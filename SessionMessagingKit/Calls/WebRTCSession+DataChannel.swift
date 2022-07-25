@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import WebRTC
 import Foundation
+import SessionUtilitiesKit
 
 extension WebRTCSession: RTCDataChannelDelegate {
     

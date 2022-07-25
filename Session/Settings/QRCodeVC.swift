@@ -1,3 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import Curve25519Kit
+import SessionUtilitiesKit
 
 final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -66,13 +71,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
         view.pin(.bottom, to: .bottom, of: pageVCView)
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
-        let height: CGFloat
-        if #available(iOS 13, *) {
-            height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight
-        } else {
-            let statusBarHeight = UIApplication.shared.statusBarFrame.height
-            height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight - statusBarHeight
-        }
+        let height: CGFloat = (navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight)
         pageVCView.set(.height, to: height)
         viewMyQRCodeVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
@@ -122,13 +121,22 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     
     fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(title: NSLocalizedString("invalid_session_id", comment: ""), message: NSLocalizedString("Please check the Session ID and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(
+                title: "invalid_session_id".localized(),
+                message: "INVALID_SESSION_ID_MESSAGE".localized(), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
-        } else {
-            let thread = TSContactThread.getOrCreateThread(contactSessionID: hexEncodedPublicKey)
+        }
+        else {
+            let maybeThread: SessionThread? = Storage.shared.write { db in
+                try SessionThread.fetchOrCreate(db, id: hexEncodedPublicKey, variant: .contact)
+            }
+            
+            guard maybeThread != nil else { return }
+            
             presentingViewController?.dismiss(animated: true, completion: nil)
-            SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+            
+            SessionApp.presentConversation(for: hexEncodedPublicKey, action: .compose, animated: false)
         }
     }
 }

@@ -3,27 +3,9 @@
 //
 
 import Foundation
+import SessionUtilitiesKit
 
 @objc public class OWSAlerts: NSObject {
-
-    /// Cleanup and present alert for no permissions
-    @objc
-    public class func showNoMicrophonePermissionAlert() {
-        let alertTitle = NSLocalizedString("CALL_AUDIO_PERMISSION_TITLE", comment: "Alert title when calling and permissions for microphone are missing")
-        let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment: "Alert message when calling and permissions for microphone are missing")
-        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
-
-        let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
-        dismissAction.accessibilityIdentifier = "OWSAlerts.\("dismiss")"
-        alert.addAction(dismissAction)
-
-        if let settingsAction = CurrentAppContext().openSystemSettingsAction {
-            settingsAction.accessibilityIdentifier = "OWSAlerts.\("settings")"
-            alert.addAction(settingsAction)
-        }
-        CurrentAppContext().frontmostViewController()?.presentAlert(alert)
-    }
-
     @objc
     public class func showAlert(_ alert: UIAlertController) {
         guard let frontmostViewController = CurrentAppContext().frontmostViewController() else {
@@ -92,33 +74,5 @@ import Foundation
         }
         action.accessibilityIdentifier = "OWSAlerts.\("cancel")"
         return action
-    }
-
-    @objc
-    public class func showIOSUpgradeNagIfNecessary() {
-        // Our min SDK is iOS9, so this will only show for iOS9 users
-        if #available(iOS 10.0, *) {
-            return
-        }
-
-        // Don't show the nag to users who have just launched
-        // the app for the first time.
-        guard AppVersion.sharedInstance().lastAppVersion != nil else {
-            return
-        }
-
-        if let iOSUpgradeNagDate = Environment.shared.preferences.iOSUpgradeNagDate() {
-            let kNagFrequencySeconds = 14 * kDayInterval
-            guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
-                return
-            }
-        }
-
-        Environment.shared.preferences.setIOSUpgradeNagDate(Date())
-
-        OWSAlerts.showAlert(title: NSLocalizedString("UPGRADE_IOS_ALERT_TITLE",
-                                                        comment: "Title for the alert indicating that user should upgrade iOS."),
-                            message: NSLocalizedString("UPGRADE_IOS_ALERT_MESSAGE",
-                                                      comment: "Message for the alert indicating that user should upgrade iOS."))
     }
 }

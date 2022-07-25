@@ -7,6 +7,7 @@ import MobileCoreServices
 
 import PromiseKit
 import AVFoundation
+import SessionUtilitiesKit
 
 public enum SignalAttachmentError: Error {
     case missingData
@@ -104,62 +105,30 @@ public enum TSImageQuality: UInt {
 // [SignalAttachment hasError] will be true for non-valid attachments.
 //
 // TODO: Perhaps do conversion off the main thread?
-@objc
-public class SignalAttachment: NSObject {
+public class SignalAttachment: Equatable, Hashable {
 
     // MARK: Properties
 
-    @objc
     public let dataSource: DataSource
-
-    @objc
     public var captionText: String?
+    public var linkPreviewDraft: LinkPreviewDraft?
     
-    @objc
-    public var linkPreviewDraft: OWSLinkPreviewDraft?
-
-    @objc
-    public var data: Data {
-        return dataSource.data()
-    }
-
-    @objc
-    public var dataLength: UInt {
-        return dataSource.dataLength()
-    }
-
-    @objc
-    public var dataUrl: URL? {
-        return dataSource.dataUrl()
-    }
-
-    @objc
-    public var sourceFilename: String? {
-        return dataSource.sourceFilename?.filterFilename()
-    }
-
-    @objc
-    public var isValidImage: Bool {
-        return dataSource.isValidImage()
-    }
-
-    @objc
-    public var isValidVideo: Bool {
-        return dataSource.isValidVideo()
-    }
+    public var data: Data { return dataSource.data() }
+    public var dataLength: UInt { return dataSource.dataLength() }
+    public var dataUrl: URL? { return dataSource.dataUrl() }
+    public var sourceFilename: String? { return dataSource.sourceFilename?.filterFilename() }
+    public var isValidImage: Bool { return dataSource.isValidImage() }
+    public var isValidVideo: Bool { return dataSource.isValidVideo() }
 
     // This flag should be set for text attachments that can be sent as text messages.
-    @objc
     public var isConvertibleToTextMessage = false
 
     // This flag should be set for attachments that can be sent as contact shares.
-    @objc
     public var isConvertibleToContactShare = false
 
     // Attachment types are identified using UTIs.
     //
     // See: https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
-    @objc
     public let dataUTI: String
 
     public var error: SignalAttachmentError? {
@@ -174,7 +143,6 @@ public class SignalAttachment: NSObject {
     private var cachedImage: UIImage?
     private var cachedVideoPreview: UIImage?
 
-    @objc
     private(set) public var isVoiceMessage = false
 
     // MARK: Constants
@@ -187,28 +155,21 @@ public class SignalAttachment: NSObject {
 
     // MARK: 
 
-    @objc
     public static let maxAttachmentsAllowed: Int = 32
 
     // MARK: Constructor
 
     // This method should not be called directly; use the factory
     // methods instead.
-    @objc
     private init(dataSource: DataSource, dataUTI: String) {
         self.dataSource = dataSource
         self.dataUTI = dataUTI
-        super.init()
     }
 
     // MARK: Methods
 
-    @objc
-    public var hasError: Bool {
-        return error != nil
-    }
+    public var hasError: Bool { return error != nil }
 
-    @objc
     public var errorName: String? {
         guard let error = error else {
             // This method should only be called if there is an error.
@@ -218,7 +179,6 @@ public class SignalAttachment: NSObject {
         return "\(error)"
     }
 
-    @objc
     public var localizedErrorDescription: String? {
         guard let error = self.error else {
             // This method should only be called if there is an error.
@@ -231,30 +191,31 @@ public class SignalAttachment: NSObject {
         return "\(errorDescription)"
     }
 
-    @objc
     public class var missingDataErrorMessage: String {
         guard let errorDescription = SignalAttachmentError.missingData.errorDescription else {
             return ""
         }
+        
         return errorDescription
     }
 
-    @objc
     public func staticThumbnail() -> UIImage? {
         if isAnimatedImage {
             return image()
-        } else if isImage {
+        }
+        else if isImage {
             return image()
-        } else if isVideo {
+        }
+        else if isVideo {
             return videoPreview()
-        } else if isAudio {
-            return nil
-        } else {
+        }
+        else if isAudio {
             return nil
         }
+        
+        return nil
     }
 
-    @objc
     public func image() -> UIImage? {
         if let cachedImage = cachedImage {
             return cachedImage
@@ -262,11 +223,11 @@ public class SignalAttachment: NSObject {
         guard let image = UIImage(data: dataSource.data()) else {
             return nil
         }
+        
         cachedImage = image
         return image
     }
 
-    @objc
     public func videoPreview() -> UIImage? {
         if let cachedVideoPreview = cachedVideoPreview {
             return cachedVideoPreview
@@ -296,7 +257,6 @@ public class SignalAttachment: NSObject {
         }
     }
     
-    @objc
     public func text() -> String? {
         guard let text = String(data: dataSource.data(), encoding: .utf8) else {
             return nil
@@ -307,7 +267,6 @@ public class SignalAttachment: NSObject {
 
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
-    @objc
     public var mimeType: String {
         if isVoiceMessage {
             // Legacy iOS clients don't handle "audio/mp4" files correctly;
@@ -331,9 +290,6 @@ public class SignalAttachment: NSObject {
                 }
             }
         }
-        if isOversizeText {
-            return OWSMimeTypeOversizeTextMessage
-        }
         if dataUTI == kUnknownTestAttachmentUTI {
             return OWSMimeTypeUnknownForTests
         }
@@ -345,7 +301,6 @@ public class SignalAttachment: NSObject {
 
     // Use the filename if known. If not, e.g. if the attachment was copy/pasted, we'll generate a filename
     // like: "signal-2017-04-24-095918.zip"
-    @objc
     public var filenameOrDefault: String {
         if let filename = sourceFilename {
             return filename.filterFilename()
@@ -367,16 +322,12 @@ public class SignalAttachment: NSObject {
 
     // Returns the file extension for this attachment or nil if no file extension
     // can be identified.
-    @objc
     public var fileExtension: String? {
         if let filename = sourceFilename {
             let fileExtension = (filename as NSString).pathExtension
             if fileExtension.count > 0 {
                 return fileExtension.filterFilename()
             }
-        }
-        if isOversizeText {
-            return kOversizeTextAttachmentFileExtension
         }
         if dataUTI == kUnknownTestAttachmentUTI {
             return "unknown"
@@ -456,17 +407,10 @@ public class SignalAttachment: NSObject {
     }
 
     @objc
-    public var isOversizeText: Bool {
-        return dataUTI == kOversizeTextAttachmentUTI
-    }
-
-    @objc
     public var isText: Bool {
         return (
-            isConvertibleToTextMessage && (
-                UTTypeConformsTo(dataUTI as CFString, kUTTypeText) ||
-                isOversizeText
-            )
+            isConvertibleToTextMessage &&
+            UTTypeConformsTo(dataUTI as CFString, kUTTypeText)
         )
     }
 
@@ -529,7 +473,6 @@ public class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    @objc
     public class func attachmentFromPasteboard() -> SignalAttachment? {
         guard UIPasteboard.general.numberOfItems >= 1 else {
             return nil
@@ -596,7 +539,6 @@ public class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    @objc
     private class func imageAttachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(dataUTI.count > 0)
         assert(dataSource != nil)
@@ -684,7 +626,6 @@ public class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may nil or not be valid.
     //       Check the attachment's error property.
-    @objc
     public class func imageAttachment(image: UIImage?, dataUTI: String, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(dataUTI.count > 0)
 
@@ -1056,20 +997,6 @@ public class SignalAttachment: NSObject {
                              maxFileSize: kMaxFileSizeAudio)
     }
 
-    // MARK: Oversize Text Attachments
-
-    // Factory method for oversize text attachments.
-    //
-    // NOTE: The attachment returned by this method may not be valid.
-    //       Check the attachment's error property.
-    private class func oversizeTextAttachment(text: String?) -> SignalAttachment {
-        let dataSource = DataSourceValue.dataSource(withOversizeText: text)
-        return newAttachment(dataSource: dataSource,
-                             dataUTI: kOversizeTextAttachmentUTI,
-                             validUTISet: nil,
-                             maxFileSize: kMaxFileSizeGeneric)
-    }
-
     // MARK: Generic Attachments
 
     // Factory method for generic attachments.
@@ -1085,7 +1012,6 @@ public class SignalAttachment: NSObject {
 
     // MARK: Voice Messages
 
-    @objc
     public class func voiceMessageAttachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
         let attachment = audioAttachment(dataSource: dataSource, dataUTI: dataUTI)
         attachment.isVoiceMessage = true
@@ -1098,7 +1024,6 @@ public class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    @objc
     public class func attachment(dataSource: DataSource?, dataUTI: String) -> SignalAttachment {
         return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .original)
     }
@@ -1107,7 +1032,6 @@ public class SignalAttachment: NSObject {
     //
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
-    @objc
     public class func attachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> SignalAttachment {
         if inputImageUTISet.contains(dataUTI) {
             return imageAttachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality)
@@ -1120,7 +1044,6 @@ public class SignalAttachment: NSObject {
         }
     }
 
-    @objc
     public class func empty() -> SignalAttachment {
         return SignalAttachment.attachment(dataSource: DataSourceValue.emptyDataSource(),
                                            dataUTI: kUTTypeContent as String,
@@ -1164,5 +1087,35 @@ public class SignalAttachment: NSObject {
 
         // Attachment is valid
         return attachment
+    }
+    
+    // MARK: - Equatable
+    
+    public static func == (lhs: SignalAttachment, rhs: SignalAttachment) -> Bool {
+        return (
+            lhs.dataSource == rhs.dataSource &&
+            lhs.dataUTI == rhs.dataUTI &&
+            lhs.captionText == rhs.captionText &&
+            lhs.linkPreviewDraft == rhs.linkPreviewDraft &&
+            lhs.isConvertibleToTextMessage == rhs.isConvertibleToTextMessage &&
+            lhs.isConvertibleToContactShare == rhs.isConvertibleToContactShare &&
+            lhs.cachedImage == rhs.cachedImage &&
+            lhs.cachedVideoPreview == rhs.cachedVideoPreview &&
+            lhs.isVoiceMessage == rhs.isVoiceMessage
+        )
+    }
+    
+    // MARK: - Hashable
+    
+    public func hash(into hasher: inout Hasher) {
+        dataSource.hash(into: &hasher)
+        dataUTI.hash(into: &hasher)
+        captionText.hash(into: &hasher)
+        linkPreviewDraft.hash(into: &hasher)
+        isConvertibleToTextMessage.hash(into: &hasher)
+        isConvertibleToContactShare.hash(into: &hasher)
+        cachedImage.hash(into: &hasher)
+        cachedVideoPreview.hash(into: &hasher)
+        isVoiceMessage.hash(into: &hasher)
     }
 }

@@ -1,11 +1,16 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import GRDB
 import PromiseKit
+import SessionUIKit
+import SessionMessagingKit
 
 private protocol TableViewTouchDelegate {
-    
     func tableViewWasTouched(_ tableView: TableView)
 }
 
-private final class TableView : UITableView {
+private final class TableView: UITableView {
     var touchDelegate: TableViewTouchDelegate?
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -14,107 +19,127 @@ private final class TableView : UITableView {
     }
 }
 
-final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate, TableViewTouchDelegate, UITextFieldDelegate, UIScrollViewDelegate {
-    private let contacts = ContactUtilities.getAllContacts()
+final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate, TableViewTouchDelegate, UITextFieldDelegate, UIScrollViewDelegate {
+    private let contactProfiles: [Profile] = Profile.fetchAllContactProfiles(excludeCurrentUser: true)
     private var selectedContacts: Set<String> = []
     
-    // MARK: Components
-    private lazy var nameTextField = TextField(placeholder: NSLocalizedString("vc_create_closed_group_text_field_hint", comment: ""))
+    // MARK: - Components
+    
+    private lazy var nameTextField = TextField(placeholder: "vc_create_closed_group_text_field_hint".localized())
 
     private lazy var tableView: TableView = {
-        let result = TableView()
+        let result: TableView = TableView()
         result.dataSource = self
         result.delegate = self
         result.touchDelegate = self
-        result.register(UserCell.self, forCellReuseIdentifier: "UserCell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.isScrollEnabled = false
+        result.register(view: UserCell.self)
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUpGradientBackground()
         setUpNavBarStyle()
+        
         let customTitleFontSize = Values.largeFontSize
-        setNavBarTitle(NSLocalizedString("vc_create_closed_group_title", comment: ""), customFontSize: customTitleFontSize)
+        setNavBarTitle("vc_create_closed_group_title".localized(), customFontSize: customTitleFontSize)
+        
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
+        
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(createClosedGroup))
         doneButton.tintColor = Colors.text
         navigationItem.rightBarButtonItem = doneButton
+        
         // Set up content
         setUpViewHierarchy()
     }
 
     private func setUpViewHierarchy() {
-        if !contacts.isEmpty {
-            let mainStackView = UIStackView()
-            mainStackView.axis = .vertical
-            nameTextField.delegate = self
-            let nameTextFieldContainer = UIView()
-            nameTextFieldContainer.addSubview(nameTextField)
-            nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.largeSpacing)
-            nameTextField.pin(.top, to: .top, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
-            nameTextFieldContainer.pin(.trailing, to: .trailing, of: nameTextField, withInset: Values.largeSpacing)
-            nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
-            mainStackView.addArrangedSubview(nameTextFieldContainer)
-            let separator = UIView()
-            separator.backgroundColor = Colors.separator
-            separator.set(.height, to: Values.separatorThickness)
-            mainStackView.addArrangedSubview(separator)
-            tableView.set(.height, to: CGFloat(contacts.count * 65)) // A cell is exactly 65 points high
-            tableView.set(.width, to: UIScreen.main.bounds.width)
-            mainStackView.addArrangedSubview(tableView)
-            let scrollView = UIScrollView(wrapping: mainStackView, withInsets: UIEdgeInsets.zero)
-            scrollView.showsVerticalScrollIndicator = false
-            scrollView.delegate = self
-            view.addSubview(scrollView)
-            scrollView.set(.width, to: UIScreen.main.bounds.width)
-            scrollView.pin(to: view)
-        } else {
-            let explanationLabel = UILabel()
+        guard !contactProfiles.isEmpty else {
+            let explanationLabel: UILabel = UILabel()
             explanationLabel.textColor = Colors.text
             explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
             explanationLabel.numberOfLines = 0
             explanationLabel.lineBreakMode = .byWordWrapping
             explanationLabel.textAlignment = .center
             explanationLabel.text = NSLocalizedString("vc_create_closed_group_empty_state_message", comment: "")
-            let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
+            
+            let createNewPrivateChatButton: Button = Button(style: .prominentOutline, size: .large)
             createNewPrivateChatButton.setTitle(NSLocalizedString("vc_create_closed_group_empty_state_button_title", comment: ""), for: UIControl.State.normal)
             createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: UIControl.Event.touchUpInside)
             createNewPrivateChatButton.set(.width, to: 196)
-            let stackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
+            
+            let stackView: UIStackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
             stackView.axis = .vertical
             stackView.spacing = Values.mediumSpacing
             stackView.alignment = .center
             view.addSubview(stackView)
             stackView.center(.horizontal, in: view)
+            
             let verticalCenteringConstraint = stackView.center(.vertical, in: view)
             verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
+            return
         }
+        
+        let mainStackView: UIStackView = UIStackView()
+        mainStackView.axis = .vertical
+        nameTextField.delegate = self
+        
+        let nameTextFieldContainer: UIView = UIView()
+        nameTextFieldContainer.addSubview(nameTextField)
+        nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.largeSpacing)
+        nameTextField.pin(.top, to: .top, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
+        nameTextFieldContainer.pin(.trailing, to: .trailing, of: nameTextField, withInset: Values.largeSpacing)
+        nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
+        mainStackView.addArrangedSubview(nameTextFieldContainer)
+        
+        let separator: UIView = UIView()
+        separator.backgroundColor = Colors.separator
+        separator.set(.height, to: Values.separatorThickness)
+        mainStackView.addArrangedSubview(separator)
+        tableView.set(.height, to: CGFloat(contactProfiles.count * 65)) // A cell is exactly 65 points high
+        tableView.set(.width, to: UIScreen.main.bounds.width)
+        mainStackView.addArrangedSubview(tableView)
+        
+        let scrollView: UIScrollView = UIScrollView(wrapping: mainStackView, withInsets: UIEdgeInsets.zero)
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.delegate = self
+        view.addSubview(scrollView)
+        
+        scrollView.set(.width, to: UIScreen.main.bounds.width)
+        scrollView.pin(to: view)
     }
     
-    // MARK: Table View Data Source
+    // MARK: - Table View Data Source
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return contacts.count
+        return contactProfiles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
-        let publicKey = contacts[indexPath.row]
-        cell.publicKey = publicKey
-        let isSelected = selectedContacts.contains(publicKey)
-        cell.accessory = .tick(isSelected: isSelected)
-        cell.update()
+        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        cell.update(
+            with: contactProfiles[indexPath.row].id,
+            profile: contactProfiles[indexPath.row],
+            isZombie: false,
+            accessory: .tick(isSelected: selectedContacts.contains(contactProfiles[indexPath.row].id))
+        )
+        
         return cell
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
         crossfadeLabel.text = textField.text!.isEmpty ? NSLocalizedString("vc_create_closed_group_title", comment: "") : textField.text!
     }
@@ -135,13 +160,15 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let publicKey = contacts[indexPath.row]
-        if !selectedContacts.contains(publicKey) { selectedContacts.insert(publicKey) } else { selectedContacts.remove(publicKey) }
-        guard let cell = tableView.cellForRow(at: indexPath) as? UserCell else { return }
-        let isSelected = selectedContacts.contains(publicKey)
-        cell.accessory = .tick(isSelected: isSelected)
-        cell.update()
+        if !selectedContacts.contains(contactProfiles[indexPath.row].id) {
+            selectedContacts.insert(contactProfiles[indexPath.row].id)
+        }
+        else {
+            selectedContacts.remove(contactProfiles[indexPath.row].id)
+        }
+        
         tableView.deselectRow(at: indexPath, animated: true)
+        tableView.reloadRows(at: [indexPath], with: .none)
     }
     
     @objc private func close() {
@@ -169,28 +196,34 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         let selectedContacts = self.selectedContacts
         let message: String? = (selectedContacts.count > 20) ? "Please wait while the group is created..." : nil
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, message: message) { [weak self] _ in
-            var promise: Promise<TSGroupThread>!
-            Storage.writeSync { transaction in
-                promise = MessageSender.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
-            }
-            let _ = promise.done(on: DispatchQueue.main) { thread in
-                MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                self?.presentingViewController?.dismiss(animated: true, completion: nil)
-                SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
-            }
-            promise.catch(on: DispatchQueue.main) { _ in
-                self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                let title = "Couldn't Create Group"
-                let message = "Please check your internet connection and try again."
-                let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                self?.presentAlert(alert)
-            }
+            Storage.shared
+                .writeAsync { db in
+                    try MessageSender.createClosedGroup(db, name: name, members: selectedContacts)
+                }
+                .done(on: DispatchQueue.main) { thread in
+                    Storage.shared.writeAsync { db in
+                        try? MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                    }
+                    
+                    self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                    SessionApp.presentConversation(for: thread.id, action: .compose, animated: false)
+                }
+                .catch(on: DispatchQueue.main) { [weak self] _ in
+                    self?.dismiss(animated: true, completion: nil) // Dismiss the loader
+                    
+                    let title = "Couldn't Create Group"
+                    let message = "Please check your internet connection and try again."
+                    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+                    self?.presentAlert(alert)
+                }
+                .retainUntilComplete()
         }
     }
     
     @objc private func createNewDM() {
         presentingViewController?.dismiss(animated: true, completion: nil)
-        SignalApp.shared().homeViewController!.createNewDM()
+        
+        SessionApp.homeViewController.wrappedValue?.createNewDM()
     }
 }

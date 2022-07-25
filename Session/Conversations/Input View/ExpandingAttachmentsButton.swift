@@ -143,7 +143,7 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
     }
 }
 
-// MARK: Delegate
+// MARK: - Delegate
 
 protocol ExpandingAttachmentsButtonDelegate: AnyObject {
 

@@ -5,6 +5,7 @@
 import Foundation
 import UserNotifications
 import PromiseKit
+import SessionMessagingKit
 
 class UserNotificationConfig {
 
@@ -85,12 +86,12 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?) {
         AssertIsOnMainThread()
         notify(category: category, title: title, body: body, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
 
         let content = UNMutableNotificationContent()
@@ -103,7 +104,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             isBackgroudPoll = replacingIdentifier == threadIdentifier
         }
         let isAppActive = UIApplication.shared.applicationState == .active
-        if let sound = sound, sound != OWSSound.none {
+        if let sound = sound, sound != .none {
             content.sound = sound.notificationSound(isQuiet: isAppActive)
         }
         
@@ -139,21 +140,21 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
 
         Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
-        if isReplacingNotification { cancelNotification(identifier: notificationIdentifier) }
+        if isReplacingNotification { cancelNotifications(identifiers: [notificationIdentifier]) }
         notificationCenter.add(request)
         notifications[notificationIdentifier] = request
     }
 
-    func cancelNotification(identifier: String) {
+    func cancelNotifications(identifiers: [String]) {
         AssertIsOnMainThread()
-        notifications.removeValue(forKey: identifier)
-        notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
-        notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
+        identifiers.forEach { notifications.removeValue(forKey: $0) }
+        notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiers)
+        notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiers)
     }
 
     func cancelNotification(_ notification: UNNotificationRequest) {
         AssertIsOnMainThread()
-        cancelNotification(identifier: notification.identifier)
+        cancelNotifications(identifiers: [notification.identifier])
     }
 
     func cancelNotifications(threadId: String) {
@@ -191,13 +192,13 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             owsFailDebug("threadId was unexpectedly nil")
             return true
         }
-
+        
         guard let conversationViewController = UIApplication.shared.frontmostViewController as? ConversationVC else {
             return true
         }
 
-        // Show notifications for any *other* thread
-        return conversationViewController.thread.uniqueId != notificationThreadId
+        /// Show notifications for any **other** threads
+        return (conversationViewController.viewModel.threadData.threadId != notificationThreadId)
     }
 }
 
@@ -229,16 +230,18 @@ public class UserNotificationActionHandler: NSObject {
         let userInfo = response.notification.request.content.userInfo
 
         switch response.actionIdentifier {
-        case UNNotificationDefaultActionIdentifier:
-            Logger.debug("default action")
-            return try actionHandler.showThread(userInfo: userInfo)
-        case UNNotificationDismissActionIdentifier:
-            // TODO - mark as read?
-            Logger.debug("dismissed notification")
-            return Promise.value(())
-        default:
-            // proceed
-            break
+            case UNNotificationDefaultActionIdentifier:
+                Logger.debug("default action")
+                return try actionHandler.showThread(userInfo: userInfo)
+                
+            case UNNotificationDismissActionIdentifier:
+                // TODO - mark as read?
+                Logger.debug("dismissed notification")
+                return Promise.value(())
+                
+            default:
+                // proceed
+                break
         }
 
         guard let action = UserNotificationConfig.action(identifier: response.actionIdentifier) else {
@@ -246,16 +249,18 @@ public class UserNotificationActionHandler: NSObject {
         }
 
         switch action {
-        case .markAsRead:
-            return try actionHandler.markAsRead(userInfo: userInfo)
-        case .reply:
-            guard let textInputResponse = response as? UNTextInputNotificationResponse else {
-                throw NotificationError.failDebug("response had unexpected type: \(response)")
-            }
+            case .markAsRead:
+                return try actionHandler.markAsRead(userInfo: userInfo)
+                
+            case .reply:
+                guard let textInputResponse = response as? UNTextInputNotificationResponse else {
+                    throw NotificationError.failDebug("response had unexpected type: \(response)")
+                }
 
-            return try actionHandler.reply(userInfo: userInfo, replyText: textInputResponse.userText)
-        case .showThread:
-            return try actionHandler.showThread(userInfo: userInfo)
+                return try actionHandler.reply(userInfo: userInfo, replyText: textInputResponse.userText)
+                    
+            case .showThread:
+                return try actionHandler.showThread(userInfo: userInfo)
         }
     }
 }

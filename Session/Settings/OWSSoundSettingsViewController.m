@@ -5,7 +5,7 @@
 #import "OWSSoundSettingsViewController.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SessionMessagingKit/OWSAudioPlayer.h>
-#import <SessionMessagingKit/OWSSounds.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import "Session-Swift.h"
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL isDirty;
 
-@property (nonatomic) OWSSound currentSound;
+@property (nonatomic) NSInteger currentSound;
 
 @property (nonatomic, nullable) OWSAudioPlayer *audioPlayer;
 
@@ -32,9 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                        @"Label for settings view that allows user to change the notification sound.")];
-    self.currentSound
-        = (self.thread ? [OWSSounds notificationSoundForThread:self.thread] : [OWSSounds globalNotificationSound]);
-
+    self.currentSound = [SMKSound notificationSoundFor:self.threadId];
+    
     [self updateTableContents];
     [self updateNavigationItems];
     
@@ -85,33 +84,34 @@ NS_ASSUME_NONNULL_BEGIN
     soundsSection.headerTitle = NSLocalizedString(
         @"NOTIFICATIONS_SECTION_SOUNDS", @"Label for settings UI that allows user to change the notification sound.");
 
-    NSArray<NSNumber *> *allSounds = [OWSSounds allNotificationSounds];
+    NSArray<NSNumber *> *allSounds = [SMKSound notificationSounds];
     for (NSNumber *nsValue in allSounds) {
-        OWSSound sound = (OWSSound)nsValue.intValue;
+        NSInteger sound = nsValue.integerValue;
         OWSTableItem *item;
 
         NSString *soundLabelText = ^{
-            NSString *baseName = [OWSSounds displayNameForSound:sound];
-            if (sound == OWSSound_Note) {
+            NSString *baseName = [SMKSound displayNameFor:sound];
+            if ([SMKSound isNote:sound]) {
                 NSString *noteStringFormat = NSLocalizedString(@"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT",
                     @"Format string for the default 'Note' sound. Embeds the system {{sound name}}.");
                 return [NSString stringWithFormat:noteStringFormat, baseName];
-            } else {
-                return [OWSSounds displayNameForSound:sound];
+            }
+            else {
+                return [SMKSound displayNameFor:sound];
             }
         }();
 
         if (sound == self.currentSound) {
             item = [OWSTableItem
                   checkmarkItemWithText:soundLabelText
-                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, [OWSSounds displayNameForSound:sound])
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, [SMKSound displayNameFor:sound])
                             actionBlock:^{
                                 [weakSelf soundWasSelected:sound];
                             }];
         } else {
             item = [OWSTableItem
                      actionItemWithText:soundLabelText
-                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, [OWSSounds displayNameForSound:sound])
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, [SMKSound displayNameFor:sound])
                             actionBlock:^{
                                 [weakSelf soundWasSelected:sound];
                             }];
@@ -126,10 +126,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Events
 
-- (void)soundWasSelected:(OWSSound)sound
+- (void)soundWasSelected:(NSInteger)sound
 {
     [self.audioPlayer stop];
-    self.audioPlayer = [OWSSounds audioPlayerForSound:sound audioBehavior:OWSAudioBehavior_Playback];
+    self.audioPlayer = [SMKSound audioPlayerFor:sound audioBehavior:OWSAudioBehavior_Playback];
     // Suppress looping in this view.
     self.audioPlayer.isLooping = NO;
     [self.audioPlayer play];
@@ -153,10 +153,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWasPressed:(id)sender
 {
-    if (self.thread) {
-        [OWSSounds setNotificationSound:self.currentSound forThread:self.thread];
-    } else {
-        [OWSSounds setGlobalNotificationSound:self.currentSound];
+    if (self.threadId) {
+        [SMKSound setNotificationSound:self.currentSound forThreadId:self.threadId];
+    }
+    else {
+        [SMKSound setGlobalNotificationSound:self.currentSound];
     }
 
     [self.audioPlayer stop];

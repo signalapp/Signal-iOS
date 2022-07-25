@@ -1,20 +1,26 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-extension ContextMenuVC {
-    
+import UIKit
+import SessionUIKit
+import SessionUtilitiesKit
+
+extension ContextMenuVC {    
     final class EmojiReactsView: UIView {
-        private let emoji: EmojiWithSkinTones
+        private let action: Action
         private let dismiss: () -> Void
-        private let work: () -> Void
 
-        // MARK: Settings
+        // MARK: - Settings
+        
         private static let size: CGFloat = 40
         
-        // MARK: Lifecycle
-        init(for emoji: EmojiWithSkinTones, dismiss: @escaping () -> Void, work: @escaping () -> Void) {
-            self.emoji = emoji
+        // MARK: - Lifecycle
+        
+        init(for action: Action, dismiss: @escaping () -> Void) {
+            self.action = action
             self.dismiss = dismiss
-            self.work = work
+            
             super.init(frame: CGRect.zero)
+            
             setUpViewHierarchy()
         }
 
@@ -28,36 +34,42 @@ extension ContextMenuVC {
 
         private func setUpViewHierarchy() {
             let emojiLabel = UILabel()
-            emojiLabel.text = self.emoji.rawValue
+            emojiLabel.text = self.action.title
             emojiLabel.font = .systemFont(ofSize: Values.veryLargeFontSize)
             emojiLabel.set(.height, to: ContextMenuVC.EmojiReactsView.size)
             addSubview(emojiLabel)
             emojiLabel.pin(to: self)
+            
             // Tap gesture recognizer
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
             addGestureRecognizer(tapGestureRecognizer)
         }
         
-        // MARK: Interaction
+        // MARK: - Interaction
+        
         @objc private func handleTap() {
-            work()
+            action.work()
             dismiss()
         }
     }
     
     final class EmojiPlusButton: UIView {
+        private let action: Action?
         private let dismiss: () -> Void
-        private let work: () -> Void
 
-        // MARK: Settings
+        // MARK: - Settings
+        
         public static let size: CGFloat = 28
         private let iconSize: CGFloat = 14
         
-        // MARK: Lifecycle
-        init(dismiss: @escaping () -> Void, work: @escaping () -> Void) {
+        // MARK: - Lifecycle
+        
+        init(action: Action?, dismiss: @escaping () -> Void) {
+            self.action = action
             self.dismiss = dismiss
-            self.work = work
+            
             super.init(frame: CGRect.zero)
+            
             setUpViewHierarchy()
         }
 
@@ -78,22 +90,24 @@ extension ContextMenuVC {
             iconImageView.contentMode = .scaleAspectFit
             addSubview(iconImageView)
             iconImageView.center(in: self)
+            
             // Background
             isUserInteractionEnabled = true
             backgroundColor = Colors.sessionEmojiPlusButtonBackground
+            
             // Tap gesture recognizer
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
             addGestureRecognizer(tapGestureRecognizer)
         }
         
-        // MARK: Interaction
+        // MARK: - Interaction
+        
         @objc private func handleTap() {
             dismiss()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: { [weak self] in
-                self?.work()
-            })
             
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25, execute: { [weak self] in
+                self?.action?.work()
+            })
         }
     }
-    
 }

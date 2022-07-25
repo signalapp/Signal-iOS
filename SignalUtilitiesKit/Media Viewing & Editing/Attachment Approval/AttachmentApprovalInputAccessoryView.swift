@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 import SessionUIKit
 
-protocol AttachmentApprovalInputAccessoryViewDelegate: class {
+protocol AttachmentApprovalInputAccessoryViewDelegate: AnyObject {
     func attachmentApprovalInputUpdateMediaRail()
     func attachmentApprovalInputStartEditingCaptions()
     func attachmentApprovalInputStopEditingCaptions()
@@ -88,6 +88,14 @@ class AttachmentApprovalInputAccessoryView: UIView {
         // the layout if you hide the keyboard in the simulator (or if the
         // user uses an external keyboard).
         stackView.autoPinEdge(toSuperviewMargin: .bottom)
+        
+        let galleryRailBlockingView: UIView = UIView()
+        galleryRailBlockingView.backgroundColor = backgroundView.backgroundColor
+        stackView.addSubview(galleryRailBlockingView)
+        galleryRailBlockingView.pin(.top, to: .bottom, of: attachmentTextToolbar)
+        galleryRailBlockingView.pin(.left, to: .left, of: stackView)
+        galleryRailBlockingView.pin(.right, to: .right, of: stackView)
+        galleryRailBlockingView.pin(.bottom, to: .bottom, of: stackView)
     }
 
     // MARK: - Events

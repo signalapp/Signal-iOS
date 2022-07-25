@@ -12,8 +12,8 @@ public protocol TappableLabelDelegate: AnyObject {
 }
 
 public class TappableLabel: UILabel {
-
     private var links: [String: NSRange] = [:]
+    private lazy var highlightedMentionBackgroundView: HighlightMentionBackgroundView = HighlightMentionBackgroundView(targetLabel: self)
     private(set) var layoutManager = NSLayoutManager()
     private(set) var textContainer = NSTextContainer(size: CGSize.zero)
     private(set) var textStorage = NSTextStorage() {
@@ -26,13 +26,20 @@ public class TappableLabel: UILabel {
 
     public override var attributedText: NSAttributedString? {
         didSet {
-            if let attributedText = attributedText {
-                textStorage = NSTextStorage(attributedString: attributedText)
-                findLinksAndRange(attributeString: attributedText)
-            } else {
+            guard let attributedText: NSAttributedString = attributedText else {
                 textStorage = NSTextStorage()
                 links = [:]
+                return
             }
+
+            textStorage = NSTextStorage(attributedString: attributedText)
+            findLinksAndRange(attributeString: attributedText)
+            highlightedMentionBackgroundView.maxPadding = highlightedMentionBackgroundView
+                .calculateMaxPadding(for: attributedText)
+            highlightedMentionBackgroundView.frame = self.bounds.insetBy(
+                dx: -highlightedMentionBackgroundView.maxPadding,
+                dy: -highlightedMentionBackgroundView.maxPadding
+            )
         }
     }
 
@@ -47,6 +54,8 @@ public class TappableLabel: UILabel {
             textContainer.maximumNumberOfLines = numberOfLines
         }
     }
+    
+    // MARK: - Initialization
 
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -66,11 +75,33 @@ public class TappableLabel: UILabel {
         textContainer.maximumNumberOfLines  = numberOfLines
         numberOfLines = 0
     }
+    
+    // MARK: - Layout
+    
+    public override func didMoveToSuperview() {
+        super.didMoveToSuperview()
 
+        // Note: Because we want the 'highlight' content to appear behind the label we need
+        // to add the 'highlightedMentionBackgroundView' below it in the view hierarchy
+        //
+        // In order to try and avoid adding even more complexity to UI components which use
+        // this 'TappableLabel' we are going some view hierarchy manipulation and forcing
+        // these elements to maintain the same superview
+        highlightedMentionBackgroundView.removeFromSuperview()
+        superview?.insertSubview(highlightedMentionBackgroundView, belowSubview: self)
+    }
+    
     public override func layoutSubviews() {
         super.layoutSubviews()
+        
         textContainer.size = bounds.size
+        highlightedMentionBackgroundView.frame = self.frame.insetBy(
+            dx: -highlightedMentionBackgroundView.maxPadding,
+            dy: -highlightedMentionBackgroundView.maxPadding
+        )
     }
+    
+    // MARK: - Functions
 
     private func findLinksAndRange(attributeString: NSAttributedString) {
         links = [:]
@@ -89,7 +120,9 @@ public class TappableLabel: UILabel {
         guard let locationOfTouch = touches.first?.location(in: self) else {
             return
         }
+        
         textContainer.size = bounds.size
+        
         let indexOfCharacter = layoutManager.glyphIndex(for: locationOfTouch, in: textContainer)
         for (urlString, range) in links where NSLocationInRange(indexOfCharacter, range) {
             delegate?.tapableLabel(self, didTapUrl: urlString, atRange: range)

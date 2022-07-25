@@ -1,87 +1,87 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
+import SessionUtilitiesKit
 
 public extension VisibleMessage {
-    
-    @objc(SNReaction)
-    class Reaction : NSObject, NSCoding {
-        public var timestamp: UInt64?
-        public var publicKey: String?
-        public var emoji: String?
-        public var kind: Kind?
+    struct VMReaction: Codable {
+        /// This is the timestamp (in milliseconds since epoch) when the interaction this reaction belongs to was sent
+        public var timestamp: UInt64
         
-        // MARK: Kind
-        public enum Kind : Int, CustomStringConvertible {
-            case react, remove
-
-            static func fromProto(_ proto: SNProtoDataMessageReaction.SNProtoDataMessageReactionAction) -> Kind {
-                switch proto {
-                case .react: return .react
-                case .remove: return .remove
-                }
-            }
-
-            func toProto() -> SNProtoDataMessageReaction.SNProtoDataMessageReactionAction {
+        /// This is the public key of the sender of the interaction this reaction belongs to
+        public var publicKey: String
+        
+        /// This is the emoji for the reaction
+        public var emoji: String
+        
+        /// This is the behaviour for the reaction
+        public var kind: Kind
+        
+        public var isValid: Bool { true }
+        
+        // MARK: - Kind
+        
+        public enum Kind: Int, Codable {
+            case react
+            case remove
+            
+            var description: String {
                 switch self {
-                case .react: return .react
-                case .remove: return .remove
+                    case .react: return "react"
+                    case .remove: return "remove"
                 }
             }
             
-            public var description: String {
+            // MARK: - Initialization
+            
+            init(protoAction: SNProtoDataMessageReaction.SNProtoDataMessageReactionAction) {
+                switch protoAction {
+                    case .react: self = .react
+                    case .remove: self = .remove
+                }
+            }
+            
+            // MARK: - Proto Conversion
+            
+            func toProto() -> SNProtoDataMessageReaction.SNProtoDataMessageReactionAction {
                 switch self {
-                case .react: return "react"
-                case .remove: return "remove"
+                    case .react: return .react
+                    case .remove: return .remove
                 }
             }
         }
         
-        // MARK: Validation
-        public var isValid: Bool { timestamp != nil && publicKey != nil }
+        // MARK: - Initialization
 
-        // MARK: Initialization
-        public override init() { super.init() }
-        
-        internal init(timestamp: UInt64, publicKey: String, emoji: String?, kind: Kind?) {
+        public init(timestamp: UInt64, publicKey: String, emoji: String, kind: Kind) {
             self.timestamp = timestamp
             self.publicKey = publicKey
             self.emoji = emoji
             self.kind = kind
         }
 
-        // MARK: Coding
-        public required init?(coder: NSCoder) {
-            if let timestamp = coder.decodeObject(forKey: "timestamp") as! UInt64? { self.timestamp = timestamp }
-            if let publicKey = coder.decodeObject(forKey: "authorId") as! String? { self.publicKey = publicKey }
-            if let emoji = coder.decodeObject(forKey: "emoji") as! String? { self.emoji = emoji }
-            if let rawKind = coder.decodeObject(forKey: "action") as! Int? { self.kind = Kind(rawValue: rawKind) }
-        }
-
-        public func encode(with coder: NSCoder) {
-            coder.encode(timestamp, forKey: "timestamp")
-            coder.encode(publicKey, forKey: "authorId")
-            coder.encode(emoji, forKey: "emoji")
-            coder.encode(kind?.rawValue, forKey: "action")
-        }
-
-        // MARK: Proto Conversion
-        public static func fromProto(_ proto: SNProtoDataMessageReaction) -> Reaction? {
-            let timestamp = proto.id
-            let publicKey = proto.author
-            let emoji = proto.emoji
-            let kind = Kind.fromProto(proto.action)
-            return Reaction(timestamp: timestamp, publicKey: publicKey, emoji: emoji, kind: kind)
+        // MARK: - Proto Conversion
+        
+        public static func fromProto(_ proto: SNProtoDataMessageReaction) -> VMReaction? {
+            guard let emoji: String = proto.emoji else { return nil }
+            
+            return VMReaction(
+                timestamp: proto.id,
+                publicKey: proto.author,
+                emoji: emoji,
+                kind: Kind(protoAction: proto.action)
+            )
         }
 
         public func toProto() -> SNProtoDataMessageReaction? {
-            preconditionFailure("Use toProto(using:) instead.")
-        }
-
-        public func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoDataMessageReaction? {
-            guard let timestamp = timestamp, let publicKey = publicKey, let kind = kind else {
-                SNLog("Couldn't construct reaction proto from: \(self).")
-                return nil
-            }
-            let reactionProto = SNProtoDataMessageReaction.builder(id: timestamp, author: publicKey, action: kind.toProto())
-            if let emoji = emoji { reactionProto.setEmoji(emoji) }
+            let reactionProto = SNProtoDataMessageReaction.builder(
+                id: self.timestamp,
+                author: self.publicKey,
+                action: self.kind.toProto()
+            )
+            reactionProto.setEmoji(self.emoji)
+            
             do {
                 return try reactionProto.build()
             } catch {
@@ -90,14 +90,15 @@ public extension VisibleMessage {
             }
         }
         
-        // MARK: Description
-        public override var description: String {
+        // MARK: - Description
+        
+        public var description: String {
             """
             Reaction(
-                timestamp: \(timestamp?.description ?? "null"),
-                publicKey: \(publicKey ?? "null"),
-                emoji: \(emoji ?? "null"),
-                kind: \(kind?.description ?? "null")
+                timestamp: \(timestamp),
+                publicKey: \(publicKey),
+                emoji: \(emoji),
+                kind: \(kind.description)
             )
             """
         }

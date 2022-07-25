@@ -1,44 +1,56 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
-@objc(SNMessageRequestResponse)
 public final class MessageRequestResponse: ControlMessage {
+    private enum CodingKeys: String, CodingKey {
+        case isApproved
+    }
+    
     public var isApproved: Bool
     
     // MARK: - Initialization
     
-    public init(isApproved: Bool) {
+    public init(
+        isApproved: Bool,
+        sentTimestampMs: UInt64? = nil
+    ) {
         self.isApproved = isApproved
         
-        super.init()
+        super.init(
+            sentTimestamp: sentTimestampMs
+        )
     }
     
-    // MARK: - Coding
-
-    public required init?(coder: NSCoder) {
-        guard let isApproved: Bool = coder.decodeObject(forKey: "isApproved") as? Bool else { return nil }
+    // MARK: - Codable
+    
+    required init(from decoder: Decoder) throws {
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
         
-        self.isApproved = isApproved
+        isApproved = try container.decode(Bool.self, forKey: .isApproved)
         
-        super.init(coder: coder)
+        try super.init(from: decoder)
     }
-
-    public override func encode(with coder: NSCoder) {
-        super.encode(with: coder)
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
         
-        coder.encode(isApproved, forKey: "isApproved")
+        var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encodeIfPresent(isApproved, forKey: .isApproved)
     }
     
     // MARK: - Proto Conversion
 
-    public override class func fromProto(_ proto: SNProtoContent) -> MessageRequestResponse? {
+    public override class func fromProto(_ proto: SNProtoContent, sender: String) -> MessageRequestResponse? {
         guard let messageRequestResponseProto = proto.messageRequestResponse else { return nil }
         
-        let isApproved = messageRequestResponseProto.isApproved
-
-        return MessageRequestResponse(isApproved: isApproved)
+        return MessageRequestResponse(isApproved: messageRequestResponseProto.isApproved)
     }
 
-    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+    public override func toProto(_ db: Database) -> SNProtoContent? {
         let messageRequestResponseProto = SNProtoMessageRequestResponse.builder(isApproved: isApproved)
         let contentProto = SNProtoContent.builder()
         
@@ -53,7 +65,7 @@ public final class MessageRequestResponse: ControlMessage {
     
     // MARK: - Description
     
-    public override var description: String {
+    public var description: String {
         """
         MessageRequestResponse(
             isApproved: \(isApproved)

@@ -114,7 +114,7 @@ extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
         searchBar.resignFirstResponder()
     }
     
-    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones) {
+    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView?, didSelectEmoji emoji: EmojiWithSkinTones) {
         completionHandler(emoji)
         dismiss(animated: true, completion: dismissHandler)
     }

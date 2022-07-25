@@ -1,20 +1,14 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
 import SignalUtilitiesKit
-import SignalUtilitiesKit
 
-@objc public class AppEnvironment: NSObject {
+public class AppEnvironment {
 
     private static var _shared: AppEnvironment = AppEnvironment()
 
-    @objc
     public class var shared: AppEnvironment {
-        get {
-            return _shared
-        }
+        get { return _shared }
         set {
             guard CurrentAppContext().isRunningTests else {
                 owsFailDebug("Can only switch environments in tests.")
@@ -25,47 +19,37 @@ import SignalUtilitiesKit
         }
     }
 
-    @objc
-    public var accountManager: AccountManager
-    
-    @objc
     public var callManager: SessionCallManager
-
-    @objc
     public var notificationPresenter: NotificationPresenter
-
-    @objc
     public var pushRegistrationManager: PushRegistrationManager
-
-    @objc
     public var fileLogger: DDFileLogger
 
     // Stored properties cannot be marked as `@available`, only classes and functions.
     // Instead, store a private `Any` and wrap it with a public `@available` getter
     private var _userNotificationActionHandler: Any?
 
-    @objc
     public var userNotificationActionHandler: UserNotificationActionHandler {
         return _userNotificationActionHandler as! UserNotificationActionHandler
     }
 
-    private override init() {
-        self.accountManager = AccountManager()
+    private init() {
         self.callManager = SessionCallManager()
         self.notificationPresenter = NotificationPresenter()
         self.pushRegistrationManager = PushRegistrationManager()
         self._userNotificationActionHandler = UserNotificationActionHandler()
         self.fileLogger = DDFileLogger()
-
-        super.init()
-
+        
         SwiftSingletons.register(self)
     }
 
-    @objc
     public func setup() {
-        // Hang certain singletons on SSKEnvironment too.
-        SSKEnvironment.shared.notificationsManager = notificationPresenter
+        // Hang certain singletons on Environment too.
+        Environment.shared?.callManager.mutate {
+            $0 = callManager
+        }
+        Environment.shared?.notificationsManager.mutate {
+            $0 = notificationPresenter
+        }
         setupLogFiles()
     }
     

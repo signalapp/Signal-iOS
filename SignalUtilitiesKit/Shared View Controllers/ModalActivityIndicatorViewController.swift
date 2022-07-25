@@ -41,8 +41,14 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc
-    public class func present(fromViewController: UIViewController, canCancel: Bool = false, message: String? = nil,
-        backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+    public class func present(
+        fromViewController: UIViewController?,
+        canCancel: Bool = false,
+        message: String? = nil,
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+    ) {
+        guard let fromViewController: UIViewController = fromViewController else { return }
+        
         AssertIsOnMainThread()
 
         let view = ModalActivityIndicatorViewController(canCancel: canCancel, message: message)
@@ -57,8 +63,13 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     }
 
     @objc
-    public func dismiss(completion : @escaping () -> Void) {
-        AssertIsOnMainThread()
+    public func dismiss(completion: @escaping () -> Void) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                self?.dismiss(completion: completion)
+            }
+            return
+        }
 
         if !wasDimissed {
             // Only dismiss once.

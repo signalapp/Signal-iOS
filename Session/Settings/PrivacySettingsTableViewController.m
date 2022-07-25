@@ -6,14 +6,11 @@
 
 #import "Session-Swift.h"
 #import <SignalCoreKit/NSString+OWS.h>
-#import <SessionMessagingKit/Environment.h>
-#import <SessionMessagingKit/OWSPreferences.h>
 
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionUtilitiesKit/NSString+SSK.h>
-#import <SignalUtilitiesKit/ThreadUtil.h>
-#import <SessionMessagingKit/OWSReadReceiptManager.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -62,23 +59,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Dependencies
-
-- (OWSPreferences *)preferences
-{
-    return Environment.shared.preferences;
-}
-
-- (OWSReadReceiptManager *)readReceiptManager
-{
-    return OWSReadReceiptManager.sharedManager;
-}
-
-- (id<OWSTypingIndicators>)typingIndicators
-{
-    return SSKEnvironment.shared.typingIndicators;
-}
-
 #pragma mark - Table Contents
 
 - (void)updateTableContents
@@ -97,7 +77,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Label for the 'read receipts' setting.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"read_receipts"]
                     isOnBlock:^{
-                        return [OWSReadReceiptManager.sharedManager areReadReceiptsEnabled];
+                        return [SMKPreferences areReadReceiptsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -115,7 +95,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Label for the 'typing indicators' setting.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"typing_indicators"]
                     isOnBlock:^{
-                        return [SSKEnvironment.shared.typingIndicators areTypingIndicatorsEnabled];
+                        return [SMKPreferences areTypingIndicatorsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -168,7 +148,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"Disable Preview in App Switcher", @"")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"screen_security"]
                     isOnBlock:^{
-                        return [Environment.shared.preferences screenSecurityIsEnabled];
+                        return [SMKPreferences isScreenSecurityEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -193,7 +173,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Setting for enabling & disabling link previews.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"link_previews"]
                     isOnBlock:^{
-                        return [SSKPreferences areLinkPreviewsEnabled];
+                        return [SMKPreferences areLinkPreviewsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -212,7 +192,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Setting for enabling & disabling voice & video calls.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"calls"]
                     isOnBlock:^{
-                        return [SSKPreferences areCallsEnabled];
+                        return [SMKPreferences areCallsEnabled];
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -255,35 +235,35 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
 - (void)deleteThreadsAndMessages
 {
-    [ThreadUtil deleteAllContent];
+    [SMKThread deleteAll];
 }
 
 - (void)didToggleScreenSecuritySwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled screen security: %@", enabled ? @"ON" : @"OFF");
-    [self.preferences setScreenSecurity:enabled];
+    [SMKPreferences setScreenSecurity:enabled];
 }
 
 - (void)didToggleReadReceiptsSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areReadReceiptsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [self.readReceiptManager setAreReadReceiptsEnabled:enabled];
+    [SMKPreferences setAreReadReceiptsEnabled:enabled];
 }
 
 - (void)didToggleTypingIndicatorsSwitch:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled areTypingIndicatorsEnabled: %@", enabled ? @"ON" : @"OFF");
-    [self.typingIndicators setTypingIndicatorsEnabledWithValue:enabled];
+    [SMKPreferences setTypingIndicatorsEnabled:enabled];
 }
 
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     BOOL enabled = sender.isOn;
     OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
-    SSKPreferences.areLinkPreviewsEnabled = enabled;
+    [SMKPreferences setLinkPreviewsEnabled:enabled];
 }
 
 - (void)didToggleCallsEnabled:(UISwitch *)sender
@@ -297,9 +277,10 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
             [self objc_requestMicrophonePermissionIfNeeded];
         }];
         [self presentViewController:modal animated:YES completion:nil];
-    } else {
+    }
+    else {
         OWSLogInfo(@"toggled to: %@", (enabled ? @"ON" : @"OFF"));
-        SSKPreferences.areCallsEnabled = enabled;
+        [SMKPreferences setCallsEnabled:enabled];
     }
 }
 

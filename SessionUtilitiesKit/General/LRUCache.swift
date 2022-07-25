@@ -2,32 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-@objc
-public class AnyLRUCache: NSObject {
-
-    private let backingCache: LRUCache<NSObject, NSObject>
-
-    @objc
-    public init(maxSize: Int) {
-        backingCache = LRUCache(maxSize: maxSize)
-    }
-
-    @objc
-    public func get(key: NSObject) -> NSObject? {
-        return self.backingCache.get(key: key)
-    }
-
-    @objc
-    public func set(key: NSObject, value: NSObject) {
-        self.backingCache.set(key: key, value: value)
-    }
-
-    @objc
-    public func clear() {
-        self.backingCache.clear()
-    }
-}
-
 // A simple LRU cache bounded by the number of entries.
 public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
 

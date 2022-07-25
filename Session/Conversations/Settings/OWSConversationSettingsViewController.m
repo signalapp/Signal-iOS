@@ -9,17 +9,8 @@
 #import "UIView+OWS.h"
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SessionMessagingKit/Environment.h>
-#import <SignalUtilitiesKit/OWSProfileManager.h>
-#import <SessionMessagingKit/OWSSounds.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
-#import <SessionMessagingKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SessionMessagingKit/OWSDisappearingMessagesConfiguration.h>
-#import <SessionMessagingKit/OWSPrimaryStorage.h>
-#import <SessionMessagingKit/TSGroupThread.h>
-#import <SessionMessagingKit/TSOutgoingMessage.h>
-#import <SessionMessagingKit/TSThread.h>
 
 @import ContactsUI;
 @import PromiseKit;
@@ -30,12 +21,18 @@ CGFloat kIconViewLength = 24;
 
 @interface OWSConversationSettingsViewController () <OWSSheetViewControllerDelegate>
 
-@property (nonatomic) TSThread *thread;
-@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
+@property (nonatomic) NSString *threadId;
+@property (nonatomic) NSString *threadName;
+@property (nonatomic) BOOL isNoteToSelf;
+@property (nonatomic) BOOL isClosedGroup;
+@property (nonatomic) BOOL isOpenGroup;
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
-@property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-@property (nullable, nonatomic) MediaGallery *mediaGallery;
+
+@property (nonatomic) BOOL originalIsDisappearingMessagesEnabled;
+@property (nonatomic) NSInteger originalDisappearingMessagesDurationIndex;
+@property (nonatomic) BOOL isDisappearingMessagesEnabled;
+@property (nonatomic) NSInteger disappearingMessagesDurationIndex;
+
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
 @property (nonatomic) UILabel *displayNameLabel;
@@ -56,8 +53,6 @@ CGFloat kIconViewLength = 24;
         return self;
     }
 
-    [self commonInit];
-
     return self;
 }
 
@@ -67,8 +62,6 @@ CGFloat kIconViewLength = 24;
     if (!self) {
         return self;
     }
-
-    [self commonInit];
 
     return self;
 }
@@ -80,95 +73,24 @@ CGFloat kIconViewLength = 24;
         return self;
     }
 
-    [self commonInit];
-
     return self;
-}
-
-- (void)commonInit
-{
-
-    [self observeNotifications];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-#pragma mark - Dependencies
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
-- (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager sharedManager];
 }
 
 #pragma mark
 
-- (void)observeNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(identityStateDidChange:)
-                                                 name:kNSNotificationName_IdentityStateDidChange
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(otherUsersProfileDidChange:)
-                                                 name:kNSNotificationName_OtherUsersProfileDidChange
-                                               object:nil];
-}
-
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
-    return [OWSPrimaryStorage sharedManager].dbReadWriteConnection;
-}
-
-- (nullable NSString *)threadName
-{
-    NSString *threadName = self.thread.name;
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
-        TSContactThread *thread = (TSContactThread *)self.thread;
-        return [[LKStorage.shared getContactWithSessionID:thread.contactSessionID] displayNameFor:SNContactContextRegular] ?: @"Anonymous";
-    } else if (threadName.length == 0 && [self isGroupThread]) {
-        threadName = [MessageStrings newGroupDefaultTitle];
+- (void)configureWithThreadId:(NSString *)threadId threadName:(NSString *)threadName isClosedGroup:(BOOL)isClosedGroup isOpenGroup:(BOOL)isOpenGroup isNoteToSelf:(BOOL)isNoteToSelf {
+    self.threadId = threadId;
+    self.threadName = threadName;
+    self.isClosedGroup = isClosedGroup;
+    self.isOpenGroup = isOpenGroup;
+    self.isNoteToSelf = isNoteToSelf;
+    
+    if (!isClosedGroup && !isOpenGroup) {
+        self.threadName = [SMKProfile displayNameWithId:threadId customFallback:@"Anonymous"];
     }
-    return threadName;
-}
-
-- (BOOL)isGroupThread
-{
-    return [self.thread isKindOfClass:[TSGroupThread class]];
-}
-
-- (BOOL)isOpenGroup
-{
-    if ([self isGroupThread]) {
-        TSGroupThread *thread = (TSGroupThread *)self.thread;
-        return thread.isOpenGroup;
+    else {
+        self.threadName = threadName;
     }
-    return false;
-}
-
--(BOOL)isClosedGroup
-{
-    if (self.isGroupThread) {
-        TSGroupThread *thread = (TSGroupThread *)self.thread;
-        return thread.groupModel.groupType == closedGroup;
-    }
-    return false;
-}
-
-- (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
-{
-    OWSAssertDebug(thread);
-    self.thread = thread;
-    self.uiDatabaseConnection = uiDatabaseConnection;
 }
 
 #pragma mark - ContactEditingDelegate
@@ -211,7 +133,7 @@ CGFloat kIconViewLength = 24;
     self.displayNameLabel.font = [UIFont boldSystemFontOfSize:LKValues.largeFontSize];
     self.displayNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.displayNameLabel.textAlignment = NSTextAlignmentCenter;
-        
+
     self.displayNameTextField = [[SNTextField alloc] initWithPlaceholder:@"Enter a name" usesDefaultHeight:NO];
     self.displayNameTextField.textAlignment = NSTextAlignmentCenter;
     self.displayNameTextField.accessibilityLabel = @"Edit name text field";
@@ -220,46 +142,42 @@ CGFloat kIconViewLength = 24;
     self.displayNameContainer = [UIView new];
     self.displayNameContainer.accessibilityLabel = @"Edit name text field";
     self.displayNameContainer.isAccessibilityElement = YES;
-    
+
     [self.displayNameContainer autoSetDimension:ALDimensionHeight toSize:40];
     [self.displayNameContainer addSubview:self.displayNameLabel];
     [self.displayNameLabel autoPinToEdgesOfView:self.displayNameContainer];
     [self.displayNameContainer addSubview:self.displayNameTextField];
     [self.displayNameTextField autoPinToEdgesOfView:self.displayNameContainer];
-    
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
+
+    if (!self.isClosedGroup && !self.isOpenGroup) {
         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showEditNameUI)];
         [self.displayNameContainer addGestureRecognizer:tapGestureRecognizer];
     }
-    
+
     self.tableView.estimatedRowHeight = 45;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
 
     _disappearingMessagesDurationLabel = [UILabel new];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _disappearingMessagesDurationLabel);
 
-    self.disappearingMessagesDurations = [OWSDisappearingMessagesConfiguration validDurationsSeconds];
-
-    self.disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-
-    if (!self.disappearingMessagesConfiguration) {
-        self.disappearingMessagesConfiguration =
-            [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
-    }
-
-    [self updateTableContents];
+    self.disappearingMessagesDurations = [SMKDisappearingMessagesConfiguration validDurationsSeconds];
+    self.isDisappearingMessagesEnabled = [SMKDisappearingMessagesConfiguration isEnabledFor: self.threadId];
+    self.disappearingMessagesDurationIndex = [SMKDisappearingMessagesConfiguration durationIndexFor: self.threadId];
+    self.originalIsDisappearingMessagesEnabled = self.isDisappearingMessagesEnabled;
+    self.originalDisappearingMessagesDurationIndex = self.disappearingMessagesDurationIndex;
     
+    [self updateTableContents];
+
     NSString *title;
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+    if (!self.isClosedGroup && !self.isOpenGroup) {
         title = NSLocalizedString(@"Settings", @"");
     } else {
         title = NSLocalizedString(@"Group Settings", @"");
     }
     [LKViewControllerUtilities setUpDefaultSessionStyleForVC:self withTitle:title customBackButton:YES];
     self.tableView.backgroundColor = UIColor.clearColor;
-    
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
+
+    if (!self.isClosedGroup && !self.isOpenGroup) {
         [self updateNavBarButtons];
     }
 }
@@ -269,8 +187,6 @@ CGFloat kIconViewLength = 24;
     OWSTableContents *contents = [OWSTableContents new];
     contents.title = NSLocalizedString(@"CONVERSATION_SETTINGS", @"title for conversation settings screen");
 
-    BOOL isNoteToSelf = self.thread.isNoteToSelf;
-    
     __weak OWSConversationSettingsViewController *weakSelf = self;
 
     OWSTableSection *section = [OWSTableSection new];
@@ -279,7 +195,7 @@ CGFloat kIconViewLength = 24;
     section.customHeaderHeight = @(UITableViewAutomaticDimension);
 
     // Copy Session ID
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
+    if (!self.isClosedGroup && !self.isOpenGroup) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             return [weakSelf
                 disclosureCellWithName:NSLocalizedString(@"vc_conversation_settings_copy_session_id_button_title", "")
@@ -300,7 +216,7 @@ CGFloat kIconViewLength = 24;
     } actionBlock:^{
         [weakSelf showMediaGallery];
     }]];
-    
+
     // Invite button
     if (self.isOpenGroup) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
@@ -325,9 +241,9 @@ CGFloat kIconViewLength = 24;
     } actionBlock:^{
         [weakSelf tappedConversationSearch];
     }]];
-    
+
     // Disappearing messages
-    if (![self isOpenGroup] && !self.thread.isBlocked) {
+    if (![self isOpenGroup] && ![SMKContact isBlockedFor:self.threadId]) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell = [OWSTableItem newCell];
             OWSConversationSettingsViewController *strongSelf = weakSelf;
@@ -337,7 +253,7 @@ CGFloat kIconViewLength = 24;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
             NSString *iconName
-                = (strongSelf.disappearingMessagesConfiguration.isEnabled ? @"ic_timer" : @"ic_timer_disabled");
+                = (strongSelf.isDisappearingMessagesEnabled ? @"ic_timer" : @"ic_timer_disabled");
             UIImageView *iconView = [strongSelf viewForIconWithName:iconName];
 
             UILabel *rowLabel = [UILabel new];
@@ -348,7 +264,7 @@ CGFloat kIconViewLength = 24;
             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
             UISwitch *switchView = [UISwitch new];
-            switchView.on = strongSelf.disappearingMessagesConfiguration.isEnabled;
+            switchView.on = strongSelf.isDisappearingMessagesEnabled;
             [switchView addTarget:strongSelf action:@selector(disappearingMessagesSwitchValueDidChange:)
                 forControlEvents:UIControlEventValueChanged];
 
@@ -361,11 +277,10 @@ CGFloat kIconViewLength = 24;
 
             UILabel *subtitleLabel = [UILabel new];
             NSString *displayName;
-            if (self.thread.isGroupThread) {
+            if (self.isClosedGroup || self.isOpenGroup) {
                 displayName = @"the group";
             } else {
-                TSContactThread *thread = (TSContactThread *)self.thread;
-                displayName = [[LKStorage.shared getContactWithSessionID:thread.contactSessionID] displayNameFor:SNContactContextRegular] ?: @"anonymous";
+                displayName = [SMKProfile displayNameWithId:self.threadId customFallback:@"anonymous"];
             }
             subtitleLabel.text = [NSString stringWithFormat:NSLocalizedString(@"When enabled, messages between you and %@ will disappear after they have been seen.", ""), displayName];
             subtitleLabel.textColor = LKColors.text;
@@ -385,7 +300,7 @@ CGFloat kIconViewLength = 24;
             return cell;
          } customRowHeight:UITableViewAutomaticDimension actionBlock:nil]];
 
-        if (self.disappearingMessagesConfiguration.isEnabled) {
+        if (self.isDisappearingMessagesEnabled) {
             [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [OWSTableItem newCell];
                 OWSConversationSettingsViewController *strongSelf = weakSelf;
@@ -415,7 +330,7 @@ CGFloat kIconViewLength = 24;
                 slider.minimumValue = 0;
                 slider.tintColor = LKColors.accent;
                 slider.continuous = NO;
-                slider.value = strongSelf.disappearingMessagesConfiguration.durationIndex;
+                slider.value = strongSelf.disappearingMessagesDurationIndex;
                 [slider addTarget:strongSelf action:@selector(durationSliderDidChange:)
                     forControlEvents:UIControlEventValueChanged];
                 [cell.contentView addSubview:slider];
@@ -423,7 +338,7 @@ CGFloat kIconViewLength = 24;
                 [slider autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:rowLabel];
                 [slider autoPinTrailingToSuperviewMargin];
                 [slider autoPinBottomToSuperviewMargin];
-                
+
                 cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
                 cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
@@ -438,11 +353,10 @@ CGFloat kIconViewLength = 24;
 
     // Closed group settings
     __block BOOL isUserMember = NO;
-    if (self.isGroupThread) {
-        NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
-        isUserMember = [(TSGroupThread *)self.thread isUserMemberInGroup:userPublicKey];
+    if (self.isClosedGroup || self.isOpenGroup) {
+        isUserMember = [SMKGroupMember isCurrentUserMemberOf:self.threadId];
     }
-    if (self.isGroupThread && self.isClosedGroup && isUserMember) {
+    if (self.isClosedGroup && isUserMember) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell =
                 [weakSelf disclosureCellWithName:NSLocalizedString(@"EDIT_GROUP_ACTION", @"table cell label in conversation settings")
@@ -465,8 +379,8 @@ CGFloat kIconViewLength = 24;
             [weakSelf didTapLeaveGroup];
         }]];
     }
-    
-    if (!isNoteToSelf) {
+
+    if (!self.isNoteToSelf) {
         // Notification sound
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             UITableViewCell *cell =
@@ -493,8 +407,8 @@ CGFloat kIconViewLength = 24;
             [cell.contentView addSubview:contentRow];
             [contentRow autoPinEdgesToSuperviewMargins];
 
-            OWSSound sound = [OWSSounds notificationSoundForThread:strongSelf.thread];
-            cell.detailTextLabel.text = [OWSSounds displayNameForSound:sound];
+            NSInteger sound = [SMKSound notificationSoundFor:strongSelf.threadId];
+            cell.detailTextLabel.text = [SMKSound displayNameFor:sound];
 
             cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                 OWSConversationSettingsViewController, @"notifications");
@@ -504,11 +418,11 @@ CGFloat kIconViewLength = 24;
         customRowHeight:UITableViewAutomaticDimension
         actionBlock:^{
             OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
-            vc.thread = weakSelf.thread;
+            vc.threadId = weakSelf.threadId;
             [weakSelf.navigationController pushViewController:vc animated:YES];
         }]];
-        
-        if (self.isGroupThread) {
+
+        if (self.isClosedGroup || self.isOpenGroup) {
             // Notification Settings
             [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
                 UITableViewCell *cell = [OWSTableItem newCell];
@@ -527,7 +441,7 @@ CGFloat kIconViewLength = 24;
                 rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
                 UISwitch *switchView = [UISwitch new];
-                switchView.on = ((TSGroupThread *)strongSelf.thread).isOnlyNotifyingForMentions;
+                switchView.on = [SMKThread isOnlyNotifyingForMentions:strongSelf.threadId];
                 [switchView addTarget:strongSelf action:@selector(notifyForMentionsOnlySwitchValueDidChange:)
                     forControlEvents:UIControlEventValueChanged];
 
@@ -557,7 +471,7 @@ CGFloat kIconViewLength = 24;
                 return cell;
              } customRowHeight:UITableViewAutomaticDimension actionBlock:nil]];
         }
-        
+
         // Mute thread
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             OWSConversationSettingsViewController *strongSelf = weakSelf;
@@ -570,7 +484,7 @@ CGFloat kIconViewLength = 24;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
             UISwitch *muteConversationSwitch = [UISwitch new];
-            NSDate *mutedUntilDate = strongSelf.thread.mutedUntilDate;
+            NSDate *mutedUntilDate = [SMKThread mutedUntilDateFor:strongSelf.threadId];
             NSDate *now = [NSDate date];
             muteConversationSwitch.on = (mutedUntilDate != nil && [mutedUntilDate timeIntervalSinceDate:now] > 0);
             [muteConversationSwitch addTarget:strongSelf action:@selector(handleMuteSwitchToggled:)
@@ -580,9 +494,9 @@ CGFloat kIconViewLength = 24;
             return cell;
         } actionBlock:nil]];
     }
-    
+
     // Block contact
-    if (!isNoteToSelf && [self.thread isKindOfClass:TSContactThread.class]) {
+    if (!self.isNoteToSelf && !self.isClosedGroup && !self.isOpenGroup) {
         [section addItem:[OWSTableItem itemWithCustomCellBlock:^{
             OWSConversationSettingsViewController *strongSelf = weakSelf;
             if (!strongSelf) { return [UITableViewCell new]; }
@@ -594,7 +508,7 @@ CGFloat kIconViewLength = 24;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
             UISwitch *blockConversationSwitch = [UISwitch new];
-            blockConversationSwitch.on = strongSelf.thread.isBlocked;
+            blockConversationSwitch.on = [SMKContact isBlockedFor:strongSelf.threadId];
             [blockConversationSwitch addTarget:strongSelf action:@selector(blockConversationSwitchDidChange:)
                 forControlEvents:UIControlEventValueChanged];
             cell.accessoryView = blockConversationSwitch;
@@ -681,36 +595,36 @@ CGFloat kIconViewLength = 24;
     [profilePictureView autoSetDimension:ALDimensionWidth toSize:size];
     [profilePictureView autoSetDimension:ALDimensionHeight toSize:size];
     [profilePictureView addGestureRecognizer:profilePictureTapGestureRecognizer];
-    
+
     self.displayNameLabel.text = (self.threadName != nil && self.threadName.length > 0) ? self.threadName : @"Anonymous";
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
+    if (!self.isClosedGroup && !self.isOpenGroup) {
         UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showEditNameUI)];
         [self.displayNameContainer addGestureRecognizer:tapGestureRecognizer];
     }
-    
+
     UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[ profilePictureView, self.displayNameContainer ]];
     stackView.axis = UILayoutConstraintAxisVertical;
     stackView.spacing = LKValues.mediumSpacing;
-    stackView.distribution = UIStackViewDistributionEqualCentering; 
+    stackView.distribution = UIStackViewDistributionEqualCentering;
     stackView.alignment = UIStackViewAlignmentCenter;
     BOOL isSmallScreen = (UIScreen.mainScreen.bounds.size.height - 568) < 1;
     CGFloat horizontalSpacing = isSmallScreen ? LKValues.largeSpacing : LKValues.veryLargeSpacing;
     stackView.layoutMargins = UIEdgeInsetsMake(LKValues.mediumSpacing, horizontalSpacing, LKValues.mediumSpacing, horizontalSpacing);
     [stackView setLayoutMarginsRelativeArrangement:YES];
 
-    if (!self.isGroupThread) {
+    if (!self.isClosedGroup && !self.isOpenGroup) {
         SRCopyableLabel *subtitleView = [SRCopyableLabel new];
         subtitleView.textColor = LKColors.text;
         subtitleView.font = [LKFonts spaceMonoOfSize:LKValues.smallFontSize];
         subtitleView.lineBreakMode = NSLineBreakByCharWrapping;
         subtitleView.numberOfLines = 2;
-        subtitleView.text = ((TSContactThread *)self.thread).contactSessionID;
+        subtitleView.text = self.threadId;
         subtitleView.textAlignment = NSTextAlignmentCenter;
         [stackView addArrangedSubview:subtitleView];
     }
-    
-    [profilePictureView updateForThread:self.thread];
-    
+
+    [profilePictureView updateForThreadId:self.threadId];
+
     return stackView;
 }
 
@@ -749,48 +663,41 @@ CGFloat kIconViewLength = 24;
 {
     [super viewWillDisappear:animated];
 
-    if (self.disappearingMessagesConfiguration.isNewRecord && !self.disappearingMessagesConfiguration.isEnabled) {
-        // don't save defaults, else we'll unintentionally save the configuration and notify the contact.
+    // Do nothing if the values haven't changed (or if it's disabled and only the 'durationIndex'
+    // has changed as the 'durationIndex' value defaults to 1 hour when disabled)
+    if (
+        self.isDisappearingMessagesEnabled == self.originalIsDisappearingMessagesEnabled && (
+            !self.originalIsDisappearingMessagesEnabled ||
+            self.disappearingMessagesDurationIndex == self.originalDisappearingMessagesDurationIndex
+        )
+    ) {
         return;
     }
-
-    if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
-            OWSDisappearingConfigurationUpdateInfoMessage *infoMessage = [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                         initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                    thread:self.thread
-                             configuration:self.disappearingMessagesConfiguration
-                       createdByRemoteName:nil
-                    createdInExistingGroup:NO];
-            [infoMessage saveWithTransaction:transaction];
-
-            SNExpirationTimerUpdate *expirationTimerUpdate = [SNExpirationTimerUpdate new];
-            BOOL isEnabled = self.disappearingMessagesConfiguration.enabled;
-            expirationTimerUpdate.duration = isEnabled ? self.disappearingMessagesConfiguration.durationSeconds : 0;
-            [SNMessageSender send:expirationTimerUpdate inThread:self.thread usingTransaction:transaction];
-        }];
-    }
+    
+    [SMKDisappearingMessagesConfiguration
+        update:self.threadId
+        isEnabled: self.isDisappearingMessagesEnabled
+        durationIndex: self.disappearingMessagesDurationIndex
+    ];
 }
 
 #pragma mark - Actions
 
 - (void)editGroup
 {
-    SNEditClosedGroupVC *editClosedGroupVC = [[SNEditClosedGroupVC alloc] initWithThreadID:self.thread.uniqueId];
+    SNEditClosedGroupVC *editClosedGroupVC = [[SNEditClosedGroupVC alloc] initWithThreadId:self.threadId];
     [self.navigationController pushViewController:editClosedGroupVC animated:YES completion:nil];
 }
 
 - (void)didTapLeaveGroup
 {
-    NSString *userPublicKey = [SNGeneralUtilities getUserPublicKey];
     NSString *message;
-    if ([((TSGroupThread *)self.thread).groupModel.groupAdminIds containsObject:userPublicKey]) {
+    if ([SMKGroupMember isCurrentUserAdminOf:self.threadId]) {
         message = @"Because you are the creator of this group it will be deleted for everyone. This cannot be undone.";
     } else {
         message = NSLocalizedString(@"CONFIRM_LEAVE_GROUP_DESCRIPTION", @"Alert body");
     }
-    
+
     UIAlertController *alert =
         [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_LEAVE_GROUP_TITLE", @"Alert title")
                                             message:message
@@ -811,9 +718,8 @@ CGFloat kIconViewLength = 24;
 
 - (BOOL)hasLeftGroup
 {
-    if (self.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-        return !groupThread.isCurrentUserMemberInGroup;
+    if (self.isClosedGroup) {
+        return ![SMKGroupMember isCurrentUserMemberOf:self.threadId];
     }
 
     return NO;
@@ -821,13 +727,8 @@ CGFloat kIconViewLength = 24;
 
 - (void)leaveGroup
 {
-    TSGroupThread *gThread = (TSGroupThread *)self.thread;
-
-    if (gThread.isClosedGroup) {
-        NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:gThread.groupModel.groupId];
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [[SNMessageSender leaveClosedGroupWithPublicKey:groupPublicKey using:transaction] retainUntilComplete];
-        }];
+    if (self.isClosedGroup) {
+        [[SMKMessageSender leaveClosedGroupWithPublicKey:self.threadId] retainUntilComplete];
     }
 
     [self.navigationController popViewControllerAnimated:YES];
@@ -846,13 +747,9 @@ CGFloat kIconViewLength = 24;
 {
     UISwitch *uiSwitch = (UISwitch *)sender;
     if (uiSwitch.isOn) {
-        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self.thread updateWithMutedUntilDate:[NSDate distantFuture] transaction:transaction];
-        }];
+        [SMKThread updateWithMutedUntilDateTo:[NSDate distantFuture] forThreadId:self.threadId];
     } else {
-        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self.thread updateWithMutedUntilDate:nil transaction:transaction];
-        }];
+        [SMKThread updateWithMutedUntilDateTo:nil forThreadId:self.threadId];
     }
 }
 
@@ -861,13 +758,12 @@ CGFloat kIconViewLength = 24;
     if (![sender isKindOfClass:[UISwitch class]]) {
         OWSFailDebug(@"Unexpected sender for block user switch: %@", sender);
     }
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread type: %@", self.thread.class);
+    if (self.isClosedGroup || self.isOpenGroup) {
+        OWSFailDebug(@"unexpected group thread");
     }
     UISwitch *blockConversationSwitch = (UISwitch *)sender;
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
 
-    BOOL isCurrentlyBlocked = contactThread.isBlocked;
+    BOOL isCurrentlyBlocked = [SMKContact isBlockedFor:self.threadId];
 
     __weak OWSConversationSettingsViewController *weakSelf = self;
     if (blockConversationSwitch.isOn) {
@@ -875,15 +771,15 @@ CGFloat kIconViewLength = 24;
         if (isCurrentlyBlocked) {
             return;
         }
-        [BlockListUIUtils showBlockThreadActionSheet:contactThread
+        [BlockListUIUtils showBlockThreadActionSheet:self.threadId
                                                 from:self
                                      completionBlock:^(BOOL isBlocked) {
                                          // Update switch state if user cancels action.
                                          blockConversationSwitch.on = isBlocked;
-            
+
                                          // If we successfully blocked then force a config sync
                                          if (isBlocked) {
-                                             [SNMessageSender forceSyncConfigurationNow];
+                                             [SMKMessageSender forceSyncConfigurationNow];
                                          }
 
                                          [weakSelf updateTableContents];
@@ -894,15 +790,15 @@ CGFloat kIconViewLength = 24;
         if (!isCurrentlyBlocked) {
             return;
         }
-        [BlockListUIUtils showUnblockThreadActionSheet:contactThread
+        [BlockListUIUtils showUnblockThreadActionSheet:self.threadId
                                                   from:self
                                        completionBlock:^(BOOL isBlocked) {
                                            // Update switch state if user cancels action.
                                            blockConversationSwitch.on = isBlocked;
-            
+
                                            // If we successfully unblocked then force a config sync
                                            if (!isBlocked) {
-                                               [SNMessageSender forceSyncConfigurationNow];
+                                               [SMKMessageSender forceSyncConfigurationNow];
                                            }
 
                                            [weakSelf updateTableContents];
@@ -912,7 +808,7 @@ CGFloat kIconViewLength = 24;
 
 - (void)toggleDisappearingMessages:(BOOL)flag
 {
-    self.disappearingMessagesConfiguration.enabled = flag;
+    self.isDisappearingMessagesEnabled = flag;
 
     [self updateTableContents];
 }
@@ -920,21 +816,23 @@ CGFloat kIconViewLength = 24;
 - (void)durationSliderDidChange:(UISlider *)slider
 {
     // snap the slider to a valid value
-    NSUInteger index = (NSUInteger)(slider.value + 0.5);
+    NSInteger index = (NSInteger)(slider.value + 0.5);
     [slider setValue:index animated:YES];
-    NSNumber *numberOfSeconds = self.disappearingMessagesDurations[index];
-    self.disappearingMessagesConfiguration.durationSeconds = [numberOfSeconds unsignedIntValue];
+    self.disappearingMessagesDurationIndex = index;
 
     [self updateDisappearingMessagesDurationLabel];
 }
 
 - (void)updateDisappearingMessagesDurationLabel
 {
-    if (self.disappearingMessagesConfiguration.isEnabled) {
+    if (self.isDisappearingMessagesEnabled) {
         NSString *keepForFormat = @"Disappear after %@";
-        self.disappearingMessagesDurationLabel.text =
-            [NSString stringWithFormat:keepForFormat, self.disappearingMessagesConfiguration.durationString];
-    } else {
+        self.disappearingMessagesDurationLabel.text = [NSString
+            stringWithFormat:keepForFormat,
+            [SMKDisappearingMessagesConfiguration durationStringFor: self.disappearingMessagesDurationIndex]
+        ];
+    }
+    else {
         self.disappearingMessagesDurationLabel.text
             = NSLocalizedString(@"KEEP_MESSAGES_FOREVER", @"Slider label when disappearing messages is off");
     }
@@ -945,30 +843,16 @@ CGFloat kIconViewLength = 24;
 
 - (void)copySessionID
 {
-    UIPasteboard.generalPasteboard.string = ((TSContactThread *)self.thread).contactSessionID;
+    UIPasteboard.generalPasteboard.string = self.threadId;
 }
 
 - (void)inviteUsersToOpenGroup
 {
-    NSString *threadID = self.thread.uniqueId;
-    SNOpenGroupV2 *openGroup = [LKStorage.shared getV2OpenGroupForThreadID:threadID];
-    NSString *url = [NSString stringWithFormat:@"%@/%@?public_key=%@", openGroup.server, openGroup.room, openGroup.publicKey];
+    NSString *threadId = self.threadId;
     SNUserSelectionVC *userSelectionVC = [[SNUserSelectionVC alloc] initWithTitle:NSLocalizedString(@"vc_conversation_settings_invite_button_title", @"")
                                                                         excluding:[NSSet new]
                                                                        completion:^(NSSet<NSString *> *selectedUsers) {
-        for (NSString *user in selectedUsers) {
-            SNVisibleMessage *message = [SNVisibleMessage new];
-            message.sentTimestamp = [NSDate millisecondTimestamp];
-            message.openGroupInvitation = [[SNOpenGroupInvitation alloc] initWithName:openGroup.name url:url];
-            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactSessionID:user];
-            TSOutgoingMessage *tsMessage = [TSOutgoingMessage from:message associatedWith:thread];
-            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [tsMessage saveWithTransaction:transaction];
-            }];
-            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [SNMessageSender send:message inThread:thread usingTransaction:transaction];
-            }];
-        }
+        [SMKOpenGroup inviteUsers:selectedUsers toOpenGroupFor:threadId];
     }];
     [self.navigationController pushViewController:userSelectionVC animated:YES];
 }
@@ -977,13 +861,8 @@ CGFloat kIconViewLength = 24;
 {
     OWSLogDebug(@"");
 
-    MediaGallery *mediaGallery = [[MediaGallery alloc] initWithThread:self.thread
-                                                              options:MediaGalleryOptionSliderEnabled];
-
-    self.mediaGallery = mediaGallery;
-
     OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
-    [mediaGallery pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
+    [SNMediaGallery pushTileViewWithSliderEnabledForThreadId:self.threadId isClosedGroup:self.isClosedGroup isOpenGroup:self.isOpenGroup fromNavController:(OWSNavigationController *)self.navigationController];
 }
 
 - (void)tappedConversationSearch
@@ -995,9 +874,8 @@ CGFloat kIconViewLength = 24;
 {
     UISwitch *uiSwitch = (UISwitch *)sender;
     BOOL isEnabled = uiSwitch.isOn;
-    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [(TSGroupThread *)self.thread setIsOnlyNotifyingForMentions:isEnabled withTransaction:transaction];
-    }];
+    
+    [SMKThread setIsOnlyNotifyingForMentions:self.threadId to:isEnabled];
 }
 
 - (void)hideEditNameUI
@@ -1013,9 +891,9 @@ CGFloat kIconViewLength = 24;
 - (void)setIsEditingDisplayName:(BOOL)isEditingDisplayName
 {
     _isEditingDisplayName = isEditingDisplayName;
-    
+
     [self updateNavBarButtons];
-    
+
     [UIView animateWithDuration:0.25 animations:^{
         self.displayNameLabel.alpha = self.isEditingDisplayName ? 0 : 1;
         self.displayNameTextField.alpha = self.isEditingDisplayName ? 1 : 0;
@@ -1029,18 +907,10 @@ CGFloat kIconViewLength = 24;
 
 - (void)saveName
 {
-    if (![self.thread isKindOfClass:TSContactThread.class]) { return; }
-    NSString *sessionID = ((TSContactThread *)self.thread).contactSessionID;
-    SNContact *contact = [LKStorage.shared getContactWithSessionID:sessionID];
-    if (contact == nil) {
-        contact = [[SNContact alloc] initWithSessionID:sessionID];
-    }
+    if (self.isClosedGroup || self.isOpenGroup) { return; }
+    
     NSString *text = [self.displayNameTextField.text stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
-    contact.nickname = text.length > 0 ? text : nil;
-    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKStorage.shared setContact:contact usingTransaction:transaction];
-    }];
-    self.displayNameLabel.text = text.length > 0 ? text : contact.name;
+    self.displayNameLabel.text = [SMKProfile displayNameAfterSavingNickname:text forProfileId:self.threadId];
     [self hideEditNameUI];
 }
 
@@ -1069,23 +939,16 @@ CGFloat kIconViewLength = 24;
 
 #pragma mark - Notifications
 
-- (void)identityStateDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateTableContents];
-}
-
+// FIXME: When this screen gets refactored, make sure to observe changes for relevant profile image updates
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
 {
-    OWSAssertIsOnMainThread();
-
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    NSString *recipientId = @"";//notification.userInfo[NSNotification.profileRecipientIdKey];
     OWSAssertDebug(recipientId.length > 0);
 
-    if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&
-        [((TSContactThread *)self.thread).contactSessionID isEqualToString:recipientId]) {
-        [self updateTableContents];
+    if (recipientId.length > 0 && !self.isClosedGroup && !self.isOpenGroup && self.threadId == recipientId) {
+        DispatchMainThreadSafe(^{
+            [self updateTableContents];
+        });
     }
 }
 

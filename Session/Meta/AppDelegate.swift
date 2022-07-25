@@ -1,188 +1,631 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import PromiseKit
 import WebRTC
 import SessionUIKit
 import UIKit
 import SessionMessagingKit
+import SessionUtilitiesKit
+import SessionUIKit
+import UserNotifications
+import UIKit
+import SignalUtilitiesKit
 
-extension AppDelegate {
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, AppModeManagerDelegate {
+    var window: UIWindow?
+    var backgroundSnapshotBlockerWindow: UIWindow?
+    var appStartupWindow: UIWindow?
+    var hasInitialRootViewController: Bool = false
+    private var loadingViewController: LoadingViewController?
+    
+    /// This needs to be a lazy variable to ensure it doesn't get initialized before it actually needs to be used
+    lazy var poller: Poller = Poller()
+    
+    // MARK: - Lifecycle
 
-    // MARK: Call handling
-    @objc func hasIncomingCallWaiting() -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // These should be the first things we do (the startup process can fail without them)
+        SetCurrentAppContext(MainAppContext())
+        verifyDBKeysAvailableBeforeBackgroundLaunch()
+
+        AppModeManager.configure(delegate: self)
+        Cryptography.seedRandom()
+        AppVersion.sharedInstance()
+
+        // Prevent the device from sleeping during database view async registration
+        // (e.g. long database upgrades).
+        //
+        // This block will be cleared in storageIsReady.
+        DeviceSleepManager.sharedInstance.addBlock(blockObject: self)
+        
+        let mainWindow: UIWindow = UIWindow(frame: UIScreen.main.bounds)
+        self.loadingViewController = LoadingViewController()
+        
+        AppSetup.setupEnvironment(
+            appSpecificBlock: {
+                // Create AppEnvironment
+                AppEnvironment.shared.setup()
+                
+                // Note: Intentionally dispatching sync as we want to wait for these to complete before
+                // continuing
+                DispatchQueue.main.sync {
+                    OWSScreenLockUI.sharedManager().setup(withRootWindow: mainWindow)
+                    OWSWindowManager.shared().setup(
+                        withRootWindow: mainWindow,
+                        screenBlockingWindow: OWSScreenLockUI.sharedManager().screenBlockingWindow
+                    )
+                    OWSScreenLockUI.sharedManager().startObserving()
+                }
+            },
+            migrationProgressChanged: { [weak self] progress, minEstimatedTotalTime in
+                self?.loadingViewController?.updateProgress(
+                    progress: progress,
+                    minEstimatedTotalTime: minEstimatedTotalTime
+                )
+            },
+            migrationsCompletion: { [weak self] error, needsConfigSync in
+                guard error == nil else {
+                    self?.showFailedMigrationAlert(error: error)
+                    return
+                }
+                
+                self?.completePostMigrationSetup(needsConfigSync: needsConfigSync)
+            }
+        )
+        
+        SNAppearance.switchToSessionAppearance()
+        
+        // No point continuing if we are running tests
+        guard !CurrentAppContext().isRunningTests else { return true }
+
+        self.window = mainWindow
+        CurrentAppContext().mainWindow = mainWindow
+        
+        // Show LoadingViewController until the async database view registrations are complete.
+        mainWindow.rootViewController = self.loadingViewController
+        mainWindow.makeKeyAndVisible()
+
+        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
+
+        // This must happen in appDidFinishLaunching or earlier to ensure we don't
+        // miss notifications.
+        // Setting the delegate also seems to prevent us from getting the legacy notification
+        // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
+        UNUserNotificationCenter.current().delegate = self
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .registrationStateDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showMissedCallTipsIfNeeded(_:)),
+            name: .missedCall,
+            object: nil
+        )
+        
+        Logger.info("application: didFinishLaunchingWithOptions completed.")
+
+        return true
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        DDLog.flushLog()
+        
+        // NOTE: Fix an edge case where user taps on the callkit notification
+        // but answers the call on another device
+        stopPollers(shouldStopUserPoller: !self.hasIncomingCallWaiting())
+    }
+    
+    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+        Logger.info("applicationDidReceiveMemoryWarning")
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        DDLog.flushLog()
+        
+        stopPollers()
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        guard !CurrentAppContext().isRunningTests else { return }
+        
+        UserDefaults.sharedLokiProject?[.isMainAppActive] = true
+        
+        ensureRootViewController()
+        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
+            self?.handleActivation()
+            
+            /// Clear all notifications whenever we become active once the app is ready
+            ///
+            /// **Note:** It looks like when opening the app from a notification, `userNotificationCenter(didReceive)` is
+            /// no longer always called before `applicationDidBecomeActive` we need to trigger the "clear notifications" logic
+            /// within the `runNowOrWhenAppDidBecomeReady` callback and dispatch to the next run loop to ensure it runs after
+            /// the notification has actually been handled
+            DispatchQueue.main.async { [weak self] in
+                self?.clearAllNotificationsAndRestoreBadgeCount()
+            }
+        }
+
+        // On every activation, clear old temp directories.
+        ClearOldTemporaryDirectories();
+    }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        clearAllNotificationsAndRestoreBadgeCount()
+        
+        UserDefaults.sharedLokiProject?[.isMainAppActive] = false
+
+        DDLog.flushLog()
+    }
+    
+    // MARK: - Orientation
+
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        return .portrait
+    }
+    
+    // MARK: - Background Fetching
+    
+    func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            BackgroundPoller.poll(completionHandler: completionHandler)
+        }
+    }
+    
+    // MARK: - App Readiness
+    
+    private func completePostMigrationSetup(needsConfigSync: Bool) {
+        Configuration.performMainSetup()
+        JobRunner.add(executor: SyncPushTokensJob.self, for: .syncPushTokens)
+        
+        // Trigger any launch-specific jobs and start the JobRunner
+        JobRunner.appDidFinishLaunching()
+        
+        /// Setup the UI
+        ///
+        /// **Note:** This **MUST** be run before calling `AppReadiness.setAppIsReady()` otherwise if
+        /// we are launching the app from a push notification the HomeVC won't be setup yet and it won't open the
+        /// related thread
+        self.ensureRootViewController(isPreAppReadyCall: true)
+        
+        // Note that this does much more than set a flag;
+        // it will also run all deferred blocks (including the JobRunner
+        // 'appDidBecomeActive' method)
+        AppReadiness.setAppIsReady()
+        
+        DeviceSleepManager.sharedInstance.removeBlock(blockObject: self)
+        AppVersion.sharedInstance().mainAppLaunchDidComplete()
+        Environment.shared?.audioSession.setup()
+        Environment.shared?.reachabilityManager.setup()
+        
+        Storage.shared.writeAsync { db in
+            // Disable the SAE until the main app has successfully completed launch process
+            // at least once in the post-SAE world.
+            db[.isReadyForAppExtensions] = true
+            
+            if Identity.userExists(db) {
+                let appVersion: AppVersion = AppVersion.sharedInstance()
+                
+                // If the device needs to sync config or the user updated to a new version
+                if
+                    needsConfigSync || (
+                        (appVersion.lastAppVersion?.count ?? 0) > 0 &&
+                        appVersion.lastAppVersion != appVersion.currentAppVersion
+                    )
+                {
+                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                }
+            }
+        }
+    }
+    
+    private func showFailedMigrationAlert(error: Error?) {
+        let alert = UIAlertController(
+            title: "Session",
+            message: ((error as? StorageError) == StorageError.devRemigrationRequired ?
+                "The database has changed since the last version and you need to re-migrate (this will close the app and migrate on the next launch)" :
+                "DATABASE_MIGRATION_FAILED".localized()
+            ),
+            preferredStyle: .alert
+        )
+        
+        switch (error as? StorageError) {
+            case .devRemigrationRequired:
+                alert.addAction(UIAlertAction(title: "Re-Migrate Database", style: .default) { _ in
+                    Storage.deleteDatabaseFiles()
+                    try? Storage.deleteDbKeys()
+                    exit(1)
+                })
+                
+            default:
+                alert.addAction(UIAlertAction(title: "modal_share_logs_title".localized(), style: .default) { _ in
+                    ShareLogsModal.shareLogs(from: alert) { [weak self] in
+                        self?.showFailedMigrationAlert(error: error)
+                    }
+                })
+                alert.addAction(UIAlertAction(title: "vc_restore_title".localized(), style: .destructive) { _ in
+                    // Remove the legacy database and any message hashes that have been migrated to the new DB
+                    try? SUKLegacy.deleteLegacyDatabaseFilesAndKey()
+                    
+                    Storage.shared.write { db in
+                        try SnodeReceivedMessageInfo.deleteAll(db)
+                    }
+                    
+                    // The re-run the migration (should succeed since there is no data)
+                    AppSetup.runPostSetupMigrations(
+                        migrationProgressChanged: { [weak self] progress, minEstimatedTotalTime in
+                            self?.loadingViewController?.updateProgress(
+                                progress: progress,
+                                minEstimatedTotalTime: minEstimatedTotalTime
+                            )
+                        },
+                        migrationsCompletion: { [weak self] error, needsConfigSync in
+                            guard error == nil else {
+                                self?.showFailedMigrationAlert(error: error)
+                                return
+                            }
+                            
+                            self?.completePostMigrationSetup(needsConfigSync: needsConfigSync)
+                        }
+                    )
+                })
+        }
+        
+        alert.addAction(UIAlertAction(title: "Close", style: .default) { _ in
+            DDLog.flushLog()
+            exit(0)
+        })
+        
+        self.window?.rootViewController?.present(alert, animated: true, completion: nil)
+    }
+    
+    /// The user must unlock the device once after reboot before the database encryption key can be accessed.
+    private func verifyDBKeysAvailableBeforeBackgroundLaunch() {
+        guard UIApplication.shared.applicationState == .background else { return }
+        
+        guard !Storage.isDatabasePasswordAccessible else { return }    // All good
+        
+        Logger.info("Exiting because we are in the background and the database password is not accessible.")
+        
+        let notificationContent: UNMutableNotificationContent = UNMutableNotificationContent()
+        notificationContent.body = String(
+            format: NSLocalizedString("NOTIFICATION_BODY_PHONE_LOCKED_FORMAT", comment: ""),
+            UIDevice.current.localizedModel
+        )
+        let notificationRequest: UNNotificationRequest = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: notificationContent,
+            trigger: nil
+        )
+        
+        // Make sure we clear any existing notifications so that they don't start stacking up
+        // if the user receives multiple pushes.
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UIApplication.shared.applicationIconBadgeNumber = 0
+        
+        UNUserNotificationCenter.current().add(notificationRequest, withCompletionHandler: nil)
+        UIApplication.shared.applicationIconBadgeNumber = 1
+        
+        DDLog.flushLog()
+        exit(0)
+    }
+    
+    private func enableBackgroundRefreshIfNecessary() {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            UIApplication.shared.setMinimumBackgroundFetchInterval(UIApplication.backgroundFetchIntervalMinimum)
+        }
+    }
+
+    private func handleActivation() {
+        guard Identity.userExists() else { return }
+        
+        enableBackgroundRefreshIfNecessary()
+        JobRunner.appDidBecomeActive()
+        
+        startPollersIfNeeded()
+        
+        if CurrentAppContext().isMainApp {
+            syncConfigurationIfNeeded()
+            handleAppActivatedWithOngoingCallIfNeeded()
+        }
+    }
+    
+    private func ensureRootViewController(isPreAppReadyCall: Bool = false) {
+        guard (AppReadiness.isAppReady() || isPreAppReadyCall) && Storage.shared.isValid && !hasInitialRootViewController else {
+            return
+        }
+        
+        self.hasInitialRootViewController = true
+        self.window?.rootViewController = OWSNavigationController(
+            rootViewController: (Identity.userExists() ?
+                HomeVC() :
+                LandingVC()
+            )
+        )
+        UIViewController.attemptRotationToDeviceOrientation()
+        
+        /// **Note:** There is an annoying case when starting the app by interacting with a push notification where
+        /// the `HomeVC` won't have completed loading it's view which means the `SessionApp.homeViewController`
+        /// won't have been set - we set the value directly here to resolve this edge case
+        if let homeViewController: HomeVC = (self.window?.rootViewController as? UINavigationController)?.viewControllers.first as? HomeVC {
+            SessionApp.homeViewController.mutate { $0 = homeViewController }
+        }
+    }
+    
+    // MARK: - Notifications
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        PushRegistrationManager.shared.didReceiveVanillaPushToken(deviceToken)
+        Logger.info("Registering for push notifications with token: \(deviceToken).")
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        Logger.error("Failed to register push token with error: \(error).")
+        
+        #if DEBUG
+        Logger.warn("We're in debug mode. Faking success for remote registration with a fake push identifier.")
+        PushRegistrationManager.shared.didReceiveVanillaPushToken(Data(count: 32))
+        #else
+        PushRegistrationManager.shared.didFailToReceiveVanillaPushToken(error: error)
+        #endif
+    }
+    
+    private func clearAllNotificationsAndRestoreBadgeCount() {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            AppEnvironment.shared.notificationPresenter.clearAllNotifications()
+            
+            guard CurrentAppContext().isMainApp else { return }
+            
+            CurrentAppContext().setMainAppBadgeNumber(
+                Storage.shared
+                    .read { db in
+                        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                        let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+                        
+                        return try Interaction
+                            .filter(Interaction.Columns.wasRead == false)
+                            .filter(
+                                // Only count mentions if 'onlyNotifyForMentions' is set
+                                thread[.onlyNotifyForMentions] == false ||
+                                Interaction.Columns.hasMention == true
+                            )
+                            .joining(
+                                required: Interaction.thread
+                                    .aliased(thread)
+                                    .joining(optional: SessionThread.contact)
+                                    .filter(
+                                        // Ignore muted threads
+                                        SessionThread.Columns.mutedUntilTimestamp == nil ||
+                                        SessionThread.Columns.mutedUntilTimestamp < Date().timeIntervalSince1970
+                                    )
+                                    .filter(
+                                        // Ignore message request threads
+                                        SessionThread.Columns.variant != SessionThread.Variant.contact ||
+                                        !SessionThread.isMessageRequest(userPublicKey: userPublicKey)
+                                    )
+                            )
+                            .fetchCount(db)
+                    }
+                    .defaulting(to: 0)
+            )
+        }
+    }
+    
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            guard Identity.userExists() else { return }
+            
+            SessionApp.homeViewController.wrappedValue?.createNewDM()
+            completionHandler(true)
+        }
+    }
+
+    /// The method will be called on the delegate only if the application is in the foreground. If the method is not implemented or the
+    /// handler is not called in a timely manner then the notification will not be presented. The application can choose to have the
+    /// notification presented as a sound, badge, alert and/or in the notification list.
+    ///
+    /// This decision should be based on whether the information in the notification is otherwise visible to the user.
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if notification.request.content.userInfo["remote"] != nil {
+            Logger.info("[Loki] Ignoring remote notifications while the app is in the foreground.")
+            return
+        }
+        
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            // We need to respect the in-app notification sound preference. This method, which is called
+            // for modern UNUserNotification users, could be a place to do that, but since we'd still
+            // need to handle this behavior for legacy UINotification users anyway, we "allow" all
+            // notification options here, and rely on the shared logic in NotificationPresenter to
+            // honor notification sound preferences for both modern and legacy users.
+            completionHandler([.alert, .badge, .sound])
+        }
+    }
+
+    /// The method will be called on the delegate when the user responded to the notification by opening the application, dismissing
+    /// the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from
+    /// application:didFinishLaunchingWithOptions:.
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            AppEnvironment.shared.userNotificationActionHandler.handleNotificationResponse(response, completionHandler: completionHandler)
+        }
+    }
+
+    /// The method will be called on the delegate when the application is launched in response to the user's request to view in-app
+    /// notification settings. Add UNAuthorizationOptionProvidesAppNotificationSettings as an option in
+    /// requestAuthorizationWithOptions:completionHandler: to add a button to inline notification settings view and the notification
+    /// settings view in Settings. The notification will be nil when opened from Settings.
+    func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {
+    }
+    
+    // MARK: - Notification Handling
+    
+    @objc private func registrationStateDidChange() {
+        handleActivation()
+    }
+    
+    @objc public func showMissedCallTipsIfNeeded(_ notification: Notification) {
+        guard !UserDefaults.standard[.hasSeenCallMissedTips] else { return }
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.showMissedCallTipsIfNeeded(notification)
+            }
+            return
+        }
+        guard let callerId: String = notification.userInfo?[Notification.Key.senderId.rawValue] as? String else {
+            return
+        }
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
+        
+        let callMissedTipsModal: CallMissedTipsModal = CallMissedTipsModal(
+            caller: Profile.displayName(id: callerId)
+        )
+        presentingVC.present(callMissedTipsModal, animated: true, completion: nil)
+        
+        UserDefaults.standard[.hasSeenCallMissedTips] = true
+    }
+    
+    // MARK: - Polling
+    
+    public func startPollersIfNeeded(shouldStartGroupPollers: Bool = true) {
+        guard Identity.userExists() else { return }
+        
+        poller.startIfNeeded()
+        
+        guard shouldStartGroupPollers else { return }
+        
+        ClosedGroupPoller.shared.start()
+        OpenGroupManager.shared.startPolling()
+    }
+    
+    public func stopPollers(shouldStopUserPoller: Bool = true) {
+        if shouldStopUserPoller {
+            poller.stop()
+        }
+        
+        ClosedGroupPoller.shared.stop()
+        OpenGroupManager.shared.stopPolling()
+    }
+    
+    // MARK: - App Mode
+
+    private func adapt(appMode: AppMode) {
+        // FIXME: Need to update this when an appropriate replacement is added (see https://teng.pub/technical/2021/11/9/uiapplication-key-window-replacement)
+        guard let window: UIWindow = UIApplication.shared.keyWindow else { return }
+        
+        switch (appMode) {
+            case .light:
+                window.overrideUserInterfaceStyle = .light
+                window.backgroundColor = .white
+            
+            case .dark:
+                window.overrideUserInterfaceStyle = .dark
+                window.backgroundColor = .black
+        }
+        
+        if LKAppModeUtilities.isSystemDefault {
+            window.overrideUserInterfaceStyle = .unspecified
+        }
+        
+        NotificationCenter.default.post(name: .appModeChanged, object: nil)
+    }
+    
+    func setCurrentAppMode(to appMode: AppMode) {
+        UserDefaults.standard[.appMode] = appMode.rawValue
+        adapt(appMode: appMode)
+    }
+    
+    func setAppModeToSystemDefault() {
+        UserDefaults.standard.removeObject(forKey: SNUserDefaults.Int.appMode.rawValue)
+        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
+    }
+    
+    // MARK: - App Link
+
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        guard let components: URLComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            return false
+        }
+        
+        // URL Scheme is sessionmessenger://DM?sessionID=1234
+        // We can later add more parameters like message etc.
+        if components.host == "DM" {
+            let matches: [URLQueryItem] = (components.queryItems ?? [])
+                .filter { item in item.name == "sessionID" }
+            
+            if let sessionId: String = matches.first?.value {
+                createNewDMFromDeepLink(sessionId: sessionId)
+                return true
+            }
+        }
+        
+        return false
+    }
+
+    private func createNewDMFromDeepLink(sessionId: String) {
+        guard let homeViewController: HomeVC = (window?.rootViewController as? OWSNavigationController)?.visibleViewController as? HomeVC else {
+            return
+        }
+        
+        homeViewController.createNewDMFromDeepLink(sessionID: sessionId)
+    }
+        
+    // MARK: - Call handling
+        
+    func hasIncomingCallWaiting() -> Bool {
         guard let call = AppEnvironment.shared.callManager.currentCall else { return false }
+        
         return !call.hasStartedConnecting
     }
     
-    @objc func handleAppActivatedWithOngoingCallIfNeeded() {
-        guard let call = AppEnvironment.shared.callManager.currentCall else { return }
-        guard MiniCallView.current == nil else { return }
-        if let callVC = CurrentAppContext().frontmostViewController() as? CallVC, callVC.call == call { return }
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // FIXME: Handle more gracefully
-        let callVC = CallVC(for: call)
-        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
+    func handleAppActivatedWithOngoingCallIfNeeded() {
+        guard
+            let call: SessionCall = (AppEnvironment.shared.callManager.currentCall as? SessionCall),
+            MiniCallView.current == nil
+        else { return }
+        
+        if let callVC = CurrentAppContext().frontmostViewController() as? CallVC, callVC.call.uuid == call.uuid {
+            return
+        }
+        
+        // FIXME: Handle more gracefully
+        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
+        
+        let callVC: CallVC = CallVC(for: call)
+        
+        if let conversationVC: ConversationVC = presentingVC as? ConversationVC, conversationVC.viewModel.threadData.threadId == call.sessionId {
             callVC.conversationVC = conversationVC
             conversationVC.inputAccessoryView?.isHidden = true
             conversationVC.inputAccessoryView?.alpha = 0
         }
+        
         presentingVC.present(callVC, animated: true, completion: nil)
     }
     
-    private func dismissAllCallUI() {
-        if let currentBanner = IncomingCallBanner.current { currentBanner.dismiss() }
-        if let callVC = CurrentAppContext().frontmostViewController() as? CallVC { callVC.handleEndCallMessage() }
-        if let miniCallView = MiniCallView.current { miniCallView.dismiss() }
-    }
+    // MARK: - Config Sync
     
-    private func showCallUIForCall(_ call: SessionCall) {
-        DispatchQueue.main.async {
-            call.reportIncomingCallIfNeeded{ error in
-                if let error = error {
-                    SNLog("[Calls] Failed to report incoming call to CallKit due to error: \(error)")
-                } else {
-                    if CurrentAppContext().isMainAppAndActive {
-                        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() } // FIXME: Handle more gracefully
-                        if let conversationVC = presentingVC as? ConversationVC, let contactThread = conversationVC.thread as? TSContactThread, contactThread.contactSessionID() == call.sessionID {
-                            let callVC = CallVC(for: call)
-                            callVC.conversationVC = conversationVC
-                            conversationVC.inputAccessoryView?.isHidden = true
-                            conversationVC.inputAccessoryView?.alpha = 0
-                            presentingVC.present(callVC, animated: true, completion: nil)
-                        } else if !SSKPreferences.isCallKitSupported {
-                            let incomingCallBanner = IncomingCallBanner(for: call)
-                            incomingCallBanner.show()
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    private func insertCallInfoMessage(for message: CallMessage, using transaction: YapDatabaseReadWriteTransaction) -> TSInfoMessage? {
-        guard let sender = message.sender, let uuid = message.uuid else { return nil }
-        var receivedCalls = Storage.shared.getReceivedCalls(for: sender, using: transaction)
-        guard !receivedCalls.contains(uuid) else { return nil }
-        let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-        let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
-        infoMessage.save(with: transaction)
-        receivedCalls.insert(uuid)
-        Storage.shared.setReceivedCalls(to: receivedCalls, for: sender, using: transaction)
-        return infoMessage
-    }
-    
-    private func showMissedCallTipsIfNeeded(caller: String) {
-        let userDefaults = UserDefaults.standard
-        guard !userDefaults[.hasSeenCallMissedTips] else { return }
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
-        let callMissedTipsModal = CallMissedTipsModal(caller: caller)
-        presentingVC.present(callMissedTipsModal, animated: true, completion: nil)
-        userDefaults[.hasSeenCallMissedTips] = true
-    }
-    
-    @objc func setUpCallHandling() {
-        // Pre offer messages
-        MessageReceiver.handleNewCallOfferMessageIfNeeded = { (message, transaction) in
-            guard CurrentAppContext().isMainApp else { return }
-            guard let timestamp = message.sentTimestamp, TimestampUtils.isWithinOneMinute(timestamp: timestamp) else {
-                // Add missed call message for call offer messages from more than one minute
-                if let infoMessage = self.insertCallInfoMessage(for: message, using: transaction) {
-                    infoMessage.updateCallInfoMessage(.missed, using: transaction)
-                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-                    SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
-                }
-                return
-            }
-            guard SSKPreferences.areCallsEnabled else {
-                if let infoMessage = self.insertCallInfoMessage(for: message, using: transaction) {
-                    infoMessage.updateCallInfoMessage(.permissionDenied, using: transaction)
-                    let thread = TSContactThread.getOrCreateThread(withContactSessionID: message.sender!, transaction: transaction)
-                    SSKEnvironment.shared.notificationsManager?.notifyUser(forIncomingCall: infoMessage, in: thread, transaction: transaction)
-                    let contactName = Storage.shared.getContact(with: message.sender!, using: transaction)?.displayName(for: Contact.Context.regular) ?? message.sender!
-                    DispatchQueue.main.async {
-                        self.showMissedCallTipsIfNeeded(caller: contactName)
-                    }
-                }
-                return
-            }
-            let callManager = AppEnvironment.shared.callManager
-            // Ignore pre offer message after the same call instance has been generated
-            if let currentCall = callManager.currentCall, currentCall.uuid == message.uuid! { return }
-            guard callManager.currentCall == nil else {
-                callManager.handleIncomingCallOfferInBusyState(offerMessage: message, using: transaction)
-                return
-            }
-            let infoMessage = self.insertCallInfoMessage(for: message, using: transaction)
-            // Handle UI
-            if let caller = message.sender, let uuid = message.uuid {
-                let call = SessionCall(for: caller, uuid: uuid, mode: .answer)
-                call.callMessageID = infoMessage?.uniqueId
-                self.showCallUIForCall(call)
-            }
-        }
-        // Offer messages
-        MessageReceiver.handleOfferCallMessage = { message in
-            DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
-                let sdp = RTCSessionDescription(type: .offer, sdp: message.sdps![0])
-                call.didReceiveRemoteSDP(sdp: sdp)
-            }
-        }
-        // Answer messages
-        MessageReceiver.handleAnswerCallMessage = { message in
-            DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
-                if message.sender! == getUserHexEncodedPublicKey() {
-                    guard !call.hasStartedConnecting else { return }
-                    self.dismissAllCallUI()
-                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .answeredElsewhere)
-                } else {
-                    call.hasStartedConnecting = true
-                    let sdp = RTCSessionDescription(type: .answer, sdp: message.sdps![0])
-                    call.didReceiveRemoteSDP(sdp: sdp)
-                    guard let callVC = CurrentAppContext().frontmostViewController() as? CallVC else { return }
-                    callVC.handleAnswerMessage(message)
-                }
-            }
-        }
-        // End call messages
-        MessageReceiver.handleEndCallMessage = { message in
-            DispatchQueue.main.async {
-                guard let call = AppEnvironment.shared.callManager.currentCall, message.uuid! == call.uuid else { return }
-                self.dismissAllCallUI()
-                if message.sender! == getUserHexEncodedPublicKey() {
-                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .declinedElsewhere)
-                } else {
-                    AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: .remoteEnded)
-                }
-            }
-        }
-    }
-    
-    // MARK: Configuration message
-    @objc(syncConfigurationIfNeeded)
     func syncConfigurationIfNeeded() {
-        guard Storage.shared.getUser()?.name != nil else { return }
-        let userDefaults = UserDefaults.standard
-        let lastSync = userDefaults[.lastConfigurationSync] ?? .distantPast
-        guard Date().timeIntervalSince(lastSync) > 7 * 24 * 60 * 60 else { return } // Sync every 2 days
+        let lastSync: Date = (UserDefaults.standard[.lastConfigurationSync] ?? .distantPast)
         
-        MessageSender.syncConfiguration(forceSyncNow: false)
+        guard Date().timeIntervalSince(lastSync) > (7 * 24 * 60 * 60) else { return } // Sync every 2 days
+        
+        Storage.shared
+            .writeAsync { db in try MessageSender.syncConfiguration(db, forceSyncNow: false) }
             .done {
-                // Only update the 'lastConfigurationSync' timestamp if we have done the first sync (Don't want
-                // a new device config sync to override config syncs from other devices)
-                if userDefaults[.hasSyncedInitialConfiguration] {
-                    userDefaults[.lastConfigurationSync] = Date()
+                // Only update the 'lastConfigurationSync' timestamp if we have done the
+                // first sync (Don't want a new device config sync to override config
+                // syncs from other devices)
+                if UserDefaults.standard[.hasSyncedInitialConfiguration] {
+                    UserDefaults.standard[.lastConfigurationSync] = Date()
                 }
             }
             .retainUntilComplete()
     }
-
-    // MARK: Closed group poller
-    @objc func startClosedGroupPoller() {
-        guard OWSIdentityManager.shared().identityKeyPair() != nil else { return }
-        ClosedGroupPoller.shared.start()
-    }
-
-    @objc func stopClosedGroupPoller() {
-        ClosedGroupPoller.shared.stop()
-    }
-
 }

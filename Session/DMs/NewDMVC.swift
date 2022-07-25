@@ -1,3 +1,10 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import GRDB
+import Curve25519Kit
+import SessionMessagingKit
+import SessionUtilitiesKit
 
 final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -71,12 +78,7 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        let tabBarInset: CGFloat
-        if #available(iOS 13, *) {
-            tabBarInset = UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height()
-        } else {
-            tabBarInset = 0
-        }
+        let tabBarInset: CGFloat = (UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height())
         tabBar.pin(.top, to: .top, of: view, withInset: tabBarInset)
         view.pin(.trailing, to: .trailing, of: tabBar)
         // Set up page VC constraints
@@ -88,13 +90,7 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         view.pin(.bottom, to: .bottom, of: pageVCView)
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
-        let height: CGFloat
-        if #available(iOS 13, *) {
-            height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight
-        } else {
-            let statusBarHeight = UIApplication.shared.statusBarFrame.height
-            height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight - statusBarHeight
-        }
+        let height: CGFloat = (navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight)
         pageVCView.set(.height, to: height)
         enterPublicKeyVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
@@ -150,10 +146,11 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
                 }.catch { error in
                     modalActivityIndicator.dismiss {
                         var messageOrNil: String?
-                        if let error = error as? SnodeAPI.Error {
+                        if let error = error as? SnodeAPIError {
                             switch error {
-                            case .decryptionFailed, .hashingFailed, .validationFailed: messageOrNil = error.errorDescription
-                            default: break
+                                case .decryptionFailed, .hashingFailed, .validationFailed:
+                                    messageOrNil = error.errorDescription
+                                default: break
                             }
                         }
                         let message = messageOrNil ?? "Please check the Session ID or ONS name and try again"
@@ -166,10 +163,16 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         }
     }
 
-    private func startNewDM(with sessionID: String) {
-        let thread = TSContactThread.getOrCreateThread(contactSessionID: sessionID)
+    private func startNewDM(with sessionId: String) {
+        let maybeThread: SessionThread? = Storage.shared.write { db in
+            try SessionThread.fetchOrCreate(db, id: sessionId, variant: .contact)
+        }
+        
+        guard maybeThread != nil else { return }
+        
         presentingViewController?.dismiss(animated: true, completion: nil)
-        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+        
+        SessionApp.presentConversation(for: sessionId, action: .compose, animated: false)
     }
 }
 

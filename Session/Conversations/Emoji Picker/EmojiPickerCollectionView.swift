@@ -1,6 +1,10 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionUtilitiesKit
 
 protocol EmojiPickerCollectionViewDelegate: AnyObject {
-    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: EmojiWithSkinTones)
+    func emojiPicker(_ emojiPicker: EmojiPickerCollectionView?, didSelectEmoji emoji: EmojiWithSkinTones)
     func emojiPickerWillBeginDragging(_ emojiPicker: EmojiPickerCollectionView)
 }
 
@@ -38,6 +42,8 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     lazy var tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissSkinTonePicker))
+    
+    // MARK: - Initialization
 
     init() {
         layout = UICollectionViewFlowLayout()
@@ -66,24 +72,31 @@ class EmojiPickerCollectionView: UICollectionView {
         addGestureRecognizer(tapGestureRecognizer)
         tapGestureRecognizer.delegate = self
         
-        Storage.read { transaction in
-            self.recentEmoji = Storage.shared.getRecentEmoji(withDefaultEmoji: false, transaction: transaction)
-
+        // Fetch the emoji data from the database
+        let maybeEmojiData: (recent: [EmojiWithSkinTones], allGrouped: [Emoji.Category: [EmojiWithSkinTones]])? = Storage.shared.read { db in
             // Some emoji have two different code points but identical appearances. Let's remove them!
             // If we normalize to a different emoji than the one currently in our array, we want to drop
             // the non-normalized variant if the normalized variant already exists. Otherwise, map to the
             // normalized variant.
-            for (idx, emoji) in self.recentEmoji.enumerated().reversed() {
-                if !emoji.isNormalized {
-                    if self.recentEmoji.contains(emoji.normalized) {
-                        self.recentEmoji.remove(at: idx)
-                    } else {
-                        self.recentEmoji[idx] = emoji.normalized
+            let recentEmoji: [EmojiWithSkinTones] = try Emoji.getRecent(db, withDefaultEmoji: false)
+                .compactMap { EmojiWithSkinTones(rawValue: $0) }
+                .reduce(into: [EmojiWithSkinTones]()) { result, emoji in
+                    guard !emoji.isNormalized else {
+                        result.append(emoji)
+                        return
                     }
+                    guard !result.contains(emoji.normalized) else { return }
+                    
+                    result.append(emoji.normalized)
                 }
-            }
-
-            self.allSendableEmojiByCategory = Emoji.allSendableEmojiByCategoryWithPreferredSkinTones(transaction: transaction)
+            let allSendableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]] = Emoji.allSendableEmojiByCategoryWithPreferredSkinTones(db)
+            
+            return (recentEmoji, allSendableEmojiByCategory)
+        }
+        
+        if let emojiData: (recent: [EmojiWithSkinTones], allGrouped: [Emoji.Category: [EmojiWithSkinTones]]) = maybeEmojiData {
+            self.recentEmoji = emojiData.recent
+            self.allSendableEmojiByCategory = emojiData.allGrouped
         }
     }
 
@@ -92,7 +105,9 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     // This is not an exact calculation, but is simple and works for our purposes.
-    var numberOfColumns: Int { Int((self.width()) / (EmojiPickerCollectionView.emojiWidth + EmojiPickerCollectionView.minimumSpacing)) }
+    var numberOfColumns: Int {
+        Int((self.width()) / (EmojiPickerCollectionView.emojiWidth + EmojiPickerCollectionView.minimumSpacing))
+    }
 
     // At max, we show 3 rows of recent emoji
     private var maxRecentEmoji: Int { numberOfColumns * 3 }
@@ -170,19 +185,19 @@ class EmojiPickerCollectionView: UICollectionView {
 
             currentSkinTonePicker?.dismiss()
             currentSkinTonePicker = EmojiSkinTonePicker.present(referenceView: cell, emoji: emoji) { [weak self] emoji in
-                guard let self = self else { return }
-
-                if let emoji = emoji {
-                    Storage.write { transaction in
-                        Storage.shared.recordRecentEmoji(emoji, transaction: transaction)
-                        emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
+                if let emoji: EmojiWithSkinTones = emoji {
+                    Storage.shared.writeAsync { db in
+                        emoji.baseEmoji.setPreferredSkinTones(
+                            db,
+                            preferredSkinTonePermutation: emoji.skinTones
+                        )
                     }
 
-                    self.pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
+                    self?.pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
                 }
 
-                self.currentSkinTonePicker?.dismiss()
-                self.currentSkinTonePicker = nil
+                self?.currentSkinTonePicker?.dismiss()
+                self?.currentSkinTonePicker = nil
             }
         case .changed:
             currentSkinTonePicker?.didChangeLongPress(sender)
@@ -215,11 +230,7 @@ extension EmojiPickerCollectionView: UICollectionViewDelegate {
         guard let emoji = emojiForIndexPath(indexPath) else {
             return owsFailDebug("Missing emoji for indexPath \(indexPath)")
         }
-
-        Storage.write { transaction in
-            Storage.shared.recordRecentEmoji(emoji, transaction: transaction)
-        }
-
+        
         pickerDelegate?.emojiPicker(self, didSelectEmoji: emoji)
     }
 }

@@ -1,32 +1,32 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
+import SessionUIKit
 
 public struct ReactionViewModel: Hashable {
     let emoji: EmojiWithSkinTones
     let number: Int
     let showBorder: Bool
-    
-    init(emoji: EmojiWithSkinTones, value: Int, showBorder: Bool) {
-        self.emoji = emoji
-        self.number = value
-        self.showBorder = showBorder
-    }
 }
 
 final class ReactionButton: UIView {
     let viewModel: ReactionViewModel
     let showNumber: Bool
     
-    // MARK: Settings
+    // MARK: - Settings
+    
     private var height: CGFloat = 22
     private var fontSize: CGFloat = Values.verySmallFontSize
-    
     private var spacing: CGFloat = Values.verySmallSpacing
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init(viewModel: ReactionViewModel, showNumber: Bool = true) {
         self.viewModel = viewModel
         self.showNumber = showNumber
+        
         super.init(frame: CGRect.zero)
+        
         setUpViewHierarchy()
     }
     
@@ -73,14 +73,18 @@ final class ReactionButton: UIView {
 final class ExpandingReactionButton: UIView {
     private let emojis: [EmojiWithSkinTones]
     
-    // MARK: Settings
+    // MARK: - Settings
+    
     private let size: CGFloat = 22
     private let margin: CGFloat = 15
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init(emojis: [EmojiWithSkinTones]) {
         self.emojis = emojis
+        
         super.init(frame: CGRect.zero)
+        
         setUpViewHierarchy()
     }
     
@@ -94,6 +98,7 @@ final class ExpandingReactionButton: UIView {
     
     private func setUpViewHierarchy() {
         var rightMargin: CGFloat = 0
+        
         for emoji in self.emojis.reversed() {
             let container = UIView()
             container.set(.width, to: size)
@@ -101,7 +106,8 @@ final class ExpandingReactionButton: UIView {
             container.backgroundColor = Colors.receivedMessageBackground
             container.layer.cornerRadius = size / 2
             container.layer.borderWidth = 1
-            container.layer.borderColor = isDarkMode ? UIColor.black.cgColor : UIColor.white.cgColor
+            // FIXME: This is going to have issues when swapping between light/dark mode
+            container.layer.borderColor = (isDarkMode ? UIColor.black.cgColor : UIColor.white.cgColor)
             
             let emojiLabel = UILabel()
             emojiLabel.text = emoji.rawValue

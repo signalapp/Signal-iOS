@@ -1,101 +1,191 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionMessagingKit
 
 extension ContextMenuVC {
-
     struct Action {
-        let icon: UIImage
+        let icon: UIImage?
         let title: String
+        let isEmojiAction: Bool
+        let isEmojiPlus: Bool
+        let isDismissAction: Bool
         let work: () -> Void
-
-        static func reply(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = NSLocalizedString("context_menu_reply", comment: "")
-            return Action(icon: UIImage(named: "ic_reply")!, title: title) { delegate?.reply(viewItem) }
-        }
-
-        static func copy(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = NSLocalizedString("copy", comment: "")
-            return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate?.copy(viewItem) }
-        }
-
-        static func copySessionID(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = NSLocalizedString("vc_conversation_settings_copy_session_id_button_title", comment: "")
-            return Action(icon: UIImage(named: "ic_copy")!, title: title) { delegate?.copySessionID(viewItem) }
-        }
-
-        static func delete(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = NSLocalizedString("TXT_DELETE_TITLE", comment: "")
-            return Action(icon: UIImage(named: "ic_trash")!, title: title) { delegate?.delete(viewItem) }
-        }
-
-        static func save(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = NSLocalizedString("context_menu_save", comment: "")
-            return Action(icon: UIImage(named: "ic_download")!, title: title) { delegate?.save(viewItem) }
-        }
-
-        static func ban(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = NSLocalizedString("context_menu_ban_user", comment: "")
-            return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.ban(viewItem) }
+        
+        // MARK: - Initialization
+        
+        init(
+            icon: UIImage? = nil,
+            title: String = "",
+            isEmojiAction: Bool = false,
+            isEmojiPlus: Bool = false,
+            isDismissAction: Bool = false,
+            work: @escaping () -> Void
+        ) {
+            self.icon = icon
+            self.title = title
+            self.isEmojiAction = isEmojiAction
+            self.isEmojiPlus = isEmojiPlus
+            self.isDismissAction = isDismissAction
+            self.work = work
         }
         
-        static func banAndDeleteAllMessages(_ viewItem: ConversationViewItem, _ delegate: ContextMenuActionDelegate?) -> Action {
-            let title = NSLocalizedString("context_menu_ban_and_delete_all", comment: "")
-            return Action(icon: UIImage(named: "ic_block")!, title: title) { delegate?.banAndDeleteAllMessages(viewItem) }
+        // MARK: - Actions
+
+        static func reply(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                icon: UIImage(named: "ic_reply"),
+                title: "context_menu_reply".localized()
+            ) { delegate?.reply(cellViewModel) }
+        }
+
+        static func copy(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                icon: UIImage(named: "ic_copy"),
+                title: "copy".localized()
+            ) { delegate?.copy(cellViewModel) }
+        }
+
+        static func copySessionID(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                icon: UIImage(named: "ic_copy"),
+                title: "vc_conversation_settings_copy_session_id_button_title".localized()
+            ) { delegate?.copySessionID(cellViewModel) }
+        }
+
+        static func delete(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                icon: UIImage(named: "ic_trash"),
+                title: "TXT_DELETE_TITLE".localized()
+            ) { delegate?.delete(cellViewModel) }
+        }
+
+        static func save(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                icon: UIImage(named: "ic_download"),
+                title: "context_menu_save".localized()
+            ) { delegate?.save(cellViewModel) }
+        }
+
+        static func ban(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                icon: UIImage(named: "ic_block"),
+                title: "context_menu_ban_user".localized()
+            ) { delegate?.ban(cellViewModel) }
+        }
+        
+        static func banAndDeleteAllMessages(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                icon: UIImage(named: "ic_block"),
+                title: "context_menu_ban_and_delete_all".localized()
+            ) { delegate?.banAndDeleteAllMessages(cellViewModel) }
+        }
+        
+        static func react(_ cellViewModel: MessageViewModel, _ emoji: EmojiWithSkinTones, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                title: emoji.rawValue,
+                isEmojiAction: true
+            ) { delegate?.react(cellViewModel, with: emoji) }
+        }
+        
+        static func emojiPlusButton(_ cellViewModel: MessageViewModel, _ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                isEmojiPlus: true
+            ) { delegate?.showFullEmojiKeyboard(cellViewModel) }
+        }
+        
+        static func dismiss(_ delegate: ContextMenuActionDelegate?) -> Action {
+            return Action(
+                isDismissAction: true
+            ) { delegate?.contextMenuDismissed() }
         }
     }
 
-    static func actions(for viewItem: ConversationViewItem, delegate: ContextMenuActionDelegate?) -> [Action] {
-        func isReplyingAllowed() -> Bool {
-            guard let message = viewItem.interaction as? TSOutgoingMessage else { return true }
-            switch message.messageState {
-            case .failed, .sending: return false
-            default: return true
-            }
+    static func actions(
+        for cellViewModel: MessageViewModel,
+        recentEmojis: [EmojiWithSkinTones],
+        currentUserIsOpenGroupModerator: Bool,
+        delegate: ContextMenuActionDelegate?
+    ) -> [Action]? {
+        // No context items for info messages
+        guard cellViewModel.variant == .standardOutgoing || cellViewModel.variant == .standardIncoming else {
+            return nil
         }
-        switch viewItem.messageCellType {
-        case .textOnlyMessage:
-            var result: [Action] = []
-            if isReplyingAllowed() { result.append(Action.reply(viewItem, delegate)) }
-            result.append(Action.copy(viewItem, delegate))
-            let isGroup = viewItem.isGroupThread
-            if let message = viewItem.interaction as? TSIncomingMessage, isGroup, !message.isOpenGroupMessage {
-                result.append(Action.copySessionID(viewItem, delegate))
-            }
-            if !isGroup || viewItem.userCanDeleteGroupMessage { result.append(Action.delete(viewItem, delegate)) }
-            if isGroup && viewItem.interaction is TSIncomingMessage && viewItem.userHasModerationPermission {
-                result.append(Action.ban(viewItem, delegate))
-                result.append(Action.banAndDeleteAllMessages(viewItem, delegate))
-            }
-            return result
-        case .mediaMessage, .audio, .genericAttachment:
-            var result: [Action] = []
-            if isReplyingAllowed() { result.append(Action.reply(viewItem, delegate)) }
-            if viewItem.canCopyMedia() { result.append(Action.copy(viewItem, delegate)) }
-            if viewItem.canSaveMedia() { result.append(Action.save(viewItem, delegate)) }
-            let isGroup = viewItem.isGroupThread
-            if let message = viewItem.interaction as? TSIncomingMessage, isGroup, !message.isOpenGroupMessage {
-                result.append(Action.copySessionID(viewItem, delegate))
-            }
-            if !isGroup || viewItem.userCanDeleteGroupMessage { result.append(Action.delete(viewItem, delegate)) }
-            if isGroup && viewItem.interaction is TSIncomingMessage && viewItem.userHasModerationPermission {
-                result.append(Action.ban(viewItem, delegate))
-                result.append(Action.banAndDeleteAllMessages(viewItem, delegate))
-            }
-            return result
-        default: return []
-        }
+        
+        let canReply: Bool = (
+            cellViewModel.variant != .standardOutgoing || (
+                cellViewModel.state != .failed &&
+                cellViewModel.state != .sending
+            )
+        )
+        let canCopy: Bool = (
+            cellViewModel.cellType == .textOnlyMessage || (
+                (
+                    cellViewModel.cellType == .genericAttachment ||
+                    cellViewModel.cellType == .mediaMessage
+                ) &&
+                (cellViewModel.attachments ?? []).count == 1 &&
+                (cellViewModel.attachments ?? []).first?.isVisualMedia == true &&
+                (cellViewModel.attachments ?? []).first?.isValid == true && (
+                    (cellViewModel.attachments ?? []).first?.state == .downloaded ||
+                    (cellViewModel.attachments ?? []).first?.state == .uploaded
+                )
+            )
+        )
+        let canSave: Bool = (
+            cellViewModel.cellType == .mediaMessage &&
+            (cellViewModel.attachments ?? [])
+                .filter { attachment in
+                    attachment.isValid &&
+                    attachment.isVisualMedia && (
+                        attachment.state == .downloaded ||
+                        attachment.state == .uploaded
+                    )
+                }.isEmpty == false
+        )
+        let canCopySessionId: Bool = (
+            cellViewModel.variant == .standardIncoming &&
+            cellViewModel.threadVariant != .openGroup
+        )
+        let canDelete: Bool = (
+            cellViewModel.threadVariant != .openGroup ||
+            currentUserIsOpenGroupModerator
+        )
+        let canBan: Bool = (
+            cellViewModel.threadVariant == .openGroup &&
+            currentUserIsOpenGroupModerator
+        )
+        
+        let generatedActions: [Action] = [
+            (canReply ? Action.reply(cellViewModel, delegate) : nil),
+            (canCopy ? Action.copy(cellViewModel, delegate) : nil),
+            (canSave ? Action.save(cellViewModel, delegate) : nil),
+            (canCopySessionId ? Action.copySessionID(cellViewModel, delegate) : nil),
+            (canDelete ? Action.delete(cellViewModel, delegate) : nil),
+            (canBan ? Action.ban(cellViewModel, delegate) : nil),
+            (canBan ? Action.banAndDeleteAllMessages(cellViewModel, delegate) : nil),
+        ]
+        .appending(contentsOf: recentEmojis.map { Action.react(cellViewModel, $0, delegate) })
+        .appending(Action.emojiPlusButton(cellViewModel, delegate))
+        .compactMap { $0 }
+        
+        guard !generatedActions.isEmpty else { return [] }
+        
+        return generatedActions.appending(Action.dismiss(delegate))
     }
 }
 
-// MARK: Delegate
-protocol ContextMenuActionDelegate : AnyObject {
-    
-    func reply(_ viewItem: ConversationViewItem)
-    func copy(_ viewItem: ConversationViewItem)
-    func copySessionID(_ viewItem: ConversationViewItem)
-    func delete(_ viewItem: ConversationViewItem)
-    func save(_ viewItem: ConversationViewItem)
-    func ban(_ viewItem: ConversationViewItem)
-    func banAndDeleteAllMessages(_ viewItem: ConversationViewItem)
-    func react(_ viewItem: ConversationViewItem, with emoji: EmojiWithSkinTones)
-    func showFullEmojiKeyboard(_ viewItem: ConversationViewItem)
+// MARK: - Delegate
+
+protocol ContextMenuActionDelegate {
+    func reply(_ cellViewModel: MessageViewModel)
+    func copy(_ cellViewModel: MessageViewModel)
+    func copySessionID(_ cellViewModel: MessageViewModel)
+    func delete(_ cellViewModel: MessageViewModel)
+    func save(_ cellViewModel: MessageViewModel)
+    func ban(_ cellViewModel: MessageViewModel)
+    func banAndDeleteAllMessages(_ cellViewModel: MessageViewModel)
+    func react(_ cellViewModel: MessageViewModel, with emoji: EmojiWithSkinTones)
+    func showFullEmojiKeyboard(_ cellViewModel: MessageViewModel)
     func contextMenuDismissed()
 }

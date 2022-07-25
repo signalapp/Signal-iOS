@@ -1,4 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import PromiseKit
+import SessionUtilitiesKit
+import SessionSnodeKit
 
 final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -123,16 +128,25 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     
     func continueWithSeed(_ seed: Data) {
         if (seed.count != 16) {
-            let alert = UIAlertController(title: NSLocalizedString("invalid_recovery_phrase", comment: ""), message: NSLocalizedString("Please check the Recovery Phrase and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(
+                title: "invalid_recovery_phrase".localized(),
+                message: "INVALID_RECOVERY_PHRASE_MESSAGE".localized(),
+                preferredStyle: .alert
+            )
             alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: { _ in
                 self.scanQRCodeWrapperVC.startCapture()
             }))
             presentAlert(alert)
             return
         }
-        let (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
+        let (ed25519KeyPair, x25519KeyPair) = try! Identity.generate(from: seed)
         Onboarding.Flow.link.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
-        TSAccountManager.sharedInstance().didRegister()
+        
+        Identity.didRegister()
+        
+        // Now that we have registered get the Snode pool
+        GetSnodePoolJob.run()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(handleInitialConfigurationMessageReceived), name: .initialConfigurationMessageReceived, object: nil)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!) { [weak self] modal in
             self?.activityIndicatorModal = modal
@@ -140,7 +154,6 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
     }
     
     @objc private func handleInitialConfigurationMessageReceived(_ notification: Notification) {
-        TSAccountManager.sharedInstance().phoneNumberAwaitingVerification = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         DispatchQueue.main.async {
             self.navigationController!.dismiss(animated: true) {
                 let pnModeVC = PNModeVC()

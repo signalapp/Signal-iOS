@@ -1,5 +1,19 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class ReactionContainerView : UIView {
+import UIKit
+import SessionUIKit
+
+final class ReactionContainerView: UIView {
+    var showingAllReactions = false
+    private var isOutgoingMessage = false
+    private var showNumbers = true
+    private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
+    
+    var reactions: [ReactionViewModel] = []
+    var reactionViews: [ReactionButton] = []
+    
+    // MARK: - UI
+    
     private lazy var mainStackView: UIStackView = {
         let result = UIStackView(arrangedSubviews: [ reactionContainerView ])
         result.axis = .vertical
@@ -16,14 +30,8 @@ final class ReactionContainerView : UIView {
         return result
     }()
     
-    var showingAllReactions = false
-    private var isOutgoingMessage = false
-    private var showNumbers = true
-    private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
-    
-    var reactions: [ReactionViewModel] = []
-    var reactionViews: [ReactionButton] = []
     var expandButton: ExpandingReactionButton?
+    
     var collapseButton: UIStackView = {
         let arrow = UIImageView(image: UIImage(named: "ic_chevron_up")?.resizedImage(to: CGSize(width: 15, height: 13))?.withRenderingMode(.alwaysTemplate))
         arrow.tintColor = Colors.text
@@ -39,7 +47,8 @@ final class ReactionContainerView : UIView {
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init() {
         super.init(frame: CGRect.zero)
         setUpViewHierarchy()
@@ -55,6 +64,7 @@ final class ReactionContainerView : UIView {
     
     private func setUpViewHierarchy() {
         addSubview(mainStackView)
+        
         mainStackView.pin(to: self)
     }
     
@@ -62,10 +72,13 @@ final class ReactionContainerView : UIView {
         self.reactions = reactions
         self.isOutgoingMessage = isOutgoingMessage
         self.showNumbers = showNumbers
+        
         prepareForUpdate()
+        
         if showingAllReactions {
             updateAllReactions()
-        } else {
+        }
+        else {
             updateCollapsedReactions(reactions)
         }
     }
@@ -75,10 +88,12 @@ final class ReactionContainerView : UIView {
         stackView.axis = .horizontal
         stackView.spacing = Values.smallSpacing
         stackView.alignment = .center
+        
         if isOutgoingMessage {
             stackView.semanticContentAttribute = .forceRightToLeft
             reactionContainerView.semanticContentAttribute = .forceRightToLeft
-        } else {
+        }
+        else {
             stackView.semanticContentAttribute = .unspecified
             reactionContainerView.semanticContentAttribute = .unspecified
         }
@@ -88,8 +103,10 @@ final class ReactionContainerView : UIView {
         
         if reactions.count > maxEmojisPerLine {
             displayedReactions = Array(reactions[0...(maxEmojisPerLine - 3)])
-            expandButtonReactions = Array(reactions[(maxEmojisPerLine - 2)...maxEmojisPerLine]).map{ $0.emoji }
-        } else {
+            expandButtonReactions = Array(reactions[(maxEmojisPerLine - 2)...maxEmojisPerLine])
+                .map { $0.emoji }
+        }
+        else {
             displayedReactions = reactions
             expandButtonReactions = []
         }
@@ -99,29 +116,39 @@ final class ReactionContainerView : UIView {
             stackView.addArrangedSubview(reactionView)
             reactionViews.append(reactionView)
         }
+        
         if expandButtonReactions.count > 0 {
-            expandButton = ExpandingReactionButton(emojis: expandButtonReactions)
-            stackView.addArrangedSubview(expandButton!)
-        } else {
+            let expandButton: ExpandingReactionButton = ExpandingReactionButton(emojis: expandButtonReactions)
+            stackView.addArrangedSubview(expandButton)
+            
+            self.expandButton = expandButton
+        }
+        else {
             expandButton = nil
         }
+        
         reactionContainerView.addArrangedSubview(stackView)
     }
     
     private func updateAllReactions() {
         var reactions = self.reactions
         var numberOfLines = 0
+        
         while reactions.count > 0 {
             var line: [ReactionViewModel] = []
+            
             while reactions.count > 0 && line.count < maxEmojisPerLine {
                 line.append(reactions.removeFirst())
             }
+            
             updateCollapsedReactions(line)
             numberOfLines += 1
         }
+        
         if numberOfLines > 1 {
             mainStackView.addArrangedSubview(collapseButton)
-        } else {
+        }
+        else {
             showingAllReactions = false
         }
     }
@@ -131,6 +158,7 @@ final class ReactionContainerView : UIView {
             reactionContainerView.removeArrangedSubview(subview)
             subview.removeFromSuperview()
         }
+        
         mainStackView.removeArrangedSubview(collapseButton)
         collapseButton.removeFromSuperview()
         reactionViews = []
@@ -138,12 +166,14 @@ final class ReactionContainerView : UIView {
     
     public func showAllEmojis() {
         guard !showingAllReactions else { return }
+        
         showingAllReactions = true
         update(reactions, isOutgoingMessage: isOutgoingMessage, showNumbers: showNumbers)
     }
     
     public func showLessEmojis() {
         guard showingAllReactions else { return }
+        
         showingAllReactions = false
         update(reactions, isOutgoingMessage: isOutgoingMessage, showNumbers: showNumbers)
     }

@@ -1,9 +1,14 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class UserDetailsSheet : Sheet {
-    private let sessionID: String
+import UIKit
+import SessionMessagingKit
+
+final class UserDetailsSheet: Sheet {
+    private let profile: Profile
     
-    init(for sessionID: String) {
-        self.sessionID = sessionID
+    init(for profile: Profile) {
+        self.profile = profile
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -22,16 +27,21 @@ final class UserDetailsSheet : Sheet {
         profilePictureView.size = size
         profilePictureView.set(.width, to: size)
         profilePictureView.set(.height, to: size)
-        profilePictureView.publicKey = sessionID
-        profilePictureView.update()
+        profilePictureView.update(
+            publicKey: profile.id,
+            profile: profile,
+            threadVariant: .contact
+        )
+        
         // Display name label
         let displayNameLabel = UILabel()
-        let displayName = Storage.shared.getContact(with: sessionID)?.displayName(for: .regular) ?? sessionID
+        let displayName = profile.displayName()
         displayNameLabel.text = displayName
         displayNameLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
         displayNameLabel.textColor = Colors.text
         displayNameLabel.numberOfLines = 1
         displayNameLabel.lineBreakMode = .byTruncatingTail
+        
         // Session ID label
         let sessionIDLabel = UILabel()
         sessionIDLabel.textColor = Colors.text
@@ -39,7 +49,8 @@ final class UserDetailsSheet : Sheet {
         sessionIDLabel.numberOfLines = 0
         sessionIDLabel.lineBreakMode = .byCharWrapping
         sessionIDLabel.accessibilityLabel = "Session ID label"
-        sessionIDLabel.text = sessionID
+        sessionIDLabel.text = profile.id
+        
         // Session ID label container
         let sessionIDLabelContainer = UIView()
         sessionIDLabelContainer.addSubview(sessionIDLabel)
@@ -47,23 +58,26 @@ final class UserDetailsSheet : Sheet {
         sessionIDLabelContainer.layer.cornerRadius = TextField.cornerRadius
         sessionIDLabelContainer.layer.borderWidth = 1
         sessionIDLabelContainer.layer.borderColor = isLightMode ? UIColor.black.cgColor : UIColor.white.cgColor
+        
         // Copy button
         let copyButton = Button(style: .prominentOutline, size: .medium)
         copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
         copyButton.addTarget(self, action: #selector(copySessionID), for: UIControl.Event.touchUpInside)
         copyButton.set(.width, to: 160)
+        
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel, sessionIDLabelContainer, copyButton, UIView.vSpacer(Values.largeSpacing) ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .center
+        
         // Constraints
         contentView.addSubview(stackView)
         stackView.pin(to: contentView, withInset: Values.largeSpacing)
     }
     
     @objc private func copySessionID() {
-        UIPasteboard.general.string = sessionID
+        UIPasteboard.general.string = profile.id
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
 }

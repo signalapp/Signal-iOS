@@ -1,30 +1,56 @@
 import Foundation
 
+public protocol UserDefaultsType: AnyObject {
+    func object(forKey defaultName: String) -> Any?
+    func string(forKey defaultName: String) -> String?
+    func array(forKey defaultName: String) -> [Any]?
+    func dictionary(forKey defaultName: String) -> [String : Any]?
+    func data(forKey defaultName: String) -> Data?
+    func stringArray(forKey defaultName: String) -> [String]?
+    func integer(forKey defaultName: String) -> Int
+    func float(forKey defaultName: String) -> Float
+    func double(forKey defaultName: String) -> Double
+    func bool(forKey defaultName: String) -> Bool
+    func url(forKey defaultName: String) -> URL?
+
+    func set(_ value: Any?, forKey defaultName: String)
+    func set(_ value: Int, forKey defaultName: String)
+    func set(_ value: Float, forKey defaultName: String)
+    func set(_ value: Double, forKey defaultName: String)
+    func set(_ value: Bool, forKey defaultName: String)
+    func set(_ url: URL?, forKey defaultName: String)
+}
+
+extension UserDefaults: UserDefaultsType {}
+
 public enum SNUserDefaults {
     
-    public enum Bool : Swift.String {
+    public enum Bool: Swift.String {
         case hasSyncedInitialConfiguration = "hasSyncedConfiguration"
-        case hasViewedSeed
         case hasSeenLinkPreviewSuggestion
         case hasSeenCallIPExposureWarning
         case hasSeenCallMissedTips
         case isUsingFullAPNs
-        case hasHiddenMessageRequests
+        case wasUnlinked
+        case isMainAppActive
+        case isCallOngoing
     }
 
-    public enum Date : Swift.String {
+    public enum Date: Swift.String {
         case lastConfigurationSync
         case lastDisplayNameUpdate
         case lastProfilePictureUpdate
+        case lastProfilePictureUpload
         case lastOpenGroupImageUpdate
         case lastOpen
+        case lastGarbageCollection
     }
 
-    public enum Double : Swift.String {
+    public enum Double: Swift.String {
         case lastDeviceTokenUpload = "lastDeviceTokenUploadTime"
     }
 
-    public enum Int : Swift.String {
+    public enum Int: Swift.String {
         case appMode
         case hardfork
         case softfork
@@ -36,7 +62,12 @@ public enum SNUserDefaults {
 }
 
 public extension UserDefaults {
-    
+    @objc static var sharedLokiProject: UserDefaults? {
+        UserDefaults(suiteName: "group.com.loki-project.loki-messenger")
+    }
+}
+
+public extension UserDefaultsType {
     subscript(bool: SNUserDefaults.Bool) -> Bool {
         get { return self.bool(forKey: bool.rawValue) }
         set { set(newValue, forKey: bool.rawValue) }

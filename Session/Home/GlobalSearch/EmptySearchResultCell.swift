@@ -1,10 +1,12 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
+import UIKit
+import PureLayout
+import SessionUIKit
+import SessionUtilitiesKit
 import NVActivityIndicatorView
 
 class EmptySearchResultCell: UITableViewCell {
-    static let reuseIdentifier = "EmptySearchResultCell"
-
     private lazy var messageLabel: UILabel = {
         let result = UILabel()
         result.textAlignment = .center
@@ -24,6 +26,7 @@ class EmptySearchResultCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         backgroundColor = .clear
+        selectionStyle = .none
         
         contentView.addSubview(messageLabel)
         messageLabel.autoSetDimension(.height, toSize: 150)

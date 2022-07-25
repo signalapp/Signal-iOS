@@ -19,13 +19,11 @@ NSString *const OWSMimeTypeImageTiff1 = @"image/tiff";
 NSString *const OWSMimeTypeImageTiff2 = @"image/x-tiff";
 NSString *const OWSMimeTypeImageBmp1 = @"image/bmp";
 NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
-NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
 NSString *const OWSMimeTypeApplicationPdf = @"application/pdf";
 
-NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
-NSString *const kOversizeTextAttachmentFileExtension = @"txt";
+NSString *const kTextAttachmentFileExtension = @"txt";
 NSString *const kUnknownTestAttachmentUTI = @"org.whispersystems.unknown";
 NSString *const kSyncMessageFileExtension = @"bin";
 
@@ -409,12 +407,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
         return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([self isBinaryData:contentType]) {
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
-    } else if ([contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
-        // We need to use a ".txt" file extension since this file extension is used
-        // by UIActivityViewController to determine which kinds of sharing are
-        // appropriate for this text.
-        // be used outside the app.
-        return [self filePathForData:uniqueId withFileExtension:@"txt" inFolder:folder];
     } else if ([contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
         // This file extension is arbitrary - it should never be exposed to the user or
         // be used outside the app.

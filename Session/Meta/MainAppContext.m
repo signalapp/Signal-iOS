@@ -5,10 +5,7 @@
 #import "MainAppContext.h"
 #import "Session-Swift.h"
 #import <SignalCoreKit/Threading.h>
-#import <SessionMessagingKit/Environment.h>
-#import <SignalUtilitiesKit/OWSProfileManager.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
-#import <SessionMessagingKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -227,9 +224,8 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 - (void)setMainAppBadgeNumber:(NSInteger)value
 {
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber:value];
-    NSUserDefaults *sharedUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.loki-project.loki-messenger"];
-    [sharedUserDefaults setInteger:value forKey:@"currentBadgeNumber"];
-    [sharedUserDefaults synchronize];
+    [[NSUserDefaults sharedLokiProject] setInteger:value forKey:@"currentBadgeNumber"];
+    [[NSUserDefaults sharedLokiProject] synchronize];
 }
 
 - (nullable UIViewController *)frontmostViewController
@@ -249,7 +245,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 - (BOOL)isRunningTests
 {
-    return getenv("runningTests_dontStartApp");
+    return (NSProcessInfo.processInfo.environment[@"XCTestConfigurationFilePath"] != nil);
 }
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
@@ -298,11 +294,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
-}
-
-- (id<SSKKeychainStorage>)keychainStorage
-{
-    return [SSKDefaultKeychainStorage shared];
 }
 
 - (NSString *)appDocumentDirectoryPath

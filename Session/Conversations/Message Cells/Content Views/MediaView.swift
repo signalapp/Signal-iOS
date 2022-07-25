@@ -1,13 +1,13 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
+import UIKit
+import YYImage
 import SessionUIKit
+import SessionMessagingKit
 
-@objc(OWSMediaView)
 public class MediaView: UIView {
-
+    static let contentMode: UIView.ContentMode = .scaleAspectFill
+    
     private enum MediaError {
         case missing
         case invalid
@@ -17,8 +17,7 @@ public class MediaView: UIView {
     // MARK: -
 
     private let mediaCache: NSCache<NSString, AnyObject>
-    @objc
-    public let attachment: TSAttachment
+    public let attachment: Attachment
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
     private var loadBlock: (() -> Void)?
@@ -42,50 +41,16 @@ public class MediaView: UIView {
         case failed
     }
 
-    // Thread-safe access to load state.
-    //
-    // We use a "box" class so that we can capture a reference
-    // to this box (rather than self) and a) safely access
-    // if off the main thread b) not prevent deallocation of
-    // self.
-    private class ThreadSafeLoadState {
-        private var value: LoadState
-
-        required init(_ value: LoadState) {
-            self.value = value
-        }
-
-        func get() -> LoadState {
-            objc_sync_enter(self)
-            let valueCopy = value
-            objc_sync_exit(self)
-            return valueCopy
-        }
-
-        func set(_ newValue: LoadState) {
-            objc_sync_enter(self)
-            value = newValue
-            objc_sync_exit(self)
-        }
-    }
-    private let threadSafeLoadState = ThreadSafeLoadState(.unloaded)
-    // Convenience accessors.
-    private var loadState: LoadState {
-        get {
-            return threadSafeLoadState.get()
-        }
-        set {
-            threadSafeLoadState.set(newValue)
-        }
-    }
+    private let loadState: Atomic<LoadState> = Atomic(.unloaded)
 
     // MARK: - Initializers
 
-    @objc
-    public required init(mediaCache: NSCache<NSString, AnyObject>,
-                         attachment: TSAttachment,
-                         isOutgoing: Bool,
-                         maxMessageWidth: CGFloat) {
+    public required init(
+        mediaCache: NSCache<NSString, AnyObject>,
+        attachment: Attachment,
+        isOutgoing: Bool,
+        maxMessageWidth: CGFloat
+    ) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
@@ -105,9 +70,7 @@ public class MediaView: UIView {
     }
 
     deinit {
-        AssertIsOnMainThread()
-
-        loadState = .unloaded
+        loadState.mutate { $0 = .unloaded }
     }
 
     // MARK: -
@@ -115,41 +78,45 @@ public class MediaView: UIView {
     private func createContents() {
         AssertIsOnMainThread()
 
-        guard let attachmentStream = attachment as? TSAttachmentStream else {
+        guard attachment.state != .pendingDownload && attachment.state != .downloading else {
             addDownloadProgressIfNecessary()
             return
         }
-        guard !isFailedDownload else {
+        guard attachment.state != .failedDownload else {
             configure(forError: .failed)
             return
         }
-        if attachmentStream.isAnimated {
-            configureForAnimatedImage(attachmentStream: attachmentStream)
-        } else if attachmentStream.isImage {
-            configureForStillImage(attachmentStream: attachmentStream)
-        } else if attachmentStream.isVideo {
-            configureForVideo(attachmentStream: attachmentStream)
-        } else {
+        guard attachment.isValid else {
+            configure(forError: .invalid)
+            return
+        }
+        
+        if attachment.isAnimated {
+            configureForAnimatedImage(attachment: attachment)
+        }
+        else if attachment.isImage {
+            configureForStillImage(attachment: attachment)
+        }
+        else if attachment.isVideo {
+            configureForVideo(attachment: attachment)
+        }
+        else {
             owsFailDebug("Attachment has unexpected type.")
             configure(forError: .invalid)
         }
     }
-
+    
     private func addDownloadProgressIfNecessary() {
-        guard !isFailedDownload else {
+        guard attachment.state != .failedDownload else {
             configure(forError: .failed)
             return
         }
-        guard let attachmentPointer = attachment as? TSAttachmentPointer else {
-            owsFailDebug("Attachment has unexpected type.")
-            configure(forError: .invalid)
-            return
-        }
-        guard attachmentPointer.pointerType == .incoming else {
+        guard attachment.state != .uploading && attachment.state != .uploaded else {
             // TODO: Show "restoring" indicator and possibly progress.
             configure(forError: .missing)
             return
         }
+        
         backgroundColor = (isDarkMode ? .ows_gray90 : .ows_gray05)
         let loader = MediaLoaderView()
         addSubview(loader)
@@ -158,28 +125,30 @@ public class MediaView: UIView {
 
     private func addUploadProgressIfNecessary(_ subview: UIView) -> Bool {
         guard isOutgoing else { return false }
-        guard let attachmentStream = attachment as? TSAttachmentStream else { return false }
-        guard !attachmentStream.isUploaded else { return false }
+        guard attachment.state != .failedUpload else {
+            configure(forError: .failed)
+            return false
+        }
+        guard attachment.state != .uploaded else { return false }
+        
         let loader = MediaLoaderView()
         addSubview(loader)
         loader.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: self)
+        
         return true
     }
 
-    private func configureForAnimatedImage(attachmentStream: TSAttachmentStream) {
-        guard let cacheKey = attachmentStream.uniqueId else {
-            owsFailDebug("Attachment stream missing unique ID.")
-            return
-        }
-        let animatedImageView = YYAnimatedImageView()
+    private func configureForAnimatedImage(attachment: Attachment) {
+        let animatedImageView: YYAnimatedImageView = YYAnimatedImageView()
         // We need to specify a contentMode since the size of the image
         // might not match the aspect ratio of the view.
-        animatedImageView.contentMode = .scaleAspectFill
+        animatedImageView.contentMode = MediaView.contentMode
         // Use trilinear filters for better scaling quality at
         // some performance cost.
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
         animatedImageView.backgroundColor = Colors.unimportant
+        animatedImageView.isHidden = !attachment.isValid
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(animatedImageView)
@@ -187,36 +156,34 @@ public class MediaView: UIView {
         loadBlock = { [weak self] in
             AssertIsOnMainThread()
 
-            guard let strongSelf = self else {
-                return
-            }
+            guard let strongSelf = self else { return }
 
             if animatedImageView.image != nil {
                 owsFailDebug("Unexpectedly already loaded.")
                 return
             }
-            strongSelf.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
-                guard attachmentStream.isValidImage else {
-                    Logger.warn("Ignoring invalid attachment.")
-                    return nil
-                }
-                guard let filePath = attachmentStream.originalFilePath else {
-                    owsFailDebug("Attachment stream missing original file path.")
-                    return nil
-                }
-                let animatedImage = YYImage(contentsOfFile: filePath)
-                return animatedImage
-            },
-                                                        applyMediaBlock: { (media) in
-                                                            AssertIsOnMainThread()
-
-                                                            guard let image = media as? YYImage else {
-                                                                owsFailDebug("Media has unexpected type: \(type(of: media))")
-                                                                return
-                                                            }
-                                                            animatedImageView.image = image
-            },
-                                                        cacheKey: cacheKey)
+            strongSelf.tryToLoadMedia(
+                loadMediaBlock: { applyMediaBlock in
+                    guard attachment.isValid else { return }
+                    guard let filePath: String = attachment.originalFilePath else {
+                        owsFailDebug("Attachment stream missing original file path.")
+                        return
+                    }
+                    
+                    applyMediaBlock(YYImage(contentsOfFile: filePath))
+                },
+                applyMediaBlock: { media in
+                    AssertIsOnMainThread()
+                    
+                    guard let image: YYImage = media as? YYImage else {
+                        owsFailDebug("Media has unexpected type: \(type(of: media))")
+                        return
+                    }
+                    // FIXME: Animated images flicker when reloading the cells (even though they are in the cache)
+                    animatedImageView.image = image
+                },
+                cacheKey: attachment.id
+            )
         }
         unloadBlock = {
             AssertIsOnMainThread()
@@ -225,23 +192,21 @@ public class MediaView: UIView {
         }
     }
 
-    private func configureForStillImage(attachmentStream: TSAttachmentStream) {
-        guard let cacheKey = attachmentStream.uniqueId else {
-            owsFailDebug("Attachment stream missing unique ID.")
-            return
-        }
+    private func configureForStillImage(attachment: Attachment) {
         let stillImageView = UIImageView()
         // We need to specify a contentMode since the size of the image
         // might not match the aspect ratio of the view.
-        stillImageView.contentMode = .scaleAspectFill
+        stillImageView.contentMode = MediaView.contentMode
         // Use trilinear filters for better scaling quality at
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
         stillImageView.backgroundColor = Colors.unimportant
+        stillImageView.isHidden = !attachment.isValid
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(stillImageView)
+        
         loadBlock = { [weak self] in
             AssertIsOnMainThread()
 
@@ -249,29 +214,28 @@ public class MediaView: UIView {
                 owsFailDebug("Unexpectedly already loaded.")
                 return
             }
-            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
-                guard attachmentStream.isValidImage else {
-                    Logger.warn("Ignoring invalid attachment.")
-                    return nil
-                }
-                return attachmentStream.thumbnailImageLarge(success: { (image) in
+            self?.tryToLoadMedia(
+                loadMediaBlock: { applyMediaBlock in
+                    guard attachment.isValid else { return }
+                    
+                    attachment.thumbnail(
+                        size: .large,
+                        success: { image, _ in applyMediaBlock(image) },
+                        failure: { Logger.error("Could not load thumbnail") }
+                    )
+                },
+                applyMediaBlock: { media in
                     AssertIsOnMainThread()
-
+                    
+                    guard let image: UIImage = media as? UIImage else {
+                        owsFailDebug("Media has unexpected type: \(type(of: media))")
+                        return
+                    }
+                    
                     stillImageView.image = image
-                }, failure: {
-                    Logger.error("Could not load thumbnail")
-                })
-            },
-                                 applyMediaBlock: { (media) in
-                                    AssertIsOnMainThread()
-
-                                    guard let image = media as? UIImage else {
-                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
-                                        return
-                                    }
-                                    stillImageView.image = image
-            },
-                                                        cacheKey: cacheKey)
+                },
+                cacheKey: attachment.id
+            )
         }
         unloadBlock = {
             AssertIsOnMainThread()
@@ -280,20 +244,17 @@ public class MediaView: UIView {
         }
     }
 
-    private func configureForVideo(attachmentStream: TSAttachmentStream) {
-        guard let cacheKey = attachmentStream.uniqueId else {
-            owsFailDebug("Attachment stream missing unique ID.")
-            return
-        }
+    private func configureForVideo(attachment: Attachment) {
         let stillImageView = UIImageView()
         // We need to specify a contentMode since the size of the image
         // might not match the aspect ratio of the view.
-        stillImageView.contentMode = .scaleAspectFill
+        stillImageView.contentMode = MediaView.contentMode
         // Use trilinear filters for better scaling quality at
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
         stillImageView.backgroundColor = Colors.unimportant
+        stillImageView.isHidden = !attachment.isValid
 
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
@@ -314,29 +275,28 @@ public class MediaView: UIView {
                 owsFailDebug("Unexpectedly already loaded.")
                 return
             }
-            self?.tryToLoadMedia(loadMediaBlock: { () -> AnyObject? in
-                guard attachmentStream.isValidVideo else {
-                    Logger.warn("Ignoring invalid attachment.")
-                    return nil
-                }
-                return attachmentStream.thumbnailImageMedium(success: { (image) in
+            self?.tryToLoadMedia(
+                loadMediaBlock: { applyMediaBlock in
+                    guard attachment.isValid else { return }
+                    
+                    attachment.thumbnail(
+                        size: .medium,
+                        success: { image, _ in applyMediaBlock(image) },
+                        failure: { Logger.error("Could not load thumbnail") }
+                    )
+                },
+                applyMediaBlock: { media in
                     AssertIsOnMainThread()
 
+                    guard let image: UIImage = media as? UIImage else {
+                        owsFailDebug("Media has unexpected type: \(type(of: media))")
+                        return
+                    }
+                    
                     stillImageView.image = image
-                }, failure: {
-                    Logger.error("Could not load thumbnail")
-                })
-            },
-                                 applyMediaBlock: { (media) in
-                                    AssertIsOnMainThread()
-
-                                    guard let image = media as? UIImage else {
-                                        owsFailDebug("Media has unexpected type: \(type(of: media))")
-                                        return
-                                    }
-                                    stillImageView.image = image
-            },
-                                                        cacheKey: cacheKey)
+                },
+                cacheKey: attachment.id
+            )
         }
         unloadBlock = {
             AssertIsOnMainThread()
@@ -345,100 +305,105 @@ public class MediaView: UIView {
         }
     }
 
-    private var isFailedDownload: Bool {
-        guard let attachmentPointer = attachment as? TSAttachmentPointer else {
-            return false
-        }
-        return attachmentPointer.state == .failed
-    }
-
     private func configure(forError error: MediaError) {
-        backgroundColor = (isDarkMode ? .ows_gray90 : .ows_gray05)
         let icon: UIImage
+        
         switch error {
-        case .failed:
-            guard let asset = UIImage(named: "media_retry") else {
-                owsFailDebug("Missing image")
-                return
-            }
-            icon = asset
-        case .invalid:
-            guard let asset = UIImage(named: "media_invalid") else {
-                owsFailDebug("Missing image")
-                return
-            }
-            icon = asset
-        case .missing:
-            return
+            case .failed:
+                guard let asset = UIImage(named: "media_retry") else {
+                    owsFailDebug("Missing image")
+                    return
+                }
+                icon = asset
+                
+            case .invalid:
+                guard let asset = UIImage(named: "media_invalid") else {
+                    owsFailDebug("Missing image")
+                    return
+                }
+                icon = asset
+                
+            case .missing: return
         }
+        
+        backgroundColor = (isDarkMode ? .ows_gray90 : .ows_gray05)
+        
+        // For failed ougoing messages add an overlay to make the icon more visible
+        if isOutgoing {
+            let attachmentOverlayView: UIView = UIView()
+            attachmentOverlayView.backgroundColor = Colors.navigationBarBackground
+                .withAlphaComponent(Values.lowOpacity)
+            addSubview(attachmentOverlayView)
+            attachmentOverlayView.pin(to: self)
+        }
+        
         let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
-        iconView.tintColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        iconView.tintColor = Colors.text
+            .withAlphaComponent(Values.mediumOpacity)
         addSubview(iconView)
         iconView.autoCenterInSuperview()
     }
 
-    private func tryToLoadMedia(loadMediaBlock: @escaping () -> AnyObject?,
-                                applyMediaBlock: @escaping (AnyObject) -> Void,
-                                cacheKey: String) {
-        AssertIsOnMainThread()
-
+    private func tryToLoadMedia(
+        loadMediaBlock: @escaping (@escaping (AnyObject?) -> Void) -> Void,
+        applyMediaBlock: @escaping (AnyObject) -> Void,
+        cacheKey: String
+    ) {
         // It's critical that we update loadState once
         // our load attempt is complete.
-        let loadCompletion: (AnyObject?) -> Void = { [weak self] (possibleMedia) in
-            AssertIsOnMainThread()
-
-            guard let strongSelf = self else {
-                return
-            }
-            guard strongSelf.loadState == .loading else {
+        let loadCompletion: (AnyObject?) -> Void = { [weak self] possibleMedia in
+            guard self?.loadState.wrappedValue == .loading else {
                 Logger.verbose("Skipping obsolete load.")
                 return
             }
-            guard let media = possibleMedia else {
-                strongSelf.loadState = .failed
+            guard let media: AnyObject = possibleMedia else {
+                self?.loadState.mutate { $0 = .failed }
                 // TODO:
                 //            [self showAttachmentErrorViewWithMediaView:mediaView];
                 return
             }
-
+            
             applyMediaBlock(media)
-
-            strongSelf.loadState = .loaded
+            
+            self?.mediaCache.setObject(media, forKey: cacheKey as NSString)
+            self?.loadState.mutate { $0 = .loaded }
         }
 
-        guard loadState == .loading else {
+        guard loadState.wrappedValue == .loading else {
             owsFailDebug("Unexpected load state: \(loadState)")
             return
         }
 
-        let mediaCache = self.mediaCache
-        if let media = mediaCache.object(forKey: cacheKey as NSString) {
+        if let media: AnyObject = self.mediaCache.object(forKey: cacheKey as NSString) {
             Logger.verbose("media cache hit")
+            
+            guard Thread.isMainThread else {
+                DispatchQueue.main.async {
+                    loadCompletion(media)
+                }
+                return
+            }
+            
             loadCompletion(media)
             return
         }
 
         Logger.verbose("media cache miss")
 
-        let threadSafeLoadState = self.threadSafeLoadState
-        MediaView.loadQueue.async {
-            guard threadSafeLoadState.get() == .loading else {
+        MediaView.loadQueue.async { [weak self] in
+            guard self?.loadState.wrappedValue == .loading else {
                 Logger.verbose("Skipping obsolete load.")
                 return
             }
-
-            guard let media = loadMediaBlock() else {
-                Logger.error("Failed to load media.")
-
-                DispatchQueue.main.async {
-                    loadCompletion(nil)
+            
+            loadMediaBlock { media in
+                guard Thread.isMainThread else {
+                    DispatchQueue.main.async {
+                        loadCompletion(media)
+                    }
+                    return
                 }
-                return
-            }
-
-            DispatchQueue.main.async {
-                mediaCache.setObject(media, forKey: cacheKey as NSString)
-
+                
                 loadCompletion(media)
             }
         }
@@ -459,32 +424,18 @@ public class MediaView: UIView {
     //   "skip rate" of obsolete loads.
     private static let loadQueue = ReverseDispatchQueue(label: "org.signal.asyncMediaLoadQueue")
 
-    @objc
     public func loadMedia() {
-        AssertIsOnMainThread()
-
-        switch loadState {
-        case .unloaded:
-            loadState = .loading
-
-            guard let loadBlock = loadBlock else {
-                return
-            }
-            loadBlock()
-        case .loading, .loaded, .failed:
-            break
+        switch loadState.wrappedValue {
+            case .unloaded:
+                loadState.mutate { $0 = .loading }
+                loadBlock?()
+        
+            case .loading, .loaded, .failed: break
         }
     }
 
-    @objc
     public func unloadMedia() {
-        AssertIsOnMainThread()
-
-        loadState = .unloaded
-
-        guard let unloadBlock = unloadBlock else {
-            return
-        }
-        unloadBlock()
+        loadState.mutate { $0 = .unloaded }
+        unloadBlock?()
     }
 }

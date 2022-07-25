@@ -1,80 +1,113 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class ReactionListSheet : BaseVC {
-    private let thread: TSGroupThread
-    private let viewItem: ConversationViewItem
-    private var reactions: [ReactMessage] = []
-    private var reactionMap: OrderedDictionary<EmojiWithSkinTones, [ReactMessage]> = OrderedDictionary()
-    var selectedReaction: EmojiWithSkinTones?
-    var delegate: ReactionDelegate?
+import UIKit
+import DifferenceKit
+import SessionUIKit
+import SessionMessagingKit
+import SignalUtilitiesKit
+
+final class ReactionListSheet: BaseVC {
+    public struct ReactionSummary: Hashable, Differentiable {
+        let emoji: EmojiWithSkinTones
+        let number: Int
+        let isSelected: Bool
+        
+        var description: String {
+            return "\(emoji.rawValue) · \(number)"
+        }
+    }
     
-    // MARK: Components
+    private let interactionId: Int64
+    private let onDismiss: (() -> ())?
+    private var messageViewModel: MessageViewModel = MessageViewModel()
+    private var reactionSummaries: [ReactionSummary] = []
+    private var selectedReactionUserList: [MessageViewModel.ReactionInfo] = []
+    private var lastSelectedReactionIndex: Int = 0
+    public var delegate: ReactionDelegate?
+    
+    // MARK: - UI
     
     private lazy var contentView: UIView = {
-        let result = UIView()
-        let line = UIView()
-        line.set(.height, to: 0.5)
+        let result: UIView = UIView()
+        result.backgroundColor = Colors.modalBackground
+        
+        let line: UIView = UIView()
         line.backgroundColor = Colors.border.withAlphaComponent(0.5)
         result.addSubview(line)
+        
+        line.set(.height, to: 0.5)
         line.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: result)
-        result.backgroundColor = Colors.modalBackground
+        
         return result
     }()
     
     private lazy var layout: UICollectionViewFlowLayout = {
-        let result = UICollectionViewFlowLayout()
+        let result: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         result.scrollDirection = .horizontal
-        result.minimumLineSpacing = Values.smallSpacing
-        result.minimumInteritemSpacing = Values.smallSpacing
+        result.sectionInset = UIEdgeInsets(
+            top: 0,
+            leading: Values.smallSpacing,
+            bottom: 0,
+            trailing: Values.smallSpacing
+        )
+        result.minimumLineSpacing = 0
+        result.minimumInteritemSpacing = 0
         result.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        
         return result
     }()
     
     private lazy var reactionContainer: UICollectionView = {
-        let result = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
-        result.register(Cell.self, forCellWithReuseIdentifier: Cell.identifier)
+        let result: UICollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        result.register(view: Cell.self)
         result.set(.height, to: 48)
         result.backgroundColor = .clear
         result.isScrollEnabled = true
         result.showsHorizontalScrollIndicator = false
         result.dataSource = self
         result.delegate = self
+        
         return result
     }()
     
     private lazy var detailInfoLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.font = .systemFont(ofSize: Values.mediumFontSize)
         result.textColor = Colors.grey.withAlphaComponent(0.8)
         result.set(.height, to: 32)
+        
         return result
     }()
     
     private lazy var clearAllButton: Button = {
-        let result = Button(style: .destructiveOutline, size: .small)
+        let result: Button = Button(style: .destructiveOutline, size: .small)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
+        result.setTitle("MESSAGE_REQUESTS_CLEAR_ALL".localized(), for: .normal)
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
         result.layer.borderWidth = 0
         result.isHidden = true
+        
         return result
     }()
     
     private lazy var userListView: UITableView = {
-        let result = UITableView()
+        let result: UITableView = UITableView()
         result.dataSource = self
         result.delegate = self
-        result.register(UserCell.self, forCellReuseIdentifier: "UserCell")
+        result.register(view: UserCell.self)
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
     
-    init(for viewItem: ConversationViewItem, thread: TSGroupThread) {
-        self.viewItem = viewItem
-        self.thread = thread
+    init(for interactionId: Int64, onDismiss: (() -> ())? = nil) {
+        self.interactionId = interactionId
+        self.onDismiss = onDismiss
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -88,21 +121,20 @@ final class ReactionListSheet : BaseVC {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.backgroundColor = .clear
+        
         let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
         swipeGestureRecognizer.direction = .down
         view.addGestureRecognizer(swipeGestureRecognizer)
-        NotificationCenter.default.addObserver(self, selector: #selector(update), name: .emojiReactsUpdated, object: nil)
+        
         setUpViewHierarchy()
-        update()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        if let index = reactionMap.orderedKeys.firstIndex(of: selectedReaction!) {
-            let indexPath = IndexPath(item: index, section: 0)
-            reactionContainer.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
-        }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        self.onDismiss?()
     }
 
     private func setUpViewHierarchy() {
@@ -117,6 +149,7 @@ final class ReactionListSheet : BaseVC {
         contentView.addSubview(reactionContainer)
         reactionContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
         reactionContainer.pin(.top, to: .top, of: contentView, withInset: Values.verySmallSpacing)
+        
         // Seperator
         let seperator = UIView()
         seperator.backgroundColor = Colors.border.withAlphaComponent(0.1)
@@ -125,12 +158,14 @@ final class ReactionListSheet : BaseVC {
         seperator.pin(.leading, to: .leading, of: contentView, withInset: Values.smallSpacing)
         seperator.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.smallSpacing)
         seperator.pin(.top, to: .bottom, of: reactionContainer, withInset: Values.verySmallSpacing)
+        
         // Detail info & clear all
         let stackView = UIStackView(arrangedSubviews: [ detailInfoLabel, clearAllButton ])
         contentView.addSubview(stackView)
         stackView.pin(.top, to: .bottom, of: seperator, withInset: Values.smallSpacing)
         stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.mediumSpacing)
         stackView.pin(.trailing, to: .trailing, of: contentView, withInset: -Values.mediumSpacing)
+        
         // Line
         let line = UIView()
         line.set(.height, to: 0.5)
@@ -138,65 +173,169 @@ final class ReactionListSheet : BaseVC {
         contentView.addSubview(line)
         line.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
         line.pin(.top, to: .bottom, of: stackView, withInset: Values.smallSpacing)
+        
         // Reactor list
         contentView.addSubview(userListView)
         userListView.pin([ UIView.HorizontalEdge.trailing, UIView.HorizontalEdge.leading, UIView.VerticalEdge.bottom ], to: contentView)
         userListView.pin(.top, to: .bottom, of: line, withInset: 0)
     }
     
-    private func populateData() {
-        self.reactions = []
-        self.reactionMap = OrderedDictionary()
-        if let messageId = viewItem.interaction.uniqueId, let message = TSMessage.fetch(uniqueId: messageId) {
-            self.reactions = message.reactions as! [ReactMessage]
-        }
-        for reaction in reactions {
-            if let rawEmoji = reaction.emoji, let emoji = EmojiWithSkinTones(rawValue: rawEmoji) {
-                if !reactionMap.hasValue(forKey: emoji) { reactionMap.append(key: emoji, value: []) }
-                var value = reactionMap.value(forKey: emoji)!
-                if reaction.sender == getUserHexEncodedPublicKey() {
-                    value.insert(reaction, at: 0)
-                } else {
-                    value.append(reaction)
-                }
-                reactionMap.replace(key: emoji, value: value)
-            }
-        }
-        if (selectedReaction == nil || reactionMap.value(forKey: selectedReaction!) == nil) && reactionMap.orderedKeys.count > 0 {
-            selectedReaction = reactionMap.orderedKeys[0]
-        }
-    }
+    // MARK: - Content
     
-    private func reloadData() {
-        reactionContainer.reloadData()
-        let seletedData = reactionMap.value(forKey: selectedReaction!)!
-        detailInfoLabel.text = "\(selectedReaction!.rawValue) · \(seletedData.count)"
-        if thread.isOpenGroup, let threadId = thread.uniqueId, let openGroupV2 = Storage.shared.getV2OpenGroup(for: threadId) {
-            let isUserModerator = OpenGroupAPIV2.isUserModerator(getUserHexEncodedPublicKey(), for: openGroupV2.room, on: openGroupV2.server)
-            clearAllButton.isHidden = !isUserModerator
+    public func handleInteractionUpdates(
+        _ allMessages: [MessageViewModel],
+        selectedReaction: EmojiWithSkinTones? = nil,
+        updatedReactionIndex: Int? = nil,
+        initialLoad: Bool = false
+    ) {
+        guard let cellViewModel: MessageViewModel = allMessages.first(where: { $0.id == self.interactionId }) else {
+            return
         }
-        userListView.reloadData()
-    }
-    
-    @objc private func update() {
-        populateData()
-        if reactions.isEmpty {
+        
+        // If we have no more reactions (eg. the user removed the last one) then closed the list sheet
+        guard cellViewModel.reactionInfo?.isEmpty == false else {
             close()
             return
         }
-        reloadData()
+        
+        // Generated the updated data
+        let updatedReactionInfo: OrderedDictionary<EmojiWithSkinTones, [MessageViewModel.ReactionInfo]> = (cellViewModel.reactionInfo ?? [])
+            .reduce(into: OrderedDictionary<EmojiWithSkinTones, [MessageViewModel.ReactionInfo]>()) {
+                result, reactionInfo in
+                guard let emoji: EmojiWithSkinTones = EmojiWithSkinTones(rawValue: reactionInfo.reaction.emoji) else {
+                    return
+                }
+                
+                guard var updatedValue: [MessageViewModel.ReactionInfo] = result.value(forKey: emoji) else {
+                    result.append(key: emoji, value: [reactionInfo])
+                    return
+                }
+                
+                if reactionInfo.reaction.authorId == cellViewModel.currentUserPublicKey {
+                    updatedValue.insert(reactionInfo, at: 0)
+                }
+                else {
+                    updatedValue.append(reactionInfo)
+                }
+                
+                result.replace(key: emoji, value: updatedValue)
+            }
+        let oldSelectedReactionIndex: Int = self.lastSelectedReactionIndex
+        let updatedSelectedReactionIndex: Int = updatedReactionIndex
+            .defaulting(
+                to: {
+                    // If we explicitly provided a 'selectedReaction' value then try to use that
+                    if selectedReaction != nil, let targetIndex: Int = updatedReactionInfo.orderedKeys.firstIndex(where: { $0 == selectedReaction }) {
+                        return targetIndex
+                    }
+
+                    // Otherwise try to maintain the index of the currently selected index
+                    guard
+                        !self.reactionSummaries.isEmpty,
+                        let emoji: EmojiWithSkinTones = self.reactionSummaries[safe: oldSelectedReactionIndex]?.emoji,
+                        let targetIndex: Int = updatedReactionInfo.orderedKeys.firstIndex(of: emoji)
+                    else { return 0 }
+
+                    return targetIndex
+                }()
+            )
+        let updatedSummaries: [ReactionSummary] = updatedReactionInfo
+            .orderedKeys
+            .enumerated()
+            .map { index, emoji in
+                ReactionSummary(
+                    emoji: emoji,
+                    number: updatedReactionInfo.value(forKey: emoji)
+                        .defaulting(to: [])
+                        .map { Int($0.reaction.count) }
+                        .reduce(0, +),
+                    isSelected: (index == updatedSelectedReactionIndex)
+                )
+            }
+        
+        // Update the general UI
+        
+        self.detailInfoLabel.text = updatedSummaries[safe: updatedSelectedReactionIndex]?.description
+        self.clearAllButton.isHidden = !cellViewModel.isSenderOpenGroupModerator
+        
+        // Update general properties
+        self.messageViewModel = cellViewModel
+        self.lastSelectedReactionIndex = updatedSelectedReactionIndex
+        
+        // Ensure the first load or a load when returning from a child screen runs without animations (if
+        // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
+        guard !initialLoad else {
+            self.reactionSummaries = updatedSummaries
+            self.selectedReactionUserList = updatedReactionInfo
+                .orderedKeys[safe: updatedSelectedReactionIndex]
+                .map { updatedReactionInfo.value(forKey: $0) }
+                .defaulting(to: [])
+            
+            UIView.performWithoutAnimation {
+                self.reactionContainer.reloadData()
+                self.userListView.reloadData()
+            }
+            return
+        }
+        
+        // Update the collection view content
+        let collectionViewChangeset: StagedChangeset<[ReactionSummary]> = StagedChangeset(
+            source: self.reactionSummaries,
+            target: updatedSummaries
+        )
+        
+        // If there are changes then we want to reload both the collection and table views
+        self.reactionContainer.reload(
+            using: collectionViewChangeset,
+            interrupt: { $0.changeCount > 1 }
+        ) { [weak self] updatedData in
+            self?.reactionSummaries = updatedData
+        }
+        
+        // If we changed the selected index then no need to reload the changes
+        guard
+            oldSelectedReactionIndex == updatedSelectedReactionIndex &&
+            self.reactionSummaries[safe: oldSelectedReactionIndex]?.emoji == updatedSummaries[safe: updatedSelectedReactionIndex]?.emoji
+        else {
+            self.selectedReactionUserList = updatedReactionInfo
+                .orderedKeys[safe: updatedSelectedReactionIndex]
+                .map { updatedReactionInfo.value(forKey: $0) }
+                .defaulting(to: [])
+            self.userListView.reloadData()
+            return
+        }
+        
+        let tableChangeset: StagedChangeset<[MessageViewModel.ReactionInfo]> = StagedChangeset(
+            source: self.selectedReactionUserList,
+            target: updatedReactionInfo
+                .orderedKeys[safe: updatedSelectedReactionIndex]
+                .map { updatedReactionInfo.value(forKey: $0) }
+                .defaulting(to: [])
+        )
+        
+        self.userListView.reload(
+            using: tableChangeset,
+            deleteSectionsAnimation: .none,
+            insertSectionsAnimation: .none,
+            reloadSectionsAnimation: .none,
+            deleteRowsAnimation: .none,
+            insertRowsAnimation: .none,
+            reloadRowsAnimation: .none,
+            interrupt: {  $0.changeCount > 100 }
+        ) { [weak self] updatedData in
+            self?.selectedReactionUserList = updatedData
+        }
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first!
-        let location = touch.location(in: view)
-        if contentView.frame.contains(location) {
-            super.touchesBegan(touches, with: event)
-        } else {
+        guard let touch: UITouch = touches.first, contentView.frame.contains(touch.location(in: view)) else {
             close()
+            return
         }
+        
+        super.touchesBegan(touches, with: event)
     }
 
     @objc func close() {
@@ -204,83 +343,90 @@ final class ReactionListSheet : BaseVC {
     }
     
     @objc private func clearAllTapped() {
-        guard let reactMessages = reactionMap.value(forKey: selectedReaction!) else { return }
-        delegate?.cancelAllReact(reactMessages: reactMessages)
+        guard let selectedReaction: EmojiWithSkinTones = self.reactionSummaries.first(where: { $0.isSelected })?.emoji else { return }
+        
+        delegate?.removeAllReactions(messageViewModel, for: selectedReaction.rawValue)
     }
 }
 
-// MARK: UICollectionView
+// MARK: - UICollectionView
 
 extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    // MARK: Layout
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, leading: Values.smallSpacing, bottom: 0, trailing: Values.smallSpacing)
-    }
-    
     // MARK: Data Source
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return reactionMap.orderedKeys.count
+        return self.reactionSummaries.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
-        let item = reactionMap.orderedItems[indexPath.item]
-        cell.data = (item.0.rawValue, item.1.count)
-        cell.isCurrentSelection = item.0 == selectedReaction!
+        let cell: Cell = collectionView.dequeue(type: Cell.self, for: indexPath)
+        let summary: ReactionSummary = self.reactionSummaries[indexPath.item]
+        
+        cell.update(
+            with: summary.emoji.rawValue,
+            count: summary.number,
+            isCurrentSelection: summary.isSelected
+        )
+        
         return cell
     }
     
     // MARK: Interaction
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        selectedReaction = reactionMap.orderedKeys[indexPath.item]
-        reloadData()
+        self.handleInteractionUpdates([messageViewModel], updatedReactionIndex: indexPath.item)
     }
 }
 
-// MARK: UITableView
+// MARK: - UITableViewDelegate & UITableViewDataSource
 
 extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
-    // MARK: Table View Data Source
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return reactionMap.value(forKey: selectedReaction!)?.count ?? 0
+        return self.selectedReactionUserList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
-        let publicKey = reactionMap.value(forKey: selectedReaction!)![indexPath.row].sender!
-        cell.publicKey = publicKey
-        cell.normalFont = true
-        if publicKey == getUserHexEncodedPublicKey() {
-            cell.accessory = .x
-        } else {
-            cell.accessory = .none
-        }
-        cell.update()
+        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        let cellViewModel: MessageViewModel.ReactionInfo = self.selectedReactionUserList[indexPath.row]
+        cell.update(
+            with: cellViewModel.reaction.authorId,
+            profile: cellViewModel.profile,
+            isZombie: false,
+            mediumFont: true,
+            accessory: (cellViewModel.reaction.authorId == self.messageViewModel.currentUserPublicKey ?
+                .x :
+                .none
+            )
+        )
+        
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard let reactMessage = reactionMap.value(forKey: selectedReaction!)?[indexPath.row], let publicKey = reactMessage.sender else { return }
-        if publicKey == getUserHexEncodedPublicKey() {
-            delegate?.cancelReact(viewItem, for: selectedReaction!)
-        }
+        
+        let cellViewModel: MessageViewModel.ReactionInfo = self.selectedReactionUserList[indexPath.row]
+        
+        guard
+            let selectedReaction: EmojiWithSkinTones = self.reactionSummaries
+                .first(where: { $0.isSelected })?
+                .emoji,
+            selectedReaction.rawValue == cellViewModel.reaction.emoji,
+            cellViewModel.reaction.authorId == self.messageViewModel.currentUserPublicKey
+        else { return }
+        
+        delegate?.removeReact(self.messageViewModel, for: selectedReaction)
     }
 }
 
-// MARK: Cell
+// MARK: - Cell
 
 extension ReactionListSheet {
-    
-    fileprivate final class Cell : UICollectionViewCell {
-        var data: (String, Int)? { didSet { update() } }
-        var isCurrentSelection: Bool? { didSet { updateBorder() } }
+    fileprivate final class Cell: UICollectionViewCell {
+        // MARK: - UI
         
-        static let identifier = "ReactionListSheetCell"
+        private static var contentViewHeight: CGFloat = 32
+        private static var contentViewCornerRadius: CGFloat { contentViewHeight / 2 }
         
         private lazy var snContentView: UIView = {
             let result = UIView()
@@ -300,27 +446,31 @@ extension ReactionListSheet {
             let result = UILabel()
             result.textColor = Colors.text
             result.font = .systemFont(ofSize: Values.mediumFontSize)
+            
             return result
         }()
         
-        private static var contentViewHeight: CGFloat = 32
-        private static var contentViewCornerRadius: CGFloat { contentViewHeight / 2 }
+        // MARK: - Initialization
         
         override init(frame: CGRect) {
             super.init(frame: frame)
+            
             setUpViewHierarchy()
         }
         
         required init?(coder: NSCoder) {
             super.init(coder: coder)
+            
             setUpViewHierarchy()
         }
         
         private func setUpViewHierarchy() {
             addSubview(snContentView)
+            
             let stackView = UIStackView(arrangedSubviews: [ emojiLabel, numberLabel ])
             stackView.axis = .horizontal
             stackView.alignment = .center
+            
             let spacing = Values.smallSpacing + 2
             stackView.spacing = spacing
             stackView.layoutMargins = UIEdgeInsets(top: 0, left: spacing, bottom: 0, right: spacing)
@@ -330,29 +480,30 @@ extension ReactionListSheet {
             snContentView.pin(to: self)
         }
         
-        private func update() {
-            guard let data = data else { return }
-            emojiLabel.text = data.0
-            numberLabel.text = data.1 < 1000 ? "\(data.1)" : String(format: "%.1f", Float(data.1) / 1000) + "k"
-        }
+        // MARK: - Content
         
-        private func updateBorder() {
-            if isCurrentSelection == true {
-                snContentView.addBorder(with: Colors.accent)
-            } else {
-                snContentView.addBorder(with: .clear)
-            }
+        fileprivate func update(
+            with emoji: String,
+            count: Int,
+            isCurrentSelection: Bool
+        ) {
+            snContentView.addBorder(
+                with: (isCurrentSelection == true ? Colors.accent : .clear)
+            )
+            
+            emojiLabel.text = emoji
+            numberLabel.text = (count < 1000 ?
+                "\(count)" :
+                String(format: "%.1fk", Float(count) / 1000)
+            )
         }
     }
 }
 
-// MARK: Delegate
+// MARK: - Delegate
 
-protocol ReactionDelegate : AnyObject {
-    
-    func quickReact(_ viewItem: ConversationViewItem, with emoji: EmojiWithSkinTones)
-    func cancelReact(_ viewItem: ConversationViewItem, for emoji: EmojiWithSkinTones)
-    func cancelAllReact(reactMessages: [ReactMessage])
-    
+protocol ReactionDelegate: AnyObject {
+    func react(_ cellViewModel: MessageViewModel, with emoji: EmojiWithSkinTones)
+    func removeReact(_ cellViewModel: MessageViewModel, for emoji: EmojiWithSkinTones)
+    func removeAllReactions(_ cellViewModel: MessageViewModel, for emoji: String)
 }
-

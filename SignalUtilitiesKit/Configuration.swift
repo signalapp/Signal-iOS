@@ -1,14 +1,17 @@
-import SessionMessagingKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import SessionSnodeKit
+import SessionMessagingKit
 
-extension OWSPrimaryStorage : OWSPrimaryStorageProtocol { }
-
-@objc(SNConfiguration)
-public final class Configuration : NSObject {
-    
-    @objc public static func performMainSetup() {
-        SNMessagingKit.configure(storage: Storage.shared)
-        SNSnodeKit.configure(storage: Storage.shared)
-        SNUtilitiesKit.configure(owsPrimaryStorage: OWSPrimaryStorage.shared(), maxFileSize: UInt(Double(FileServerAPIV2.maxFileSize) / FileServerAPIV2.fileSizeORMultiplier))
+public enum Configuration {
+    public static func performMainSetup() {
+        // Need to do this first to ensure the legacy database exists
+        SNUtilitiesKit.configure(
+            maxFileSize: UInt(Double(FileServerAPI.maxFileSize) / FileServerAPI.fileSizeORMultiplier)
+        )
+        
+        SNMessagingKit.configure()
+        SNSnodeKit.configure()
     }
 }

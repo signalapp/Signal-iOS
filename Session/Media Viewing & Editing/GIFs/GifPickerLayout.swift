@@ -4,7 +4,7 @@
 
 import Foundation
 
-protocol GifPickerLayoutDelegate: class {
+protocol GifPickerLayoutDelegate: AnyObject {
     func imageInfosForLayout() -> [GiphyImageInfo]
 }
 

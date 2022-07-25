@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
     AudioPlaybackState_Paused,
 };
 
-@protocol OWSAudioPlayerDelegate <NSObject>
+@protocol OWSAudioPlayerDelegate
 
 - (AudioPlaybackState)audioPlaybackState;
 - (void)setAudioPlaybackState:(AudioPlaybackState)state;
@@ -37,7 +37,7 @@ typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
 
 @interface OWSAudioPlayer : NSObject
 
-@property (nonatomic, readonly, weak) id<OWSAudioPlayerDelegate> delegate;
+@property (nonatomic, weak) id<OWSAudioPlayerDelegate> delegate;
 // This property can be used to associate instances of the player with view or model objects.
 @property (nonatomic, weak) id owner;
 @property (nonatomic) BOOL isLooping;
@@ -46,7 +46,7 @@ typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
 @property (nonatomic) NSTimeInterval duration;
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior;
-- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior delegate:(id<OWSAudioPlayerDelegate>)delegate;
+- (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior delegate:(nullable id<OWSAudioPlayerDelegate>)delegate;
 - (void)play;
 - (void)setCurrentTime:(NSTimeInterval)currentTime;
 - (void)pause;

@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SessionMessagingKit
 
 class AddMoreRailItem: GalleryRailItem {
     func buildRailItemView() -> UIView {
@@ -18,6 +19,10 @@ class AddMoreRailItem: GalleryRailItem {
         iconView.autoCenterInSuperview()
 
         return view
+    }
+    
+    func isEqual(to other: GalleryRailItem?) -> Bool {
+        return (other is AddMoreRailItem)
     }
 }
 
@@ -56,22 +61,8 @@ class SignalAttachmentItem: Hashable {
         return attachment.captionText
     }
 
-    var imageSize: CGSize = .zero
-
-    func getThumbnailImage() -> Promise<UIImage> {
-        return DispatchQueue.global().async(.promise) { () -> UIImage in
-            guard let image = self.attachment.staticThumbnail() else {
-                throw SignalAttachmentItemError.noThumbnail
-            }
-            return image
-            }.tap { result in
-                switch result {
-                case .fulfilled(let image):
-                    self.imageSize = image.size
-                case .rejected(let error):
-                    owsFailDebug("failed with error: \(error)")
-                }
-        }
+    func getThumbnailImage() -> UIImage? {
+        return attachment.staticThumbnail()
     }
 
     // MARK: Hashable

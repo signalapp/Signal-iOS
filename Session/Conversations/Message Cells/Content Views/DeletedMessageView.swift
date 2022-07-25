@@ -1,43 +1,51 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class DeletedMessageView : UIView {
-    private let viewItem: ConversationViewItem
-    private let textColor: UIColor
-    
-    // MARK: Settings
+import UIKit
+import SignalUtilitiesKit
+import SessionUtilitiesKit
+
+final class DeletedMessageView: UIView {
     private static let iconSize: CGFloat = 18
     private static let iconImageViewSize: CGFloat = 30
     
-    // MARK: Lifecycle
-    init(viewItem: ConversationViewItem, textColor: UIColor) {
-        self.viewItem = viewItem
-        self.textColor = textColor
+    // MARK: - Lifecycle
+    
+    init(textColor: UIColor) {
         super.init(frame: CGRect.zero)
-        setUpViewHierarchy()
+        
+        setUpViewHierarchy(textColor: textColor)
     }
     
     override init(frame: CGRect) {
-        preconditionFailure("Use init(viewItem:textColor:) instead.")
+        preconditionFailure("Use init(textColor:) instead.")
     }
     
     required init?(coder: NSCoder) {
-        preconditionFailure("Use init(viewItem:textColor:) instead.")
+        preconditionFailure("Use init(textColor:) instead.")
     }
     
-    private func setUpViewHierarchy() {
+    private func setUpViewHierarchy(textColor: UIColor) {
         // Image view
-        let iconSize = DeletedMessageView.iconSize
-        let icon = UIImage(named: "ic_trash")?.withTint(textColor)?.resizedImage(to: CGSize(width: iconSize, height: iconSize))
+        let icon = UIImage(named: "ic_trash")?
+            .withRenderingMode(.alwaysTemplate)
+            .resizedImage(to: CGSize(
+                width: DeletedMessageView.iconSize,
+                height: DeletedMessageView.iconSize
+            ))
+        
         let imageView = UIImageView(image: icon)
+        imageView.tintColor = textColor
         imageView.contentMode = .center
-        let iconImageViewSize = DeletedMessageView.iconImageViewSize
-        imageView.set(.width, to: iconImageViewSize)
-        imageView.set(.height, to: iconImageViewSize)
+        imageView.set(.width, to: DeletedMessageView.iconImageViewSize)
+        imageView.set(.height, to: DeletedMessageView.iconImageViewSize)
+        
         // Body label
         let titleLabel = UILabel()
         titleLabel.lineBreakMode = .byTruncatingTail
-        titleLabel.text = NSLocalizedString("message_deleted", comment: "")
+        titleLabel.text = "message_deleted".localized()
         titleLabel.textColor = textColor
         titleLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ imageView, titleLabel ])
         stackView.axis = .horizontal
@@ -45,7 +53,8 @@ final class DeletedMessageView : UIView {
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 6)
         addSubview(stackView)
+        
         stackView.pin(to: self, withInset: Values.smallSpacing)
+        stackView.set(.height, to: .height, of: imageView)
     }
 }
-

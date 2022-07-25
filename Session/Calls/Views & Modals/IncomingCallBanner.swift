@@ -1,5 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 import WebRTC
+import SessionUIKit
 import SessionMessagingKit
 
 final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
@@ -82,8 +85,12 @@ final class IncomingCallBanner: UIView, UIGestureRecognizerDelegate {
         self.layer.cornerRadius = Values.largeSpacing
         self.layer.masksToBounds = true
         self.set(.height, to: 100)
-        profilePictureView.publicKey = call.sessionID
-        profilePictureView.update()
+        
+        profilePictureView.update(
+            publicKey: call.sessionId,
+            profile: Profile.fetchOrCreate(id: call.sessionId),
+            threadVariant: .contact
+        )
         displayNameLabel.text = call.contactName
         let stackView = UIStackView(arrangedSubviews: [profilePictureView, displayNameLabel, hangUpButton, answerButton])
         stackView.axis = .horizontal
