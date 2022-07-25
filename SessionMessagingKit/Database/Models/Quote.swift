@@ -97,11 +97,20 @@ public extension Quote {
             .filter(Interaction.Columns.timestampMs == Double(quoteProto.id))
             .fetchOne(db)
         
+        guard quotedInteraction != nil else {
+            self.body = "QUOTED_MESSAGE_NOT_FOUND".localized()
+            self.attachmentId = nil
+            return
+        }
+
         if let quotedInteraction: Interaction = quotedInteraction, quotedInteraction.body?.isEmpty == false {
             self.body = quotedInteraction.body
         }
+        else if let body: String = quoteProto.text, !body.isEmpty {
+            self.body = body
+        }
         else {
-            self.body = "QUOTED_MESSAGE_NOT_FOUND".localized()
+            self.body = nil
         }
         
         // We only use the first attachment
