@@ -1,0 +1,36 @@
+name: 'Clone everything'
+description: 'Checks out the repo, and initializes submodules. Must check out repo first.'
+
+inputs:
+  access-token:
+    description: 'Private pods access token'
+    required: false
+
+runs:
+  using: 'composite'
+
+  steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+        # Check out submodules through GitHub instead of from scratch later.
+        # THIS STEP WILL FAIL if the current Pods commit is only available in Private.
+        # However, we can continue and the build will still pass.
+        submodules: recursive
+      continue-on-error: true
+
+    # Checkout private pods repo iff we have an access token to read private repos
+    - name: Checkout Private Pods
+      uses: actions/checkout@v3
+      if: ${{ inputs.access-token != '' }}
+      with:
+        repository: signalapp/signal-pods-private
+        token: ${{ inputs.access-token }}
+        path: Pods
+        # We don't know which commit we'll need in this step, so fetch everything so that
+        # `make dependencies` doesn't end up doing it the slow way.
+        fetch-depth: 0
+
+    - name: Initialize Submodules
+      shell: bash
+      run: make dependencies
