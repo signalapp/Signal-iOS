@@ -1071,6 +1071,7 @@
 		F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */; };
 		F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */; };
 		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
+		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
 		F941B17028412D5F00498CCD /* ApplePayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F941B16F28412D5F00498CCD /* ApplePayButton.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftThanksSheet.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
@@ -2548,6 +2549,7 @@
 		F1F5EEB86B2B807C24D790CC /* Pods-SignalPerformanceTests.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.profiling.xcconfig"; sourceTree = "<group>"; };
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
+		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F941B16F28412D5F00498CCD /* ApplePayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayButton.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
@@ -4093,6 +4095,7 @@
 			children = (
 				76EB03C218170B33006006FC /* AppDelegate.h */,
 				76EB03C318170B33006006FC /* AppDelegate.m */,
+				F92074752888648A00B7F087 /* AppDelegate.swift */,
 				88D23D1323CEC0C700B0E74B /* Calls */,
 				76EB041118170B33006006FC /* environment */,
 				45D231751DC7E8C50034FA89 /* Jobs */,
@@ -6693,6 +6696,7 @@
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalMe.swift in Sources */,
+				F92074762888648A00B7F087 /* AppDelegate.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				34848D6325D44EBD00E5034B /* PaymentsTransferInViewController.swift in Sources */,
 				883A7FC3269F4C0000841DF9 /* AvatarSettingsViewController.swift in Sources */,

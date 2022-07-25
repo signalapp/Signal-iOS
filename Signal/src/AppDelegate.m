@@ -55,36 +55,6 @@ NSString *const kURLHostLinkDevicePrefix = @"linkdevice";
 
 static NSTimeInterval launchStartedAt;
 
-typedef NS_ENUM(NSUInteger, LaunchFailure) {
-    LaunchFailure_None,
-    LaunchFailure_CouldNotLoadDatabase,
-    LaunchFailure_UnknownDatabaseVersion,
-    LaunchFailure_CouldNotRestoreTransferredData,
-    LaunchFailure_DatabaseUnrecoverablyCorrupted,
-    LaunchFailure_LastAppLaunchCrashed,
-    LaunchFailure_LowStorageSpaceAvailable,
-};
-
-static NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
-{
-    switch (launchFailure) {
-        case LaunchFailure_None:
-            return @"LaunchFailure_None";
-        case LaunchFailure_CouldNotLoadDatabase:
-            return @"LaunchFailure_CouldNotLoadDatabase";
-        case LaunchFailure_UnknownDatabaseVersion:
-            return @"LaunchFailure_UnknownDatabaseVersion";
-        case LaunchFailure_CouldNotRestoreTransferredData:
-            return @"LaunchFailure_CouldNotRestoreTransferredData";
-        case LaunchFailure_DatabaseUnrecoverablyCorrupted:
-            return @"LaunchFailure_DatabaseUnrecoverablyCorrupted";
-        case LaunchFailure_LastAppLaunchCrashed:
-            return @"LaunchFailure_LastAppLaunchCrashed";
-        case LaunchFailure_LowStorageSpaceAvailable:
-            return @"LaunchFailure_NoDiskSpaceAvailable";
-    }
-}
-
 static void uncaughtExceptionHandler(NSException *exception)
 {
     if (SSKDebugFlags.internalLogging) {
@@ -243,26 +213,26 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access the database, files on disk, or NSUserDefaults.
-    LaunchFailure launchFailure = LaunchFailure_None;
+    LaunchFailure launchFailure = LaunchFailureNone;
     NSInteger launchAttemptFailureThreshold = SSKDebugFlags.betaLogging ? 2 : 3;
 
     if (![self checkSomeDiskSpaceAvailable]) {
-        launchFailure = LaunchFailure_LowStorageSpaceAvailable;
+        launchFailure = LaunchFailureLowStorageSpaceAvailable;
     } else if (deviceTransferRestoreFailed) {
-        launchFailure = LaunchFailure_CouldNotRestoreTransferredData;
+        launchFailure = LaunchFailureCouldNotRestoreTransferredData;
     } else if (StorageCoordinator.hasInvalidDatabaseVersion) {
         // Prevent:
         // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
-        launchFailure = LaunchFailure_UnknownDatabaseVersion;
+        launchFailure = LaunchFailureUnknownDatabaseVersion;
     } else if ([SSKPreferences hasGrdbDatabaseCorruption]) {
-        launchFailure = LaunchFailure_DatabaseUnrecoverablyCorrupted;
+        launchFailure = LaunchFailureDatabaseUnrecoverablyCorrupted;
     } else if ([AppVersion.shared.lastAppVersion isEqual:AppVersion.shared.currentAppReleaseVersion] &&
         [[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey]
             >= launchAttemptFailureThreshold) {
-        launchFailure = LaunchFailure_LastAppLaunchCrashed;
+        launchFailure = LaunchFailureLastAppLaunchCrashed;
     }
 
-    if (launchFailure != LaunchFailure_None) {
+    if (launchFailure != LaunchFailureNone) {
         [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
         OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
         [self showUIForLaunchFailure:launchFailure];
@@ -316,7 +286,7 @@ static void uncaughtExceptionHandler(NSException *exception)
 
             if (error != nil) {
                 OWSFailDebug(@"Error: %@", error);
-                [self showUIForLaunchFailure:LaunchFailure_CouldNotLoadDatabase];
+                [self showUIForLaunchFailure:LaunchFailureCouldNotLoadDatabase];
             } else {
                 [self versionMigrationsDidComplete];
             }
@@ -422,10 +392,14 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 - (void)showUIForLaunchFailure:(LaunchFailure)launchFailure
 {
-    OWSLogInfo(@"launchFailure: %@", NSStringForLaunchFailure(launchFailure));
+    OWSLogInfo(@"launchFailure: %@", [AppDelegate stringForLaunchFailure:launchFailure]);
 
     // Disable normal functioning of app.
     self.didAppLaunchFail = YES;
+
+    if (launchFailure == LaunchFailureLowStorageSpaceAvailable) {
+        self.shouldKillAppWhenBackgrounded = YES;
+    }
 
     // We perform a subset of the [application:didFinishLaunchingWithOptions:].
     if (self.window == nil) {
@@ -440,116 +414,18 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     [self.window makeKeyAndVisible];
 
-    NSString *alertTitle;
-    NSString *alertMessage
-        = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_MESSAGE", @"Message for the 'app launch failed' alert.");
-    switch (launchFailure) {
-        case LaunchFailure_DatabaseUnrecoverablyCorrupted:
-        case LaunchFailure_CouldNotLoadDatabase:
-            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
-                @"Error indicating that the app could not launch because the database could not be loaded.");
-            break;
-        case LaunchFailure_UnknownDatabaseVersion:
-            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
-                @"Error indicating that the app could not launch without reverting unknown database migrations.");
-            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
-                @"Error indicating that the app could not launch without reverting unknown database migrations.");
-            break;
-        case LaunchFailure_CouldNotRestoreTransferredData:
-            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE",
-                @"Error indicating that the app could not restore transferred data.");
-            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
-                @"Error indicating that the app could not restore transferred data.");
-            break;
-        case LaunchFailure_LastAppLaunchCrashed:
-            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
-                @"Error indicating that the app crashed during the previous launch.");
-            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
-                @"Error indicating that the app crashed during the previous launch.");
-            break;
-        case LaunchFailure_LowStorageSpaceAvailable:
-            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE",
-                @"Error title indicating that the app crashed because there was low storage space available on the "
-                @"device.");
-            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
-                @"Error description indicating that the app crashed because there was low storage space available on "
-                @"the device.");
-            break;
-        case LaunchFailure_None:
-            OWSFailDebug(@"Unknown launch failure.");
-            alertTitle
-                = NSLocalizedString(@"APP_LAUNCH_FAILURE_ALERT_TITLE", @"Title for the 'app launch failed' alert.");
-            break;
-    }
-
-    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:alertTitle message:alertMessage];
-
-    if (SSKDebugFlags.internalSettings) {
-        [actionSheet addAction:[[ActionSheetAction alloc]
-                                   initWithTitle:@"Export Database (internal)"
-                                           style:ActionSheetActionStyleDefault
-                                         handler:^(ActionSheetAction *_Nonnull action) {
-                                             [SignalApp
-                                                 showExportDatabaseUIFromViewController:viewController
-                                                                             completion:^{
-                                                                                 [viewController
-                                                                                     presentActionSheet:actionSheet];
-                                                                             }];
-                                         }]];
-    }
-
-    // Note: It's sometimes useful for us to enable this for certain external users.
-    // In that case, we can make a PR that changes this to `if (true)` and do a build from that.
-    if (SSKDebugFlags.databaseIntegrityCheck) {
-        [actionSheet
-            addAction:[[ActionSheetAction alloc]
-                          initWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_CHECK_DATABASE", nil)
-                                  style:ActionSheetActionStyleDefault
-                                handler:^(ActionSheetAction *_Nonnull action) {
-                                    [SignalApp
-                                        showDatabaseIntegrityCheckUIFromViewController:viewController
-                                                                            completion:^{
-                                                                                [viewController
-                                                                                    presentActionSheet:actionSheet];
-                                                                            }];
-                                }]];
-    }
-
-    if (launchFailure == LaunchFailure_LowStorageSpaceAvailable) {
-        self.shouldKillAppWhenBackgrounded = YES;
-    } else {
-        [actionSheet
-            addAction:[[ActionSheetAction alloc]
-                          initWithTitle:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", nil)
-                                  style:ActionSheetActionStyleDefault
-                                handler:^(ActionSheetAction *_Nonnull action) {
-                                    [Pastelog
-                                        submitLogsWithSupportTag:NSStringForLaunchFailure(launchFailure)
-                                                      completion:^{
-                                                          if (launchFailure == LaunchFailure_LastAppLaunchCrashed) {
-                                                              // Pretend we didn't fail!
-                                                              self.didAppLaunchFail = NO;
-                                                              [self launchToHomeScreen:nil instrumentsMonitorId:0];
-                                                          } else {
-                                                              OWSFail(@"exiting after sharing debug logs.");
-                                                          }
-                                                      }];
-                                }]];
-    }
-
-    if (launchFailure == LaunchFailure_LastAppLaunchCrashed) {
-        // Use a cancel-style button to draw attention.
-        [actionSheet
-            addAction:[[ActionSheetAction alloc]
-                          initWithTitle:NSLocalizedString(@"APP_LAUNCH_FAILURE_CONTINUE",
-                                            @"Button to try launching the app even though the last launch failed")
-                                  style:ActionSheetActionStyleCancel
-                                handler:^(ActionSheetAction *_Nonnull action) {
-                                    // Pretend we didn't fail!
-                                    self.didAppLaunchFail = NO;
-                                    [self launchToHomeScreen:nil instrumentsMonitorId:0];
-                                }]];
-    }
+    ActionSheetController *actionSheet =
+        [self getActionSheetForLaunchFailure:launchFailure
+                          fromViewController:viewController
+                                  onContinue:^{
+                                      if (launchFailure == LaunchFailureLastAppLaunchCrashed) {
+                                          // Pretend we didn't fail!
+                                          self.didAppLaunchFail = NO;
+                                          [self launchToHomeScreen:nil instrumentsMonitorId:0];
+                                      } else {
+                                          OWSFail(@"exiting after sharing debug logs.");
+                                      }
+                                  }];
 
     [viewController presentActionSheet:actionSheet];
 }
