@@ -72,6 +72,16 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
     
     // MARK: - Report calls
     
+    public static func reportFakeCall(info: String) {
+        SessionCallManager.sharedProvider(useSystemCallLog: false)
+            .reportNewIncomingCall(
+                with: UUID(),
+                update: CXCallUpdate()
+            ) { _ in
+                SNLog("[Calls] Reported fake incoming call to CallKit due to: \(info)")
+            }
+    }
+    
     public func reportOutgoingCall(_ call: SessionCall) {
         AssertIsOnMainThread()
         UserDefaults.sharedLokiProject?.set(true, forKey: "isCallOngoing")
@@ -109,7 +119,9 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
                 UserDefaults.sharedLokiProject?.set(true, forKey: "isCallOngoing")
                 completion(nil)
             }
-        } else {
+        }
+        else {
+            SessionCallManager.reportFakeCall(info: "No CXProvider instance")
             UserDefaults.sharedLokiProject?.set(true, forKey: "isCallOngoing")
             completion(nil)
         }

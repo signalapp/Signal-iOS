@@ -147,7 +147,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
-        startObservingChanges()
+        startObservingChanges(didReturnFromBackground: true)
     }
     
     @objc func applicationDidResignActive(_ notification: Notification) {
@@ -186,9 +186,16 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     
     // MARK: - Updating
     
-    private func startObservingChanges() {
+    private func startObservingChanges(didReturnFromBackground: Bool = false) {
         self.viewModel.onThreadChange = { [weak self] updatedThreadData in
             self?.handleThreadUpdates(updatedThreadData)
+        }
+        
+        // Note: When returning from the background we could have received notifications but the
+        // PagedDatabaseObserver won't have them so we need to force a re-fetch of the current
+        // data to ensure everything is up to date
+        if didReturnFromBackground {
+            self.viewModel.pagedDataObserver?.reload()
         }
     }
     

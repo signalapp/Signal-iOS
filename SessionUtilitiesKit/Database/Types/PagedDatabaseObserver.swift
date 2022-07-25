@@ -477,6 +477,13 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             cacheCurrentEndIndex,
                             currentPageInfo.pageOffset
                         )
+                        
+                    case .reloadCurrent:
+                        return (
+                            currentPageInfo.currentCount,
+                            currentPageInfo.pageOffset,
+                            currentPageInfo.pageOffset
+                        )
                 }
             }()
             
@@ -569,6 +576,10 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         }
         
         triggerUpdates()
+    }
+    
+    public func reload() {
+        self.load(.reloadCurrent)
     }
 }
 
@@ -718,6 +729,7 @@ public enum PagedData {
             case pageBefore
             case pageAfter
             case untilInclusive(id: SQLExpression, padding: Int)
+            case reloadCurrent
         }
         
         public enum Target<ID: SQLExpressible> {
