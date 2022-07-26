@@ -6,6 +6,7 @@ import Foundation
 import Lottie
 import SignalUI
 import QuartzCore
+import BonMot
 
 class GiftBadgeView: ManualStackView {
 
@@ -131,9 +132,10 @@ class GiftBadgeView: ManualStackView {
     // This is a label, not a button, to remain compatible with the hit testing code.
     private let redeemButtonLabel = CVLabel()
     private static func redeemButtonLabelConfig(for state: State) -> CVLabelConfig {
+        let font: UIFont = .ows_dynamicTypeBody.ows_semibold
         return CVLabelConfig(
-            text: Self.redeemButtonText(for: state),
-            font: .ows_dynamicTypeBody.ows_semibold,
+            attributedText: Self.redeemButtonText(for: state, font: font),
+            font: font,
             textColor: Self.redeemButtonTextColor(for: state),
             lineBreakMode: .byTruncatingTail,
             textAlignment: .center
@@ -148,7 +150,8 @@ class GiftBadgeView: ManualStackView {
         }
     }
 
-    private static func redeemButtonText(for state: State) -> String {
+    private static func redeemButtonText(for state: State, font: UIFont) -> NSAttributedString {
+        let nonAttributedString: String
         if state.isIncoming {
             // TODO: (GB) Alter this value based on whether or not the badge has been redeemed.
             switch state.redemptionState {
@@ -156,19 +159,24 @@ class GiftBadgeView: ManualStackView {
                 owsFailDebug("Only outgoing gifts can be permanently opened")
                 fallthrough
             case .pending:
-                return CommonStrings.redeemGiftButton
+                nonAttributedString = CommonStrings.redeemGiftButton
             case .redeemed:
-                return NSLocalizedString(
+                let attrString = NSMutableAttributedString()
+                attrString.appendTemplatedImage(named: "check-circle-outline-24", font: font)
+                attrString.append("\u{2004}\u{2009}")
+                attrString.append(NSLocalizedString(
                     "BADGE_GIFTING_REDEEMED",
                     comment: "Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark."
-                )
+                ))
+                return attrString
             }
         } else {
-            return NSLocalizedString(
+            nonAttributedString = NSLocalizedString(
                 "BADGE_GIFTING_VIEW",
                 comment: "A button shown on a gift message you send to view additional details about the badge."
             )
         }
+        return NSAttributedString(string: nonAttributedString)
     }
 
     private let badgeView = CVImageView()
