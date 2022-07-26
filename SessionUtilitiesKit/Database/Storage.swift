@@ -193,6 +193,12 @@ public final class Storage {
             if !jobTableInfo.contains(where: { $0["name"] == "shouldSkipLaunchBecomeActive" }) {
                 finalError = StorageError.devRemigrationRequired
             }
+            // Forcibly change any 'infoUpdates' on open groups from '-1' to '0' (-1 is invalid)
+            try? db.execute(literal: """
+                UPDATE openGroup
+                SET infoUpdates = 0
+                WHERE openGroup.infoUpdates = -1
+            """)
             // TODO: Remove this once everyone has updated
             
             onComplete(finalError, needsConfigSync)
