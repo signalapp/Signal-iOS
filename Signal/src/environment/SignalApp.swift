@@ -113,27 +113,17 @@ extension SignalApp {
             progressView.autoCenterInSuperview()
             progressView.startAnimating()
 
-            _ = GRDBDatabaseStorageAdapter.runIntegrityCheck().done { results in
-                progressView.removeFromSuperview()
+            var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
 
-                let resultsAlert = UIAlertController(
-                    title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_RESULTS_TITLE",
-                                             comment: "Title for alert after running a database integrity check"),
-                    message: results,
-                    preferredStyle: .alert)
-                resultsAlert.addAction(.init(title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG",
-                                                                      comment: "Button to save database integrity check results to the debug log"),
-                                             style: .default) { _ in
-                    Logger.info(results)
-                    completion()
-                })
-                resultsAlert.addAction(.init(title: CommonStrings.cancelButton, style: .default) { _ in
-                    completion()
-                })
-                parentVC.present(resultsAlert, animated: true)
-            }
+            GRDBDatabaseStorageAdapter.logIntegrityChecks().ensure {
+                owsAssertDebug(backgroundTask != nil)
+                backgroundTask = nil
+                progressView.removeFromSuperview()
+                completion()
+            }.cauterize()
         })
-        alert.addAction(.init(title: CommonStrings.cancelButton,
+        alert.addAction(.init(title: NSLocalizedString("DATABASE_INTEGRITY_CHECK_SKIP",
+                                                       comment: "Button to skip database integrity check step"),
                               style: .cancel) { _ in
             completion()
         })

@@ -62,22 +62,20 @@ extension AppDelegate {
             })
         }
 
-        // Note: It's sometimes useful for us to enable this for certain external users.
-        // In that case, we can make a PR that changes this to `if true` and do a build from that.
-        if DebugFlags.databaseIntegrityCheck {
-            let title = NSLocalizedString("APP_LAUNCH_FAILURE_CHECK_DATABASE", comment: "")
-            result.addAction(.init(title: title) { _ in
-                SignalApp.showDatabaseIntegrityCheckUI(from: viewController) { [weak viewController] in
-                    viewController?.presentActionSheet(result)
-                }
-            })
-        }
-
         if launchFailure != .lowStorageSpaceAvailable {
             let title = NSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: "")
             result.addAction(.init(title: title) { _ in
-                Pastelog.submitLogs(withSupportTag: Self.string(for: launchFailure),
-                                    completion: onContinue)
+                func submitDebugLogs() {
+                    Pastelog.submitLogs(withSupportTag: Self.string(for: launchFailure),
+                                        completion: onContinue)
+                }
+
+                if launchFailure == .databaseUnrecoverablyCorrupted {
+                    SignalApp.showDatabaseIntegrityCheckUI(from: viewController,
+                                                           completion: submitDebugLogs)
+                } else {
+                    submitDebugLogs()
+                }
             })
         }
 
