@@ -93,7 +93,7 @@ class AttachmentKeyboard: CustomKeyboard {
     }
 
     func showRecentPhotos() {
-        guard recentPhotosCollectionView.hasPhotos else {
+        guard recentPhotosCollectionView.hasPhotos || isMediaLibraryAccessLimited else {
             return showRecentPhotosError()
         }
 
