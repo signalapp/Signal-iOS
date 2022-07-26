@@ -34,6 +34,15 @@ public enum AttachmentUploadJob: JobExecutor {
             return
         }
         
+        // If the original interaction no longer exists then don't bother uploading the attachment (ie. the
+        // message was deleted before it even got sent)
+        if let interactionId: Int64 = job.interactionId {
+            guard Storage.shared.read({ db in try Interaction.exists(db, id: interactionId) }) == true else {
+                failure(job, StorageError.objectNotFound, true)
+                return
+            }
+        }
+        
         // Note: In the AttachmentUploadJob we intentionally don't provide our own db instance to prevent reentrancy
         // issues when the success/failure closures get called before the upload as the JobRunner will attempt to
         // update the state of the job immediately

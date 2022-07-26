@@ -86,6 +86,7 @@ public enum HTTP {
         case invalidResponse
         case maxFileSizeExceeded
         case httpRequestFailed(statusCode: UInt, data: Data?)
+        case timeout
         
         public var errorDescription: String? {
             switch self {
@@ -95,6 +96,7 @@ public enum HTTP {
                 case .parsingFailed, .invalidResponse: return "Invalid response."
                 case .maxFileSizeExceeded: return "Maximum file size exceeded."
                 case .httpRequestFailed(let statusCode, _): return "HTTP request failed with status code: \(statusCode)."
+                case .timeout: return "The request timed out."
             }
         }
     }
@@ -138,8 +140,13 @@ public enum HTTP {
                 } else {
                     SNLog("\(verb.rawValue) request to \(url) failed.")
                 }
+                
                 // Override the actual error so that we can correctly catch failed requests in sendOnionRequest(invoking:on:with:)
-                return seal.reject(Error.httpRequestFailed(statusCode: 0, data: nil))
+                switch (error as? NSError)?.code {
+                    case NSURLErrorTimedOut: return seal.reject(Error.timeout)
+                    default: return seal.reject(Error.httpRequestFailed(statusCode: 0, data: nil))
+                }
+                
             }
             if let error = error {
                 SNLog("\(verb.rawValue) request to \(url) failed due to error: \(error).")

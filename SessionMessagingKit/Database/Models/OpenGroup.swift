@@ -156,7 +156,7 @@ public extension OpenGroup {
                 imageId: nil,
                 imageData: nil,
                 userCount: 0,
-                infoUpdates: -1,
+                infoUpdates: 0,
                 sequenceNumber: 0,
                 inboxLatestMessageId: 0,
                 outboxLatestMessageId: 0
