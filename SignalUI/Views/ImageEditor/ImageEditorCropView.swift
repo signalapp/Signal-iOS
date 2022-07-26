@@ -11,47 +11,130 @@ enum CropRegion {
     case topLeft, topRight, bottomLeft, bottomRight
 }
 
-private class CropCornerView: OWSLayerView {
+private class CropCornerView: UIView {
+
     let cropRegion: CropRegion
+
+    var size: CGSize = CGSize(square: CropView.desiredCornerSize) {
+        didSet {
+            widthConstraint.constant = size.width
+            heightConstraint.constant = size.height
+        }
+    }
+
+    lazy private var widthConstraint: NSLayoutConstraint = self.widthAnchor.constraint(equalToConstant: size.width)
+    lazy private var heightConstraint: NSLayoutConstraint = self.heightAnchor.constraint(equalToConstant: size.width)
 
     init(cropRegion: CropRegion) {
         self.cropRegion = cropRegion
-        super.init()
+        super.init(frame: .zero)
+        isUserInteractionEnabled = false
+        translatesAutoresizingMaskIntoConstraints = false
+        shapeLayer?.fillColor = UIColor.white.cgColor
+        addConstraints([ widthConstraint, heightConstraint ])
     }
 
     @available(*, unavailable, message: "Use init(cropRegion:) instead.")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    override class var layerClass: AnyClass {
+        return CAShapeLayer.self
+    }
+
+    private var shapeLayer: CAShapeLayer? {
+        return layer as? CAShapeLayer
+    }
+
+    override var bounds: CGRect {
+        didSet {
+            if bounds != oldValue {
+                updatePath()
+            }
+        }
+    }
+
+    private func updatePath() {
+        guard let shapeLayer = shapeLayer else {
+            return
+        }
+
+        let cornerThickness: CGFloat = 2
+        let shapeFrame = bounds.insetBy(dx: -cornerThickness, dy: -cornerThickness)
+        let bezierPath = UIBezierPath()
+        switch cropRegion {
+        case .topLeft:
+            bezierPath.addRegion(withPoints: [
+                shapeFrame.origin,
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.minY),
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.minY + cornerThickness),
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY + cornerThickness),
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.maxY - cornerThickness),
+                CGPoint(x: shapeFrame.minX, y: shapeFrame.maxY - cornerThickness)
+            ])
+        case .topRight:
+            bezierPath.addRegion(withPoints: [
+                CGPoint(x: shapeFrame.maxX, y: shapeFrame.minY),
+                CGPoint(x: shapeFrame.maxX, y: shapeFrame.maxY - cornerThickness),
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY - cornerThickness),
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.minY + cornerThickness),
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY + cornerThickness),
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY)
+            ])
+        case .bottomLeft:
+            bezierPath.addRegion(withPoints: [
+                CGPoint(x: shapeFrame.minX, y: shapeFrame.maxY),
+                CGPoint(x: shapeFrame.minX, y: shapeFrame.minY + cornerThickness),
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY + cornerThickness),
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.maxY - cornerThickness),
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY - cornerThickness),
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY)
+            ])
+        case .bottomRight:
+            bezierPath.addRegion(withPoints: [
+                CGPoint(x: shapeFrame.maxX, y: shapeFrame.maxY),
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.maxY),
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.maxY - cornerThickness),
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY - cornerThickness),
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.minY + cornerThickness),
+                CGPoint(x: shapeFrame.maxX, y: shapeFrame.minY + cornerThickness)
+            ])
+        default:
+            owsFailDebug("Invalid crop region: \(cropRegion)")
+        }
+
+        shapeLayer.path = bezierPath.cgPath
+    }
 }
 
 private class CropBackgroundView: UIView {
 
     enum Style {
-        case none
         case blur
         case darkening
+        case blackout
     }
 
-    var style: Style = .none {
+    var style: Style {
         didSet {
             updateStyle()
         }
     }
 
-    var maskRect: CGRect = .zero {
-        didSet {
-            updateMask()
-        }
-    }
-
-    private var blurView: UIView?
-    private var darkeningView: UIView?
+    private let blurView = UIVisualEffectView()
+    private let darkeningView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .black
+        return view
+    }()
 
     required init(style: Style) {
+        self.style = style
         super.init(frame: .zero)
         isUserInteractionEnabled = false
-        self.style = style
+        addSubview(blurView)
+        addSubview(darkeningView)
         updateStyle()
     }
 
@@ -60,73 +143,75 @@ private class CropBackgroundView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        blurView.frame = bounds
+        darkeningView.frame = bounds
+    }
+
     private func updateStyle() {
         switch style {
-        case .none:
-            if let blurView = blurView {
-                blurView.alpha = 0
-            }
-            if let darkeningView = darkeningView {
-                darkeningView.alpha = 0
-            }
-
         case .blur:
-            if let darkeningView = darkeningView {
-                darkeningView.alpha = 0
-            }
-            if blurView == nil {
-                let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-                addSubview(blurView)
-                blurView.autoPinEdgesToSuperviewEdges()
-                self.blurView = blurView
-            }
-            blurView?.alpha = 1
+            darkeningView.alpha = 0
+            blurView.effect = UIBlurEffect(style: .dark)
 
         case .darkening:
-            if let blurView = blurView {
-                blurView.alpha = 0
-            }
-            if darkeningView == nil {
-                let darkeningView = UIView()
-                darkeningView.backgroundColor = .ows_blackAlpha50
-                addSubview(darkeningView)
-                darkeningView.autoPinEdgesToSuperviewEdges()
-                self.darkeningView = darkeningView
-            }
-            darkeningView?.alpha = 1
+            darkeningView.alpha = 0.5
+            blurView.effect = nil
+
+        case .blackout:
+            darkeningView.alpha = 1
         }
     }
 
-    private func updateMask() {
+    var lastKnownMaskRect: CGRect?
+
+    fileprivate func setMaskRect(_ maskRect: CGRect, animationDuration: TimeInterval) {
+        if let lastKnownMaskRect = lastKnownMaskRect, lastKnownMaskRect == maskRect {
+            return
+        }
+
+        let maskLayer: CAShapeLayer
+        if let existingMaskLayer = layer.mask as? CAShapeLayer {
+            maskLayer = existingMaskLayer
+        } else {
+            maskLayer = CAShapeLayer()
+            maskLayer.fillRule = .evenOdd
+            layer.mask = maskLayer
+        }
+        maskLayer.frame = layer.bounds
+
         let path = CGMutablePath()
         path.addRect(bounds)
         path.addRect(maskRect)
-        let maskLayer = CAShapeLayer()
+
+        if animationDuration > 0 {
+            let animation = CABasicAnimation(keyPath: #keyPath(CAShapeLayer.path))
+            animation.duration = animationDuration
+            animation.fromValue = maskLayer.path
+            animation.toValue = path
+            maskLayer.add(animation, forKey: "path")
+        }
+
         maskLayer.path = path
-        maskLayer.fillRule = .evenOdd
-        layer.mask = maskLayer
+
+        lastKnownMaskRect = maskRect
     }
 }
 
 class CropView: UIView {
 
     static let desiredCornerSize: CGFloat = 22 // adjusted for stroke width, visible size is 24
-    private(set) var cornerSize = CGSize.zero
+    private(set) var cornerSize = CGSize(square: CropView.desiredCornerSize)
 
-    private let backgroundView = CropBackgroundView(style: .darkening)
+    private lazy var backgroundView = CropBackgroundView(style: CropView.backgroundStyle(forState: state))
 
-    /**
-     * In coordinates of CropView.
-     */
-    var cropFrame: CGRect {
-        get {
-            cropFrameView.frame
-        }
-        set {
-            set(cropFrame: newValue)
-        }
-    }
-    private let cropFrameView = UIView()
+    private let cropFrameView: UIView = {
+        let view = UIView()
+        view.addBorder(with: .white)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
 
     private let cropCornerViews: [CropCornerView] = [
         CropCornerView(cropRegion: .topLeft),
@@ -138,7 +223,15 @@ class CropView: UIView {
     private let verticalGridLines: [UIView] = [ UIView(), UIView() ]
     private let horizontalGridLines: [UIView] = [ UIView(), UIView() ]
 
-    private var cropViewConstraints = [NSLayoutConstraint]()
+    enum State {
+        case initial    // no crop frame visible, background set to `blackout`
+        case normal     // default look: crop frame visible, grid lines hidden, background set to `blur`
+        case resizing   // user is resizing: crop frame and grid lines visible, background set to `darkening`
+    }
+    private var state: State = .initial
+
+    // Defines crop frame.
+    let cropFrameLayoutGuide = UILayoutGuide()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -146,11 +239,19 @@ class CropView: UIView {
         isUserInteractionEnabled = false
 
         addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
 
+        // Crop Frame
+        cropFrameLayoutGuide.identifier = "CropFrame"
+        addLayoutGuide(cropFrameLayoutGuide)
         addSubview(cropFrameView)
-        set(cropFrame: bounds)
+        addConstraints([
+            cropFrameView.leadingAnchor.constraint(equalTo: cropFrameLayoutGuide.leadingAnchor),
+            cropFrameView.topAnchor.constraint(equalTo: cropFrameLayoutGuide.topAnchor),
+            cropFrameView.trailingAnchor.constraint(equalTo: cropFrameLayoutGuide.trailingAnchor),
+            cropFrameView.bottomAnchor.constraint(equalTo: cropFrameLayoutGuide.bottomAnchor)
+        ])
 
+        // Crop Frame Corners
         for cropCornerView in cropCornerViews {
             cropFrameView.addSubview(cropCornerView)
 
@@ -172,77 +273,7 @@ class CropView: UIView {
             }
         }
 
-        setupConstraints()
-    }
-
-    @available(*, unavailable, message: "Use init(frame:)")
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private func setupConstraints() {
-        // Corners
-        let cornerSize = CGSize(width: min(width * 0.5, CropView.desiredCornerSize),
-                                height: min(height * 0.5, CropView.desiredCornerSize))
-        self.cornerSize = cornerSize
-        for cropCornerView in cropCornerViews {
-            let cornerThickness: CGFloat = 2
-
-            let shapeLayer = CAShapeLayer()
-            cropCornerView.layer.addSublayer(shapeLayer)
-            shapeLayer.fillColor = UIColor.white.cgColor
-            shapeLayer.strokeColor = nil
-            cropCornerView.layoutCallback = { (view) in
-                let shapeFrame = view.bounds.insetBy(dx: -cornerThickness, dy: -cornerThickness)
-                shapeLayer.frame = shapeFrame
-
-                let bezierPath = UIBezierPath()
-
-                switch cropCornerView.cropRegion {
-                case .topLeft:
-                    bezierPath.addRegion(withPoints: [
-                        CGPoint.zero,
-                        CGPoint(x: shapeFrame.width - cornerThickness, y: 0),
-                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
-                        CGPoint(x: cornerThickness, y: cornerThickness),
-                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
-                        CGPoint(x: 0, y: shapeFrame.height - cornerThickness)
-                    ])
-                case .topRight:
-                    bezierPath.addRegion(withPoints: [
-                        CGPoint(x: shapeFrame.width, y: 0),
-                        CGPoint(x: shapeFrame.width, y: shapeFrame.height - cornerThickness),
-                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
-                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
-                        CGPoint(x: cornerThickness, y: cornerThickness),
-                        CGPoint(x: cornerThickness, y: 0)
-                    ])
-                case .bottomLeft:
-                    bezierPath.addRegion(withPoints: [
-                        CGPoint(x: 0, y: shapeFrame.height),
-                        CGPoint(x: 0, y: cornerThickness),
-                        CGPoint(x: cornerThickness, y: cornerThickness),
-                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
-                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
-                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height)
-                    ])
-                case .bottomRight:
-                    bezierPath.addRegion(withPoints: [
-                        CGPoint(x: shapeFrame.width, y: shapeFrame.height),
-                        CGPoint(x: cornerThickness, y: shapeFrame.height),
-                        CGPoint(x: cornerThickness, y: shapeFrame.height - cornerThickness),
-                        CGPoint(x: shapeFrame.width - cornerThickness, y: shapeFrame.height - cornerThickness),
-                        CGPoint(x: shapeFrame.width - cornerThickness, y: cornerThickness),
-                        CGPoint(x: shapeFrame.width, y: cornerThickness)
-                    ])
-                default:
-                    owsFailDebug("Invalid crop region: \(cropCornerView.cropRegion)")
-                }
-
-                shapeLayer.path = bezierPath.cgPath
-            }
-        }
-
+        // Spacer Layout Guide that allows to space grid lines evenly
         let spacerLayoutGuide = UILayoutGuide()
         cropFrameView.addLayoutGuide(spacerLayoutGuide)
         NSLayoutConstraint(item: spacerLayoutGuide, attribute: .left, relatedBy: .equal,
@@ -275,38 +306,56 @@ class CropView: UIView {
                                multiplier: CGFloat(index + 1),
                                constant: 0).isActive = true
         }
-        setGrid(hidden: true)
-
-        // Border
-        cropFrameView.addBorder(with: .white)
+        setState(.initial, animated: false)
     }
 
-    func setGrid(hidden: Bool, animated: Bool = false) {
+    @available(*, unavailable, message: "Use init(frame:)")
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        backgroundView.frame = bounds
+        // `inheritedAnimationDuration` will return a non-zero value when called from within an animation block.
+        // That allows me to attach CAAnimation with the correct duration (if necessary).
+        let animationDuration = UIView.inheritedAnimationDuration
+        let maskRect = backgroundView.convert(cropFrameView.frame, from: self)
+        backgroundView.setMaskRect(maskRect, animationDuration: animationDuration)
+        updateCornerSize()
+    }
+
+    func setState(_ state: State, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        let cropFrameAlpha: CGFloat = state == .initial ? 0 : 1
+        let gridLinesAlpha: CGFloat = state == .resizing ? 1 : 0
+        let backgroundStyle = CropView.backgroundStyle(forState: state)
         let layoutBlock = {
-            self.verticalGridLines.forEach { $0.alpha = hidden ? 0 : 1 }
-            self.horizontalGridLines.forEach { $0.alpha = hidden ? 0 : 1 }
-            self.backgroundView.style = hidden ? .blur : .darkening
+            self.cropFrameView.alpha = cropFrameAlpha
+            self.verticalGridLines.forEach { $0.alpha = gridLinesAlpha }
+            self.horizontalGridLines.forEach { $0.alpha = gridLinesAlpha }
+            self.backgroundView.style = backgroundStyle
         }
         if animated {
-            UIView.animate(withDuration: 0.2, animations: layoutBlock)
+            UIView.animate(withDuration: 0.15, animations: layoutBlock, completion: completion)
         } else {
             layoutBlock()
+            completion?(true)
         }
     }
 
-    func updateLayout(using clipView: UIView) {
-        NSLayoutConstraint.deactivate(cropViewConstraints)
-        cropViewConstraints.removeAll()
-
-        cornerSize = CGSize(width: min(clipView.width * 0.5, CropView.desiredCornerSize),
-                            height: min(clipView.height * 0.5, CropView.desiredCornerSize))
-        for cropCornerView in cropCornerViews {
-            cropViewConstraints.append(contentsOf: cropCornerView.autoSetDimensions(to: cornerSize))
+    private class func backgroundStyle(forState state: State) -> CropBackgroundView.Style {
+        switch state {
+        case .initial: return .blackout
+        case .normal: return .blur
+        case .resizing: return .darkening
         }
     }
 
-    private func set(cropFrame: CGRect) {
-        cropFrameView.frame = cropFrame
-        backgroundView.maskRect = backgroundView.convert(cropFrameView.frame, from: self)
+    private func updateCornerSize() {
+        guard cropFrameView.width > 0, cropFrameView.height > 0 else { return }
+
+        self.cornerSize = CGSize(width: min(cropFrameView.width * 0.5, CropView.desiredCornerSize),
+                                 height: min(cropFrameView.height * 0.5, CropView.desiredCornerSize))
+        cropCornerViews.forEach { $0.size = cornerSize }
     }
 }

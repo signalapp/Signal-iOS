@@ -83,6 +83,7 @@ class ImageEditorBottomBar: UIView {
         super.init(frame: .zero)
 
         preservesSuperviewLayoutMargins = true
+        setContentHuggingVerticalHigh()
 
         // Constrain bottom edge to bottom safe area.
         if UIDevice.current.hasIPhoneXNotch {

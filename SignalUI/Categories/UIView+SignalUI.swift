@@ -377,13 +377,14 @@ public extension UIView {
         return view
     }
 
-    func setIsHidden(_ isHidden: Bool, animated: Bool) {
-        setIsHidden(isHidden, withAnimationDuration: animated ? 0.2 : 0)
+    func setIsHidden(_ isHidden: Bool, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        setIsHidden(isHidden, withAnimationDuration: animated ? 0.2 : 0, completion: completion)
     }
 
-    func setIsHidden(_ isHidden: Bool, withAnimationDuration duration: TimeInterval) {
+    func setIsHidden(_ isHidden: Bool, withAnimationDuration duration: TimeInterval, completion: ((Bool) -> Void)? = nil) {
         guard duration > 0, isHidden != self.isHidden else {
             self.isHidden = isHidden
+            completion?(true)
             return
         }
 
@@ -400,9 +401,13 @@ public extension UIView {
             self.alpha = isHidden ? 0 : initialAlpha
         },
                        completion: { finished in
-            guard finished else { return }
+            guard finished else {
+                completion?(false)
+                return
+            }
             self.isHidden = isHidden
             self.alpha = initialAlpha
+            completion?(true)
         })
     }
 }
