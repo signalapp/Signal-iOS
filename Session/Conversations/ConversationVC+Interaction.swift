@@ -1075,6 +1075,13 @@ extension ConversationVC:
                 .done { _ in
                     // Delete the interaction (and associated data) from the database
                     Storage.shared.writeAsync { db in
+                        try Quote
+                            .updateBeforeQuotedInterationDeletion(
+                                db,
+                                timestampMs: cellViewModel.timestampMs,
+                                authorId: cellViewModel.authorId
+                            )
+                        
                         _ = try Interaction
                             .filter(id: cellViewModel.id)
                             .deleteAll(db)
@@ -1155,6 +1162,13 @@ extension ConversationVC:
                 // For incoming interactions or interactions with no serverHash just delete them locally
                 guard cellViewModel.variant == .standardOutgoing, let serverHash: String = serverHash else {
                     Storage.shared.writeAsync { db in
+                        try Quote
+                            .updateBeforeQuotedInterationDeletion(
+                                db,
+                                timestampMs: cellViewModel.timestampMs,
+                                authorId: cellViewModel.authorId
+                            )
+                        
                         _ = try Interaction
                             .filter(id: cellViewModel.id)
                             .deleteAll(db)
@@ -1178,6 +1192,13 @@ extension ConversationVC:
                 let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
                 alertVC.addAction(UIAlertAction(title: "delete_message_for_me".localized(), style: .destructive) { [weak self] _ in
                     Storage.shared.writeAsync { db in
+                        try Quote
+                            .updateBeforeQuotedInterationDeletion(
+                                db,
+                                timestampMs: cellViewModel.timestampMs,
+                                authorId: cellViewModel.authorId
+                            )
+                        
                         _ = try Interaction
                             .filter(id: cellViewModel.id)
                             .deleteAll(db)
