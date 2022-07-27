@@ -487,7 +487,7 @@ def check_diff_for_keywords():
         'git diff --staged | grep --color=always -C 3 -E "%s"' % matching_expression
     )
     try:
-        output = subprocess.check_output(command_line, shell=True)
+        output = subprocess.check_output(command_line, shell=True, text=True)
     except subprocess.CalledProcessError as e:
         # > man grep
         #  EXIT STATUS
