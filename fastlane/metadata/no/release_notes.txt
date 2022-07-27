@@ -1,2 +1,3 @@
-• Vi har gjort medieredigeringsprogrammet bedre slik at det blir lettere for deg å skreddersy både bildene og videoene dine før du sender dem.
-• Et knippe andre feilrettinger som sørger for at appen fungerer optimalt. Flere spennende oppdateringer er i vente!
+• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
+• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
+• Additional bug fixes to keep your app running smoothly. 
