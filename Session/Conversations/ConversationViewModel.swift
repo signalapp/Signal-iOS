@@ -195,7 +195,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                 ),
                 PagedData.ObservedChanges(
                     table: Quote.self,
-                    columns: [.body],
+                    columns: [.body, .attachmentId],
                     joinToPagedType: {
                         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
                         let quote: TypedTableAlias<Quote> = TypedTableAlias()
