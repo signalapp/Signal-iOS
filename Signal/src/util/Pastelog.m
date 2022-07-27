@@ -126,15 +126,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                                  completion();
                                              }]];
 #endif
-        [alert
-            addAction:[[ActionSheetAction
-                          alloc] initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
-                                                   @"Label for the 'Open a Bug Report' option of the debug log alert.")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"submit_bug_report")
-                                            style:ActionSheetActionStyleDefault
-                                          handler:^(ActionSheetAction *action) {
-                                              [Pastelog.shared prepareRedirection:url completion:completion];
-                                          }]];
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SHARE",
                                                          @"Label for the 'Share' option of the debug log alert.")
@@ -346,37 +337,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
                                                         style:ActionSheetActionStyleDefault
                                                       handler:^(ActionSheetAction *action) { deleteArchive(); }]];
-    UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentActionSheet:alert];
-}
-
-- (void)prepareRedirection:(NSURL *)url completion:(SubmitDebugLogsCompletion)completion
-{
-    OWSAssertDebug(completion);
-
-    UIPasteboard *pb = [UIPasteboard generalPasteboard];
-    [pb setString:url.absoluteString];
-
-    ActionSheetController *alert =
-        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE",
-                                                         @"Title of the alert before redirecting to GitHub Issues.")
-                                             message:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE",
-                                                         @"Message of the alert before redirecting to GitHub Issues.")];
-    [alert
-        addAction:[[ActionSheetAction alloc]
-                                initWithTitle:CommonStrings.okButton
-                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                                        style:ActionSheetActionStyleDefault
-                                      handler:^(ActionSheetAction *action) {
-                                          [UIApplication.sharedApplication
-                                              openURL:[NSURL
-                                                          URLWithString:[[NSBundle mainBundle]
-                                                                            objectForInfoDictionaryKey:@"LOGS_URL"]]
-                                              options:@{ }
-                                    completionHandler:nil];
-
-                                          completion();
-                                      }]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
     [presentingViewController presentActionSheet:alert];
 }
