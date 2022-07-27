@@ -267,11 +267,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             )
             return String(format: formatText, self.badge.localizedName)
         case .gift(_, fullName: let fullName, _, _):
-            let formatText = NSLocalizedString(
-                "BADGE_GIFTING_YOU_RECEIVED_FORMAT",
-                comment: "Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}."
-            )
-            return String(format: formatText, fullName)
+            return BadgeGiftingStrings.youReceived(from: fullName)
         }
     }
 

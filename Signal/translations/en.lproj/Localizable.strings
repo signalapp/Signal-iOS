@@ -421,7 +421,7 @@
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
 
-/* Shown on a gift badge message to indicate that the message contains a gift. */
+/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "Gift Badge";
 
 /* Short paragraph on the screen where you choose a gift badge */

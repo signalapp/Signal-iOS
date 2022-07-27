@@ -61,10 +61,7 @@ class GiftBadgeView: ManualStackView {
     private static func titleLabelConfig(for state: State) -> CVLabelConfig {
         let textColor = state.conversationStyle.bubbleTextColor(isIncoming: state.isIncoming)
         return CVLabelConfig(
-            text: NSLocalizedString(
-                "BADGE_GIFTING_CHAT_TITLE",
-                comment: "Shown on a gift badge message to indicate that the message contains a gift."
-            ),
+            text: BadgeGiftingStrings.giftBadgeTitle,
             font: .ows_dynamicTypeBody,
             textColor: textColor,
             numberOfLines: 0

@@ -96,6 +96,13 @@ extension ConversationViewController {
             sheet.delegate = self
             return sheet
         }
+        if isRedeemed {
+            let fullName = self.databaseStorage.read { transaction -> String in
+                let authorAddress = incomingMessage.authorAddress
+                return self.contactsManager.displayName(for: authorAddress, transaction: transaction)
+            }
+            return BadgeGiftingAlreadyRedeemedSheet(badge: profileBadge, fullName: fullName)
+        }
         return self.giftRedemptionSheet(incomingMessage: incomingMessage, profileBadge: profileBadge)
     }
 
