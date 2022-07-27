@@ -244,19 +244,6 @@ static void uncaughtExceptionHandler(NSException *exception)
     return YES;
 }
 
-- (BOOL)checkSomeDiskSpaceAvailable
-{
-    NSString *tempDir = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSUUID new].UUIDString];
-    BOOL succeededCreatingDir = [OWSFileSystem ensureDirectoryExists:tempDir];
-
-    // Best effort at deleting temp dir, which shouldn't ever fail
-    if (succeededCreatingDir && ![OWSFileSystem deleteFile:tempDir]) {
-        OWSFailDebug(@"Failed to delete temp dir used for checking disk space!");
-    }
-
-    return succeededCreatingDir;
-}
-
 - (BOOL)launchToHomeScreen:(NSDictionary *_Nullable)launchOptions instrumentsMonitorId:(unsigned long long)monitorId
 {
     [self setupNSEInteroperation];

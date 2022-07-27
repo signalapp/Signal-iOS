@@ -16,6 +16,21 @@ enum LaunchFailure: UInt {
 }
 
 extension AppDelegate {
+    @objc(checkSomeDiskSpaceAvailable)
+    func checkSomeDiskSpaceAvailable() -> Bool {
+        let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent(UUID().uuidString)
+            .path
+        let succeededCreatingDir = OWSFileSystem.ensureDirectoryExists(tempDir)
+
+        // Best effort at deleting temp dir, which shouldn't ever fail
+        if succeededCreatingDir && !OWSFileSystem.deleteFile(tempDir) {
+            owsFailDebug("Failed to delete temp dir used for checking disk space!")
+        }
+
+        return succeededCreatingDir
+    }
+
     @objc(getActionSheetForLaunchFailure:fromViewController:onContinue:)
     func getActionSheet(for launchFailure: LaunchFailure,
                         from viewController: UIViewController,
