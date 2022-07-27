@@ -1075,7 +1075,7 @@
 		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
 		F941B17028412D5F00498CCD /* ApplePayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F941B16F28412D5F00498CCD /* ApplePayButton.swift */; };
-		F95427E6286E042200314EDA /* BadgeGiftThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftThanksSheet.swift */; };
+		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
@@ -2555,7 +2555,7 @@
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
 		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F941B16F28412D5F00498CCD /* ApplePayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayButton.swift; sourceTree = "<group>"; };
-		F95427E5286E042200314EDA /* BadgeGiftThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftThanksSheet.swift; sourceTree = "<group>"; };
+		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
@@ -4998,20 +4998,20 @@
 			isa = PBXGroup;
 			children = (
 				F941B16F28412D5F00498CCD /* ApplePayButton.swift */,
-				F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */,
-				F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */,
-				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
-				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
-				888017912741F33B00346E9A /* BoostViewController.swift */,
-				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
-				500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */,
-				F95427E5286E042200314EDA /* BadgeGiftThanksSheet.swift */,
 				881BB2892743531D00B609B8 /* BadgeDetailsSheet.swift */,
 				F02564D7274EDF4600D7B48A /* BadgeExpirationSheet.swift */,
-				F0CA67F92728A89A002B9DFE /* SubscriptionViewController.swift */,
+				500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */,
+				F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */,
+				F9A335CB282F0DEC00B5F5FA /* BadgeGiftingChooseRecipientViewController.swift */,
+				F9F4DE29283FDFDA001909ED /* BadgeGiftingConfirmationViewController.swift */,
+				F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */,
+				8880179327430DDB00346E9A /* BadgeThanksSheet.swift */,
+				888017912741F33B00346E9A /* BoostViewController.swift */,
+				F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */,
+				F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */,
 				F9A8ACC6280A175E00AFC6A7 /* DonationViewController.swift */,
 				F9DD70B82811AF82000C5960 /* DonationViewsUtil.swift */,
-				F9D83011282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift */,
+				F0CA67F92728A89A002B9DFE /* SubscriptionViewController.swift */,
 			);
 			path = Donations;
 			sourceTree = "<group>";
@@ -6546,7 +6546,7 @@
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
 				8864073127F21AD7009916B6 /* StoryReplyInputToolbar.swift in Sources */,
 				326DF2612739F4D90017B789 /* FeaturedBadgeViewController.swift in Sources */,
-				F95427E6286E042200314EDA /* BadgeGiftThanksSheet.swift in Sources */,
+				F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */,
 				34ACA7D92733159600E47AD4 /* OnboardingController.swift in Sources */,
 				88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */,
 				347342F72548587900D440CD /* ConversationViewController+BottomBar.swift in Sources */,

@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-class BadgeGiftThanksSheet: OWSTableViewController2 {
+class BadgeGiftingThanksSheet: OWSTableViewController2 {
     private let thread: TSContactThread
     private let badge: ProfileBadge
 

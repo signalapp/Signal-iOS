@@ -666,7 +666,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             SignalApp.shared().presentConversation(for: self.thread, action: .none, animated: false)
             self.dismiss(animated: true) {
                 SignalApp.shared().conversationSplitViewControllerForSwift?.present(
-                    BadgeGiftThanksSheet(thread: self.thread, badge: self.badge),
+                    BadgeGiftingThanksSheet(thread: self.thread, badge: self.badge),
                     animated: true
                 )
             }

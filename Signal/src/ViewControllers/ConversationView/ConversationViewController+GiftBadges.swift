@@ -62,7 +62,7 @@ extension ConversationViewController {
                 return
             }
 
-            viewControllerToPresent = BadgeGiftThanksSheet(thread: thread, badge: profileBadge)
+            viewControllerToPresent = BadgeGiftingThanksSheet(thread: thread, badge: profileBadge)
 
         default:
             owsFailDebug("Tapped on gift that's not a message")
