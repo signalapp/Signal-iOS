@@ -88,18 +88,22 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
         ActionSheetController *alert = [[ActionSheetController alloc]
             initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
                   message:NSLocalizedString(@"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")];
-        [alert
-            addAction:[[ActionSheetAction alloc]
-                                    initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
-                                                      @"Label for the 'email debug log' option of the debug log alert.")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
-                                            style:ActionSheetActionStyleDefault
-                                          handler:^(ActionSheetAction *action) {
-                                              [ComposeSupportEmailOperation
-                                                  sendEmailWithDefaultErrorHandlingWithSupportFilter:supportFilter
-                                                                                              logUrl:url];
-                                              completion();
-                                          }]];
+
+        if ([ComposeSupportEmailOperation canSendEmails]) {
+            [alert
+                addAction:
+                    [[ActionSheetAction alloc]
+                                  initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
+                                                    @"Label for the 'email debug log' option of the debug log alert.")
+                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
+                                          style:ActionSheetActionStyleDefault
+                                        handler:^(ActionSheetAction *action) {
+                                            [ComposeSupportEmailOperation
+                                                sendEmailWithDefaultErrorHandlingWithSupportFilter:supportFilter
+                                                                                            logUrl:url];
+                                            completion();
+                                        }]];
+        }
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
                                                          @"Label for the 'copy link' option of the debug log alert.")

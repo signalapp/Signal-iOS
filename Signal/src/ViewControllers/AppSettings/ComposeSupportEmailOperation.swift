@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import SignalServiceKit
@@ -81,7 +81,8 @@ final class ComposeSupportEmailOperation: NSObject {
         }
     }
 
-    static var canSendEmails: Bool {
+    @objc
+    public static var canSendEmails: Bool {
         return UIApplication.shared.canOpenURL(MailtoLink(to: "", subject: "", body: "").url!)
     }
 
