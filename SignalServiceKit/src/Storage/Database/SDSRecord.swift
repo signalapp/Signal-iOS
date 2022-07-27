@@ -83,13 +83,7 @@ public extension SDSRecord {
             statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
-            // If the attempt to write to GRDB flagged that the database was
-            // corrupt, in addition to crashing we flag this so that we can
-            // attempt to perform recovery.
-            if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
-                SSKPreferences.setHasGrdbDatabaseCorruption(true)
-            }
-
+            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
             owsFail("Write failed: \(error.grdbErrorForLogging)")
         }
     }
