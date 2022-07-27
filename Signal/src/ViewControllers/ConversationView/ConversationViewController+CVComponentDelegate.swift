@@ -325,8 +325,8 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) { willUnwrapGift(itemViewModel) }
 
-    public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {
-        didTapGiftBadge(itemViewModel, profileBadge: profileBadge)
+    public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge, isExpired: Bool, isRedeemed: Bool) {
+        didTapGiftBadge(itemViewModel, profileBadge: profileBadge, isExpired: isExpired, isRedeemed: isRedeemed)
     }
 
     public func cvc_didTapSignalMeLink(url: URL) {

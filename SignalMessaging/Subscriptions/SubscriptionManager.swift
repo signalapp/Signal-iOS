@@ -152,6 +152,10 @@ public struct Subscription {
     }
 }
 
+public extension Notification.Name {
+    static let hasExpiredGiftBadgeDidChangeNotification = NSNotification.Name("hasExpiredGiftBadgeDidChangeNotification")
+}
+
 @objc
 public class SubscriptionManager: NSObject {
 
@@ -214,7 +218,9 @@ public class SubscriptionManager: NSObject {
     fileprivate static let displayBadgesOnProfileKey = "displayBadgesOnProfileKey"
     fileprivate static let knownUserSubscriptionBadgeIDsKey = "knownUserSubscriptionBadgeIDsKey"
     fileprivate static let knownUserBoostBadgeIDsKey = "knownUserBoostBadgeIDsKey"
+    fileprivate static let knownUserGiftBadgeIDsKey = "knownUserGiftBageIDsKey"
     fileprivate static let mostRecentlyExpiredBadgeIDKey = "mostRecentlyExpiredBadgeIDKey"
+    fileprivate static let mostRecentlyExpiredGiftBadgeIDKey = "mostRecentlyExpiredGiftBadgeIDKey"
     fileprivate static let showExpirySheetOnHomeScreenKey = "showExpirySheetOnHomeScreenKey"
     fileprivate static let mostRecentSubscriptionBadgeChargeFailureCodeKey = "mostRecentSubscriptionBadgeChargeFailureCode"
     fileprivate static let hasMigratedToStorageServiceKey = "hasMigratedToStorageServiceKey"
@@ -972,6 +978,14 @@ extension SubscriptionManager {
         return ids
     }
 
+    fileprivate static func setKnownUserGiftBadgeIDs(badgeIDs: [String], transaction: SDSAnyWriteTransaction) {
+        subscriptionKVS.setObject(badgeIDs, key: knownUserGiftBadgeIDsKey, transaction: transaction)
+    }
+
+    fileprivate static func knownUserGiftBadgeIDs(transaction: SDSAnyReadTransaction) -> [String] {
+        subscriptionKVS.getObject(forKey: knownUserGiftBadgeIDsKey, transaction: transaction) as? [String] ?? []
+    }
+
     fileprivate static func setMostRecentlyExpiredBadgeID(badgeID: String?, transaction: SDSAnyWriteTransaction) {
         guard let badgeID = badgeID else {
             subscriptionKVS.removeValue(forKey: mostRecentlyExpiredBadgeIDKey, transaction: transaction)
@@ -989,6 +1003,27 @@ extension SubscriptionManager {
     public static func clearMostRecentlyExpiredBadgeIDWithSneakyTransaction() {
         databaseStorage.write { transaction in
             self.setMostRecentlyExpiredBadgeID(badgeID: nil, transaction: transaction)
+        }
+    }
+
+    fileprivate static func setMostRecentlyExpiredGiftBadgeID(badgeID: String?, transaction: SDSAnyWriteTransaction) {
+        if let badgeID = badgeID {
+            subscriptionKVS.setString(badgeID, key: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
+        } else {
+            subscriptionKVS.removeValue(forKey: mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
+        }
+        transaction.addAsyncCompletionOnMain {
+            NotificationCenter.default.post(name: .hasExpiredGiftBadgeDidChangeNotification, object: nil)
+        }
+    }
+
+    public static func mostRecentlyExpiredGiftBadgeID(transaction: SDSAnyReadTransaction) -> String? {
+        subscriptionKVS.getString(mostRecentlyExpiredGiftBadgeIDKey, transaction: transaction)
+    }
+
+    public static func clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction() {
+        databaseStorage.write { transaction in
+            self.setMostRecentlyExpiredGiftBadgeID(badgeID: nil, transaction: transaction)
         }
     }
 
@@ -1272,9 +1307,16 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
             return badge.badgeId
         }
 
+        let currentGiftBadgeIDs = currentBadges.compactMap { (badge: OWSUserProfileBadgeInfo) -> String? in
+            guard GiftBadgeIds.contains(badge.badgeId) else { return nil }
+            return badge.badgeId
+        }
+
         // Read existing values
         let persistedSubscriberBadgeIDs = Self.knownUserSubscriptionBadgeIDs(transaction: transaction)
         let persistedBoostBadgeIDs = Self.knownUserBoostBadgeIDs(transaction: transaction)
+        let persistedGiftBadgeIDs = Self.knownUserGiftBadgeIDs(transaction: transaction)
+        let oldExpiredGiftBadgeID = Self.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
         var expiringBadgeId = Self.mostRecentlyExpiredBadgeID(transaction: transaction)
         var userManuallyCancelled = Self.userManuallyCancelledSubscription(transaction: transaction)
         var showExpiryOnHomeScreen = Self.showExpirySheetOnHomeScreenKey(transaction: transaction)
@@ -1304,6 +1346,12 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
 
         let expiredBoostBadgeIds = Set(persistedBoostBadgeIDs).subtracting(currentBoostBadgeIDs)
         Logger.info("Learned of \(expiredBoostBadgeIds.count) newly expired boost badge ids: \(expiredBoostBadgeIds)")
+
+        let newGiftBadgeIds = Set(currentGiftBadgeIDs).subtracting(persistedGiftBadgeIDs)
+        Logger.info("Learned of \(newGiftBadgeIds.count) new gift badge ids: \(newGiftBadgeIds)")
+
+        let expiredGiftBadgeIds = Set(persistedGiftBadgeIDs).subtracting(currentGiftBadgeIDs)
+        Logger.info("Learned of \(expiredGiftBadgeIds.count) newly expired gift badge ids: \(expiredGiftBadgeIds)")
 
         var newExpiringBadgeId: String?
         if let persistedBadgeId = persistedSubscriberBadgeIDs.first, currentSubscriberBadgeIDs.isEmpty {
@@ -1345,11 +1393,25 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
             userManuallyCancelled = false
         }
 
+        let newExpiredGiftBadgeID: String?
+        if currentGiftBadgeIDs.isEmpty {
+            // If you don't have any remaining gift badges, show (a) the badge that
+            // *just* expired, (b) a gift that expired during a previous call to
+            // reconcile badge states, or (c) nothing. Most users will fall into (c).
+            newExpiredGiftBadgeID = expiredGiftBadgeIds.first ?? oldExpiredGiftBadgeID ?? nil
+        } else {
+            // If you have a gift badge, don't show any expiration about gift badges.
+            // Perhaps you redeemed another gift before we displayed the sheet.
+            newExpiredGiftBadgeID = nil
+        }
+
         Logger.info("""
         Reconciled badge state:
             Subscriber Badge Ids: \(currentSubscriberBadgeIDs)
             Boost Badge Ids: \(currentBoostBadgeIDs)
+            Gift Badge Ids: \(currentGiftBadgeIDs)
             Most Recently Expired Badge Id: \(expiringBadgeId ?? "nil")
+            Expired Gift Badge Id: \(newExpiredGiftBadgeID ?? "nil")
             Show Expiry On Home Screen: \(showExpiryOnHomeScreen)
             User Manually Cancelled Subscription: \(userManuallyCancelled)
             Display Badges On Profile: \(displayBadgesOnProfile)
@@ -1358,6 +1420,8 @@ extension SubscriptionManager: SubscriptionManagerProtocol {
         // Persist new values
         Self.setKnownUserSubscriptionBadgeIDs(badgeIDs: currentSubscriberBadgeIDs, transaction: transaction)
         Self.setKnownUserBoostBadgeIDs(badgeIDs: currentBoostBadgeIDs, transaction: transaction)
+        Self.setKnownUserGiftBadgeIDs(badgeIDs: currentGiftBadgeIDs, transaction: transaction)
+        Self.setMostRecentlyExpiredGiftBadgeID(badgeID: newExpiredGiftBadgeID, transaction: transaction)
         Self.setMostRecentlyExpiredBadgeID(badgeID: expiringBadgeId, transaction: transaction)
         Self.setShowExpirySheetOnHomeScreenKey(show: showExpiryOnHomeScreen, transaction: transaction)
         Self.setUserManuallyCancelledSubscription(userManuallyCancelled, transaction: transaction)

@@ -132,7 +132,7 @@ public protocol CVComponentDelegate {
     func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl)
 
     /// Invoked when the button on a gift is tapped.
-    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge)
+    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge, isExpired: Bool, isRedeemed: Bool)
 
     // MARK: - Selection
 

@@ -129,7 +129,13 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
             return false
         }
 
-        componentDelegate.cvc_didTapGiftBadge(itemViewModel, profileBadge: profileBadge)
+        let giftBadge = self.giftBadge
+        componentDelegate.cvc_didTapGiftBadge(
+            itemViewModel,
+            profileBadge: profileBadge,
+            isExpired: giftBadge.expirationDate.isBeforeNow,
+            isRedeemed: giftBadge.redemptionState == .redeemed
+        )
         return true
     }
 

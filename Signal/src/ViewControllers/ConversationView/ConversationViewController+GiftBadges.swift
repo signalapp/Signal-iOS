@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalMessaging
 import SignalServiceKit
 
 extension ConversationViewController {
@@ -41,14 +42,19 @@ extension ConversationViewController {
         }
     }
 
-    func didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {
+    func didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge, isExpired: Bool, isRedeemed: Bool) {
         AssertIsOnMainThread()
 
         let viewControllerToPresent: UIViewController
 
         switch itemViewModel.interaction {
         case let incomingMessage as TSIncomingMessage:
-            viewControllerToPresent = self.giftRedemptionSheet(incomingMessage: incomingMessage, profileBadge: profileBadge)
+            viewControllerToPresent = self.incomingGiftSheet(
+                incomingMessage: incomingMessage,
+                profileBadge: profileBadge,
+                isExpired: isExpired,
+                isRedeemed: isRedeemed
+            )
 
         case is TSOutgoingMessage:
             guard let thread = thread as? TSContactThread else {
@@ -64,6 +70,33 @@ extension ConversationViewController {
         }
 
         self.present(viewControllerToPresent, animated: true)
+    }
+
+    private func incomingGiftSheet(
+        incomingMessage: TSIncomingMessage,
+        profileBadge: ProfileBadge,
+        isExpired: Bool,
+        isRedeemed: Bool
+    ) -> UIViewController {
+        if isExpired {
+            let mode: BadgeExpirationSheetState.Mode
+            if isRedeemed {
+                let hasCurrentSubscription = self.databaseStorage.read { transaction -> Bool in
+                    self.subscriptionManager.hasCurrentSubscription(transaction: transaction)
+                }
+                mode = .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription)
+            } else {
+                let fullName = self.databaseStorage.read { transaction -> String in
+                    let authorAddress = incomingMessage.authorAddress
+                    return self.contactsManager.displayName(for: authorAddress, transaction: transaction)
+                }
+                mode = .giftNotRedeemed(fullName: fullName)
+            }
+            let sheet = BadgeExpirationSheet(badge: profileBadge, mode: mode)
+            sheet.delegate = self
+            return sheet
+        }
+        return self.giftRedemptionSheet(incomingMessage: incomingMessage, profileBadge: profileBadge)
     }
 
     private func giftRedemptionSheet(incomingMessage: TSIncomingMessage, profileBadge: ProfileBadge) -> UIViewController {
@@ -90,4 +123,19 @@ extension ConversationViewController {
         self.presentToastCVC(text)
     }
 
+}
+
+extension ConversationViewController: BadgeExpirationSheetDelegate {
+    func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction) {
+        switch action {
+        case .dismiss:
+            break
+        case .openSubscriptionsView:
+            let appSettings = AppSettingsViewController.inModalNavigationController()
+            appSettings.viewControllers += [DonationViewController(), SubscriptionViewController()]
+            self.presentFormSheet(appSettings, animated: true, completion: nil)
+        case .openBoostView:
+            owsFailDebug("Not supported")
+        }
+    }
 }

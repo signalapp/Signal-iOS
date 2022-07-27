@@ -44,6 +44,12 @@ class DonationViewController: OWSTableViewController2 {
         loadAndUpdateState()
     }
 
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        showGiftBadgeExpirationSheetIfNeeded()
+    }
+
     @objc
     private func didLongPressAvatar(sender: UIGestureRecognizer) {
         let subscriberID = databaseStorage.read { SubscriptionManager.getSubscriberID(transaction: $0) }
@@ -463,6 +469,61 @@ class DonationViewController: OWSTableViewController2 {
 
     private func showSubscriptionViewController() {
         self.navigationController?.pushViewController(SubscriptionViewController(), animated: true)
+    }
+
+    // MARK: - Gift Badge Expiration
+
+    public static func shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() -> Bool {
+        let expiredGiftBadgeID = self.databaseStorage.read { transaction in
+            SubscriptionManager.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
+        }
+        guard let expiredGiftBadgeID = expiredGiftBadgeID, GiftBadgeIds.contains(expiredGiftBadgeID) else {
+            return false
+        }
+        return true
+    }
+
+    private func showGiftBadgeExpirationSheetIfNeeded() {
+        guard Self.shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() else {
+            return
+        }
+        firstly {
+            SubscriptionManager.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
+        }.done { [weak self] cachedValue in
+            guard let self = self else { return }
+            guard UIApplication.shared.frontmostViewController == self else { return }
+            guard case .profileBadge(let profileBadge) = cachedValue else {
+                // The server confirmed this badge doesn't exist. This shouldn't happen,
+                // but clear the flag so that we don't keep trying.
+                SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
+                return
+            }
+
+            let hasCurrentSubscription = self.databaseStorage.read { transaction -> Bool in
+                self.subscriptionManager.hasCurrentSubscription(transaction: transaction)
+            }
+            let sheet = BadgeExpirationSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
+            sheet.delegate = self
+            self.present(sheet, animated: true)
+
+            // We've shown it, so don't show it again.
+            SubscriptionManager.clearMostRecentlyExpiredGiftBadgeIDWithSneakyTransaction()
+        }.cauterize()
+    }
+}
+
+// MARK: - Badge Expiration Delegate
+
+extension DonationViewController: BadgeExpirationSheetDelegate {
+    func badgeExpirationSheetActionTapped(_ action: BadgeExpirationSheetAction) {
+        switch action {
+        case .dismiss:
+            break
+        case .openSubscriptionsView:
+            self.showSubscriptionViewController()
+        case .openBoostView:
+            owsFailDebug("not supported")
+        }
     }
 }
 
