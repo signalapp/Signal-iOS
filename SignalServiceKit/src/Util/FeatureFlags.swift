@@ -97,7 +97,7 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let hsmContactDiscovery = false
 
-    public static let shouldUseRemoteConfigForReceivingGiftBadges = build.includes(.qa)
+    public static let shouldUseRemoteConfigForReceivingGiftBadges = true
 
     public static let isPrerelease = build.includes(.beta)
 
