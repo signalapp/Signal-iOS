@@ -90,11 +90,6 @@ class ImageEditorView: AttachmentPrepContentView {
         canvasView.gestureReferenceView
     }
 
-    var roundCorners: Bool {
-        get { canvasView.roundCorners }
-        set { canvasView.roundCorners = newValue }
-    }
-
     // MARK: - Navigation Bar
 
     private func updateControls() {
@@ -390,6 +385,18 @@ class ImageEditorView: AttachmentPrepContentView {
         default:
             movingTextItem = nil
         }
+    }
+}
+
+// MARK: - Corner Radius
+
+extension ImageEditorView {
+
+    static let defaultCornerRadius: CGFloat = 18
+
+    func setHasRoundCorners(_ roundCorners: Bool, animationDuration: TimeInterval = 0) {
+        canvasView.setCornerRadius(roundCorners ? ImageEditorView.defaultCornerRadius : 0,
+                                   animationDuration: animationDuration)
     }
 }
 

@@ -171,7 +171,7 @@ class ImageEditorViewController: OWSViewController {
     }
     var currentStroke: ImageEditorStrokeItem? {
         didSet {
-            updateControlsVisibility(animated: true, slideButtonsInOut: false)
+            updateControlsVisibility()
             updateTopBar()
         }
     }
@@ -280,14 +280,14 @@ class ImageEditorViewController: OWSViewController {
         super.viewWillAppear(animated)
 
         UIView.performWithoutAnimation {
-            setControls(hidden: true, slideButtonsInOut: true)
+            transitionUI(toState: .initial, animated: false)
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        updateControlsVisibility(animated: true) { finished in
+        transitionUI(toState: .final, animated: true) { finished in
             guard finished else { return }
             if self.startEditingTextOnViewAppear && self.canBeginTextEditingOnViewAppear {
                 self.beginTextEditing()
@@ -368,8 +368,8 @@ class ImageEditorViewController: OWSViewController {
         model.canUndo() && firstUndoOperationId != model.currentUndoOperationId()
     }
 
-    func updateControlsVisibility(animated: Bool, slideButtonsInOut: Bool = true, completion: ((Bool) -> Void)? = nil) {
-        setControls(hidden: shouldHideControls, animated: animated, slideButtonsInOut: slideButtonsInOut, completion: completion)
+    func updateControlsVisibility() {
+        setControls(hidden: shouldHideControls, animated: true, slideButtonsInOut: false)
     }
 
     private func setControls(hidden: Bool, animated: Bool, slideButtonsInOut: Bool, completion: ((Bool) -> Void)? = nil) {
@@ -387,9 +387,7 @@ class ImageEditorViewController: OWSViewController {
                            completion: completion)
         } else {
             setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
-            if let completion = completion {
-                completion(true)
-            }
+            completion?(true)
         }
     }
 
@@ -442,19 +440,24 @@ class ImageEditorViewController: OWSViewController {
             model.undo()
         }
     }
+}
+
+// MARK: - Presenting / Dismissing {
+
+extension ImageEditorViewController {
 
     private func prepareToDismiss(completion: ((Bool) -> Void)?) {
         if mode == .text {
             finishTextEditing(applyEdits: false)
         }
-        setControls(hidden: true, animated: true, slideButtonsInOut: true, completion: completion)
+        transitionUI(toState: .initial, animated: true, completion: completion)
     }
 
     private func prepareToFinish(completion: ((Bool) -> Void)?) {
         if mode == .text {
             finishTextEditing(applyEdits: true)
         }
-        setControls(hidden: true, animated: true, slideButtonsInOut: true, completion: completion)
+        transitionUI(toState: .initial, animated: true, completion: completion)
     }
 
     private func discardAndDismiss() {
@@ -496,6 +499,16 @@ class ImageEditorViewController: OWSViewController {
         }))
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel, handler: nil))
         presentActionSheet(actionSheet)
+    }
+
+    private enum UIState {
+        case initial
+        case final
+    }
+
+    private func transitionUI(toState state: UIState, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        setControls(hidden: state == .initial, animated: animated, slideButtonsInOut: true, completion: completion)
+        imageEditorView.setHasRoundCorners(state == .initial, animationDuration: animated ? 0.15 : 0)
     }
 }
 

@@ -168,10 +168,17 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
 
     private var imageLayer = CALayer()
 
-    var roundCorners: Bool = false {
-        didSet {
-            clipView.layer.cornerRadius = roundCorners ? 18 : 0
+    func setCornerRadius(_ cornerRadius: CGFloat, animationDuration: TimeInterval = 0) {
+        guard cornerRadius != clipView.layer.cornerRadius else { return }
+
+        if animationDuration > 0 {
+            let animation = CABasicAnimation(keyPath: #keyPath(CALayer.cornerRadius))
+            animation.fromValue = clipView.layer.cornerRadius
+            animation.toValue = cornerRadius
+            animation.duration = animationDuration
+            clipView.layer.add(animation, forKey: "cornerRadius")
         }
+        clipView.layer.cornerRadius = cornerRadius
     }
 
     func configureSubviews() {

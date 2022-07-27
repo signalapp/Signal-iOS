@@ -442,7 +442,7 @@ extension ImageEditorViewController: ImageEditorViewDelegate {
     }
 
     func imageEditorDidRequestToolbarVisibilityUpdate(_ imageEditorView: ImageEditorView) {
-        updateControlsVisibility(animated: true, slideButtonsInOut: false)
+        updateControlsVisibility()
     }
 }
 

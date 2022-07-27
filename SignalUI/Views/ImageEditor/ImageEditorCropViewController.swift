@@ -407,7 +407,7 @@ class ImageEditorCropViewController: OWSViewController {
 
         let animationDuration: TimeInterval = 0.15
 
-        let imageCornerRadius: CGFloat = state == .initial ? 18 : 0
+        let imageCornerRadius: CGFloat = state == .initial ? ImageEditorView.defaultCornerRadius : 0
         if animated {
             let animation = CABasicAnimation(keyPath: #keyPath(CALayer.cornerRadius))
             animation.fromValue = imageView.layer.cornerRadius
