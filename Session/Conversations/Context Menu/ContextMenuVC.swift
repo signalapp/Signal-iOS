@@ -174,8 +174,8 @@ final class ContextMenuVC: UIViewController {
         
         snapshot.pin(.left, to: .left, of: view, withInset: targetFrame.origin.x)
         snapshot.pin(.top, to: .top, of: view, withInset: targetFrame.origin.y)
-        snapshot.set(.width, to: frame.width)
-        snapshot.set(.height, to: frame.height)
+        snapshot.set(.width, to: targetFrame.width)
+        snapshot.set(.height, to: targetFrame.height)
         emojiBar.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
         menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
         
