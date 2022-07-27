@@ -303,8 +303,9 @@ class GiftBadgeView: ManualStackView {
 
         if state.wrapState == .unwrapped || !componentDelegate.cvc_willWrapGift(state.messageUniqueId) {
             self.giftWrap = nil
-        } else if self.giftWrap == nil {
-            self.giftWrap = GiftWrap()
+        } else if self.giftWrap?.isIncoming != state.isIncoming {
+            // If `giftWrap` is nil, we'll also fall into this case.
+            self.giftWrap = GiftWrap(isIncoming: state.isIncoming)
         }
     }
 
@@ -459,9 +460,11 @@ class GiftWrap {
     /// from the conversation view to the window for the "unwrap" animation.
     private let giftWrapView: GiftWrapView
 
+    fileprivate let isIncoming: Bool
+
     static let shakeAnimationDuration: CGFloat = 0.8
 
-    fileprivate init() {
+    fileprivate init(isIncoming: Bool) {
         let giftWrapView = GiftWrapView()
 
         // Don't let the subview wrapper touch `GiftWrapView` -- we want this view
@@ -472,6 +475,7 @@ class GiftWrap {
 
         self.giftWrapView = giftWrapView
         self.rootView = .wrapSubviewUsingIOSAutoLayout(view, wrapperName: "giftWrapWrapper")
+        self.isIncoming = isIncoming
     }
 
     func animateShake() {
@@ -501,7 +505,9 @@ class GiftWrap {
         let view = UnwrapAnimationView(giftWrapView)
         view.frame = frame
         window.addSubview(view)
-        view.animateUnwrap(minimumVerticalDelta: window.height - frame.y)
+        view.animateUnwrap(isIncoming: self.isIncoming)
+
+        UIImpactFeedbackGenerator().impactOccurred()
     }
 }
 
@@ -635,7 +641,11 @@ private class GiftWrapView: UIView {
 /// When the animation is done, this view removes itself from its superview.
 private class UnwrapAnimationView: UIView, CAAnimationDelegate {
 
-    init(_ containerView: UIView) {
+    private let bowView: UIView
+
+    init(_ containerView: GiftWrapView) {
+        self.bowView = containerView.bowView
+
         super.init(frame: .zero)
 
         // When animating, don't capture any touches.
@@ -649,80 +659,139 @@ private class UnwrapAnimationView: UIView, CAAnimationDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private struct CurvePoint {
-        var point: CGPoint
-        var controlPoint1: CGPoint
-        var controlPoint2: CGPoint
-
-        func scaled(by scale: CGFloat) -> Self {
-            var result = self
-            result.point *= scale
-            result.controlPoint1 *= scale
-            result.controlPoint2 *= scale
-            return result
-        }
-    }
-
     /// Builds an animation for unwrapping a gift.
     ///
-    /// - Parameters:
-    ///   - minimumVerticalDelta: The minimum distance the view will travel
-    ///     downward by the end of its animation. Used to ensure the view moves
-    ///     all the way off the screen. Note that the view may move further than
-    ///     requested by this parameter.
-    ///
-    func animateUnwrap(minimumVerticalDelta: CGFloat) {
-        let defaultScale: CGFloat = 221
+    func animateUnwrap(isIncoming: Bool) {
+        let animationKey = "unwrap"
 
-        // This is the default animation curve. We'll adjust it as necessary for
-        // the device.
-        var curvePoints: [CurvePoint] = [
-            CurvePoint(
-                point: CGPoint(x: 0.521, y: -1.242),
-                controlPoint1: CGPoint(x: 0.114, y: -0.640),
-                controlPoint2: CGPoint(x: 0.194, y: -1.232)
-            ),
-            CurvePoint(
-                point: CGPoint(x: 1.000, y: 1.588),
-                controlPoint1: CGPoint(x: 0.834, y: -1.251),
-                controlPoint2: CGPoint(x: 1.019, y: -0.431)
-            )
-        ]
+        // Flip the horizontal and rotation elements for outgoing gifts.
+        let directionMultipler: CGFloat = isIncoming ? 1.0 : -1.0
 
-        // Start by scaling all the points by the scale factor. This factor is
-        // determined based on the width of the device, it's an aspect
-        // ratio-preserving adjustment.
-        curvePoints = curvePoints.map { $0.scaled(by: defaultScale) }
+        // The bow rotates back and forth.
+        self.bowView.layer.animateRotation(animationKey: animationKey, duration: 1.8, keyFrames: [
+            (0.000, 0 * directionMultipler),
+            (0.050, 3 * directionMultipler),
+            (0.220, -3 * directionMultipler),
+            (0.400, 3 * directionMultipler),
+            (1.030, -8 * directionMultipler),
+            (1.400, 5 * directionMultipler),
+            (1.800, 5 * directionMultipler)
+        ])
+        // The bubble rotates back and forth, opposite from the bow.
+        self.layer.animateRotation(animationKey: animationKey, duration: 1.8, keyFrames: [
+            (0.000, 0 * directionMultipler),
+            (0.400, 0 * directionMultipler),
+            (1.030, 8 * directionMultipler),
+            (1.400, -5 * directionMultipler),
+            (1.800, -5 * directionMultipler)
+        ])
+        // The vertical movement is "approximately gravity". As a result, the path
+        // is closer to a parabola than a standard easeInEaseOut curve (that curve
+        // would have the fastest movement at the top of the arc). This gravity
+        // motion is roughly approximated by an easeOutEaseIn curve (note the
+        // flipped order of out/in), but the magnitude of the easing has been
+        // tweaked to mimic the spec.
+        self.layer.animateTranslation(animationKey: animationKey, coordinateKey: "y", duration: 1.8, keyFrames: [
+            (0.400, 0, .init(name: .linear)),
+            (0.730, -74, .init(controlPoints: 0.00, 0.00, 0.25, 1.00)),
+            (1.800, 1366, .init(controlPoints: 0.90, 0.00, 1.00, 1.00))
+        ]).delegate = self
 
-        // Next, ensure that the ending position will be off the screen. Note that
-        // we don't touch any of the control points when moving the point -- this
-        // keeps the shape of the curve roughly correct. (In a perfect world, we'd
-        // probably move `controlPoint2` up slightly as we move `point` downwards.)
-        curvePoints[1].point.y = max(curvePoints[1].point.y, minimumVerticalDelta)
+        // The horizontal movement uses easeInEaseOut, split across the two phases.
+        self.layer.animateTranslation(animationKey: animationKey, coordinateKey: "x", duration: 1.8, keyFrames: [
+            (0.400, 0 * directionMultipler, .init(name: .linear)),
+            (0.730, 11 * directionMultipler, .init(name: .easeIn)),
+            (1.400, 18 * directionMultipler, .init(name: .easeOut)),
+            (1.800, 18 * directionMultipler, .init(name: .linear))
+        ])
 
-        let path = UIBezierPath()
-        path.move(to: .zero)
-        for curvePoint in curvePoints {
-            path.addCurve(
-                to: curvePoint.point,
-                controlPoint1: curvePoint.controlPoint1,
-                controlPoint2: curvePoint.controlPoint2
-            )
-        }
+        // The vertical motion uses a constant of 1366, which is (currently) the
+        // tallest iPad. As a result, all devices use the same shape and *velocity*
+        // for the animation. Most of the time, however, the wrapping view will be
+        // offscreen before the total duration has elapsed, so you'll only see part
+        // of the animation. This is more natural than animating faster or slower
+        // depending on how far the gift wrap needs to move.
+        assert(self.window!.bounds.size.height <= 1366)
 
-        let animation = CAKeyframeAnimation(keyPath: "transform.translation")
-        animation.path = path.cgPath
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        animation.duration = 0.7
-        animation.delegate = self
-
-        let finalPoint = path.currentPoint
-        self.layer.setAffineTransform(CGAffineTransform(translationX: finalPoint.x, y: finalPoint.y))
-
-        self.layer.add(animation, forKey: "unwrap")
+        // Set the final position off the screen so that the view doesn't "jump
+        // back" before it gets removed.
+        self.layer.setAffineTransform(
+            CGAffineTransform(translationX: 18 * directionMultipler, y: 1366)
+        )
     }
 
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         self.removeFromSuperview()
     }
+}
+
+private extension CALayer {
+
+    /// Animates a rotation through various key frames.
+    ///
+    /// This animation uses cubic interpolation, which smooths the changes in
+    /// direction.
+    ///
+    /// - Parameters:
+    ///   - animationKey: A unique key to associate with the animation. A
+    ///     rotation-specific key is appended.
+    ///
+    ///   - duration: The total duration of the animation, in seconds.
+    ///
+    ///   - keyFrames: The key frames for the animation. The first key frame
+    ///     should have a time of `0`, and the last key frame should have a time
+    ///     of `duration`.
+    ///
+    func animateRotation(
+        animationKey: String,
+        duration: CFTimeInterval,
+        keyFrames: [(keyTime: CFTimeInterval, degrees: CGFloat)]
+    ) {
+        let keyPath = "transform.rotation"
+        let animation = CAKeyframeAnimation(keyPath: keyPath)
+        let values = keyFrames.map { $0.degrees * .pi / 180 }
+        animation.values = values
+        animation.keyTimes = keyFrames.map { NSNumber(value: $0.keyTime / duration) }
+        animation.calculationMode = .cubic
+        animation.duration = duration
+        animation.fillMode = .forwards
+        self.add(animation, forKey: "\(animationKey).\(keyPath)")
+    }
+
+    /// Animates a translation through various key frames.
+    ///
+    /// Each key frame specifies its own timing function. The initial position
+    /// is assumed to be `0` at 0 seconds, and each timing function argument
+    /// applies to the prior point and the current point.
+    ///
+    /// - Parameters:
+    ///   - animationKey: A unique key to associated with the animation. A
+    ///     translation-specific key is appended.
+    ///
+    ///   - coordinateKey: The coordinate whose value should be animated. Should
+    ///     be "x" or "y".
+    ///
+    ///   - duration: The total duration of the animation, in seconds.
+    ///
+    ///   - keyFrames: The key frames for the animation. The first key frame
+    ///     should have a time of `0`, and the last key frame should have a time
+    ///     of `duration`.
+    ///
+    @discardableResult
+    func animateTranslation(
+        animationKey: String,
+        coordinateKey: String,
+        duration: CFTimeInterval,
+        keyFrames: [(keyTime: CFTimeInterval, value: CGFloat, timingFunction: CAMediaTimingFunction)]
+    ) -> CAAnimation {
+        let keyPath = "transform.translation.\(coordinateKey)"
+        let animation = CAKeyframeAnimation(keyPath: keyPath)
+        animation.values = [0 as CGFloat] + keyFrames.map { $0.value }
+        animation.keyTimes = [NSNumber(0)] + keyFrames.map { NSNumber(value: $0.keyTime / duration) }
+        animation.timingFunctions = keyFrames.map { $0.timingFunction }
+        animation.duration = duration
+        self.add(animation, forKey: "\(animationKey).\(keyPath)")
+        return animation
+    }
+
 }
