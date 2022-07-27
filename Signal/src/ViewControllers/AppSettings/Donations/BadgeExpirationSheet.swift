@@ -215,11 +215,6 @@ public class BadgeExpirationSheetState {
 class BadgeExpirationSheet: OWSTableSheetViewController {
     private let state: BadgeExpirationSheetState
 
-    public override var contentSizeHeight: CGFloat {
-        tableViewController.tableView.layoutIfNeeded()
-        return tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.top
-    }
-
     public weak var delegate: BadgeExpirationSheetDelegate?
 
     public init(badge: ProfileBadge, mode: BadgeExpirationSheetState.Mode) {
