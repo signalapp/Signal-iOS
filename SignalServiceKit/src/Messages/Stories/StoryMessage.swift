@@ -266,6 +266,16 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    public func updateRecipientStates(_ recipientStates: [UUID: StoryRecipientState], transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { message in
+            guard case .outgoing = message.manifest else {
+                return owsFailDebug("Unexpectedly tried to update recipient states for a non-outgoing message.")
+            }
+
+            message.manifest = .outgoing(recipientStates: recipientStates)
+        }
+    }
+
     public func threads(transaction: SDSAnyReadTransaction) -> [TSThread] {
         var threads = [TSThread]()
 
@@ -355,7 +365,7 @@ public enum StoryManifest: Codable {
 public struct StoryRecipientState: Codable {
     public typealias DistributionListId = String
 
-    public let allowsReplies: Bool
+    public var allowsReplies: Bool
     public var contexts: [DistributionListId]
     public var viewedTimestamp: UInt64?
 }

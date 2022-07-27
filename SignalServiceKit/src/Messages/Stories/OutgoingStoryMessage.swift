@@ -7,9 +7,15 @@ import Foundation
 public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public private(set) var storyMessageId: String!
+    @objc
+    public private(set) var storyAllowsReplies: NSNumber!
+    @objc
+    public private(set) var isPrivateStorySend: NSNumber!
 
     public init(thread: TSThread, storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) {
         self.storyMessageId = storyMessage.uniqueId
+        self.storyAllowsReplies = NSNumber(value: (thread as? TSPrivateStoryThread)?.allowsReplies ?? true)
+        self.isPrivateStorySend = NSNumber(value: thread is TSPrivateStoryThread)
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.timestamp = storyMessage.timestamp
         super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
@@ -52,6 +58,41 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         thread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
 
         let outgoingMessage = OutgoingStoryMessage(thread: thread, storyMessage: storyMessage, transaction: transaction)
+        return outgoingMessage
+    }
+
+    public class func createUnsentMessage(
+        thread: TSThread,
+        storyMessageId: String,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> OutgoingStoryMessage {
+        guard let privateStoryThread = thread as? TSPrivateStoryThread else {
+            throw OWSAssertionError("Only private stories should share an existing story message context")
+        }
+
+        guard let storyMessage = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction),
+                case .outgoing(var recipientStates) = storyMessage.manifest else {
+            throw OWSAssertionError("Missing existing story message")
+        }
+
+        let recipientAddresses = Set(privateStoryThread.recipientAddresses(with: transaction))
+
+        for address in recipientAddresses {
+            guard let uuid = address.uuid else { continue }
+            if var recipient = recipientStates[uuid] {
+                recipient.contexts.append(privateStoryThread.uniqueId)
+                recipient.allowsReplies = recipient.allowsReplies || privateStoryThread.allowsReplies
+                recipientStates[uuid] = recipient
+            } else {
+                recipientStates[uuid] = .init(allowsReplies: privateStoryThread.allowsReplies, contexts: [privateStoryThread.uniqueId])
+            }
+        }
+
+        storyMessage.updateRecipientStates(recipientStates, transaction: transaction)
+
+        privateStoryThread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
+
+        let outgoingMessage = OutgoingStoryMessage(thread: privateStoryThread, storyMessage: storyMessage, transaction: transaction)
         return outgoingMessage
     }
 
