@@ -227,6 +227,30 @@ public class RemoteConfig: BaseFlags {
         }
     }
 
+    public static var groupRings: Bool {
+        DebugFlags.internalSettings || isEnabled(.groupRings)
+    }
+
+    public static var maxGroupRingSize: UInt {
+        let defaultValue: UInt = 16
+        guard AppReadiness.isAppReady else {
+            owsFailDebug("Storage is not yet ready.")
+            return defaultValue
+        }
+        guard let rawValue: AnyObject = value(.maxGroupRingSize) else {
+            return defaultValue
+        }
+        guard let stringValue = rawValue as? String else {
+            owsFailDebug("Unexpected value.")
+            return defaultValue
+        }
+        guard let uintValue = UInt(stringValue) else {
+            owsFailDebug("Invalid value.")
+            return defaultValue
+        }
+        return uintValue
+    }
+
     // MARK: -
 
     private static func interval(
@@ -418,6 +442,7 @@ private struct Flags {
         case canReceiveGiftBadges
         case canSendGiftBadgesInPrerelease
         case canSendGiftBadgesInProduction
+        case groupRings
     }
 
     // Values defined in this array remain set once they are
@@ -438,6 +463,7 @@ private struct Flags {
         case paymentsDisabledRegions
         case donationMegaphone
         case donationMegaphoneSnoozeInterval
+        case maxGroupRingSize
     }
 
     // We filter the received config down to just the supported values.
@@ -457,6 +483,7 @@ private struct Flags {
         case paymentsDisabledRegions
         case donationMegaphone
         case donationMegaphoneSnoozeInterval
+        case maxGroupRingSize
     }
 }
 

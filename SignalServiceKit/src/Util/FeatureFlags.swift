@@ -86,9 +86,6 @@ public class FeatureFlags: BaseFlags {
     public static let deprecateREST = false
 
     @objc
-    public static let groupRings = false
-
-    @objc
     public static let stories = build.includes(.qa)
 
     @objc
