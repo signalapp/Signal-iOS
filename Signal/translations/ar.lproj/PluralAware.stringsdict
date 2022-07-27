@@ -92,10 +92,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%dعناصر </string>
+			<key>many</key>
+			<string>%dعناصر</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>1 عنصر</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>%d عناصر</string>
+			<key>two</key>
+			<string>%dعناصر</string>
+			<key>zero</key>
+			<string>%dعناصر</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -1255,10 +1263,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d مشاهدين</string>
+			<key>many</key>
+			<string>%d مشاهدين</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 مشاهد</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%dمشاهدين</string>
+			<key>two</key>
+			<string>%d مشاهدين</string>
+			<key>zero</key>
+			<string>%d مشاهدين</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>

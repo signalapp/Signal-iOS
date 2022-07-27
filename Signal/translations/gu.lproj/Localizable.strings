@@ -776,7 +776,7 @@
 "CAMERA_BUTTON_LABEL" = "કૅમેરા";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "આલ્બમ મોડ";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "બંધ";
@@ -785,25 +785,25 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "ચાલુ";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+"CAMERA_VO_CAMERA_BACK_FACING" = "પાછળનો કૅમેરા";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "કૅમેરા પસંદકર્તા";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "કૅમેરાની વચ્ચે સ્વિચ કરે છે";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "આગળના કૅમેરા";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "બંધ";
 
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_AUTO" = "Automatic";
+"CAMERA_VO_FLASH_AUTO" = "ઓટોમેટિક";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_FLASH_BUTTON" = "Flash";
+"CAMERA_VO_FLASH_BUTTON" = "ફ્લેશ";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_OFF" = "બંધ";
@@ -812,22 +812,22 @@
 "CAMERA_VO_FLASH_ON" = "ચાલુ";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
-"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "ફોટો અને વિડીયો વ્યુઅર";
 
 /* VoiceOver label for the round capture button in in-app camera during video recording. */
-"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+"CAMERA_VO_STOP_VIDEO_REC" = "વિડીયો રેકોર્ડિંગ બંધ કરો";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+"CAMERA_VO_TAKE_PICTURE" = "ફોટો લો";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
-"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+"CAMERA_VO_TAKE_VIDEO" = "વિડીયો લો";
 
 /* VoiceOver label for camera zoom control. */
 "CAMERA_VO_ZOOM" = "ઝુમ";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@times";
+"CAMERA_VO_ZOOM_LEVEL" = "%@વખત";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "જ્યાં સુધી તમે તેમની સાથે મેસેજની આપ-લે ન કરો ત્યાં સુધી આ વપરાશકર્તાની ચકાસણી કરી શકાતી નથી.";
@@ -1175,7 +1175,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "હંમેશાં";
 
 /* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ નવી સ્ટોરી";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "આ ગ્રુપને ફક્ત એડમિન જ મેસેજ મોકલી શકે છે.";
@@ -3746,7 +3746,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "સભ્યો પસંદ કરો";
 
 /* Title for the 'new group story' view */
-"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "ગ્રુપ પસંદ કરો";
 
 /* No comment provided by engineer. */
 "new_message" = "નવો મેસેજ";
@@ -3758,22 +3758,22 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "વપરાશકર્તા શોધો";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "સ્ટોરીને નામ આપો";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "બનાવો";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "સ્ટોરીનું નામ આવશ્યક છે.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "સ્ટોરીનું નામ નથી";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "સ્ટોરીનું નામ (આવશ્યક)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "દર્શકો પસંદ કરો";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "દર્શકો";
@@ -3782,7 +3782,7 @@
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "કોઈ વર્તમાન ગ્રુપમાં શેર કરો";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "નવી ગ્રુપ સ્ટોરી";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "ફક્ત ચોક્કસ લોકોને જ દેખાઈ શકે છે";
@@ -3791,7 +3791,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "નવી ખાનગી સ્ટોરી";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
+"NEW_STORY_SHEET_TITLE" = "સ્ટોરીનો પ્રકાર પસંદ કરો";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ફોન નંબર દ્વારા સંપર્કો શોધો";
@@ -4265,7 +4265,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "વિનંતી નકારો";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\"ની વિનંતી નકારવી છે? તે ફરીથી ગ્રુપ લિંક વડે જોડાવાની વિનંતી કરી શકશે નહીં.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "મેમ્બરની કોઈ બાકી રહેલી વિનંતીઓ નથી.";
@@ -4616,13 +4616,13 @@
 "PRIVACY_VERIFY_BUTTON" = "ચકાસાયેલ તરીકે માર્ક કરો";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "દર્શકો ઉમેરો";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "ખાનગી સ્ટોરી ડિલીટ કરો";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "શું તમે ખરેખર આ સ્ટોરીને ડિલીટ કરવા માંગો છો?";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "દૂર કરો";
@@ -4631,7 +4631,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "આ વ્યક્તિ હવે તમારી સ્ટોરી જોઈ નહીં શકે.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ને દૂર કરવા છે?";
 
 /* Section header for the 'viewers' section on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "આ સ્ટોરી કોણ જોઈ શકે";

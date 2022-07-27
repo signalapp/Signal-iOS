@@ -395,7 +395,7 @@
 "BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
-"BADGE_GIFT_THANKS_TITLE" = "Thanks for your support!";
+"BADGE_GIFT_THANKS_TITLE" = "ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು!";
 
 /* Text telling the user that they can add a message along with their gift badge */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
@@ -410,10 +410,10 @@
 "BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "ಅವಧಿ ಮುಗಿದಿದೆ";
 
 /* Shown on a gift badge message to indicate that the message contains a gift. */
-"BADGE_GIFTING_CHAT_TITLE" = "Gift Badge";
+"BADGE_GIFTING_CHAT_TITLE" = "ಉಡುಗೊರೆ ಬ್ಯಾಡ್ಜ್";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
@@ -473,10 +473,10 @@
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Redeemed";
+"BADGE_GIFTING_REDEEMED" = "ರೀಡೀಮ್ ಮಾಡಲಾಗಿದೆ";
 
 /* Shown when you're replying to a gift message to indicate that it contains a gift. */
-"BADGE_GIFTING_REPLY" = "Gift";
+"BADGE_GIFTING_REPLY" = "ಉಡುಗೊರೆ";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
 "BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
@@ -503,7 +503,7 @@
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
 
 /* Title for subscription on the thank you sheet. */
-"BADGE_THANKS_SUBSCRIPTION_TITLE" = "Thanks for your support!";
+"BADGE_THANKS_SUBSCRIPTION_TITLE" = "ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
 "BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
@@ -1784,7 +1784,7 @@
 "DONATION_RECEIPT_FOOTER" = "Thank you for supporting Signal. Your contribution helps fuel the mission of developing open source privacy technology that protects free expression and enables secure global communication for millions around the world. If you’re a resident of the United States, please retain this receipt for your tax records. Signal Technology Foundation is a tax-exempt nonprofit organization in the United States under section 501c3 of the Internal Revenue Code. Our Federal Tax ID is 82-4506840.";
 
 /* Title for gift donation receipts */
-"DONATION_RECEIPT_GIFT" = "Gift";
+"DONATION_RECEIPT_GIFT" = "ಉಡುಗೊರೆ";
 
 /* Title for one-time donation receipts */
 "DONATION_RECEIPT_ONE_TIME" = "One-time";
@@ -6119,7 +6119,7 @@
 "STORIES_NO_RECENT_MESSAGES" = "ಪ್ರಸ್ತುತ ತೋರಿಸಲು ಯಾವುದೇ ಪರಿಷ್ಕರಣೆಗಳಿಲ್ಲ.\nನಿಮ್ಮ ಸ್ಟೋರಿಗೆ ಸೇರಿಸಲು ಟ್ಯಾಪ್ + ";
 
 /* Indicates that this story has no replies yet */
-"STORIES_NO_REPLIES_YET" = "No replies yet";
+"STORIES_NO_REPLIES_YET" = "ಇನ್ನೂ ಯಾವುದೇ ಪ್ರತ್ಯುತ್ತರವಿಲ್ಲ";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
@@ -6149,10 +6149,10 @@
 "STORIES_TITLE" = "ಸ್ಟೋರೀಸ್";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "ಲಿಂಕ್‌ಗೆ ಭೇಟಿ ನೀಡಿ";
 
 /* Text indicating a story that was replied to is no longer available. */
-"STORY_NO_LONGER_AVAILABLE" = "No longer available";
+"STORY_NO_LONGER_AVAILABLE" = "ಲಭ್ಯವಿಲ್ಲ";
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "ಖಾಸಗಿತನ";
@@ -6167,7 +6167,7 @@
 "STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "ಉತ್ತರಿಸಿ";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "Reacted to the story";
+"STORY_REPLY_REACTION" = "ಸ್ಟೋರಿಗೆ ಪ್ರತಿಕ್ರಿಯಿಸಲಾಗಿದೆ";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ಉತ್ತರಿಸಿ";

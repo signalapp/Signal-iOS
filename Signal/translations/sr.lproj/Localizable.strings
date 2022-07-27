@@ -212,7 +212,7 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Грешка при чувању";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип датотеке: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Tip fajla: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Величина: %@";
@@ -257,7 +257,7 @@
 "ATTACHMENT_ERROR_INVALID_DATA" = "Прилог има неисправан садржај.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Прилог је неисправног типа.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Fajl je neispravnog tipa";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Прилог је празан.";
@@ -272,7 +272,7 @@
 "ATTACHMENT_KEYBOARD_CONTACT" = "Контакт";
 
 /* A button to select a file from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_FILE" = "Датотека";
+"ATTACHMENT_KEYBOARD_FILE" = "Fajl";
 
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
@@ -296,16 +296,16 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Грешка при избору документа.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Молимо вас да пошаљете компресовану копију ове датотеке или директоријума.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Kreirajte komprimovanu arhivu ovog fajla ili foldera i probajte da je pošaljete.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Неподржана датотека";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nepodržan fajl";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Звучни запис";
 
 /* Short text label for a file attachment, used for thread preview and on the lock screen */
-"ATTACHMENT_TYPE_FILE" = "Датотека";
+"ATTACHMENT_TYPE_FILE" = "Fajl";
 
 /* Short text label for a gif attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_GIF" = "GIF";
@@ -776,7 +776,7 @@
 "CAMERA_BUTTON_LABEL" = "Камера";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "Albumski režim";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "Искључено";
@@ -785,25 +785,25 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "Укључено";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+"CAMERA_VO_CAMERA_BACK_FACING" = "Zadnja kamera";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Odabir kamere";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Menja odabir kamere";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Prednja kamera";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "Затвори";
 
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_AUTO" = "Automatic";
+"CAMERA_VO_FLASH_AUTO" = "Automatski";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_FLASH_BUTTON" = "Flash";
+"CAMERA_VO_FLASH_BUTTON" = "Blic";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_OFF" = "Искључено";
@@ -812,22 +812,22 @@
 "CAMERA_VO_FLASH_ON" = "Укључено";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
-"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Prikazivač fotografija i video snimaka";
 
 /* VoiceOver label for the round capture button in in-app camera during video recording. */
-"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+"CAMERA_VO_STOP_VIDEO_REC" = "Zaustavi snimanje video snimka";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+"CAMERA_VO_TAKE_PICTURE" = "Snimi fotografiju";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
-"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+"CAMERA_VO_TAKE_VIDEO" = "Snimi video";
 
 /* VoiceOver label for camera zoom control. */
 "CAMERA_VO_ZOOM" = "Зумирај";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@times";
+"CAMERA_VO_ZOOM_LEVEL" = "%@ put(a)";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Ова особа не може бити оверена док не започнете разговор.";
@@ -1175,7 +1175,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Увек";
 
 /* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ Nova priča";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Само Админи могу послати поруке овој групи.";
@@ -1262,7 +1262,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_FOOTER" = "Изаберите ко може мењати чланове групе.";
 
 /* Label for 'group link' action in conversation settings view. */
-"CONVERSATION_SETTINGS_GROUP_LINK" = "Веза групе";
+"CONVERSATION_SETTINGS_GROUP_LINK" = "Link za grupu";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Постави за администратора";
@@ -1484,7 +1484,7 @@
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Пријавите грешку";
 
 /* Label for the 'copy link' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Копирај линк";
+"DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Kopiraj link";
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Пошаљите имејл подршци";
@@ -2378,58 +2378,58 @@
 "GROUP_INVALID_INVITES_REMOVED_N" = "Неважећи позиви су опозвани.";
 
 /* Message indicating that the group invite link was disabled. */
-"GROUP_INVITE_LINK_DISABLED" = "Веза до групе је искључена.";
+"GROUP_INVITE_LINK_DISABLED" = "Link za grupu je isključen.";
 
 /* Message indicating that the group invite link was disabled by the local user. */
-"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Искључили сте везу групе.";
+"GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "Isključili ste link za grupu.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ је искључио/ла везу до групе.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ je isključio/la link za grupu.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Веза до групе је укључена са одобрењем админитратора.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Uključen je link za grupu sa obaveznim odobrenjem administratora.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Укључили сте везу до групе са одобрењем администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Uključili ste link za grupu sa obaveznim odobrenjem administratora.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ је укључио/ла везу до групе са одобрењем администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la link za grupu sa obaveznim odobrenjem administratora.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Веза до групе је укључена без одобрењем админитратора.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Uključen je link za grupu bez obaveznog odobrenja administratora.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Укључили сте везу до групе са искљученим одобрењем администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Uključili ste link za grupu bez obaveznog odobrenja administratora.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ је укључио/ла везу до групе без одобрењем администратора.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la link za grupu bez obaveznog odobrenja administratora.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "Веза до групе је ресетована.";
+"GROUP_INVITE_LINK_RESET" = "Link za grupu je resetovan.";
 
 /* Message indicating that the group invite link was reset by the local user. */
-"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Ресетовали сте везу групе.";
+"GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "Resetovali ste link za grupu.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ је ресетовао/ла везу до групе.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ je resetovao/la link za grupu.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Одобрење администратора је искључено за везу до групе.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "Isključeno je obavezno odobrenje administratora za link za grupu.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Искључили сте администраторска одобрења за везу групе.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Isključili ste obavezno odobrenje administratora za link za grupu.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ је искључио/ла одобрење администратора за везу до групе.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je isključio/la obavezno odobrenje administratora za link za grupu.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Одобрење администратора је ускључено за везу до групе.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "Uključeno je obavezno odobrenje administratora za link za grupu.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Укључили сте одобрење администратора за везу групе.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Uključili ste obavezno odobrenje administratora za link za grupu.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ је ускључио/ла одобрење администратора за везу до групе.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ je uključio/la obavezno odobrenje administratora za link za grupu.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Не можете аутоматски додати %@ у групу. Позивница им је послата, а групне поруке неће видети док је не прихвате.";
@@ -2456,13 +2456,13 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ је променио/ла подешавања групе како би се омогућили да само админи шаљу поруке.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Не можете да се придружите овој групи преко везе групе јер вас је администратор уклонио.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "Ne možete da se pridružite ovoj grupi preko linka za grupu jer vas je administrator uklonio.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "Не може да се придружи групи";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Веза до групе није више активна.";
+"GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "Link za grupu više nije ispravan.";
 
 /* Indicator for group conversations in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_GROUP_INDICATOR" = "Група";
@@ -2483,34 +2483,34 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Молимо покушајте поново.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ово није важећа веза до групе. Уверите се да је цела веза нетакнута и исправна пре него што покушате да се придружите.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Ovaj link za grupu nije ispravan. Proverite da li je ceo link kompletan i ispravan pre nego što pokušate da se pridružite.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Неисправна веза";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Neispravan link";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Ажурирајте Signal на овом уређају како бисте могли да се придружите овој групи.";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Захтева да администратор одобри придруживање нових чланова путем везе групе.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Obavezno je da administrator odobri nove članove koji se pridružuju preko linka za grupu.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Одобри нове чланове";
 
 /* Label for the 'enable and share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Омогући и дели везу";
+"GROUP_LINK_PROMOTION_ALERT_ENABLE_AND_SHARE_LINK" = "Aktiviraj i podeli link";
 
 /* Label for the 'share link' button in the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Дели везу";
+"GROUP_LINK_PROMOTION_ALERT_SHARE_LINK" = "Podeli link";
 
 /* Subtitle for the 'group link promotion' alert view. */
-"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Поделите везу са пријатељима како би се брзо придружили овој групи.";
+"GROUP_LINK_PROMOTION_ALERT_SUBTITLE" = "Podelite link sa prijateljima da bi se brže pridružili grupi.";
 
 /* Title for the 'group link promotion' alert view. */
 "GROUP_LINK_PROMOTION_ALERT_TITLE" = "Позовите пријатеље";
 
 /* Suggestion to invite more group members via the group invite link. */
-"GROUP_LINK_PROMOTION_UPDATE" = "Позовите пријатеље у вашу групу преко везе до групе";
+"GROUP_LINK_PROMOTION_UPDATE" = "Pozovite prijatelje u grupu preko linka za grupu";
 
 /* Description text in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Особе које скенирају овај код моћи ће да се придруже Вашој групи. Администратори ће и даље морати да одобравају нове захтеве за чланство ако је та поставка укључена.";
@@ -2525,19 +2525,19 @@
 "GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH" = "Одобри нове чланове";
 
 /* Label for the 'copy link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_COPY_LINK" = "Копирај линк";
+"GROUP_LINK_VIEW_COPY_LINK" = "Kopiraj link";
 
 /* Label for the 'enable group link' switch in the 'group link' view. */
-"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Веза групе";
+"GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Link za grupu";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Захтева да администратор одобри придруживање нових чланова путем везе групе.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Obavezno je da administrator odobri nove članove koji se pridružuju preko linka za grupu.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK" = "Ресетуј везу";
+"GROUP_LINK_VIEW_RESET_LINK" = "Resetuj link";
 
 /* Title for the 'confirm reset link' alert in the 'group link' view. */
-"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Да ли сте сигурни да желите да укинете везу према групи? Особе више неће моћи да се придруже групи помоћу тренутне везе.";
+"GROUP_LINK_VIEW_RESET_LINK_CONFIRM_ALERT_TITLE" = "Da li ste sigurni da želite da resetujete link za grupu? Ljudi više neće moći da se pridruže grupi preko trenutnog linka.";
 
 /* Label for the 'share link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_SHARE_LINK" = "Поделите";
@@ -2552,10 +2552,10 @@
 "GROUP_LINK_VIEW_SHARE_LINK_VIA_SIGNAL" = "Поделите Signal-ом";
 
 /* Message for the 'share group link' action sheet in the 'group link' view. */
-"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Свако са овом везом може да види име и чланове ове групе и да затражи да се придружи. Поделите везу са људима у које имате поверења.";
+"GROUP_LINK_VIEW_SHARE_SHEET_MESSAGE" = "Svako ko ima ovaj link može da vidi naziv grupe i njene članove, kao i da zatraži da se pridruži grupi. Podelite link sa ljudima u koje imate poverenja.";
 
 /* The title for the 'group link' view. */
-"GROUP_LINK_VIEW_TITLE" = "Веза групе";
+"GROUP_LINK_VIEW_TITLE" = "Link za grupu";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ вас је додао/ла.";
@@ -2594,7 +2594,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Придружили сте се групи.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Придружили сте се групи преко везе групе.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "Pridružili ste se grupi preko linka za grupu.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ вас је уклонио/ла.";
@@ -2699,7 +2699,7 @@
 "GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ се придружио/ла групи.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ се придружио/ла групи преко везе до групе.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ se pridružio/la grupi preko linka za grupu.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ је напустио/ла групу.";
@@ -2729,7 +2729,7 @@
 "GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "Захтев за придруживање групи од %@ је одбијен.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ је затражио/ла да се придружи преко везе до групе.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ je zatražio/la da se pridruži grupi preko linka za grupu.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ су одузете администраторске дозволе.";
@@ -3059,7 +3059,7 @@
 "IMAGE_EDITOR_BLUR_TOAST" = "Цртајте да замутите додатна лица или делове фотографије";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Не можете поделити више од %@ датотека.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ne možete da podelite stavke ako ih ima više od %@.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
 "IMAGE_PICKER_CHANGE_PHOTOS" = "Промени фотографију";
@@ -3239,7 +3239,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Повежите нови уређај";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Приказ линка";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Prikaz linka";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Повезани уређаји";
@@ -3359,7 +3359,7 @@
 "MESSAGE_ACTION_LINK_OPEN_GROUP_INVITE" = "Отворити групну позивницу";
 
 /* Label for button to open a link. */
-"MESSAGE_ACTION_LINK_OPEN_LINK" = "Отворити везу";
+"MESSAGE_ACTION_LINK_OPEN_LINK" = "Otvori link";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Видите пакет налепница";
@@ -3404,7 +3404,7 @@
 "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE" = "Послао";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Величина датотеке";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Veličina fajla";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME тип";
@@ -3443,7 +3443,7 @@
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Послато";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Назив датотеке";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Naziv fajla";
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Детаљи поруке";
@@ -3746,7 +3746,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Одаберите чланове";
 
 /* Title for the 'new group story' view */
-"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Izaberite grupu";
 
 /* No comment provided by engineer. */
 "new_message" = "Нова порука";
@@ -3758,31 +3758,31 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Пронађите особу";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Dajte naziv priči";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Направи";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Neophodno je dati naziv priči.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Nedostaje naziv priče";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Naziv priče (obavezno)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Izaberite gledaoce";
 
 /* Header for the 'viewers' section of the 'new private story' view */
-"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Гледаоци";
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Gledaoci";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Делити са целом групом";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Nova grupna priča";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Видљиво само одређеним људима";
@@ -3791,7 +3791,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Nova privatna priča";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
+"NEW_STORY_SHEET_TITLE" = "Izaberite tip priče";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Пронађите контакт по броју телефона";
@@ -4265,7 +4265,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Одбиј захтев";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Želite li da odbijete zahtev koji šalje %@? Neće više moći da zatraži da se pridruži grupi preko linka.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Нема захтева за чланство на чекању.";
@@ -4292,7 +4292,7 @@
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Информације о особама позваним од стране других чланова групе нису приказане. Подаци позваних особа ће бити приказани када се придруже групи. Групне поруке неће видети док не прихвате позивницу.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Особе са ове листе покушавају да се придруже „%@“ путем везе до групе.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "Osobe sa ove liste pokušavaju da se pridruže grupi „%@“ preko linka za grupu.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "Неважеће позивнице";
@@ -4616,13 +4616,13 @@
 "PRIVACY_VERIFY_BUTTON" = "Означи овереним";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Dodajte gledaoce";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Izbriši privatnu priču";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Želite li sigurno da izbrišete ovu priču?";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Уклони";
@@ -4631,7 +4631,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ова особа више неће видети вашу причу.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Želite li da uklonite gledaoca (%1$@)?";
 
 /* Section header for the 'viewers' section on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "Ko može da vidi ovu priču";
@@ -4787,7 +4787,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Реакција %@ на ваш подељени контакт";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Реакција %@ на вашу датотеку";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Dobili ste reakciju %@ na vaš fajl";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Реакција %@ на ваш GIF";
@@ -6026,7 +6026,7 @@
 "SHOW_THREAD_BUTTON_TITLE" = "Прикажи преписку";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Позивам те да инсталираш Signal! Ево га линк:";
+"SMS_INVITE_BODY" = "Pozivam te da instaliraš Signal! U nastavku je link:";
 
 /* table cell label in conversation settings */
 "SOUND_AND_NOTIFICATION_SETTINGS" = "Звуви и обавештења";
@@ -6149,7 +6149,7 @@
 "STORIES_TITLE" = "Приче";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Посетите везу";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Posetite link";
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "Није више доступно";
@@ -6605,7 +6605,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Кликните овде да порука нестане када буде погледана.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Одлазни једнократни медији се аутоматски бришу након слања.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Odlazni jednokratni medijski sadržaj se automatski uklanja nakon slanja.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Превуцте да бисте отказали";
