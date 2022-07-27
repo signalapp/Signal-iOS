@@ -55,6 +55,7 @@ class GroupCallViewController: UIViewController {
         didSet { updateCallUI() }
     }
     var hasUnresolvedSafetyNumberMismatch = false
+    var shouldRing = false
 
     private static let keyValueStore = SDSKeyValueStore(collection: "GroupCallViewController")
     private static let didUserSwipeToSpeakerViewKey = "didUserSwipeToSpeakerView"
@@ -730,6 +731,12 @@ extension GroupCallViewController: CallControlsDelegate {
             callControls.audioSourceButton.isSelected = true
             callService.audioService.requestSpeakerphone(call: self.call.groupCall, isEnabled: true)
         }
+    }
+
+    func didPressRing(sender: UIButton) {
+        let shouldRing = !sender.isSelected
+        sender.isSelected = shouldRing
+        call.shouldRing = shouldRing ? .enabled : .disabledByUser
     }
 
     func didPressFlipCamera(sender: UIButton) {

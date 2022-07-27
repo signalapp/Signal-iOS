@@ -1166,6 +1166,11 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     }
 
     @objc
+    func didPressRing(sender: UIButton) {
+        owsFailDebug("1:1 calls always ring")
+    }
+
+    @objc
     func didPressFlipCamera(sender: UIButton) {
         sender.isSelected = !sender.isSelected
 

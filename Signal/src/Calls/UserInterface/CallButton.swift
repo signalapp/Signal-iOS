@@ -131,7 +131,7 @@ class CallButton: UIButton {
             label.isHidden = true
         }
 
-        alpha = isHighlighted ? 0.6 : 1
+        alpha = (isHighlighted || !isEnabled) ? 0.6 : 1
     }
 
     private func updateSizing() {

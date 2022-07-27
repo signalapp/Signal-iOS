@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalRingRTC
+import SignalServiceKit
 
 @objc
 protocol CallControlsDelegate: AnyObject {
@@ -11,6 +12,7 @@ protocol CallControlsDelegate: AnyObject {
     func didPressAudioSource(sender: UIButton)
     func didPressMute(sender: UIButton)
     func didPressVideo(sender: UIButton)
+    func didPressRing(sender: UIButton)
     func didPressFlipCamera(sender: UIButton)
     func didPressCancel(sender: UIButton)
     func didPressJoin(sender: UIButton)
@@ -36,6 +38,10 @@ class CallControls: UIView {
     private lazy var videoButton = createButton(
         iconName: "video-solid-28",
         action: #selector(CallControlsDelegate.didPressVideo)
+    )
+    private lazy var ringButton = createButton(
+        iconName: "ring-28",
+        action: #selector(CallControlsDelegate.didPressRing)
     )
     private lazy var flipCameraButton: CallButton = {
         let button = createButton(
@@ -146,6 +152,7 @@ class CallControls: UIView {
         stackView.addArrangedSubview(flipCameraButton)
         stackView.addArrangedSubview(muteButton)
         stackView.addArrangedSubview(videoButton)
+        stackView.addArrangedSubview(ringButton)
         stackView.addArrangedSubview(hangUpButton)
 
         return stackView
@@ -179,16 +186,23 @@ class CallControls: UIView {
     private func updateControls() {
         let hasExternalAudioInputs = callService.audioService.hasExternalInputs
         let isLocalVideoMuted = call.groupCall.isOutgoingVideoMuted
+        let joinState = call.groupCall.localDeviceState.joinState
+        let devicesAlreadyInCall = call.groupCall.peekInfo?.deviceCount ?? 0
 
         flipCameraButton.isHidden = isLocalVideoMuted
         videoButton.isSelected = !isLocalVideoMuted
         muteButton.isSelected = call.groupCall.isOutgoingAudioMuted
-        hangUpButton.isHidden = call.groupCall.localDeviceState.joinState != .joined
+        ringButton.isHidden = joinState == .joined || devicesAlreadyInCall > 0 || call.shouldRing == .notApplicable
+        ringButton.isEnabled = call.shouldRing.canChange
+        // Leave the button visible but locked if joining, like the "join call" button.
+        ringButton.isUserInteractionEnabled = joinState == .notJoined
+        ringButton.isSelected = call.shouldRing == .enabled
+        hangUpButton.isHidden = joinState != .joined
 
         if !UIDevice.current.isIPad {
             // Use small controls if video is enabled and we have external
             // audio inputs, because we have five buttons now.
-            [audioSourceButton, flipCameraButton, videoButton, muteButton, hangUpButton].forEach {
+            [audioSourceButton, flipCameraButton, videoButton, muteButton, ringButton, hangUpButton].forEach {
                 let isSmall = hasExternalAudioInputs && !isLocalVideoMuted
                 $0.isSmall = isSmall
                 if UIDevice.current.isNarrowerThanIPhone6 {
@@ -224,14 +238,14 @@ class CallControls: UIView {
             audioSourceButton.showDropdownArrow = false
         }
 
-        bottomStackView.isHidden = call.groupCall.localDeviceState.joinState == .joined
+        bottomStackView.isHidden = joinState == .joined
 
         let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
         let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
 
         if call.groupCall.isFull {
             joinButton.isEnabled = false
-        } else if call.groupCall.localDeviceState.joinState == .joining {
+        } else if joinState == .joining {
             joinButton.isEnabled = true
             joinButton.isUserInteractionEnabled = false
             joinButtonActivityIndicator.startAnimating()
@@ -242,8 +256,7 @@ class CallControls: UIView {
             joinButton.isUserInteractionEnabled = true
             joinButtonActivityIndicator.stopAnimating()
 
-            let deviceCount = call.groupCall.peekInfo?.deviceCount ?? 0
-            joinButton.setTitle(deviceCount == 0 ? startCallText : joinCallText, for: .normal)
+            joinButton.setTitle(devicesAlreadyInCall == 0 ? startCallText : joinCallText, for: .normal)
         }
     }
 

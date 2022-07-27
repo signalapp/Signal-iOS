@@ -560,6 +560,10 @@ public final class CallService: LightweightCallManager {
         // this method would be called when you're already joined, but it is
         // safe to do so.
         if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
+
+        if call.shouldRing == .enabled {
+            call.groupCall.ringAll()
+        }
     }
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> SignalCall? {
@@ -867,7 +871,43 @@ extension CallService: CallManagerDelegate {
         message: Data,
         urgency: CallMessageUrgency
     ) {
-        Logger.info("Stubbed \(#function)")
+        AssertIsOnMainThread()
+        Logger.info("")
+
+        databaseStorage.read(.promise) { transaction throws -> TSGroupThread in
+            guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                throw OWSAssertionError("tried to send call message to unknown group")
+            }
+            return thread
+        }.then(on: .global()) { thread throws -> Promise<Void> in
+            let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
+            opaqueBuilder.setData(message)
+            opaqueBuilder.setUrgency(urgency.protobufValue)
+
+            return try Self.databaseStorage.write { transaction in
+                let callMessage = OWSOutgoingCallMessage(
+                    thread: thread,
+                    opaqueMessage: try opaqueBuilder.build(),
+                    transaction: transaction
+                )
+
+                return ThreadUtil.enqueueMessagePromise(
+                    message: callMessage,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
+        }.done(on: .main) { _ in
+            // TODO: Tell RingRTC we succeeded in sending the message. API TBD
+        }.catch(on: .main) { error in
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("Failed to send opaque message \(error)")
+            } else {
+                Logger.error("Failed to send opaque message \(error)")
+            }
+            // TODO: Tell RingRTC something went wrong. API TBD
+        }
     }
 
     public func callManager(

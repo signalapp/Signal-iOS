@@ -231,13 +231,13 @@ public class RemoteConfig: BaseFlags {
         DebugFlags.internalSettings || isEnabled(.groupRings)
     }
 
-    public static var maxGroupRingSize: UInt {
+    public static var maxGroupCallRingSize: UInt {
         let defaultValue: UInt = 16
         guard AppReadiness.isAppReady else {
             owsFailDebug("Storage is not yet ready.")
             return defaultValue
         }
-        guard let rawValue: AnyObject = value(.maxGroupRingSize) else {
+        guard let rawValue: AnyObject = value(.maxGroupCallRingSize) else {
             return defaultValue
         }
         guard let stringValue = rawValue as? String else {
@@ -463,7 +463,7 @@ private struct Flags {
         case paymentsDisabledRegions
         case donationMegaphone
         case donationMegaphoneSnoozeInterval
-        case maxGroupRingSize
+        case maxGroupCallRingSize
     }
 
     // We filter the received config down to just the supported values.
@@ -483,7 +483,7 @@ private struct Flags {
         case paymentsDisabledRegions
         case donationMegaphone
         case donationMegaphoneSnoozeInterval
-        case maxGroupRingSize
+        case maxGroupCallRingSize
     }
 }
 
@@ -504,6 +504,7 @@ private extension FlagType {
         case "groupsV2MaxGroupSizeHardLimit": return "global.groupsv2.groupSizeHardLimit"
         case "cdsSyncInterval": return "cds.syncInterval.seconds"
         case "paymentsDisabledRegions": return "global.payments.disabledRegions"
+        case "maxGroupCallRingSize": return "global.calling.maxGroupCallRingSize"
         default: return Flags.prefix + rawValue
         }
     }

@@ -109,6 +109,35 @@ public class SignalCall: NSObject, CallManagerCallReference {
     @objc
     public let thread: TSThread
 
+    public enum RingMode {
+        /// 1:1 calls (at least for today)
+        case notApplicable
+        /// Group calls that are too large
+        case groupIsTooLarge
+        /// The user has chosen not to ring for this call
+        case disabledByUser
+        /// The call should ring callees
+        case enabled
+
+        var canChange: Bool {
+            switch self {
+            case .notApplicable, .groupIsTooLarge:
+                return false
+            case .disabledByUser, .enabled:
+                return true
+            }
+        }
+    }
+
+    // Should only be used on the main thread
+    public var shouldRing: RingMode {
+        willSet {
+            AssertIsOnMainThread()
+            owsAssertDebug(shouldRing == newValue || shouldRing.canChange,
+                           "ringing has been disabled for this call")
+        }
+    }
+
     public var error: CallError?
     public enum CallError: Error {
         case providerReset
@@ -145,6 +174,13 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = groupThread
+        if !RemoteConfig.groupRings {
+            shouldRing = .notApplicable
+        } else if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
+            shouldRing = .groupIsTooLarge
+        } else {
+            shouldRing = .enabled
+        }
         super.init()
         groupCall.delegate = self
     }
@@ -156,6 +192,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = individualCall.thread
+        shouldRing = .notApplicable
         super.init()
         individualCall.delegate = self
     }
