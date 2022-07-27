@@ -192,6 +192,16 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                         
                         return SQL("LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])")
                     }()
+                ),
+                PagedData.ObservedChanges(
+                    table: Quote.self,
+                    columns: [.body],
+                    joinToPagedType: {
+                        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+                        let quote: TypedTableAlias<Quote> = TypedTableAlias()
+                        
+                        return SQL("LEFT JOIN \(Quote.self) ON \(quote[.interactionId]) = \(interaction[.id])")
+                    }()
                 )
             ],
             filterSQL: MessageViewModel.filterSQL(threadId: threadId),
