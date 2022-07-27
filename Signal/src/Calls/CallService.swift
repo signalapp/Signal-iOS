@@ -162,6 +162,11 @@ public final class CallService: LightweightCallManager {
             selector: #selector(configureBandwidthMode),
             name: Self.callServicePreferencesDidChange,
             object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationChanged),
+            name: .registrationStateDidChange,
+            object: nil)
 
         // Note that we're not using the usual .owsReachabilityChanged
         // We want to update our bandwidth mode if the app has been backgrounded
@@ -173,6 +178,9 @@ public final class CallService: LightweightCallManager {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
+            if let localUuid = self.tsAccountManager.localUuid {
+                self.callManager.setSelfUuid(localUuid)
+            }
         }
     }
 
@@ -605,6 +613,14 @@ public final class CallService: LightweightCallManager {
     func didBecomeActive() {
         AssertIsOnMainThread()
         self.updateIsVideoEnabled()
+    }
+
+    @objc
+    private func registrationChanged() {
+        AssertIsOnMainThread()
+        if let localUuid = tsAccountManager.localUuid {
+            callManager.setSelfUuid(localUuid)
+        }
     }
 
     // MARK: -
