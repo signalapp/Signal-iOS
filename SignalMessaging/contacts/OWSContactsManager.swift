@@ -722,9 +722,7 @@ extension OWSContactsManager {
     }
 
     @objc
-    static func buildSignalAccounts(forContacts contacts: [Contact],
-                                    shouldClearStaleCache: Bool,
-                                    completion: @escaping ([SignalAccount]) -> Void) {
+    static func buildSignalAccounts(forContacts contacts: [Contact], completion: @escaping ([SignalAccount]) -> Void) {
         intersectionQueue.async {
             var systemContactsSignalAccounts = [SignalAccount]()
             var seenAddresses = Set<SignalServiceAddress>()
@@ -791,24 +789,9 @@ extension OWSContactsManager {
                     // it doesn't need to be cleaned up.
                     continue
                 }
-
-                // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.
-                // However, as of iOS 11.2 CNContactStore occasionally gives us only a subset of the system contacts.
-                // Because of that, it's not safe to clear orphaned accounts.
-                // Because we still want to give users a way to clear their stale accounts, if they pull-to-refresh
-                // their contacts we'll clear the cached ones.
-                // RADAR: https://bugreport.apple.com/web/?problemID=36082946
-                let isOrphan = signalAccountsToKeep[signalAccount.recipientAddress] == nil
-                if isOrphan && !shouldClearStaleCache {
-                    Logger.verbose("Ensuring old SignalAccount is not inadvertently lost: \(signalAccount.recipientAddress).")
-                    // Make note that we're retaining this orphan otherwise we could
-                    // retain multiple orphans for a given recipient.
-                    signalAccountsToKeep[signalAccount.recipientAddress] = signalAccount
-                } else {
-                    // Clean up instances that have been replaced by another instance
-                    // or are no longer in the system contacts.
-                    signalAccountsToRemove.append(signalAccount)
-                }
+                // Clean up instances that have been replaced by another instance
+                // or are no longer in the system contacts.
+                signalAccountsToRemove.append(signalAccount)
             }
 
             // Update cached SignalAccounts on disk
