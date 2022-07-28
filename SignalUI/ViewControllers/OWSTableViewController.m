@@ -597,15 +597,9 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         return self;
     }
 
-    [self owsTableCommonInit];
+    _contents = [OWSTableContents new];
 
     return self;
-}
-
-- (void)owsTableCommonInit
-{
-    _contents = [OWSTableContents new];
-    self.tableViewStyle = UITableViewStyleGrouped;
 }
 
 - (void)loadView
@@ -614,7 +608,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     OWSAssertDebug(self.contents);
 
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:self.tableViewStyle];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];

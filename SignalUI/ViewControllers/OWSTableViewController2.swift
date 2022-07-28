@@ -48,12 +48,6 @@ open class OWSTableViewController2: OWSViewController {
     @objc
     open var bottomFooter: UIView?
 
-    // TODO: Remove.
-    @objc
-    public var tableViewStyle: UITableView.Style {
-        tableView.style
-    }
-
     @objc
     public var useThemeBackgroundColors = false {
         didSet {

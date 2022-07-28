@@ -206,8 +206,6 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 @property (nonatomic) OWSTableContents *contents;
 @property (nonatomic, readonly) UITableView *tableView;
 
-@property (nonatomic) UITableViewStyle tableViewStyle;
-
 @property (nonatomic) BOOL layoutMarginsRelativeTableContent;
 @property (nonatomic) BOOL useThemeBackgroundColors;
 
