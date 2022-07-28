@@ -593,7 +593,49 @@ public enum OpenGroupAPI {
     
     // MARK: - Reactions
     
+    public static func reactionAdd(
+        _ db: Database,
+        emoji: String,
+        id: Int64,
+        in roomToken: String,
+        on server: String,
+        using dependencies: SMKDependencies = SMKDependencies()
+    ) -> Promise<OnionRequestResponseInfoType> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    method: .put,
+                    server: server,
+                    endpoint: .reaction(roomToken, id: id, emoji: emoji)
+                ),
+                using: dependencies
+            )
+            .map { responseInfo, _ in responseInfo }
+    }
+    
     public static func reactionDelete(
+        _ db: Database,
+        emoji: String,
+        id: Int64,
+        in roomToken: String,
+        on server: String,
+        using dependencies: SMKDependencies = SMKDependencies()
+    ) -> Promise<OnionRequestResponseInfoType> {
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    method: .delete,
+                    server: server,
+                    endpoint: .reaction(roomToken, id: id, emoji: emoji)
+                ),
+                using: dependencies
+            )
+            .map { responseInfo, _ in responseInfo }
+    }
+    
+    public static func reactionDeleteAll(
         _ db: Database,
         emoji: String,
         id: Int64,

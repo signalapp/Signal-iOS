@@ -1022,7 +1022,7 @@ extension ConversationVC:
                 }
                 
                 return OpenGroupAPI
-                    .reactionDelete(
+                    .reactionDeleteAll(
                         db,
                         emoji: emoji,
                         id: openGroupServerMessageId,
@@ -1077,7 +1077,6 @@ extension ConversationVC:
                     .filter(id: thread.id)
                     .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                 
-                // TODO: Need to handle open group specific logic
                 // Update the database
                 if remove {
                     _ = try Reaction
@@ -1100,30 +1099,60 @@ extension ConversationVC:
                     Emoji.addRecent(db, emoji: emoji)
                 }
                 
-                // Send the actual message
-                try MessageSender.send(
-                    db,
-                    message: VisibleMessage(
-                        sentTimestamp: UInt64(sentTimestamp),
-                        // TODO: Is the 'groupPublicKey' needed here?
-                        groupPublicKey: (thread.variant == .closedGroup ? thread.id : nil),
-                        text: nil,
-                        reaction: VisibleMessage.VMReaction(
-                            timestamp: UInt64(cellViewModel.timestampMs),
-                            publicKey: {
-                                guard cellViewModel.variant == .standardIncoming else {
-                                    return cellViewModel.currentUserPublicKey
-                                }
-                                
-                                return cellViewModel.authorId
-                            }(),
-                            emoji: emoji,
-                            kind: (remove ? .remove : .react)
-                        )
-                    ),
-                    interactionId: cellViewModel.id,
-                    in: thread
-                )
+                if let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: cellViewModel.threadId) {
+                    // Send reaction to open groups
+                    guard
+                        let openGroupServerMessageId: Int64 = try? Interaction
+                            .select(.openGroupServerMessageId)
+                            .filter(id: cellViewModel.id)
+                            .asRequest(of: Int64.self)
+                            .fetchOne(db)
+                    else { return }
+                    
+                    if remove {
+                        _ = OpenGroupAPI
+                            .reactionDelete(
+                                db,
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server
+                            )
+                    } else {
+                        _ = OpenGroupAPI
+                            .reactionAdd(
+                                db,
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server
+                            )
+                    }
+                    
+                } else {
+                    // Send the actual message
+                    try MessageSender.send(
+                        db,
+                        message: VisibleMessage(
+                            sentTimestamp: UInt64(sentTimestamp),
+                            text: nil,
+                            reaction: VisibleMessage.VMReaction(
+                                timestamp: UInt64(cellViewModel.timestampMs),
+                                publicKey: {
+                                    guard cellViewModel.variant == .standardIncoming else {
+                                        return cellViewModel.currentUserPublicKey
+                                    }
+                                    
+                                    return cellViewModel.authorId
+                                }(),
+                                emoji: emoji,
+                                kind: (remove ? .remove : .react)
+                            )
+                        ),
+                        interactionId: cellViewModel.id,
+                        in: thread
+                    )
+                }
             },
             completion: { [weak self] _, _ in
                 self?.handleMessageSent()
