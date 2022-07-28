@@ -194,7 +194,10 @@ extension OpenGroupAPI {
                             
                         case .roomPollInfo(let roomToken, _):
                             guard let responseData: BatchSubResponse<RoomPollInfo> = endpointResponse.data as? BatchSubResponse<RoomPollInfo>, let responseBody: RoomPollInfo = responseData.body else {
-                                SNLog("Open group polling failed due to invalid room info data.")
+                                switch (endpointResponse.data as? BatchSubResponse<RoomPollInfo>)?.code {
+                                    case 404: SNLog("Open group polling failed to retrieve info for unknown room '\(roomToken)'.")
+                                    default: SNLog("Open group polling failed due to invalid room info data.")
+                                }
                                 return
                             }
                             
@@ -209,7 +212,10 @@ extension OpenGroupAPI {
                             
                         case .roomMessagesRecent(let roomToken), .roomMessagesBefore(let roomToken, _), .roomMessagesSince(let roomToken, _):
                             guard let responseData: BatchSubResponse<[Failable<Message>]> = endpointResponse.data as? BatchSubResponse<[Failable<Message>]>, let responseBody: [Failable<Message>] = responseData.body else {
-                                SNLog("Open group polling failed due to invalid messages data.")
+                                switch (endpointResponse.data as? BatchSubResponse<[Failable<Message>]>)?.code {
+                                    case 404: SNLog("Open group polling failed to retrieve messages for unknown room '\(roomToken)'.")
+                                    default: SNLog("Open group polling failed due to invalid messages data.")
+                                }
                                 return
                             }
                             let successfulMessages: [Message] = responseBody.compactMap { $0.value }
