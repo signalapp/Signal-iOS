@@ -26,6 +26,11 @@ extension OpenGroupAPI {
         case roomMessagesSince(String, seqNo: Int64)
         case roomDeleteMessages(String, sessionId: String)
         
+        // Reactions
+        
+        case reactionDelete(String, id: Int64, emoji: String)
+        case reaction(String, id: Int64, emoji: String)
+        
         // Pinning
         
         case roomPinMessage(String, id: Int64)
@@ -86,6 +91,14 @@ extension OpenGroupAPI {
                     
                 case .roomDeleteMessages(let roomToken, let sessionId):
                     return "room/\(roomToken)/all/\(sessionId)"
+                
+                // Reactions
+                
+                case .reactionDelete(let roomToken, let messageId, let emoji):
+                    return "room/\(roomToken)/reactions/\(messageId)/\(emoji)"
+                
+                case .reaction(let roomToken, let messageId, let emoji):
+                    return "room/\(roomToken)/reaction/\(messageId)/\(emoji)"
                     
                 // Pinning
                     

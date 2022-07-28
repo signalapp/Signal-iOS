@@ -1009,20 +1009,27 @@ extension ConversationVC:
         
         Storage.shared
             .read { db -> Promise<Void> in
-                guard let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: cellViewModel.threadId) else {
+                guard
+                    let openGroup: OpenGroup = try? OpenGroup
+                        .fetchOne(db, id: cellViewModel.threadId),
+                    let openGroupServerMessageId: Int64 = try? Interaction
+                        .select(.openGroupServerMessageId)
+                        .filter(id: cellViewModel.id)
+                        .asRequest(of: Int64.self)
+                        .fetchOne(db)
+                else {
                     return Promise(error: StorageError.objectNotFound)
                 }
                 
-                // TODO: Need to add this API ()
-                return Promise.value(())
-    //            OpenGroupAPI
-    //                .reactionDelete(
-    //                    db,
-    //                    emoji: emoji,
-    //                    in: openGroup.roomToken,
-    //                    on: openGroup.server
-    //                )
-    //                .map { _ in () }
+                return OpenGroupAPI
+                    .reactionDelete(
+                        db,
+                        emoji: emoji,
+                        id: openGroupServerMessageId,
+                        in: openGroup.roomToken,
+                        on: openGroup.server
+                    )
+                    .map { _ in () }
             }
             .done { _ in
                 Storage.shared.writeAsync { db in
