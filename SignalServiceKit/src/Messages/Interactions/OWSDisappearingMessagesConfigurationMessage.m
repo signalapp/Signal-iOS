@@ -24,6 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 - (instancetype)initWithConfiguration:(OWSDisappearingMessagesConfiguration *)configuration
                                thread:(TSThread *)thread
                           transaction:(SDSAnyReadTransaction *)transaction

@@ -499,6 +499,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return NO;
 }
 
+- (BOOL)isUrgent
+{
+    return YES;
+}
+
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_OutgoingMessage;

@@ -76,6 +76,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 - (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {

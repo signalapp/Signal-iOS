@@ -23,4 +23,15 @@ class TypingIndicatorMessageTest: SSKBaseTestSwift {
             XCTAssertTrue(message.isOnline)
         }
     }
+
+    func testIsUrgent() throws {
+        write { transaction in
+            let message = TypingIndicatorMessage(
+                thread: makeThread(transaction: transaction),
+                action: .started,
+                transaction: transaction
+            )
+            XCTAssertFalse(message.isUrgent)
+        }
+    }
 }

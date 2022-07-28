@@ -815,7 +815,8 @@ public extension MessageSender {
                                                                                    messages: deviceMessages,
                                                                                    timeStamp: message.timestamp,
                                                                                    udAccessKey: udAccessKey,
-                                                                                   isOnline: message.isOnline)
+                                                                                   isOnline: message.isOnline,
+                                                                                   isUrgent: message.isUrgent)
                                         },
                                         udAuthFailureBlock: {
                                             // Note the UD auth failure so subsequent retries
@@ -1250,7 +1251,8 @@ extension MessageSender {
             "destination": protocolAddress.name,
             "destinationDeviceId": protocolAddress.deviceId,
             "destinationRegistrationId": Int32(bitPattern: try session.remoteRegistrationId()),
-            "content": serializedMessage.base64EncodedString()
+            "content": serializedMessage.base64EncodedString(),
+            "urgent": messageSend.message.isUrgent
         ]
     }
 
@@ -1304,7 +1306,8 @@ extension MessageSender {
             "destination": protocolAddress.name,
             "destinationDeviceId": protocolAddress.deviceId,
             "destinationRegistrationId": Int32(bitPattern: try session.remoteRegistrationId()),
-            "content": serializedMessage.base64EncodedString()
+            "content": serializedMessage.base64EncodedString(),
+            "urgent": messageSend.message.isUrgent
         ]
     }
 }

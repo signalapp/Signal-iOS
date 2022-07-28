@@ -73,6 +73,11 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 // --- CODE GENERATION MARKER
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 + (nullable instancetype)fetchWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self fetchWithThreadId:thread.uniqueId transaction:transaction];

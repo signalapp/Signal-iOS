@@ -528,6 +528,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                      timeStamp:(uint64_t)timeStamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                       isOnline:(BOOL)isOnline
+                                      isUrgent:(BOOL)isUrgent
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(recipientAddress.isValid);
@@ -539,7 +540,8 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     // the Signal Web Service.
     // See
     // <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
-    NSDictionary *parameters = @{ @"messages" : messages, @"timestamp" : @(timeStamp), @"online" : @(isOnline) };
+    NSDictionary *parameters =
+        @{ @"messages" : messages, @"timestamp" : @(timeStamp), @"online" : @(isOnline), @"urgent" : @(isUrgent) };
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
     if (udAccessKey != nil) {
@@ -552,6 +554,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                            compositeUDAccessKey:(SMKUDAccessKey *)udAccessKey
                                                       timestamp:(uint64_t)timestamp
                                                        isOnline:(BOOL)isOnline
+                                                       isUrgent:(BOOL)isUrgent
 {
     OWSAssertDebug(ciphertext);
     OWSAssertDebug(udAccessKey);
@@ -563,6 +566,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     components.queryItems = @[
         [NSURLQueryItem queryItemWithName:@"ts" value:[@(timestamp) stringValue]],
         [NSURLQueryItem queryItemWithName:@"online" value:isOnline ? @"true" : @"false"],
+        [NSURLQueryItem queryItemWithName:@"urgent" value:isUrgent ? @"true" : @"false"],
     ];
     NSURL *url = [components URL];
 

@@ -49,6 +49,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];

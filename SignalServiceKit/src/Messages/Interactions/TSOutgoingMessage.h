@@ -206,6 +206,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 @property (nonatomic, readonly) BOOL isOnline;
 
+@property (nonatomic, readonly) BOOL isUrgent;
+
 // NOTE: We do not persist this property; it is only used for
 //       group updates which we don't insert into the database.
 @property (nonatomic, readonly, nullable) NSData *changeActionsProtoData;

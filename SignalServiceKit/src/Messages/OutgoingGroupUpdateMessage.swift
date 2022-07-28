@@ -47,4 +47,6 @@ public class OutgoingGroupUpdateMessage: TSOutgoingMessage {
     required init(dictionary: [String: Any]!) throws {
         try super.init(dictionary: dictionary)
     }
+
+    public override var isUrgent: Bool { false }
 }

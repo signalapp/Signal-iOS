@@ -29,6 +29,9 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         try super.init(dictionary: dictionaryValue)
     }
 
+    @objc
+    public override var isUrgent: Bool { false }
+
     public class func createUnsentMessage(
         attachment: TSAttachmentStream,
         thread: TSThread,

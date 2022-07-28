@@ -28,6 +28,10 @@ class OWSOutgoingReactionMessageTest: SSKBaseTestSwift {
         }
     }()
 
+    func testIsUrgent() throws {
+        XCTAssertTrue(reactionMessage.isUrgent)
+    }
+
     func testShouldBeSaved() throws {
         // Reactions should be saved, but their outgoing messages are not. For example,
         // if I react with 🔮, we save that reaction, but we don't save the message that

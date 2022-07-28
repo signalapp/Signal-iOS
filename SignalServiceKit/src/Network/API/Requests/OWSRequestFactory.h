@@ -85,13 +85,15 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                                       messages:(NSArray *)messages
                                      timeStamp:(uint64_t)timeStamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                      isOnline:(BOOL)isOnline;
+                                      isOnline:(BOOL)isOnline
+                                      isUrgent:(BOOL)isUrgent;
 
 + (TSRequest *)submitMultiRecipientMessageRequestWithCiphertext:(NSData *)ciphertext
                                            compositeUDAccessKey:(SMKUDAccessKey *)udAccessKey
                                                       timestamp:(uint64_t)timestamp
                                                        isOnline:(BOOL)isOnline
-    NS_SWIFT_NAME(submitMultiRecipientMessageRequest(ciphertext:compositeUDAccessKey:timestamp:isOnline:));
+                                                       isUrgent:(BOOL)isUrgent
+    NS_SWIFT_NAME(submitMultiRecipientMessageRequest(ciphertext:compositeUDAccessKey:timestamp:isOnline:isUrgent:));
 
 + (TSRequest *)verifyPrimaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
                                                   phoneNumber:(NSString *)phoneNumber

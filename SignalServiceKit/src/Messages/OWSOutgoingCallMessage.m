@@ -208,6 +208,11 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (BOOL)isUrgent
+{
+    return self.offerMessage ? YES : NO;
+}
+
 - (NSString *)debugDescription
 {
     NSString *className = NSStringFromClass([self class]);
