@@ -26,6 +26,7 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         case sequenceNumber
         case inboxLatestMessageId
         case outboxLatestMessageId
+        case pollFailureCount
     }
     
     public var id: String { threadId }  // Identifiable
@@ -86,6 +87,9 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
     /// updated whenever this value changes)
     public let outboxLatestMessageId: Int64
     
+    /// The number of times this room has failed to poll since the last successful poll
+    public let pollFailureCount: Int64
+    
     // MARK: - Relationships
     
     public var thread: QueryInterfaceRequest<SessionThread> {
@@ -117,7 +121,8 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         infoUpdates: Int64,
         sequenceNumber: Int64 = 0,
         inboxLatestMessageId: Int64 = 0,
-        outboxLatestMessageId: Int64 = 0
+        outboxLatestMessageId: Int64 = 0,
+        pollFailureCount: Int64 = 0
     ) {
         self.threadId = OpenGroup.idFor(roomToken: roomToken, server: server)
         self.server = server.lowercased()
@@ -133,6 +138,7 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         self.sequenceNumber = sequenceNumber
         self.inboxLatestMessageId = inboxLatestMessageId
         self.outboxLatestMessageId = outboxLatestMessageId
+        self.pollFailureCount = pollFailureCount
     }
 }
 
@@ -159,7 +165,8 @@ public extension OpenGroup {
                 infoUpdates: 0,
                 sequenceNumber: 0,
                 inboxLatestMessageId: 0,
-                outboxLatestMessageId: 0
+                outboxLatestMessageId: 0,
+                pollFailureCount: 0
             )
         }
         
@@ -192,7 +199,8 @@ extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
             "infoUpdates: \(infoUpdates)",
             "sequenceNumber: \(sequenceNumber)",
             "inboxLatestMessageId: \(inboxLatestMessageId)",
-            "outboxLatestMessageId: \(outboxLatestMessageId))"
+            "outboxLatestMessageId: \(outboxLatestMessageId)",
+            "pollFailureCount: \(pollFailureCount))"
         ].joined(separator: ", ")
     }
 }

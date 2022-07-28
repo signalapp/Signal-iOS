@@ -3070,8 +3070,6 @@
 			children = (
 				C3C2A5B0255385C700C340D1 /* Meta */,
 				FD17D79D27F40CAA00122BE0 /* Database */,
-				FD17D7DF27F67BC400122BE0 /* Models */,
-				FD17D7D027F5795300122BE0 /* Types */,
 				FDC438AF27BB158500C60D73 /* Models */,
 				C3C2A5CD255385F300C340D1 /* Utilities */,
 				C3C2A5B9255385ED00C340D1 /* Configuration.swift */,
@@ -3554,20 +3552,6 @@
 				FDF0B73F280402C4004C14C5 /* Job.swift */,
 				FD09C5E1282212B3000CE219 /* JobDependencies.swift */,
 				FD17D7CC27F546FF00122BE0 /* Setting.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		FD17D7D027F5795300122BE0 /* Types */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Types;
-			sourceTree = "<group>";
-		};
-		FD17D7DF27F67BC400122BE0 /* Models */ = {
-			isa = PBXGroup;
-			children = (
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -6830,7 +6814,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 360;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6902,7 +6886,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 357;
+				CURRENT_PROJECT_VERSION = 360;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
