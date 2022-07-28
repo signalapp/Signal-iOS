@@ -52,7 +52,14 @@ public enum UpdateProfilePictureJob: JobExecutor {
             image: nil,
             imageFilePath: profileFilePath,
             requiredSync: true,
-            success: { _, _ in success(job, false) },
+            success: { _, _ in
+                // Need to call the 'success' closure asynchronously on the queue to prevent a reentrancy
+                // issue as it will write to the database and this closure is already called within
+                // another database write
+                queue.async {
+                    success(job, false)
+                }
+            },
             failure: { error in failure(job, error, false) }
         )
     }

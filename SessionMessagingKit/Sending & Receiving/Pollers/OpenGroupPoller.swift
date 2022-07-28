@@ -15,7 +15,8 @@ extension OpenGroupAPI {
 
         // MARK: - Settings
         
-        private static let pollInterval: TimeInterval = 4
+        private static let minPollInterval: TimeInterval = 3
+        private static let maxPollInterval: Double = (60 * 60)
         internal static let maxInactivityPeriod: Double = (14 * 24 * 60 * 60)
         
         // MARK: - Lifecycle
@@ -28,10 +29,7 @@ extension OpenGroupAPI {
             guard !hasStarted else { return }
             
             hasStarted = true
-            timer = Timer.scheduledTimerOnMainThread(withTimeInterval: Poller.pollInterval, repeats: true) { _ in
-                self.poll(using: dependencies).retainUntilComplete()
-            }
-            poll(using: dependencies).retainUntilComplete()
+            pollRecursively(using: dependencies)
         }
 
         @objc public func stop() {
@@ -40,6 +38,30 @@ extension OpenGroupAPI {
         }
 
         // MARK: - Polling
+        
+        private func pollRecursively(using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) {
+            guard hasStarted else { return }
+            
+            let minPollFailureCount: TimeInterval = Storage.shared
+                .read { db in
+                    try OpenGroup
+                        .filter(OpenGroup.Columns.server == server)
+                        .select(min(OpenGroup.Columns.pollFailureCount))
+                        .asRequest(of: TimeInterval.self)
+                        .fetchOne(db)
+                }
+                .defaulting(to: 0)
+            let nextPollInterval: TimeInterval = getInterval(for: minPollFailureCount, minInterval: Poller.minPollInterval, maxInterval: Poller.maxPollInterval)
+            
+            poll(using: dependencies).retainUntilComplete()
+            timer = Timer.scheduledTimerOnMainThread(withTimeInterval: nextPollInterval, repeats: false) { [weak self] timer in
+                timer.invalidate()
+                
+                Threading.pollerQueue.async {
+                    self?.pollRecursively(using: dependencies)
+                }
+            }
+        }
         
         @discardableResult
         public func poll(using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) -> Promise<Void> {
@@ -83,6 +105,14 @@ extension OpenGroupAPI {
                             cache.timeSinceLastPoll[server] = Date().timeIntervalSince1970
                             UserDefaults.standard[.lastOpen] = Date()
                         }
+                        
+                        // Reset the failure count
+                        Storage.shared.writeAsync { db in
+                            try OpenGroup
+                                .filter(OpenGroup.Columns.server == server)
+                                .updateAll(db, OpenGroup.Columns.pollFailureCount.set(to: 0))
+                        }
+                        
                         SNLog("Open group polling finished for \(server).")
                         seal.fulfill(())
                     }
@@ -97,7 +127,24 @@ extension OpenGroupAPI {
                         )
                         .done(on: OpenGroupAPI.workQueue) { [weak self] didHandleError in
                             if !didHandleError {
-                                SNLog("Open group polling failed due to error: \(error).")
+                                // Increase the failure count
+                                let pollFailureCount: Int64 = Storage.shared
+                                    .read { db in
+                                        try OpenGroup
+                                            .filter(OpenGroup.Columns.server == server)
+                                            .select(max(OpenGroup.Columns.pollFailureCount))
+                                            .asRequest(of: Int64.self)
+                                            .fetchOne(db)
+                                    }
+                                    .defaulting(to: 0)
+                                
+                                Storage.shared.writeAsync { db in
+                                    try OpenGroup
+                                        .filter(OpenGroup.Columns.server == server)
+                                        .updateAll(db, OpenGroup.Columns.pollFailureCount.set(to: (pollFailureCount + 1)))
+                                }
+                                
+                                SNLog("Open group polling failed due to error: \(error). Setting failure count to \(pollFailureCount).")
                             }
                             
                             self?.isPolling = false
@@ -194,7 +241,10 @@ extension OpenGroupAPI {
                             
                         case .roomPollInfo(let roomToken, _):
                             guard let responseData: BatchSubResponse<RoomPollInfo> = endpointResponse.data as? BatchSubResponse<RoomPollInfo>, let responseBody: RoomPollInfo = responseData.body else {
-                                SNLog("Open group polling failed due to invalid room info data.")
+                                switch (endpointResponse.data as? BatchSubResponse<RoomPollInfo>)?.code {
+                                    case 404: SNLog("Open group polling failed to retrieve info for unknown room '\(roomToken)'.")
+                                    default: SNLog("Open group polling failed due to invalid room info data.")
+                                }
                                 return
                             }
                             
@@ -209,7 +259,10 @@ extension OpenGroupAPI {
                             
                         case .roomMessagesRecent(let roomToken), .roomMessagesBefore(let roomToken, _), .roomMessagesSince(let roomToken, _):
                             guard let responseData: BatchSubResponse<[Failable<Message>]> = endpointResponse.data as? BatchSubResponse<[Failable<Message>]>, let responseBody: [Failable<Message>] = responseData.body else {
-                                SNLog("Open group polling failed due to invalid messages data.")
+                                switch (endpointResponse.data as? BatchSubResponse<[Failable<Message>]>)?.code {
+                                    case 404: SNLog("Open group polling failed to retrieve messages for unknown room '\(roomToken)'.")
+                                    default: SNLog("Open group polling failed due to invalid messages data.")
+                                }
                                 return
                             }
                             let successfulMessages: [Message] = responseBody.compactMap { $0.value }
@@ -258,5 +311,12 @@ extension OpenGroupAPI {
                 }
             }
         }
+    }
+    
+    // MARK: - Convenience
+
+    fileprivate static func getInterval(for failureCount: TimeInterval, minInterval: TimeInterval, maxInterval: TimeInterval) -> TimeInterval {
+        // Arbitrary backoff factor...
+        return min(maxInterval, minInterval + pow(2, failureCount))
     }
 }
