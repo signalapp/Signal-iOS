@@ -255,7 +255,7 @@ public class StickerPackViewController: OWSViewController {
 
         authorLabel.text = stickerPack.author?.filterForDisplay
 
-        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(stickerPack.info)
+        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(packId: stickerPack.info.packId)
         authorLabel.textColor = isDefaultStickerPack ? Theme.accentBlueColor : Theme.darkThemePrimaryColor
         defaultPackIconView.isHidden = !isDefaultStickerPack
 
