@@ -3442,6 +3442,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                  offerType:TSRecentCallOfferTypeAudio
                                                     thread:contactThread
                                            sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb
+                                                 offerType:TSRecentCallOfferTypeAudio
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
     }
 
     {

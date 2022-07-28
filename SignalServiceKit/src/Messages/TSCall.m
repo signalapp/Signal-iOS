@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSCall.h"
@@ -34,6 +34,8 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
             return @"RPRecentCallTypeIncomingDeclinedElsewhere";
         case RPRecentCallTypeIncomingBusyElsewhere:
             return @"RPRecentCallTypeIncomingBusyElsewhere";
+        case RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb:
+            return @"RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb";
     }
 }
 
@@ -70,12 +72,15 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
     _offerType = offerType;
 
     // Ensure users are notified of missed calls.
-    BOOL isIncomingMissed = (_callType == RPRecentCallTypeIncomingMissed
-        || _callType == RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity);
-    if (isIncomingMissed) {
-        _read = NO;
-    } else {
-        _read = YES;
+    switch (callType) {
+        case RPRecentCallTypeIncomingMissed:
+        case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
+        case RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb:
+            _read = NO;
+            break;
+        default:
+            _read = YES;
+            break;
     }
 
     return self;
@@ -171,6 +176,15 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         case RPRecentCallTypeIncomingDeclined:
         case RPRecentCallTypeIncomingDeclinedElsewhere:
             return OWSLocalizedString(@"MISSED_CALL", @"info message text in conversation view");
+        case RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb:
+            if (@available(iOS 15, *)) {
+                return OWSLocalizedString(@"MISSED_CALL_FOCUS_MODE",
+                    @"info message text in conversation view (use Apple's name for 'Focus')");
+            } else {
+                return OWSLocalizedString(@"MISSED_CALL_DO_NOT_DISTURB",
+                    @"info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and "
+                    @"older)");
+            }
     }
 }
 

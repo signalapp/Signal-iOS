@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSReadTracking.h>
@@ -21,7 +21,8 @@ typedef NS_ENUM(NSUInteger, RPRecentCallType) {
     RPRecentCallTypeOutgoingMissed,
     RPRecentCallTypeIncomingAnsweredElsewhere,
     RPRecentCallTypeIncomingDeclinedElsewhere,
-    RPRecentCallTypeIncomingBusyElsewhere
+    RPRecentCallTypeIncomingBusyElsewhere,
+    RPRecentCallTypeIncomingMissedBecauseOfDoNotDisturb
 };
 
 typedef NS_CLOSED_ENUM(NSUInteger, TSRecentCallOfferType) {

@@ -666,6 +666,7 @@ extension CVComponentSystemMessage {
             switch call.callType {
             case .incomingMissed,
                  .incomingMissedBecauseOfChangedIdentity,
+                 .incomingMissedBecauseOfDoNotDisturb,
                  .incomingBusyElsewhere,
                  .incomingDeclined,
                  .incomingDeclinedElsewhere:
@@ -760,6 +761,7 @@ extension CVComponentSystemMessage {
             switch call.callType {
             case .incomingMissed,
                  .incomingMissedBecauseOfChangedIdentity,
+                 .incomingMissedBecauseOfDoNotDisturb,
                  .incomingBusyElsewhere,
                  .incomingDeclined,
                  .incomingDeclinedElsewhere:
@@ -1158,6 +1160,7 @@ extension CVComponentSystemMessage {
         case .incoming,
              .incomingMissed,
              .incomingMissedBecauseOfChangedIdentity,
+             .incomingMissedBecauseOfDoNotDisturb,
              .incomingDeclined,
              .incomingAnsweredElsewhere,
              .incomingDeclinedElsewhere,

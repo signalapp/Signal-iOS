@@ -731,7 +731,7 @@ final public class IndividualCallService: NSObject {
 
             if let callRecord = call.individualCall.callRecord {
                 switch callRecord.callType {
-                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
+                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
                     // already handled and ended, don't update the call record.
                     break
                 case .incomingIncomplete, .incoming:
@@ -1067,9 +1067,21 @@ final public class IndividualCallService: NSObject {
     /**
      * User didn't answer incoming call
      */
-    public func handleMissedCall(_ call: SignalCall) {
+    public func handleMissedCall(_ call: SignalCall, error: SignalCall.CallError? = nil) {
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
+
+        let callType: RPRecentCallType
+        switch error {
+        case .doNotDisturbEnabled?:
+            callType = .incomingMissedBecauseOfDoNotDisturb
+        default:
+            if call.individualCall?.direction == .outgoing {
+                callType = .outgoingMissed
+            } else {
+                callType = .incomingMissed
+            }
+        }
 
         let callRecord: TSCall
         if let existingCallRecord = call.individualCall.callRecord {
@@ -1087,15 +1099,16 @@ final public class IndividualCallService: NSObject {
         switch callRecord.callType {
         case .incomingMissed:
             databaseStorage.asyncWrite { transaction in
+                callRecord.updateCallType(callType, transaction: transaction)
                 callRecord.anyUpsert(transaction: transaction)
             }
             callUIAdapter.reportMissedCall(call)
         case .incomingIncomplete, .incoming:
-            callRecord.updateCallType(.incomingMissed)
+            callRecord.updateCallType(callType)
             callUIAdapter.reportMissedCall(call)
         case .outgoingIncomplete:
-            callRecord.updateCallType(.outgoingMissed)
-        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
+            callRecord.updateCallType(callType)
+        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
             databaseStorage.asyncWrite { transaction in
                 callRecord.anyUpsert(transaction: transaction)
@@ -1377,7 +1390,7 @@ final public class IndividualCallService: NSObject {
         case .answering, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
             assert(failedCall.individualCall.callRecord == nil)
             // call failed before any call record could be created, make one now.
-            handleMissedCall(failedCall)
+            handleMissedCall(failedCall, error: callError)
         default:
             assert(failedCall.individualCall.callRecord != nil)
         }
@@ -1484,27 +1497,7 @@ final public class IndividualCallService: NSObject {
 
 extension RPRecentCallType: CustomStringConvertible {
     public var description: String {
-        switch self {
-        case .incoming:
-            return ".incoming"
-        case .outgoing:
-            return ".outgoing"
-        case .incomingMissed:
-            return ".incomingMissed"
-        case .outgoingIncomplete:
-            return ".outgoingIncomplete"
-        case .incomingIncomplete:
-            return ".incomingIncomplete"
-        case .incomingMissedBecauseOfChangedIdentity:
-            return ".incomingMissedBecauseOfChangedIdentity"
-        case .incomingDeclined:
-            return ".incomingDeclined"
-        case .outgoingMissed:
-            return ".outgoingMissed"
-        default:
-            owsFailDebug("unexpected RPRecentCallType: \(self.rawValue)")
-            return "RPRecentCallTypeUnknown"
-        }
+        NSStringFromCallType(self)
     }
 }
 
