@@ -133,9 +133,6 @@
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "បញ្ហា";
 
-/* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "ដំណើរការការត្រួតពិនិត្យភាពត្រឹមត្រូវនៃមូលដ្ឋានទិន្នន័យ";
-
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "បើក Signal ជំនួសវិញ";
 
@@ -368,10 +365,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "អោយ Signal នូវការជំរុញមួយ";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "ស្លាកទ្រទ្រង់របស់អ្នកបានផុតកំណត់ និងលែងមានសម្រាប់បង្ហាញនៅលើប្រូហ្វាល់របស់អ្នក​ទៀតហើយ។\n\nអ្នកអាចបន្តប្រើប្រាស់ Signal បាន ប៉ុន្តែដើម្បីគាំទ្របច្ចេកវិទ្យាដែលបង្កើតឡើងសម្រាប់អ្នក សូមពិចារណាក្លាយជាអ្នកទ្រទ្រង់ដោយធ្វើការបរិច្ចាគប្រចាំខែ។";
+"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "ស្លាកទ្រទ្រង់របស់អ្នកបានផុតកំណត់ និងលែងមានសម្រាប់បង្ហាញនៅលើប្រូហ្វាល់របស់អ្នក​ទៀតហើយ។\n\nអ្នកអាចដំណើរការស្លាកទ្រទ្រង់របស់អ្នកឡើងវិញបានរយៈពេល 30 ថ្ងៃទៀតតាមរយៈ​ការរួមចំណែកតែមួយដង។";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "ស្លាកទ្រទ្រង់របស់អ្នកបានផុតកំណត់ និងលែងមានសម្រាប់បង្ហាញនៅលើប្រូហ្វាល់របស់អ្នក​ទៀតហើយ។\n\nអ្នកអាចដំណើរការស្លាកទ្រទ្រង់របស់អ្នកឡើងវិញបានរយៈពេល 30 ថ្ងៃទៀតតាមរយៈ​ការរួមចំណែកតែមួយដង។";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "ក្លាយជាទ្រទ្រង់ម្នាក់";
@@ -382,8 +379,20 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "ស្លាកសម្គាល់អស់សុពលភាព";
 
+/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+
+/* Title for gift on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "ស្វែងយល់បន្ថែម។";
+
+/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "អ្នកអាចបន្តប្រើប្រាស់ Signal បាន ប៉ុន្តែដើម្បីគាំទ្របច្ចេកវិទ្យាដែលបង្កើតឡើងសម្រាប់អ្នក សូមពិចារណាក្លាយជាអ្នកទ្រទ្រង់ដោយធ្វើការបរិច្ចាគប្រចាំខែ។";
+
+/* Button title to donate monthly on the badge expiration sheet. */
+"BADGE_EXPIRED_RENEWAL_MONTHLY" = "ធ្វើការបរិច្ចាគប្រចាំខែ";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "ការជាវឡើងវិញ";
@@ -412,7 +421,7 @@
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "បានផុតកំណត់";
 
-/* Shown on a gift badge message to indicate that the message contains a gift. */
+/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "ស្លាកកាដូ";
 
 /* Short paragraph on the screen where you choose a gift badge */
@@ -465,6 +474,12 @@
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "ប្តូរ";
+
+/* Shown as the body of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+
+/* Shown as the title of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
@@ -1442,16 +1457,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "ដំណើរការ";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "វា​អាច​ចំណាយ​ពេលបន្តិច (ពីរបីនាទី ឬ​យូរ​ជាង​នេះ) អាស្រ័យ​លើ​ថាតើអ្នក​បាន​ប្រើ Signal ច្រើនប៉ុនណា។ ប្រសិនបើវាចំណាយពេលយូរពេក អ្នកអាចបិទ Signal សិន ដើម្បីសុវត្ថិភាព។";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
 
-/* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "បញ្ចូលទៅកំណត់ហេតុលុបបំបាត់បញ្ហា";
-
-/* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "លទ្ធផលត្រួតពិនិត្យភាពត្រឹមត្រូវ";
+/* Button to skip database integrity check step */
+"DATABASE_INTEGRITY_CHECK_SKIP" = "រំលង";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "ដំណើរការការត្រួតពិនិត្យភាពត្រឹមត្រូវនៃមូលដ្ឋានទិន្នន័យឬ?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "វាអាចចំណាយពេលប៉ុន្មានទាទី។";
@@ -1480,9 +1492,6 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "មិនអាចស្វែងរកកំណត់ត្រាផ្សេងៗ។";
 
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "បើករបាយការណ៍បញ្ហា";
-
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "ថតចម្លងតំណភ្ជាប់";
 
@@ -1500,12 +1509,6 @@
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "មួយជំហានទៀត";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "តំណភ្ជាប់សំខាន់ត្រូវបានថតចម្លងនៅក្នុងក្តាចុចរបស់អ្នក។ អ្នកនឹងត្រូវផ្លាស់ប្តូរទៅកាន់បញ្ជីបញ្ហា GitHub ។";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "ការផ្លាស់ប្តូរទៅកាន់ GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "ព័ត៌មានអំពីកំណត់ត្រាបញ្ហា";
@@ -2157,6 +2160,12 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "បញ្ចូលការស្វែងរករបស់អ្នក";
+
+/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+
+/* Title when trying to redeem a gift that's already expired. */
+"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "ទៅកាន់ ការកំណត់";

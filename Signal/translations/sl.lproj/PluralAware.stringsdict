@@ -92,10 +92,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d predmeti</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>1 predmet</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>%d predmetov</string>
+			<key>two</key>
+			<string>%d predmeta</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -1059,10 +1063,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d gledalci_ke</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 gledalec_ka</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d gledalcev_k</string>
+			<key>two</key>
+			<string>%d gledalca_ki</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>

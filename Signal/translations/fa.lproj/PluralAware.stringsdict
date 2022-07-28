@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CAMERA_VO_N_ITEMS</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 مورد</string>
+			<key>other</key>
+			<string>%d مورد</string>
+		</dict>
+	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -16,22 +32,6 @@
 			<string>پیام صوتی 1 ثانیه</string>
 			<key>other</key>
 			<string>پیام صوتی %d ثانیه</string>
-		</dict>
-	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>افزودن عضو</string>
-			<key>other</key>
-			<string>افزودن اعضاء</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -66,7 +66,7 @@
 			<string>افزودن اعضای جدید</string>
 		</dict>
 	</dict>
-	<key>CAMERA_VO_N_ITEMS</key>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>افزودن عضو</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>افزودن اعضاء</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -317,70 +317,6 @@
 			<string>%d پیام بفرستید</string>
 		</dict>
 	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>این گروه نمی‌تواند ایجاد شود چون 1 عضو در حال استفاده از یک نسخهٔ قدیمی سیگنال است. شما می‌توانید پس از اینکه وی سیگنال را به‌روزرسانی کرد با او یک گروه با سبک جدید بسازید، و یا پیش از اینکه گروه را ایجاد کنید وی را حذف کنید. %2$@</string>
-			<key>other</key>
-			<string>این گروه نمی‌تواند ایجاد شود چون %d عضو در حال استفاده از یک نسخهٔ قدیمی سیگنال هستند. شما می‌توانید پس از اینکه آن‌ها سیگنال را به‌روزرسانی کردند با آن‌ها یک گروه با سبک جدید بسازید، و یا پیش از اینکه گروه را ایجاد کنید آن‌ها را حذف کنید. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>این گروه نمی‌تواند ایجاد شود چون 1 عضو در حال استفاده از یک نسخهٔ قدیمی سیگنال است. شما می‌توانید پس از اینکه وی سیگنال را به‌روزرسانی کرد با او یک گروه با سبک جدید بسازید، و یا پیش از اینکه گروه را ایجاد کنید وی را حذف کنید.</string>
-			<key>other</key>
-			<string>این گروه نمی‌تواند ایجاد شود چون %d عضو در حال استفاده از یک نسخهٔ قدیمی سیگنال هستند. شما می‌توانید پس از اینکه آن‌ها سیگنال را به‌روزرسانی کردند با آن‌ها یک گروه با سبک جدید بسازید، و یا پیش از اینکه گروه را ایجاد کنید آن‌ها را حذف کنید.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 عضو نمی‌تواند مجددا به گروه جدید اضافه شود. می‌خواهید حالا وی را اضافه کنید؟</string>
-			<key>other</key>
-			<string>%d عضو نمی‌توانند مجددا به گروه جدید اضافه شوند. می‌خواهید حالا آنان را اضافه کنید؟</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>گروه‌های سیگنال با 1 عضو یا کمتر به بهترین شکل عمل می‌کنند. افزودن اعضای بیشتر باعث بوجود آمدن تأخیر در ارسال و دریافت پیام‌ها خواهد شد.</string>
-			<key>other</key>
-			<string>گروه‌های سیگنال با %d عضو یا کمتر به بهترین شکل عمل می‌کنند. افزودن اعضای بیشتر باعث بوجود آمدن تأخیر در ارسال و دریافت پیام‌ها خواهد شد.</string>
-		</dict>
-	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -411,6 +347,70 @@
 			<string>در این تماس · 1 نفر</string>
 			<key>other</key>
 			<string>در این تماس · %d نفر</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 بازدید</string>
+			<key>other</key>
+			<string>%d بازدید</string>
+		</dict>
+	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>استوری خصوصی · 1 بازدید کننده</string>
+			<key>other</key>
+			<string>استوری خصوصی · %d بازدید کننده</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 بازدیدکننده</string>
+			<key>other</key>
+			<string>%d بازدیدکننده</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>استوری گروهی · 1 بازدید کننده</string>
+			<key>other</key>
+			<string>استوری گروهی · %d بازدید کننده</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -477,6 +477,38 @@
 			<string>%d دعوت‌نامه ارسال شد</string>
 		</dict>
 	</dict>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 عضو</string>
+			<key>other</key>
+			<string>%d عضو</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 عضو</string>
+			<key>other</key>
+			<string>%d عضو</string>
+		</dict>
+	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -525,7 +557,7 @@
 			<string>%d عضو گروه نام‌های یکسان دارند، اعضا را در پایین مرور کنید و یا اقدام لازم را انجام دهید.</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -536,15 +568,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 عضو</string>
+			<string>دعوت به گروه برای 1 نفر لغو شد.</string>
 			<key>other</key>
-			<string>%d عضو</string>
+			<string>دعوت به گروه برای %d نفر لغو شد.</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
+		<string>%1$#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -552,9 +584,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 عضو</string>
+			<string>%2$@ دعوت به گروه برای 1 نفر را لغو کرد.</string>
 			<key>other</key>
-			<string>%d عضو</string>
+			<string>%2$@ دعوت به گروه برای %d نفر را لغو کرد.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -589,54 +621,6 @@
 			<string>%2$@ %d نفر را به گروه دعوت کرد.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>دعوت به گروه برای 1 نفر لغو شد.</string>
-			<key>other</key>
-			<string>دعوت به گروه برای %d نفر لغو شد.</string>
-		</dict>
-	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>%2$@ دعوت به گروه برای 1 نفر را لغو کرد.</string>
-			<key>other</key>
-			<string>%2$@ دعوت به گروه برای %d نفر را لغو کرد.</string>
-		</dict>
-	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>استوری گروهی · 1 بازدید کننده</string>
-			<key>other</key>
-			<string>استوری گروهی · %d بازدید کننده</string>
-		</dict>
-	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -667,6 +651,70 @@
 			<string>یک عضو به گروه جدید اضافه نشد و برای پیوستن دعوت شد.</string>
 			<key>other</key>
 			<string>%d عضو به گروه جدید اضافه نشدند و برای پیوستن دعوت شدند.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>این گروه نمی‌تواند ایجاد شود چون 1 عضو در حال استفاده از یک نسخهٔ قدیمی سیگنال است. شما می‌توانید پس از اینکه وی سیگنال را به‌روزرسانی کرد با او یک گروه با سبک جدید بسازید، و یا پیش از اینکه گروه را ایجاد کنید وی را حذف کنید. %2$@</string>
+			<key>other</key>
+			<string>این گروه نمی‌تواند ایجاد شود چون %d عضو در حال استفاده از یک نسخهٔ قدیمی سیگنال هستند. شما می‌توانید پس از اینکه آن‌ها سیگنال را به‌روزرسانی کردند با آن‌ها یک گروه با سبک جدید بسازید، و یا پیش از اینکه گروه را ایجاد کنید آن‌ها را حذف کنید. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>این گروه نمی‌تواند ایجاد شود چون 1 عضو در حال استفاده از یک نسخهٔ قدیمی سیگنال است. شما می‌توانید پس از اینکه وی سیگنال را به‌روزرسانی کرد با او یک گروه با سبک جدید بسازید، و یا پیش از اینکه گروه را ایجاد کنید وی را حذف کنید.</string>
+			<key>other</key>
+			<string>این گروه نمی‌تواند ایجاد شود چون %d عضو در حال استفاده از یک نسخهٔ قدیمی سیگنال هستند. شما می‌توانید پس از اینکه آن‌ها سیگنال را به‌روزرسانی کردند با آن‌ها یک گروه با سبک جدید بسازید، و یا پیش از اینکه گروه را ایجاد کنید آن‌ها را حذف کنید.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 عضو نمی‌تواند مجددا به گروه جدید اضافه شود. می‌خواهید حالا وی را اضافه کنید؟</string>
+			<key>other</key>
+			<string>%d عضو نمی‌توانند مجددا به گروه جدید اضافه شوند. می‌خواهید حالا آنان را اضافه کنید؟</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>گروه‌های سیگنال با 1 عضو یا کمتر به بهترین شکل عمل می‌کنند. افزودن اعضای بیشتر باعث بوجود آمدن تأخیر در ارسال و دریافت پیام‌ها خواهد شد.</string>
+			<key>other</key>
+			<string>گروه‌های سیگنال با %d عضو یا کمتر به بهترین شکل عمل می‌کنند. افزودن اعضای بیشتر باعث بوجود آمدن تأخیر در ارسال و دریافت پیام‌ها خواهد شد.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -749,22 +797,6 @@
 			<string>%d مورد</string>
 		</dict>
 	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>شما 1 عضو این گروه را مسدود کردید</string>
-			<key>other</key>
-			<string>شما %d عضو این گروه را مسدود کردید</string>
-		</dict>
-	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -779,6 +811,22 @@
 			<string>1 مورد انتخاب شده</string>
 			<key>other</key>
 			<string>%d مورد انتخاب شده</string>
+		</dict>
+	</dict>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>شما 1 عضو این گروه را مسدود کردید</string>
+			<key>other</key>
+			<string>شما %d عضو این گروه را مسدود کردید</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -813,22 +861,6 @@
 			<string>%d نفر</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 بازدیدکننده</string>
-			<key>other</key>
-			<string>%d بازدیدکننده</string>
-		</dict>
-	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -856,9 +888,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 بازدیدکننده</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d بازدیدکننده</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -925,22 +957,6 @@
 			<string>لغو %d دعوت نامعتبر</string>
 		</dict>
 	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>لغو دعوت</string>
-			<key>other</key>
-			<string>لغو دعوت‌ها</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -957,6 +973,22 @@
 			<string>%d دعوت ارسالی از طرف «%2$@» لغو شوند؟</string>
 		</dict>
 	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>لغو دعوت</string>
+			<key>other</key>
+			<string>لغو دعوت‌ها</string>
+		</dict>
+	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -971,22 +1003,6 @@
 			<string>در آینده به شما یادآوری خواهیم کرد. ایجاد پین از 1 روز دیگر الزامی خواهد شد.</string>
 			<key>other</key>
 			<string>در آینده به شما یادآوری خواهیم کرد. ایجاد پین از %d روز دیگر الزامی خواهد شد.</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>استوری خصوصی · 1 بازدید کننده</string>
-			<key>other</key>
-			<string>استوری خصوصی · %d بازدید کننده</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1051,22 +1067,6 @@
 			<string>1 نفر مستثنی شد</string>
 			<key>other</key>
 			<string>%d نفر مستثنی شدند</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 بازدید</string>
-			<key>other</key>
-			<string>%d بازدید</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

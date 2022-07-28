@@ -133,9 +133,6 @@
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "പിശക്";
 
-/* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "ഡാറ്റാബേസ് സത്യസന്ധതാ പരിശോധന റൺ ചെയ്യുക";
-
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "പകരം Signal തുറക്കുക";
 
@@ -368,10 +365,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal ന് ഒരു ബൂസ്റ്റ് നല്‍കുക";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "നിങ്ങളുടെ ബൂസ്റ്റ് ബാഡ്‍ജ് കാലഹരണപ്പെട്ടു, ഇനി അത് നിങ്ങളുടെ പ്രൊഫൈലിൽ പ്രദർശിപ്പിക്കാൻ ലഭ്യമല്ല. \n\nനിങ്ങൾക്ക് Signal ഉപയോഗിക്കുന്നത് തുടരാം, പക്ഷെ നിങ്ങൾക്കായി നിർമ്മിച്ച സാങ്കേതികവിദ്യയെ പിന്തുണയ്ക്കുന്നതിന് എല്ലാ മാസവും ആവർത്തിക്കുന്ന ഒരു സംഭാവന നൽകി സസ്‍റ്റെയ്‌നർ ആകുന്നത് പരിഗണിക്കുക.";
+"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "നിങ്ങളുടെ ബൂസ്റ്റ് ബാഡ്‍ജ് കാലഹരണപ്പെട്ടു, ഇനി അത് നിങ്ങളുടെ പ്രൊഫൈലിൽ പ്രദർശിപ്പിക്കാൻ ലഭ്യമല്ല. \n\nഒരു ഒറ്റത്തവണ സംഭാവനയിലൂടെ നിങ്ങളുടെ ബൂസ്റ്റ് ബാഡ്‍ജ് അടുത്ത 30 ദിവസത്തേക്ക് നിങ്ങൾക്ക് വീണ്ടും സജീവമാക്കാം.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "നിങ്ങളുടെ ബൂസ്റ്റ് ബാഡ്‍ജ് കാലഹരണപ്പെട്ടു, ഇനി അത് നിങ്ങളുടെ പ്രൊഫൈലിൽ പ്രദർശിപ്പിക്കാൻ ലഭ്യമല്ല. \n\nഒരു ഒറ്റത്തവണ സംഭാവനയിലൂടെ നിങ്ങളുടെ ബൂസ്റ്റ് ബാഡ്‍ജ് അടുത്ത 30 ദിവസത്തേക്ക് നിങ്ങൾക്ക് വീണ്ടും സജീവമാക്കാം.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "പരിപാലകര്‍ ആകുക";
@@ -382,8 +379,20 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "ബാഡ്ജ് കാലഹരണപ്പെട്ടു";
 
+/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+
+/* Title for gift on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "കൂടുതൽ അറിയുക.";
+
+/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "നിങ്ങൾക്ക് Signal ഉപയോഗിക്കുന്നത് തുടരാം, പക്ഷെ നിങ്ങൾക്കായി നിർമ്മിച്ച സാങ്കേതികവിദ്യയെ പിന്തുണയ്ക്കുന്നതിന് എല്ലാ മാസവും ആവർത്തിക്കുന്നൊരു സംഭാവന നൽകി സസ്റ്റെയ്നർ ആകുന്നത് പരിഗണിക്കുക.";
+
+/* Button title to donate monthly on the badge expiration sheet. */
+"BADGE_EXPIRED_RENEWAL_MONTHLY" = "എല്ലാ മാസവും ആവർത്തിക്കുന്നൊരു സംഭാവന നൽകുക";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "സബ്സ്ക്രിപ്ഷൻ പുതുക്കുക";
@@ -412,7 +421,7 @@
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "കാലഹരണപ്പെട്ടു";
 
-/* Shown on a gift badge message to indicate that the message contains a gift. */
+/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "ഗിഫ്റ്റ് ബാഡ്‌ജ്";
 
 /* Short paragraph on the screen where you choose a gift badge */
@@ -465,6 +474,12 @@
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "റിഡീം ചെയ്യുക";
+
+/* Shown as the body of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+
+/* Shown as the title of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
@@ -1442,16 +1457,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "റൺ ചെയ്യുക";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "നിങ്ങൾ Signal എന്തുമാത്രം ഉപയോഗിച്ചിട്ടുണ്ടെന്നതിനെ അനുസരിച്ച് ഇതിന് കുറച്ച് സമയം (നിരവധി മിനിറ്റുകളോ അതിൽക്കൂടുതലോ) എടുക്കും. ഒരുപാട് സമയം എടുക്കുന്നുണ്ടെങ്കിൽ Signal അടയ്ക്കുന്നത് സുരക്ഷിതമാണ്.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
 
-/* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "ഡീബഗ് ലോഗിലേക്ക് ചേർക്കുക";
-
-/* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "സത്യസന്ധതാ പരിശോധനാ ഫലങ്ങൾ";
+/* Button to skip database integrity check step */
+"DATABASE_INTEGRITY_CHECK_SKIP" = "ഒഴിവാക്കുക";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "ഡാറ്റാബേസ് സത്യസന്ധതാ പരിശോധന റൺ ചെയ്യണോ?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "ഇത് കുറച്ച് മിനിറ്റുകൾ എടുക്കും.";
@@ -1480,9 +1492,6 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "ലോഗുകളൊന്നും കണ്ടെത്താനായില്ല.";
 
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "ഒരു ബഗ്ഗ് റിപ്പോർട്ട് ഓപ്പൺ ചെയ്യുക";
-
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "ലിങ്ക് പകർത്തുക";
 
@@ -1500,12 +1509,6 @@
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "ഒരു സ്റ്റെപ്പ് കൂടെ";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "ജിസ്റ്റ് ലിങ്ക് നിങ്ങളുടെ ക്ലിപ്ബോർഡിൽ കോപ്പി ആയിട്ടുണ്ട്.  നിങ്ങൾ ഗിട്ട്‌ഹബ്ബ് ഇഷ്യൂ ലിസ്റ്റിലേക്ക് റീഡയറക്ട് ആവാൻ പോകുകയാണ്.";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "ഗിട്ട്ഹബ്ബ് റീഡയറക്ഷൻ";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "ഡീബഗ് ലോഗുകളെക്കുറിച്ചുള്ള വിവരങ്ങൾ";
@@ -2157,6 +2160,12 @@
 
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "നിങ്ങളുടെ തിരയൽ നൽകുക.";
+
+/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+
+/* Title when trying to redeem a gift that's already expired. */
+"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "ക്രമീകരണങ്ങളിലേക്ക് പോകുക";
