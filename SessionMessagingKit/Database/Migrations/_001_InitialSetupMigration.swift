@@ -140,6 +140,9 @@ enum _001_InitialSetupMigration: Migration {
             t.column(.sequenceNumber, .integer).notNull()
             t.column(.inboxLatestMessageId, .integer).notNull()
             t.column(.outboxLatestMessageId, .integer).notNull()
+            t.column(.pollFailureCount, .integer)
+                .notNull()
+                .defaults(to: 0)
         }
         
         /// Create a full-text search table synchronized with the OpenGroup table

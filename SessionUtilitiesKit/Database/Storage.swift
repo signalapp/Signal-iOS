@@ -193,7 +193,21 @@ public final class Storage {
             if !jobTableInfo.contains(where: { $0["name"] == "shouldSkipLaunchBecomeActive" }) {
                 finalError = StorageError.devRemigrationRequired
             }
+            // Forcibly change any 'infoUpdates' on open groups from '-1' to '0' (-1 is invalid)
+            try? db.execute(literal: """
+                UPDATE openGroup
+                SET infoUpdates = 0
+                WHERE openGroup.infoUpdates = -1
+            """)
             // TODO: Remove this once everyone has updated
+            let openGroupTableInfo: [Row] = (try? Row.fetchAll(db, sql: "PRAGMA table_info(openGroup)"))
+                .defaulting(to: [])
+            if !openGroupTableInfo.contains(where: { $0["name"] == "pollFailureCount" }) {
+                try? db.execute(literal: """
+                    ALTER TABLE openGroup
+                    ADD pollFailureCount INTEGER NOT NULL DEFAULT 0
+                """)
+            }
             
             onComplete(finalError, needsConfigSync)
         }

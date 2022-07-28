@@ -283,8 +283,10 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             let indexesAreSequential: Bool = (indexes.map { $0 - 1 }.dropFirst() == indexes.dropLast())
             let hasOneValidIndex: Bool = indexInfo.contains(where: { info -> Bool in
                 info.rowIndex >= updatedPageInfo.pageOffset && (
-                    info.rowIndex < updatedPageInfo.currentCount ||
-                    updatedPageInfo.currentCount == 0
+                    info.rowIndex < updatedPageInfo.currentCount || (
+                        updatedPageInfo.currentCount < updatedPageInfo.pageSize &&
+                        info.rowIndex <= (updatedPageInfo.pageOffset + updatedPageInfo.pageSize)
+                    )
                 )
             })
             
@@ -293,8 +295,10 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                 indexInfo
                     .filter { info -> Bool in
                         info.rowIndex >= updatedPageInfo.pageOffset && (
-                            info.rowIndex < updatedPageInfo.currentCount ||
-                            updatedPageInfo.currentCount == 0
+                            info.rowIndex < updatedPageInfo.currentCount || (
+                                updatedPageInfo.currentCount < updatedPageInfo.pageSize &&
+                                info.rowIndex <= (updatedPageInfo.pageOffset + updatedPageInfo.pageSize)
+                            )
                         )
                     }
                     .map { info -> Int64 in info.rowId }
@@ -477,6 +481,13 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             cacheCurrentEndIndex,
                             currentPageInfo.pageOffset
                         )
+                        
+                    case .reloadCurrent:
+                        return (
+                            currentPageInfo.currentCount,
+                            currentPageInfo.pageOffset,
+                            currentPageInfo.pageOffset
+                        )
                 }
             }()
             
@@ -569,6 +580,10 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         }
         
         triggerUpdates()
+    }
+    
+    public func reload() {
+        self.load(.reloadCurrent)
     }
 }
 
@@ -720,6 +735,7 @@ public enum PagedData {
             case pageBefore
             case pageAfter
             case untilInclusive(id: SQLExpression, padding: Int)
+            case reloadCurrent
         }
         
         public enum Target<ID: SQLExpressible> {
@@ -1092,8 +1108,10 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
         /// commit - this will mean in some cases we cache data which is actually unrelated to the filtered paged data
         let hasOneValidIndex: Bool = pagedItemIndexes.contains(where: { info -> Bool in
             info.rowIndex >= pageInfo.pageOffset && (
-                info.rowIndex < pageInfo.currentCount ||
-                pageInfo.currentCount == 0
+                info.rowIndex < pageInfo.currentCount || (
+                    pageInfo.currentCount < pageInfo.pageSize &&
+                    info.rowIndex <= (pageInfo.pageOffset + pageInfo.pageSize)
+                )
             )
         })
         

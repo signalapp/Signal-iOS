@@ -27,6 +27,10 @@ public enum MessageSendJob: JobExecutor {
             return
         }
         
+        // We need to include 'fileIds' when sending messages with attachments to Open Groups
+        // so extract them from any associated attachments
+        var messageFileIds: [String] = []
+        
         if details.message is VisibleMessage {
             guard
                 let jobId: Int64 = job.id,
@@ -36,20 +40,30 @@ public enum MessageSendJob: JobExecutor {
                 return
             }
             
+            // If the original interaction no longer exists then don't bother sending the message (ie. the
+            // message was deleted before it even got sent)
+            guard Storage.shared.read({ db in try Interaction.exists(db, id: interactionId) }) == true else {
+                failure(job, StorageError.objectNotFound, true)
+                return
+            }
+            
             // Check if there are any attachments associated to this message, and if so
             // upload them now
             //
             // Note: Normal attachments should be sent in a non-durable way but any
             // attachments for LinkPreviews and Quotes will be processed through this mechanism
-            let attachmentState: (shouldFail: Bool, shouldDefer: Bool)? = Storage.shared.write { db in
+            let attachmentState: (shouldFail: Bool, shouldDefer: Bool, fileIds: [String])? = Storage.shared.write { db in
                 let allAttachmentStateInfo: [Attachment.StateInfo] = try Attachment
                     .stateInfo(interactionId: interactionId)
                     .fetchAll(db)
+                let maybeFileIds: [String?] = allAttachmentStateInfo
+                    .map { Attachment.fileId(for: $0.downloadUrl) }
+                let fileIds: [String] = maybeFileIds.compactMap { $0 }
                 
                 // If there were failed attachments then this job should fail (can't send a
                 // message which has associated attachments if the attachments fail to upload)
                 guard !allAttachmentStateInfo.contains(where: { $0.state == .failedDownload }) else {
-                    return (true, false)
+                    return (true, false, fileIds)
                 }
                 
                 // Create jobs for any pending (or failed) attachment jobs and insert them into the
@@ -102,9 +116,13 @@ public enum MessageSendJob: JobExecutor {
                 // If there were pending or uploading attachments then stop here (we want to
                 // upload them first and then re-run this send job - the 'JobRunner.insert'
                 // method will take care of this)
+                let isMissingFileIds: Bool = (maybeFileIds.count != fileIds.count)
+                let hasPendingUploads: Bool = allAttachmentStateInfo.contains(where: { $0.state != .uploaded })
+                
                 return (
-                    false,
-                    allAttachmentStateInfo.contains(where: { $0.state != .uploaded })
+                    (isMissingFileIds && !hasPendingUploads),
+                    hasPendingUploads,
+                    fileIds
                 )
             }
             
@@ -122,6 +140,9 @@ public enum MessageSendJob: JobExecutor {
                 deferred(job)
                 return
             }
+            
+            // Store the fileIds so they can be sent with the open group message content
+            messageFileIds = (attachmentState?.fileIds ?? [])
         }
         
         // Store the sentTimestamp from the message in case it fails due to a clockOutOfSync error
@@ -135,7 +156,8 @@ public enum MessageSendJob: JobExecutor {
             try MessageSender.sendImmediate(
                 db,
                 message: details.message,
-                to: details.destination,
+                to: details.destination
+                    .with(fileIds: messageFileIds),
                 interactionId: job.interactionId
             )
         }

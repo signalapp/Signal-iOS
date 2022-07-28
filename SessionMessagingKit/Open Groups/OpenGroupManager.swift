@@ -775,17 +775,29 @@ public final class OpenGroupManager: NSObject {
         }
         
         let (promise, seal) = Promise<[OpenGroupAPI.Room]>.pending()
-
+        
         // Try to retrieve the default rooms 8 times
         attempt(maxRetryCount: 8, recoveringOn: OpenGroupAPI.workQueue) {
             dependencies.storage.read { db in
-                OpenGroupAPI.rooms(db, server: OpenGroupAPI.defaultServer, using: dependencies)
+                OpenGroupAPI.capabilitiesAndRooms(
+                    db,
+                    on: OpenGroupAPI.defaultServer,
+                    authenticated: false,
+                    using: dependencies
+                )
             }
-            .map { _, data in data }
         }
-        .done(on: OpenGroupAPI.workQueue) { items in
+        .done(on: OpenGroupAPI.workQueue) { response in
             dependencies.storage.writeAsync { db in
-                items
+                // Store the capabilities first
+                OpenGroupManager.handleCapabilities(
+                    db,
+                    capabilities: response.capabilities.data,
+                    on: OpenGroupAPI.defaultServer
+                )
+                    
+                // Then the rooms
+                response.rooms.data
                     .compactMap { room -> (String, String)? in
                         // Try to insert an inactive version of the OpenGroup (use 'insert' rather than 'save'
                         // as we want it to fail if the room already exists)
@@ -825,7 +837,7 @@ public final class OpenGroupManager: NSObject {
                     }
             }
             
-            seal.fulfill(items)
+            seal.fulfill(response.rooms.data)
         }
         .catch(on: OpenGroupAPI.workQueue) { error in
             dependencies.mutableCache.mutate { cache in

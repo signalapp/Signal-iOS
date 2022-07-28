@@ -454,7 +454,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }
     
     @objc func applicationDidBecomeActive(_ notification: Notification) {
-        startObservingChanges()
+        startObservingChanges(didReturnFromBackground: true)
         recoverInputView()
     }
     
@@ -464,7 +464,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     
     // MARK: - Updating
     
-    private func startObservingChanges() {
+    private func startObservingChanges(didReturnFromBackground: Bool = false) {
         // Start observing for data changes
         dataChangeObservable = Storage.shared.start(
             viewModel.observableThreadData,
@@ -509,6 +509,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                 if self?.viewModel.onInteractionChange == nil {
                     self?.viewModel.onInteractionChange = { [weak self] updatedInteractionData in
                         self?.handleInteractionUpdates(updatedInteractionData)
+                    }
+                    
+                    // Note: When returning from the background we could have received notifications but the
+                    // PagedDatabaseObserver won't have them so we need to force a re-fetch of the current
+                    // data to ensure everything is up to date
+                    if didReturnFromBackground {
+                        self?.viewModel.pagedDataObserver?.reload()
                     }
                 }
             }

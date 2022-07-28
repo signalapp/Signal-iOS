@@ -134,30 +134,42 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     }
     
     fileprivate func startNewDMIfPossible(with onsNameOrPublicKey: String) {
-        if ECKeyPair.isValidHexEncodedPublicKey(candidate: onsNameOrPublicKey) {
+        let maybeSessionId: SessionId? = SessionId(from: onsNameOrPublicKey)
+        
+        if ECKeyPair.isValidHexEncodedPublicKey(candidate: onsNameOrPublicKey) && maybeSessionId?.prefix == .standard {
             startNewDM(with: onsNameOrPublicKey)
-        } else {
-            // This could be an ONS name
-            ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
-                SnodeAPI.getSessionID(for: onsNameOrPublicKey).done { sessionID in
-                    modalActivityIndicator.dismiss {
-                        self?.startNewDM(with: sessionID)
-                    }
-                }.catch { error in
-                    modalActivityIndicator.dismiss {
-                        var messageOrNil: String?
-                        if let error = error as? SnodeAPIError {
-                            switch error {
-                                case .decryptionFailed, .hashingFailed, .validationFailed:
-                                    messageOrNil = error.errorDescription
-                                default: break
-                            }
+            return
+        }
+        
+        // This could be an ONS name
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
+            SnodeAPI.getSessionID(for: onsNameOrPublicKey).done { sessionID in
+                modalActivityIndicator.dismiss {
+                    self?.startNewDM(with: sessionID)
+                }
+            }.catch { error in
+                modalActivityIndicator.dismiss {
+                    var messageOrNil: String?
+                    if let error = error as? SnodeAPIError {
+                        switch error {
+                            case .decryptionFailed, .hashingFailed, .validationFailed:
+                                messageOrNil = error.errorDescription
+                            default: break
                         }
-                        let message = messageOrNil ?? "Please check the Session ID or ONS name and try again"
-                        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-                        self?.presentAlert(alert)
                     }
+                    let message: String = {
+                        if let messageOrNil: String = messageOrNil {
+                            return messageOrNil
+                        }
+                        
+                        return (maybeSessionId?.prefix == .blinded ?
+                            "You can only send messages to Blinded IDs from within an Open Group" :
+                            "Please check the Session ID or ONS name and try again"
+                        )
+                    }()
+                    let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
+                    self?.presentAlert(alert)
                 }
             }
         }

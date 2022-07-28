@@ -114,6 +114,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return true
     }
     
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        /// **Note:** We _shouldn't_ need to call this here but for some reason the OS doesn't seems to
+        /// be calling the `userNotificationCenter(_:,didReceive:withCompletionHandler:)`
+        /// method when the device is locked while the app is in the foreground (or if the user returns to the
+        /// springboard without swapping to another app) - adding this here in addition to the one in
+        /// `appDidFinishLaunching` seems to fix this odd behaviour (even though it doesn't match
+        /// Apple's documentation on the matter)
+        UNUserNotificationCenter.current().delegate = self
+    }
+    
     func applicationDidEnterBackground(_ application: UIApplication) {
         DDLog.flushLog()
         
@@ -155,7 +165,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // On every activation, clear old temp directories.
-        ClearOldTemporaryDirectories();
+        ClearOldTemporaryDirectories()
     }
     
     func applicationWillResignActive(_ application: UIApplication) {

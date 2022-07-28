@@ -15,7 +15,7 @@ final class NukeDataModal: Modal {
         let result = UILabel()
         result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        result.text = NSLocalizedString("modal_clear_all_data_title", comment: "")
+        result.text = "modal_clear_all_data_title".localized()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
@@ -27,7 +27,7 @@ final class NukeDataModal: Modal {
         let result = UILabel()
         result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         result.font = .systemFont(ofSize: Values.smallFontSize)
-        result.text = NSLocalizedString("modal_clear_all_data_explanation", comment: "")
+        result.text = "modal_clear_all_data_explanation".localized()
         result.numberOfLines = 0
         result.textAlignment = .center
         result.lineBreakMode = .byWordWrapping
@@ -44,7 +44,7 @@ final class NukeDataModal: Modal {
         }
         result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         result.setTitleColor(isLightMode ? Colors.destructive : Colors.text, for: UIControl.State.normal)
-        result.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: UIControl.State.normal)
+        result.setTitle("TXT_DELETE_TITLE".localized(), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(clearAllData), for: UIControl.Event.touchUpInside)
         
         return result
@@ -66,7 +66,7 @@ final class NukeDataModal: Modal {
         result.backgroundColor = Colors.buttonBackground
         result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.setTitle(NSLocalizedString("modal_clear_all_data_device_only_button_title", comment: ""), for: UIControl.State.normal)
+        result.setTitle("modal_clear_all_data_device_only_button_title".localized(), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(clearDeviceOnly), for: UIControl.Event.touchUpInside)
         
         return result
@@ -81,7 +81,7 @@ final class NukeDataModal: Modal {
         }
         result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         result.setTitleColor(isLightMode ? Colors.destructive : Colors.text, for: UIControl.State.normal)
-        result.setTitle(NSLocalizedString("modal_clear_all_data_entire_account_button_title", comment: ""), for: UIControl.State.normal)
+        result.setTitle("modal_clear_all_data_entire_account_button_title".localized(), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(clearEntireAccount), for: UIControl.Event.touchUpInside)
         
         return result
@@ -210,6 +210,10 @@ final class NukeDataModal: Modal {
             let data: Data = Data(hex: deviceToken)
             PushNotificationAPI.unregister(data).retainUntilComplete()
         }
+        
+        // Clear the app badge and notifications
+        AppEnvironment.shared.notificationPresenter.clearAllNotifications()
+        CurrentAppContext().setMainAppBadgeNumber(0)
         
         // Clear out the user defaults
         UserDefaults.removeAll()

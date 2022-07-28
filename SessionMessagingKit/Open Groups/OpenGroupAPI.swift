@@ -382,6 +382,72 @@ public enum OpenGroupAPI {
             }
     }
     
+    /// This is a convenience method which constructs a `/sequence` of the `capabilities` and `rooms`  requests, refer to those
+    /// methods for the documented behaviour of each method
+    public static func capabilitiesAndRooms(
+        _ db: Database,
+        on server: String,
+        authenticated: Bool = true,
+        using dependencies: SMKDependencies = SMKDependencies()
+    ) -> Promise<(capabilities: (info: OnionRequestResponseInfoType, data: Capabilities), rooms: (info: OnionRequestResponseInfoType, data: [Room]))> {
+        let requestResponseType: [BatchRequestInfoType] = [
+            // Get the latest capabilities for the server (in case it's a new server or the cached ones are stale)
+            BatchRequestInfo(
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .capabilities
+                ),
+                responseType: Capabilities.self
+            ),
+            
+            // And the room info
+            BatchRequestInfo(
+                request: Request<NoBody, Endpoint>(
+                    server: server,
+                    endpoint: .rooms
+                ),
+                responseType: [Room].self
+            )
+        ]
+        
+        return OpenGroupAPI
+            .sequence(
+                db,
+                server: server,
+                requests: requestResponseType,
+                authenticated: authenticated,
+                using: dependencies
+            )
+            .map { (response: [Endpoint: (OnionRequestResponseInfoType, Codable?)]) -> (capabilities: (OnionRequestResponseInfoType, Capabilities), rooms: (OnionRequestResponseInfoType, [Room])) in
+                let maybeCapabilities: (info: OnionRequestResponseInfoType, data: Capabilities?)? = response[.capabilities]
+                    .map { info, data in (info, (data as? BatchSubResponse<Capabilities>)?.body) }
+                let maybeRoomResponse: (OnionRequestResponseInfoType, Codable?)? = response
+                    .first(where: { key, _ in
+                        switch key {
+                            case .rooms: return true
+                            default: return false
+                        }
+                    })
+                    .map { _, value in value }
+                let maybeRooms: (info: OnionRequestResponseInfoType, data: [Room]?)? = maybeRoomResponse
+                    .map { info, data in (info, (data as? BatchSubResponse<[Room]>)?.body) }
+                
+                guard
+                    let capabilitiesInfo: OnionRequestResponseInfoType = maybeCapabilities?.info,
+                    let capabilities: Capabilities = maybeCapabilities?.data,
+                    let roomsInfo: OnionRequestResponseInfoType = maybeRooms?.info,
+                    let rooms: [Room] = maybeRooms?.data
+                else {
+                    throw HTTP.Error.parsingFailed
+                }
+                
+                return (
+                    (capabilitiesInfo, capabilities),
+                    (roomsInfo, rooms)
+                )
+            }
+    }
+    
     // MARK: - Messages
     
     /// Posts a new message to a room
