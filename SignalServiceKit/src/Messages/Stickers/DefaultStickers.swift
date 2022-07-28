@@ -62,16 +62,16 @@ class DefaultStickerPack {
     static var packsToAutoInstall: [StickerPackInfo] {
         all.values.filter {
             $0.shouldAutoInstall
-            }.map {
-                $0.info
+        }.map {
+            $0.info
         }
     }
 
     static var packsToNotAutoInstall: [StickerPackInfo] {
         all.values.filter {
             !$0.shouldAutoInstall
-            }.map {
-                $0.info
+        }.map {
+            $0.info
         }
     }
 
