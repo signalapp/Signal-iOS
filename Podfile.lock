@@ -29,6 +29,15 @@ PODS:
     - DifferenceKit/Core
   - GRDB.swift/SQLCipher (5.24.1):
     - SQLCipher (>= 3.4.0)
+  - libwebp (1.2.1):
+    - libwebp/demux (= 1.2.1)
+    - libwebp/mux (= 1.2.1)
+    - libwebp/webp (= 1.2.1)
+  - libwebp/demux (1.2.1):
+    - libwebp/webp
+  - libwebp/mux (1.2.1):
+    - libwebp/demux
+  - libwebp/webp (1.2.1)
   - Nimble (10.0.0)
   - NVActivityIndicatorView (5.1.1):
     - NVActivityIndicatorView/Base (= 5.1.1)
@@ -124,6 +133,9 @@ PODS:
   - YYImage (1.0.4):
     - YYImage/Core (= 1.0.4)
   - YYImage/Core (1.0.4)
+  - YYImage/libwebp (1.0.4):
+    - libwebp
+    - YYImage/Core
   - ZXingObjC (3.6.5):
     - ZXingObjC/All (= 3.6.5)
   - ZXingObjC/All (3.6.5)
@@ -149,6 +161,7 @@ DEPENDENCIES:
   - WebRTC-lib
   - YapDatabase/SQLCipher (from `https://github.com/oxen-io/session-ios-yap-database.git`, branch `signal-release`)
   - YYImage (from `https://github.com/signalapp/YYImage`)
+  - YYImage/libwebp (from `https://github.com/signalapp/YYImage`)
   - ZXingObjC
 
 SPEC REPOS:
@@ -158,6 +171,7 @@ SPEC REPOS:
     - CryptoSwift
     - DifferenceKit
     - GRDB.swift
+    - libwebp
     - Nimble
     - NVActivityIndicatorView
     - OpenSSL-Universal
@@ -212,6 +226,7 @@ SPEC CHECKSUMS:
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
   GRDB.swift: b3180ce2135fc06a453297889b746b1478c4d8c7
+  libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667
   OpenSSL-Universal: e7311447fd2419f57420c79524b641537387eff2
@@ -230,6 +245,6 @@ SPEC CHECKSUMS:
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 6ab902a81a379cc2c0a9a92c334c78d413190338
+PODFILE CHECKSUM: 456facc7043447a9c67733cf8846ec62afff8ea8
 
 COCOAPODS: 1.11.3

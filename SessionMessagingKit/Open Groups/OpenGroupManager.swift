@@ -617,28 +617,37 @@ public final class OpenGroupManager: NSObject {
                     dependencies: dependencies
                 )
                 
-                // If the message was an outgoing message then attempt to unblind the recipient (this will help put
-                // messages in the correct thread in case of message request approval race conditions as well as
-                // during device sync'ing and restoration)
+                // We want to update the BlindedIdLookup cache with the message info so we can avoid using the
+                // "expensive" lookup when possible
+                let lookup: BlindedIdLookup = try {
+                    // Minor optimisation to avoid processing the same sender multiple times in the same
+                    // 'handleMessages' call (since the 'mapping' call is done within a transaction we
+                    // will never have a mapping come through part-way through processing these messages)
+                    if let result: BlindedIdLookup = lookupCache[message.recipient] {
+                        return result
+                    }
+                    
+                    return try BlindedIdLookup.fetchOrCreate(
+                        db,
+                        blindedId: (fromOutbox ?
+                            message.recipient :
+                            message.sender
+                        ),
+                        sessionId: (fromOutbox ?
+                            nil :
+                            processedMessage?.threadId
+                        ),
+                        openGroupServer: server.lowercased(),
+                        openGroupPublicKey: openGroup.publicKey,
+                        isCheckingForOutbox: fromOutbox,
+                        dependencies: dependencies
+                    )
+                }()
+                lookupCache[message.recipient] = lookup
+                    
+                // We also need to set the 'syncTarget' for outgoing messages to be consistent with
+                // standard messages
                 if fromOutbox {
-                    // Attempt to un-blind the 'message.recipient'
-                    let lookup: BlindedIdLookup = try {
-                        // Minor optimisation to avoid processing the same sender multiple times in the same
-                        // 'handleMessages' call (since the 'mapping' call is done within a transaction we
-                        // will never have a mapping come through part-way through processing these messages)
-                        if let result: BlindedIdLookup = lookupCache[message.recipient] {
-                            return result
-                        }
-                        
-                        return try BlindedIdLookup.fetchOrCreate(
-                            db,
-                            blindedId: message.recipient,
-                            openGroupServer: server.lowercased(),
-                            openGroupPublicKey: openGroup.publicKey,
-                            isCheckingForOutbox: true,
-                            dependencies: dependencies
-                        )
-                    }()
                     let syncTarget: String = (lookup.sessionId ?? message.recipient)
                     
                     switch processedMessage?.messageInfo.variant {
@@ -650,8 +659,6 @@ public final class OpenGroupManager: NSObject {
                             
                         default: break
                     }
-                    
-                    lookupCache[message.recipient] = lookup
                 }
                 
                 if let messageInfo: MessageReceiveJob.Details.MessageInfo = processedMessage?.messageInfo {

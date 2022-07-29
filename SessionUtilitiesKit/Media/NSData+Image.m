@@ -2,6 +2,8 @@
 #import "MIMETypeUtil.h"
 #import "OWSFileSystem.h"
 #import <AVFoundation/AVFoundation.h>
+#import <libwebp/decode.h>
+#import <libwebp/demux.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,7 +15,17 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Tiff,
     ImageFormat_Jpeg,
     ImageFormat_Bmp,
+    ImageFormat_Webp,
+    ImageFormat_Heic,
+    ImageFormat_Heif,
 };
+
+#pragma mark -
+
+typedef struct {
+    CGSize pixelSize;
+    CGFloat depthBytes;
+} ImageDimensionInfo;
 
 // FIXME: Refactor all of these to be in Swift against 'Data'
 @implementation NSData (Image)
@@ -47,40 +59,47 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     return YES;
 }
 
-+ (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
++ (nullable NSData *)ows_validImageDataAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
 {
     if (mimeType.length < 1) {
         NSString *fileExtension = [filePath pathExtension].lowercaseString;
         mimeType = [MIMETypeUtil mimeTypeForFileExtension:fileExtension];
     }
     if (mimeType.length < 1) {
-        return NO;
+        return nil;
     }
     NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:filePath];
     if (!fileSize) {
-        return NO;
+        return nil;
     }
 
     BOOL isAnimated = [MIMETypeUtil isSupportedAnimatedMIMEType:mimeType];
     if (isAnimated) {
         if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeAnimatedImage) {
-            return NO;
+            return nil;
         }
     } else if ([MIMETypeUtil isSupportedImageMIMEType:mimeType]) {
         if (fileSize.unsignedIntegerValue > OWSMediaUtils.kMaxFileSizeImage) {
-            return NO;
+            return nil;
         }
     } else {
-        return NO;
+        return nil;
     }
 
     NSError *error = nil;
-    NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
-    if (!data || error) {
+    return [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+}
+
++ (BOOL)ows_isValidImageAtPath:(NSString *)filePath mimeType:(nullable NSString *)mimeType
+{
+    NSData *_Nullable data = [NSData ows_validImageDataAtPath:filePath mimeType:mimeType];
+    if (!data) {
         return NO;
     }
 
-    if (![self ows_hasValidImageDimensionsAtPath:filePath isAnimated:isAnimated]) {
+    BOOL isAnimated = [MIMETypeUtil isSupportedAnimatedMIMEType:mimeType];
+    
+    if (![self ows_hasValidImageDimensionsAtPath:filePath withData:data mimeType:mimeType isAnimated:isAnimated]) {
         return NO;
     }
 
@@ -93,45 +112,98 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     if (imageSource == NULL) {
         return NO;
     }
-    BOOL result = [NSData ows_hasValidImageDimensionWithImageSource:imageSource isAnimated:isAnimated];
+    
+    ImageDimensionInfo dimensionInfo = [NSData ows_imageDimensionWithImageSource:imageSource isAnimated:isAnimated];
     CFRelease(imageSource);
-    return result;
+    
+    return [NSData ows_isValidImageDimension:dimensionInfo.pixelSize depthBytes:dimensionInfo.depthBytes isAnimated:isAnimated];
 }
 
-+ (BOOL)ows_hasValidImageDimensionsAtPath:(NSString *)path isAnimated:(BOOL)isAnimated
++ (BOOL)ows_hasValidImageDimensionsAtPath:(NSString *)path withData:(NSData *)data mimeType:(nullable NSString *)mimeType isAnimated:(BOOL)isAnimated
+{
+    CGSize imageDimensions = [self ows_imageDimensionsAtPath:path withData:data mimeType:mimeType isAnimated:isAnimated];
+    
+    if (imageDimensions.width < 1 || imageDimensions.height < 1) {
+        return NO;
+    }
+    
+    return YES;
+}
+
++ (CGSize)ows_imageDimensionsAtPath:(NSString *)path withData:(nullable NSData *)data mimeType:(nullable NSString *)mimeType isAnimated:(BOOL)isAnimated
 {
     NSURL *url = [NSURL fileURLWithPath:path];
     if (!url) {
-        return NO;
+        return CGSizeZero;
+    }
+    
+    if ([mimeType isEqualToString:OWSMimeTypeImageWebp]) {
+        NSData *targetData = data;
+        
+        if (targetData == nil) {
+            NSError *error = nil;
+            NSData *_Nullable loadedData = [NSData dataWithContentsOfFile:path options:NSDataReadingMappedIfSafe error:&error];
+            
+            if (!data || error) {
+                return CGSizeZero;
+            }
+            
+            targetData = loadedData;
+        }
+        
+        CGSize imageSize = [data sizeForWebpData];
+        
+        if (imageSize.width < 1 || imageSize.height < 1) {
+            return CGSizeZero;
+        }
+        
+        const CGFloat kExpectedBytePerPixel = 4;
+        CGFloat kMaxValidImageDimension = OWSMediaUtils.kMaxAnimatedImageDimensions;
+        CGFloat kMaxBytes = kMaxValidImageDimension * kMaxValidImageDimension * kExpectedBytePerPixel;
+        
+        if (data.length > kMaxBytes) {
+            return CGSizeZero;
+        }
+        
+        return imageSize;
     }
 
     CGImageSourceRef imageSource = CGImageSourceCreateWithURL((__bridge CFURLRef)url, NULL);
     if (imageSource == NULL) {
-        return NO;
+        return CGSizeZero;
     }
-    BOOL result = [self ows_hasValidImageDimensionWithImageSource:imageSource isAnimated:isAnimated];
+    
+    ImageDimensionInfo dimensionInfo = [self ows_imageDimensionWithImageSource:imageSource isAnimated:isAnimated];
     CFRelease(imageSource);
-    return result;
+    
+    if (![self ows_isValidImageDimension:dimensionInfo.pixelSize depthBytes:dimensionInfo.depthBytes isAnimated:isAnimated]) {
+        return CGSizeZero;
+    }
+    
+    return dimensionInfo.pixelSize;
 }
 
-+ (BOOL)ows_hasValidImageDimensionWithImageSource:(CGImageSourceRef)imageSource isAnimated:(BOOL)isAnimated
++ (ImageDimensionInfo)ows_imageDimensionWithImageSource:(CGImageSourceRef)imageSource isAnimated:(BOOL)isAnimated
 {
     NSDictionary *imageProperties
         = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, 0, NULL);
+    ImageDimensionInfo info;
+    info.pixelSize = CGSizeZero;
+    info.depthBytes = 0;
 
     if (!imageProperties) {
-        return NO;
+        return info;
     }
 
     NSNumber *widthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelWidth];
     if (!widthNumber) {
-        return NO;
+        return info;
     }
     CGFloat width = widthNumber.floatValue;
 
     NSNumber *heightNumber = imageProperties[(__bridge NSString *)kCGImagePropertyPixelHeight];
     if (!heightNumber) {
-        return NO;
+        return info;
     }
     CGFloat height = heightNumber.floatValue;
 
@@ -139,7 +211,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
      * key is a CFNumberRef. */
     NSNumber *depthNumber = imageProperties[(__bridge NSString *)kCGImagePropertyDepth];
     if (!depthNumber) {
-        return NO;
+        return info;
     }
     NSUInteger depthBits = depthNumber.unsignedIntegerValue;
     // This should usually be 1.
@@ -149,13 +221,27 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
      * The value of this key is CFStringRef. */
     NSString *colorModel = imageProperties[(__bridge NSString *)kCGImagePropertyColorModel];
     if (!colorModel) {
-        return NO;
+        return info;
     }
     if (![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelRGB]
         && ![colorModel isEqualToString:(__bridge NSString *)kCGImagePropertyColorModelGray]) {
+        return info;
+    }
+    
+    // Update the struct to return
+    info.pixelSize = CGSizeMake(width, height);
+    info.depthBytes = depthBytes;
+    
+    return info;
+}
+
++ (BOOL)ows_isValidImageDimension:(CGSize)imageSize depthBytes:(CGFloat)depthBytes isAnimated:(BOOL)isAnimated
+{
+    if (imageSize.width < 1 || imageSize.height < 1 || depthBytes < 1) {
+        // Invalid metadata.
         return NO;
     }
-
+    
     // We only support (A)RGB and (A)Grayscale, so worst case is 4.
     const CGFloat kWorseCastComponentsPerPixel = 4;
     CGFloat bytesPerPixel = kWorseCastComponentsPerPixel * depthBytes;
@@ -164,7 +250,7 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     CGFloat kMaxValidImageDimension
         = (isAnimated ? OWSMediaUtils.kMaxAnimatedImageDimensions : OWSMediaUtils.kMaxStillImageDimensions);
     CGFloat kMaxBytes = kMaxValidImageDimension * kMaxValidImageDimension * kExpectedBytePerPixel;
-    CGFloat actualBytes = width * height * bytesPerPixel;
+    CGFloat actualBytes = imageSize.width * imageSize.height * bytesPerPixel;
     if (actualBytes > kMaxBytes) {
         return NO;
     }
@@ -205,6 +291,12 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
         case ImageFormat_Bmp:
             return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageBmp1] ||
                 [mimeType isEqualToString:OWSMimeTypeImageBmp2]);
+        case ImageFormat_Webp:
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageWebp]);
+        case ImageFormat_Heic:
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageHeic]);
+        case ImageFormat_Heif:
+            return (mimeType == nil || [mimeType isEqualToString:OWSMimeTypeImageHeif]);
     }
 }
 
@@ -235,9 +327,52 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     } else if (byte0 == 0x49 && byte1 == 0x49) {
         // Intel byte order TIFF
         return ImageFormat_Tiff;
+    } else if (byte0 == 0x52 && byte1 == 0x49) {
+        // First two letters of RIFF tag.
+        return ImageFormat_Webp;
+    }
+
+    return [self ows_guessHighEfficiencyImageFormat];
+}
+
+- (ImageFormat)ows_guessHighEfficiencyImageFormat
+{
+    // A HEIF image file has the first 16 bytes like
+    // 0000 0018 6674 7970 6865 6963 0000 0000
+    // so in this case the 5th to 12th bytes shall make a string of "ftypheic"
+    const NSUInteger kHeifHeaderStartsAt = 4;
+    const NSUInteger kHeifBrandStartsAt = 8;
+    // We support "heic", "mif1" or "msf1". Other brands are invalid for us for now.
+    // The length is 4 + 1 because the brand must be terminated with a null.
+    // Include the null in the comparison to prevent a bogus brand like "heicfake"
+    // from being considered valid.
+    const NSUInteger kHeifSupportedBrandLength = 5;
+    const NSUInteger kTotalHeaderLength = kHeifBrandStartsAt - kHeifHeaderStartsAt + kHeifSupportedBrandLength;
+    if (self.length < kHeifBrandStartsAt + kHeifSupportedBrandLength) {
+        return ImageFormat_Unknown;
     }
 
     return ImageFormat_Unknown;
+    // These are the brands of HEIF formatted files that are renderable by CoreGraphics
+    const NSString *kHeifBrandHeaderHeic = @"ftypheic\0";
+    const NSString *kHeifBrandHeaderHeif = @"ftypmif1\0";
+    const NSString *kHeifBrandHeaderHeifStream = @"ftypmsf1\0";
+
+    // Pull the string from the header and compare it with the supported formats
+    unsigned char bytes[kTotalHeaderLength];
+    [self getBytes:&bytes range:NSMakeRange(kHeifHeaderStartsAt, kTotalHeaderLength)];
+    NSData *data = [[NSData alloc] initWithBytes:bytes length:kTotalHeaderLength];
+    NSString *marker = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+    if ([kHeifBrandHeaderHeic isEqualToString:marker]) {
+        return ImageFormat_Heic;
+    } else if ([kHeifBrandHeaderHeif isEqualToString:marker]) {
+        return ImageFormat_Heif;
+    } else if ([kHeifBrandHeaderHeifStream isEqualToString:marker]) {
+        return ImageFormat_Heif;
+    } else {
+        return ImageFormat_Unknown;
+    }
 }
 
 - (NSString *_Nullable)ows_guessMimeType
@@ -304,9 +439,18 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 + (CGSize)imageSizeForFilePath:(NSString *)filePath mimeType:(NSString *)mimeType
 {
-    if (![NSData ows_isValidImageAtPath:filePath mimeType:mimeType]) {
+    NSData *_Nullable data = [NSData ows_validImageDataAtPath:filePath mimeType:mimeType];
+    if (!data) {
         return CGSizeZero;
     }
+    
+    BOOL isAnimated = [MIMETypeUtil isSupportedAnimatedMIMEType:mimeType];
+    CGSize pixelSize = [NSData ows_imageDimensionsAtPath:filePath withData:data mimeType:mimeType isAnimated:isAnimated];
+    
+    if (pixelSize.width > 0 && pixelSize.height > 0 && [mimeType isEqualToString:OWSMimeTypeImageWebp]) {
+        return pixelSize;
+    }
+    
     NSURL *url = [NSURL fileURLWithPath:filePath];
 
     // With CGImageSource we avoid loading the whole image into memory.
@@ -384,6 +528,42 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     }
     CFRelease(source);
     return result;
+}
+
+// MARK: - Webp
+
++ (CGSize)sizeForWebpFilePath:(NSString *)filePath
+{
+    NSError *error = nil;
+    NSData *_Nullable data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+    if (!data || error) {
+        return CGSizeZero;
+    }
+    return [data sizeForWebpData];
+}
+
+- (CGSize)sizeForWebpData
+{
+    WebPData webPData = { 0 };
+    webPData.bytes = self.bytes;
+    webPData.size = self.length;
+    WebPDemuxer *demuxer = WebPDemux(&webPData);
+    
+    if (!demuxer) {
+        return CGSizeZero;
+    }
+
+    CGFloat canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
+    CGFloat canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+    CGFloat frameCount = WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
+    
+    WebPDemuxDelete(demuxer);
+    
+    if (canvasWidth > 0 && canvasHeight > 0 && frameCount > 0) {
+        return CGSizeMake(canvasWidth, canvasHeight);
+    }
+
+    return CGSizeZero;
 }
 
 @end
