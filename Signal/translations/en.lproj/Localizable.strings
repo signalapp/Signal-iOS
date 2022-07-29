@@ -6115,6 +6115,12 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "Delete";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "Delete";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story Saved";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Forward";
 
@@ -6138,6 +6144,12 @@
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
+
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Failed to Save Story";
+
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "Save";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
