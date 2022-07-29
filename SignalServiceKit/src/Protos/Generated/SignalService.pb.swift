@@ -3,7 +3,7 @@
 //
 
 //*
-// Copyright (C) 2014-2016 Open Whisper Systems
+// Copyright (C) 2014-2022 Open Whisper Systems
 //
 // Licensed according to the LICENSE file in this repository.
 
@@ -64,15 +64,7 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `destinationUuid`. Subsequent reads from it will return its default value.
   mutating func clearDestinationUuid() {self._destinationUuid = nil}
 
-  var relay: String {
-    get {return _relay ?? String()}
-    set {_relay = newValue}
-  }
-  /// Returns true if `relay` has been explicitly set.
-  var hasRelay: Bool {return self._relay != nil}
-  /// Clears the value of `relay`. Subsequent reads from it will return its default value.
-  mutating func clearRelay() {self._relay = nil}
-
+  /// 3 is reserved (formerly `relay`)
   /// @required
   var timestamp: UInt64 {
     get {return _timestamp ?? 0}
@@ -185,7 +177,6 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _sourceE164: String? = nil
   fileprivate var _sourceDevice: UInt32? = nil
   fileprivate var _destinationUuid: String? = nil
-  fileprivate var _relay: String? = nil
   fileprivate var _timestamp: UInt64? = nil
   fileprivate var _legacyMessage: Data? = nil
   fileprivate var _content: Data? = nil
@@ -4716,7 +4707,6 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     2: .same(proto: "sourceE164"),
     7: .same(proto: "sourceDevice"),
     13: .same(proto: "destinationUuid"),
-    3: .same(proto: "relay"),
     5: .same(proto: "timestamp"),
     6: .same(proto: "legacyMessage"),
     8: .same(proto: "content"),
@@ -4733,7 +4723,6 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularEnumField(value: &self._type) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self._sourceE164) }()
-      case 3: try { try decoder.decodeSingularStringField(value: &self._relay) }()
       case 5: try { try decoder.decodeSingularUInt64Field(value: &self._timestamp) }()
       case 6: try { try decoder.decodeSingularBytesField(value: &self._legacyMessage) }()
       case 7: try { try decoder.decodeSingularUInt32Field(value: &self._sourceDevice) }()
@@ -4757,9 +4746,6 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     } }()
     try { if let v = self._sourceE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    } }()
-    try { if let v = self._relay {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     } }()
     try { if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 5)
@@ -4793,7 +4779,6 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._sourceE164 != rhs._sourceE164 {return false}
     if lhs._sourceDevice != rhs._sourceDevice {return false}
     if lhs._destinationUuid != rhs._destinationUuid {return false}
-    if lhs._relay != rhs._relay {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs._legacyMessage != rhs._legacyMessage {return false}
     if lhs._content != rhs._content {return false}
