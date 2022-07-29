@@ -10,7 +10,21 @@ public class TSConstants: NSObject {
     private enum Environment {
         case production, staging
     }
-    private static var environment: Environment = .production
+    private static var environment: Environment {
+        // You can set "USE_STAGING=1" in your Xcode Scheme. This allows you to
+        // prepare a series of commits without accidentally committing the change
+        // to the environment.
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["USE_STAGING"] == "1" {
+            return .staging
+        }
+        #endif
+
+        // If you do want to make a build that will always connect to staging,
+        // change this value. (Scheme environment variables are only set when
+        // launching via Xcode, so this approach is still quite useful.)
+        return .production
+    }
 
     @objc
     public static var isUsingProductionService: Bool {
