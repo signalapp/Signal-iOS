@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGroupCallMessage.h"
@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)participantNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     if (address.isLocalAddress) {
-        return OWSLocalizedString(@"GROUP_CALL_YOU", "Text describing the local user as a participant in a group call.");
+        return OWSLocalizedString(@"YOU", "Second person pronoun to represent the local user.");
     } else {
         return [self.contactsManager displayNameForAddress:address transaction:transaction];
     }

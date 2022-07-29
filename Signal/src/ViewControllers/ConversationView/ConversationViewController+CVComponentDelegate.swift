@@ -244,7 +244,7 @@ extension ConversationViewController: CVComponentDelegate {
                 block: { StoryFinder.story(timestamp: quotedReply.timestamp, author: quotedReply.authorAddress, transaction: $0) }
             ) else { return }
 
-            let vc = StoryPageViewController(context: quotedStory.context)
+            let vc = StoryPageViewController(context: quotedStory.context, loadMessage: quotedStory)
             presentFullScreen(vc, animated: true)
         } else {
             scrollToQuotedMessage(quotedReply, isAnimated: true)

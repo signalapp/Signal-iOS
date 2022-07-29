@@ -19,6 +19,7 @@ protocol StoryContextViewControllerDelegate: AnyObject {
     )
     func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController)
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController)
+    func storyContextViewControllerShouldOnlyRenderMyStories(_ storyContextViewController: StoryContextViewController) -> Bool
 }
 
 class StoryContextViewController: OWSViewController {
@@ -42,6 +43,8 @@ class StoryContextViewController: OWSViewController {
         }
         return currentItem.message.localUserAllowedToReply
     }
+
+    var loadMessage: StoryMessage?
 
     enum LoadPosition {
         case `default`
@@ -68,8 +71,14 @@ class StoryContextViewController: OWSViewController {
             currentItemMediaView.reset()
             updateProgressState()
         } else {
-            // If there's an unviewed story, we always want to present that first.
-            if let firstUnviewedStory = items.first(where: {
+            // If a specific message was specified to load to, present that first.
+            if let loadMessage = loadMessage, let item = items.first(where: {
+                $0.message.uniqueId == loadMessage.uniqueId
+            }) {
+                currentItem = item
+
+            // Otherwise, if there's an unviewed story, we always want to present that first.
+            } else if let firstUnviewedStory = items.first(where: {
                 $0.message.localUserViewedTimestamp == nil
             }) {
                 currentItem = firstUnviewedStory
@@ -84,6 +93,7 @@ class StoryContextViewController: OWSViewController {
 
             // For subsequent loads, use the default position.
             loadPositionIfRead = .default
+            loadMessage = nil
         }
 
         playbackProgressView.alpha = 1
@@ -207,6 +217,7 @@ class StoryContextViewController: OWSViewController {
         databaseStorage.asyncRead { [weak self] transaction in
             guard let self = self else { return }
             StoryFinder.enumerateStoriesForContext(self.context, transaction: transaction) { message, stop in
+                if self.delegate?.storyContextViewControllerShouldOnlyRenderMyStories(self) == true && !message.authorAddress.isLocalAddress { return }
                 guard let storyItem = self.buildStoryItem(for: message, transaction: transaction) else { return }
                 storyItems.append(storyItem)
                 if storyItems.count >= Self.maxItemsToRender { stop.pointee = true }
@@ -483,6 +494,9 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             directReplyVC.dismissHandler = { [weak self] in self?.play() }
             self.pause()
             self.present(directReplyVC, animated: true)
+        case .privateStory:
+            // TODO: Views sheet
+            break
         case .none:
             owsFailDebug("Unexpected context")
         }

@@ -35,10 +35,17 @@ struct StoryViewModel: Dependencies {
             guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                 throw OWSAssertionError("Missing group thread for group story")
             }
-            let authorShortName = Self.contactsManager.shortDisplayName(
-                for: latestMessage.authorAddress,
-                transaction: transaction
-            )
+
+            let authorShortName: String
+            if latestMessage.authorAddress.isLocalAddress {
+                authorShortName = CommonStrings.you
+            } else {
+                authorShortName = Self.contactsManager.shortDisplayName(
+                    for: latestMessage.authorAddress,
+                    transaction: transaction
+                )
+            }
+
             let nameFormat = NSLocalizedString(
                 "GROUP_STORY_NAME_FORMAT",
                 comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}")
@@ -84,6 +91,8 @@ extension StoryContext: BatchUpdateValue {
             return data.hexadecimalString
         case .authorUuid(let uuid):
             return uuid.uuidString
+        case .privateStory(let uniqueId):
+            return uniqueId
         case .none:
             owsFailDebug("Unexpected StoryContext for batch update")
             return "none"

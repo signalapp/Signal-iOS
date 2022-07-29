@@ -210,6 +210,16 @@ private extension StoryContext {
             return "\(StoryMessage.columnName(.groupId)) = x'\(data.hexadecimalString)'"
         case .authorUuid(let uuid):
             return "\(StoryMessage.columnName(.authorUuid)) = '\(uuid.uuidString)' AND \(StoryMessage.columnName(.groupId)) is NULL"
+        case .privateStory(let uniqueId):
+            return """
+                \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
+                AND \(StoryMessage.columnName(.groupId)) is NULL
+                AND (
+                    SELECT 1 FROM json_tree(\(StoryMessage.columnName(.manifest)), '$.outgoing.recipientStates')
+                    WHERE json_tree.type IS 'object'
+                    AND json_extract(json_tree.value, '$.contexts') LIKE '%"\(uniqueId)"%'
+                )
+            """
         case .none:
             return nil
         }

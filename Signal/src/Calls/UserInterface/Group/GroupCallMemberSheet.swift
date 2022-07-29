@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalRingRTC
+import SignalMessaging
 
 @objc
 class GroupCallMemberSheet: InteractiveSheetViewController {
@@ -97,10 +98,7 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
                 guard let localAddress = self.tsAccountManager.localAddress else { return members }
 
-                let displayName = NSLocalizedString(
-                    "GROUP_CALL_YOU",
-                    comment: "Text describing the local user as a participant in a group call."
-                )
+                let displayName = CommonStrings.you
                 let comparableName = displayName
 
                 members.append(JoinedMember(

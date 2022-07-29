@@ -269,6 +269,11 @@ public class CommonStrings: NSObject {
     static public var searchBarPlaceholder: String {
         OWSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
     }
+
+    @objc
+    static public var you: String {
+        OWSLocalizedString("YOU", comment: "Second person pronoun to represent the local user.")
+    }
 }
 
 // MARK: -

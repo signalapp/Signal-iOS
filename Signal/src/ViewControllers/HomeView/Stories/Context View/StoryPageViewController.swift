@@ -17,6 +17,7 @@ class StoryPageViewController: UIPageViewController {
             setViewControllers([StoryContextViewController(context: newValue, delegate: self)], direction: .forward, animated: false)
         }
     }
+    let onlyRenderMyStories: Bool
     var currentContextViewController: StoryContextViewController {
         viewControllers!.first as! StoryContextViewController
     }
@@ -26,9 +27,11 @@ class StoryPageViewController: UIPageViewController {
     lazy var initiallyAvailableContexts: [StoryContext] = [currentContext]
     private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
 
-    required init(context: StoryContext) {
+    required init(context: StoryContext, loadMessage: StoryMessage? = nil, onlyRenderMyStories: Bool = false) {
+        self.onlyRenderMyStories = onlyRenderMyStories
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
         self.currentContext = context
+        currentContextViewController.loadMessage = loadMessage
         modalPresentationStyle = .fullScreen
         transitioningDelegate = self
     }
@@ -176,6 +179,10 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController) {
         displayLink?.isPaused = false
     }
+
+    func storyContextViewControllerShouldOnlyRenderMyStories(_ storyContextViewController: StoryContextViewController) -> Bool {
+        onlyRenderMyStories
+    }
 }
 
 extension StoryPageViewController: UIViewControllerTransitioningDelegate {
@@ -216,6 +223,8 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         guard splitViewController.homeVC.selectedTab == .stories else { return nil }
 
         let storiesVC = splitViewController.homeVC.storiesViewController
+
+        guard storiesVC.navigationController?.topViewController == storiesVC else { return nil }
 
         // If the story cell isn't visible, use a default animation
         guard let storyCell = storiesVC.cell(for: currentContext) else { return nil }

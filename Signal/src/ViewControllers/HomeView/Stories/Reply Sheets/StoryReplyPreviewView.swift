@@ -40,9 +40,7 @@ class StoryReplyPreviewView: UIView {
 
         let authorName: String
         if quotedReplyModel.authorAddress.isLocalAddress {
-            authorName = NSLocalizedString(
-                "QUOTED_REPLY_AUTHOR_INDICATOR_YOU",
-                comment: "message header label when someone else is quoting you")
+            authorName = CommonStrings.you
         } else {
             authorName = contactsManager.displayName(for: quotedReplyModel.authorAddress)
         }

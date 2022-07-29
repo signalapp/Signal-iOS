@@ -121,6 +121,14 @@ class MyStoriesViewController: OWSViewController {
 }
 
 extension MyStoriesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+
+        guard let thread = thread(for: indexPath.section), let item = item(for: indexPath) else { return }
+        let vc = StoryPageViewController(context: thread.storyContext, loadMessage: item.message, onlyRenderMyStories: true)
+        vc.contextDataSource = self
+        present(vc, animated: true)
+    }
 }
 
 extension MyStoriesViewController: UITableViewDataSource {
@@ -361,6 +369,12 @@ extension MyStoriesViewController: ForwardMessageDelegate {
 
     public func forwardMessageFlowDidCancel() {
         dismiss(animated: true)
+    }
+}
+
+extension MyStoriesViewController: StoryPageViewControllerDataSource {
+    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
+        items.orderedKeys.map { $0.storyContext }
     }
 }
 

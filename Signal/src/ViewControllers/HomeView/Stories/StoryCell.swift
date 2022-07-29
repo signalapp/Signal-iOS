@@ -55,6 +55,8 @@ class StoryCell: UITableViewCell {
             replyImageView.image = #imageLiteral(resourceName: "reply-solid-20").withRenderingMode(.alwaysTemplate)
         case .groupId:
             replyImageView.image = #imageLiteral(resourceName: "messages-solid-20").withRenderingMode(.alwaysTemplate)
+        case .privateStory:
+            owsFailDebug("Unexpectedly had private story on stories list")
         case .none:
             owsFailDebug("Unexpected context")
         }

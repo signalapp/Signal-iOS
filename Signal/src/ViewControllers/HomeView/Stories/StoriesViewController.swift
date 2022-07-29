@@ -583,6 +583,8 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
                             return owsFailDebug("Unexpectedly missing thread for 1:1 story")
                         }
                         Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
+                    case .privateStory:
+                        owsFailDebug("Unexpectedly had private story on stories list")
                     case .none:
                         owsFailDebug("Unexpectedly missing context for story")
                     }

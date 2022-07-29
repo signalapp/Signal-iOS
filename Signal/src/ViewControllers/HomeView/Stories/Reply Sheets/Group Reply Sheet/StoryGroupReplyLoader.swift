@@ -245,10 +245,7 @@ class StoryGroupReplyLoader: Dependencies {
                 replyItem = reusableReplyItem
             } else {
                 let displayName = authorAddress.isLocalAddress
-                    ? NSLocalizedString(
-                        "STORY_REPLY_YOU_AUTHOR",
-                        comment: "Author text when the local user author's a story reply"
-                      )
+                    ? CommonStrings.you
                     : displayNamesByAddress[authorAddress]
                 replyItem = StoryGroupReplyViewItem(
                     message: message,

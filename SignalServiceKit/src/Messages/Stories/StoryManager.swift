@@ -115,6 +115,7 @@ public class StoryManager: NSObject {
 public enum StoryContext: Equatable, Hashable {
     case groupId(Data)
     case authorUuid(UUID)
+    case privateStory(String)
     case none
 }
 
@@ -124,6 +125,8 @@ public extension TSThread {
             return .groupId(groupThread.groupId)
         } else if let contactThread = self as? TSContactThread, let authorUuid = contactThread.contactAddress.uuid {
             return .authorUuid(authorUuid)
+        } else if let privateStoryThread = self as? TSPrivateStoryThread {
+            return .privateStory(privateStoryThread.uniqueId)
         } else {
             return .none
         }
@@ -143,6 +146,8 @@ public extension StoryContext {
                 SignalServiceAddress(uuid: uuid),
                 transaction: transaction
             )?.uniqueId
+        case .privateStory(let uniqueId):
+            return uniqueId
         case .none:
             return nil
         }
@@ -157,6 +162,8 @@ public extension StoryContext {
                 SignalServiceAddress(uuid: uuid),
                 transaction: transaction
             )
+        case .privateStory(let uniqueId):
+            return TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: transaction)
         case .none:
             return nil
         }

@@ -290,7 +290,7 @@ class StoryItemMediaView: UIView {
             groupAvatarView.autoPinEdge(.leading, to: .trailing, of: authorAvatarView, withOffset: -4)
 
             return avatarContainer
-        case .authorUuid, .none:
+        case .authorUuid, .privateStory, .none:
             return authorAvatarView
         }
     }
@@ -310,19 +310,29 @@ class StoryItemMediaView: UIView {
                     return groupThread.groupNameOrDefault
                 }()
 
-                let authorShortName = Self.contactsManager.shortDisplayName(
-                    for: item.message.authorAddress,
-                    transaction: transaction
-                )
+                let authorShortName: String
+                if item.message.authorAddress.isLocalAddress {
+                    authorShortName = CommonStrings.you
+                } else {
+                    authorShortName = Self.contactsManager.shortDisplayName(
+                        for: item.message.authorAddress,
+                        transaction: transaction
+                    )
+                }
+
                 let nameFormat = NSLocalizedString(
                     "GROUP_STORY_NAME_FORMAT",
                     comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}")
                 return String(format: nameFormat, authorShortName, groupName)
             default:
-                return Self.contactsManager.displayName(
-                    for: item.message.authorAddress,
-                    transaction: transaction
-                )
+                if item.message.authorAddress.isLocalAddress {
+                    return CommonStrings.you
+                } else {
+                    return Self.contactsManager.displayName(
+                        for: item.message.authorAddress,
+                        transaction: transaction
+                    )
+                }
             }
         }()
         return label

@@ -193,8 +193,7 @@ public class ChatListInfo: Dependencies {
                     transaction: transaction
                 )
             } else if lastMessageForInbox is TSOutgoingMessage {
-                return OWSLocalizedString("GROUP_MEMBER_LOCAL_USER",
-                                         comment: "Label indicating the local user.")
+                return CommonStrings.you
             } else {
                 return nil
             }

@@ -291,8 +291,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             let receiptStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: outgoingMessage)
             let isDisappearingMessage = outgoingMessage.hasPerConversationExpiration
-            itemViewState.accessibilityAuthorName = NSLocalizedString("ACCESSIBILITY_LABEL_SENDER_SELF",
-                                                                      comment: "Accessibility label for messages sent by you.")
+            itemViewState.accessibilityAuthorName = CommonStrings.you
 
             // clustering
             if let previousItem = previousItem,

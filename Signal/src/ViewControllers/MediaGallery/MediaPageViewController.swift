@@ -689,7 +689,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         case let incomingMessage as TSIncomingMessage:
             return self.contactsManager.displayName(for: incomingMessage.authorAddress)
         case is TSOutgoingMessage:
-            return NSLocalizedString("MEDIA_GALLERY_SENDER_NAME_YOU", comment: "Short sender label for media sent by you")
+            return CommonStrings.you
         default:
             owsFailDebug("Unknown message type: \(type(of: message))")
             return ""
