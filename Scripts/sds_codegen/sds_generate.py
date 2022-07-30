@@ -1383,16 +1383,14 @@ extension %sSerializer {
         swift_body += '''
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static var table: SDSTableMetadata { 
+    public static var table: SDSTableMetadata {
         SDSTableMetadata(collection: %s.collection(),
                          tableName: "%s",
                          columns: [
 ''' % ( str(clazz.name), database_table_name, )
-
-        for column_property_name in column_property_names:
-            swift_body += '''        %sColumn,
-''' % ( str(column_property_name) )
-        swift_body += '''        ]) 
+        swift_body += ',\n'.join(['        %sColumn' % str(column_property_name) for column_property_name in column_property_names])
+        swift_body += '''
+        ])
     }
 }
 '''
