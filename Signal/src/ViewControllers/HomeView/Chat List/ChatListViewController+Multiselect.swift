@@ -181,8 +181,13 @@ extension ChatListViewController {
         v.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         v.delegate = self
 
-        viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
-        viewState.multiSelectState.contextMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
+        viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(
+            v,
+            dismissCallback: { [weak self] in
+                self?.hideMenu()
+            }
+        )
+        
         window.addSubview(viewState.multiSelectState.contextMenuView!)
         viewState.multiSelectState.contextMenuView!.frame = window.bounds
         adjustContextMenuPosition()
@@ -212,6 +217,8 @@ extension ChatListViewController {
             self?.viewState.multiSelectState.parentButton?.alpha = 1
             self?.viewState.multiSelectState.parentButton = nil
             self?.viewState.multiSelectState.contextMenuView = nil
+            // ensures that the VoiceOver cursor jumps to the parent button upon dismissal of the modal
+            UIAccessibility.post(notification: .screenChanged, argument: self?.viewState.multiSelectState.parentButton)
             handler?()
         }
         if animated {
@@ -462,12 +469,14 @@ extension ChatListViewController: ContextMenuActionsViewDelegate {
 private class ContextMenuActionsViewContainer: UIView {
     static let offset = CGPoint(x: 8, y: 0)
     fileprivate let menuContainer: UIView
+    private let dismissCallback: () -> Void
 
-    required init(_ target: UIView) {
+    required init(_ target: UIView, dismissCallback: @escaping () -> Void) {
         let container = UIView(frame: target.bounds)
         container.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
         self.menuContainer = container
-
+        self.dismissCallback = dismissCallback
+        
         super.init(frame: .zero)
 
         let radius = target.layer.cornerRadius
@@ -482,10 +491,25 @@ private class ContextMenuActionsViewContainer: UIView {
         container.addSubview(target)
         self.addSubview(container)
         self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleDismiss)))
+        
+        // ensures that only the menu is accessible on VoiceOver when visible
+        self.accessibilityViewIsModal = true
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    @objc private func handleDismiss() {
+        dismissCallback()
+    }
+    
+    override func accessibilityPerformEscape() -> Bool {
+        // ensures that a VoiceOver user can dismiss the menu using the Z gesture
+        dismissCallback()
+        return true
     }
 }
 
