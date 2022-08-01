@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -43,6 +43,7 @@ public extension DecodableDefault {
     typealias Source = DecodableDefaultSource
     typealias DecodableBooleanLiteral = Decodable & ExpressibleByBooleanLiteral
     typealias DecodableIntegerLiteral = Decodable & ExpressibleByIntegerLiteral
+    typealias DecodableFloatLiteral = Decodable & ExpressibleByFloatLiteral
     typealias DecodableStringLiteral = Decodable & ExpressibleByStringLiteral
     typealias DecodableArrayLiteral = Decodable & ExpressibleByArrayLiteral
     typealias DecodableDictionaryLiteral = Decodable & ExpressibleByDictionaryLiteral
@@ -58,6 +59,18 @@ public extension DecodableDefault {
 
         public enum Zero<T: DecodableIntegerLiteral>: Source {
             public static var defaultValue: T { 0 }
+        }
+
+        public enum One<T: DecodableIntegerLiteral>: Source {
+            public static var defaultValue: T { 1 }
+        }
+
+        public enum ZeroFloat<T: DecodableFloatLiteral>: Source {
+            public static var defaultValue: T { 0.0 }
+        }
+
+        public enum OneFloat<T: DecodableFloatLiteral>: Source {
+            public static var defaultValue: T { 1.0 }
         }
 
         public enum EmptyString<T: DecodableStringLiteral>: Source {
@@ -83,6 +96,9 @@ public extension DecodableDefault {
     typealias True<T: DecodableBooleanLiteral> = Wrapper<Sources.True<T>>
     typealias False<T: DecodableBooleanLiteral> = Wrapper<Sources.False<T>>
     typealias Zero<T: DecodableIntegerLiteral> = Wrapper<Sources.Zero<T>>
+    typealias One<T: DecodableIntegerLiteral> = Wrapper<Sources.One<T>>
+    typealias ZeroFloat<T: DecodableFloatLiteral> = Wrapper<Sources.ZeroFloat<T>>
+    typealias OneFloat<T: DecodableFloatLiteral> = Wrapper<Sources.OneFloat<T>>
     typealias EmptyString<T: DecodableStringLiteral> = Wrapper<Sources.EmptyString<T>>
     typealias EmptyArray<T: DecodableArrayLiteral> = Wrapper<Sources.EmptyArray<T>>
     typealias EmptyDictionary<T: DecodableDictionaryLiteral> = Wrapper<Sources.EmptyDictionary<T>>

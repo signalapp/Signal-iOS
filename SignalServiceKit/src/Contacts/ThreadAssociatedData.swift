@@ -26,6 +26,10 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     public private(set) var mutedUntilTimestamp: UInt64
 
     @objc
+    @DecodableDefault.OneFloat
+    public private(set) var audioPlaybackRate: Float
+
+    @objc
     public var isMuted: Bool { mutedUntilTimestamp > Date.ows_millisecondTimestamp() }
 
     @objc
@@ -126,12 +130,14 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         threadUniqueId: String,
         isArchived: Bool,
         isMarkedUnread: Bool,
-        mutedUntilTimestamp: UInt64
+        mutedUntilTimestamp: UInt64,
+        audioPlaybackRate: Float
     ) {
         self.threadUniqueId = threadUniqueId
         self.isArchived = isArchived
         self.isMarkedUnread = isMarkedUnread
         self.mutedUntilTimestamp = mutedUntilTimestamp
+        self.audioPlaybackRate = audioPlaybackRate
         super.init()
     }
 
@@ -139,10 +145,11 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         isArchived: Bool? = nil,
         isMarkedUnread: Bool? = nil,
         mutedUntilTimestamp: UInt64? = nil,
+        audioPlaybackRate: Float? = nil,
         updateStorageService: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard isArchived != nil || isMarkedUnread != nil || mutedUntilTimestamp != nil else {
+        guard isArchived != nil || isMarkedUnread != nil || mutedUntilTimestamp != nil || audioPlaybackRate != nil else {
             return owsFailDebug("You must set one value")
         }
 
@@ -166,6 +173,9 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             if let mutedUntilTimestamp = mutedUntilTimestamp {
                 associatedData.mutedUntilTimestamp = mutedUntilTimestamp
             }
+            if let audioPlaybackRate = audioPlaybackRate {
+                associatedData.audioPlaybackRate = audioPlaybackRate
+            }
         }
     }
 
@@ -185,6 +195,12 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @available(swift, obsoleted: 1.0)
     public func updateWith(mutedUntilTimestamp: UInt64, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.mutedUntilTimestamp = mutedUntilTimestamp }
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func updateWith(audioPlaybackRate: Float, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+        updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.audioPlaybackRate = audioPlaybackRate }
     }
 
     @objc(clearIsArchived:clearIsMarkedUnread:updateStorageService:transaction:)

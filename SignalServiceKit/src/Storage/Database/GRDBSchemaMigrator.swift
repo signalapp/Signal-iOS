@@ -166,6 +166,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addUnsavedMessagesToSendToJobRecord
         case addColumnsForSendGiftBadgeDurableJob
         case addDonationReceiptTypeColumn
+        case addAudioPlaybackRateColumn
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1835,6 +1836,16 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(.addAudioPlaybackRateColumn) { db in
+            do {
+                try db.alter(table: "thread_associated_data") { table in
+                    table.add(column: "audioPlaybackRate", .double)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2075,7 +2086,9 @@ public class GRDBSchemaMigrator: NSObject {
                         threadUniqueId: thread.uniqueId,
                         isArchived: thread.isArchivedObsolete,
                         isMarkedUnread: thread.isMarkedUnreadObsolete,
-                        mutedUntilTimestamp: thread.mutedUntilTimestampObsolete
+                        mutedUntilTimestamp: thread.mutedUntilTimestampObsolete,
+                        // this didn't exist pre-migration, just write the default
+                        audioPlaybackRate: 1
                     ).insert(transaction.database)
                 } catch {
                     owsFail("Error \(error)")
