@@ -17,6 +17,8 @@ extension OpenGroupAPI {
             
             case base64EncodedData = "data"
             case base64EncodedSignature = "signature"
+            
+            case reactions = "reactions"
         }
 
         public let id: Int64
@@ -30,6 +32,20 @@ extension OpenGroupAPI {
         
         public let base64EncodedData: String?
         public let base64EncodedSignature: String?
+        
+        public let reactions: [String:Reaction]?
+    }
+    
+    public struct Reaction: Codable, Equatable {
+        enum CodingKeys: String, CodingKey {
+            case total
+            case reactors
+            case you
+        }
+        
+        public let total: Int64
+        public let reactors: [String]?
+        public let you: Bool
     }
 }
 
@@ -42,6 +58,7 @@ extension OpenGroupAPI.Message {
         let maybeSender: String? = try? container.decode(String.self, forKey: .sender)
         let maybeBase64EncodedData: String? = try? container.decode(String.self, forKey: .base64EncodedData)
         let maybeBase64EncodedSignature: String? = try? container.decode(String.self, forKey: .base64EncodedSignature)
+        let maybeReactions: [String:Reaction]? = try? container.decode([String:Reaction].self, forKey: .reactions)
         
         // If we have data and a signature (ie. the message isn't a deletion) then validate the signature
         if let base64EncodedData: String = maybeBase64EncodedData, let base64EncodedSignature: String = maybeBase64EncodedSignature {
@@ -84,7 +101,20 @@ extension OpenGroupAPI.Message {
             whisperMods: ((try? container.decode(Bool.self, forKey: .whisperMods)) ?? false),
             whisperTo: try? container.decode(String.self, forKey: .whisperTo),
             base64EncodedData: maybeBase64EncodedData,
-            base64EncodedSignature: maybeBase64EncodedSignature
+            base64EncodedSignature: maybeBase64EncodedSignature,
+            reactions: [:]
+        )
+    }
+}
+
+extension OpenGroupAPI.Reaction {
+    public init(from decoder: Decoder) throws {
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self = OpenGroupAPI.Reaction(
+            total: try container.decode(Int64.self, forKey: .total),
+            reactors: try? container.decode([String].self, forKey: .reactors),
+            you: (try? container.decode(Bool.self, forKey: .you)) ?? false
         )
     }
 }
