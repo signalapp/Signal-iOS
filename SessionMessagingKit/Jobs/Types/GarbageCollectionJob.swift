@@ -372,6 +372,8 @@ public enum GarbageCollectionJob: JobExecutor {
                             }
                             catch { deletionErrors.append(error) }
                         }
+                        
+                        SNLog("[GarbageCollectionJob] Removed \(orphanedAttachmentFiles.count) orphaned attachment\(orphanedAttachmentFiles.count == 1 ? "" : "s")")
                     }
                     
                     // Orphaned profile avatar files (actual deletion)
@@ -393,6 +395,8 @@ public enum GarbageCollectionJob: JobExecutor {
                             }
                             catch { deletionErrors.append(error) }
                         }
+                        
+                        SNLog("[GarbageCollectionJob] Removed \(orphanedAvatarFiles.count) orphaned avatar image\(orphanedAvatarFiles.count == 1 ? "" : "s")")
                     }
                     
                     // Report a single file deletion as a job failure (even if other content was successfully removed)
