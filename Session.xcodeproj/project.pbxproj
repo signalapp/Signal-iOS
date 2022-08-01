@@ -817,6 +817,7 @@
 		FDF2220B2818F38D000A4995 /* SessionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF2220A2818F38D000A4995 /* SessionApp.swift */; };
 		FDF2220F281B55E6000A4995 /* QueryInterfaceRequest+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF2220E281B55E6000A4995 /* QueryInterfaceRequest+Utilities.swift */; };
 		FDF22211281B5E0B000A4995 /* TableRecord+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF22210281B5E0B000A4995 /* TableRecord+Utilities.swift */; };
+		FDF40CDE2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDF40CDD2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift */; };
 		FDFD645927F26C6800808CA1 /* Array+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A5D12553860800C340D1 /* Array+Utilities.swift */; };
 		FDFD645B27F26D4600808CA1 /* Data+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645A27F26D4600808CA1 /* Data+Utilities.swift */; };
 		FDFD645D27F273F300808CA1 /* MockGeneralCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */; };
@@ -1871,6 +1872,7 @@
 		FDF2220A2818F38D000A4995 /* SessionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionApp.swift; sourceTree = "<group>"; };
 		FDF2220E281B55E6000A4995 /* QueryInterfaceRequest+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QueryInterfaceRequest+Utilities.swift"; sourceTree = "<group>"; };
 		FDF22210281B5E0B000A4995 /* TableRecord+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TableRecord+Utilities.swift"; sourceTree = "<group>"; };
+		FDF40CDD2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _004_RemoveLegacyYDB.swift; sourceTree = "<group>"; };
 		FDFD645A27F26D4600808CA1 /* Data+Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Data+Utilities.swift"; sourceTree = "<group>"; };
 		FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockGeneralCache.swift; sourceTree = "<group>"; };
 		FDFDE123282D04F20098B17F /* MediaDismissAnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDismissAnimationController.swift; sourceTree = "<group>"; };
@@ -3517,6 +3519,7 @@
 				FDF0B7412804EA4F004C14C5 /* _002_SetupStandardJobs.swift */,
 				FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */,
 				FD09B7E4288670BB00ED0B66 /* _005_EmojiReacts.swift */,
+				FDF40CDD2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift */,
 			);
 			path = Migrations;
 			sourceTree = "<group>";
@@ -5150,6 +5153,7 @@
 				FD09799927FFC1A300936362 /* Attachment.swift in Sources */,
 				FD245C5F2850662200B966DD /* OWSWindowManager.m in Sources */,
 				C3471ECB2555356A00297E91 /* MessageSender+Encryption.swift in Sources */,
+				FDF40CDE2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift in Sources */,
 				FDF0B74928060D13004C14C5 /* QuotedReplyModel.swift in Sources */,
 				FD77289A284AF1BD0018502F /* Sodium+Utilities.swift in Sources */,
 				FD5C7309285007920029977D /* BlindedIdLookup.swift in Sources */,
@@ -6893,7 +6897,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 360;
+				CURRENT_PROJECT_VERSION = 361;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6965,7 +6969,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 360;
+				CURRENT_PROJECT_VERSION = 361;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

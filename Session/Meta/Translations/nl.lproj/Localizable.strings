@@ -652,7 +652,7 @@
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "LOADING_CONVERSATIONS" = "Loading Conversations...";
-"DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database\n\nYou can export your application logs to be able to share for troubleshooting or you can restore our device\n\nWarning: Restoring your device will result in loss of any data older than two weeks";
+"DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database\n\nYou can export your application logs to be able to share for troubleshooting or you can restore your device\n\nWarning: Restoring your device will result in loss of any data older than two weeks";
 "CHATS_TITLE" = "Chats";
 "MESSAGE_TRIMMING_TITLE" = "Message Trimming";
 "MESSAGE_TRIMMING_OPEN_GROUP_TITLE" = "Delete Old Open Group Messages";

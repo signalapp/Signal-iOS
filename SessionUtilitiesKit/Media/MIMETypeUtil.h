@@ -12,6 +12,9 @@ extern NSString *const OWSMimeTypeImageTiff1;
 extern NSString *const OWSMimeTypeImageTiff2;
 extern NSString *const OWSMimeTypeImageBmp1;
 extern NSString *const OWSMimeTypeImageBmp2;
+extern NSString *const OWSMimeTypeImageWebp;
+extern NSString *const OWSMimeTypeImageHeic;
+extern NSString *const OWSMimeTypeImageHeif;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
 extern NSString *const kOversizeTextAttachmentUTI;
@@ -35,6 +38,10 @@ extern NSString *const kSyncMessageFileExtension;
 + (nullable NSString *)getSupportedExtensionFromAudioMIMEType:(NSString *)supportedMIMEType;
 + (nullable NSString *)getSupportedExtensionFromImageMIMEType:(NSString *)supportedMIMEType;
 + (nullable NSString *)getSupportedExtensionFromAnimatedMIMEType:(NSString *)supportedMIMEType;
+
++ (NSArray<NSString *> *)supportedImageMIMETypes;
++ (NSArray<NSString *> *)supportedAnimatedImageMIMETypes;
++ (NSArray<NSString *> *)supportedVideoMIMETypes;
 
 + (BOOL)isAnimated:(NSString *)contentType;
 + (BOOL)isImage:(NSString *)contentType;

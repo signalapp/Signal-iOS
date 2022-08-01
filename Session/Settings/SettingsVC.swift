@@ -298,8 +298,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             return button
         }
         
-        let debugReMigrateButton = getSettingButton(withTitle: "DEBUG - Re-Migrate Database", color: Colors.destructive, action: #selector(remigrateDatabase))
-        
         let pathButton = getSettingButton(withTitle: NSLocalizedString("vc_path_title", comment: ""), color: Colors.text, action: #selector(showPath))
         let pathStatusView = PathStatusView()
         pathStatusView.set(.width, to: PathStatusView.size)
@@ -310,8 +308,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         pathStatusView.autoVCenterInSuperview()
         
         return [
-            getSeparator(),
-            debugReMigrateButton,
             getSeparator(),
             pathButton,
             getSeparator(),
@@ -601,22 +597,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             shareVC.popoverPresentationController?.sourceRect = self.view.bounds
         }
         navigationController!.present(shareVC, animated: true, completion: nil)
-    }
-    
-    @objc private func remigrateDatabase() {
-        let alert = UIAlertController(
-            title: "Session",
-            message: "Are you sure you want to re-migrate from your old database state?\n\nWarning: If you had a migration error and picked the \"Restore your account\" option this will result in a complete loss of data and the need to manually restore from the seed",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "Re-migrate", style: .destructive) { _ in
-            Storage.deleteDatabaseFiles()
-            try? Storage.deleteDbKeys()
-            exit(1)
-        })
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default))
-        
-        navigationController?.present(alert, animated: true)
     }
     
     @objc private func showPath() {

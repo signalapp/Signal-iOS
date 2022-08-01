@@ -1,5 +1,6 @@
 import NVActivityIndicatorView
 import UIKit
+import SessionMessagingKit
 
 final class PathVC : BaseVC {
 
