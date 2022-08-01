@@ -339,6 +339,23 @@ extension Attachment {
                 default: return (self.isValid, self.duration)
             }
         }()
+        // Regenerate this just in case we added support since the attachment was inserted into
+        // the database (eg. manually downloaded in a later update)
+        let isVisualMedia: Bool = (
+            MIMETypeUtil.isImage(contentType) ||
+            MIMETypeUtil.isVideo(contentType) ||
+            MIMETypeUtil.isAnimated(contentType)
+        )
+        let attachmentResolution: CGSize? = {
+            if let width: UInt = self.width, let height: UInt = self.height, width > 0, height > 0 {
+                return CGSize(width: Int(width), height: Int(height))
+            }
+            guard isVisualMedia else { return nil }
+            guard state == .downloaded else { return nil }
+            guard let originalFilePath: String = originalFilePath else { return nil }
+            
+            return Attachment.imageSize(contentType: contentType, originalFilePath: originalFilePath)
+        }()
         
         return Attachment(
             id: self.id,
@@ -351,10 +368,16 @@ extension Attachment {
             sourceFilename: sourceFilename,
             downloadUrl: (downloadUrl ?? self.downloadUrl),
             localRelativeFilePath: (localRelativeFilePath ?? self.localRelativeFilePath),
-            width: width,
-            height: height,
+            width: attachmentResolution.map { UInt($0.width) },
+            height: attachmentResolution.map { UInt($0.height) },
             duration: duration,
-            isVisualMedia: isVisualMedia,
+            isVisualMedia: (
+                // Regenerate this just in case we added support since the attachment was inserted into
+                // the database (eg. manually downloaded in a later update)
+                MIMETypeUtil.isImage(contentType) ||
+                MIMETypeUtil.isVideo(contentType) ||
+                MIMETypeUtil.isAnimated(contentType)
+            ),
             isValid: isValid,
             encryptionKey: (encryptionKey ?? self.encryptionKey),
             digest: (digest ?? self.digest),
