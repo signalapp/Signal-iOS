@@ -618,7 +618,8 @@ public enum OpenGroupAPI {
                 db,
                 request: Request<NoBody, Endpoint>(
                     server: server,
-                    endpoint: .roomMessagesSince(roomToken, seqNo: seqNo)
+                    endpoint: .roomMessagesSince(roomToken, seqNo: seqNo),
+                    queryParameters: [.reactions : "r"]
                 ),
                 using: dependencies
             )
@@ -667,7 +668,7 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
-        guard let encodedEmoji: String = "👍".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+        guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             return Promise(error: OpenGroupAPIError.invalidEmoji)
         }
         
@@ -681,10 +682,7 @@ public enum OpenGroupAPI {
                 ),
                 using: dependencies
             )
-            .map { responseInfo, _ in
-                print("Ryan Test: \(responseInfo)")
-                return responseInfo
-            }
+            .map { responseInfo, _ in responseInfo }
     }
     
     public static func reactionAdd(
