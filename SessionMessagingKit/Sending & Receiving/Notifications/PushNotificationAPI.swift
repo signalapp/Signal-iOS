@@ -128,8 +128,8 @@ public final class PushNotificationAPI : NSObject {
         promises.append(
             attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
                 OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
-                    .map2 { _, response -> Void in
-                        guard let response: UpdateRegistrationResponse = try? response?.decoded(as: UpdateRegistrationResponse.self) else {
+                    .map2 { _, data -> Void in
+                        guard let response: UpdateRegistrationResponse = try? data?.decoded(as: UpdateRegistrationResponse.self) else {
                             return SNLog("Couldn't register device token.")
                         }
                         guard response.body.code != 0 else {

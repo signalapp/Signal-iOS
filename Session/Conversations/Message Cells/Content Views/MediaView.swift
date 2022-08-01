@@ -131,7 +131,10 @@ public class MediaView: UIView {
             configure(forError: .failed)
             return false
         }
-        guard attachment.state != .uploaded else { return false }
+        
+        // If this message was uploaded on a different device it'll now be seen as 'downloaded' (but
+        // will still be outgoing - we don't want to show a loading indicator in this case)
+        guard attachment.state != .uploaded && attachment.state != .downloaded else { return false }
         
         let loader = MediaLoaderView()
         addSubview(loader)
@@ -166,9 +169,13 @@ public class MediaView: UIView {
             }
             strongSelf.tryToLoadMedia(
                 loadMediaBlock: { applyMediaBlock in
-                    guard attachment.isValid else { return }
+                    guard attachment.isValid else {
+                        self?.configure(forError: .invalid)
+                        return
+                    }
                     guard let filePath: String = attachment.originalFilePath else {
                         owsFailDebug("Attachment stream missing original file path.")
+                        self?.configure(forError: .invalid)
                         return
                     }
                     
@@ -179,6 +186,7 @@ public class MediaView: UIView {
                     
                     guard let image: YYImage = media as? YYImage else {
                         owsFailDebug("Media has unexpected type: \(type(of: media))")
+                        self?.configure(forError: .invalid)
                         return
                     }
                     // FIXME: Animated images flicker when reloading the cells (even though they are in the cache)
@@ -218,12 +226,18 @@ public class MediaView: UIView {
             }
             self?.tryToLoadMedia(
                 loadMediaBlock: { applyMediaBlock in
-                    guard attachment.isValid else { return }
+                    guard attachment.isValid else {
+                        self?.configure(forError: .invalid)
+                        return
+                    }
                     
                     attachment.thumbnail(
                         size: .large,
                         success: { image, _ in applyMediaBlock(image) },
-                        failure: { Logger.error("Could not load thumbnail") }
+                        failure: {
+                            Logger.error("Could not load thumbnail")
+                            self?.configure(forError: .invalid)
+                        }
                     )
                 },
                 applyMediaBlock: { media in
@@ -231,6 +245,7 @@ public class MediaView: UIView {
                     
                     guard let image: UIImage = media as? UIImage else {
                         owsFailDebug("Media has unexpected type: \(type(of: media))")
+                        self?.configure(forError: .invalid)
                         return
                     }
                     
@@ -279,12 +294,18 @@ public class MediaView: UIView {
             }
             self?.tryToLoadMedia(
                 loadMediaBlock: { applyMediaBlock in
-                    guard attachment.isValid else { return }
+                    guard attachment.isValid else {
+                        self?.configure(forError: .invalid)
+                        return
+                    }
                     
                     attachment.thumbnail(
                         size: .medium,
                         success: { image, _ in applyMediaBlock(image) },
-                        failure: { Logger.error("Could not load thumbnail") }
+                        failure: {
+                            Logger.error("Could not load thumbnail")
+                            self?.configure(forError: .invalid)
+                        }
                     )
                 },
                 applyMediaBlock: { media in
@@ -292,6 +313,7 @@ public class MediaView: UIView {
 
                     guard let image: UIImage = media as? UIImage else {
                         owsFailDebug("Media has unexpected type: \(type(of: media))")
+                        self?.configure(forError: .invalid)
                         return
                     }
                     

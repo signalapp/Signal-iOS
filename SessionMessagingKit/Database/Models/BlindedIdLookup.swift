@@ -72,6 +72,7 @@ public extension BlindedIdLookup {
     static func fetchOrCreate(
         _ db: Database,
         blindedId: String,
+        sessionId: String? = nil,
         openGroupServer: String,
         openGroupPublicKey: String,
         isCheckingForOutbox: Bool,
@@ -89,6 +90,22 @@ public extension BlindedIdLookup {
         
         // If the lookup already has a resolved sessionId then just return it immediately
         guard lookup.sessionId == nil else { return lookup }
+        
+        // If we we given a sessionId then validate it is correct and if so save it
+        if
+            let sessionId: String = sessionId,
+            dependencies.sodium.sessionId(
+                sessionId,
+                matchesBlindedId: blindedId,
+                serverPublicKey: openGroupPublicKey,
+                genericHash: dependencies.genericHash
+            )
+        {
+            lookup = try lookup
+                .with(sessionId: sessionId)
+                .saved(db)
+            return lookup
+        }
         
         // We now need to try to match the blinded id to an existing contact, this can only be done by looping
         // through all approved contacts and generating a blinded id for the provided open group for each to

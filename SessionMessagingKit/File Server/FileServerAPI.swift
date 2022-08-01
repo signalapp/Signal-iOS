@@ -14,7 +14,7 @@ public final class FileServerAPI: NSObject {
     public static let oldServerPublicKey = "7cb31905b55cd5580c686911debf672577b3fb0bff81df4ce2d5c4cb3a7aaa69"
     @objc public static let server = "http://filev2.getsession.org"
     public static let serverPublicKey = "da21e1d886c6fbaea313f75298bd64aab03a97ce985b46bb2dad9f2089c8ee59"
-    public static let maxFileSize = 10_000_000 // 10 MB
+    public static let maxFileSize = (10 * 1024 * 1024) // 10 MB
     /// The file server has a file size limit of `maxFileSize`, which the Service Nodes try to enforce as well. However, the limit applied by the Service Nodes
     /// is on the **HTTP request** and not the actual file size. Because the file server expects the file data to be base 64 encoded, the size of the HTTP
     /// request for a given file will be at least `ceil(n / 3) * 4` bytes, where n is the file size in bytes. This is the minimum size because there might also
