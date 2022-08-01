@@ -41,40 +41,6 @@ public enum DisappearingMessagesJob: JobExecutor {
         
         // The 'if' is only there to prevent the "variable never read" warning from showing
         if backgroundTask != nil { backgroundTask = nil }
-        
-        // TODO: Remove this for the final build
-        Storage.shared.writeAsync { db in
-            // Re-process all WebP images, and images with no width/height values to update their validity state
-            let supportedVisualMediaMimeTypes: Set<String> = MIMETypeUtil.supportedImageMIMETypes()
-                .appending(contentsOf: MIMETypeUtil.supportedAnimatedImageMIMETypes())
-                .appending(contentsOf: MIMETypeUtil.supportedVideoMIMETypes())
-                .asSet()
-            let attachments: [Attachment] = try Attachment
-                .filter(Attachment.Columns.state == Attachment.State.downloaded)
-                .filter(
-                    Attachment.Columns.contentType == "image/webp" || (
-                        (
-                            Attachment.Columns.width == nil ||
-                            Attachment.Columns.height == nil
-                        ) &&
-                        supportedVisualMediaMimeTypes.contains(Attachment.Columns.contentType)
-                    )
-                )
-                .filter(
-                    !Attachment.Columns.isValid ||
-                    !Attachment.Columns.isVisualMedia ||
-                    Attachment.Columns.width == nil ||
-                    Attachment.Columns.height == nil
-                )
-                .fetchAll(db)
-            
-            if !attachments.isEmpty {
-                attachments.forEach { attachment in
-                    _ = try? attachment.with(state: attachment.state).saved(db)
-                }
-            }
-        }
-        // TODO: Remove this for the final build
     }
 }
 
