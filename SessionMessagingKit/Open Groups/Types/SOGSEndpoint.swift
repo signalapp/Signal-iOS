@@ -30,6 +30,7 @@ extension OpenGroupAPI {
         
         case reactionDelete(String, id: Int64, emoji: String)
         case reaction(String, id: Int64, emoji: String)
+        case reactors(String, id: Int64, emoji: String)
         
         // Pinning
         
@@ -99,6 +100,9 @@ extension OpenGroupAPI {
                 
                 case .reaction(let roomToken, let messageId, let emoji):
                     return "room/\(roomToken)/reaction/\(messageId)/\(emoji)"
+                
+                case .reactors(let roomToken, let messageId, let emoji):
+                    return "room/\(roomToken)/reactors/\(messageId)/\(emoji)"
                     
                 // Pinning
                     

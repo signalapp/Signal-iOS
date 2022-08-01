@@ -659,6 +659,34 @@ public enum OpenGroupAPI {
     
     // MARK: - Reactions
     
+    public static func reactors(
+        _ db: Database,
+        emoji: String,
+        id: Int64,
+        in roomToken: String,
+        on server: String,
+        using dependencies: SMKDependencies = SMKDependencies()
+    ) -> Promise<OnionRequestResponseInfoType> {
+        guard let encodedEmoji: String = "👍".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+            return Promise(error: OpenGroupAPIError.invalidEmoji)
+        }
+        
+        return OpenGroupAPI
+            .send(
+                db,
+                request: Request<NoBody, Endpoint>(
+                    method: .get,
+                    server: server,
+                    endpoint: .reactors(roomToken, id: id, emoji: encodedEmoji)
+                ),
+                using: dependencies
+            )
+            .map { responseInfo, _ in
+                print("Ryan Test: \(responseInfo)")
+                return responseInfo
+            }
+    }
+    
     public static func reactionAdd(
         _ db: Database,
         emoji: String,
@@ -667,13 +695,17 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
+        guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+            return Promise(error: OpenGroupAPIError.invalidEmoji)
+        }
+        
         return OpenGroupAPI
             .send(
                 db,
                 request: Request<NoBody, Endpoint>(
                     method: .put,
                     server: server,
-                    endpoint: .reaction(roomToken, id: id, emoji: emoji)
+                    endpoint: .reaction(roomToken, id: id, emoji: encodedEmoji)
                 ),
                 using: dependencies
             )
@@ -688,13 +720,17 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
+        guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+            return Promise(error: OpenGroupAPIError.invalidEmoji)
+        }
+        
         return OpenGroupAPI
             .send(
                 db,
                 request: Request<NoBody, Endpoint>(
                     method: .delete,
                     server: server,
-                    endpoint: .reaction(roomToken, id: id, emoji: emoji)
+                    endpoint: .reaction(roomToken, id: id, emoji: encodedEmoji)
                 ),
                 using: dependencies
             )
@@ -709,13 +745,17 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
+        guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
+            return Promise(error: OpenGroupAPIError.invalidEmoji)
+        }
+        
         return OpenGroupAPI
             .send(
                 db,
                 request: Request<NoBody, Endpoint>(
                     method: .delete,
                     server: server,
-                    endpoint: .reactionDelete(roomToken, id: id, emoji: emoji)
+                    endpoint: .reactionDelete(roomToken, id: id, emoji: encodedEmoji)
                 ),
                 using: dependencies
             )
@@ -1286,7 +1326,7 @@ public enum OpenGroupAPI {
         guard let url: URL = request.url else { return nil }
         
         var updatedRequest: URLRequest = request
-        let path: String = url.path
+        let path: String = url.path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? url.path
             .appending(url.query.map { value in "?\(value)" })
         let method: String = (request.httpMethod ?? "GET")
         let timestamp: Int = Int(floor(dependencies.date.timeIntervalSince1970))

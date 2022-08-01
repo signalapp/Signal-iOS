@@ -1110,7 +1110,7 @@ extension ConversationVC:
                     else { return }
                     
                     if remove {
-                        _ = OpenGroupAPI
+                        OpenGroupAPI
                             .reactionDelete(
                                 db,
                                 emoji: emoji,
@@ -1118,8 +1118,19 @@ extension ConversationVC:
                                 in: openGroup.roomToken,
                                 on: openGroup.server
                             )
+                            .retainUntilComplete()
                     } else {
-                        _ = OpenGroupAPI
+                        OpenGroupAPI
+                            .reactors(
+                                db,
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server
+                            )
+                            .retainUntilComplete()
+                        
+                        OpenGroupAPI
                             .reactionAdd(
                                 db,
                                 emoji: emoji,
@@ -1127,6 +1138,7 @@ extension ConversationVC:
                                 in: openGroup.roomToken,
                                 on: openGroup.server
                             )
+                            .retainUntilComplete()
                     }
                     
                 } else {
