@@ -129,7 +129,15 @@ class MediaDetailViewController: OWSViewController, UIScrollViewDelegate, OWSVid
     // MARK: - Functions
     
     private func updateMinZoomScale() {
-        guard let image: UIImage = image else {
+        let maybeImageSize: CGSize? = {
+            switch self.mediaView {
+                case let imageView as UIImageView: return (imageView.image?.size ?? .zero)
+                case let imageView as YYAnimatedImageView: return (imageView.image?.size ?? .zero)
+                default: return nil
+            }
+        }()
+        
+        guard let imageSize: CGSize = maybeImageSize else {
             self.scrollView.minimumZoomScale = 1
             self.scrollView.maximumZoomScale = 1
             self.scrollView.zoomScale = 1
@@ -138,13 +146,13 @@ class MediaDetailViewController: OWSViewController, UIScrollViewDelegate, OWSVid
         
         let viewSize: CGSize = self.scrollView.bounds.size
         
-        guard image.size.width > 0 && image.size.height > 0 else {
-            SNLog("Invalid image dimensions (\(image.size.width), \(image.size.height))")
-            return;
+        guard imageSize.width > 0 && imageSize.height > 0 else {
+            SNLog("Invalid image dimensions (\(imageSize.width), \(imageSize.height))")
+            return
         }
         
-        let scaleWidth: CGFloat = (viewSize.width / image.size.width)
-        let scaleHeight: CGFloat = (viewSize.height / image.size.height)
+        let scaleWidth: CGFloat = (viewSize.width / imageSize.width)
+        let scaleHeight: CGFloat = (viewSize.height / imageSize.height)
         let minScale: CGFloat = min(scaleWidth, scaleHeight)
 
         if minScale != self.scrollView.minimumZoomScale {
