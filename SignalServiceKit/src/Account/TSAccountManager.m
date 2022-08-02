@@ -248,11 +248,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark -
 
 - (void)warmCaches

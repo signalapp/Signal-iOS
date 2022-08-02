@@ -1574,15 +1574,6 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
     fileprivate func offsetCGPoint(_ point: CGPoint, offset: CGFloat) -> CGPoint {
         return CGPoint(x: point.x + offset, y: point.y)
     }
-
-    //
-    // MARK: - Deinit
-    //
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
 }
 
 //

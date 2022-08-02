@@ -131,7 +131,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
     deinit {
         Logger.info("deinit")
-        NotificationCenter.default.removeObserver(self)
 
         // Share extensions reside in a process that may be reused between usages.
         // That isn't safe; the codebase is full of statics (e.g. singletons) which

@@ -64,8 +64,6 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     deinit {
         Logger.verbose("")
-
-        NotificationCenter.default.removeObserver(self)
     }
 
     @objc

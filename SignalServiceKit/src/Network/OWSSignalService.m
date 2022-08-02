@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSignalService.h"
@@ -78,11 +78,6 @@ NSNotificationName const NSNotificationNameIsCensorshipCircumventionActiveDidCha
                                              selector:@selector(localNumberDidChange:)
                                                  name:NSNotificationNameLocalNumberDidChange
                                                object:nil];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)updateHasCensoredPhoneNumber

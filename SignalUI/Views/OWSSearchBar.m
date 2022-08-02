@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSearchBar.h"
@@ -56,11 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(themeDidChange:)
                                                  name:ThemeDidChangeNotification
                                                object:nil];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)ows_applyTheme

@@ -176,10 +176,6 @@ public final class CallService: LightweightCallManager {
         }
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     // MARK: - Observers
 
     private var observers = WeakArray<CallServiceObserver>()

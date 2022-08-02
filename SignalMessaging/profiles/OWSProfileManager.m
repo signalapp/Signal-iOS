@@ -132,11 +132,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self

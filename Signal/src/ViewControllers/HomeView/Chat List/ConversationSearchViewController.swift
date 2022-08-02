@@ -125,10 +125,6 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
         self.hasEverAppeared = true
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     @objc
     internal func themeDidChange(notification: NSNotification) {
         AssertIsOnMainThread()

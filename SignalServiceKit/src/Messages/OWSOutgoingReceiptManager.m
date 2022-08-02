@@ -92,11 +92,6 @@ NSString *NSStringForOWSReceiptType(OWSReceiptType receiptType)
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (dispatch_queue_t)serialQueue
 {
     static dispatch_queue_t _serialQueue;

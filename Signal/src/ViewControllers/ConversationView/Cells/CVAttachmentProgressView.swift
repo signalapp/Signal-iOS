@@ -77,10 +77,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
         fatalError("init(name:) has not been implemented")
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     private static func outerDiameter(style: Style) -> CGFloat {
         switch style {
         case .withCircle:

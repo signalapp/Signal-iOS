@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Surface memory leaks by logging the deallocation of view controllers.
     OWSLogVerbose(@"Dealloc: %@", self.class);
-
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (instancetype)init

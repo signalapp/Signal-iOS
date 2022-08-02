@@ -29,10 +29,6 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     // MARK: - Create Views
 
     private func createViews() {

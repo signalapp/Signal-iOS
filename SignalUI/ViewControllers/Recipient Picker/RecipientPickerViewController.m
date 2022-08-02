@@ -190,11 +190,6 @@ const NSUInteger kMinimumSearchLength = 1;
     self.searchBar.layoutMargins = [OWSTableViewController2 cellOuterInsetsIn:self.view];
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
 {
     OWSAssertIsOnMainThread();

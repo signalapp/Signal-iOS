@@ -468,10 +468,6 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
         ensureDownloadFolder()
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     private lazy var downloadSession: URLSession = {
         AssertIsOnMainThread()
 

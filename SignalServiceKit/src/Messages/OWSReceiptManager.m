@@ -62,11 +62,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
 {

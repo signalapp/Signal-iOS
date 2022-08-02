@@ -60,10 +60,6 @@ public class ManageStickersViewController: OWSTableViewController2 {
         super.init()
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     // MARK: - View Lifecycle
 
     override public func loadView() {

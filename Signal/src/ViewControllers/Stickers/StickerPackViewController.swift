@@ -37,10 +37,6 @@ public class StickerPackViewController: OWSViewController {
                                                object: nil)
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     // MARK: - View Lifecycle
 
     override public var canBecomeFirstResponder: Bool {
