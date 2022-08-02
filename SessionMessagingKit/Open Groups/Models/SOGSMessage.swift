@@ -33,19 +33,19 @@ extension OpenGroupAPI {
         public let base64EncodedData: String?
         public let base64EncodedSignature: String?
         
-        public let reactions: [String:Reaction]?
-    }
-    
-    public struct Reaction: Codable, Equatable {
-        enum CodingKeys: String, CodingKey {
-            case total
-            case reactors
-            case you
+        public struct Reaction: Codable, Equatable {
+            enum CodingKeys: String, CodingKey {
+                case count
+                case reactors
+                case you
+            }
+            
+            public let count: Int64
+            public let reactors: [String]?
+            public let you: Bool
         }
         
-        public let total: Int64
-        public let reactors: [String]?
-        public let you: Bool
+        public let reactions: [String:Reaction]?
     }
 }
 
@@ -102,17 +102,17 @@ extension OpenGroupAPI.Message {
             whisperTo: try? container.decode(String.self, forKey: .whisperTo),
             base64EncodedData: maybeBase64EncodedData,
             base64EncodedSignature: maybeBase64EncodedSignature,
-            reactions: [:]
+            reactions: maybeReactions
         )
     }
 }
 
-extension OpenGroupAPI.Reaction {
+extension OpenGroupAPI.Message.Reaction {
     public init(from decoder: Decoder) throws {
         let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
-        
-        self = OpenGroupAPI.Reaction(
-            total: try container.decode(Int64.self, forKey: .total),
+
+        self = OpenGroupAPI.Message.Reaction(
+            count: try container.decode(Int64.self, forKey: .count),
             reactors: try? container.decode([String].self, forKey: .reactors),
             you: (try? container.decode(Bool.self, forKey: .you)) ?? false
         )
