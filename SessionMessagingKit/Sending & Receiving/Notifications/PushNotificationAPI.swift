@@ -65,13 +65,13 @@ public final class PushNotificationAPI : NSObject {
         request.httpBody = body
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
-                .map2 { _, response in
-                    guard let response: UpdateRegistrationResponse = try? response?.decoded(as: UpdateRegistrationResponse.self) else {
+            OnionRequestAPI.sendOnionRequest(request, to: server, with: serverPublicKey)
+                .map2 { _, data in
+                    guard let response: PushServerResponse = try? data?.decoded(as: PushServerResponse.self) else {
                         return SNLog("Couldn't unregister from push notifications.")
                     }
-                    guard response.body.code != 0 else {
-                        return SNLog("Couldn't unregister from push notifications due to error: \(response.body.message ?? "nil").")
+                    guard response.code != 0 else {
+                        return SNLog("Couldn't unregister from push notifications due to error: \(response.message ?? "nil").")
                     }
                 }
         }
@@ -127,13 +127,13 @@ public final class PushNotificationAPI : NSObject {
         
         promises.append(
             attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-                OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
+                OnionRequestAPI.sendOnionRequest(request, to: server, with: serverPublicKey)
                     .map2 { _, data -> Void in
-                        guard let response: UpdateRegistrationResponse = try? data?.decoded(as: UpdateRegistrationResponse.self) else {
+                        guard let response: PushServerResponse = try? data?.decoded(as: PushServerResponse.self) else {
                             return SNLog("Couldn't register device token.")
                         }
-                        guard response.body.code != 0 else {
-                            return SNLog("Couldn't register device token due to error: \(response.body.message ?? "nil").")
+                        guard response.code != 0 else {
+                            return SNLog("Couldn't register device token due to error: \(response.message ?? "nil").")
                         }
                         
                         userDefaults[.deviceToken] = hexEncodedToken
@@ -193,13 +193,13 @@ public final class PushNotificationAPI : NSObject {
         request.httpBody = body
         
         let promise: Promise<Void> = attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
-                .map2 { _, response in
-                    guard let response: UpdateRegistrationResponse = try? response?.decoded(as: UpdateRegistrationResponse.self) else {
+            OnionRequestAPI.sendOnionRequest(request, to: server, with: serverPublicKey)
+                .map2 { _, data in
+                    guard let response: PushServerResponse = try? data?.decoded(as: PushServerResponse.self) else {
                         return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey).")
                     }
-                    guard response.body.code != 0 else {
-                        return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(response.body.message ?? "nil").")
+                    guard response.code != 0 else {
+                        return SNLog("Couldn't subscribe/unsubscribe for closed group: \(closedGroupPublicKey) due to error: \(response.message ?? "nil").")
                     }
                 }
         }
@@ -236,8 +236,15 @@ public final class PushNotificationAPI : NSObject {
         
         let retryCount: UInt = (maxRetryCount ?? PushNotificationAPI.maxRetryCount)
         let promise: Promise<Void> = attempt(maxRetryCount: retryCount, recoveringOn: queue) {
-            OnionRequestAPI.sendOnionRequest(request, to: server, using: .v2, with: serverPublicKey)
-                .map { _ in }
+            OnionRequestAPI.sendOnionRequest(request, to: server, with: serverPublicKey)
+                .map2 { _, data in
+                    guard let response: PushServerResponse = try? data?.decoded(as: PushServerResponse.self) else {
+                        return SNLog("Couldn't send push notification.")
+                    }
+                    guard response.code != 0 else {
+                        return SNLog("Couldn't send push notification due to error: \(response.message ?? "nil").")
+                    }
+                }
         }
         
         return promise
