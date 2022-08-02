@@ -109,7 +109,7 @@ public extension ChatListViewController {
             return
         }
 
-        Logger.info("[Subscriptions] showing expiry sheet for badge \(expiredBadgeID)")
+        Logger.info("[Subscriptions] showing expiry sheet for expired badge \(expiredBadgeID)")
 
         if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {

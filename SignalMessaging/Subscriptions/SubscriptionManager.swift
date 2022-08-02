@@ -133,6 +133,17 @@ public struct Subscription {
     public let status: StripeSubscriptionStatus
     public let chargeFailure: ChargeFailure?
 
+    public var debugDescription: String {
+        [
+            "Subscription",
+            "End of current period: \(endOfCurrentPeriod)",
+            "Billing cycle anchor: \(billingCycleAnchor)",
+            "Cancel at end of period?: \(cancelAtEndOfPeriod)",
+            "Status: \(status)",
+            "Charge failure: \(chargeFailure.debugDescription)"
+        ].joined(separator: ". ")
+    }
+
     public init(subscriptionDict: [String: Any], chargeFailureDict: [String: Any]?) throws {
         let params = ParamParser(dictionary: subscriptionDict)
         level = try params.required(key: "level")
@@ -175,6 +186,7 @@ public class SubscriptionManager: NSObject {
     }
 
     private static func warmCaches() {
+        Logger.info("[Subscriptions] Warming caches")
         let value = databaseStorage.read { displayBadgesOnProfile(transaction: $0) }
         displayBadgesOnProfileCache.set(value)
     }
@@ -185,6 +197,8 @@ public class SubscriptionManager: NSObject {
         }
 
         guard !hasMigratedToStorageService else { return }
+
+        Logger.info("[Subscriptions] Migrating to storage service")
 
         databaseStorage.write { transaction in
             subscriptionKVS.setBool(true, key: hasMigratedToStorageServiceKey, transaction: transaction)
@@ -693,6 +707,12 @@ public class SubscriptionManager: NSObject {
     }
 
     public class func redeemReceiptCredentialPresentation(receiptCredentialPresentation: ReceiptCredentialPresentation) throws -> Promise<Void> {
+        let expiresAtForLogging: String = {
+            guard let result = try? receiptCredentialPresentation.getReceiptExpirationTime() else { return "UNKNOWN" }
+            return String(result)
+        }()
+        Logger.info("[Subscriptions] Redeeming receipt credential presentation. Expires at \(expiresAtForLogging)")
+
         let receiptCredentialPresentationData = receiptCredentialPresentation.serialize().asData
 
         let receiptCredentialPresentationString = receiptCredentialPresentationData.base64EncodedString()
@@ -704,6 +724,7 @@ public class SubscriptionManager: NSObject {
         }.map(on: .global()) { response in
             let statusCode = response.responseStatusCode
             if statusCode != 200 {
+                Logger.warn("[Subscriptions] Receipt credential presentation request failed with status code \(statusCode)")
                 throw OWSRetryableSubscriptionError()
             }
         }.then(on: .global()) {
@@ -745,6 +766,12 @@ public class SubscriptionManager: NSObject {
             subscriberID = self.getSubscriberID(transaction: transaction)
             currencyCode = self.getSubscriberCurrencyCode(transaction: transaction)
         }
+
+        let lastSubscriptionExpirationForLogging: String = {
+            guard let lastSubscriptionExpiration = lastSubscriptionExpiration else { return "nil" }
+            return String(lastSubscriptionExpiration.timeIntervalSince1970)
+        }()
+        Logger.info("[Subscriptions] Last subscription expiration: \(lastSubscriptionExpirationForLogging)")
 
         var performHeartbeat: Bool = true
         if let lastKeepAliveHeartbeat = lastKeepAliveHeartbeat, Date().timeIntervalSince(lastKeepAliveHeartbeat) < heartbeatInterval {

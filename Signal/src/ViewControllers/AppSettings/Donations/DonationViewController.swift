@@ -17,10 +17,26 @@ class DonationViewController: OWSTableViewController2 {
                     currentSubscription: Subscription?)
         case loadFailed(hasAnyDonationReceipts: Bool,
                         profileBadgeLookup: ProfileBadgeLookup)
+
+        public var debugDescription: String {
+            switch self {
+            case .initializing:
+                return "initializing"
+            case .loading:
+                return "loading"
+            case .loaded:
+                return "loaded"
+            case .loadFailed:
+                return "loadFailed"
+            }
+        }
     }
 
     private var state: State = .initializing {
-        didSet { updateTableContents() }
+        didSet {
+            Logger.info("[Subscriptions] DonationViewController state changed to \(state.debugDescription)")
+            updateTableContents()
+        }
     }
 
     private var avatarImage: UIImage?
@@ -96,7 +112,7 @@ class DonationViewController: OWSTableViewController2 {
                     return Guarantee.value(result)
                 }
             }.recover { error -> Guarantee<State> in
-                Logger.warn("\(error)")
+                Logger.warn("[Subscriptions] \(error)")
                 let result: State = .loadFailed(hasAnyDonationReceipts: hasAnyDonationReceipts,
                                                 profileBadgeLookup: profileBadgeLookup)
                 return Guarantee.value(result)
@@ -114,13 +130,13 @@ class DonationViewController: OWSTableViewController2 {
             // Make the result an Optional.
             $0
         }.recover { error -> Guarantee<SubscriptionManager.OneTimeBadgeResponse?> in
-            Logger.warn("Failed to fetch boost badge \(error). Proceeding without it, as it is only cosmetic here")
+            Logger.warn("[Subscriptions] Failed to fetch boost badge \(error). Proceeding without it, as it is only cosmetic here")
             return Guarantee.value(nil)
         }
 
         let subscriptionLevelsPromise: Guarantee<[SubscriptionLevel]> = SubscriptionManager.getSubscriptions()
             .recover { error -> Guarantee<[SubscriptionLevel]> in
-                Logger.warn("Failed to fetch subscription levels \(error). Proceeding without them, as they are only cosmetic here")
+                Logger.warn("[Subscriptions] Failed to fetch subscription levels \(error). Proceeding without them, as they are only cosmetic here")
                 return Guarantee.value([])
             }
 
@@ -487,6 +503,7 @@ class DonationViewController: OWSTableViewController2 {
         guard Self.shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() else {
             return
         }
+        Logger.info("[Gifting] Preparing to show gift badge expiration sheet...")
         firstly {
             SubscriptionManager.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
         }.done { [weak self] cachedValue in
@@ -495,6 +512,7 @@ class DonationViewController: OWSTableViewController2 {
             guard case .profileBadge(let profileBadge) = cachedValue else {
                 // The server confirmed this badge doesn't exist. This shouldn't happen,
                 // but clear the flag so that we don't keep trying.
+                Logger.warn("[Gifting] Clearing expired badge ID because the server said it didn't exist")
                 SubscriptionManager.clearMostRecentlyExpiredBadgeIDWithSneakyTransaction()
                 return
             }
@@ -502,6 +520,7 @@ class DonationViewController: OWSTableViewController2 {
             let hasCurrentSubscription = self.databaseStorage.read { transaction -> Bool in
                 self.subscriptionManager.hasCurrentSubscription(transaction: transaction)
             }
+            Logger.info("[Gifting] Showing badge gift expiration sheet (hasCurrentSubscription: \(hasCurrentSubscription))")
             let sheet = BadgeExpirationSheet(badge: profileBadge, mode: .giftBadgeExpired(hasCurrentSubscription: hasCurrentSubscription))
             sheet.delegate = self
             self.present(sheet, animated: true)
@@ -557,7 +576,7 @@ extension DonationViewController: BadgeConfigurationDelegate {
             }
 
             if oldVisibleBadgeIds != newVisibleBadgeIds {
-                Logger.info("Updating visible badges from \(oldVisibleBadgeIds) to \(newVisibleBadgeIds)")
+                Logger.info("[Subscriptions] Updating visible badges from \(oldVisibleBadgeIds) to \(newVisibleBadgeIds)")
                 vc.showDismissalActivity = true
                 return OWSProfileManager.updateLocalProfilePromise(
                     profileGivenName: snapshot.givenName,

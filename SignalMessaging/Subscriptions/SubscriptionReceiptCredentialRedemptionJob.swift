@@ -19,6 +19,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
         boostPaymentIntentID: String,
         transaction: SDSAnyWriteTransaction
     ) {
+        Logger.info("[Subscriptions] Adding a boost job")
         let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
             receiptCredentialRequestContext: receiptCredentialRequestContext,
             receiptCredentailRequest: receiptCredentailRequest,
@@ -43,6 +44,7 @@ public class SubscriptionReceiptCredentialJobQueue: NSObject, JobQueue {
         boostPaymentIntentID: String,
         transaction: SDSAnyWriteTransaction
     ) {
+        Logger.info("[Subscriptions] Adding a subscription job")
         let jobRecord = OWSReceiptCredentialRedemptionJobRecord(
             receiptCredentialRequestContext: receiptCredentialRequestContext,
             receiptCredentailRequest: receiptCredentailRequest,
@@ -155,6 +157,8 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     override public func run() {
         assert(self.durableOperationDelegate != nil)
 
+        Logger.info("[Subscriptions] Running job for \(isBoost ? "boost" : "subscription")")
+
         let getMoneyPromise: Promise<Void>
         if isBoost {
             getMoneyPromise = Promise.value(())
@@ -163,6 +167,8 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                 guard let subscription = subscription else {
                     throw OWSAssertionError("Missing subscription")
                 }
+
+                Logger.info("[Subscriptions] Fetched current subscription. \(subscription.debugDescription)")
 
                 // Subscriptions represent $12.34 as `1234`, unlike most other code.
                 var amount = subscription.amount as Decimal
@@ -204,9 +210,9 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                            priorSubscriptionLevel: self.priorSubscriptionLevel
                     )
                 }
-            }.then(on: .global()) { newReceiptCredentialPresentation in
-                // Store the receipt credential presentation, in case the job fails.
-                self.databaseStorage.writePromise { transaction in
+            }.then(on: .global()) { newReceiptCredentialPresentation -> Promise<ReceiptCredentialPresentation> in
+                Logger.info("[Subscriptions] Storing receipt credential presentation in case the job fails")
+                return self.databaseStorage.writePromise { transaction in
                     self.jobRecord.update(
                         withReceiptCredentialPresentation: newReceiptCredentialPresentation.serialize().asData,
                         transaction: transaction
@@ -228,6 +234,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     }
 
     override public func didSucceed() {
+        Logger.info("[Subscriptions] Redemption job succeeded")
         self.databaseStorage.write { transaction in
             if !self.isBoost {
                 SubscriptionManager.setLastReceiptRedemptionFailed(failureReason: .none, transaction: transaction)
@@ -241,7 +248,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
                     currencyCode: currencyCode
                 ).anyInsert(transaction: transaction)
             } else {
-                Logger.warn("amount and/or currencyCode was missing. Is this an old job?")
+                Logger.warn("[Subscriptions] amount and/or currencyCode was missing. Is this an old job?")
             }
 
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
@@ -267,7 +274,7 @@ public class SubscriptionReceiptCredentailRedemptionOperation: OWSOperation, Dur
     }
 
     override public func didFail(error: Error) {
-        Logger.error("failed to redeem receipt credential with error: \(error.userErrorDescription)")
+        Logger.error("[Subscriptions] failed to redeem receipt credential with error: \(error.userErrorDescription)")
         self.databaseStorage.write { transaction in
             NotificationCenter.default.postNotificationNameAsync(
                 SubscriptionManager.SubscriptionJobQueueDidFailJobNotification,
