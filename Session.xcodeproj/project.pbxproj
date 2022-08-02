@@ -741,7 +741,7 @@
 		FDC4381527B329CE00C60D73 /* NonceGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381427B329CE00C60D73 /* NonceGenerator.swift */; };
 		FDC4381727B32EC700C60D73 /* Personalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381627B32EC700C60D73 /* Personalization.swift */; };
 		FDC4382027B36ADC00C60D73 /* SOGSEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4381F27B36ADC00C60D73 /* SOGSEndpoint.swift */; };
-		FDC4382F27B383AF00C60D73 /* UpdateRegistrationResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382E27B383AF00C60D73 /* UpdateRegistrationResponse.swift */; };
+		FDC4382F27B383AF00C60D73 /* PushServerResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4382E27B383AF00C60D73 /* PushServerResponse.swift */; };
 		FDC4383827B3863200C60D73 /* VersionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4383727B3863200C60D73 /* VersionResponse.swift */; };
 		FDC4384F27B4804F00C60D73 /* Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4384E27B4804F00C60D73 /* Header.swift */; };
 		FDC4385127B4807400C60D73 /* QueryParam.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC4385027B4807400C60D73 /* QueryParam.swift */; };
@@ -1775,7 +1775,7 @@
 		FDC4381427B329CE00C60D73 /* NonceGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonceGenerator.swift; sourceTree = "<group>"; };
 		FDC4381627B32EC700C60D73 /* Personalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Personalization.swift; sourceTree = "<group>"; };
 		FDC4381F27B36ADC00C60D73 /* SOGSEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SOGSEndpoint.swift; sourceTree = "<group>"; };
-		FDC4382E27B383AF00C60D73 /* UpdateRegistrationResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateRegistrationResponse.swift; sourceTree = "<group>"; };
+		FDC4382E27B383AF00C60D73 /* PushServerResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushServerResponse.swift; sourceTree = "<group>"; };
 		FDC4383727B3863200C60D73 /* VersionResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionResponse.swift; sourceTree = "<group>"; };
 		FDC4383D27B4708600C60D73 /* Atomic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Atomic.swift; sourceTree = "<group>"; };
 		FDC4384E27B4804F00C60D73 /* Header.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Header.swift; sourceTree = "<group>"; };
@@ -3761,7 +3761,7 @@
 		FDC4382D27B383A600C60D73 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				FDC4382E27B383AF00C60D73 /* UpdateRegistrationResponse.swift */,
+				FDC4382E27B383AF00C60D73 /* PushServerResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -5165,7 +5165,7 @@
 				FD6A7A692818BE7300035AC1 /* RetrieveDefaultOpenGroupRoomsJob.swift in Sources */,
 				FD09798D27FD1D8900936362 /* DisappearingMessageConfiguration.swift in Sources */,
 				FDF0B75A2807F3A3004C14C5 /* MessageSenderError.swift in Sources */,
-				FDC4382F27B383AF00C60D73 /* UpdateRegistrationResponse.swift in Sources */,
+				FDC4382F27B383AF00C60D73 /* PushServerResponse.swift in Sources */,
 				FDC4386327B4D94E00C60D73 /* SOGSMessage.swift in Sources */,
 				FD245C692850666800B966DD /* ExpirationTimerUpdate.swift in Sources */,
 				FD42F9A8285064B800A0C77D /* PushNotificationAPI.swift in Sources */,
