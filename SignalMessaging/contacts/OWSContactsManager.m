@@ -779,8 +779,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (savedContactNameComponents) {
         return savedContactNameComponents;
     }
-    
-    return [self.profileManagerImpl nameComponentsForAddress:address transaction:transaction];
+
+    return [self.profileManager nameComponentsForProfileWithAddress:address transaction:transaction];
 }
 
 // TODO: Remove?

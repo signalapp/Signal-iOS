@@ -1428,8 +1428,8 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return userProfile.familyName;
 }
 
-- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
-                                                  transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSPersonNameComponents *)nameComponentsForProfileWithAddress:(SignalServiceAddress *)address
+                                                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 

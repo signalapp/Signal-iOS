@@ -212,6 +212,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_repairAvatar
         case dataMigration_dropEmojiAvailabilityStore
         case dataMigration_dropSentStories
+        case dataMigration_indexMultipleNameComponentsForReceipients
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2169,6 +2170,19 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.execute(sql: sql)
             } catch {
                 owsFail("Error \(error)")
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_indexMultipleNameComponentsForReceipients) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // We updated how we generate text for the search index for a
+            // recipient, and consequently should touch all recipients so that
+            // we regenerate the index text.
+
+            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient, _: UnsafeMutablePointer<ObjCBool>) in
+                GRDBFullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: transaction)
             }
         }
     }
