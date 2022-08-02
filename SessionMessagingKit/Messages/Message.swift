@@ -302,6 +302,19 @@ public extension Message {
             throw MessageReceiverError.invalidMessage
         }
         
+        if let reactions = message.reactions {
+            try processRawReceivedReactions(
+                db,
+                reactions: reactions,
+                serverExpirationTimestamp: nil,
+                serverHash: nil,
+                openGroupId: openGroupId,
+                openGroupMessageServerId: message.id,
+                openGroupServerPublicKey: openGroupServerPublicKey,
+                dependencies: dependencies
+            )
+        }
+        
         return try processRawReceivedMessage(
             db,
             envelope: envelope,
@@ -346,6 +359,34 @@ public extension Message {
             handleClosedGroupKeyUpdateMessages: false,
             dependencies: dependencies
         )
+    }
+    
+    private static func processRawReceivedReactions(
+        _ db: Database,
+        reactions: [String:OpenGroupAPI.Message.Reaction],
+        serverExpirationTimestamp: TimeInterval?,
+        serverHash: String?,
+        openGroupId: String? = nil,
+        openGroupMessageServerId: Int64? = nil,
+        openGroupServerPublicKey: String? = nil,
+        dependencies: SMKDependencies = SMKDependencies()
+    ) throws {
+        guard let openGroupMessageServerId = openGroupMessageServerId else { return }
+        for (encodedEmoji, rawReaction) in reactions {
+            if let emoji = encodedEmoji.removingPercentEncoding,
+               rawReaction.count > 0,
+               let reactors = rawReaction.reactors?.joined(separator: ",")
+            {
+                try Reaction(
+                    interactionId: openGroupMessageServerId,
+                    serverHash: nil,
+                    timestampMs: Int64(floor((Date().timeIntervalSince1970 * 1000))),
+                    authorId: reactors,
+                    emoji: emoji,
+                    count: rawReaction.count
+                ).insert(db)
+            }
+        }
     }
     
     private static func processRawReceivedMessage(
