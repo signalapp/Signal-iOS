@@ -160,14 +160,12 @@ public class MediaView: UIView {
 
         loadBlock = { [weak self] in
             AssertIsOnMainThread()
-
-            guard let strongSelf = self else { return }
-
+            
             if animatedImageView.image != nil {
                 owsFailDebug("Unexpectedly already loaded.")
                 return
             }
-            strongSelf.tryToLoadMedia(
+            self?.tryToLoadMedia(
                 loadMediaBlock: { applyMediaBlock in
                     guard attachment.isValid else {
                         self?.configure(forError: .invalid)
@@ -330,6 +328,16 @@ public class MediaView: UIView {
     }
 
     private func configure(forError error: MediaError) {
+        // When there is a failure in the 'loadMediaBlock' closure this can be called
+        // on a background thread - rather than dispatching in every 'loadMediaBlock'
+        // usage we just do so here
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.configure(forError: error)
+            }
+            return
+        }
+        
         let icon: UIImage
         
         switch error {
