@@ -19,18 +19,18 @@ public class PaymentsProcessor: NSObject {
             self.process()
         }
 
-        NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
-                                               object: nil, queue: nil) { [weak self] _ in
-            self?.process()
-        }
-        NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive,
-                                               object: nil, queue: nil) { [weak self] _ in
-            self?.process()
-        }
-        NotificationCenter.default.addObserver(forName: PaymentsConstants.arePaymentsEnabledDidChange,
-                                               object: nil, queue: nil) { [weak self] _ in
-            self?.process()
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(process),
+                                               name: SSKReachability.owsReachabilityDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(process),
+                                               name: .OWSApplicationDidBecomeActive,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(process),
+                                               name: PaymentsConstants.arePaymentsEnabledDidChange,
+                                               object: nil)
     }
 
     private static let unfairLock = UnfairLock()
@@ -95,6 +95,7 @@ public class PaymentsProcessor: NSObject {
     // A given payment record's operation will make a best effort to
     // resolve that payment record until it is complete or failed,
     // although the operations may fail to do so.
+    @objc
     public func process() {
         DispatchQueue.global().async {
             guard !CurrentAppContext().isRunningTests else {

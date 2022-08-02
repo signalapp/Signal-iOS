@@ -36,6 +36,8 @@ class CallAudioService: NSObject, CallObserver {
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
+    private var observerToken: NSObjectProtocol?
+
     var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
     }
@@ -50,16 +52,18 @@ class CallAudioService: NSObject, CallObserver {
         // Configure audio session so we don't prompt user with Record permission until call is connected.
 
         audioSession.configureRTCAudio()
-        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: OperationQueue()) { _ in
+        observerToken = NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: OperationQueue()) { [weak self] _ in
             assert(!Thread.isMainThread)
-            self.audioRouteDidChange()
+            self?.audioRouteDidChange()
         }
 
         Self.callService.addObserverAndSyncState(observer: self)
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        if let observerToken = observerToken {
+            NotificationCenter.default.removeObserver(observerToken)
+        }
     }
 
     // MARK: - CallObserver

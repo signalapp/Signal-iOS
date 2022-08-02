@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -46,11 +46,10 @@ public class RefreshEvent: NSObject {
             object: nil
         )
         NotificationCenter.default.addObserver(
-            forName: SSKReachability.owsReachabilityDidChange,
-            object: nil,
-            queue: nil) { [weak self] _ in
-            self?.fireEvent()
-        }
+            self,
+            selector: #selector(fireEvent),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil)
     }
 
     private var canFire: Bool {
@@ -62,6 +61,7 @@ public class RefreshEvent: NSObject {
         return true
     }
 
+    @objc
     private func fireEvent() {
         guard canFire else {
             return

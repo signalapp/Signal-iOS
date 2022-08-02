@@ -49,16 +49,14 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         updateMode()
 
-        NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
-            guard let strongSelf = self else { return }
-            strongSelf.updateMode()
-        }
-
-        NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
-                                               object: nil, queue: nil) { [weak self] _ in
-            guard let strongSelf = self else { return }
-            strongSelf.updateMode()
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateMode),
+                                               name: .OWSContactsManagerSignalAccountsDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateMode),
+                                               name: SSKReachability.owsReachabilityDidChange,
+                                               object: nil)
     }
 
     // MARK: - View Lifecycle
@@ -110,6 +108,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         hasLoadedView = true
     }
 
+    @objc
     private func updateMode() {
         AssertIsOnMainThread()
 

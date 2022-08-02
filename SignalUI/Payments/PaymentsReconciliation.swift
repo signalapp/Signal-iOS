@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,12 +20,13 @@ public class PaymentsReconciliation: Dependencies {
                 self?.reconcileIfNecessary()
             }
         }
-        NotificationCenter.default.addObserver(forName: PaymentsConstants.arePaymentsEnabledDidChange,
-                                               object: nil, queue: nil) { [weak self] _ in
-            self?.reconcileIfNecessary()
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(reconcileIfNecessary),
+                                               name: PaymentsConstants.arePaymentsEnabledDidChange,
+                                               object: nil)
     }
 
+    @objc
     private func reconcileIfNecessary() {
         if CurrentAppContext().isNSE {
             return

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 @objc
@@ -48,18 +48,20 @@ public class BulkUUIDLookup: NSObject {
     }
 
     private func observeNotifications() {
-        NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
-                                               object: nil, queue: nil) { [weak self] _ in
-                                                guard let self = self else { return }
-                                                self.serialQueue.async {
-                                                    self.process()
-                                                }
-        }
-        NotificationCenter.default.addObserver(forName: .registrationStateDidChange, object: nil, queue: nil) { [weak self] _ in
-            guard let self = self else { return }
-            self.serialQueue.async {
-                self.process()
-            }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(processBecauseOfNotification),
+                                               name: SSKReachability.owsReachabilityDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(processBecauseOfNotification),
+                                               name: .registrationStateDidChange,
+                                               object: nil)
+    }
+
+    @objc
+    private func processBecauseOfNotification(_ notification: Notification) {
+        serialQueue.async {
+            self.process()
         }
     }
 

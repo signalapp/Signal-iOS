@@ -94,6 +94,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     let kSpacingBetweenItems: CGFloat = 20
 
+    private var observerToken: NSObjectProtocol?
+
     required public init(options: AttachmentApprovalViewControllerOptions,
                          attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
@@ -117,9 +119,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             overrideUserInterfaceStyle = .dark
         }
 
-        NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
+        observerToken = NotificationCenter.default.addObserver(forName: .OWSApplicationDidBecomeActive, object: nil, queue: .main) { [weak self] _ in
             guard let self = self else { return }
             self.updateContents(animated: false)
+        }
+    }
+
+    deinit {
+        if let observerToken = observerToken {
+            NotificationCenter.default.removeObserver(observerToken)
         }
     }
 

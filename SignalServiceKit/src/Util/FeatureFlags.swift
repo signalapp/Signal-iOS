@@ -563,6 +563,8 @@ public class TestableFlag: NSObject {
 
         super.init()
 
+        // Normally we'd store the observer here and remove it in deinit.
+        // But TestableFlags are always static; they don't *get* deinitialized except in testing.
         NotificationCenter.default.addObserver(forName: Self.ResetAllTestableFlagsNotification,
                                                object: nil, queue: nil) { [weak self] _ in
             guard let self = self else { return }

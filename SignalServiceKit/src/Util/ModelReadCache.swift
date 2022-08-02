@@ -1103,11 +1103,10 @@ public class ModelReadCaches: NSObject {
 
         super.init()
 
-        NotificationCenter.default.addObserver(forName: SDSDatabaseStorage.storageDidReload,
-                                               object: nil, queue: nil) { [weak self] _ in
-                                                AssertIsOnMainThread()
-                                                self?.evacuateAllCaches()
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(evacuateAllCaches),
+                                               name: SDSDatabaseStorage.storageDidReload,
+                                               object: nil)
     }
 
     @objc
@@ -1128,6 +1127,7 @@ public class ModelReadCaches: NSObject {
     @objc
     fileprivate static let evacuateAllModelCaches = Notification.Name("EvacuateAllModelCaches")
 
+    @objc
     func evacuateAllCaches() {
         NotificationCenter.default.post(name: Self.evacuateAllModelCaches, object: nil)
     }
