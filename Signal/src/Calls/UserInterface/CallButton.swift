@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 class CallButton: UIButton {
     var iconName: String { didSet { updateAppearance() } }
@@ -98,6 +99,17 @@ class CallButton: UIButton {
 
         updateAppearance()
         updateSizing()
+        updateOrientation()
+
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateOrientation),
+                                               name: UIDevice.orientationDidChangeNotification,
+                                               object: nil)
+    }
+
+    deinit {
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
     }
 
     private func updateAppearance() {
@@ -144,6 +156,25 @@ class CallButton: UIButton {
         } else {
             dropdownIconView?.removeFromSuperview()
             dropdownIconView = nil
+        }
+    }
+
+    @objc
+    private func updateOrientation() {
+        let rotationAngle: CGFloat
+        switch UIDevice.current.orientation {
+        case .landscapeLeft:
+            rotationAngle = .pi / 2
+        case .landscapeRight:
+            rotationAngle = -.pi / 2
+        case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
+            fallthrough
+        @unknown default:
+            rotationAngle = 0
+        }
+
+        UIView.animate(withDuration: 0.3, delay: 0, options: .allowUserInteraction) {
+            self.circleView.transform = CGAffineTransform(rotationAngle: rotationAngle)
         }
     }
 
