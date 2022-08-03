@@ -192,11 +192,14 @@ class CallControls: UIView {
         flipCameraButton.isHidden = isLocalVideoMuted
         videoButton.isSelected = !isLocalVideoMuted
         muteButton.isSelected = call.groupCall.isOutgoingAudioMuted
-        ringButton.isHidden = joinState == .joined || devicesAlreadyInCall > 0 || call.shouldRing == .notApplicable
-        ringButton.isEnabled = call.shouldRing.canChange
+
+        ringButton.isHidden = joinState == .joined || devicesAlreadyInCall > 0 || call.ringMode == .notApplicable
         // Leave the button visible but locked if joining, like the "join call" button.
         ringButton.isUserInteractionEnabled = joinState == .notJoined
-        ringButton.isSelected = call.shouldRing == .enabled
+        ringButton.isSelected = call.ringMode == .allowed && call.userWantsToRing
+        // Leave the button enabled so we can present an explanatory toast, but show it disabled.
+        ringButton.shouldDrawAsDisabled = call.ringMode != .allowed
+
         hangUpButton.isHidden = joinState != .joined
 
         if !UIDevice.current.isIPad {

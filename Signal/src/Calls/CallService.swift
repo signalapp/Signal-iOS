@@ -561,7 +561,7 @@ public final class CallService: LightweightCallManager {
         // safe to do so.
         if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
 
-        if call.shouldRing == .enabled {
+        if call.ringMode == .allowed && call.userWantsToRing {
             call.groupCall.ringAll()
         }
     }

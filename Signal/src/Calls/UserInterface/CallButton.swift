@@ -32,6 +32,8 @@ class CallButton: UIButton {
     override var isSelected: Bool { didSet { updateAppearance() } }
     override var isHighlighted: Bool { didSet { updateAppearance() } }
 
+    var shouldDrawAsDisabled = false { didSet { updateAppearance() } }
+
     var showDropdownArrow = false { didSet { updateDropdownArrow() } }
 
     var isSmall = false { didSet { updateSizing() } }
@@ -131,7 +133,7 @@ class CallButton: UIButton {
             label.isHidden = true
         }
 
-        alpha = (isHighlighted || !isEnabled) ? 0.6 : 1
+        alpha = (isHighlighted || !isEnabled || shouldDrawAsDisabled) ? 0.6 : 1
     }
 
     private func updateSizing() {

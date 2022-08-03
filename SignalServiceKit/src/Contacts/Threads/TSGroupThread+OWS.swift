@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -142,6 +142,13 @@ public extension TSGroupThread {
         setGroupIdMapping(threadUniqueId, forGroupId: groupId, transaction: transaction)
     }
 
+    /// Posted when the group associated with this thread adds or removes members.
+    ///
+    /// The object is the group's unique ID as a string. Note that NotificationCenter dispatches by
+    /// object identity rather than equality, so any observer should register for *all* membership
+    /// changes and then filter the notifications they receive as needed.
+    static let membershipDidChange = Notification.Name("TSGroupThread.membershipDidChange")
+
     func updateGroupMemberRecords(transaction: SDSAnyWriteTransaction) {
         let memberAddresses = Set(groupMembership.fullMembers)
         let previousMembers = TSGroupMember.groupMembers(in: uniqueId, transaction: transaction)
@@ -169,6 +176,10 @@ public extension TSGroupThread {
                 groupThreadId: uniqueId,
                 lastInteractionTimestamp: lastInteraction?.timestamp ?? 0
             ).anyInsert(transaction: transaction)
+        }
+
+        transaction.addAsyncCompletionOnMain { [uniqueId = self.uniqueId] in
+            NotificationCenter.default.post(name: Self.membershipDidChange, object: uniqueId)
         }
     }
 }

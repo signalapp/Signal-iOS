@@ -110,31 +110,23 @@ public class SignalCall: NSObject, CallManagerCallReference {
     public let thread: TSThread
 
     public enum RingMode {
-        /// 1:1 calls (at least for today)
+        /// The user does not get to choose whether this kind of call rings.
         case notApplicable
-        /// Group calls that are too large
-        case groupIsTooLarge
-        /// The user has chosen not to ring for this call
-        case disabledByUser
-        /// The call should ring callees
-        case enabled
+        /// This group is too large to allow ringing.
+        case groupTooLarge
+        /// The user can choose whether to ring or not.
+        case allowed
+    }
 
-        var canChange: Bool {
-            switch self {
-            case .notApplicable, .groupIsTooLarge:
-                return false
-            case .disabledByUser, .enabled:
-                return true
-            }
+    public var ringMode: RingMode {
+        didSet {
+            AssertIsOnMainThread()
         }
     }
 
-    // Should only be used on the main thread
-    public var shouldRing: RingMode {
-        willSet {
+    public var userWantsToRing: Bool = true {
+        didSet {
             AssertIsOnMainThread()
-            owsAssertDebug(shouldRing == newValue || shouldRing.canChange,
-                           "ringing has been disabled for this call")
         }
     }
 
@@ -175,14 +167,22 @@ public class SignalCall: NSObject, CallManagerCallReference {
         )
         thread = groupThread
         if !RemoteConfig.groupRings {
-            shouldRing = .notApplicable
+            ringMode = .notApplicable
         } else if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
-            shouldRing = .groupIsTooLarge
+            ringMode = .groupTooLarge
         } else {
-            shouldRing = .enabled
+            ringMode = .allowed
         }
         super.init()
         groupCall.delegate = self
+        // Watch group membership changes.
+        // The object is the group thread ID, which is a string.
+        // NotificationCenter dispatches by object identity rather than equality,
+        // so we watch all changes and filter later.
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(groupMembershipDidChange),
+                                               name: TSGroupThread.membershipDidChange,
+                                               object: nil)
     }
 
     init(individualCall: IndividualCall) {
@@ -192,7 +192,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = individualCall.thread
-        shouldRing = .notApplicable
+        ringMode = .notApplicable
         super.init()
         individualCall.delegate = self
     }
@@ -260,6 +260,33 @@ public class SignalCall: NSObject, CallManagerCallReference {
         )
         individualCall.offerMediaType = offerMediaType
         return SignalCall(individualCall: individualCall)
+    }
+
+    @objc
+    private func groupMembershipDidChange(_ notification: Notification) {
+        // NotificationCenter dispatches by object identity rather than equality,
+        // so we filter based on the thread ID here.
+        guard ringMode != .notApplicable, self.thread.uniqueId == notification.object as? String else {
+            return
+        }
+        databaseStorage.read { transaction in
+            self.thread.anyReload(transaction: transaction)
+        }
+        guard let groupModel = self.thread.groupModelIfGroupThread else {
+            owsFailDebug("should not observe membership for a non-group thread")
+            return
+        }
+
+        let oldRingMode = ringMode
+        if groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
+            ringMode = .groupTooLarge
+        } else {
+            ringMode = .allowed
+        }
+        if ringMode != oldRingMode && groupCall.localDeviceState.joinState == .notJoined {
+            // Use a fake local state change to refresh the call controls.
+            self.groupCall(onLocalDeviceStateChanged: groupCall)
+        }
     }
 
     // MARK: -

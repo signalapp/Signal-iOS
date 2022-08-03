@@ -734,9 +734,18 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressRing(sender: UIButton) {
-        let shouldRing = !sender.isSelected
-        sender.isSelected = shouldRing
-        call.shouldRing = shouldRing ? .enabled : .disabledByUser
+        switch call.ringMode {
+        case .notApplicable:
+            owsFailDebug("should not show the ring button at all")
+        case .groupTooLarge:
+            let toast = ToastController(text: NSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
+            toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
+        case .allowed:
+            let oldShouldRing = sender.isSelected
+            let newShouldRing = !oldShouldRing
+            sender.isSelected = newShouldRing
+            call.userWantsToRing = newShouldRing
+        }
     }
 
     func didPressFlipCamera(sender: UIButton) {
