@@ -5,26 +5,26 @@
 import Foundation
 
 @objc
-public protocol CameraFirstCaptureDelegate: AnyObject {
+protocol CameraFirstCaptureDelegate: AnyObject {
     func cameraFirstCaptureSendFlowDidComplete(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
     func cameraFirstCaptureSendFlowDidCancel(_ cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow)
 }
 
 @objc
-public class CameraFirstCaptureSendFlow: NSObject {
+class CameraFirstCaptureSendFlow: NSObject {
     @objc
-    public weak var delegate: CameraFirstCaptureDelegate?
+    weak var delegate: CameraFirstCaptureDelegate?
 
-    var approvedAttachments: [SignalAttachment]?
-    var approvalMessageBody: MessageBody?
+    private var approvedAttachments: [SignalAttachment]?
+    private var approvalMessageBody: MessageBody?
 
-    var mentionCandidates: [SignalServiceAddress] = []
+    private var mentionCandidates: [SignalServiceAddress] = []
 
     private let selection = ConversationPickerSelection()
-    var selectedConversations: [ConversationItem] { selection.conversations }
+    private var selectedConversations: [ConversationItem] { selection.conversations }
 
     private let storiesOnly: Bool
-    public init(storiesOnly: Bool) {
+    init(storiesOnly: Bool) {
         self.storiesOnly = storiesOnly
         super.init()
     }
@@ -52,6 +52,7 @@ public class CameraFirstCaptureSendFlow: NSObject {
 }
 
 extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
+
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
         // Restore status bar visibility (if current VC hides it) so that
         // there's no visible UI updates in the presenter.
@@ -77,16 +78,19 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?) {
+        self.approvalMessageBody = newMessageBody
+    }
+}
+
+extension CameraFirstCaptureSendFlow: SendMediaNavDataSource {
+
     func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
         return approvalMessageBody
     }
 
-    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?) {
-        self.approvalMessageBody = newMessageBody
-    }
-
     var sendMediaNavTextInputContextIdentifier: String? {
-        return nil
+        nil
     }
 
     var sendMediaNavRecipientNames: [String] {
@@ -98,9 +102,8 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     }
 }
 
-// MARK: -
-
 extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
+
     public func conversationPickerSelectionDidChange(_ conversationPickerViewController: ConversationPickerViewController) {
         updateMentionCandidates()
     }
@@ -118,7 +121,7 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
                                                   approvalMessageBody: self.approvalMessageBody,
                                                   approvedAttachments: approvedAttachments)
         }.done { _ in
-                self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
+            self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
         }.catch { error in
             owsFailDebug("Error: \(error)")
         }

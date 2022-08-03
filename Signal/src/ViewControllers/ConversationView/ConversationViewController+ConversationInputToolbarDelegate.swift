@@ -410,7 +410,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let pickerModal = SendMediaNavigationController.showingApprovalWithPickedLibraryMedia(asset: asset,
                                                                                               attachment: attachment,
-                                                                                              delegate: self)
+                                                                                              delegate: self,
+                                                                                              dataSource: self)
         presentFullScreen(pickerModal, animated: true)
     }
 }
@@ -525,6 +526,7 @@ fileprivate extension ConversationViewController {
 
                 let pickerModal = SendMediaNavigationController.showingCameraFirst()
                 pickerModal.sendMediaNavDelegate = self
+                pickerModal.sendMediaNavDataSource = self
                 pickerModal.modalPresentationStyle = .overFullScreen
                 // Defer hiding status bar until modal is fully onscreen
                 // to prevent unwanted shifting upwards of the entire presenter VC's view.
@@ -557,6 +559,7 @@ fileprivate extension ConversationViewController {
 
             let pickerModal = SendMediaNavigationController.showingMediaLibraryFirst()
             pickerModal.sendMediaNavDelegate = self
+            pickerModal.sendMediaNavDataSource = self
 
             self.dismissKeyBoard()
             self.presentFullScreen(pickerModal, animated: true)
@@ -781,10 +784,6 @@ extension ConversationViewController: SendMediaNavDelegate {
         self.dismiss(animated: true, completion: nil)
     }
 
-    func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
-        inputToolbar?.messageBody()
-    }
-
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController,
                       didChangeMessageBody newMessageBody: MessageBody?) {
         guard hasViewWillAppearEverBegun else {
@@ -797,6 +796,15 @@ extension ConversationViewController: SendMediaNavDelegate {
         }
 
         inputToolbar.setMessageBody(newMessageBody, animated: false)
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: SendMediaNavDataSource {
+
+    func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
+        inputToolbar?.messageBody()
     }
 
     var sendMediaNavTextInputContextIdentifier: String? { textInputContextIdentifier }
