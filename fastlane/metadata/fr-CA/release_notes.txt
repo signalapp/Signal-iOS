@@ -1,2 +1,1 @@
-• Nous avons amélioré l'éditeur de médias pour faciliter la personnalisation de vos photos et vidéos avant leur envoi.
-• Des correctifs apportés pour un bon fonctionnement de votre application, et de nombreuses surprises à venir !
+• Bug fixes, tweaks, and plans for the future
