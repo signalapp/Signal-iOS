@@ -3,6 +3,7 @@
 import Foundation
 import GRDB
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 /// Abstract base class for `VisibleMessage` and `ControlMessage`.
 public class Message: Codable {
@@ -302,22 +303,21 @@ public extension Message {
             throw MessageReceiverError.invalidMessage
         }
         
-        if let reactions = message.reactions {
-            try processRawReceivedReactions(
-                db,
-                reactions: reactions,
-                serverExpirationTimestamp: nil,
-                serverHash: nil,
-                openGroupId: openGroupId,
-                openGroupMessageServerId: message.id,
-                openGroupServerPublicKey: openGroupServerPublicKey,
-                dependencies: dependencies
-            )
-        }
+        let reactions = processRawReceivedReactions(
+            db,
+            reactions: message.reactions,
+            serverExpirationTimestamp: nil,
+            serverHash: nil,
+            openGroupId: openGroupId,
+            openGroupMessageServerId: message.id,
+            openGroupServerPublicKey: openGroupServerPublicKey,
+            dependencies: dependencies
+        )
         
         return try processRawReceivedMessage(
             db,
             envelope: envelope,
+            reactions: reactions,
             serverExpirationTimestamp: nil,
             serverHash: nil,
             openGroupId: openGroupId,
@@ -363,35 +363,55 @@ public extension Message {
     
     private static func processRawReceivedReactions(
         _ db: Database,
-        reactions: [String:OpenGroupAPI.Message.Reaction],
+        reactions: [String:OpenGroupAPI.Message.Reaction]?,
         serverExpirationTimestamp: TimeInterval?,
         serverHash: String?,
         openGroupId: String? = nil,
         openGroupMessageServerId: Int64? = nil,
         openGroupServerPublicKey: String? = nil,
         dependencies: SMKDependencies = SMKDependencies()
-    ) throws {
-        guard let openGroupMessageServerId = openGroupMessageServerId else { return }
+    ) -> [Reaction] {
+        var results: [Reaction] = []
+        guard let openGroupMessageServerId = openGroupMessageServerId, let reactions = reactions else { return results }
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
         for (encodedEmoji, rawReaction) in reactions {
             if let emoji = encodedEmoji.removingPercentEncoding,
                rawReaction.count > 0,
-               let reactors = rawReaction.reactors?.joined(separator: ",")
+               let reactors = rawReaction.reactors
             {
-                try Reaction(
-                    interactionId: openGroupMessageServerId,
-                    serverHash: nil,
-                    timestampMs: Int64(floor((Date().timeIntervalSince1970 * 1000))),
-                    authorId: reactors,
-                    emoji: emoji,
-                    count: rawReaction.count
-                ).insert(db)
+                var count = rawReaction.count
+                for reactor in reactors {
+                    let reaction = Reaction(
+                        interactionId: openGroupMessageServerId,
+                        serverHash: nil,
+                        timestampMs: Int64(floor((Date().timeIntervalSince1970 * 1000))),
+                        authorId: reactor,
+                        emoji: emoji,
+                        count: count
+                    )
+                    count = 0 // Only insert the first reaction with the total count of this emoji
+                    results.append(reaction)
+                }
+                if rawReaction.you && !reactors.contains(userPublicKey) {
+                    let reaction = Reaction(
+                        interactionId: openGroupMessageServerId,
+                        serverHash: nil,
+                        timestampMs: Int64(floor((Date().timeIntervalSince1970 * 1000))),
+                        authorId: userPublicKey,
+                        emoji: emoji,
+                        count: 0
+                    )
+                    results.append(reaction)
+                }
             }
         }
+        return results
     }
     
     private static func processRawReceivedMessage(
         _ db: Database,
         envelope: SNProtoEnvelope,
+        reactions: [Reaction] = [],
         serverExpirationTimestamp: TimeInterval?,
         serverHash: String?,
         openGroupId: String? = nil,
@@ -461,7 +481,8 @@ public extension Message {
             try MessageReceiveJob.Details.MessageInfo(
                 message: message,
                 variant: variant,
-                proto: proto
+                proto: proto,
+                reactions: reactions
             )
         )
     }

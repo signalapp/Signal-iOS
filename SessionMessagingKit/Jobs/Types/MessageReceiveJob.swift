@@ -106,30 +106,36 @@ extension MessageReceiveJob {
                 case message
                 case variant
                 case serializedProtoData
+                case reactions
             }
             
             public let message: Message
             public let variant: Message.Variant
             public let serializedProtoData: Data
+            public let reactions: [Reaction]
             
             public init(
                 message: Message,
                 variant: Message.Variant,
-                proto: SNProtoContent
+                proto: SNProtoContent,
+                reactions: [Reaction]
             ) throws {
                 self.message = message
                 self.variant = variant
                 self.serializedProtoData = try proto.serializedData()
+                self.reactions = reactions
             }
             
             private init(
                 message: Message,
                 variant: Message.Variant,
-                serializedProtoData: Data
+                serializedProtoData: Data,
+                reactions: [Reaction]
             ) {
                 self.message = message
                 self.variant = variant
                 self.serializedProtoData = serializedProtoData
+                self.reactions = reactions
             }
             
             // MARK: - Codable
@@ -145,7 +151,8 @@ extension MessageReceiveJob {
                 self = MessageInfo(
                     message: try variant.decode(from: container, forKey: .message),
                     variant: variant,
-                    serializedProtoData: try container.decode(Data.self, forKey: .serializedProtoData)
+                    serializedProtoData: try container.decode(Data.self, forKey: .serializedProtoData),
+                    reactions: try container.decode([Reaction].self, forKey: .reactions)
                 )
             }
             
@@ -160,6 +167,7 @@ extension MessageReceiveJob {
                 try container.encode(message, forKey: .message)
                 try container.encode(variant, forKey: .variant)
                 try container.encode(serializedProtoData, forKey: .serializedProtoData)
+                try container.encode(reactions, forKey: .reactions)
             }
         }
         

@@ -1121,16 +1121,6 @@ extension ConversationVC:
                             .retainUntilComplete()
                     } else {
                         OpenGroupAPI
-                            .reactors(
-                                db,
-                                emoji: emoji,
-                                id: openGroupServerMessageId,
-                                in: openGroup.roomToken,
-                                on: openGroup.server
-                            )
-                            .retainUntilComplete()
-                        
-                        OpenGroupAPI
                             .reactionAdd(
                                 db,
                                 emoji: emoji,
