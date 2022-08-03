@@ -537,6 +537,7 @@ public final class OpenGroupManager: NSObject {
                         message: messageInfo.message,
                         associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
                         openGroupId: openGroup.id,
+                        openGroupReactions: messageInfo.reactions,
                         isBackgroundPoll: isBackgroundPoll,
                         dependencies: dependencies
                     )

@@ -90,4 +90,17 @@ public extension Reaction {
             count: (count ?? self.count)
         )
     }
+    
+    func with(
+        interactionId: Int64?
+    ) -> Reaction {
+        return Reaction(
+            interactionId: (interactionId ?? self.interactionId),
+            serverHash: self.serverHash,
+            timestampMs: self.timestampMs,
+            authorId: self.authorId,
+            emoji: self.emoji,
+            count: self.count
+        )
+    }
 }

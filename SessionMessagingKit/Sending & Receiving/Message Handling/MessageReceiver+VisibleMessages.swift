@@ -12,6 +12,7 @@ extension MessageReceiver {
         message: VisibleMessage,
         associatedWithProto proto: SNProtoContent,
         openGroupId: String?,
+        openGroupReactions: [Reaction] = [],
         isBackgroundPoll: Bool,
         dependencies: Dependencies = Dependencies()
     ) throws -> Int64 {
@@ -140,6 +141,10 @@ extension MessageReceiver {
                     return recipientParts[2]
                 }()
             ).inserted(db)
+            
+            for reaction in openGroupReactions {
+                try reaction.with(interactionId: interaction.id).insert(db)
+            }
         }
         catch {
             switch error {

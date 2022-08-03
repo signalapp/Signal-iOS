@@ -180,6 +180,7 @@ public enum MessageReceiver {
         message: Message,
         associatedWithProto proto: SNProtoContent,
         openGroupId: String?,
+        openGroupReactions: [Reaction] = [],
         isBackgroundPoll: Bool,
         dependencies: SMKDependencies = SMKDependencies()
     ) throws {
@@ -217,6 +218,7 @@ public enum MessageReceiver {
                     message: message,
                     associatedWithProto: proto,
                     openGroupId: openGroupId,
+                    openGroupReactions: openGroupReactions,
                     isBackgroundPoll: isBackgroundPoll
                 )
                 
