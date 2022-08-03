@@ -365,7 +365,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "دعم Signal ";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_BOOST_BODY" = "انتهت صلاحية شارة الدعم الخاصة بك ولم تعُد ظاهرة للآخرين على حسابك الشخصي.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "انتهت صلاحية شارة الدعم الخاصة بك ولم تعد مُتوفرة لِعرضها على حسابك الشخصي.\n\n يُمكنك إعادة تفعيل شارة الدعم الخاصة بك لمدة 30 يومًا أخرى بتقديم مساهمة لمرة واحدة.";
@@ -380,10 +380,10 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "انتهت صلاحية الشارة";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_GIFT_BODY" = "انتهت صلاحية شارة الدعم الخاصة بك ولم تعد متاحة للعرض على حسابك الشخصي.";
 
 /* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+"BADGE_EXPIRED_GIFT_TITLE" = "انتهت صلاحية شارتك المُهداة";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "لمعرفة المزيد.";
@@ -476,10 +476,10 @@
 "BADGE_GIFTING_REDEEM" = "اقبل الهدية";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "تعذّر حصولك على هديتك. تفقّد اتصال شبكتك وحاول مرة أخرى.";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "تعذّر حصولك على هديتك.";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "يمكنك استرجاع شارتك لاحقًا";
@@ -1457,13 +1457,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "تشغيل";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "سَيساعدنا هذا في حل مشكلتك وقد يستغرق استكماله عدة دقائق. يُمكنك إغلاق تطبيق Signal أثناء تشغيل هذا الفحص، ولكن يُرجى العودة لرفع سِجلاتك.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "تخطي";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "تشغيل فحص قاعدة البيانات؟";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "قد يستغرق ذلك بضع دقائق.";
@@ -2162,10 +2162,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "إدخال البحث الخاص بك";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "انتهت صلاحية هديتك المهداة من طرف %@ ولم يعد من الممكن الحصول عليها.";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
+"GIFT_NOT_REDEEMED_TITLE" = "انتهت صلاحية هديتك";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "الانتقال إلى الإعدادات";

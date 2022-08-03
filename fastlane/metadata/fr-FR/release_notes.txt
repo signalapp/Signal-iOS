@@ -1,3 +1,3 @@
-• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
-• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
-• Additional bug fixes to keep your app running smoothly.
+• Il est désormais plus facile de recadrer les photos dans l'éditeur de contenus avant de les envoyer à votre public.
+• Vous pouvez rechercher des émojis en utilisant une syllabe du terme associé à l'émoji en question. Par exemple, vous pouvez rechercher « tél » plutôt que « téléphone ».
+• Des corrections de bugs supplémentaires pour assurer le bon fonctionnement de votre application.

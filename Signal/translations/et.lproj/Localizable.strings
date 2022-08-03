@@ -6131,7 +6131,7 @@
 "STORIES_NO_REPLIES_YET" = "Vastuseid veel pole";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Luba inimestel, kes su lugu näevad, sellele reageerida ja vastata.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";

@@ -538,7 +538,7 @@
 			<key>one</key>
 			<string>1 gruppemedlem har likt navn, se medlemmet under og hva du kan gjøre.</string>
 			<key>other</key>
-			<string>%d gruppemedlemmer har like navn, se medlemmene under og hva du kan gjøre.</string>
+			<string>%d gruppemedlemmer har lignende navn. Se medlemmene under eller velg å gjøre noe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -554,7 +554,7 @@
 			<key>one</key>
 			<string>1 gruppemedlem har samme navn, se medlemmet under og hva du kan gjøre.</string>
 			<key>other</key>
-			<string>%d gruppemedlemmer har samme navn, se medlemmene under og hva du kan gjøre.</string>
+			<string>%d gruppemedlemmer har samme navn. Se medlemmene under eller velg om du vil gjøre noe.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>

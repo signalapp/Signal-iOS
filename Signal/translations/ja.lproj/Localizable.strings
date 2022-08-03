@@ -365,7 +365,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signalをブーストしましょう";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_BOOST_BODY" = "あなたのブーストバッジは有効期限が切れたため、プロフィールには表示されません。";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "ブーストバッジの有効期限が切れたため、プロフィールに表示されなくなりました。\n\nもう一回寄付をしていただくと、Boostバッジをさらに30日間プロフィールに表示できます。";
@@ -380,10 +380,10 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "バッジが失効しました";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_GIFT_BODY" = "あなたのギフトバッジは有効期限が切れたため、プロフィールには表示されません。";
 
 /* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+"BADGE_EXPIRED_GIFT_TITLE" = "ギフトバッジが失効しました";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "さらに詳しく";
@@ -476,10 +476,10 @@
 "BADGE_GIFTING_REDEEM" = "引換え";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "ギフトを引き換えることが出来ませんでした。インターネット接続を確認して再度試してください。";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "ギフトを引き換えることが出来ませんでした";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "バッジは後で引換えることが可能です";
@@ -1457,13 +1457,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "実行";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "これは問題を解決するのに役立ち、完了するまでに数分かかる場合があります。 このチェックの実行中にSignalを閉じることはできますが、ログを送信するために戻ってください。";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "スキップ";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "データベース診断を実行しますか？";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "数分かかるかも知れません。";
@@ -2162,10 +2162,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "検索";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%@からのギフトは有効期限が切れているため引き換えができません。";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
+"GIFT_NOT_REDEEMED_TITLE" = "ギフトが失効しました";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "設定へ";

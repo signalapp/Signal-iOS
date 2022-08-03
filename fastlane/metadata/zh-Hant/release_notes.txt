@@ -1,3 +1,3 @@
-• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
-• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
-• Additional bug fixes to keep your app running smoothly.
+• 現在可以輕鬆地使用多媒體編輯器裁切照片，然後再傳送給接收者。
+• 現在只需在表情符號名稱中輸入部分字詞，即可進行搜尋。例如，輸入「手機」而非「智慧型手機」，就會跑出📱
+• 修復了其他問題，提升 App 運作的順暢度。

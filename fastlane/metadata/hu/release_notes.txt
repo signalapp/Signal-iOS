@@ -1,3 +1,3 @@
-• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
-• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
-• Additional bug fixes to keep your app running smoothly.
+• Mostantól könnyebben levághatod a fényképeket a médiaszerkesztőben, mielőtt elküldenéd őket a közönségednek.
+• Mostantól rákereshetsz a hangulatjelekre a hangulatjel nevében megtalálható bármely szöveg használatával. Például a „repülőgép” szóra a „repülő” szóval is rákereshetsz, és szállj fel a ✈️ jellel
+• További hibajavítások az alkalmazás zökkenőmentes működése érdekében.

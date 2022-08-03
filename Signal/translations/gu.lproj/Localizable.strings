@@ -365,7 +365,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signalને થોડું બૂસ્ટ કરો";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_BOOST_BODY" = "તમારું બૂસ્ટ બૅજ સમાપ્ત થઈ ગયું છે અને હવે તમારી પ્રોફાઇલ પર દર્શાવવા માટે ઉપલબ્ધ નથી.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "તમારા બૂસ્ટ બૅજની સમયસીમા સમાપ્ત થઈ ગઈ છે અને હવે તે તમારી પ્રોફાઇલ પર પ્રદર્શિત થવા માટે ઉપલબ્ધ નથી.\n\nતમે એક-વખતના યોગદાન દ્વારા તમારા બૂસ્ટ બૅજને બીજા 30 દિવસ માટે ફરીથી સક્રિય કરી શકો છો.";
@@ -380,10 +380,10 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "બૅજ સમાપ્ત";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_GIFT_BODY" = "તમારું ગિફ્ટ બૅજ સમાપ્ત થઈ ગયું છે અને હવે તમારી પ્રોફાઇલ પર દર્શાવવા માટે ઉપલબ્ધ નથી.";
 
 /* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+"BADGE_EXPIRED_GIFT_TITLE" = "તમારું ગિફ્ટ બૅજ સમાપ્ત થઈ ગયું છે";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "વધુ શીખો.";
@@ -476,10 +476,10 @@
 "BADGE_GIFTING_REDEEM" = "રીડીમ કરો";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "તમારી ગિફ્ટ રિડિમ કરી શકાઈ નહીં. તમારું કનેક્શન તપાસો અને ફરી પ્રયાસ કરો.";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "ગિફ્ટ રિડિમ કરી શકાઈ નહીં";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "તમે તમારું બૅજ પછી રિડિમ કરી શકો છો";
@@ -1457,13 +1457,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "ચલાવો";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "આ અમને તમારી સમસ્યા ઉકેલવામાં મદદ કરશે અને પૂર્ણ થવામાં થોડી મિનિટો લાગી શકે છે. આ તપાસ ચાલે ત્યાં સુધી તમે Signal બંધ કરી શકો છો, પરંતુ કૃપા કરીને તમારા લૉગ સબમિટ કરવા પાછા આવજો.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "સ્કિપ";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "ડેટાબેઝ ડાયગ્નોસ્ટિક ચલાવવું છે?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "આમાં થોડીવાર લાગી શકે છે.";
@@ -2162,10 +2162,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "તમારી શોધ દાખલ કરો";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "તમારી %@ પાસેથી મળેલી ગિફ્ટ સમાપ્ત થઈ ગઈ છે અને હવે રિડિમ કરી શકાતી નથી.";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
+"GIFT_NOT_REDEEMED_TITLE" = "તમારી ગિફ્ટ સમાપ્ત થઈ ગઈ છે";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "સેટિંગ્સ પર જાઓ";

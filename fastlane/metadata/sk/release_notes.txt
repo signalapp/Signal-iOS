@@ -1,3 +1,3 @@
-• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
-• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
-• Additional bug fixes to keep your app running smoothly.
+• Orezanie fotografií v editore médií pred ich odoslaním netrpezlivým sledovateľom je teraz ešte jednoduchšie!
+• Odteraz môžete vyhľadať emodži pomocou textu kdekoľvek v názve emodži. Zadajte napríklad „auto“ namiesto „automobil“ a vyrazte s 🚗
+• Ďalšie opravy chýb pre bezproblémové fungovanie aplikácie.

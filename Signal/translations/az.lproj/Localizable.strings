@@ -6131,7 +6131,7 @@
 "STORIES_NO_REPLIES_YET" = "Hələ ki, cavab yoxdur";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Hekayənizi görən insanların reaksiya və cavab verməsinə icazə verin.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";

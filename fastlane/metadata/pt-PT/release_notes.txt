@@ -1,3 +1,3 @@
-• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
-• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
-• Additional bug fixes to keep your app running smoothly.
+• Agora é mais fácil cortar as suas fotos no editor de multimédia antes de as disponibilizar à sua audiência.
+• Procure um emoji escrevendo parte do nome dele. Por exemplo, procure "chuva" em vez de "guarda-chuva" e aí está ☂️
+• Outras correções de bugs para manter o bom funcionamento da sua app.

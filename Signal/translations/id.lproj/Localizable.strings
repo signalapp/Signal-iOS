@@ -365,7 +365,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Beri Penguat untuk Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_BOOST_BODY" = "Lencana Boost Anda sudah kedaluwarsa dan tidak bisa lagi ditampilkan di profil.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Lencana Boost Anda telah kedaluwarsa dan tidak dapat lagi ditampilkan di profil.\n\nAnda dapat mengaktifkan kembali lencana Boost untuk 30 hari ke depan dengan kontribusi satu kali.";
@@ -380,10 +380,10 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "Lencana Kadaluarsa";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_GIFT_BODY" = "Lencana hadiah Anda sudah kedaluwarsa dan tidak bisa lagi ditampilkan di profil.";
 
 /* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+"BADGE_EXPIRED_GIFT_TITLE" = "Lencana Hadiah Anda Sudah Kedaluwarsa";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Pelajari lebih lanjut.";
@@ -401,7 +401,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Donasi bulanan dibatalkan";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "Anda memberikan lencana ke %@. Setelah penerima menukarkannya, mereka bisa memilih untuk menampilkan atau menyembunyikan lencana.";
+"BADGE_GIFT_THANKS_BODY" = "Anda memberikan lencana ke %@. Setelah penerima menebusnya, mereka bisa memilih untuk menampilkan atau menyembunyikan lencana.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "Terima kasih untuk dukungan Anda!";
@@ -473,22 +473,22 @@
 "BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Anda mengirim hadiah";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "Tukarkan";
+"BADGE_GIFTING_REDEEM" = "Tebus";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Hadiah Anda tidak dapat ditebus. Periksa koneksi dan coba lagi.";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Tidak Dapat Menebus Hadiah";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "Anda bisa menukarkan lencana Anda nanti";
+"BADGE_GIFTING_REDEEM_LATER" = "Anda bisa menebus lencana Anda nanti";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
 "BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ mengirimi Anda hadiah";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
-"BADGE_GIFTING_REDEEMED" = "Ditukarkan";
+"BADGE_GIFTING_REDEEMED" = "Ditebus";
 
 /* Shown when you're replying to a gift message to indicate that it contains a gift. */
 "BADGE_GIFTING_REPLY" = "Hadiah";
@@ -1457,13 +1457,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Jalankan";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Ini akan membantu kami mengatasi masalah Anda dan mungkin perlu beberapa menit untuk bisa selesai. Anda dapat menutup Signal saat pemeriksaan berjalan, tetapi mohon kembali untuk mengirimkan log.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "Lewati";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Jalankan diagnostik database?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ini akan memerlukan beberapa menit.";
@@ -2162,10 +2162,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Masukkan pencarian Anda";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Hadiah Anda dari %@ sudah kedaluwarsa dan tidak bisa lagi ditebus.";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
+"GIFT_NOT_REDEEMED_TITLE" = "Hadiah Anda Sudah Kedaluwarsa";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Pergi ke Pengaturan";

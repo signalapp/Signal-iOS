@@ -1,3 +1,3 @@
-• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
-• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
-• Additional bug fixes to keep your app running smoothly.
+• इंतज़ार करती हुई अपनी ऑडियंस को फ़ोटो भेजने से पहले उन्हें मीडिया एडिटर में क्रॉप करना अब और भी आसान है।
+• अब इमोजी के नाम में कहीं भी टेक्स्ट के इस्तेमाल से इमोजी ढूँढ़ें। जैसे कि "एयरप्लेन" के बजाय "प्लेन" ढूँढ़ें और ✈️ के साथ टेक-ऑफ़ करें 
+• आपके ऐप को आराम से चलाते रहने के लिए अतिरिक्त बग फ़िक्स।

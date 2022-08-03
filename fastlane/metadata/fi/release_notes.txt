@@ -1,3 +1,3 @@
-• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
-• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
-• Additional bug fixes to keep your app running smoothly.
+• Kuvien rajaaminen mediaeditorissa on nyt helpompaa ennen niiden lähettämistä kohdeyleisölle.
+• Voit nyt etsiä emojeja käyttämällä mitä tahansa tekstiä emojin nimestä. Voit esimerkiksi etsiä sanalla "lento" "lentokoneen" sijaan ja löytää etsimäsi ✈️
+• Muita virheenkorjauksia, jotta sovellus toimii sujuvasti.

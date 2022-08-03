@@ -6131,7 +6131,7 @@
 "STORIES_NO_REPLIES_YET" = "Nog geen antwoorde nie";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Laat toe dat mense wat na jou storie kan kyk, daarop reageer en antwoord.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";
