@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Media";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "Zu";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Eranskailua";
 
@@ -2314,9 +2311,6 @@
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Deitik deskonektatu zara. Egiaztatu zure internet konexioa eta saiatu berriz.";
 
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "Zu";
-
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Talde-deian zaude";
 
@@ -2634,9 +2628,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Administratzailea";
-
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "Zu";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Lagunak taldea sortu ondoren gehitu edo gonbidatu ditzakezu:";
@@ -3315,9 +3306,6 @@
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
-
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "Zu";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Hilabete honetan";
@@ -4741,9 +4729,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Zu";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Ezin izan da mezu originala aurkitu.";
 
@@ -4818,9 +4803,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Zure ahots mezuarekiko erreakzioa: %@";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "Zu";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Irakurrita";
@@ -5626,9 +5608,6 @@
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ on %2$@";
 
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Zu";
-
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Bidalita";
 
@@ -6115,6 +6094,12 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "Ezabatu";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "Ezabatu";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story Saved";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Birbidali";
 
@@ -6131,13 +6116,19 @@
 "STORIES_NO_REPLIES_YET" = "Erantzunik ez oraindik";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Utzi zure istorioa ikus dezakeen jendeari erreakzionatzen eta erantzuten";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
+
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Failed to Save Story";
+
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "Gorde";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
@@ -6180,9 +6171,6 @@
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Erantzun";
-
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "Zu";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
@@ -6711,6 +6699,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Ezarri hormairudia";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "Zu";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Mezu hau ezabatu duzu.";

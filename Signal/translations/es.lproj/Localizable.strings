@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Adjuntos";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "Tú";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Sticker";
 
@@ -365,7 +362,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Da un impulso a Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_BOOST_BODY" = "Tu insignia Boost ha caducado y ya no podrás mostrarla en tu perfil.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.\n\nYou can reactivate your Boost badge for another 30 days with a one-time contribution.";
@@ -380,10 +377,10 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "Distintivo caducado";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_GIFT_BODY" = "Tu insignia de regalo ha caducado y ya no podrás mostrarla en tu perfil.";
 
 /* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+"BADGE_EXPIRED_GIFT_TITLE" = "Tu insignia de regalo ha caducado";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Saber más.";
@@ -476,10 +473,10 @@
 "BADGE_GIFTING_REDEEM" = "Canjear";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "No se pudo reclamar tu regalo. Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "No se pudo reclamar el regalo";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
@@ -1457,13 +1454,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Ejecutar";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Esto nos ayudará a resolver tu problema y tardará varios minutos en completarse. Puedes cerrar Signal mientras realizamos esta verificación, pero vuelve para enviar tus registros.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "Omitir";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "¿Realizar diagnóstico de la base de datos?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Puede tomar unos minutos.";
@@ -2162,10 +2159,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Buscar";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Tu regalo de %@ ha caducado y ya no puede ser reclamado.";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
+"GIFT_NOT_REDEEMED_TITLE" = "Tu regalo ha caducado";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Ir a ajustes";
@@ -2313,9 +2310,6 @@
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Desconexión en la llamada. Comprueba tu conexión e inténtalo de nuevo.";
-
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "Tú";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Participas en la llamada";
@@ -2634,9 +2628,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
-
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "Tú";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Puedes añadir o invitar amistades tras crear el grupo.";
@@ -3316,9 +3307,6 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
 
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "Tú";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Este mes";
 
@@ -3662,13 +3650,13 @@
 "MY_STORIES_NO_STORIES" = "Actualizaciones de tu historia se mostrarán aquí.";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Hide your story from specific people";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Oculta tu historia a ciertas personas";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Share with all connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Compartir con todos los contactos";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
@@ -4741,9 +4729,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Tú";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "No se encontró el mensaje original.";
 
@@ -4818,9 +4803,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacción a tu nota de voz: %@";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "Tú";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Leído";
@@ -5626,9 +5608,6 @@
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ el %2$@";
 
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Tú";
-
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Enviado";
 
@@ -6115,6 +6094,12 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "Eliminar";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "Eliminar";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story Saved";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Reenviar";
 
@@ -6131,13 +6116,19 @@
 "STORIES_NO_REPLIES_YET" = "Sin respuestas por ahora";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Deja que las personas que ven tu historia puedan reaccionar y responder.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
+
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Failed to Save Story";
+
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "Guardar";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "New Private Story";
@@ -6180,9 +6171,6 @@
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Responder";
-
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "Tú";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
@@ -6711,6 +6699,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Fijar fondo de chat";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "Tú";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Mensaje eliminado.";

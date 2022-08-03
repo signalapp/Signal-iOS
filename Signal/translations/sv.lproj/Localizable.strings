@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Media";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "Du";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Klistermärke";
 
@@ -197,7 +194,7 @@
 "ASPECT_RATIO_ORIGINAL" = "Original";
 
 /* One of the choices for pre-defined aspect ratio of a photo in media editor. */
-"ASPECT_RATIO_SQUARE" = "Square";
+"ASPECT_RATIO_SQUARE" = "Fyrkant";
 
 /* Variable aspect ratio, eg 3:4. %1$@ and %2$@ are numbers. */
 "ASPECT_RATIO_X_BY_Y" = "%1$@:%2$@";
@@ -365,7 +362,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Ge Signal en boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_BOOST_BODY" = "Ditt Boost-märke har upphört att gälla och kan inte längre visas på din profil.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Ditt Boost-märke har gått ut och är inte längre tillgängligt för att visas på din profil.\n\nDu kan återaktivera ditt Boost-märke i ytterligare 30 dagar genom ett engångsbidrag.";
@@ -380,10 +377,10 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "Märket har upphört att gälla";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_GIFT_BODY" = "Ditt gåvomärke har upphört att gälla och kan inte längre visas på din profil.";
 
 /* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+"BADGE_EXPIRED_GIFT_TITLE" = "Ditt gåvomärke har upphört att gälla";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Läs mer.";
@@ -413,10 +410,10 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Lägg till ett meddelande";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Det gick inte att skicka gåvomärke. Kontrollera din anslutning och försök igen.";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Det gick inte att skicka gåvomärke";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Utgånget";
@@ -425,7 +422,7 @@
 "BADGE_GIFTING_CHAT_TITLE" = "Gåvomärke";
 
 /* Short paragraph on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
+"BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Ge någon ett märke genom att donera till Signal. De får då ett märke att visa på sin profil.";
 
 /* Title on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Ge bort ett märke";
@@ -440,13 +437,13 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Den här användaren kan inte ta emot gåvor förrän de uppgraderar Signal.";
 
 /* Title for error message dialog indicating that a user can't receive gifts. */
-"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_TITLE" = "Det gick inte att skicka gåvomärke";
 
 /* Error message indicating that the person you're trying to send has been blocked. */
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_BODY" = "Den här användaren kan inte ta emot din gåva eftersom du har blockerat hen.";
 
 /* Title for error message dialog indicating that the person you're trying to send to has been blocked. */
-"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Cannot Send Gift Badge";
+"BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Det gick inte att skicka gåvomärke";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Skicka ett gåvomärke";
@@ -467,25 +464,25 @@
 "BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Gåvomärke misslyckades";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
-"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 You received a gift";
+"BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Du har fått en gåva";
 
 /* Shown on the list of chats when the most recent message is a gift you sent to someone else. */
-"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
+"BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Du har skickat en gåva";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Lös in";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Din gåva kunde inte lösas in. Kontrollera din anslutning och försök igen.";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Det gick inte att lösa in gåva";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
-"BADGE_GIFTING_REDEEM_LATER" = "You can redeem your badge later";
+"BADGE_GIFTING_REDEEM_LATER" = "Du kan lösa in ditt märke senare";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ sent you a gift";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ skickade dig en gåva";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "Inlöst";
@@ -500,7 +497,7 @@
 "BADGE_GIFTING_VIEW" = "Visa";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "You’ve received a gift badge from %@. Display this badge on your profile to build awareness for donating to Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Du har fått ett gåvomärke från %@. Visa detta märke på din profil för att väcka intresse om att donera till Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Din återkommande månadsdonation avbröts automatiskt. %@Ditt %@ märke är inte längre synligt på din profil.";
@@ -1457,13 +1454,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Kör";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Det här hjälper oss att lösa ditt problem och det kan ta flera minuter att slutföra. Du kan avsluta Signal medan kontrollen körs men kom tillbaka för att skicka dina loggar.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "Hoppa över";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Kör databasdiagnostik?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Detta kan ta några minuter.";
@@ -2162,10 +2159,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Skriv vad du söker";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Din gåva från %@ har upphört att gälla och kan inte längre lösas in.";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
+"GIFT_NOT_REDEEMED_TITLE" = "Din gåva har upphört att gälla";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Gå till inställningar";
@@ -2313,9 +2310,6 @@
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du kopplades bort från samtalet. Kontrollera din anslutning och försök igen.";
-
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "Du";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Du är i gruppsamtalet";
@@ -2634,9 +2628,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Administratör";
-
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "Du";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Du kan lägga till eller bjuda in vänner efter att du har skapat denna grupp.";
@@ -3293,31 +3284,28 @@
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Alla media";
 
 /* Title for the button that discards all edits in media editor. */
-"MEDIA_EDITOR_CLEAR_ALL" = "Clear All";
+"MEDIA_EDITOR_CLEAR_ALL" = "Rensa alla";
 
 /* Media Editor: Title for the button in 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Discard Changes";
+"MEDIA_EDITOR_DISCARD_ALL_BUTTON" = "Släng ändringar";
 
 /* Media Editor: Message for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "You will lose any changes you have made to this photo";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE" = "Du förlorar alla ändringar du har gjort på detta foto.";
 
 /* Media Editor: Title for the 'Discard Changes' confirmation prompt. */
-"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Discard Changes?";
+"MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE" = "Släng ändringar?";
 
 /* Title for the button that resets photo to its initial state. */
 "MEDIA_EDITOR_RESET" = "Återställ";
 
 /* Placeholder for message text input field in media editor. */
-"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Add Message";
+"MEDIA_EDITOR_TEXT_FIELD_ADD_MESSAGE" = "Lägg till meddelande";
 
 /* Shown in place of message input text in media editor when 'View Once' is on. */
-"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "View Once Media";
+"MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "Visa en gång-media";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
-
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "Du";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Denna månad";
@@ -3662,13 +3650,13 @@
 "MY_STORIES_NO_STORIES" = "Uppdateringar av din berättelse kommer att visas här.";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Hide your story from specific people";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Dölj din berättelse för specifika personer";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alla Signal-anslutningar utom ...";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Share with all connections";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Dela med alla kontakter";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alla Signal-anslutningar";
@@ -4628,10 +4616,10 @@
 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Lägg till tittare";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Radera privat Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Ta bort privat berättelse";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Är du säker på att du vill radera din Story?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Är du säker på att du vill ta bort din berättelse?";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Ta bort";
@@ -4741,9 +4729,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Du";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Hittade inte originalmeddelandet.";
 
@@ -4818,9 +4803,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagerade %@ på ditt röstmeddelande";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "Du";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Läst";
@@ -5626,9 +5608,6 @@
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ på %2$@";
 
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Du";
-
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Skickad";
 
@@ -6115,6 +6094,12 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "Ta bort";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "Ta bort";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story Saved";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Vidarebefordra";
 
@@ -6131,13 +6116,19 @@
 "STORIES_NO_REPLIES_YET" = "Inga svar ännu";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Låt personer som kan se din berättelse reagera och svara.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";
+"STORIES_REPLIES_AND_REACTIONS_HEADER" = "Svar och reaktioner";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
+"STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Tillåt svar och reaktioner";
+
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Failed to Save Story";
+
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "Spara";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "Ny privat story";
@@ -6180,9 +6171,6 @@
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Svara";
-
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "Du";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Anslutningar";
@@ -6602,7 +6590,7 @@
 "VERIFY_PRIVACY_MULTIPLE" = "Granska säkerhetsnummer";
 
 /* Toast alert text shown when tapping on a video that cannot be played. */
-"VIDEO_BROKEN" = "This video can’t be played";
+"VIDEO_BROKEN" = "Den här videon kan inte spelas";
 
 /* Accessibility label for placing a video call */
 "VIDEO_CALL_LABEL" = "Videosamtal";
@@ -6711,6 +6699,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Ställ in bakgrund";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "Du";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Du tog bort detta meddelande.";

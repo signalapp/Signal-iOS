@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "মিডিয়া";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "আপনি";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "স্টিকার";
 
@@ -365,7 +362,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "সংকেতে একটি বুস্ট দিন";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_BOOST_BODY" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং আপনার প্রোফাইলে তা আর দেখা যাবে না৷";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "আপনার বুস্ট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং এটি আপনার প্রোফাইলে আর দেখা যাবে না।\n\n আপনি আপনার বুস্ট ব্যাজ আরও 30 দিনের জন্য এককালীন আর্থিক অবদান প্রদান করার মাধ্যমে পুনরায় সক্রিয় করতে পারেন।";
@@ -380,10 +377,10 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "ব্যাজের মেয়াদ শেষ";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_GIFT_BODY" = "আপনার গিফট ব্যাজের মেয়াদ শেষ হয়ে গেছে এবং আপনার প্রোফাইলে তা আর দেখা যাবে না৷";
 
 /* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+"BADGE_EXPIRED_GIFT_TITLE" = "আপনার গিফট ব্যাজের মেয়াদ শেষ হয়ে গেছে";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "আরও জানুন।";
@@ -476,10 +473,10 @@
 "BADGE_GIFTING_REDEEM" = "ফিরে পান";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "আপনার গিফট ছাড় করা যায়নি। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "গিফট ছাড় করা যায়নি";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "আপনি পরে আপনার ব্যাজ ছাড় করতে পারবেন";
@@ -1457,13 +1454,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "চালান";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "আপনার সমস্যা সমাধান করতে এটি আমাদের সাহায্য করবে এবং এটি সম্পন্ন হতে কয়েক মিনিট সময় লাগতে পারে৷ এই চেক চলাকালীন আপনি Signal বন্ধ রাখতে পারেন, তবে আপনার লগ জমা দিতে অনুগ্রহ করে পুনরায় ফিরে আসুন।";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "এড়িয়ে যান";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "ডেটাবেজ ডায়গনিস্টিক চালাবেন?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "এই কয়েক মিনিট সময় নিতে পারে.";
@@ -2162,10 +2159,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "যা অনুসন্ধান করতে চান লিখুন।";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%@ থেকে আপনার গিফটের মেয়াদ শেষ হয়ে গেছে এবং এটি আর ছাড় করা যাবে না।";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
+"GIFT_NOT_REDEEMED_TITLE" = "আপনার গিফটের মেয়াদ শেষ হয়ে গেছে";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "সেটিংস-এ যান";
@@ -2313,9 +2310,6 @@
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "আপনি কলটি থেকে বিচ্ছিন্ন হয়ে গেছেন। আপনার সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।";
-
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "আপনি";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "আপনি গ্রুপ কলে আছেন";
@@ -2634,9 +2628,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "অ্যাডমিন";
-
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "আপনি";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "এই গ্রুপটি তৈরি করার পরে আপনি বন্ধুদের আমন্ত্রণ জানাতে অথবা যোগ করতে পারবেন।";
@@ -3315,9 +3306,6 @@
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+ %@";
-
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "আপনি";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "এই মাস";
@@ -4741,9 +4729,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "আপনি";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "মূল বার্তাটি পাওয়া যায়নি";
 
@@ -4818,9 +4803,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "আপনার ভয়েস মেসেজে %@ প্রতিক্রিয়া ব্যক্ত করা হয়েছে";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "আপনি";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "পড়ুন";
@@ -5626,9 +5608,6 @@
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = " %2$@-এ %1$@";
 
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "আপনি";
-
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "পাঠানো হয়েছে";
 
@@ -6115,6 +6094,12 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "মুছুন";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "মুছুন";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story Saved";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ফরওয়ার্ড";
 
@@ -6138,6 +6123,12 @@
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "উত্তর ও রিঅ্যাকশন অনুমোদন করুন";
+
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Failed to Save Story";
+
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "সংরক্ষণ করুন";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "নতুন ব্যক্তিগত স্টোরি";
@@ -6180,9 +6171,6 @@
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "প্রত্যুত্তর";
-
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "আপনি";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "কানেকশন";
@@ -6711,6 +6699,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "ওয়ালপেপার সেট করুন";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "আপনি";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "আপনি এই মেসেজটি মুছে দিয়েছেন।";

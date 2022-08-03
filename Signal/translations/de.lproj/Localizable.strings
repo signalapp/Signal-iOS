@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Medieninhalte";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "Du";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Sticker";
 
@@ -365,7 +362,7 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Gib Signal einen Boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_BOOST_BODY" = "Dein Boost-Abzeichen ist abgelaufen und kann nicht mehr auf deinem Profil angezeigt werden.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Dein Boost-Abzeichen ist abgelaufen und kann nicht mehr in deinem Profil angezeigt werden.\n\nDu kannst dein Boost-Abzeichen für weitere 30 Tage mit einem einmaligen Beitrag reaktivieren.";
@@ -380,16 +377,16 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "Abzeichen abgelaufen";
 
 /* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_BODY" = "Your gift badge has expired and is no longer available to be displayed on your profile.";
+"BADGE_EXPIRED_GIFT_BODY" = "Dein Geschenk-Abzeichen ist abgelaufen und kann nicht mehr auf deinem Profil angezeigt werden.";
 
 /* Title for gift on the badge expiration sheet. */
-"BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
+"BADGE_EXPIRED_GIFT_TITLE" = "Dein Geschenk-Abzeichen ist abgelaufen";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Mehr erfahren.";
 
 /* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
-"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Du kannst Signal weiterhin nutzen, aber um eine Technologie zu unterstützen, die für dich entwickelt wird, zieh bitte eine monatliche Spende in Betracht.";
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Du kannst Signal weiterhin nutzen, aber um eine Technologie zu unterstützen, die für dich entwickelt wird, überlege dir, ob du mit einer monatlichen Spende Unterstützer:in werden möchtest.";
 
 /* Button title to donate monthly on the badge expiration sheet. */
 "BADGE_EXPIRED_RENEWAL_MONTHLY" = "Monatlich spenden";
@@ -422,7 +419,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "Abgelaufen";
 
 /* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
-"BADGE_GIFTING_CHAT_TITLE" = "Geschenkabzeichen";
+"BADGE_GIFTING_CHAT_TITLE" = "Geschenk-Abzeichen";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Schenke jemandem ein Abzeichen, indem du an Signal spendest. Die Person erhält ein Abzeichen, das sie in ihrem Profil anzeigen kann.";
@@ -476,10 +473,10 @@
 "BADGE_GIFTING_REDEEM" = "Einlösen";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Dein Geschenk konnte nicht eingelöst werden. Überprüfe deine Verbindung und versuche es erneut.";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Couldn’t Redeem Gift";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Geschenk konnte nicht eingelöst werden";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "Du kannst dein Abzeichen später einlösen";
@@ -800,16 +797,16 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "Ein";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Hintere";
+"CAMERA_VO_CAMERA_BACK_FACING" = "Rückseitige Kamera";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Kamerawähler";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Kamera-Auswahl";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_CHOOSER_HINT" = "Wechselt zwischen Kameras";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Vordere";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Frontkamera";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "Schließen";
@@ -1457,13 +1454,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Starten";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "This will help us solve your issue and may take several minutes to complete. You may close Signal while this check runs, but please return to submit your logs.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Das hilft uns, dein Problem zu lösen und kann einige Minuten dauern. Du kannst Signal schließen, während die Prüfung läuft, aber bitte vergiss nicht, anschließend deine Logs zu senden.";
 
 /* Button to skip database integrity check step */
 "DATABASE_INTEGRITY_CHECK_SKIP" = "Überspringen";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Run database diagnostic?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Datenbankdiagnose durchführen?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dies kann einige Minuten dauern.";
@@ -2162,10 +2159,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Suchbegriff eingeben";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Your gift from %@ has expired and can no longer be redeemed.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Dein Geschenk von %@ ist abgelaufen und kann nicht mehr eingelöst werden.";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
+"GIFT_NOT_REDEEMED_TITLE" = "Dein Geschenk ist abgelaufen";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Einstellungen öffnen";
@@ -2313,9 +2310,6 @@
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du wurdest vom Anruf getrennt. Überprüfe deine Internetverbindung und versuche es erneut.";
-
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "Du";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Du nimmst am Gruppenanruf teil";
@@ -2634,9 +2628,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
-
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "Du";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nachdem diese Gruppe erstellt wurde, kannst du Freunde hinzufügen oder einladen.";
@@ -3316,9 +3307,6 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "Du";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Diesen Monat";
 
@@ -3800,7 +3788,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Neue private Story";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Typ der Story auswählen";
+"NEW_STORY_SHEET_TITLE" = "Story-Typ wählen";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kontakte über Rufnummer suchen";
@@ -4631,7 +4619,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Private Story löschen";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Möchtest du wirklich diese Story löschen?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Möchtest du diese Story wirklich löschen?";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Entfernen";
@@ -4741,9 +4729,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Du";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Originalnachricht nicht gefunden.";
 
@@ -4818,9 +4803,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Hat mit %@ auf deine Sprachnachricht reagiert";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "Du";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Gelesen";
@@ -5626,9 +5608,6 @@
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ am %2$@";
 
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Du";
-
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Versendet";
 
@@ -6115,6 +6094,12 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "Löschen";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "Löschen";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story Saved";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Weiter­leiten";
 
@@ -6131,13 +6116,19 @@
 "STORIES_NO_REPLIES_YET" = "Bisher keine Antworten";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Erlaube Personen, die deine Story sehen können, auf sie zu antworten und zu reagieren.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Erlaube Personen, die deine Story sehen können, darauf zu reagieren und zu antworten.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Antworten und Reaktionen";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Antworten und Reaktionen erlauben";
+
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Failed to Save Story";
+
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "Speichern";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "Neue private Story";
@@ -6180,9 +6171,6 @@
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Antworten";
-
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "Du";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Verbindungen";
@@ -6711,6 +6699,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Hintergrund festlegen";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "Du";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Du hast diese Nachricht gelöscht.";

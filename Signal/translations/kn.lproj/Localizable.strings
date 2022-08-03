@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "ಮೀಡಿಯಾ";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "ನೀವು";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "ಸ್ಟಿಕ್ಕರ್";
 
@@ -359,10 +356,10 @@
 "BADGE_CONFIGURATION_TITLE" = "ಬ್ಯಾಡ್ಜ್‌ಗಳು";
 
 /* Text prompting the user to become a signal sustainer */
-"BADGE_DETAILS_BECOME_A_SUSTAINER" = "Become a Sustainer";
+"BADGE_DETAILS_BECOME_A_SUSTAINER" = "ಸಸ್ಟೈನರ್ ಆಗಿರಿ";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Give Signal a Boost";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Signal ಬೂಸ್ಟ್ ನೀಡಿ";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Your Boost badge has expired and is no longer available to be displayed on your profile.";
@@ -371,10 +368,10 @@
 "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "ನಿಮ್ಮ ಬೂಸ್ಟ್ ಬ್ಯಾಡ್ಜ್ ಅವಧಿ ಮೀರಿದೆ ಮತ್ತು ಅದಿನ್ನು ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಪ್ರದರ್ಶಿಸಲು ಲಭ್ಯವಿರುವುದಿಲ್ಲ.\n\nಒಂದು ಬಾರಿಯ ಕೊಡುಗೆಯೊಂದಿಗೆ ಇನ್ನೊಂದು 30 ದಿನಗಳಿಗೆ ನಿಮ್ಮ ಬೂಸ್ಟ್ ಬ್ಯಾಡ್ಜ್ ಅನ್ನು ನೀವು ಮರುಸಕ್ರಿಯಗೊಳಿಸಬಹುದು.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Become a Sustainer";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "ಸಸ್ಟೈನರ್ ಆಗಿರಿ";
 
 /* Button title for boost on the badge expiration sheet, used if the user is already a sustainer. */
-"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "Add a Boost";
+"BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER" = "ಬೂಸ್ಟ್ ಸೇರಿಸಿ";
 
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Badge Expired";
@@ -389,7 +386,7 @@
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.";
 
 /* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
-"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "You can keep using Signal but to support technology that is built for you, consider becoming a sustainer by making a monthly donation.";
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "ನೀವು Signal ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಬಹುದು ಆದರೆ ನಿಮಗಾಗಿ ನಿರ್ಮಿಸಲಾದ ತಂತ್ರಜ್ಞಾನವನ್ನು ಬೆಂಬಲಿಸಲು, ಮಾಸಿಕ ದೇಣಿಗೆಯನ್ನು ನೀಡುವ ಮೂಲಕ ಸಸ್ಟೈನರ್ ಆಗುವುದುನ್ನು ಪರಿಗಣಿಸಿ.";
 
 /* Button title to donate monthly on the badge expiration sheet. */
 "BADGE_EXPIRED_RENEWAL_MONTHLY" = "Make a Monthly Donation";
@@ -398,7 +395,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Renew Subscription";
 
 /* Title for subscription on the badge expiration sheet. */
-"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Monthly Donation Cancelled";
+"BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "ಮಾಸಿಕ ದೇಣಿಗೆ ರದ್ದುಗೊಂಡಿದೆ";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
 "BADGE_GIFT_THANKS_BODY" = "You’ve gifted a badge to %@. When they redeem, they’ll be given a choice to show or hide their badge.";
@@ -407,10 +404,10 @@
 "BADGE_GIFT_THANKS_TITLE" = "ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು!";
 
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "ನಿಮ್ಮ ಉಡುಗೊರೆಯನ್ನು 1 ಆನ್ 1 ಮೆಸೇಜ್‌ನಲ್ಲಿ ಸ್ವೀಕೃತಿದಾರರಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಕೆಳಗೆ ನಿಮ್ಮ ಸ್ವಂತ ಮೆಸೇಜ್ ಸೇರಿಸಿ.";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Add a message";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "ಮೆಸೇಜ್ ಸೇರಿಸಿ";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
 "BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "Cannot send gift badge. Check your connection and try again.";
@@ -428,7 +425,7 @@
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "ಬ್ಯಾಡ್ಜ್ ಉಡುಗೊರೆ ನೀಡಿ";
 
 /* Title on the screen where you choose a gift badge's recipient */
 "BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "ಸ್ವೀಕೃತಿದಾರರನ್ನು ಆರಿಸಿ";
@@ -452,7 +449,7 @@
 "BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
 
 /* Text telling the user that their gift is a one-time donation */
-"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "One-time Donation";
+"BADGE_GIFTING_PAYMENT_DESCRIPTION" = "ಒಂದು ಬಾರಿಯ ದೇಣಿಗೆ";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
 "BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
@@ -473,7 +470,7 @@
 "BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 You sent a gift";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "ರೀಡೀಮ್ ಮಾಡಿ";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
 "BADGE_GIFTING_REDEEM_ERROR_BODY" = "Your gift couldn’t be redeemed. Check your connection and try again.";
@@ -509,10 +506,10 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
+"BADGE_THANKS_BOOST_TITLE" = "ಉತ್ತೇಜಿಸಿದ್ದಕಾಗಿ ಧನ್ಯವಾದಗಳು!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Display on Profile";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಪ್ರದರ್ಶಿಸಿ";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
 "BADGE_THANKS_MAKE_FEATURED" = "Make Featured Badge";
@@ -521,7 +518,7 @@
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "ನಿಮ್ಮ ಬೆಂಬಲಕ್ಕೆ ಧನ್ಯವಾದಗಳು!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "When you have more than one badge, you can choose one to feature for others to see on your profile.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "ನೀವು ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಬ್ಯಾಡ್ಜ್ ಹೊಂದಿದ್ದಾಗ, ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಇತರರು ನೋಡಲು ಒಂದು ಫೀಚರ್ ಅನ್ನು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
 "BADGE_THANKS_YOU_EARNED_FORMAT" = "You’ve earned a %@ badge. Display this badge on your profile to build awareness for donating to Signal.";
@@ -611,7 +608,7 @@
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "ಕಸ್ಟಮ್‌ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ";
 
 /* Text explaining there are other ways to donate on the boost view. */
-"BOOST_VIEW_OTHER_WAYS" = "More Payment Options";
+"BOOST_VIEW_OTHER_WAYS" = "ಇನ್ನಷ್ಟು ಪಾವತಿ ಆಯ್ಕೆಗಳು";
 
 /* Error text notifying the user they must select a large amount on the donate to signal view */
 "BOOST_VIEW_SELECT_A_LARGER_AMOUNT" = "ಕೊಡುಗೆ ನೀಡಲು ದೊಡ್ಡ ಮತ್ತವನ್ನು ಆರಿಸಿ";
@@ -623,7 +620,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "ಕೊಡುಗೆ ನೀಡಲು ಮೊತ್ತವನ್ನು ಆರಿಸಿ";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Give Signal a Boost";
+"BOOST_VIEW_TITLE" = "Signal ಬೂಸ್ಟ್ ನೀಡಿ";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "ಸೇರಿಸಿ";
@@ -1151,7 +1148,7 @@
 "CONTEXT_MENU_DELETE_MESSAGE" = "ಅಳಿಸು";
 
 /* Context menu button title */
-"CONTEXT_MENU_DETAILS" = "Info";
+"CONTEXT_MENU_DETAILS" = "ಮಾಹಿತಿ";
 
 /* Context menu button title */
 "CONTEXT_MENU_FORWARD_MESSAGE" = "ಫಾರ್ವರ್ಡ್";
@@ -1715,7 +1712,7 @@
 "DISMISS_CONTEXT_MENU" = "Dismiss Context Menu";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Display badges on profile";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಬ್ಯಾಡ್ಜ್‌ಗಳನ್ನು ಪ್ರದರ್ಶಿಸಿ";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "ಸೆನ್ಸಾರ್‌‌ಶಿಪ್ ಸರ್ಕಮ್ವೆನ್ಶನ್ ಸ್ಥಳ";
@@ -1733,7 +1730,7 @@
 "DONATE_MEGAPHONE_TITLE" = "Signal ಗೆ ದಾನ ಮಾಡಿ";
 
 /* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "ಇನ್ನೊಂದು ಪಾವತಿ ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
 "DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
@@ -1763,19 +1760,19 @@
 "DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "ಮತ್ತೊಮ್ಮೆ ಪಾವತಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.";
 
 /* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_OTHER" = "ಇನ್ನೊಂದು ಪಾವತಿ ವಿಧಾನವನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಹೆಚ್ಚಿನ ಮಾಹಿತಿಗಾಗಿ ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
 "DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
 
 /* Section title for donation amount on receipts */
-"DONATION_RECEIPT_AMOUNT" = "Amount";
+"DONATION_RECEIPT_AMOUNT" = "ಮೊತ್ತ";
 
 /* Section title for donation date on receipts */
-"DONATION_RECEIPT_DATE_PAID" = "Date paid";
+"DONATION_RECEIPT_DATE_PAID" = "ಪಾವತಿಸಿದ ದಿನಾಂಕ";
 
 /* Title on the view where you can see a single receipt */
 "DONATION_RECEIPT_DETAILS" = "ವಿವರಗಳು";
@@ -1790,22 +1787,22 @@
 "DONATION_RECEIPT_GIFT" = "ಉಡುಗೊರೆ";
 
 /* Title for one-time donation receipts */
-"DONATION_RECEIPT_ONE_TIME" = "One-time";
+"DONATION_RECEIPT_ONE_TIME" = "ಒಂದು ಬಾರಿ ";
 
 /* Title for recurring donation receipts */
-"DONATION_RECEIPT_RECURRING" = "Recurring";
+"DONATION_RECEIPT_RECURRING" = "ಆವರ್ತ";
 
 /* Title on donation receipts */
-"DONATION_RECEIPT_TITLE" = "Donation receipt";
+"DONATION_RECEIPT_TITLE" = "ದೇಣಿಗೆ ರಸೀದಿ";
 
 /* Section title for donation type on receipts */
 "DONATION_RECEIPT_TYPE" = "Type";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
-"DONATION_RECEIPTS" = "Donation Receipts";
+"DONATION_RECEIPTS" = "ದೇಣಿಗೆ ಸ್ವೀಕೃತಿಗಳು";
 
 /* Text at the bottom of the donation receipts list, telling users that receipts might not be available */
-"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "If you have reinstalled Signal, receipts from previous donations will not be available.";
+"DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED" = "ನೀವು ಮರುಸ್ಥಾಪಿಸಿದ Signal ಅನ್ನು ಹೊಂದಿದ್ದರೆ, ಹಿಂದಿನ ದೇಣಿಗೆಗಳ ರಸೀದಿಗಳು ಲಭ್ಯವಿರುವುದಿಲ್ಲ. ";
 
 /* Text of the 'donate to signal' button on the donation screen */
 "DONATION_VIEW_DONATE_TO_SIGNAL" = "Signal ಗೆ ದಾನ ಮಾಡಿ";
@@ -1814,10 +1811,10 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Signal ಗೆ ಕೊಡುಗೆ ನೀಡಿ";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "ಬ್ಯಾಡ್ಜ್ ಉಡುಗೊರೆ ನೀಡಿ";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
-"DONATION_VIEW_LOAD_FAILED" = "Network error. Check your connection and try again.";
+"DONATION_VIEW_LOAD_FAILED" = "ನೆಟ್‌ವರ್ಕ್ ದೋಷ. ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.";
 
 /* Text of the 'make a monthly donation' button on the donation screen */
 "DONATION_VIEW_MAKE_A_MONTHLY_DONATION" = "Make a Monthly Donation";
@@ -1835,16 +1832,16 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "My Support";
 
 /* Title for the 'one-time donation' link in the donation view */
-"DONATION_VIEW_ONE_TIME_DONATION" = "One-time Donation";
+"DONATION_VIEW_ONE_TIME_DONATION" = "ಒಂದು ಬಾರಿಯ ದೇಣಿಗೆ";
 
 /* Title for the 'other ways to give' section on the donation view */
 "DONATION_VIEW_OTHER_WAYS_TO_GIVE_TITLE" = "Other Ways to Give";
 
 /* Title for the 'receipts' section on the donation screen */
-"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Receipts";
+"DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "ಸ್ವೀಕೃತಿಗಳು";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
-"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Subscription FAQ";
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "ಚಂದಾ FAQ";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Signal ಗೆ ದಾನ ಮಾಡಿ";
@@ -1940,7 +1937,7 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_1" = "Couldn't forward message because it is no longer available.";
 
 /* Error indicating that messages could not be forwarded. */
-"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "Couldn't forward messages because they're no longer available.";
+"ERROR_COULD_NOT_FORWARD_MESSAGES_MISSING_N" = "ಮೆಸೇಜ್‌ಗಳನ್ನು ಫಾರ್ವರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ ಯಾಕೆಂದರೆ ಅವುಗಳು ಲಭ್ಯವಿಲ್ಲ.";
 
 /* Error indicating that messages could not be forwarded. */
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "Couldn't forward messages";
@@ -2090,7 +2087,7 @@
 "FORWARD_MESSAGE" = "ಸಂದೇಶ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ";
 
 /* Message for alert with information about forwarding messages. */
-"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "Forwarded messages are now sent immediately.";
+"FORWARD_MESSAGE_FIRST_FORWARD_MESSAGE" = "ಫಾರ್ವರ್ಡ್ ಮಾಡಲಾದ ಮೆಸೇಜ್‌ಗಳನ್ನು ಈಗ ತಕ್ಷಣವೇ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.";
 
 /* Title for alert with information about forwarding messages. */
 "FORWARD_MESSAGE_FIRST_FORWARD_TITLE" = "Faster Forwards";
@@ -2099,10 +2096,10 @@
 "FORWARD_MESSAGE_MESSAGES_SENT_1" = "Message sent";
 
 /* Indicates that multiple messages were forwarded. */
-"FORWARD_MESSAGE_MESSAGES_SENT_N" = "Messages sent";
+"FORWARD_MESSAGE_MESSAGES_SENT_N" = "ಮೆಸೇಜ್‌ಗಳನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ";
 
 /* Indicates that the user can add a text message to forwarded messages. */
-"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "Add a message";
+"FORWARD_MESSAGE_TEXT_PLACEHOLDER" = "ಮೆಸೇಜ್ ಸೇರಿಸಿ";
 
 /* Title for the 'forward message(s)' view. */
 "FORWARD_MESSAGE_TITLE" = "Forward To";
@@ -2313,9 +2310,6 @@
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "ನಿಮ್ಮ ಕರೆಯ ಸಂಪರ್ಕ ಕಡಿತಗೊಂಡಿದೆ. ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.";
-
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "ನೀವು";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "ನೀವು ಗ್ರೂಪ್‌ ಕಾಲ್‌ನಲ್ಲಿದ್ದೀರಿ";
@@ -2634,9 +2628,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "ಅಡ್ಮಿನ್‌‌";
-
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "ನೀವು";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "ಈ ಗುಂಪನ್ನು ರಚಿಸಿದ ನಂತರ ನೀವು ಸ್ನೇಹಿತರನ್ನು ಸೇರಿಸಬಹುದು ಅಥವಾ ಆಹ್ವಾನಿಸಬಹುದು.";
@@ -3316,9 +3307,6 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "ನೀವು";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "ಈ ತಿಂಗಳು";
 
@@ -3785,16 +3773,16 @@
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
 
 /* Header for the 'viewers' section of the 'new private story' view */
-"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Viewers";
+"NEW_PRIVATE_STORY_VIEWERS_HEADER" = "ವೀಕ್ಷಕರು";
 
 /* Subtitle for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Share to an existing group";
+"NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "ಚಾಲ್ತಿಯಲ್ಲಿರುವ ಗ್ರೂಪ್‌ಗೆ ಹಂಚಿಕೊಳ್ಳಿ";
 
 /* Title for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
 
 /* Subtitle for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Visible only to specific people";
+"NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "ನಿರ್ದಿಷ್ಟ ಜನರಿಗೆ ಮಾತ್ರ ಕಾಣಿಸುತ್ತದೆ";
 
 /* Title for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "ಹೊಸ ಗೌಪ್ಯ ಸ್ಟೋರಿ";
@@ -4637,7 +4625,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ತೆಗೆದುಹಾಕಿ";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer see your story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "ಈ ವ್ಯಕ್ತಿ ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ ಸ್ಟೋರಿ ನೋಡುವುದಿಲ್ಲ.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
@@ -4741,9 +4729,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "ನೀವು";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "ಮೂಲ ಸಂದೇಶ ಕಂಡುಬಂದಿಲ್ಲ.";
 
@@ -4754,7 +4739,7 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "ಮೂಲ ಸಂದೇಶ ಕಂಡುಬಂದಿಲ್ಲ.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "ನಿಮ್ಮ ಸ್ಟೋರಿಗೆ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reacted to %@’s story";
@@ -4818,9 +4803,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = " ನಿಮ್ಮ ಧ್ವನಿ ಸಂದೇಶಕ್ಕೆ %@ ಪ್ರತಿಕ್ರಿಯಿಸಿದ್ದಾರೆ";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "ನೀವು";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "ಓದಿ";
@@ -5255,7 +5237,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Your phone number has been changed to %@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "ನಂಬರ್ ಬದಲಾಯಿಸಿ";
 
 /* Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT" = "You are about to change your phone number from %1$@ to %2$@.\n\nBefore proceeding, please verify that the below number is correct.";
@@ -5288,7 +5270,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Change Phone Number";
 
 /* Title for the 'change phone number' views in settings. */
-"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Change Number";
+"SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "ನಂಬರ್ ಬದಲಾಯಿಸಿ";
 
 /* Title for the 'chats' link in settings. */
 "SETTINGS_CHATS" = "ಚಾಟ್‌‌ ಗಳು";
@@ -5626,9 +5608,6 @@
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ ರಂದು %1$@";
 
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "ನೀವು";
-
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "ಕಳುಹಿಸಲಾಗಿದೆ";
 
@@ -5945,7 +5924,7 @@
 "SETTINGS_SECURITY_TITLE" = "ಆಪ್ ಸುರಕ್ಷತೆ";
 
 /* The footer for the photos and videos section in the sent media quality settings. */
-"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "Sending high quality media will use more data.";
+"SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER" = "ಉನ್ನತ ಗುಣಮಟ್ಟದ ಮಾಧ್ಯಮವನ್ನು ಕಳುಹಿಸುವಿಕೆಯು ಹೆಚ್ಚು ಡೇಟಾವನ್ನು ಬಳಸಲಿದೆ.";
 
 /* The title for the photos and videos section in the sent media quality settings. */
 "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE" = "Photos and Videos";
@@ -6115,6 +6094,12 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "ಅಳಿಸು";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "ಅಳಿಸಿ";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story Saved";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ಫಾರ್ವರ್ಡ್";
 
@@ -6131,13 +6116,19 @@
 "STORIES_NO_REPLIES_YET" = "ಇನ್ನೂ ಯಾವುದೇ ಪ್ರತ್ಯುತ್ತರವಿಲ್ಲ";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "ನಿಮ್ಮ ಸ್ಟೋರಿ ನೋಡಬಹುದಾದ ಜನರು ಪ್ರತಿಕ್ರಿಯಿಸಲಿ ಮತ್ತು ಉತ್ತರಿಸಲಿ.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
+
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Failed to Save Story";
+
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "ಉಳಿಸಿ";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "ಹೊಸ ಗೌಪ್ಯ ಸ್ಟೋರಿ";
@@ -6181,9 +6172,6 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ಉತ್ತರಿಸಿ";
 
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "ನೀವು";
-
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
 
@@ -6194,16 +6182,16 @@
 "SUBSCRIPTION_MEGAPHONE_ACTION" = "ದಾನ ಮಾಡಿ";
 
 /* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate and receive a badge.";
+"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal ಗೆ ನಿಮ್ಮಂತಹ ಜನರೇ ಜೀವಾಳ. ದೇಣಿಗೆ ನೀಡಿ ಮತ್ತು ಒಂದು ಬ್ಯಾಡ್ಜ್‌ ಪಡೆಯಿರಿ.";
 
 /* Cancel text for subscription megaphone */
 "SUBSCRIPTION_MEGAPHONE_CANCEL" = "ಈಗಲ್ಲ";
 
 /* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Become a Sustainer";
+"SUBSCRIPTION_MEGAPHONE_TITLE" = "ಸಸ್ಟೈನರ್ ಆಗಿರಿ";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ಚಂದಾದಾರ ಐಡಿಯನ್ನು ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ಗೆ ನಕಲಿಸಲಾಗಿದೆ";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ ಹೊಂದಾಣಿಕೆಯೊಂದಿಗೆ ನಿಮ್ಮ ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆ. ನೀವು ಈ ಸಂಪರ್ಕವನ್ನು ದೃಢೀಕರಿಸಿದ್ದು ಎನ್ನುವಂತೆ ಗುರುತಿಸಬಹುದು.";
@@ -6263,7 +6251,7 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "ಲೋಡ್ ಆಗುತ್ತಿದೆ";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal is a nonprofit with no advertisers or investors, sustained only by the people who use and value it. Make a recurring monthly donation and receive a profile badge to share your support.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal ಎಂಬುದು ಒಂದು ಲಾಭ ರಹಿತ ಸಂಸ್ಥೆಯಾಗಿದ್ದು, ಜಾಹೀರಾತುದಾರರನ್ನಾಗಲೀ ಅಥವಾ ಹೂಡಿಕೆದಾರರನ್ನಾಗಲೀ ಹೊಂದಿಲ್ಲ, ಕೇವಲ ಇದನ್ನು ಬಳಸುವ ಮತ್ತು ಮೌಲ್ಯ ನೀಡುವ ಜನರಿಂದ ಪೋಷಿತಗೊಂಡಿದೆ. ನಿಮ್ಮ ಬೆಂಬಲವನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಆವೃತ್ತ ಮಾಸಿಕ ದೇಣಿಗೆ ನೀಡಿ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಬ್ಯಾಡ್ಜ್ ಸ್ವೀಕರಿಸಿ.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal is committed to developing open source privacy technology that protects free expression and enables secure global communication.\n\nYour donation fuels this cause and pays for the development and operations of an app used by millions for private communication. No ads. No trackers. No kidding.";
@@ -6281,16 +6269,16 @@
 "SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Get a %@ badge";
 
 /* Sustainer view Cancel Subscription button title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Cancel Subscription";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "ಚಂದಾ ರದ್ದುಗೊಳಿಸಿ";
 
 /* Confirm Cancellation? Action sheet confirm button */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "ದೃಢೀಕರಿಸಿ";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "You won't be charged again. Your badge will be removed from your profile at the end of your billing period.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "ನಿಮಗೆ ಮತ್ತೊಮ್ಮೆ ಶುಲ್ಕ ವಿಧಿಸಲಾಗುವುದಿಲ್ಲ. ನಿಮ್ಮ ಬ್ಯಾಡ್ಜ್ ಅನ್ನು ನಿಮ್ಮ ಬಿಲ್ಲಿಂಗ್ ಅವಧಿಯ ಕೊನೆಯಲ್ಲಿ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.";
 
 /* Confirm Cancellation? Action sheet title */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Confirm Cancellation?";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "ರದ್ದತಿಯನ್ನು ದೃಢೀಕರಿಸುತ್ತೀರಾ?";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Couldn't add badge. %@";
@@ -6302,7 +6290,7 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Couldn't Add Badge";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Please contact support.";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "ದಯವಿಟ್ಟು ಬೆಂಬಲವನ್ನು ಸಂಪರ್ಕಿಸಿ.";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Error Processing Payment";
@@ -6332,7 +6320,7 @@
 "SUSTAINER_VIEW_RENEWAL" = "Renews %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Your payment is still being processed. This can take a few minutes depending on your connection.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "ನಿಮ್ಮ ಪಾವತಿ ಇನ್ನೂ ಪ್ರಕ್ರಿಯೆಗೊಳ್ಳುತ್ತಿದೆ. ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಅವಲಂಬಿಸಿಕೊಂಡು ಇದು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Your subscription has been cancelled";
@@ -6353,7 +6341,7 @@
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "ನವೀಕರಿಸಿ";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Make a recurring monthly donation to Signal to support technology built for you, not your data.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "ನಿಮ್ಮ ಡೇಟಾ ಅಲ್ಲ, ನಿಮಗಾಗಿ ನಿರ್ಮಿಸಿದ ತಂತ್ರಜ್ಞಾನವನ್ನು ಬೆಂಬಲಿಸಲು Signal ಗೆ ಆವೃತ್ತ ಮಾಸಿಕ ದೇಣಿಗೆ ನೀಡಿ.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "ಆಫ಼್";
@@ -6711,6 +6699,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "ವಾಲ್‌ಪೇಪರ್‌ ಹೊಂದಿಸಿ";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "ನೀವು";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "ನೀವು ಈ ಸಂದೇಶವನ್ನು ಅಳಿಸಿದಿರಿ";

@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "മീഡിയ";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "നിങ്ങൾ";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "സ്റ്റിക്കർ";
 
@@ -2314,9 +2311,6 @@
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "നിങ്ങളെ കോളിൽ നിന്ന് വിച്ഛേദിച്ചിരിക്കുന്നു. ദയവായി നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക";
 
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "നിങ്ങൾ";
-
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "നിങ്ങൾ ഗ്രൂപ്പ് കോളിലാണ്";
 
@@ -2634,9 +2628,6 @@
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "അഡ്‌മിൻ‌";
-
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "നിങ്ങൾ";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "ഈ ഗ്രൂപ്പ് സൃഷ്ടിച്ചതിനുശേഷം നിങ്ങൾക്ക് സുഹൃത്തുക്കളെ ചേർക്കാനോ ക്ഷണിക്കാനോ കഴിയും.";
@@ -3315,9 +3306,6 @@
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
-
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "നിങ്ങൾ";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "ഈ മാസം";
@@ -4741,9 +4729,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "നിങ്ങൾ";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "യഥാർത്ഥ സന്ദേശം കണ്ടെത്തിയില്ല";
 
@@ -4818,9 +4803,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "നിങ്ങളുടെ ശബ്ദ സന്ദേശത്തോട് %@ പ്രതികരിച്ചു";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "നിങ്ങൾ";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "വായിച്ചു";
@@ -5626,9 +5608,6 @@
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@ൽ%1$@";
 
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "നിങ്ങൾ";
-
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "അയച്ചു";
 
@@ -6115,6 +6094,12 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "ഇല്ലാതാക്കൂ";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "ഇല്ലാതാക്കൂ";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story Saved";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ഫോർവേഡ് ചെയ്യുക";
 
@@ -6131,13 +6116,19 @@
 "STORIES_NO_REPLIES_YET" = "ഇതുവരെ മറുപടികളൊന്നുമില്ല";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Let people who can view your story react and reply.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "നിങ്ങളുടെ സ്റ്റോറി കാണാൻ കഴിയുന്ന ആളുകളെ പ്രതികരിക്കാനും മറുപടി നൽകാനും അനുവദിക്കുക.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Replies & Reactions";
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
+
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Failed to Save Story";
+
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "സംരക്ഷിക്കുക";
 
 /* Label for 'new private story' button in story settings view. */
 "STORIES_SETTINGS_NEW_STORY" = "പുതിയ സ്വകാര്യ സ്റ്റോറി";
@@ -6180,9 +6171,6 @@
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "മറുപടി";
-
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "നിങ്ങൾ";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
@@ -6711,6 +6699,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "വാള്‍പേപ്പര്‍ സജ്ജമാക്കു";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "നിങ്ങൾ";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "നിങ്ങൾ ഈ സന്ദേശം ഇല്ലാതാക്കി.";
