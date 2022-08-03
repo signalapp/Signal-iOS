@@ -41,6 +41,18 @@ class GroupModelsTest: SSKBaseTestSwift {
         XCTAssertNotEqual(membership2, membership3)
     }
 
+    func testGroupMembershipChangingDidJoinFromInviteLink() {
+        var builder1 = GroupMembership.Builder()
+        builder1.addFullMember(.uuid1, role: .normal, didJoinFromInviteLink: true)
+        let membership1 = builder1.build()
+
+        var builder2 = GroupMembership.Builder()
+        builder2.addFullMember(.uuid1, role: .normal, didJoinFromInviteLink: false)
+        let membership2 = builder2.build()
+
+        XCTAssertEqual(membership1, membership2)
+    }
+
     func testGroupMembershipChangingRequestingMembers() {
         var builder1 = GroupMembership.Builder()
         builder1.addFullMember(.uuid1, role: .normal)

@@ -132,6 +132,10 @@ struct GroupUpdateCopy: Dependencies {
             self.isReplacingJoinRequestPlaceholder = false
         }
 
+        populate(oldGroupModel: oldGroupModel,
+                 oldDisappearingMessageToken: oldDisappearingMessageToken,
+                 newDisappearingMessageToken: newDisappearingMessageToken)
+
         switch updater {
         case .unknown:
             if oldGroupModel != nil,
@@ -150,10 +154,6 @@ struct GroupUpdateCopy: Dependencies {
         default:
             break
         }
-
-        populate(oldGroupModel: oldGroupModel,
-                 oldDisappearingMessageToken: oldDisappearingMessageToken,
-                 newDisappearingMessageToken: newDisappearingMessageToken)
     }
 
     // MARK: -

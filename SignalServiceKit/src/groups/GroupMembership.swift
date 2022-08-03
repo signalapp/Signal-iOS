@@ -326,15 +326,51 @@ public class GroupMembership: MTLModel {
         guard let other = object as? GroupMembership else {
             return false
         }
-        guard self.memberStates == other.memberStates else {
+
+        guard Self.memberStates(
+            self.memberStates,
+            areEqualTo: other.memberStates
+        ) else {
             return false
         }
+
         guard self.bannedMembers == other.bannedMembers else {
             return false
         }
+
         let invalidInvitesSet = Set(invalidInvites.map { $0.userId })
         let otherInvalidInvitesSet = Set(other.invalidInvites.map { $0.userId })
         return invalidInvitesSet == otherInvalidInvitesSet
+    }
+
+    /// When comparing member states, ignore the `didJoinFromInviteLink` field.
+    /// This field is not stored as part of memberships in group snapshots from
+    /// the service, and is only computed when a member joins a group and we add
+    /// them locally. If our local membership differs from a group snapshot's
+    /// only in the `didJoinFromInviteLink` field, we want to consider them
+    /// equal to avoid clobbering our local state.
+    private static func memberStates(
+        _ memberStates: MemberStateMap,
+        areEqualTo otherMemberStates: MemberStateMap
+    ) -> Bool {
+
+        func hardcodeDidJoinViaInviteLink(for groupMemberState: GroupMemberState) -> GroupMemberState {
+            switch groupMemberState {
+            case .fullMember(let role, _):
+                return .fullMember(role: role, didJoinFromInviteLink: false)
+            default:
+                return groupMemberState
+            }
+        }
+
+        guard memberStates.count == otherMemberStates.count else {
+            return false
+        }
+
+        return memberStates.allSatisfy { (key, value) -> Bool in
+            guard let otherValue = otherMemberStates[key] else { return false }
+            return hardcodeDidJoinViaInviteLink(for: value) == hardcodeDidJoinViaInviteLink(for: otherValue)
+        }
     }
 
     // MARK: -

@@ -882,12 +882,15 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
                 // this reflects a bug, perhaps a deviation in how the service
                 // and client apply the "group changes" to the local model.
                 //
-                // There is a valid exception: when another group member joins
-                // via group invite link, the group memberships won't exactly
-                // match. This is fine and the app will recover gracefully.
+                // The one known exception is that if we know locally that a
+                // member joined via invite link, that state will not be present
+                // on the membership from the snapshot (as it is not stored in a
+                // group proto's membership). However, as differences only in
+                // "joined via invite link" are ignored when comparing
+                // memberships, getting here is a bug.
                 Logger.verbose("oldGroupModel: \(oldGroupModel.debugDescription)")
                 Logger.verbose("newGroupModel: \(newGroupModel.debugDescription)")
-                Logger.warn("Group models don't match.")
+                Logger.warn("Local and server group models don't match.")
             }
         }
 
