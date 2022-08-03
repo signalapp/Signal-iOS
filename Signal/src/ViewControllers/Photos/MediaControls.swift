@@ -1346,6 +1346,8 @@ class CameraTopBar: MediaTopBar {
         cameraControlsContainerView.topAnchor.constraint(equalTo: controlsLayoutGuide.topAnchor).isActive = true
         cameraControlsContainerView.bottomAnchor.constraint(equalTo: controlsLayoutGuide.bottomAnchor).isActive = true
         flashModeButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlsLayoutGuide.trailingAnchor).isActive = true
+
+        updateElementsVisibility(animated: false)
     }
 
     @available(*, unavailable, message: "Use init(frame:) instead")
@@ -1360,23 +1362,31 @@ class CameraTopBar: MediaTopBar {
     }
 
     var mode: Mode = .cameraControls {
-        didSet {
-            switch mode {
-            case .cameraControls:
-                closeButton.isHidden = false
-                cameraControlsContainerView.isHidden = false
-                recordingTimerView.isHidden = true
+        didSet { updateElementsVisibility(animated: false) }
+    }
 
-            case .closeButton:
-                closeButton.isHidden = false
-                cameraControlsContainerView.isHidden = true
-                recordingTimerView.isHidden = true
+    func setMode(_ mode: Mode, animated: Bool) {
+        guard mode != self.mode else { return }
+        self.mode = mode
+        updateElementsVisibility(animated: animated)
+    }
 
-            case .videoRecording:
-                closeButton.isHidden = true
-                cameraControlsContainerView.isHidden = true
-                recordingTimerView.isHidden = false
-            }
+    private func updateElementsVisibility(animated: Bool) {
+        switch mode {
+        case .cameraControls:
+            closeButton.setIsHidden(false, animated: animated)
+            cameraControlsContainerView.setIsHidden(false, animated: animated)
+            recordingTimerView.setIsHidden(true, animated: animated)
+
+        case .closeButton:
+            closeButton.setIsHidden(false, animated: animated)
+            cameraControlsContainerView.setIsHidden(true, animated: animated)
+            recordingTimerView.setIsHidden(true, animated: animated)
+
+        case .videoRecording:
+            closeButton.setIsHidden(true, animated: animated)
+            cameraControlsContainerView.setIsHidden(true, animated: animated)
+            recordingTimerView.setIsHidden(false, animated: animated)
         }
     }
 }

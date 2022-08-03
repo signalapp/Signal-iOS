@@ -281,7 +281,6 @@ class PhotoCaptureViewController: OWSViewController {
 
         // Top Bar
         view.addSubview(topBar)
-        topBar.mode = .cameraControls
         topBar.closeButton.addTarget(self, action: #selector(didTapClose), for: .touchUpInside)
         topBar.batchModeButton.addTarget(self, action: #selector(didTapBatchMode), for: .touchUpInside)
         topBar.flashModeButton.addTarget(self, action: #selector(didTapFlashMode), for: .touchUpInside)
@@ -447,7 +446,7 @@ class PhotoCaptureViewController: OWSViewController {
         }
 
         if !isRecordingVideo {
-            topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
+            topBar.setMode(isIPadUIInRegularMode ? .closeButton : .cameraControls, animated: true)
         }
         bottomBar.isHidden = isIPadUIInRegularMode
         sideBar?.isHidden = !isIPadUIInRegularMode
@@ -477,7 +476,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     private func updateUIOnVideoRecordingStateChange() {
         if isRecordingVideo {
-            topBar.mode = .videoRecording
+            topBar.setMode(.videoRecording, animated: true)
             topBar.recordingTimerView.startCounting()
 
             let captureControlState: CameraCaptureControl.State = UIAccessibility.isVoiceOverRunning ? .recordingUsingVoiceOver : .recording
@@ -486,7 +485,7 @@ class PhotoCaptureViewController: OWSViewController {
                 sideBar.cameraCaptureControl.setState(captureControlState, animationDuration: 0.4)
             }
         } else {
-            topBar.mode = isIPadUIInRegularMode ? .closeButton : .cameraControls
+            topBar.setMode(isIPadUIInRegularMode ? .closeButton : .cameraControls, animated: true)
             topBar.recordingTimerView.stopCounting()
 
             bottomBar.captureControl.setState(.initial, animationDuration: 0.2)
