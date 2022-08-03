@@ -16,7 +16,10 @@ class NSEEnvironment: Dependencies {
 
     private static var mainAppDarwinQueue: DispatchQueue { .global(qos: .userInitiated) }
 
-    func askMainAppToHandleReceipt(handledCallback: @escaping (_ mainAppHandledReceipt: Bool) -> Void) {
+    func askMainAppToHandleReceipt(
+        logger: NSELogger,
+        handledCallback: @escaping (_ mainAppHandledReceipt: Bool) -> Void
+    ) {
         Self.mainAppDarwinQueue.async {
             // We track whether we've ever handled the call back to ensure
             // we only notify the caller once and avoid any races that may
@@ -25,7 +28,7 @@ class NSEEnvironment: Dependencies {
             let hasCalledBack = AtomicBool(false)
 
             if DebugFlags.internalLogging {
-                Logger.info("Requesting main app to handle incoming message.")
+                logger.info("Requesting main app to handle incoming message.")
             }
 
             // Listen for an indication that the main app is going to handle
@@ -39,7 +42,7 @@ class NSEEnvironment: Dependencies {
                 }
 
                 if DebugFlags.internalLogging {
-                    Logger.info("Main app ack'd.")
+                    logger.info("Main app ack'd.")
                 }
 
                 handledCallback(true)
@@ -60,7 +63,7 @@ class NSEEnvironment: Dependencies {
                 }
 
                 if DebugFlags.internalLogging {
-                    Logger.info("Did timeout.")
+                    logger.info("Did timeout.")
                 }
 
                 // If we haven't called back yet and removed the observer token,
@@ -72,7 +75,7 @@ class NSEEnvironment: Dependencies {
     }
 
     private var mainAppLaunchObserverToken = DarwinNotificationInvalidObserver
-    func listenForMainAppLaunch() {
+    func listenForMainAppLaunch(logger: NSELogger) {
         guard !DarwinNotificationCenter.isValidObserver(mainAppLaunchObserverToken) else { return }
         mainAppLaunchObserverToken = DarwinNotificationCenter.addObserver(for: .mainAppLaunched, queue: .global(), using: { _ in
             // If we're currently processing messages we want to commit
@@ -83,10 +86,10 @@ class NSEEnvironment: Dependencies {
             // ourselves as a last resort.
             // TODO: We could eventually make the message fetch process
             // cancellable to never have to exit here.
-            Logger.warn("Main app launched.")
+            logger.warn("Main app launched.")
             guard self.isProcessingMessages else { return }
-            Logger.warn("Exiting because main app launched while we were processing messages.")
-            Logger.flush()
+            logger.warn("Exiting because main app launched while we were processing messages.")
+            logger.flush()
             exit(0)
         })
     }
@@ -100,43 +103,43 @@ class NSEEnvironment: Dependencies {
     }
 
     // This should be the first thing we do.
-    public func ensureAppContext() {
+    public func ensureAppContext(logger: NSELogger) {
         unfairLock.withLock {
             if _hasAppContext {
                 return
             }
             // This should be the first thing we do.
-            SetCurrentAppContext(NSEContext())
+            SetCurrentAppContext(NSEContext(logger: logger))
             _hasAppContext = true
         }
     }
 
     private var isSetup = AtomicBool(false)
 
-    func setupIfNecessary() -> UNNotificationContent? {
+    func setupIfNecessary(logger: NSELogger) -> UNNotificationContent? {
         guard isSetup.tryToSetFlag() else { return nil }
-        return DispatchQueue.main.sync { setup() }
+        return DispatchQueue.main.sync { setup(logger: logger) }
     }
 
     private var areVersionMigrationsComplete = false
-    private func setup() -> UNNotificationContent? {
+    private func setup(logger: NSELogger) -> UNNotificationContent? {
         AssertIsOnMainThread()
 
         // This should be the first thing we do.
-        ensureAppContext()
+        ensureAppContext(logger: logger)
 
         DebugLogger.shared().enableTTYLogging()
         if OWSPreferences.isLoggingEnabled() || _isDebugAssertConfiguration() {
             DebugLogger.shared().enableFileLogging()
         }
 
-        Logger.info("")
+        logger.info("")
 
         _ = AppVersion.shared()
 
         Cryptography.seedRandom()
 
-        if let errorContent = Self.verifyDBKeysAvailable() {
+        if let errorContent = Self.verifyDBKeysAvailable(logger: logger) {
             return errorContent
         }
 
@@ -155,7 +158,7 @@ class NSEEnvironment: Dependencies {
                     owsFailDebug("Error \(error)")
                     return
                 }
-                self?.versionMigrationsDidComplete()
+                self?.versionMigrationsDidComplete(logger: logger)
             }
         )
 
@@ -166,19 +169,19 @@ class NSEEnvironment: Dependencies {
             object: nil
         )
 
-        Logger.info("completed.")
+        logger.info("completed.")
 
         OWSAnalytics.appLaunchDidBegin()
 
-        listenForMainAppLaunch()
+        listenForMainAppLaunch(logger: logger)
 
         return nil
     }
 
-    public static func verifyDBKeysAvailable() -> UNNotificationContent? {
+    public static func verifyDBKeysAvailable(logger: NSELogger) -> UNNotificationContent? {
         guard !StorageCoordinator.hasGrdbFile || !GRDBDatabaseStorageAdapter.isKeyAccessible else { return nil }
 
-        Logger.info("Database password is not accessible, posting generic notification.")
+        logger.info("Database password is not accessible, posting generic notification.")
 
         let content = UNMutableNotificationContent()
         let notificationFormat = OWSLocalizedString(
@@ -189,11 +192,10 @@ class NSEEnvironment: Dependencies {
         return content
     }
 
-    @objc
-    private func versionMigrationsDidComplete() {
+    private func versionMigrationsDidComplete(logger: NSELogger) {
         AssertIsOnMainThread()
 
-        Logger.debug("")
+        logger.debug("")
 
         areVersionMigrationsComplete = true
 
@@ -204,7 +206,7 @@ class NSEEnvironment: Dependencies {
     private func storageIsReady() {
         AssertIsOnMainThread()
 
-        Logger.debug("")
+        NSELogger.uncorrelated.debug("")
 
         checkIsAppReady()
     }
