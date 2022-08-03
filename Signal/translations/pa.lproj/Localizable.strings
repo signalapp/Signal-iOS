@@ -3616,6 +3616,12 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "ਖੁੰਝੀ ਕਾਲ";
 
+/* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
+"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+
+/* info message text in conversation view (use Apple's name for 'Focus') */
+"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "ਤੁਸੀਂ Signal ਵਿੱਚ ਵੀਡੀਓ ਕਾਲਾਂ ਕਰਨ ਲਈ iOS Settings ਐਪ ਵਿੱਚ ਕੈਮਰਾ ਤਾਈਂ ਪਹੁੰਚ ਨੂੰ ਸਮਰੱਥ ਕਰ ਸਕਦੇ ਹੋ।";
 

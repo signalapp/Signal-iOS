@@ -3616,6 +3616,12 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "부재중 전화";
 
+/* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
+"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+
+/* info message text in conversation view (use Apple's name for 'Focus') */
+"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "iOS 설정 앱에서 카메라 접근을 허용하여 Signal 영상 통화를 할 수 있습니다.";
 

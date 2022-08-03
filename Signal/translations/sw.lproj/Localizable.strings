@@ -3616,6 +3616,12 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "Simu uliyokosa";
 
+/* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
+"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+
+/* info message text in conversation view (use Apple's name for 'Focus') */
+"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Unaweza kuwezesha ufikiaji wa kamera kwenye mipangilio ya programu ya iOS kupiga simu za video ndani ya Signal.";
 
