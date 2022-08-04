@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -127,7 +127,8 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 - (NSString *)durationString
 {
-    return [NSString formatDurationLosslessWithDurationSeconds:self.durationSeconds];
+    return [NSString formatDurationLosslessWithDurationSeconds:self.durationSeconds
+                                                    unitsStyle:NSDateComponentsFormatterUnitsStyleFull];
 }
 
 - (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction
