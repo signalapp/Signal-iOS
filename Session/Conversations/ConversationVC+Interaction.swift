@@ -1086,13 +1086,19 @@ extension ConversationVC:
                         .deleteAll(db)
                 }
                 else {
+                    let sortId = Reaction.getSortId(
+                        db,
+                        interactionId: cellViewModel.id,
+                        emoji: emoji
+                    )
                     try Reaction(
                         interactionId: cellViewModel.id,
                         serverHash: nil,
                         timestampMs: sentTimestamp,
                         authorId: cellViewModel.currentUserPublicKey,
                         emoji: emoji,
-                        count: 1    // TODO: For open groups this should be '0'
+                        count: 1,
+                        sortId: sortId
                     ).insert(db)
                     
                     // Add it to the recent list

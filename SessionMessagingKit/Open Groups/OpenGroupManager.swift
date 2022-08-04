@@ -512,48 +512,72 @@ public final class OpenGroupManager: NSObject {
         
         // Process the messages
         sortedMessages.forEach { message in
-            guard
-                let base64EncodedString: String = message.base64EncodedData,
-                let data = Data(base64Encoded: base64EncodedString)
-            else {
+            if message.base64EncodedData == nil && message.reactions == nil {
                 // A message with no data has been deleted so add it to the list to remove
                 messageServerIdsToRemove.append(UInt64(message.id))
                 return
             }
             
-            do {
-                let processedMessage: ProcessedMessage? = try Message.processReceivedOpenGroupMessage(
-                    db,
-                    openGroupId: openGroup.id,
-                    openGroupServerPublicKey: openGroup.publicKey,
-                    message: message,
-                    data: data,
-                    dependencies: dependencies
-                )
-                
-                if let messageInfo: MessageReceiveJob.Details.MessageInfo = processedMessage?.messageInfo {
-                    try MessageReceiver.handle(
+            // Handle messages
+            if let base64EncodedString: String = message.base64EncodedData,
+               let data = Data(base64Encoded: base64EncodedString)
+            {
+                do {
+                    let processedMessage: ProcessedMessage? = try Message.processReceivedOpenGroupMessage(
                         db,
-                        message: messageInfo.message,
-                        associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
                         openGroupId: openGroup.id,
-                        openGroupReactions: messageInfo.reactions,
-                        isBackgroundPoll: isBackgroundPoll,
+                        openGroupServerPublicKey: openGroup.publicKey,
+                        message: message,
+                        data: data,
                         dependencies: dependencies
                     )
+                    
+                    if let messageInfo: MessageReceiveJob.Details.MessageInfo = processedMessage?.messageInfo {
+                        try MessageReceiver.handle(
+                            db,
+                            message: messageInfo.message,
+                            associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
+                            openGroupId: openGroup.id,
+                            isBackgroundPoll: isBackgroundPoll,
+                            dependencies: dependencies
+                        )
+                    }
+                }
+                catch {
+                    switch error {
+                        // Ignore duplicate & selfSend message errors (and don't bother logging
+                        // them as there will be a lot since we each service node duplicates messages)
+                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                            MessageReceiverError.duplicateMessage,
+                            MessageReceiverError.duplicateControlMessage,
+                            MessageReceiverError.selfSend:
+                            break
+                        
+                        default: SNLog("Couldn't receive open group message due to error: \(error).")
+                    }
                 }
             }
-            catch {
-                switch error {
-                    // Ignore duplicate & selfSend message errors (and don't bother logging
-                    // them as there will be a lot since we each service node duplicates messages)
-                    case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
-                        MessageReceiverError.duplicateMessage,
-                        MessageReceiverError.duplicateControlMessage,
-                        MessageReceiverError.selfSend:
-                        break
+            
+            // Handle reactions
+            if message.reactions != nil {
+                do {
+                    let reactions: [Reaction] = Message.processRawReceivedReactions(
+                        db,
+                        openGroupId: openGroup.id,
+                        message: message,
+                        dependencies: dependencies
+                    )
                     
-                    default: SNLog("Couldn't receive open group message due to error: \(error).")
+                    if !reactions.isEmpty {
+                        try MessageReceiver.handleOpenGroupReactions(
+                            db,
+                            openGroupMessageServerId: message.id,
+                            openGroupReactions: reactions
+                        )
+                    }
+                }
+                catch {
+                    SNLog("Couldn't handle open group reactions due to error: \(error).")
                 }
             }
         }

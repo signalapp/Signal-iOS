@@ -180,7 +180,6 @@ public enum MessageReceiver {
         message: Message,
         associatedWithProto proto: SNProtoContent,
         openGroupId: String?,
-        openGroupReactions: [Reaction] = [],
         isBackgroundPoll: Bool,
         dependencies: SMKDependencies = SMKDependencies()
     ) throws {
@@ -218,7 +217,6 @@ public enum MessageReceiver {
                     message: message,
                     associatedWithProto: proto,
                     openGroupId: openGroupId,
-                    openGroupReactions: openGroupReactions,
                     isBackgroundPoll: isBackgroundPoll
                 )
                 
@@ -248,6 +246,29 @@ public enum MessageReceiver {
                     .fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
                     .with(shouldBeVisible: true)
                     .saved(db)
+        }
+    }
+    
+    public static func handleOpenGroupReactions(
+        _ db: Database,
+        openGroupMessageServerId: Int64,
+        openGroupReactions: [Reaction]
+    ) throws {
+        guard let interactionId: Int64 = try? Interaction
+            .select(.id)
+            .filter(Interaction.Columns.openGroupServerMessageId == openGroupMessageServerId)
+            .asRequest(of: Int64.self)
+            .fetchOne(db)
+        else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        _ = try Reaction
+            .filter(Reaction.Columns.interactionId == interactionId)
+            .deleteAll(db)
+        
+        for reaction in openGroupReactions {
+            try reaction.with(interactionId: interactionId).insert(db)
         }
     }
     

@@ -12,7 +12,6 @@ extension MessageReceiver {
         message: VisibleMessage,
         associatedWithProto proto: SNProtoContent,
         openGroupId: String?,
-        openGroupReactions: [Reaction] = [],
         isBackgroundPoll: Bool,
         dependencies: Dependencies = Dependencies()
     ) throws -> Int64 {
@@ -141,10 +140,6 @@ extension MessageReceiver {
                     return recipientParts[2]
                 }()
             ).inserted(db)
-            
-            for reaction in openGroupReactions {
-                try reaction.with(interactionId: interaction.id).insert(db)
-            }
         }
         catch {
             switch error {
@@ -329,6 +324,12 @@ extension MessageReceiver {
             throw StorageError.objectNotFound
         }
         
+        let sortId = Reaction.getSortId(
+            db,
+            interactionId: interactionId,
+            emoji: reaction.emoji
+        )
+        
         switch reaction.kind {
             case .react:
                 try Reaction(
@@ -337,7 +338,8 @@ extension MessageReceiver {
                     timestampMs: Int64(messageSentTimestamp * 1000),
                     authorId: sender,
                     emoji: reaction.emoji,
-                    count: 1    // TODO: Handle Open Group case
+                    count: 1,
+                    sortId: sortId
                 ).insert(db)
                 
             case .remove:

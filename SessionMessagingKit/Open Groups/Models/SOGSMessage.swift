@@ -94,7 +94,7 @@ extension OpenGroupAPI.Message {
         self = OpenGroupAPI.Message(
             id: try container.decode(Int64.self, forKey: .id),
             sender: try? container.decode(String.self, forKey: .sender),
-            posted: try container.decode(TimeInterval.self, forKey: .posted),
+            posted: ((try? container.decode(TimeInterval.self, forKey: .posted)) ?? Date().timeIntervalSince1970), // Reaction updates don't include posted
             edited: try? container.decode(TimeInterval.self, forKey: .edited),
             seqNo: try container.decode(Int64.self, forKey: .seqNo),
             whisper: ((try? container.decode(Bool.self, forKey: .whisper)) ?? false),

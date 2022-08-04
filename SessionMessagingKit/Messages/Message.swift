@@ -303,21 +303,9 @@ public extension Message {
             throw MessageReceiverError.invalidMessage
         }
         
-        let reactions = processRawReceivedReactions(
-            db,
-            reactions: message.reactions,
-            serverExpirationTimestamp: nil,
-            serverHash: nil,
-            openGroupId: openGroupId,
-            openGroupMessageServerId: message.id,
-            openGroupServerPublicKey: openGroupServerPublicKey,
-            dependencies: dependencies
-        )
-        
         return try processRawReceivedMessage(
             db,
             envelope: envelope,
-            reactions: reactions,
             serverExpirationTimestamp: nil,
             serverHash: nil,
             openGroupId: openGroupId,
@@ -361,18 +349,14 @@ public extension Message {
         )
     }
     
-    private static func processRawReceivedReactions(
+    static func processRawReceivedReactions(
         _ db: Database,
-        reactions: [String:OpenGroupAPI.Message.Reaction]?,
-        serverExpirationTimestamp: TimeInterval?,
-        serverHash: String?,
         openGroupId: String,
-        openGroupMessageServerId: Int64? = nil,
-        openGroupServerPublicKey: String? = nil,
+        message: OpenGroupAPI.Message,
         dependencies: SMKDependencies = SMKDependencies()
     ) -> [Reaction] {
         var results: [Reaction] = []
-        guard let openGroupMessageServerId = openGroupMessageServerId, let reactions = reactions else { return results }
+        guard let reactions = message.reactions else { return results }
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
         let blindedUserPublicKey: String? = SessionThread
             .getUserHexEncodedBlindedKey(
@@ -385,27 +369,30 @@ public extension Message {
                let reactors = rawReaction.reactors
             {
                 var count = rawReaction.count
+                let sortId: Int64 = 0 // TODO: Need to be modified to the server returned value
                 for reactor in reactors {
                     if reactor == blindedUserPublicKey { continue } // Will add a reaction for this case outside of the loop
                     let reaction = Reaction(
-                        interactionId: openGroupMessageServerId,
+                        interactionId: message.id,
                         serverHash: nil,
                         timestampMs: Int64(floor((Date().timeIntervalSince1970 * 1000))),
                         authorId: reactor,
                         emoji: emoji,
-                        count: count
+                        count: count,
+                        sortId: sortId
                     )
                     count = 0 // Only insert the first reaction with the total count of this emoji
                     results.append(reaction)
                 }
                 if rawReaction.you && !reactors.contains(userPublicKey) {
                     let reaction = Reaction(
-                        interactionId: openGroupMessageServerId,
+                        interactionId: message.id,
                         serverHash: nil,
                         timestampMs: Int64(floor((Date().timeIntervalSince1970 * 1000))),
                         authorId: userPublicKey,
                         emoji: emoji,
-                        count: 0
+                        count: count,
+                        sortId: sortId
                     )
                     results.append(reaction)
                 }
@@ -417,7 +404,6 @@ public extension Message {
     private static func processRawReceivedMessage(
         _ db: Database,
         envelope: SNProtoEnvelope,
-        reactions: [Reaction] = [],
         serverExpirationTimestamp: TimeInterval?,
         serverHash: String?,
         openGroupId: String? = nil,
@@ -487,8 +473,7 @@ public extension Message {
             try MessageReceiveJob.Details.MessageInfo(
                 message: message,
                 variant: variant,
-                proto: proto,
-                reactions: reactions
+                proto: proto
             )
         )
     }

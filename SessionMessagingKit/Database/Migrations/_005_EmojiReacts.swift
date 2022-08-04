@@ -29,6 +29,9 @@ enum _005_EmojiReacts: Migration {
             t.column(.count, .integer)
                 .notNull()
                 .defaults(to: 0)
+            t.column(.sortId, .integer)
+                .notNull()
+                .defaults(to: 0)
             
             /// A specific author should only be able to have a single instance of each emoji on a particular interaction
             t.uniqueKey([.interactionId, .emoji, .authorId])

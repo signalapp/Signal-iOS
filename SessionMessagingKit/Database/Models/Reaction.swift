@@ -19,6 +19,7 @@ public struct Reaction: Codable, Equatable, Hashable, FetchableRecord, Persistab
         case authorId
         case emoji
         case count
+        case sortId
     }
     
     /// The id for the interaction this reaction belongs to
@@ -45,6 +46,9 @@ public struct Reaction: Codable, Equatable, Hashable, FetchableRecord, Persistab
     /// regardless of the type of conversation)
     public let count: Int64
     
+    /// The id for sorting
+    public let sortId: Int64
+    
     // MARK: - Relationships
          
     public var interaction: QueryInterfaceRequest<Interaction> {
@@ -63,7 +67,8 @@ public struct Reaction: Codable, Equatable, Hashable, FetchableRecord, Persistab
         timestampMs: Int64,
         authorId: String,
         emoji: String,
-        count: Int64
+        count: Int64,
+        sortId: Int64
     ) {
         self.interactionId = interactionId
         self.serverHash = serverHash
@@ -71,6 +76,7 @@ public struct Reaction: Codable, Equatable, Hashable, FetchableRecord, Persistab
         self.authorId = authorId
         self.emoji = emoji
         self.count = count
+        self.sortId = sortId
     }
 }
 
@@ -81,7 +87,8 @@ public extension Reaction {
         interactionId: Int64? = nil,
         serverHash: String? = nil,
         authorId: String? = nil,
-        count: Int64? = nil
+        count: Int64? = nil,
+        sortId: Int64? = nil
     ) -> Reaction {
         return Reaction(
             interactionId: (interactionId ?? self.interactionId),
@@ -89,7 +96,41 @@ public extension Reaction {
             timestampMs: self.timestampMs,
             authorId: (authorId ?? self.authorId),
             emoji: self.emoji,
-            count: (count ?? self.count)
+            count: (count ?? self.count),
+            sortId: (sortId ?? self.sortId)
         )
+    }
+}
+
+// MARK: - SortId
+
+public extension Reaction {
+    static func getSortId(
+        _ db: Database,
+        interactionId: Int64,
+        emoji: String
+    ) -> Int64 {
+        let existingSortId: Int64? = try? Reaction
+            .select(Columns.sortId)
+            .filter(Columns.interactionId == interactionId)
+            .filter(Columns.emoji == emoji)
+            .asRequest(of: Int64.self)
+            .fetchOne(db)
+        
+        if let sortId = existingSortId {
+            return sortId
+        }
+        
+        let existingLargestSortId: Int64? = try? Reaction
+            .select(max(Columns.sortId))
+            .filter(Columns.interactionId == interactionId)
+            .asRequest(of: Int64.self)
+            .fetchOne(db)
+        
+        if let sortId = existingLargestSortId {
+            return sortId + 1
+        }
+        
+        return 0
     }
 }
