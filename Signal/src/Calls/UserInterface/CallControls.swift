@@ -242,6 +242,7 @@ class CallControls: UIView {
         }
 
         bottomStackView.isHidden = joinState == .joined
+        gradientView.isHidden = joinState != .joined
 
         let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
         let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")

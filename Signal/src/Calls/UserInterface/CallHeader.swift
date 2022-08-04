@@ -23,6 +23,19 @@ class CallHeader: UIView {
     }()
 
     private var callDurationTimer: Timer?
+
+    private lazy var gradientView: UIView = {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = [
+            UIColor.ows_blackAlpha60.cgColor,
+            UIColor.black.withAlphaComponent(0).cgColor
+        ]
+        let view = OWSLayerView(frame: .zero) { view in
+            gradientLayer.frame = view.bounds
+        }
+        view.layer.addSublayer(gradientLayer)
+        return view
+    }()
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
     private let groupMembersButton = GroupMembersButton()
@@ -36,16 +49,6 @@ class CallHeader: UIView {
         super.init(frame: .zero)
 
         call.addObserverAndSyncState(observer: self)
-
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.colors = [
-            UIColor.ows_blackAlpha60.cgColor,
-            UIColor.black.withAlphaComponent(0).cgColor
-        ]
-        let gradientView = OWSLayerView(frame: .zero) { view in
-            gradientLayer.frame = view.bounds
-        }
-        gradientView.layer.addSublayer(gradientLayer)
 
         addSubview(gradientView)
         gradientView.autoPinEdgesToSuperviewEdges()
@@ -254,6 +257,7 @@ extension CallHeader: CallObserver {
         owsAssertDebug(call.isGroupCall)
 
         if call.groupCall.localDeviceState.joinState == .joined {
+            gradientView.isHidden = false
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
                 callDurationTimer = WeakTimer.scheduledTimer(
@@ -266,6 +270,7 @@ extension CallHeader: CallObserver {
                 }
             }
         } else {
+            gradientView.isHidden = true
             callDurationTimer?.invalidate()
             callDurationTimer = nil
         }
