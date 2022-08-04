@@ -130,15 +130,17 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        section1.add(.disclosureItem(
-            icon: .settingsLinkedDevices,
-            name: NSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager"),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "linked-devices"),
-            actionBlock: { [weak self] in
-                let vc = LinkedDevicesTableViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
-            }
-        ))
+        if self.tsAccountManager.isPrimaryDevice {
+            section1.add(.disclosureItem(
+                icon: .settingsLinkedDevices,
+                name: NSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager"),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "linked-devices"),
+                actionBlock: { [weak self] in
+                    let vc = LinkedDevicesTableViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+        }
         section1.add(.init(customCellBlock: { [weak self] in
             guard let self = self else { return UITableViewCell() }
             let accessoryView: UIView?

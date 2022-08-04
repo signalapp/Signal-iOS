@@ -492,7 +492,8 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return NO;
             }
             return [self tryToShowStickerPackView:stickerPackInfo];
-        } else if ([url.host hasPrefix:kURLHostLinkDevicePrefix] && [self.tsAccountManager isRegistered]) {
+        } else if ([url.host hasPrefix:kURLHostLinkDevicePrefix] && [self.tsAccountManager isRegistered]
+            && self.tsAccountManager.isPrimaryDevice) {
             OWSDeviceProvisioningURLParser *parser =
                 [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:url.absoluteString];
             if (!parser.isValid) {
@@ -583,6 +584,10 @@ static void uncaughtExceptionHandler(NSException *exception)
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         if (!self.tsAccountManager.isRegistered) {
             OWSFailDebug(@"Ignoring linked device URL; not registered.");
+            return;
+        }
+        if (!self.tsAccountManager.isPrimaryDevice) {
+            OWSFailDebug(@"Ignoring linked device URL; not primary.");
             return;
         }
 
