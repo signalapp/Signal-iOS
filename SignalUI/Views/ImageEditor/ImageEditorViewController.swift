@@ -234,10 +234,8 @@ class ImageEditorViewController: OWSViewController {
         model.add(observer: self)
     }
 
-    override func loadView() {
-        view = UIView()
+    override func viewDidLoad() {
         view.backgroundColor = .black
-        view.isOpaque = true
 
         imageEditorView.configureSubviews()
         view.addSubview(imageEditorView)
@@ -268,10 +266,6 @@ class ImageEditorViewController: OWSViewController {
         strokeWidthSliderPosition = strokeWidthSliderContainer.centerXAnchor.constraint(equalTo: view.leadingAnchor)
         strokeWidthSliderPosition?.autoInstall()
         strokeWidthSliderContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSliderContainerTap(_:))))
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
         updateUIForCurrentMode()
     }
