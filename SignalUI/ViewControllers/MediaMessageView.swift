@@ -280,7 +280,7 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         }
     }
 
-    func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval) { }
+    func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval, playbackRate: Float) { }
 
     private func ensureButtonState() {
         if audioPlaybackState == .playing {

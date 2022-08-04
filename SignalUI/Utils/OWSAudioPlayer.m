@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioPlayer.h"
@@ -35,6 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(mediaUrl);
 
     _mediaUrl = mediaUrl;
+    _playbackRate = 1.0;
 
     NSString *audioActivityDescription = [NSString stringWithFormat:@"%@ %@", self.logTag, self.mediaUrl];
     _audioActivity = [[OWSAudioActivity alloc] initWithAudioDescription:audioActivityDescription
@@ -60,6 +61,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSTimeInterval)duration
 {
     return self.audioPlayer.duration;
+}
+
+- (void)setPlaybackRate:(float)playbackRate
+{
+    if (self.audioPlayer != nil && _playbackRate != playbackRate) {
+        self.audioPlayer.rate = playbackRate;
+    }
+    _playbackRate = playbackRate;
 }
 
 #pragma mark -
@@ -179,7 +188,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.delegate.audioPlaybackState = AudioPlaybackState_Paused;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
-    [self.delegate setAudioProgress:self.audioPlayer.currentTime duration:self.audioPlayer.duration];
+    [self.delegate setAudioProgress:self.audioPlayer.currentTime
+                           duration:self.audioPlayer.duration
+                       playbackRate:self.playbackRate];
     [self updateNowPlayingInfo];
 
     [self endAudioActivities];
@@ -213,6 +224,10 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         self.audioPlayer.delegate = self;
+        // Always enable playback rate from the start; it can only
+        // be set before playing begins.
+        self.audioPlayer.enableRate = true;
+        self.audioPlayer.rate = self.playbackRate;
         [self.audioPlayer prepareToPlay];
         if (self.isLooping) {
             self.audioPlayer.numberOfLoops = -1;
@@ -229,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.delegate.audioPlaybackState = AudioPlaybackState_Stopped;
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
-    [self.delegate setAudioProgress:0 duration:0];
+    [self.delegate setAudioProgress:0 duration:0 playbackRate:_playbackRate];
 
     [self endAudioActivities];
     [DeviceSleepManager.shared removeBlockWithBlockObject:self];
@@ -258,7 +273,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.audioPlayer.currentTime = currentTime;
 
-    [self.delegate setAudioProgress:self.audioPlayer.currentTime duration:self.audioPlayer.duration];
+    [self.delegate setAudioProgress:self.audioPlayer.currentTime
+                           duration:self.audioPlayer.duration
+                       playbackRate:self.playbackRate];
 
     [self updateNowPlayingInfo];
 }
@@ -272,7 +289,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.audioPlayer);
     OWSAssertDebug(self.audioPlayerPoller);
 
-    [self.delegate setAudioProgress:self.audioPlayer.currentTime duration:self.audioPlayer.duration];
+    [self.delegate setAudioProgress:self.audioPlayer.currentTime
+                           duration:self.audioPlayer.duration
+                       playbackRate:self.playbackRate];
 }
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
