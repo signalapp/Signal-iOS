@@ -1361,13 +1361,17 @@ class CameraTopBar: MediaTopBar {
         case cameraControls, closeButton, videoRecording
     }
 
-    var mode: Mode = .cameraControls {
-        didSet { updateElementsVisibility(animated: false) }
+    private var internalMode: Mode = .cameraControls
+    var mode: Mode {
+        get { internalMode }
+        set {
+            setMode(newValue, animated: false)
+        }
     }
 
     func setMode(_ mode: Mode, animated: Bool) {
-        guard mode != self.mode else { return }
-        self.mode = mode
+        guard mode != internalMode else { return }
+        internalMode = mode
         updateElementsVisibility(animated: animated)
     }
 
