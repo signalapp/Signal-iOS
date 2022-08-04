@@ -646,8 +646,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                 owsFailDebug("Missing thread.")
                 return nil
             }
+            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread,
+                                                                           transaction: transaction)
             return CVLoader.buildStandaloneRenderItem(interaction: interaction,
                                                       thread: thread,
+                                                      threadAssociatedData: threadAssociatedData,
                                                       containerView: self.view,
                                                       transaction: transaction)
         }

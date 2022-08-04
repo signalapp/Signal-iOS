@@ -126,6 +126,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         self.id = rowID
     }
 
+    @objc
     public init(
         threadUniqueId: String,
         isArchived: Bool,

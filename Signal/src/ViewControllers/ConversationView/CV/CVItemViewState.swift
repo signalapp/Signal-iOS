@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 // CVItemViewState represents the transient, un-persisted values
 // that may affect item appearance.
@@ -27,6 +28,7 @@ public struct CVItemViewState: Equatable {
     let bodyTextState: CVComponentBodyText.State?
     let giftBadgeState: CVComponentGiftBadge.ViewState?
     let nextAudioAttachment: AudioAttachment?
+    let audioPlaybackRate: Float
 
     let uiMode: ConversationUIMode
     let previousUIMode: ConversationUIMode
@@ -47,6 +49,7 @@ public struct CVItemViewState: Equatable {
         var bodyTextState: CVComponentBodyText.State?
         var giftBadgeState: CVComponentGiftBadge.ViewState?
         var nextAudioAttachment: AudioAttachment?
+        var audioPlaybackRate: Float = 1
         var uiMode: ConversationUIMode = .normal
         var previousUIMode: ConversationUIMode = .normal
 
@@ -63,6 +66,7 @@ public struct CVItemViewState: Equatable {
                             bodyTextState: bodyTextState,
                             giftBadgeState: giftBadgeState,
                             nextAudioAttachment: nextAudioAttachment,
+                            audioPlaybackRate: audioPlaybackRate,
                             uiMode: uiMode,
                             previousUIMode: previousUIMode)
         }
@@ -191,6 +195,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
     public static func buildStandaloneItem(interaction: TSInteraction,
                                            thread: TSThread,
+                                           threadAssociatedData: ThreadAssociatedData,
                                            threadViewModel: ThreadViewModel,
                                            itemBuildingContext: CVItemBuildingContext,
                                            transaction: SDSAnyReadTransaction) -> CVItemModel? {
@@ -200,6 +205,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
         guard let itemBuilder = Self.itemBuilder(forInteraction: interaction,
                                                  thread: thread,
+                                                 threadAssociatedData: threadAssociatedData,
                                                  itemBuildingContext: itemBuildingContext,
                                                  componentStateCache: ComponentStateCache()) else {
             owsFailDebug("Could not create itemBuilder.")
@@ -258,6 +264,8 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
         if let giftBadge = item.componentState.giftBadge {
             itemViewState.giftBadgeState = CVComponentGiftBadge.buildViewState(giftBadge)
         }
+
+        itemViewState.audioPlaybackRate =  threadViewModel.associatedData.audioPlaybackRate
 
         if interaction.interactionType == .dateHeader {
             itemViewState.dateHeaderState = CVComponentDateHeader.buildState(interaction: interaction)
@@ -501,6 +509,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                                   itemBuildingContext: itemBuildingContext)
             let item = ItemBuilder(interaction: interaction,
                                    thread: thread,
+                                   threadAssociatedData: threadAssociatedData,
                                    componentState: componentState)
             items.append(item)
         }
@@ -527,6 +536,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
                                                                        itemBuildingContext: itemBuildingContext)
             let item = ItemBuilder(interaction: interaction,
                                    thread: thread,
+                                   threadAssociatedData: threadAssociatedData,
                                    componentState: componentState)
             items.append(item)
         }
@@ -571,6 +581,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
     private mutating func addItem(interaction: TSInteraction) -> ItemBuilder? {
         guard let item = Self.itemBuilder(forInteraction: interaction,
                                           thread: thread,
+                                          threadAssociatedData: threadAssociatedData,
                                           itemBuildingContext: itemBuildingContext,
                                           componentStateCache: componentStateCache) else {
             return nil
@@ -603,6 +614,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
     private static func itemBuilder(forInteraction interaction: TSInteraction,
                                     thread: TSThread,
+                                    threadAssociatedData: ThreadAssociatedData,
                                     itemBuildingContext: CVItemBuildingContext,
                                     componentStateCache: ComponentStateCache) -> ItemBuilder? {
         let componentState: CVComponentState
@@ -617,6 +629,7 @@ struct CVItemModelBuilder: CVItemBuilding, Dependencies {
 
         return ItemBuilder(interaction: interaction,
                            thread: thread,
+                           threadAssociatedData: threadAssociatedData,
                            componentState: componentState)
     }
 
@@ -689,20 +702,24 @@ fileprivate extension CVMessageMapping {
 private class ItemBuilder {
     let interaction: TSInteraction
     let thread: TSThread
+    let threadAssociatedData: ThreadAssociatedData
     let componentState: CVComponentState
     var itemViewState = CVItemViewState.Builder()
 
     required init(interaction: TSInteraction,
                   thread: TSThread,
+                  threadAssociatedData: ThreadAssociatedData,
                   componentState: CVComponentState) {
         self.interaction = interaction
         self.thread = thread
+        self.threadAssociatedData = threadAssociatedData
         self.componentState = componentState
     }
 
     func build(coreState: CVCoreState) -> CVItemModel {
         CVItemModel(interaction: interaction,
                     thread: thread,
+                    threadAssociatedData: threadAssociatedData,
                     componentState: componentState,
                     itemViewState: itemViewState.build(),
                     coreState: coreState)

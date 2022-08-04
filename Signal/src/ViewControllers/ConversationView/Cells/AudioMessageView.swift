@@ -60,8 +60,11 @@ class AudioMessageView: ManualStackView {
         super.init(name: "AudioMessageView")
     }
 
-    public func configureForRendering(cellMeasurement: CVCellMeasurement,
-                                      conversationStyle: ConversationStyle) {
+    public func configureForRendering(
+        cellMeasurement: CVCellMeasurement,
+        conversationStyle: ConversationStyle,
+        audioPlaybackRate: Float
+    ) {
 
         var outerSubviews = [UIView]()
 
@@ -185,11 +188,14 @@ class AudioMessageView: ManualStackView {
     private static let measurementKey_bottomInnerStack = "CVComponentAudioAttachment.measurementKey_bottomInnerStack"
     private static let measurementKey_outerStack = "CVComponentAudioAttachment.measurementKey_outerStack"
 
-    public static func measure(maxWidth: CGFloat,
-                               audioAttachment: AudioAttachment,
-                               isIncoming: Bool,
-                               conversationStyle: ConversationStyle,
-                               measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+    public static func measure(
+        maxWidth: CGFloat,
+        audioAttachment: AudioAttachment,
+        isIncoming: Bool,
+        conversationStyle: ConversationStyle,
+        audioPlaybackRate: Float,
+        measurementBuilder: CVCellMeasurement.Builder
+    ) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         var outerSubviewInfos = [ManualStackSubviewInfo]()

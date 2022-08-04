@@ -16,6 +16,8 @@ public protocol CVComponentDelegate {
 
     func cvc_enqueueReload()
 
+    func cvc_enqueueReloadWithoutCaches()
+
     // MARK: - Body Text Items
 
     func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject)

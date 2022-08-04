@@ -19,6 +19,10 @@ extension ConversationViewController: CVComponentDelegate {
         self.loadCoordinator.enqueueReload()
     }
 
+    public func cvc_enqueueReloadWithoutCaches() {
+        self.loadCoordinator.enqueueReloadWithoutCaches()
+    }
+
     // MARK: - Body Text Items
 
     public func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {

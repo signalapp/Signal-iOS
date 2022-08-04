@@ -73,8 +73,11 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
         } else if let outgoingMessage = interaction as? TSOutgoingMessage {
             audioMessageView.setViewed(!outgoingMessage.viewedRecipientAddresses().isEmpty, animated: false)
         }
-        audioMessageView.configureForRendering(cellMeasurement: cellMeasurement,
-                                               conversationStyle: conversationStyle)
+        audioMessageView.configureForRendering(
+            cellMeasurement: cellMeasurement,
+            conversationStyle: conversationStyle,
+            audioPlaybackRate: itemViewState.audioPlaybackRate
+        )
         componentView.audioMessageView = audioMessageView
         stackView.configure(config: stackViewConfig,
                             cellMeasurement: cellMeasurement,
@@ -108,11 +111,14 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
         }
 
-        let audioSize = AudioMessageView.measure(maxWidth: maxWidth,
-                                                 audioAttachment: audioAttachment,
-                                                 isIncoming: isIncoming,
-                                                 conversationStyle: conversationStyle,
-                                                 measurementBuilder: measurementBuilder).ceil
+        let audioSize = AudioMessageView.measure(
+            maxWidth: maxWidth,
+            audioAttachment: audioAttachment,
+            isIncoming: isIncoming,
+            conversationStyle: conversationStyle,
+            audioPlaybackRate: itemViewState.audioPlaybackRate,
+            measurementBuilder: measurementBuilder
+        ).ceil
         let audioInfo = audioSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,

@@ -205,6 +205,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 owsFailDebug("Missing thread.")
                 return nil
             }
+            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
 
             let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
 
@@ -220,6 +221,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             return CVLoader.buildStandaloneRenderItem(
                 interaction: interaction,
                 thread: thread,
+                threadAssociatedData: threadAssociatedData,
                 conversationStyle: conversationStyle,
                 transaction: transaction
             )
@@ -881,6 +883,10 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_enqueueReload() {
         self.refreshContent()
+    }
+
+    func cvc_enqueueReloadWithoutCaches() {
+        self.refreshContentForDatabaseUpdate()
     }
 
     // MARK: - Body Text Items

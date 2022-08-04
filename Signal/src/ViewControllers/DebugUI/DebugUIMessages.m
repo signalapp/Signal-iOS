@@ -1950,11 +1950,13 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                           isAttachmentDownloaded:YES
                                                    quotedMessage:nil
                                                      transaction:transaction];
+                ThreadAssociatedData *threadAssociatedData = [self createFakeThreadAssociatedData:thread];
                 OWSAssertDebug(messageToQuote);
 
                 UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
                 CVRenderItem *renderItem = [CVLoader buildStandaloneRenderItemWithInteraction:messageToQuote
                                                                                        thread:thread
+                                                                         threadAssociatedData:threadAssociatedData
                                                                                 containerView:containerView
                                                                                   transaction:transaction];
                 CVItemViewModelImpl *itemViewModel = [[CVItemViewModelImpl alloc] initWithRenderItem:renderItem];
@@ -1975,10 +1977,12 @@ typedef NS_CLOSED_ENUM(NSUInteger, MessageContentType) {
                                                                                messageSticker:nil
                                                                                   transaction:transaction];
                 OWSAssertDebug(messageToQuote);
+                ThreadAssociatedData *threadAssociatedData = [self createFakeThreadAssociatedData:thread];
 
                 UIView *containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
                 CVRenderItem *renderItem = [CVLoader buildStandaloneRenderItemWithInteraction:messageToQuote
                                                                                        thread:thread
+                                                                         threadAssociatedData:threadAssociatedData
                                                                                 containerView:containerView
                                                                                   transaction:transaction];
                 CVItemViewModelImpl *itemViewModel = [[CVItemViewModelImpl alloc] initWithRenderItem:renderItem];
@@ -4465,6 +4469,15 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         OWSFailDebug(@"unknown message state.");
     }
     return label;
+}
+
++ (ThreadAssociatedData *)createFakeThreadAssociatedData:(TSThread *)thread
+{
+    return [[ThreadAssociatedData alloc] initWithThreadUniqueId:thread.uniqueId
+                                                     isArchived:NO
+                                                 isMarkedUnread:NO
+                                            mutedUntilTimestamp:0
+                                              audioPlaybackRate:1];
 }
 
 + (TSOutgoingMessage *)createFakeOutgoingMessage:(TSThread *)thread
