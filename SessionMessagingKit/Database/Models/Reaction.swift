@@ -78,29 +78,18 @@ public struct Reaction: Codable, Equatable, Hashable, FetchableRecord, Persistab
 
 public extension Reaction {
     func with(
+        interactionId: Int64? = nil,
         serverHash: String? = nil,
+        authorId: String? = nil,
         count: Int64? = nil
     ) -> Reaction {
         return Reaction(
-            interactionId: interactionId,
+            interactionId: (interactionId ?? self.interactionId),
             serverHash: (serverHash ?? self.serverHash),
             timestampMs: self.timestampMs,
-            authorId: self.authorId,
+            authorId: (authorId ?? self.authorId),
             emoji: self.emoji,
             count: (count ?? self.count)
-        )
-    }
-    
-    func with(
-        interactionId: Int64?
-    ) -> Reaction {
-        return Reaction(
-            interactionId: (interactionId ?? self.interactionId),
-            serverHash: self.serverHash,
-            timestampMs: self.timestampMs,
-            authorId: self.authorId,
-            emoji: self.emoji,
-            count: self.count
         )
     }
 }
