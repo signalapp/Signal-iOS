@@ -184,31 +184,21 @@ public final class ClosedGroupPoller {
                             guard isBackgroundPoll || poller?.isPolling.wrappedValue[groupPublicKey] == true else { return Promise.value(()) }
                             
                             var promises: [Promise<Void>] = []
-                            var messageCount: Int = 0
-                            let totalMessagesCount: Int = messageResults
-                                .map { result -> Int in
-                                    switch result {
-                                        case .fulfilled(let messages): return messages.count
-                                        default: return 0
+                            let allMessages: [SnodeReceivedMessage] = messageResults
+                                .reduce([]) { result, next in
+                                    switch next {
+                                        case .fulfilled(let messages): return result.appending(contentsOf: messages)
+                                        default: return result
                                     }
                                 }
-                                .reduce(0, +)
+                            var messageCount: Int = 0
+                            let totalMessagesCount: Int = allMessages.count
                             
-                            messageResults.forEach { result in
-                                guard case .fulfilled(let messages) = result else { return }
-                                guard !messages.isEmpty else { return }
-                                
-                                var jobToRun: Job?
-                                
-                                Storage.shared.write { db in
-                                    var jobDetailMessages: [MessageReceiveJob.Details.MessageInfo] = []
-                                    
-                                    messages.forEach { message in
+                            Storage.shared.write { db in
+                                let processedMessages: [ProcessedMessage] = allMessages
+                                    .compactMap { message -> ProcessedMessage? in
                                         do {
-                                            let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
-                                            
-                                            jobDetailMessages = jobDetailMessages
-                                                .appending(processedMessage?.messageInfo)
+                                            return try Message.processRawReceivedMessage(db, rawMessage: message)
                                         }
                                         catch {
                                             switch error {
@@ -219,28 +209,30 @@ public final class ClosedGroupPoller {
                                                     MessageReceiverError.duplicateControlMessage,
                                                     MessageReceiverError.selfSend:
                                                     break
-                                                
+
                                                 default: SNLog("Failed to deserialize envelope due to error: \(error).")
                                             }
+
+                                            return nil
                                         }
                                     }
-                                    
-                                    messageCount += jobDetailMessages.count
-                                    jobToRun = Job(
-                                        variant: .messageReceive,
-                                        behaviour: .runOnce,
-                                        threadId: groupPublicKey,
-                                        details: MessageReceiveJob.Details(
-                                            messages: jobDetailMessages,
-                                            isBackgroundPoll: isBackgroundPoll
-                                        )
-                                    )
-                                    
-                                    // If we are force-polling then add to the JobRunner so they are persistent and will retry on
-                                    // the next app run if they fail but don't let them auto-start
-                                    JobRunner.add(db, job: jobToRun, canStartJob: !isBackgroundPoll)
-                                }
                                 
+                                messageCount = processedMessages.count
+                                
+                                let jobToRun: Job? = Job(
+                                    variant: .messageReceive,
+                                    behaviour: .runOnce,
+                                    threadId: groupPublicKey,
+                                    details: MessageReceiveJob.Details(
+                                        messages: processedMessages.map { $0.messageInfo },
+                                        isBackgroundPoll: isBackgroundPoll
+                                    )
+                                )
+
+                                // If we are force-polling then add to the JobRunner so they are persistent and will retry on
+                                // the next app run if they fail but don't let them auto-start
+                                JobRunner.add(db, job: jobToRun, canStartJob: !isBackgroundPoll)
+
                                 // We want to try to handle the receive jobs immediately in the background
                                 if isBackgroundPoll {
                                     promises = promises.appending(

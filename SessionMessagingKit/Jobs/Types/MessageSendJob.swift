@@ -75,7 +75,17 @@ public enum MessageSendJob: JobExecutor {
                 // but not on the message recipients device - both LinkPreview and Quote can
                 // have this case)
                 try allAttachmentStateInfo
-                    .filter { $0.state == .uploading || $0.state == .failedUpload || $0.state == .downloaded }
+                    .filter { attachment -> Bool in
+                        // Non-media quotes won't have thumbnails so so don't try to upload them
+                        guard attachment.downloadUrl != Attachment.nonMediaQuoteFileId else { return false }
+                        
+                        switch attachment.state {
+                            case .uploading, .pendingDownload, .downloading, .failedUpload, .downloaded:
+                                return true
+                                
+                            default: return false
+                        }
+                    }
                     .filter { stateInfo in
                         // Don't add a new job if there is one already in the queue
                         !JobRunner.hasPendingOrRunningJob(
