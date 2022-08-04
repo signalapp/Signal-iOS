@@ -1050,21 +1050,75 @@ extension CVComponentSystemMessage {
                 }
             }
 
-            var newlyRequestingMembers = Set<SignalServiceAddress>()
-            newlyRequestingMembers.formUnion(newGroupModel.groupMembership.requestingMembers)
-            newlyRequestingMembers.subtract(oldGroupModel.groupMembership.requestingMembers)
+            if let singleUpdateMessage = infoMessage.updateMessages?.asSingleMessage {
+                switch singleUpdateMessage {
+                case .sequenceOfInviteLinkRequestAndCancels(_, let isTail):
+                    guard isTail else { return nil }
 
-            guard !newlyRequestingMembers.isEmpty else {
-                return nil
+                    guard
+                        let requesterAddress = infoMessage.groupUpdateSourceAddress,
+                        let requesterUuid = requesterAddress.uuid
+                    else {
+                        owsFailDebug("Missing parameters for join request sequence")
+                        return nil
+                    }
+
+                    guard
+                        let mostRecentGroupModel = TSGroupThread.fetch(
+                            groupId: newGroupModel.groupId,
+                            transaction: transaction
+                        )?.groupModel as? TSGroupModelV2
+                    else {
+                        owsFailDebug("Missing group thread for join request sequence")
+                        return nil
+                    }
+
+                    // Only show the option to ban if we are an admin, and they are
+                    // not already banned. We want to use the most up-to-date group
+                    // model here instead of the one on the info message, since
+                    // group state may have changed since that message.
+                    guard
+                        mostRecentGroupModel.groupMembership.isLocalUserFullMemberAndAdministrator,
+                        !mostRecentGroupModel.groupMembership.isBannedMember(requesterUuid)
+                    else {
+                        return nil
+                    }
+
+                    return Action(
+                        title: OWSLocalizedString(
+                            "GROUPS_BLOCK_REQUEST_BUTTON",
+                            comment: "Label for button that lets the user block a request to join the group."
+                        ),
+                        accessibilityIdentifier: "block_join_request_button",
+                        action: .cvc_didTapBlockRequest(
+                            groupModel: mostRecentGroupModel,
+                            requesterName: contactsManager.shortDisplayName(
+                                for: requesterAddress,
+                                transaction: transaction
+                            ),
+                            requesterUuid: requesterUuid
+                        )
+                    )
+                }
+            } else {
+                let newlyRequestingMembers = newGroupModel.groupMembership.requestingMembers
+                    .subtracting(oldGroupModel.groupMembership.requestingMembers)
+
+                guard !newlyRequestingMembers.isEmpty else {
+                    return nil
+                }
+
+                let title = (newlyRequestingMembers.count > 1
+                             ? NSLocalizedString("GROUPS_VIEW_REQUESTS_BUTTON",
+                                                 comment: "Label for button that lets the user view the requests to join the group.")
+                             : NSLocalizedString("GROUPS_VIEW_REQUEST_BUTTON",
+                                                 comment: "Label for button that lets the user view the request to join the group."))
+                return Action(
+                    title: title,
+                    accessibilityIdentifier: "show_group_requests_button",
+                    action: .cvc_didTapShowConversationSettingsAndShowMemberRequests
+                )
             }
-            let title = (newlyRequestingMembers.count > 1
-                            ? NSLocalizedString("GROUPS_VIEW_REQUESTS_BUTTON",
-                                                comment: "Label for button that lets the user view the requests to join the group.")
-                            : NSLocalizedString("GROUPS_VIEW_REQUEST_BUTTON",
-                                                comment: "Label for button that lets the user view the request to join the group."))
-            return Action(title: title,
-                          accessibilityIdentifier: "show_group_requests_button",
-                          action: .cvc_didTapShowConversationSettingsAndShowMemberRequests)
         case .typeGroupQuit:
             return nil
         case .unknownProtocolVersion:

@@ -408,6 +408,12 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_didTapShowConversationSettingsAndShowMemberRequests() {}
 
+    func cvc_didTapBlockRequest(
+        groupModel: TSGroupModelV2,
+        requesterName: String,
+        requesterUuid: UUID
+    ) {}
+
     func cvc_didTapShowUpgradeAppUI() {}
 
     func cvc_didTapUpdateSystemContact(_ address: SignalServiceAddress,

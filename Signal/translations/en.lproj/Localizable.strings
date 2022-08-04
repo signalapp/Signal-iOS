@@ -2836,6 +2836,18 @@
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Message an Admin";
 
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Block Request";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Block Request";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Block request?";
+
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
 

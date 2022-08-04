@@ -501,6 +501,10 @@ public extension GroupMembership {
     var allMemberUuidsOfAnyKind: Set<UUID> {
         return Set(memberStates.keys.compactMap { $0.uuid })
     }
+
+    var bannedMemberAddresses: Set<SignalServiceAddress> {
+        return Set(bannedMembers.keys.map { SignalServiceAddress(uuid: $0) })
+    }
 }
 
 // MARK: - Swift Accessors

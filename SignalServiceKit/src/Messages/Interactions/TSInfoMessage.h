@@ -32,6 +32,7 @@ typedef NS_CLOSED_ENUM(NSInteger, TSInfoMessageType) {
 
 typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
 
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyUpdateMessages;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldGroupModel;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewGroupModel;
 extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldDisappearingMessageToken;
@@ -46,8 +47,9 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyChangePhoneNumberNew;
 
 @property (nonatomic, readonly) TSInfoMessageType messageType;
 @property (nonatomic, readonly, nullable) NSString *customMessage;
-@property (nonatomic, readonly, nullable) NSDictionary<InfoMessageUserInfoKey, id> *infoMessageUserInfo;
 @property (nonatomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
+
+@property (nonatomic, nullable) NSDictionary<InfoMessageUserInfoKey, id> *infoMessageUserInfo;
 
 - (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder NS_UNAVAILABLE;
 

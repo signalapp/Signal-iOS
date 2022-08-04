@@ -143,6 +143,7 @@ extension TSInfoMessage {
             newDisappearingMessageToken: newDisappearingMessageToken,
             localAddress: localAddress,
             groupUpdateSourceAddress: groupUpdateSourceAddress,
+            updateMessages: updateMessages,
             transaction: transaction
         )
     }
@@ -201,6 +202,10 @@ extension TSInfoMessage {
         return groupModel
     }
 
+    public var updateMessages: UpdateMessages? {
+        return infoMessageValue(forKey: .updateMessages)
+    }
+
     public var oldGroupModel: TSGroupModel? {
         return infoMessageValue(forKey: .oldGroupModel)
     }
@@ -223,5 +228,27 @@ extension TSInfoMessage {
 
     fileprivate var profileChanges: ProfileChanges? {
         return infoMessageValue(forKey: .profileChanges)
+    }
+}
+
+extension TSInfoMessage {
+    private func setInfoMessageValue(_ value: Any, forKey key: InfoMessageUserInfoKey) {
+        if self.infoMessageUserInfo != nil {
+            self.infoMessageUserInfo![key] = value
+        } else {
+            self.infoMessageUserInfo = [key: value]
+        }
+    }
+
+    public func setUpdateMessages(_ messages: UpdateMessages) {
+        setInfoMessageValue(messages, forKey: .updateMessages)
+    }
+
+    public func setNewGroupModel(_ newGroupModel: TSGroupModel) {
+        setInfoMessageValue(newGroupModel, forKey: .newGroupModel)
+    }
+
+    public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
+        setInfoMessageValue(newDisappearingMessageToken, forKey: .newDisappearingMessageToken)
     }
 }

@@ -82,7 +82,7 @@ public enum GroupUpdateType: Int {
 
 struct GroupUpdateCopy: Dependencies {
 
-    struct UpdateItem: Hashable {
+    private struct UpdateItem: Hashable {
         let type: GroupUpdateType
         let address: SignalServiceAddress?
 
@@ -94,13 +94,13 @@ struct GroupUpdateCopy: Dependencies {
 
     // MARK: -
 
-    let newGroupModel: TSGroupModel
-    let newGroupMembership: GroupMembership
-    let localAddress: SignalServiceAddress
-    let groupUpdateSourceAddress: SignalServiceAddress?
-    let updater: Updater
-    let transaction: SDSAnyReadTransaction
-    let isReplacingJoinRequestPlaceholder: Bool
+    private let newGroupModel: TSGroupModel
+    private let newGroupMembership: GroupMembership
+    private let localAddress: SignalServiceAddress
+    private let groupUpdateSourceAddress: SignalServiceAddress?
+    private let updater: Updater
+    private let transaction: SDSAnyReadTransaction
+    private let isReplacingJoinRequestPlaceholder: Bool
 
     // The update items, in order.
     public private(set) var itemList = [GroupUpdateCopyItem]()
@@ -118,6 +118,7 @@ struct GroupUpdateCopy: Dependencies {
          newDisappearingMessageToken: DisappearingMessageToken?,
          localAddress: SignalServiceAddress,
          groupUpdateSourceAddress: SignalServiceAddress?,
+         updateMessages: TSInfoMessage.UpdateMessages?,
          transaction: SDSAnyReadTransaction) {
         self.newGroupModel = newGroupModel
         self.localAddress = localAddress
@@ -132,9 +133,12 @@ struct GroupUpdateCopy: Dependencies {
             self.isReplacingJoinRequestPlaceholder = false
         }
 
-        populate(oldGroupModel: oldGroupModel,
-                 oldDisappearingMessageToken: oldDisappearingMessageToken,
-                 newDisappearingMessageToken: newDisappearingMessageToken)
+        populate(
+            oldGroupModel: oldGroupModel,
+            oldDisappearingMessageToken: oldDisappearingMessageToken,
+            newDisappearingMessageToken: newDisappearingMessageToken,
+            updateMessages: updateMessages
+        )
 
         switch updater {
         case .unknown:
@@ -158,12 +162,20 @@ struct GroupUpdateCopy: Dependencies {
 
     // MARK: -
 
-    mutating func populate(oldGroupModel: TSGroupModel?,
-                           oldDisappearingMessageToken: DisappearingMessageToken?,
-                           newDisappearingMessageToken: DisappearingMessageToken?) {
-
-        if let oldGroupModel = oldGroupModel {
-
+    mutating func populate(
+        oldGroupModel: TSGroupModel?,
+        oldDisappearingMessageToken: DisappearingMessageToken?,
+        newDisappearingMessageToken: DisappearingMessageToken?,
+        updateMessages: TSInfoMessage.UpdateMessages?
+    ) {
+        if
+            let updateMessageParams = updateMessages?.groupUpdateTypeAndCopyForMessages(withUpdater: updater),
+            !updateMessageParams.isEmpty
+        {
+            for (groupUpdateType, copy) in updateMessageParams {
+                addItem(groupUpdateType, copy: copy)
+            }
+        } else if let oldGroupModel = oldGroupModel {
             let oldGroupMembership = oldGroupModel.groupMembership
 
             if isReplacingJoinRequestPlaceholder {
@@ -1962,6 +1974,33 @@ extension GroupUpdateCopy {
         case .unknown:
             return OWSLocalizedString("GROUP_UPDATED",
                                      comment: "Info message indicating that the group was updated by an unknown user.")
+        }
+    }
+}
+
+private extension TSInfoMessage.UpdateMessages {
+    func groupUpdateTypeAndCopyForMessages(withUpdater updater: GroupUpdateCopy.Updater) -> [(GroupUpdateType, String)] {
+        messages.compactMap { message -> (GroupUpdateType, String)? in
+            switch message {
+            case .sequenceOfInviteLinkRequestAndCancels(let count, _):
+                guard
+                    count > 0,
+                    case let .otherUser(updaterName, _) = updater
+                else {
+                    return nil
+                }
+
+                let format = OWSLocalizedString(
+                    "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d",
+                    tableName: "PluralAware",
+                    comment: "Message indicating that a remote user requested to join the group and then canceled, some number of times. Embeds {{ %1$@ the number of times, %2$@ the requesting user's name }}."
+                )
+
+                return (
+                    .userMembershipState,
+                    String.localizedStringWithFormat(format, count, updaterName)
+                )
+            }
         }
     }
 }

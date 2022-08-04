@@ -1888,62 +1888,6 @@ public class GroupManager: NSObject {
         storageServiceManager.recordPendingUpdates(groupModel: groupModel)
     }
 
-    // MARK: - "Group Update" Info Messages
-
-    // NOTE: This should only be called by GroupManager and by DebugUI.
-    @discardableResult
-    public static func insertGroupUpdateInfoMessage(groupThread: TSGroupThread,
-                                                    oldGroupModel: TSGroupModel?,
-                                                    newGroupModel: TSGroupModel,
-                                                    oldDisappearingMessageToken: DisappearingMessageToken?,
-                                                    newDisappearingMessageToken: DisappearingMessageToken,
-                                                    groupUpdateSourceAddress: SignalServiceAddress?,
-                                                    transaction: SDSAnyWriteTransaction) -> TSInfoMessage? {
-
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("missing local address")
-            return nil
-        }
-
-        var userInfo: [InfoMessageUserInfoKey: Any] = [
-            .newGroupModel: newGroupModel,
-            .newDisappearingMessageToken: newDisappearingMessageToken
-        ]
-        if let oldGroupModel = oldGroupModel {
-            userInfo[.oldGroupModel] = oldGroupModel
-        }
-        if let oldDisappearingMessageToken = oldDisappearingMessageToken {
-            userInfo[.oldDisappearingMessageToken] = oldDisappearingMessageToken
-        }
-        if let groupUpdateSourceAddress = groupUpdateSourceAddress {
-            userInfo[.groupUpdateSourceAddress] = groupUpdateSourceAddress
-        }
-        let infoMessage = TSInfoMessage(thread: groupThread,
-                                        messageType: .typeGroupUpdate,
-                                        infoMessageUserInfo: userInfo)
-        infoMessage.anyInsert(transaction: transaction)
-
-        let wasLocalUserInGroup = oldGroupModel?.groupMembership.isMemberOfAnyKind(localAddress) ?? false
-        let isLocalUserInGroup = newGroupModel.groupMembership.isMemberOfAnyKind(localAddress)
-
-        if let groupUpdateSourceAddress = groupUpdateSourceAddress,
-           groupUpdateSourceAddress.isLocalAddress {
-            infoMessage.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(),
-                                   thread: groupThread,
-                                   circumstance: .onThisDevice,
-                                   transaction: transaction)
-        } else if !wasLocalUserInGroup && isLocalUserInGroup {
-            // Notify when the local user is added or invited to a group.
-            self.notificationsManager?.notifyUser(
-                forPreviewableInteraction: infoMessage,
-                thread: groupThread,
-                wantsSound: true,
-                transaction: transaction
-            )
-        }
-        return infoMessage
-    }
-
     // MARK: - Capabilities
 
     private static let groupsV2MigrationCapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2MigrationCapability")

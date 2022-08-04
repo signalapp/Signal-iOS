@@ -53,7 +53,7 @@ protocol InteractionFinderAdapter {
     func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction) throws -> UInt?
     func count(excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction) -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
-    func enumerateRecentInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+    func enumerateRecentInteractions(excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func enumerateInteractions(range: NSRange, excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func interactionIds(inRange range: NSRange, excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction) throws -> [String]
     func existsOutgoingMessage(transaction: ReadTransaction) -> Bool
@@ -388,9 +388,13 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     @objc
     public func enumerateRecentInteractions(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        try enumerateRecentInteractions(excludingPlaceholders: true, storyReplyQueryMode: .excludeGroupReplies, transaction: transaction, block: block)
+    }
+
+    public func enumerateRecentInteractions(excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.enumerateRecentInteractions(transaction: grdbRead, block: block)
+            return try grdbAdapter.enumerateRecentInteractions(excludingPlaceholders: excludePlaceholders, storyReplyQueryMode: storyReplyQueryMode, transaction: grdbRead, block: block)
         }
     }
 
@@ -1289,11 +1293,18 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    func enumerateRecentInteractions(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+    func enumerateRecentInteractions(
+        excludingPlaceholders excludePlaceholders: Bool,
+        storyReplyQueryMode: StoryReplyQueryMode,
+        transaction: GRDBReadTransaction,
+        block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) throws {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
+        \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
+        \(excludePlaceholders ? filterPlaceholdersClause : "")
         ORDER BY \(interactionColumn: .id) DESC
         """
         let arguments: StatementArguments = [threadUniqueId]

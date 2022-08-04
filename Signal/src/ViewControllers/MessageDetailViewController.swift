@@ -1100,6 +1100,13 @@ extension MessageDetailViewController: CVComponentDelegate {
     func cvc_didTapShowConversationSettingsAndShowMemberRequests() {}
 
     // TODO:
+    func cvc_didTapBlockRequest(
+        groupModel: TSGroupModelV2,
+        requesterName: String,
+        requesterUuid: UUID
+    ) {}
+
+    // TODO:
     func cvc_didTapShowUpgradeAppUI() {}
 
     // TODO:
