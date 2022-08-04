@@ -452,7 +452,7 @@ public extension MessageViewModel {
         
         public let rowId: Int64
         public let reaction: Reaction
-        public let profile: Profile
+        public let profile: Profile?
         
         // MARK: - Identifiable
         
