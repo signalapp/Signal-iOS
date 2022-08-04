@@ -96,7 +96,9 @@ public enum OpenGroupAPI {
                                 endpoint: (shouldRetrieveRecentMessages ?
                                     .roomMessagesRecent(openGroup.roomToken) :
                                     .roomMessagesSince(openGroup.roomToken, seqNo: openGroup.sequenceNumber)
-                                )
+                                ),
+                                queryParameters: [.reactions: "r",
+                                                  .reactors: "20"]
                             ),
                             responseType: [Failable<Message>].self
                         )

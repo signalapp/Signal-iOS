@@ -366,7 +366,7 @@ public extension Message {
         reactions: [String:OpenGroupAPI.Message.Reaction]?,
         serverExpirationTimestamp: TimeInterval?,
         serverHash: String?,
-        openGroupId: String? = nil,
+        openGroupId: String,
         openGroupMessageServerId: Int64? = nil,
         openGroupServerPublicKey: String? = nil,
         dependencies: SMKDependencies = SMKDependencies()
@@ -374,6 +374,11 @@ public extension Message {
         var results: [Reaction] = []
         guard let openGroupMessageServerId = openGroupMessageServerId, let reactions = reactions else { return results }
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        let blindedUserPublicKey: String? = SessionThread
+            .getUserHexEncodedBlindedKey(
+                threadId: openGroupId,
+                threadVariant: .openGroup
+            )
         for (encodedEmoji, rawReaction) in reactions {
             if let emoji = encodedEmoji.removingPercentEncoding,
                rawReaction.count > 0,
@@ -381,6 +386,7 @@ public extension Message {
             {
                 var count = rawReaction.count
                 for reactor in reactors {
+                    if reactor == blindedUserPublicKey { continue } // Will add a reaction for this case outside of the loop
                     let reaction = Reaction(
                         interactionId: openGroupMessageServerId,
                         serverHash: nil,

@@ -11,4 +11,5 @@ enum QueryParam: String {
     case platform                   // For file server session version check
     
     case reactions = "t"
+    case reactors = "reactors"
 }
