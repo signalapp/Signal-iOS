@@ -30,6 +30,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private(set) var message: TSMessage
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message as? TSIncomingMessage != nil }
+    private var expires: Bool { message.expiresInSeconds > 0 }
 
     private struct MessageRecipientModel {
         let address: SignalServiceAddress
@@ -61,6 +62,47 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private var databaseUpdateTimer: Timer?
 
+    private var expiryLabelTimer: Timer?
+
+    private var expiryLabelName: String {
+        NSLocalizedString(
+            "MESSAGE_METADATA_VIEW_DISAPPEARS_IN",
+            value: "Disappears",
+            comment: "Label for the 'disappears' field of the 'message metadata' view."
+        )
+    }
+
+    private var expiryLabelValue: String {
+        let expiresAt = message.expiresAt
+        guard expiresAt > 0 else {
+            owsFailDebug("We should never hit this code, because we should never show the label")
+            return NSLocalizedString(
+                "MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS",
+                value: "Never",
+                comment: "On the 'message metadata' view, if a message never disappears, this text is shown as a fallback."
+            )
+        }
+
+        let remainingExpirySeconds: UInt32
+        let now = Date().ows_millisecondsSince1970
+        if expiresAt > now {
+            remainingExpirySeconds = UInt32((expiresAt - now) / 1000)
+        } else {
+            // This is unusual, but could happen if you change your device clock.
+            remainingExpirySeconds = 0
+        }
+
+        return String.formatDurationLossless(durationSeconds: remainingExpirySeconds, unitsStyle: .abbreviated)
+    }
+
+    private var expiryLabelAttributedText: NSAttributedString {
+        Self.valueLabelAttributedText(name: expiryLabelName, value: expiryLabelValue)
+    }
+
+    private lazy var expiryLabel: UILabel = {
+        Self.buildValueLabel(name: expiryLabelName, value: expiryLabelValue)
+    }()
+
     // MARK: Initializers
 
     required init(
@@ -69,6 +111,12 @@ class MessageDetailViewController: OWSTableViewController2 {
     ) {
         self.message = message
         super.init()
+    }
+
+    // MARK: De-initializers
+
+    deinit {
+        expiryLabelTimer?.invalidate()
     }
 
     // MARK: View Lifecycle
@@ -88,6 +136,8 @@ class MessageDetailViewController: OWSTableViewController2 {
         )
 
         databaseStorage.appendDatabaseChangeDelegate(self)
+
+        startExpiryLabelTimerIfNecessary()
 
         // Use our own swipe back animation, since the message
         // details are presented as a "drawer" type view.
@@ -111,6 +161,17 @@ class MessageDetailViewController: OWSTableViewController2 {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate(alongsideTransition: nil) { [weak self] _ in
             self?.refreshContent()
+        }
+    }
+
+    private func startExpiryLabelTimerIfNecessary() {
+        guard message.expiresAt > 0 else { return }
+        guard expiryLabelTimer == nil else { return }
+        expiryLabelTimer = Timer.scheduledTimer(
+            withTimeInterval: 1,
+            repeats: true
+        ) { [weak self] _ in
+            self?.updateExpiryLabel()
         }
     }
 
@@ -193,7 +254,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         // Sent time
 
-        let sentTimeLabel = buildValueLabel(
+        let sentTimeLabel = Self.buildValueLabel(
             name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
                                     comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
             value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp)
@@ -204,16 +265,20 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         if isIncoming {
             // Received time
-            messageStack.addArrangedSubview(buildValueLabel(
+            messageStack.addArrangedSubview(Self.buildValueLabel(
                 name: NSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
                                         comment: "Label for the 'received date & time' field of the 'message metadata' view."),
                 value: DateUtil.formatPastTimestampRelativeToNow(message.receivedAtTimestamp)
             ))
         }
 
+        if expires {
+            messageStack.addArrangedSubview(expiryLabel)
+        }
+
         if hasMediaAttachment, attachments?.count == 1, let attachment = attachments?.first {
             if let sourceFilename = attachment.sourceFilename {
-                messageStack.addArrangedSubview(buildValueLabel(
+                messageStack.addArrangedSubview(Self.buildValueLabel(
                     name: NSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
                                             comment: "Label for the original filename of any attachment in the 'message metadata' view."),
                     value: sourceFilename
@@ -221,7 +286,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             }
 
             if let formattedByteCount = byteCountFormatter.string(for: attachment.byteCount) {
-                messageStack.addArrangedSubview(buildValueLabel(
+                messageStack.addArrangedSubview(Self.buildValueLabel(
                     name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
                                             comment: "Label for file size of attachments in the 'message metadata' view."),
                     value: formattedByteCount
@@ -232,7 +297,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
             if DebugFlags.messageDetailsExtraInfo {
                 let contentType = attachment.contentType
-                messageStack.addArrangedSubview(buildValueLabel(
+                messageStack.addArrangedSubview(Self.buildValueLabel(
                     name: NSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
                                             comment: "Label for the MIME type of attachments in the 'message metadata' view."),
                     value: contentType
@@ -380,6 +445,10 @@ class MessageDetailViewController: OWSTableViewController2 {
         )
     }
 
+    private func updateExpiryLabel() {
+        expiryLabel.attributedText = expiryLabelAttributedText
+    }
+
     private func buildAccessoryView(text: String,
                                     displayUDIndicator: Bool,
                                     transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView {
@@ -416,15 +485,19 @@ class MessageDetailViewController: OWSTableViewController2 {
         return ContactCellAccessoryView(accessoryView: hStack, size: hStackSize)
     }
 
-    private func buildValueLabel(name: String, value: String) -> UILabel {
-        let label = UILabel()
-        label.textColor = Theme.primaryTextColor
-        label.font = .ows_dynamicTypeFootnoteClamped
-        label.attributedText = .composed(of: [
+    private static func valueLabelAttributedText(name: String, value: String) -> NSAttributedString {
+        .composed(of: [
             name.styled(with: .font(UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold)),
             " ",
             value
         ])
+    }
+
+    private static func buildValueLabel(name: String, value: String) -> UILabel {
+        let label = UILabel()
+        label.textColor = Theme.primaryTextColor
+        label.font = .ows_dynamicTypeFootnoteClamped
+        label.attributedText = valueLabelAttributedText(name: name, value: value)
         return label
     }
 
