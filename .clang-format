@@ -13,5 +13,5 @@ PointerBindsToType: false
 SpacesBeforeTrailingComments: 1
 TabWidth: 8
 UseTab: Never
-SortIncludes: false
+SortIncludes: CaseSensitive
 ...
