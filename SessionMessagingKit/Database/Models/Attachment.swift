@@ -717,6 +717,8 @@ extension Attachment {
 // MARK: - Convenience
 
 extension Attachment {
+    public static let nonMediaQuoteFileId: String = "NON_MEDIA_QUOTE_FILE_ID"
+    
     public enum ThumbnailSize {
         case small
         case medium
@@ -869,7 +871,7 @@ extension Attachment {
         return existingImage
     }
     
-    public func cloneAsThumbnail() -> Attachment? {
+    public func cloneAsQuoteThumbnail() -> Attachment? {
         let cloneId: String = UUID().uuidString
         let thumbnailName: String = "quoted-thumbnail-\(sourceFilename ?? "null")"
         
@@ -881,7 +883,22 @@ extension Attachment {
                 mimeType: OWSMimeTypeImageJpeg,
                 sourceFilename: thumbnailName
             )
-        else { return nil }
+        else {
+            // Non-media files cannot have thumbnails but may be sent as quotes, in these cases we want
+            // to create an attachment in an 'uploaded' state with a hard-coded file id so the messageSend
+            // job doesn't try to upload the attachment (we include the original `serverId` as it's
+            // required for generating the protobuf)
+            return Attachment(
+                id: cloneId,
+                serverId: self.serverId,
+                variant: self.variant,
+                state: .uploaded,
+                contentType: self.contentType,
+                byteCount: 0,
+                downloadUrl: Attachment.nonMediaQuoteFileId,
+                isValid: self.isValid
+            )
+        }
         
         // Try generate the thumbnail
         var thumbnailData: Data?
@@ -922,6 +939,7 @@ extension Attachment {
         return Attachment(
             id: cloneId,
             variant: .standard,
+            state: .downloaded,
             contentType: OWSMimeTypeImageJpeg,
             byteCount: UInt(thumbnailData.count),
             sourceFilename: thumbnailName,

@@ -79,8 +79,8 @@ public extension DisappearingMessagesConfiguration {
             
             return String(
                 format: "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
-                NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false),
-                senderName
+                senderName,
+                NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false)
             )
         }
     }
@@ -192,14 +192,14 @@ public class SMKDisappearingMessagesConfiguration: NSObject {
                 return
             }
             
-            let config: DisappearingMessagesConfiguration = (try DisappearingMessagesConfiguration
-                .fetchOne(db, id: threadId)?
+            let config: DisappearingMessagesConfiguration = try DisappearingMessagesConfiguration
+                .fetchOne(db, id: threadId)
+                .defaulting(to: DisappearingMessagesConfiguration.defaultWith(threadId))
                 .with(
                     isEnabled: isEnabled,
                     durationSeconds: durationSeconds
                 )
-                .saved(db))
-                .defaulting(to: DisappearingMessagesConfiguration.defaultWith(threadId))
+                .saved(db)
             
             let interaction: Interaction = try Interaction(
                 threadId: threadId,
@@ -214,7 +214,7 @@ public class SMKDisappearingMessagesConfiguration: NSObject {
                 db,
                 message: ExpirationTimerUpdate(
                     syncTarget: nil,
-                    duration: UInt32(floor(durationSeconds))
+                    duration: UInt32(floor(isEnabled ? durationSeconds : 0))
                 ),
                 interactionId: interaction.id,
                 in: thread
