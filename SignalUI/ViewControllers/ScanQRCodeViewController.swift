@@ -621,11 +621,16 @@ private class QRCodeScanner {
         }
     }
 
+    private var hasRequestedDeviceOrientationNotifications = false
+
     required init(sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate) {
         output = QRCodeScanOutput(sampleBufferDelegate: sampleBufferDelegate)
     }
 
     deinit {
+        if hasRequestedDeviceOrientationNotifications {
+            UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        }
         sessionQueue.async(.promise) { [session] in
             session.stopRunning()
         }.done {
@@ -674,11 +679,14 @@ private class QRCodeScanner {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
 
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(orientationDidChange),
-                                               name: UIDevice.orientationDidChangeNotification,
-                                               object: UIDevice.current)
+        if !hasRequestedDeviceOrientationNotifications {
+            UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(orientationDidChange),
+                                                   name: UIDevice.orientationDidChangeNotification,
+                                                   object: UIDevice.current)
+            hasRequestedDeviceOrientationNotifications = true
+        }
         let initialCaptureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
 
         return sessionQueue.async(.promise) { [weak self] in

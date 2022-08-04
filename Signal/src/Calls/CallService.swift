@@ -452,10 +452,6 @@ public final class CallService: LightweightCallManager {
                 owsFailDebug("Invalid thread type")
             }
         }
-
-        // Apparently WebRTC will sometimes disable device orientation notifications.
-        // After every call ends, we need to ensure they are enabled.
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     }
 
     // MARK: - Video

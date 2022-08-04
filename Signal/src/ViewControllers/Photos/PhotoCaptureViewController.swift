@@ -38,7 +38,6 @@ class PhotoCaptureViewController: OWSViewController {
     private var hasCaptureStarted = false
 
     deinit {
-        UIDevice.current.endGeneratingDeviceOrientationNotifications()
         photoCapture.stopCapture().done {
             Logger.debug("stopCapture completed")
         }

@@ -101,6 +101,7 @@ class PhotoCapture: NSObject {
     deinit {
         if let deviceOrientationObserver = deviceOrientationObserver {
             NotificationCenter.default.removeObserver(deviceOrientationObserver)
+            UIDevice.current.endGeneratingDeviceOrientationNotifications()
         }
     }
 
@@ -180,6 +181,7 @@ class PhotoCapture: NSObject {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
 
+        owsAssertDebug(deviceOrientationObserver == nil)
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
 
         deviceOrientationObserver = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
