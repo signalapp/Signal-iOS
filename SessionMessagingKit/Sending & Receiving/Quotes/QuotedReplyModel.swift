@@ -69,7 +69,7 @@ public extension QuotedReplyModel {
         guard let sourceAttachment: Attachment = self.attachment else { return nil }
         
         return try sourceAttachment
-            .cloneAsThumbnail()?
+            .cloneAsQuoteThumbnail()?
             .inserted(db)
             .id
     }
