@@ -136,49 +136,44 @@ public final class Poller {
                     var messageCount: Int = 0
                     
                     Storage.shared.write { db in
-                        var threadMessages: [String: [MessageReceiveJob.Details.MessageInfo]] = [:]
-                        
-                        messages.forEach { message in
-                            do {
-                                let processedMessage: ProcessedMessage? = try Message.processRawReceivedMessage(db, rawMessage: message)
-                                let key: String = (processedMessage?.threadId ?? Message.nonThreadMessageId)
-                                
-                                threadMessages[key] = (threadMessages[key] ?? [])
-                                    .appending(processedMessage?.messageInfo)
-                            }
-                            catch {
-                                switch error {
-                                    // Ignore duplicate & selfSend message errors (and don't bother logging
-                                    // them as there will be a lot since we each service node duplicates messages)
-                                    case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
-                                        MessageReceiverError.duplicateMessage,
-                                        MessageReceiverError.duplicateControlMessage,
-                                        MessageReceiverError.selfSend:
-                                        break
+                        messages
+                            .compactMap { message -> ProcessedMessage? in
+                                do {
+                                    return try Message.processRawReceivedMessage(db, rawMessage: message)
+                                }
+                                catch {
+                                    switch error {
+                                        // Ignore duplicate & selfSend message errors (and don't bother logging
+                                        // them as there will be a lot since we each service node duplicates messages)
+                                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                                            MessageReceiverError.duplicateMessage,
+                                            MessageReceiverError.duplicateControlMessage,
+                                            MessageReceiverError.selfSend:
+                                            break
+
+                                        default: SNLog("Failed to deserialize envelope due to error: \(error).")
+                                    }
                                     
-                                    default: SNLog("Failed to deserialize envelope due to error: \(error).")
+                                    return nil
                                 }
                             }
-                        }
-                        
-                        messageCount = threadMessages
-                            .values
-                            .reduce(into: 0) { prev, next in prev += next.count }
-                        
-                        threadMessages.forEach { threadId, threadMessages in
-                            JobRunner.add(
-                                db,
-                                job: Job(
-                                    variant: .messageReceive,
-                                    behaviour: .runOnce,
-                                    threadId: threadId,
-                                    details: MessageReceiveJob.Details(
-                                        messages: threadMessages,
-                                        isBackgroundPoll: false
+                            .grouped { threadId, _, _ in (threadId ?? Message.nonThreadMessageId) }
+                            .forEach { threadId, threadMessages in
+                                messageCount += threadMessages.count
+                                
+                                JobRunner.add(
+                                    db,
+                                    job: Job(
+                                        variant: .messageReceive,
+                                        behaviour: .runOnce,
+                                        threadId: threadId,
+                                        details: MessageReceiveJob.Details(
+                                            messages: threadMessages.map { $0.messageInfo },
+                                            isBackgroundPoll: false
+                                        )
                                     )
                                 )
-                            )
-                        }
+                            }
                     }
                     
                     SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") (duplicates:  \(messages.count - messageCount))")
