@@ -688,9 +688,11 @@ private final class JobQueue {
     }
     
     private func scheduleNextSoonestJob() {
+        let jobIdsAlreadyRunning: Set<Int64> = jobsCurrentlyRunning.wrappedValue
         let nextJobTimestamp: TimeInterval? = Storage.shared.read { db in
             try Job.filterPendingJobs(variants: jobVariants, excludeFutureJobs: false)
                 .select(.nextRunTimestamp)
+                .filter(!jobIdsAlreadyRunning.contains(Job.Columns.id)) // Exclude jobs already running
                 .asRequest(of: TimeInterval.self)
                 .fetchOne(db)
         }

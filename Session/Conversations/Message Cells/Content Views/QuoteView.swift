@@ -135,25 +135,8 @@ final class QuoteView: UIView {
             let fallbackImageName: String = (isAudio ? "attachment_audio" : "actionsheet_document_black")
             let imageView: UIImageView = UIImageView(
                 image: UIImage(named: fallbackImageName)?
+                    .resizedImage(to: CGSize(width: iconSize, height: iconSize))?
                     .withRenderingMode(.alwaysTemplate)
-                    .resizedImage(to: CGSize(width: iconSize, height: iconSize))
-            )
-            
-            attachment.thumbnail(
-                size: .small,
-                success: { image, _ in
-                    guard Thread.isMainThread else {
-                        DispatchQueue.main.async {
-                            imageView.image = image
-                            imageView.contentMode = .scaleAspectFill
-                        }
-                        return
-                    }
-                    
-                    imageView.image = image
-                    imageView.contentMode = .scaleAspectFill
-                },
-                failure: {}
             )
             
             imageView.tintColor = .white
@@ -169,6 +152,26 @@ final class QuoteView: UIView {
                 body = (attachment.isImage ?
                     "Image" :
                     (isAudio ? "Audio" : "Document")
+                )
+            }
+            
+            // Generate the thumbnail if needed
+            if attachment.isVisualMedia {
+                attachment.thumbnail(
+                    size: .small,
+                    success: { image, _ in
+                        guard Thread.isMainThread else {
+                            DispatchQueue.main.async {
+                                imageView.image = image
+                                imageView.contentMode = .scaleAspectFill
+                            }
+                            return
+                        }
+                        
+                        imageView.image = image
+                        imageView.contentMode = .scaleAspectFill
+                    },
+                    failure: {}
                 )
             }
         }

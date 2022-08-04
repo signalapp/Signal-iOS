@@ -43,9 +43,15 @@ public enum AttachmentUploadJob: JobExecutor {
             }
         }
         
-        // Note: In the AttachmentUploadJob we intentionally don't provide our own db instance to prevent reentrancy
-        // issues when the success/failure closures get called before the upload as the JobRunner will attempt to
-        // update the state of the job immediately
+        // If the attachment is still pending download the hold off on running this job
+        guard attachment.state != .pendingDownload && attachment.state != .downloading else {
+            deferred(job)
+            return
+        }
+        
+        // Note: In the AttachmentUploadJob we intentionally don't provide our own db instance to prevent
+        // reentrancy issues when the success/failure closures get called before the upload as the JobRunner
+        // will attempt to update the state of the job immediately
         attachment.upload(
             queue: queue,
             using: { db, data in

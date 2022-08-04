@@ -113,7 +113,7 @@ public extension Quote {
                 .map { quotedInteraction -> Attachment? in
                     // If the quotedInteraction has an attachment then try clone it
                     if let attachment: Attachment = try? quotedInteraction.attachments.fetchOne(db) {
-                        return attachment.cloneAsThumbnail()
+                        return attachment.cloneAsQuoteThumbnail()
                     }
                     
                     // Otherwise if the quotedInteraction has a link preview, try clone that
@@ -121,7 +121,7 @@ public extension Quote {
                         .fetchOne(db)?
                         .attachment
                         .fetchOne(db)?
-                        .cloneAsThumbnail()
+                        .cloneAsQuoteThumbnail()
                 }
                 .defaulting(to: Attachment(proto: attachment))
                 .inserted(db)
