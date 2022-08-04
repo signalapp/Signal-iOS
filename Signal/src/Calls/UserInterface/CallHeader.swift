@@ -53,16 +53,6 @@ class CallHeader: UIView {
         addSubview(gradientView)
         gradientView.autoPinEdgesToSuperviewEdges()
 
-        let hStack = UIStackView()
-        hStack.axis = .horizontal
-        hStack.spacing = 13
-        hStack.layoutMargins = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
-        hStack.isLayoutMarginsRelativeArrangement = true
-        addSubview(hStack)
-        hStack.autoPinWidthToSuperview()
-        hStack.autoPinEdge(toSuperviewMargin: .top)
-        hStack.autoPinEdge(toSuperviewEdge: .bottom, withInset: 46)
-
         // Back button
 
         let backButton = UIButton()
@@ -73,7 +63,22 @@ class CallHeader: UIView {
         backButton.addTarget(delegate, action: #selector(CallHeaderDelegate.didTapBackButton), for: .touchUpInside)
         addShadow(to: backButton)
 
-        hStack.addArrangedSubview(backButton)
+        addSubview(backButton)
+        backButton.autoPinLeadingToSuperviewMargin(withInset: 8)
+        backButton.autoPinTopToSuperviewMargin()
+
+        // Group members button
+
+        groupMembersButton.addTarget(
+            delegate,
+            action: #selector(CallHeaderDelegate.didTapMembersButton),
+            for: .touchUpInside
+        )
+        addShadow(to: groupMembersButton)
+
+        addSubview(groupMembersButton)
+        groupMembersButton.autoPinTrailingToSuperviewMargin(withInset: 8)
+        groupMembersButton.autoPinTopToSuperviewMargin()
 
         // vStack
 
@@ -81,7 +86,11 @@ class CallHeader: UIView {
         vStack.axis = .vertical
         vStack.spacing = 4
 
-        hStack.addArrangedSubview(vStack)
+        addSubview(vStack)
+        vStack.autoPinLeading(toTrailingEdgeOf: backButton, offset: 13)
+        vStack.autoPinTrailing(toLeadingEdgeOf: groupMembersButton, offset: 13)
+        vStack.autoPinTopToSuperviewMargin()
+        vStack.autoPinBottomToSuperviewMargin(withInset: 46)
 
         // Name Label
 
@@ -109,17 +118,6 @@ class CallHeader: UIView {
         addShadow(to: callStatusLabel)
 
         vStack.addArrangedSubview(callStatusLabel)
-
-        // Group members button
-
-        groupMembersButton.addTarget(
-            delegate,
-            action: #selector(CallHeaderDelegate.didTapMembersButton),
-            for: .touchUpInside
-        )
-        addShadow(to: groupMembersButton)
-
-        hStack.addArrangedSubview(groupMembersButton)
 
         updateCallTitleLabel()
         updateCallStatusLabel()
@@ -328,6 +326,7 @@ private class GroupMembersButton: UIButton {
 
     func updateMemberCount(_ count: Int) {
         countLabel.text = String(OWSFormat.formatInt(count))
+        self.isHidden = count == 0
     }
 
     required init?(coder: NSCoder) {
