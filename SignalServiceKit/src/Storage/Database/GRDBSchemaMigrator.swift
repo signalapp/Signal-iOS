@@ -167,6 +167,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addColumnsForSendGiftBadgeDurableJob
         case addDonationReceiptTypeColumn
         case addAudioPlaybackRateColumn
+        case addSchemaVersionToAttachments
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -216,7 +217,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 39
+    public static let grdbSchemaVersionLatest: UInt = 40
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1841,6 +1842,16 @@ public class GRDBSchemaMigrator: NSObject {
             do {
                 try db.alter(table: "thread_associated_data") { table in
                     table.add(column: "audioPlaybackRate", .double)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addSchemaVersionToAttachments) { db in
+            do {
+                try db.alter(table: "model_TSAttachment") { table in
+                    table.add(column: "attachmentSchemaVersion", .integer).defaults(to: 0)
                 }
             } catch {
                 owsFail("Error: \(error)")
