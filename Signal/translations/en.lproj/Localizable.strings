@@ -1163,6 +1163,12 @@
 "CONTEXT_MENU_SELECT_MESSAGE" = "Select";
 
 /* Context menu button title */
+"CONTEXT_MENU_SPEAK_MESSAGE" = "Speak";
+
+/* Context menu button title */
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
+
+/* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "Share";
 
 /* Message for the 'conversation delete confirmation' alert. */
@@ -3390,6 +3396,12 @@
 
 /* Action sheet accessibility label */
 "MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "Speak Message";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Stop Speaking Message";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";

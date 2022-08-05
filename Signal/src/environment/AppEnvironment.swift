@@ -57,6 +57,9 @@ public class AppEnvironment: NSObject {
     let cvAudioPlayerRef = CVAudioPlayer()
 
     @objc
+    let speechManagerRef = SpeechManager()
+
+    @objc
     public var windowManagerRef: OWSWindowManager = OWSWindowManager()
 
     private override init() {

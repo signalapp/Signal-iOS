@@ -55,6 +55,8 @@ public enum ThemeIcon: UInt {
     case stickerButton
     case cameraButton
     case micButton
+    case speakerButton
+    case stopButton
 
     case attachmentCamera
     case attachmentContact
@@ -293,6 +295,11 @@ public extension Theme {
             return isDarkThemeEnabled ? "camera-solid-24" : "camera-outline-24"
         case .micButton:
             return isDarkThemeEnabled ? "mic-solid-24" : "mic-outline-24"
+        case .speakerButton:
+            return "speaker-solid-28" // TODO: Add outline for dark theme or select another asset.
+        case .stopButton:
+            return "pause-filled-24" // TODO: Use correct asset
+
         case .attachmentCamera:
             return "camera-outline-32"
         case .attachmentContact:

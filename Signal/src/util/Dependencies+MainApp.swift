@@ -74,6 +74,14 @@ public extension NSObject {
         AppEnvironment.shared.cvAudioPlayerRef
     }
 
+    final var speechManager: SpeechManager {
+        AppEnvironment.shared.speechManagerRef
+    }
+
+    static var speechManager: SpeechManager {
+        AppEnvironment.shared.speechManagerRef
+    }
+
     final var deviceSleepManager: DeviceSleepManager {
         .shared
     }

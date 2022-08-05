@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,8 @@ protocol MessageActionsDelegate: AnyObject {
     func messageActionsForwardItem(_ itemViewModel: CVItemViewModelImpl)
     func messageActionsStartedSelect(initialItem itemViewModel: CVItemViewModelImpl)
     func messageActionsDeleteItem(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsSpeakItem(_ itemViewModel: CVItemViewModelImpl)
+    func messageActionsStopSpeakingItem(_ itemViewModel: CVItemViewModelImpl)
 }
 
 // MARK: -
@@ -93,6 +95,28 @@ struct MessageActionBuilder {
                                 delegate?.messageActionsStartedSelect(initialItem: itemViewModel)
         })
     }
+
+    static func speakMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(.speak,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_SPEAK_MESSAGE", comment: "Action sheet accessibility label"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "speak_message"),
+                             contextMenuTitle: NSLocalizedString("CONTEXT_MENU_SPEAK_MESSAGE", comment: "Context menu button title"),
+                             contextMenuAttributes: [],
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsSpeakItem(itemViewModel)
+        })
+    }
+
+    static func stopSpeakingMessage(itemViewModel: CVItemViewModelImpl, delegate: MessageActionsDelegate) -> MessageAction {
+        return MessageAction(.stopSpeaking,
+                             accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_STOP_SPEAKING_MESSAGE", comment: "Action sheet accessibility label"),
+                             accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "stop_speaking_message"),
+                             contextMenuTitle: NSLocalizedString("CONTEXT_MENU_STOP_SPEAKING_MESSAGE", comment: "Context menu button title"),
+                             contextMenuAttributes: [],
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsStopSpeakingItem(itemViewModel)
+        })
+    }
 }
 
 @objc
@@ -124,6 +148,18 @@ class MessageActions: NSObject {
 
         let selectAction = MessageActionBuilder.selectMessage(itemViewModel: itemViewModel, delegate: delegate)
         actions.append(selectAction)
+
+        if UIAccessibility.isSpeakSelectionEnabled {
+            let action: MessageAction = {
+                if self.speechManager.isSpeaking {
+                    return MessageActionBuilder.stopSpeakingMessage(itemViewModel: itemViewModel, delegate: delegate)
+                }
+
+                return MessageActionBuilder.speakMessage(itemViewModel: itemViewModel, delegate: delegate)
+            }()
+
+            actions.append(action)
+        }
 
         return actions
     }
