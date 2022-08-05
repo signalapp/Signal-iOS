@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentPointer.h"
@@ -140,6 +140,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
@@ -160,6 +161,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
                     albumMessageId:albumMessageId
+           attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType
                           blurHash:blurHash
                          byteCount:byteCount
@@ -182,12 +184,19 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
     _pointerType = pointerType;
     _state = state;
 
+    [self sdsFinalizeAttachmentPointer];
+
     return self;
 }
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)sdsFinalizeAttachmentPointer
+{
+    [self upgradeAttachmentSchemaVersionIfNecessary];
+}
 
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
                                                 albumMessage:(nullable TSMessage *)albumMessage
@@ -298,26 +307,6 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value)
         }
     }
     return [attachmentPointers copy];
-}
-
-- (BOOL)isDecimalNumberText:(NSString *)text
-{
-    return [text componentsSeparatedByCharactersInSet:[NSCharacterSet decimalDigitCharacterSet]].count == 1;
-}
-
-- (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
-{
-    // Legacy instances of TSAttachmentPointer apparently used the serverId as their
-    // uniqueId.
-    if (attachmentSchemaVersion < 2 && self.serverId == 0) {
-        OWSAssertDebug([self isDecimalNumberText:self.uniqueId]);
-        if ([self isDecimalNumberText:self.uniqueId]) {
-            // For legacy instances, try to parse the serverId from the uniqueId.
-            self.serverId = [self.uniqueId integerValue];
-        } else {
-            OWSLogError(@"invalid legacy attachment uniqueId: %@.", self.uniqueId);
-        }
-    }
 }
 
 - (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction

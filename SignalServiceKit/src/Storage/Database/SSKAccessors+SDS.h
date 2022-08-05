@@ -92,6 +92,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface TSAttachment (SDS)
+
+@property (nonatomic, readonly) NSUInteger attachmentSchemaVersion;
+
+@end
+
+#pragma mark -
+
 @interface TSAttachmentPointer (SDS)
 
 @property (nonatomic, nullable, readonly) NSString *lazyRestoreFragmentId;
