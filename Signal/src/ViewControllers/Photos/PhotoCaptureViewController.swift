@@ -20,6 +20,7 @@ protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
                                     didRequestSwitchCaptureModeTo captureMode: PhotoCaptureViewController.CaptureMode,
                                     completion: @escaping (Bool) -> Void)
+    func photoCaptureViewControllerCanShowTextEditor(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
 }
 
 protocol PhotoCaptureViewControllerDataSource: AnyObject {
@@ -207,7 +208,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     private let topBar = CameraTopBar(frame: .zero)
 
-    private let bottomBar = CameraBottomBar(frame: .zero)
+    private lazy var bottomBar = CameraBottomBar(isContentTypeSelectionControlAvailable: delegate?.photoCaptureViewControllerCanShowTextEditor(self) ?? false)
     private var bottomBarControlsLayoutGuideBottom: NSLayoutConstraint?
 
     private var sideBar: CameraSideBar? // Optional because most devices are iPhones and will never need this.
@@ -296,6 +297,10 @@ class PhotoCaptureViewController: OWSViewController {
         bottomBar.isCompactHeightLayout = !UIDevice.current.hasIPhoneXNotch
         bottomBar.switchCameraButton.addTarget(self, action: #selector(didTapSwitchCamera), for: .touchUpInside)
         bottomBar.photoLibraryButton.addTarget(self, action: #selector(didTapPhotoLibrary), for: .touchUpInside)
+        if bottomBar.isContentTypeSelectionControlAvailable {
+            bottomBar.contentTypeSelectionControl.selectedSegmentIndex = 0
+            bottomBar.contentTypeSelectionControl.addTarget(self, action: #selector(contentTypeChanged), for: .valueChanged)
+        }
         bottomBar.autoPinWidthToSuperview()
         if bottomBar.isCompactHeightLayout {
             // On devices with home button bar is simply pinned to the bottom of the screen
@@ -550,12 +555,12 @@ class PhotoCaptureViewController: OWSViewController {
 extension PhotoCaptureViewController {
 
     @objc
-    func didTapClose() {
+    private func didTapClose() {
         delegate?.photoCaptureViewControllerDidCancel(self)
     }
 
     @objc
-    func didTapSwitchCamera() {
+    private func didTapSwitchCamera() {
         switchCameraPosition()
     }
 
@@ -571,7 +576,7 @@ extension PhotoCaptureViewController {
     }
 
     @objc
-    func didTapFlashMode() {
+    private func didTapFlashMode() {
         firstly {
             photoCapture.switchFlashMode()
         }.done {
@@ -582,7 +587,7 @@ extension PhotoCaptureViewController {
     }
 
     @objc
-    func didTapBatchMode() {
+    private func didTapBatchMode() {
         guard let delegate = delegate else {
             return
         }
@@ -601,13 +606,18 @@ extension PhotoCaptureViewController {
     }
 
     @objc
-    func didTapPhotoLibrary() {
+    private func didTapPhotoLibrary() {
         delegate?.photoCaptureViewControllerDidRequestPresentPhotoLibrary(self)
     }
 
     @objc
-    func didTapDoneButton() {
+    private func didTapDoneButton() {
         delegate?.photoCaptureViewControllerDidFinish(self)
+    }
+
+    @objc
+    private func contentTypeChanged() {
+        Logger.verbose("")
     }
 }
 

@@ -811,6 +811,9 @@
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "Close";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "Automatic";
 
@@ -6171,6 +6174,12 @@
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Stories";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "Camera";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "Text";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";

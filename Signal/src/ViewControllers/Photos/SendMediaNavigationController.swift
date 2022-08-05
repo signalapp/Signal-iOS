@@ -35,6 +35,8 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
         true
     }
 
+    override var canSendToStories: Bool { FeatureFlags.stories }
+
     @objc
     private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
 
@@ -58,6 +60,8 @@ class SendMediaNavigationController: OWSNavigationController {
     fileprivate var requiresContactPickerToProceed: Bool {
         false
     }
+
+    fileprivate var canSendToStories: Bool { false }
 
     // MARK: - Overrides
 
@@ -357,6 +361,10 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             completion(false)
         })
         presentActionSheet(actionSheet)
+    }
+
+    func photoCaptureViewControllerCanShowTextEditor(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool {
+        return canSendToStories
     }
 }
 
