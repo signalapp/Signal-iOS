@@ -46,7 +46,7 @@ public struct Reaction: Codable, Equatable, Hashable, FetchableRecord, Persistab
     /// regardless of the type of conversation)
     public let count: Int64
     
-    /// The id for sorting
+    /// The first timestamp that an emoji is added
     public let sortId: Int64
     
     // MARK: - Relationships
@@ -108,29 +108,19 @@ public extension Reaction {
     static func getSortId(
         _ db: Database,
         interactionId: Int64,
-        emoji: String
+        emoji: String,
+        timestamp: Int64
     ) -> Int64 {
-        let existingSortId: Int64? = try? Reaction
+        if let existingSortId: Int64 = try? Reaction
             .select(Columns.sortId)
             .filter(Columns.interactionId == interactionId)
             .filter(Columns.emoji == emoji)
             .asRequest(of: Int64.self)
             .fetchOne(db)
-        
-        if let sortId = existingSortId {
-            return sortId
+        {
+            return existingSortId
         }
         
-        let existingLargestSortId: Int64? = try? Reaction
-            .select(max(Columns.sortId))
-            .filter(Columns.interactionId == interactionId)
-            .asRequest(of: Int64.self)
-            .fetchOne(db)
-        
-        if let sortId = existingLargestSortId {
-            return sortId + 1
-        }
-        
-        return 0
+        return timestamp
     }
 }

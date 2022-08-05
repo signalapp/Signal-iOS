@@ -369,7 +369,7 @@ public extension Message {
                let reactors = rawReaction.reactors
             {
                 var count = rawReaction.count
-                let sortId: Int64 = 0 // TODO: Need to be modified to the server returned value
+                let sortId: Int64 = Int64(floor((rawReaction.first * 1000)))
                 for reactor in reactors {
                     if reactor == blindedUserPublicKey { continue } // Will add a reaction for this case outside of the loop
                     let reaction = Reaction(

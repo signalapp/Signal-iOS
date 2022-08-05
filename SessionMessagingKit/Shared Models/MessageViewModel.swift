@@ -465,7 +465,7 @@ public extension MessageViewModel {
         // MARK: - Comparable
         
         public static func < (lhs: ReactionInfo, rhs: ReactionInfo) -> Bool {
-            return (lhs.reaction.timestampMs < rhs.reaction.timestampMs)
+            return (lhs.reaction.sortId < rhs.reaction.sortId)
         }
     }
 }

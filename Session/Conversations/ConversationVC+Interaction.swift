@@ -1089,7 +1089,8 @@ extension ConversationVC:
                     let sortId = Reaction.getSortId(
                         db,
                         interactionId: cellViewModel.id,
-                        emoji: emoji
+                        emoji: emoji,
+                        timestamp: sentTimestamp
                     )
                     try Reaction(
                         interactionId: cellViewModel.id,

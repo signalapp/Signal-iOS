@@ -38,11 +38,13 @@ extension OpenGroupAPI {
                 case count
                 case reactors
                 case you
+                case first
             }
             
             public let count: Int64
             public let reactors: [String]?
             public let you: Bool
+            public let first: TimeInterval
         }
         
         public let reactions: [String:Reaction]?
@@ -114,7 +116,8 @@ extension OpenGroupAPI.Message.Reaction {
         self = OpenGroupAPI.Message.Reaction(
             count: try container.decode(Int64.self, forKey: .count),
             reactors: try? container.decode([String].self, forKey: .reactors),
-            you: (try? container.decode(Bool.self, forKey: .you)) ?? false
+            you: (try? container.decode(Bool.self, forKey: .you)) ?? false,
+            first: ((try? container.decode(TimeInterval.self, forKey: .first)) ?? Date().timeIntervalSince1970)
         )
     }
 }
