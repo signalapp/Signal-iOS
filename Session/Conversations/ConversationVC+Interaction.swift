@@ -1069,9 +1069,6 @@ extension ConversationVC:
                     return
                 }
                 
-                // Let the viewModel know we are about to send a message
-                self?.viewModel.sentMessageBeforeUpdate = true
-                
                 // Update the thread to be visible
                 _ = try SessionThread
                     .filter(id: thread.id)
