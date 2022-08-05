@@ -939,7 +939,14 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     }
 }
 
+// MARK: - Media Quality Selection Sheet
+
 extension AttachmentApprovalViewController {
+
+    private static let mediaQualityLocalizedString = OWSLocalizedString(
+        "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE",
+        comment: "Title for the attachment approval media quality sheet"
+    )
 
     @objc
     private func didTapMediaQuality() {
@@ -948,51 +955,38 @@ extension AttachmentApprovalViewController {
         let actionSheet = ActionSheetController(theme: .translucentDark)
         actionSheet.isCancelable = true
 
-        let buttonStack = UIStackView(arrangedSubviews: [
-            buildOutputQualityButton(
-                title: ImageQualityLevel.standard.localizedString,
-                subtitle: OWSLocalizedString(
-                    "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE",
-                    comment: "Subtitle for the 'standard' option for media quality."
-                ),
-                isSelected: outputQualityLevel == .standard,
-                action: { [weak self] in
-                    self?.outputQualityLevel = .standard
-                    self?.updateBottomToolView(animated: false)
-                    actionSheet.dismiss(animated: true)
+        let selectionControl = MediaQualitySelectionControl(currentQualityLevel: outputQualityLevel)
+        selectionControl.callback = { [weak self, weak actionSheet] qualityLevel in
+            self?.outputQualityLevel = qualityLevel
+            self?.updateBottomToolView(animated: false)
+
+            if UIAccessibility.isVoiceOverRunning {
+                // Dismissing immediately and without animation prevents VoiceOver engine from reading accessibilityLabel again.
+                actionSheet?.dismiss(animated: false)
+            } else {
+                // Dismiss the action sheet with a slight delay so that user has a chance to see the change they made.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    actionSheet?.dismiss(animated: true)
                 }
-            ),
-            buildOutputQualityButton(
-                title: ImageQualityLevel.high.localizedString,
-                subtitle: OWSLocalizedString(
-                    "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE",
-                    comment: "Subtitle for the 'high' option for media quality."
-                ),
-                isSelected: outputQualityLevel == .high,
-                action: { [weak self] in
-                    self?.outputQualityLevel = .high
-                    self?.updateBottomToolView(animated: false)
-                    actionSheet.dismiss(animated: true)
-                }
-            )
-        ])
-        buttonStack.isLayoutMarginsRelativeArrangement = true
-        buttonStack.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 24)
-        buttonStack.axis = .horizontal
-        buttonStack.spacing = 20
-        buttonStack.distribution = .fillEqually
+            }
+        }
 
         let titleLabel = UILabel()
         titleLabel.font = .ows_dynamicTypeSubheadlineClamped
         titleLabel.textColor = Theme.darkThemePrimaryColor
         titleLabel.textAlignment = .center
-        titleLabel.text = OWSLocalizedString(
-            "ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE",
-            comment: "Title for the attachment approval media quality sheet"
-        )
+        titleLabel.text = AttachmentApprovalViewController.mediaQualityLocalizedString
+        titleLabel.isAccessibilityElement = false
+        let titleLabelContainer = UIView()
+        titleLabelContainer.addSubview(titleLabel)
+        titleLabel.autoPinEdgesToSuperviewMargins()
 
-        let headerStack = UIStackView(arrangedSubviews: [buttonStack, titleLabel])
-        headerStack.spacing = 4
+        let margin = OWSTableViewController2.defaultHOuterMargin
+        let bottomMargin = view.safeAreaInsets.bottom > 0 ? 0 : margin
+        let headerStack = UIStackView(arrangedSubviews: [ selectionControl, titleLabelContainer ])
+        headerStack.layoutMargins = UIEdgeInsets(top: margin, leading: margin, bottom: bottomMargin, trailing: margin)
+        headerStack.isLayoutMarginsRelativeArrangement = true
+        headerStack.spacing = 16
         headerStack.axis = .vertical
 
         actionSheet.customHeader = headerStack
@@ -1000,41 +994,172 @@ extension AttachmentApprovalViewController {
         presentActionSheet(actionSheet)
     }
 
-    private func buildOutputQualityButton(title: String, subtitle: String, isSelected: Bool, action: @escaping () -> Void) -> UIView {
-        let button = OWSButton(block: action)
+    private class MediaQualitySelectionControl: UIView {
 
-        let titleLabel = UILabel()
-        titleLabel.font = .ows_dynamicTypeFootnoteClamped.ows_medium
-        titleLabel.textColor = Theme.darkThemePrimaryColor
-        titleLabel.text = title
+        private let buttonQualityStandard = MediaQualityButton(
+            title: ImageQualityLevel.standard.localizedString,
+            subtitle: OWSLocalizedString(
+                "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE",
+                comment: "Subtitle for the 'standard' option for media quality."
+            )
+        )
 
-        let subtitleLabel = UILabel()
-        subtitleLabel.font = .ows_dynamicTypeCaption1Clamped
-        subtitleLabel.textColor = Theme.darkThemePrimaryColor
-        subtitleLabel.text = subtitle
-        subtitleLabel.lineBreakMode = .byWordWrapping
-        subtitleLabel.numberOfLines = 0
+        private let buttonQualityHigh = MediaQualityButton(
+            title: ImageQualityLevel.high.localizedString,
+            subtitle: OWSLocalizedString(
+                "ATTACHMENT_APPROVAL_MEDIA_QUALITY_HIGH_OPTION_SUBTITLE",
+                comment: "Subtitle for the 'high' option for media quality."
+            )
+        )
 
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
-        stackView.alignment = .center
-        stackView.axis = .vertical
-        stackView.spacing = 2
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(hMargin: 24, vMargin: 8)
+        private(set) var qualityLevel: ImageQualityLevel
 
-        button.addSubview(stackView)
-        stackView.isUserInteractionEnabled = false
-        stackView.autoPinEdgesToSuperviewEdges()
+        var callback: ((ImageQualityLevel) -> Void)?
 
-        if isSelected {
-            button.layer.cornerRadius = 18
-            button.layer.borderWidth = 1
-            button.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
-        } else {
-            button.alpha = 0.7
+        init(currentQualityLevel: ImageQualityLevel) {
+            qualityLevel = currentQualityLevel
+            super.init(frame: .zero)
+
+            buttonQualityStandard.block = { [weak self] in
+                self?.didSelectQualityLevel(.standard)
+            }
+            addSubview(buttonQualityStandard)
+            buttonQualityStandard.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .trailing)
+
+            buttonQualityHigh.block = { [weak self] in
+                self?.didSelectQualityLevel(.high)
+            }
+            addSubview(buttonQualityHigh)
+            buttonQualityHigh.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .leading)
+
+            buttonQualityHigh.autoPinWidth(toWidthOf: buttonQualityStandard)
+            buttonQualityHigh.autoPinEdge(.leading, to: .trailing, of: buttonQualityStandard, withOffset: 20)
+
+            updateButtonAppearance()
         }
 
-        return button
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        private func didSelectQualityLevel(_ qualityLevel: ImageQualityLevel) {
+            self.qualityLevel = qualityLevel
+            updateButtonAppearance()
+            callback?(qualityLevel)
+        }
+
+        private func updateButtonAppearance() {
+            buttonQualityStandard.isSelected = qualityLevel == .standard
+            buttonQualityHigh.isSelected = qualityLevel == .high
+        }
+
+        private class MediaQualityButton: OWSButton {
+
+            let topLabel: UILabel = {
+                let label = UILabel()
+                label.textColor = Theme.darkThemePrimaryColor
+                label.font = .ows_dynamicTypeFootnoteClamped.ows_medium
+                return label
+            }()
+
+            let bottomLabel: UILabel = {
+                let label = UILabel()
+                label.textColor = Theme.darkThemePrimaryColor
+                label.font = .ows_dynamicTypeCaption1Clamped
+                label.lineBreakMode = .byWordWrapping
+                label.numberOfLines = 0
+                return label
+            }()
+
+            init(title: String, subtitle: String) {
+                super.init(block: { })
+
+                layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 8)
+
+                layer.cornerRadius = 18
+                layer.borderWidth = 1
+                layer.borderColor = UIColor.clear.cgColor
+
+                topLabel.text = title
+                bottomLabel.text = subtitle
+
+                let stackView = UIStackView(arrangedSubviews: [ topLabel, bottomLabel ])
+                stackView.alignment = .center
+                stackView.axis = .vertical
+                stackView.spacing = 2
+                stackView.isUserInteractionEnabled = false
+                addSubview(stackView)
+                stackView.autoPinEdgesToSuperviewMargins()
+            }
+
+            required init?(coder aDecoder: NSCoder) {
+                fatalError("init(coder:) has not been implemented")
+            }
+
+            override var isSelected: Bool {
+                didSet { updateAppearance() }
+            }
+
+            override var isHighlighted: Bool {
+                didSet { updateAppearance() }
+            }
+
+            private func updateAppearance() {
+                let textColor = isSelected ? UIColor.white : (isHighlighted ? UIColor.ows_whiteAlpha40 : UIColor.ows_whiteAlpha70)
+                topLabel.textColor = textColor
+                bottomLabel.textColor = textColor
+                layer.borderColor = isSelected ? UIColor.white.cgColor : UIColor.clear.cgColor
+            }
+        }
+
+        // MARK: - VoiceOver
+
+        override var isAccessibilityElement: Bool {
+            get { true }
+            set { super.isAccessibilityElement = newValue }
+        }
+
+        override var accessibilityTraits: UIAccessibilityTraits {
+            get { .adjustable }
+            set { super.accessibilityTraits = newValue }
+        }
+
+        override var accessibilityLabel: String? {
+            get { AttachmentApprovalViewController.mediaQualityLocalizedString }
+            set { super.accessibilityLabel = newValue }
+        }
+
+        override var accessibilityValue: String? {
+            get {
+                let selectedButton = qualityLevel == .standard ? buttonQualityStandard : buttonQualityHigh
+                return [ selectedButton.topLabel, selectedButton.bottomLabel ].compactMap { $0.text }.joined(separator: ",")
+            }
+            set { super.accessibilityValue = newValue }
+        }
+
+        override var accessibilityFrame: CGRect {
+            get { UIAccessibility.convertToScreenCoordinates(bounds.inset(by: UIEdgeInsets(margin: -4)), in: self) }
+            set { super.accessibilityFrame = newValue }
+        }
+
+        override func accessibilityActivate() -> Bool {
+            callback?(qualityLevel)
+            return true
+        }
+
+        override func accessibilityIncrement() {
+            if qualityLevel == .standard {
+                qualityLevel = .high
+                updateButtonAppearance()
+            }
+        }
+
+        override func accessibilityDecrement() {
+            if qualityLevel == .high {
+                qualityLevel = .standard
+                updateButtonAppearance()
+            }
+        }
     }
 }
 
