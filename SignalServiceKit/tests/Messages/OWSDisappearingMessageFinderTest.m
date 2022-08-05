@@ -12,6 +12,8 @@
 #import "TSOutgoingMessage.h"
 #import "TestAppContext.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSLogs.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

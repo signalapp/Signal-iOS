@@ -63,38 +63,6 @@ PODS:
     - SignalRingRTC/WebRTC (= 2.20.13)
   - SignalRingRTC/WebRTC (2.20.13):
     - SignalCoreKit
-  - SignalServiceKit (0.9.0):
-    - blurhash
-    - CocoaLumberjack
-    - Curve25519Kit
-    - GRDB.swift/SQLCipher
-    - libPhoneNumber-iOS
-    - LibSignalClient
-    - libwebp
-    - Mantle
-    - OpenSSL-Universal
-    - Reachability
-    - SAMKeychain
-    - SignalArgon2
-    - SignalCoreKit
-    - SwiftProtobuf
-    - YYImage/WebP
-  - SignalServiceKit/Tests (0.9.0):
-    - blurhash
-    - CocoaLumberjack
-    - Curve25519Kit
-    - GRDB.swift/SQLCipher
-    - libPhoneNumber-iOS
-    - LibSignalClient
-    - libwebp
-    - Mantle
-    - OpenSSL-Universal
-    - Reachability
-    - SAMKeychain
-    - SignalArgon2
-    - SignalCoreKit
-    - SwiftProtobuf
-    - YYImage/WebP
   - SQLCipher (4.5.1):
     - SQLCipher/standard (= 4.5.1)
   - SQLCipher/common (4.5.1)
@@ -109,12 +77,11 @@ PODS:
   - YYImage/libwebp (1.0.4):
     - libwebp
     - YYImage/Core
-  - YYImage/WebP (1.0.4):
-    - YYImage/Core
 
 DEPENDENCIES:
   - blurhash (from `https://github.com/signalapp/blurhash`, branch `signal-master`)
   - BonMot
+  - CocoaLumberjack
   - "Curve25519Kit (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - "Curve25519Kit/Tests (from `ssh://git@github.com/signalapp/Curve25519Kit`, branch `feature/SignalClient-adoption`)"
   - GRDB.swift/SQLCipher
@@ -131,13 +98,12 @@ DEPENDENCIES:
   - OpenSSL-Universal (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - PureLayout
   - Reachability
+  - SAMKeychain
   - SignalArgon2 (from `https://github.com/signalapp/Argon2.git`)
   - SignalArgon2/Tests (from `https://github.com/signalapp/Argon2.git`)
   - "SignalCoreKit (from `git@github.com:signalapp/SignalCoreKit`)"
   - "SignalCoreKit/Tests (from `git@github.com:signalapp/SignalCoreKit`)"
   - SignalRingRTC (from `ThirdParty/SignalRingRTC.podspec`)
-  - SignalServiceKit (from `.`)
-  - SignalServiceKit/Tests (from `.`)
   - SQLCipher (>= 4.0.1)
   - SSZipArchive
   - Starscream (from `https://github.com/signalapp/Starscream.git`, branch `signal-release`)
@@ -194,8 +160,6 @@ EXTERNAL SOURCES:
     :git: "git@github.com:signalapp/SignalCoreKit"
   SignalRingRTC:
     :path: ThirdParty/SignalRingRTC.podspec
-  SignalServiceKit:
-    :path: "."
   Starscream:
     :branch: signal-release
     :git: https://github.com/signalapp/Starscream.git
@@ -266,13 +230,12 @@ SPEC CHECKSUMS:
   SignalArgon2: 1c24183835ca861e6af06631c18b1671cdf35571
   SignalCoreKit: 87da14c58d57760793b892ff03838c5ef2ce1167
   SignalRingRTC: 9dc4c7bd879520c18044eb94ba3106e0bbdb7751
-  SignalServiceKit: d598fa75d9f6c2137a5e016fdc117f94c7ac3ef7
   SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: 4bb2f9942274833f7b4d296a55504dcfc7edb7b0
   SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: b768a112fc656f1bafe9150b5bc4119ae8a0bdda
+PODFILE CHECKSUM: 13b96c9d81b40df47a41e693f45f52f8009d7dd8
 
 COCOAPODS: 1.11.3

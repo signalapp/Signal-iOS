@@ -2,14 +2,14 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSData+Image.h"
 #import "MIMETypeUtil.h"
+#import "NSData+Image.h"
 #import "OWSFileSystem.h"
-#import "webp/decode.h"
-#import "webp/demux.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YYImage/YYImage.h>
+#import <libwebp/decode.h>
+#import <libwebp/demux.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

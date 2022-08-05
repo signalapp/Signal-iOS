@@ -62,6 +62,16 @@
                ReferencedContainer = "container:Signal.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F9C5C89D289451B900548EEE"
+               BuildableName = "SignalServiceKitTests.xctest"
+               BlueprintName = "SignalServiceKitTests"
+               ReferencedContainer = "container:Signal.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -93,6 +103,7 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES"
+      askForAppToLaunch = "Yes"
       launchAutomaticallySubstyle = "2">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
@@ -8,6 +8,8 @@
 #import "TestAppContext.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
+#import <SignalCoreKit/OWSAsserts.h>
+#import <SignalCoreKit/OWSLogs.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp
 {
-    OWSLogInfo(@"%@ setUp", self.logTag);
+    OWSLogInfo(@"setUp");
 
     [super setUp];
 
@@ -34,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)tearDown
 {
-    OWSLogInfo(@"%@ tearDown", self.logTag);
+    OWSLogInfo(@"tearDown");
     OWSAssertIsOnMainThread();
 
     // Spin the main run loop to flush any remaining async work.
