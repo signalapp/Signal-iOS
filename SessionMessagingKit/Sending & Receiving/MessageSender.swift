@@ -291,7 +291,7 @@ public final class MessageSender {
                         errorCount += 1
                         guard errorCount == promiseCount else { return } // Only error out if all promises failed
                         
-                        Storage.shared.write { db in
+                        Storage.shared.read { db in
                             handleFailure(db, with: .other(error))
                         }
                     }
@@ -300,7 +300,7 @@ public final class MessageSender {
             .catch(on: DispatchQueue.global(qos: .default)) { error in
                 SNLog("Couldn't send message due to error: \(error).")
                 
-                Storage.shared.write { db in
+                Storage.shared.read { db in
                     handleFailure(db, with: .other(error))
                 }
             }
@@ -447,7 +447,7 @@ public final class MessageSender {
                 }
             }
             .catch(on: DispatchQueue.global(qos: .default)) { error in
-                dependencies.storage.write { db in
+                dependencies.storage.read { db in
                     handleFailure(db, with: .other(error))
                 }
             }
@@ -557,7 +557,7 @@ public final class MessageSender {
                 }
             }
             .catch(on: DispatchQueue.global(qos: .default)) { error in
-                dependencies.storage.write { db in
+                dependencies.storage.read { db in
                     handleFailure(db, with: .other(error))
                 }
             }
@@ -652,15 +652,34 @@ public final class MessageSender {
         with error: MessageSenderError,
         interactionId: Int64?
     ) {
-        // Mark any "sending" recipients as "failed"
-        _ = try? RecipientState
+        // Check if we need to mark any "sending" recipients as "failed"
+        //
+        // Note: The 'db' could be either read-only or writeable so we determine
+        // if a change is required, and if so dispatch to a separate queue for the
+        // actual write
+        let rowIds: [Int64] = (try? RecipientState
+            .select(Column.rowID)
             .filter(RecipientState.Columns.interactionId == interactionId)
             .filter(RecipientState.Columns.state == RecipientState.State.sending)
-            .updateAll(
-                db,
-                RecipientState.Columns.state.set(to: RecipientState.State.failed),
-                RecipientState.Columns.mostRecentFailureText.set(to: error.localizedDescription)
-            )
+            .asRequest(of: Int64.self)
+            .fetchAll(db))
+            .defaulting(to: [])
+        
+        guard !rowIds.isEmpty else { return }
+        
+        // Need to dispatch to a different thread to prevent a potential db re-entrancy
+        // issue from occuring in some cases
+        DispatchQueue.global(qos: .background).async {
+            Storage.shared.write { db in
+                try RecipientState
+                    .filter(rowIds.contains(Column.rowID))
+                    .updateAll(
+                        db,
+                        RecipientState.Columns.state.set(to: RecipientState.State.failed),
+                        RecipientState.Columns.mostRecentFailureText.set(to: error.localizedDescription)
+                    )
+            }
+        }
     }
     
     // MARK: - Convenience

@@ -126,6 +126,9 @@ public final class JobRunner {
         
         queues.mutate { $0[updatedJob.variant]?.add(updatedJob, canStartJob: canStartJob) }
         
+        // Don't start the queue if the job can't be started
+        guard canStartJob else { return }
+        
         // Start the job runner if needed
         db.afterNextTransactionCommit { _ in
             queues.wrappedValue[updatedJob.variant]?.start()
@@ -253,6 +256,15 @@ public final class JobRunner {
         JobRunner.hasCompletedInitialBecomeActive.mutate { $0 = true }
     }
     
+    /// Calling this will clear the JobRunner queues and stop it from running new jobs, any currently executing jobs will continue to run
+    /// though (this means if we suspend the database it's likely that any currently running jobs will fail to complete and fail to record their
+    /// failure - they _should_ be picked up again the next time the app is launched)
+    public static func stopAndClearPendingJobs() {
+        queues.wrappedValue.values.forEach { queue in
+            queue.stopAndClearPendingJobs()
+        }
+    }
+    
     public static func isCurrentlyRunning(_ job: Job?) -> Bool {
         guard let job: Job = job, let jobId: Int64 = job.id else { return false }
         
@@ -347,6 +359,8 @@ private final class JobQueue {
         }
     }
     
+    private static let deferralLoopThreshold: Int = 3
+    
     private let type: QueueType
     private let executionType: ExecutionType
     private let qosClass: DispatchQoS
@@ -376,6 +390,7 @@ private final class JobQueue {
     private var queue: Atomic<[Job]> = Atomic([])
     private var jobsCurrentlyRunning: Atomic<Set<Int64>> = Atomic([])
     private var detailsForCurrentlyRunningJobs: Atomic<[Int64: Data?]> = Atomic([:])
+    private var deferLoopTracker: Atomic<[Int64: (count: Int, times: [TimeInterval])]> = Atomic([:])
     
     fileprivate var hasPendingJobs: Bool { !queue.wrappedValue.isEmpty }
     
@@ -555,7 +570,16 @@ private final class JobQueue {
         runNextJob()
     }
     
+    fileprivate func stopAndClearPendingJobs() {
+        isRunning.mutate { $0 = false }
+        queue.mutate { $0 = [] }
+        deferLoopTracker.mutate { $0 = [:] }
+    }
+    
     private func runNextJob() {
+        // Ensure the queue is running (if we've stopped the queue then we shouldn't start the next job)
+        guard isRunning.wrappedValue else { return }
+        
         // Ensure this is running on the correct queue
         guard DispatchQueue.getSpecific(key: queueKey) == queueContext else {
             internalQueue.async { [weak self] in
@@ -652,7 +676,7 @@ private final class JobQueue {
             return
         }
         
-        // Update the state to indicate it's running
+        // Update the state to indicate the particular job is running
         //
         // Note: We need to store 'numJobsRemaining' in it's own variable because
         // the 'SNLog' seems to dispatch to it's own queue which ends up getting
@@ -662,7 +686,6 @@ private final class JobQueue {
             trigger?.invalidate()   // Need to invalidate to prevent a memory leak
             trigger = nil
         }
-        isRunning.mutate { $0 = true }
         jobsCurrentlyRunning.mutate { jobsCurrentlyRunning in
             jobsCurrentlyRunning = jobsCurrentlyRunning.inserting(nextJob.id)
             numJobsRunning = jobsCurrentlyRunning.count
@@ -779,13 +802,20 @@ private final class JobQueue {
             // `failureCount` and `nextRunTimestamp` to prevent them from endlessly running over
             // and over and reset their retry backoff in case they fail next time
             case .recurringOnLaunch, .recurringOnActive:
-                Storage.shared.write { db in
-                    _ = try job
-                        .with(
-                            failureCount: 0,
-                            nextRunTimestamp: 0
-                        )
-                        .saved(db)
+                if
+                    let jobId: Int64 = job.id,
+                    job.failureCount != 0 &&
+                    job.nextRunTimestamp > TimeInterval.leastNonzeroMagnitude
+                {
+                    Storage.shared.write { db in
+                        _ = try Job
+                            .filter(id: jobId)
+                            .updateAll(
+                                db,
+                                Job.Columns.failureCount.set(to: 0),
+                                Job.Columns.nextRunTimestamp.set(to: 0)
+                            )
+                    }
                 }
             
             default: break
@@ -927,8 +957,48 @@ private final class JobQueue {
     /// This function is called when a job neither succeeds or fails (this should only occur if the job has specific logic that makes it dependant
     /// on other jobs, and it should automatically manage those dependencies)
     private func handleJobDeferred(_ job: Job) {
+        var stuckInDeferLoop: Bool = false
         jobsCurrentlyRunning.mutate { $0 = $0.removing(job.id) }
         detailsForCurrentlyRunningJobs.mutate { $0 = $0.removingValue(forKey: job.id) }
+        deferLoopTracker.mutate {
+            guard let lastRecord: (count: Int, times: [TimeInterval]) = $0[job.id] else {
+                $0 = $0.setting(
+                    job.id,
+                    (1, [Date().timeIntervalSince1970])
+                )
+                return
+            }
+            
+            let timeNow: TimeInterval = Date().timeIntervalSince1970
+            stuckInDeferLoop = (
+                lastRecord.count >= JobQueue.deferralLoopThreshold &&
+                (timeNow - lastRecord.times[0]) < CGFloat(lastRecord.count)
+            )
+            
+            $0 = $0.setting(
+                job.id,
+                (
+                    lastRecord.count + 1,
+                    // Only store the last 'deferralLoopThreshold' times to ensure we aren't running faster
+                    // than one loop per second
+                    lastRecord.times.suffix(JobQueue.deferralLoopThreshold - 1) + [timeNow]
+                )
+            )
+        }
+        
+        // It's possible (by introducing bugs) to create a loop where a Job tries to run and immediately
+        // defers itself but then attempts to run again (resulting in an infinite loop); this won't block
+        // the app since it's on a background thread but can result in 100% of a CPU being used (and a
+        // battery drain)
+        //
+        // This code will maintain an in-memory store for any jobs which are deferred too quickly (ie.
+        // more than 'deferralLoopThreshold' times within 'deferralLoopThreshold' seconds)
+        guard !stuckInDeferLoop else {
+            deferLoopTracker.mutate { $0 = $0.removingValue(forKey: job.id) }
+            handleJobFailed(job, error: JobRunnerError.possibleDeferralLoop, permanentFailure: false)
+            return
+        }
+        
         internalQueue.async { [weak self] in
             self?.runNextJob()
         }

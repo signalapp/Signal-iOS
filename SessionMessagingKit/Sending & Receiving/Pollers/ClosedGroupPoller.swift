@@ -152,6 +152,7 @@ public final class ClosedGroupPoller {
         on queue: DispatchQueue = SessionSnodeKit.Threading.workQueue,
         maxRetryCount: UInt = 0,
         isBackgroundPoll: Bool = false,
+        isBackgroundPollValid: @escaping (() -> Bool) = { true },
         poller: ClosedGroupPoller? = nil
     ) -> Promise<Void> {
         let promise: Promise<Void> = SnodeAPI.getSwarm(for: groupPublicKey)
@@ -160,9 +161,10 @@ public final class ClosedGroupPoller {
                 guard let snode = swarm.randomElement() else { return Promise(error: Error.insufficientSnodes) }
                 
                 return attempt(maxRetryCount: maxRetryCount, recoveringOn: queue) {
-                    guard isBackgroundPoll || poller?.isPolling.wrappedValue[groupPublicKey] == true else {
-                        return Promise(error: Error.pollingCanceled)
-                    }
+                    guard
+                        (isBackgroundPoll && isBackgroundPollValid()) ||
+                        poller?.isPolling.wrappedValue[groupPublicKey] == true
+                    else { return Promise(error: Error.pollingCanceled) }
                     
                     let promises: [Promise<[SnodeReceivedMessage]>] = {
                         if SnodeAPI.hardfork >= 19 && SnodeAPI.softfork >= 1 {
@@ -181,9 +183,13 @@ public final class ClosedGroupPoller {
                     
                     return when(resolved: promises)
                         .then(on: queue) { messageResults -> Promise<Void> in
-                            guard isBackgroundPoll || poller?.isPolling.wrappedValue[groupPublicKey] == true else { return Promise.value(()) }
+                            guard
+                                (isBackgroundPoll && isBackgroundPollValid()) ||
+                                poller?.isPolling.wrappedValue[groupPublicKey] == true
+                            else { return Promise.value(()) }
                             
                             var promises: [Promise<Void>] = []
+                            var jobToRun: Job? = nil
                             let allMessages: [SnodeReceivedMessage] = messageResults
                                 .reduce([]) { result, next in
                                     switch next {
@@ -192,8 +198,16 @@ public final class ClosedGroupPoller {
                                     }
                                 }
                             var messageCount: Int = 0
-                            let totalMessagesCount: Int = allMessages.count
                             
+                            // No need to do anything if there are no messages
+                            guard !allMessages.isEmpty else {
+                                if !isBackgroundPoll {
+                                    SNLog("Received no new messages in closed group with public key: \(groupPublicKey)")
+                                }
+                                return Promise.value(())
+                            }
+                            
+                            // Otherwise process the messages and add them to the queue for handling
                             Storage.shared.write { db in
                                 let processedMessages: [ProcessedMessage] = allMessages
                                     .compactMap { message -> ProcessedMessage? in
@@ -209,6 +223,14 @@ public final class ClosedGroupPoller {
                                                     MessageReceiverError.duplicateControlMessage,
                                                     MessageReceiverError.selfSend:
                                                     break
+                                                    
+                                                // In the background ignore 'SQLITE_ABORT' (it generally means
+                                                // the BackgroundPoller has timed out
+                                                case DatabaseError.SQLITE_ABORT:
+                                                    guard !isBackgroundPoll else { break }
+                                                    
+                                                    SNLog("Failed to the database being suspended (running in background with no background task).")
+                                                    break
 
                                                 default: SNLog("Failed to deserialize envelope due to error: \(error).")
                                             }
@@ -219,7 +241,7 @@ public final class ClosedGroupPoller {
                                 
                                 messageCount = processedMessages.count
                                 
-                                let jobToRun: Job? = Job(
+                                jobToRun = Job(
                                     variant: .messageReceive,
                                     behaviour: .runOnce,
                                     threadId: groupPublicKey,
@@ -232,35 +254,29 @@ public final class ClosedGroupPoller {
                                 // If we are force-polling then add to the JobRunner so they are persistent and will retry on
                                 // the next app run if they fail but don't let them auto-start
                                 JobRunner.add(db, job: jobToRun, canStartJob: !isBackgroundPoll)
-
-                                // We want to try to handle the receive jobs immediately in the background
-                                if isBackgroundPoll {
-                                    promises = promises.appending(
-                                        jobToRun.map { job -> Promise<Void> in
-                                            let (promise, seal) = Promise<Void>.pending()
-                                            
-                                            // Note: In the background we just want jobs to fail silently
-                                            MessageReceiveJob.run(
-                                                job,
-                                                queue: queue,
-                                                success: { _, _ in seal.fulfill(()) },
-                                                failure: { _, _, _ in seal.fulfill(()) },
-                                                deferred: { _ in seal.fulfill(()) }
-                                            )
-
-                                            return promise
-                                        }
-                                    )
-                                }
                             }
                             
-                            if !isBackgroundPoll {
-                                if totalMessagesCount > 0 {
-                                    SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") in closed group with public key: \(groupPublicKey) (duplicates: \(totalMessagesCount - messageCount))")
-                                }
-                                else {
-                                    SNLog("Received no new messages in closed group with public key: \(groupPublicKey)")
-                                }
+                            if isBackgroundPoll {
+                                // We want to try to handle the receive jobs immediately in the background
+                                promises = promises.appending(
+                                    jobToRun.map { job -> Promise<Void> in
+                                        let (promise, seal) = Promise<Void>.pending()
+                                        
+                                        // Note: In the background we just want jobs to fail silently
+                                        MessageReceiveJob.run(
+                                            job,
+                                            queue: queue,
+                                            success: { _, _ in seal.fulfill(()) },
+                                            failure: { _, _, _ in seal.fulfill(()) },
+                                            deferred: { _ in seal.fulfill(()) }
+                                        )
+
+                                        return promise
+                                    }
+                                )
+                            }
+                            else {
+                                SNLog("Received \(messageCount) new message\(messageCount == 1 ? "" : "s") in closed group with public key: \(groupPublicKey) (duplicates: \(allMessages.count - messageCount))")
                             }
                             
                             return when(fulfilled: promises)

@@ -27,7 +27,7 @@ PODS:
   - DifferenceKit/Core (1.2.0)
   - DifferenceKit/UIKitExtension (1.2.0):
     - DifferenceKit/Core
-  - GRDB.swift/SQLCipher (5.24.1):
+  - GRDB.swift/SQLCipher (5.26.0):
     - SQLCipher (>= 3.4.0)
   - libwebp (1.2.1):
     - libwebp/demux (= 1.2.1)
@@ -222,7 +222,7 @@ SPEC CHECKSUMS:
   CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Curve25519Kit: e63f9859ede02438ae3defc5e1a87e09d1ec7ee6
   DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
-  GRDB.swift: b3180ce2135fc06a453297889b746b1478c4d8c7
+  GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   Nimble: 5316ef81a170ce87baf72dd961f22f89a602ff84
   NVActivityIndicatorView: 1f6c5687f1171810aa27a3296814dc2d7dec3667

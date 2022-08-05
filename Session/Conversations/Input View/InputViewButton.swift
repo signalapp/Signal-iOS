@@ -59,8 +59,8 @@ final class InputViewButton : UIView {
         isUserInteractionEnabled = true
         widthConstraint.isActive = true
         heightConstraint.isActive = true
-        let tint = isSendButton ? UIColor.black : Colors.text
-        let iconImageView = UIImageView(image: icon.withTint(tint))
+        let iconImageView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
+        iconImageView.tintColor = (isSendButton ? UIColor.black : Colors.text)
         iconImageView.contentMode = .scaleAspectFit
         let iconSize = InputViewButton.iconSize
         iconImageView.set(.width, to: iconSize)
