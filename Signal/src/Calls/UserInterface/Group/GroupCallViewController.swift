@@ -753,10 +753,6 @@ extension GroupCallViewController: CallControlsDelegate {
         callService.updateCameraSource(call: call, isUsingFrontCamera: !sender.isSelected)
     }
 
-    func didPressCancel(sender: UIButton) {
-        dismissCall()
-    }
-
     func didPressJoin(sender: UIButton) {
         presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
             guard let self = self else { return }

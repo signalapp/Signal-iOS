@@ -14,7 +14,6 @@ protocol CallControlsDelegate: AnyObject {
     func didPressVideo(sender: UIButton)
     func didPressRing(sender: UIButton)
     func didPressFlipCamera(sender: UIButton)
-    func didPressCancel(sender: UIButton)
     func didPressJoin(sender: UIButton)
 }
 
@@ -53,34 +52,21 @@ class CallControls: UIView {
         return button
     }()
 
-    private lazy var cancelButton: UIButton = {
-        let button = OWSButton()
-        button.setTitle(CommonStrings.cancelButton, for: .normal)
-        button.setTitleColor(.ows_white, for: .normal)
-        button.setBackgroundImage(UIImage(color: .ows_whiteAlpha40), for: .normal)
-        button.titleLabel?.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
-        button.clipsToBounds = true
-        button.layer.cornerRadius = 8
-        button.block = { [weak self] in
-            self?.delegate.didPressCancel(sender: button)
-        }
-        button.contentEdgeInsets = UIEdgeInsets(top: 11, leading: 11, bottom: 11, trailing: 11)
-        return button
-    }()
-
     private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .white)
 
     private lazy var joinButton: UIButton = {
+        let height: CGFloat = 56
+
         let button = OWSButton()
         button.setTitleColor(.ows_white, for: .normal)
         button.setBackgroundImage(UIImage(color: .ows_accentGreen), for: .normal)
         button.titleLabel?.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         button.clipsToBounds = true
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = height / 2
         button.block = { [weak self] in
             self?.delegate.didPressJoin(sender: button)
         }
-        button.contentEdgeInsets = UIEdgeInsets(top: 11, leading: 11, bottom: 11, trailing: 11)
+        button.contentEdgeInsets = UIEdgeInsets(top: 17, leading: 17, bottom: 17, trailing: 17)
         button.addSubview(joinButtonActivityIndicator)
         button.setTitle(
             NSLocalizedString(
@@ -91,6 +77,9 @@ class CallControls: UIView {
         )
         button.setTitleColor(.ows_whiteAlpha40, for: .disabled)
         joinButtonActivityIndicator.autoCenterInSuperview()
+
+        button.autoSetDimension(.width, toSize: 168)
+        button.autoSetDimension(.height, toSize: height)
         return button
     }()
 
@@ -108,7 +97,6 @@ class CallControls: UIView {
     }()
 
     private lazy var topStackView = createTopStackView()
-    private lazy var bottomStackView = createBottomStackView()
 
     private weak var delegate: CallControlsDelegate!
     private let call: SignalCall
@@ -125,15 +113,15 @@ class CallControls: UIView {
         addSubview(gradientView)
         gradientView.autoPinEdgesToSuperviewEdges()
 
-        let controlsStack = UIStackView(arrangedSubviews: [topStackView, bottomStackView])
+        let controlsStack = UIStackView(arrangedSubviews: [topStackView, joinButton])
         controlsStack.axis = .vertical
         controlsStack.spacing = 40
         controlsStack.alignment = .center
 
         addSubview(controlsStack)
         controlsStack.autoPinWidthToSuperview()
-        controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 24)
-        controlsStack.autoPinEdge(toSuperviewEdge: .top, withInset: 22)
+        controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 56)
+        controlsStack.autoPinEdge(toSuperviewEdge: .top)
 
         updateControls()
     }
@@ -154,31 +142,6 @@ class CallControls: UIView {
         stackView.addArrangedSubview(videoButton)
         stackView.addArrangedSubview(ringButton)
         stackView.addArrangedSubview(hangUpButton)
-
-        return stackView
-    }
-
-    func createBottomStackView() -> UIStackView {
-        let stackView = UIStackView()
-        stackView.axis = .horizontal
-        stackView.spacing = 8
-
-        let leadingSpacer = UIView.hStretchingSpacer()
-        let trailingSpacer = UIView.hStretchingSpacer()
-
-        stackView.addArrangedSubview(leadingSpacer)
-        stackView.addArrangedSubview(cancelButton)
-        stackView.addArrangedSubview(joinButton)
-        stackView.addArrangedSubview(trailingSpacer)
-
-        // Prefer to be big.
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            cancelButton.autoSetDimension(.width, toSize: 170)
-        }
-
-        cancelButton.autoMatch(.width, to: .width, of: joinButton)
-        leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
-        leadingSpacer.autoSetDimension(.width, toSize: 16, relation: .greaterThanOrEqual)
 
         return stackView
     }
@@ -241,7 +204,7 @@ class CallControls: UIView {
             audioSourceButton.showDropdownArrow = false
         }
 
-        bottomStackView.isHidden = joinState == .joined
+        joinButton.isHidden = joinState == .joined
         gradientView.isHidden = joinState != .joined
 
         let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
