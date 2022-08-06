@@ -898,17 +898,12 @@ class GalleryGridCellItem: PhotoGridItem {
 
     var type: PhotoGridItemType {
         if galleryItem.isVideo {
-            return .video
+            return .video(0) // TODO: return video duration
         } else if galleryItem.isAnimated {
             return .animated
         } else {
             return .photo
         }
-    }
-
-    var duration: TimeInterval {
-        // TODO: return video duration
-        0
     }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {

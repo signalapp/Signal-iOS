@@ -6,12 +6,13 @@ import SignalUI
 import UIKit
 
 public enum PhotoGridItemType {
-    case photo, animated, video
+    case photo
+    case animated
+    case video(TimeInterval)
 }
 
 public protocol PhotoGridItem: AnyObject {
     var type: PhotoGridItemType { get }
-    var duration: TimeInterval { get } // proxy to PHAsset.duration, always 0 for non-movie assets
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage?
 }
 
@@ -168,8 +169,8 @@ public class PhotoGridViewCell: UICollectionViewCell {
         contentTypeBadgeView?.sizeToFit()
     }
 
-    private func setMedia(duration: TimeInterval) {
-        guard duration > 0 else {
+    private func setMedia(itemType: PhotoGridItemType) {
+        guard case .video(let duration) = itemType else {
             durationLabel?.isHidden = true
             durationLabelBackground?.isHidden = true
             return
@@ -243,7 +244,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
             self.image = image
         }
 
-        setMedia(duration: item.duration)
+        setMedia(itemType: item.type)
 
         switch item.type {
         case .animated:

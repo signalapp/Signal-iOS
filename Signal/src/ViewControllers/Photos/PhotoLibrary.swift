@@ -38,17 +38,12 @@ class PhotoPickerAssetItem: PhotoGridItem {
 
     var type: PhotoGridItemType {
         if asset.mediaType == .video {
-            return .video
+            return .video(asset.duration)
         } else if asset.playbackStyle == .imageAnimated {
             return .animated
         } else {
             return .photo
         }
-    }
-
-    var duration: TimeInterval {
-        guard asset.mediaType == .video else { return 0 }
-        return asset.duration
     }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
