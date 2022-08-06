@@ -906,6 +906,8 @@ class GalleryGridCellItem: PhotoGridItem {
         }
     }
 
+    var creationDate: Date? { nil }
+
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
         return galleryItem.thumbnailImage(async: completion)
     }

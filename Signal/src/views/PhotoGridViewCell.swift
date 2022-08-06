@@ -5,15 +5,27 @@
 import SignalUI
 import UIKit
 
-public enum PhotoGridItemType {
+public enum PhotoGridItemType: Equatable {
     case photo
     case animated
     case video(TimeInterval)
+
+    var localizedString: String {
+        switch self {
+        case .photo:
+            return CommonStrings.attachmentTypePhoto
+        case .animated:
+            return CommonStrings.attachmentTypeAnimated
+        case .video(let duration):
+            return "\(CommonStrings.attachmentTypeVideo) \(OWSFormat.localizedDurationString(from: duration))"
+        }
+    }
 }
 
 public protocol PhotoGridItem: AnyObject {
     var type: PhotoGridItemType { get }
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage?
+    var creationDate: Date? { get }
 }
 
 public class PhotoGridViewCell: UICollectionViewCell {
@@ -36,6 +48,29 @@ public class PhotoGridViewCell: UICollectionViewCell {
     private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
     private static let selectedBadgeImage = UIImage(named: "media-composer-checkmark")
     public var loadingColor = Theme.washColor
+
+    private lazy var todayTimeFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.dateStyle = .none
+        formatter.timeStyle = .short
+        return formatter
+    }()
+
+    private lazy var thisYearDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.setLocalizedDateFormatFromTemplate("MMMMd")
+        return formatter
+    }()
+
+    private lazy var longDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = .current
+        formatter.dateStyle = .long
+        formatter.timeStyle = .none
+        return formatter
+    }()
 
     override public var isSelected: Bool {
         didSet {
@@ -219,6 +254,17 @@ public class PhotoGridViewCell: UICollectionViewCell {
         durationLabel.sizeToFit()
     }
 
+    private func setUpAccessibility(item: PhotoGridItem) {
+        self.isAccessibilityElement = true
+
+        self.accessibilityLabel = [
+            item.type.localizedString,
+            formattedDateString(for: item.creationDate)
+        ]
+            .compactMap { $0 }
+            .joined(separator: ", ")
+    }
+
     public func configure(item: PhotoGridItem) {
         self.item = item
 
@@ -245,6 +291,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
         }
 
         setMedia(itemType: item.type)
+        setUpAccessibility(item: item)
 
         switch item.type {
         case .animated:
@@ -266,5 +313,22 @@ public class PhotoGridViewCell: UICollectionViewCell {
         selectedMaskView.isHidden = true
         selectedBadgeView.isHidden = true
         outlineBadgeView.isHidden = true
+    }
+
+    private func formattedDateString(for date: Date?) -> String? {
+        guard let date = date else { return nil }
+
+        let dateIsThisYear = DateUtil.dateIsThisYear(date)
+        let dateIsToday = DateUtil.dateIsToday(date)
+
+        if dateIsToday {
+            return todayTimeFormatter.string(from: date)
+        }
+
+        if dateIsThisYear {
+            return thisYearDateFormatter.string(from: date)
+        }
+
+        return longDateFormatter.string(from: date)
     }
 }
