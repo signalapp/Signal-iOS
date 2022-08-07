@@ -137,9 +137,6 @@ class HighlightMentionBackgroundView: UIView {
                     extraYOffset
                 )
                 
-                // We don't want to draw too far to the right
-                runBounds.size.width = (runBounds.width > lineWidth ? lineWidth : runBounds.width)
-                
                 let path = UIBezierPath(roundedRect: runBounds, cornerRadius: cornerRadius)
                 mentionBackgroundColor.setFill()
                 path.fill()

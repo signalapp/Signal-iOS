@@ -150,6 +150,10 @@ public final class Poller {
                                             MessageReceiverError.duplicateControlMessage,
                                             MessageReceiverError.selfSend:
                                             break
+                                            
+                                        case DatabaseError.SQLITE_ABORT:
+                                            SNLog("Failed to the database being suspended (running in background with no background task).")
+                                            break
 
                                         default: SNLog("Failed to deserialize envelope due to error: \(error).")
                                     }

@@ -44,13 +44,13 @@ final class MediaPlaceholderView: UIView {
         // Image view
         let imageView = UIImageView(
             image: UIImage(named: iconName)?
-                .withRenderingMode(.alwaysTemplate)
                 .resizedImage(
                     to: CGSize(
                         width: MediaPlaceholderView.iconSize,
                         height: MediaPlaceholderView.iconSize
                     )
-                )
+                )?
+                .withRenderingMode(.alwaysTemplate)
         )
         imageView.tintColor = textColor
         imageView.contentMode = .center

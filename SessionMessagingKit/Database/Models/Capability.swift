@@ -59,3 +59,37 @@ public struct Capability: Codable, FetchableRecord, PersistableRecord, TableReco
         self.isMissing = isMissing
     }
 }
+
+extension Capability.Variant {
+    // MARK: - Codable
+
+    public init(from decoder: Decoder) throws {
+        let container: SingleValueDecodingContainer = try decoder.singleValueContainer()
+        let valueString: String = try container.decode(String.self)
+        
+        // FIXME: Remove this code
+        // There was a point where we didn't have custom Codable handling for the Capability.Variant
+        // which resulted in the data being encoded into the database as a JSON dict - this code catches
+        // that case and extracts the standard string value so it can be processed the same as the
+        // "proper" custom Codable logic)
+        if valueString.starts(with: "{") {
+            self = Capability.Variant(
+                from: valueString
+                    .replacingOccurrences(of: "\":{}}", with: "")
+                    .replacingOccurrences(of: "\"}}", with: "")
+                    .replacingOccurrences(of: "{\"unsupported\":{\"_0\":\"", with: "")
+                    .replacingOccurrences(of: "{\"", with: "")
+            )
+            return
+        }
+        // FIXME: Remove this code ^^^
+        
+        self = Capability.Variant(from: valueString)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container: SingleValueEncodingContainer = encoder.singleValueContainer()
+
+        try container.encode(rawValue)
+    }
+}

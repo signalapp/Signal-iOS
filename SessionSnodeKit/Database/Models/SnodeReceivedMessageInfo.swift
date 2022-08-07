@@ -68,19 +68,34 @@ public extension SnodeReceivedMessageInfo {
 
 public extension SnodeReceivedMessageInfo {
     static func pruneExpiredMessageHashInfo(for snode: Snode, namespace: Int, associatedWith publicKey: String) {
-        // Delete any expired SnodeReceivedMessageInfo values associated to a specific node
+        // Delete any expired SnodeReceivedMessageInfo values associated to a specific node (even though
+        // this runs very quickly we fetch the rowIds we want to delete from a 'read' call to avoid
+        // blocking the write queue since this method is called very frequently)
+        let rowIds: [Int64] = Storage.shared
+            .read { db in
+                // Only prune the hashes if new hashes exist for this Snode (if they don't then we don't want
+                // to clear out the legacy hashes)
+                let hasNonLegacyHash: Bool = try SnodeReceivedMessageInfo
+                    .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey, namespace: namespace))
+                    .isNotEmpty(db)
+                
+                guard hasNonLegacyHash else { return [] }
+                
+                return try SnodeReceivedMessageInfo
+                    .select(Column.rowID)
+                    .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey, namespace: namespace))
+                    .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs <= (Date().timeIntervalSince1970 * 1000))
+                    .asRequest(of: Int64.self)
+                    .fetchAll(db)
+            }
+            .defaulting(to: [])
+        
+        // If there are no rowIds to delete then do nothing
+        guard !rowIds.isEmpty else { return }
+        
         Storage.shared.write { db in
-            // Only prune the hashes if new hashes exist for this Snode (if they don't then we don't want
-            // to clear out the legacy hashes)
-            let hasNonLegacyHash: Bool = try SnodeReceivedMessageInfo
-                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey, namespace: namespace))
-                .isNotEmpty(db)
-            
-            guard hasNonLegacyHash else { return }
-            
             try SnodeReceivedMessageInfo
-                .filter(SnodeReceivedMessageInfo.Columns.key == key(for: snode, publicKey: publicKey, namespace: namespace))
-                .filter(SnodeReceivedMessageInfo.Columns.expirationDateMs <= (Date().timeIntervalSince1970 * 1000))
+                .filter(rowIds.contains(Column.rowID))
                 .deleteAll(db)
         }
     }
