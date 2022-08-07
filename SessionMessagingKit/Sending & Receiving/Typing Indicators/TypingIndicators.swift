@@ -44,10 +44,7 @@ public class TypingIndicators {
             self.timestampMs = (timestampMs ?? Int64(floor(Date().timeIntervalSince1970 * 1000)))
         }
         
-        fileprivate func starting(_ db: Database) -> Indicator {
-            let direction: Direction = self.direction
-            let timestampMs: Int64 = self.timestampMs
-            
+        fileprivate func start(_ db: Database) {
             // Start the typing indicator
             switch direction {
                 case .outgoing:
@@ -55,27 +52,17 @@ public class TypingIndicators {
                     
                 case .incoming:
                     try? ThreadTypingIndicator(
-                        threadId: self.threadId,
+                        threadId: threadId,
                         timestampMs: timestampMs
                     )
                     .save(db)
             }
             
-            // Schedule the 'stopCallback' to cancel the typing indicator
-            stopTimer?.invalidate()
-            stopTimer = Timer.scheduledTimerOnMainThread(
-                withTimeInterval: (direction == .outgoing ? 3 : 5),
-                repeats: false
-            ) { [weak self] _ in
-                Storage.shared.write { db in
-                    self?.stoping(db)
-                }
-            }
-            
-            return self
+            // Refresh the timeout since we just started
+            refreshTimeout()
         }
         
-        @discardableResult fileprivate func stoping(_ db: Database) -> Indicator? {
+        fileprivate func stop(_ db: Database) {
             self.refreshTimer?.invalidate()
             self.refreshTimer = nil
             self.stopTimer?.invalidate()
@@ -84,7 +71,7 @@ public class TypingIndicators {
             switch direction {
                 case .outgoing:
                     guard let thread: SessionThread = try? SessionThread.fetchOne(db, id: self.threadId) else {
-                        return nil
+                        return
                     }
                     
                     try? MessageSender.send(
@@ -99,8 +86,22 @@ public class TypingIndicators {
                         .filter(ThreadTypingIndicator.Columns.threadId == self.threadId)
                         .deleteAll(db)
             }
+        }
+        
+        fileprivate func refreshTimeout() {
+            let threadId: String = self.threadId
+            let direction: Direction = self.direction
             
-            return nil
+            // Schedule the 'stopCallback' to cancel the typing indicator
+            stopTimer?.invalidate()
+            stopTimer = Timer.scheduledTimerOnMainThread(
+                withTimeInterval: (direction == .outgoing ? 3 : 5),
+                repeats: false
+            ) { _ in
+                Storage.shared.write { db in
+                    TypingIndicators.didStopTyping(db, threadId: threadId, direction: direction)
+                }
+            }
         }
         
         private func scheduleRefreshCallback(_ db: Database, shouldSend: Bool = true) {
@@ -138,56 +139,76 @@ public class TypingIndicators {
     
     // MARK: - Functions
     
-    public static func didStartTyping(
-        _ db: Database,
+    public static func didStartTypingNeedsToStart(
         threadId: String,
         threadVariant: SessionThread.Variant,
         threadIsMessageRequest: Bool,
         direction: Direction,
         timestampMs: Int64?
-    ) {
+    ) -> Bool {
         switch direction {
             case .outgoing:
-                let updatedIndicator: Indicator? = (
-                    outgoing.wrappedValue[threadId] ??
-                    Indicator(
-                        threadId: threadId,
-                        threadVariant: threadVariant,
-                        threadIsMessageRequest: threadIsMessageRequest,
-                        direction: direction,
-                        timestampMs: timestampMs
-                    )
-                )?.starting(db)
+                // If we already have an existing typing indicator for this thread then just
+                // refresh it's timeout (no need to do anything else)
+                if let existingIndicator: Indicator = outgoing.wrappedValue[threadId] {
+                    existingIndicator.refreshTimeout()
+                    return false
+                }
                 
-                outgoing.mutate { $0[threadId] = updatedIndicator }
+                let newIndicator: Indicator? = Indicator(
+                    threadId: threadId,
+                    threadVariant: threadVariant,
+                    threadIsMessageRequest: threadIsMessageRequest,
+                    direction: direction,
+                    timestampMs: timestampMs
+                )
+                newIndicator?.refreshTimeout()
+                
+                outgoing.mutate { $0[threadId] = newIndicator }
+                return true
                 
             case .incoming:
-                let updatedIndicator: Indicator? = (
-                    incoming.wrappedValue[threadId] ??
-                    Indicator(
-                        threadId: threadId,
-                        threadVariant: threadVariant,
-                        threadIsMessageRequest: threadIsMessageRequest,
-                        direction: direction,
-                        timestampMs: timestampMs
-                    )
-                )?.starting(db)
+                // If we already have an existing typing indicator for this thread then just
+                // refresh it's timeout (no need to do anything else)
+                if let existingIndicator: Indicator = incoming.wrappedValue[threadId] {
+                    existingIndicator.refreshTimeout()
+                    return false
+                }
                 
-                incoming.mutate { $0[threadId] = updatedIndicator }
+                let newIndicator: Indicator? = Indicator(
+                    threadId: threadId,
+                    threadVariant: threadVariant,
+                    threadIsMessageRequest: threadIsMessageRequest,
+                    direction: direction,
+                    timestampMs: timestampMs
+                )
+                newIndicator?.refreshTimeout()
+                
+                incoming.mutate { $0[threadId] = newIndicator }
+                return true
+        }
+    }
+    
+    public static func start(_ db: Database, threadId: String, direction: Direction) {
+        switch direction {
+            case .outgoing: outgoing.wrappedValue[threadId]?.start(db)
+            case .incoming: incoming.wrappedValue[threadId]?.start(db)
         }
     }
     
     public static func didStopTyping(_ db: Database, threadId: String, direction: Direction) {
         switch direction {
             case .outgoing:
-                let updatedIndicator: Indicator? = outgoing.wrappedValue[threadId]?.stoping(db)
-                
-                outgoing.mutate { $0[threadId] = updatedIndicator }
+                if let indicator: Indicator = outgoing.wrappedValue[threadId] {
+                    indicator.stop(db)
+                    outgoing.mutate { $0[threadId] = nil }
+                }
                 
             case .incoming:
-                let updatedIndicator: Indicator? = incoming.wrappedValue[threadId]?.stoping(db)
-                
-                incoming.mutate { $0[threadId] = updatedIndicator }
+                if let indicator: Indicator = incoming.wrappedValue[threadId] {
+                    indicator.stop(db)
+                    incoming.mutate { $0[threadId] = nil }
+                }
         }
     }
 }

@@ -60,6 +60,7 @@ public final class Storage {
         // Configure the database and create the DatabasePool for interacting with the database
         var config = Configuration()
         config.maximumReaderCount = 10  // Increase the max read connection limit - Default is 5
+        config.observesSuspensionNotifications = true // Minimise `0xDEAD10CC` exceptions
         config.prepareDatabase { db in
             var keySpec: Data = Storage.getOrGenerateDatabaseKeySpec()
             defer { keySpec.resetBytes(in: 0..<keySpec.count) } // Reset content immediately after use
@@ -180,7 +181,6 @@ public final class Storage {
             self?.hasCompletedMigrations = true
             self?.migrationProgressUpdater = nil
             SUKLegacy.clearLegacyDatabaseInstance()
-//            SUKLegacy.deleteLegacyDatabaseFilesAndKey() // TODO: Add a "Delete legacy database" migration to run after the '003' migrations
             
             if let error = error {
                 SNLog("[Migration Error] Migration failed with error: \(error)")

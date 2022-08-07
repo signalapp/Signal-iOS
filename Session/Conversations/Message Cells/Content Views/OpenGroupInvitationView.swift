@@ -68,8 +68,8 @@ final class OpenGroupInvitationView: UIView {
         let iconImageViewSize = OpenGroupInvitationView.iconImageViewSize
         let iconImageView = UIImageView(
             image: UIImage(named: iconName)?
+                .resizedImage(to: CGSize(width: iconSize, height: iconSize))?
                 .withRenderingMode(.alwaysTemplate)
-                .resizedImage(to: CGSize(width: iconSize, height: iconSize))
         )
         iconImageView.tintColor = .white
         iconImageView.contentMode = .center
