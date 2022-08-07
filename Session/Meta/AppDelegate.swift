@@ -122,6 +122,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         /// `appDidFinishLaunching` seems to fix this odd behaviour (even though it doesn't match
         /// Apple's documentation on the matter)
         UNUserNotificationCenter.current().delegate = self
+        
+        // Resume database
+        NotificationCenter.default.post(name: Database.resumeNotification, object: self)
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -130,6 +133,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // NOTE: Fix an edge case where user taps on the callkit notification
         // but answers the call on another device
         stopPollers(shouldStopUserPoller: !self.hasIncomingCallWaiting())
+        JobRunner.stopAndClearPendingJobs()
+        
+        // Suspend database
+        NotificationCenter.default.post(name: Database.suspendNotification, object: self)
     }
     
     func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
@@ -185,8 +192,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Background Fetching
     
     func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        // Resume database
+        NotificationCenter.default.post(name: Database.resumeNotification, object: self)
+        
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            BackgroundPoller.poll(completionHandler: completionHandler)
+            BackgroundPoller.poll { result in
+                // Suspend database
+                NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+                
+                completionHandler(result)
+            }
         }
     }
     

@@ -28,8 +28,8 @@ final class CallMessageView: UIView {
         // Image view
         let imageView: UIImageView = UIImageView(
             image: UIImage(named: "Phone")?
+                .resizedImage(to: CGSize(width: CallMessageView.iconSize, height: CallMessageView.iconSize))?
                 .withRenderingMode(.alwaysTemplate)
-                .resizedImage(to: CGSize(width: CallMessageView.iconSize, height: CallMessageView.iconSize))
         )
         imageView.tintColor = textColor
         imageView.contentMode = .center

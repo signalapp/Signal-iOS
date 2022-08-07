@@ -520,16 +520,18 @@ extension ConversationVC:
             let threadId: String = self.viewModel.threadData.threadId
             let threadVariant: SessionThread.Variant = self.viewModel.threadData.threadVariant
             let threadIsMessageRequest: Bool = (self.viewModel.threadData.threadIsMessageRequest == true)
+            let needsToStartTypingIndicator: Bool = TypingIndicators.didStartTypingNeedsToStart(
+                threadId: threadId,
+                threadVariant: threadVariant,
+                threadIsMessageRequest: threadIsMessageRequest,
+                direction: .outgoing,
+                timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
+            )
             
-            Storage.shared.writeAsync { db in
-                TypingIndicators.didStartTyping(
-                    db,
-                    threadId: threadId,
-                    threadVariant: threadVariant,
-                    threadIsMessageRequest: threadIsMessageRequest,
-                    direction: .outgoing,
-                    timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
-                )
+            if needsToStartTypingIndicator {
+                Storage.shared.writeAsync { db in
+                    TypingIndicators.start(db, threadId: threadId, direction: .outgoing)
+                }
             }
         }
         
