@@ -142,10 +142,6 @@ final class ShareAppExtensionContext: NSObject, AppContext {
         return rootViewController.findFrontmostViewController(true)
     }
     
-    func keychainStorage() -> SSKKeychainStorage {
-        return SSKDefaultKeychainStorage.shared
-    }
-    
     func appDocumentDirectoryPath() -> String {
         let targetPath: String? = FileManager.default
             .urls(

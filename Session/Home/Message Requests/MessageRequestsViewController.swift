@@ -1,49 +1,60 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import GRDB
+import DifferenceKit
 import SessionUIKit
 import SessionMessagingKit
+import SignalUtilitiesKit
 
-@objc
 class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
-    private var threads: YapDatabaseViewMappings! =  {
-        let result = YapDatabaseViewMappings(groups: [ TSMessageRequestGroup ], view: TSThreadDatabaseViewExtensionName)
-        result.setIsReversed(true, forGroup: TSMessageRequestGroup)
-        return result
-    }()
-    private var threadViewModelCache: [String: ThreadViewModel] = [:] // Thread ID to ThreadViewModel
-    private var tableViewTopConstraint: NSLayoutConstraint!
+    private static let loadingHeaderHeight: CGFloat = 20
     
-    private var messageRequestCount: UInt {
-        threads.numberOfItems(inGroup: TSMessageRequestGroup)
+    private let viewModel: MessageRequestsViewModel = MessageRequestsViewModel()
+    private var dataChangeObservable: DatabaseCancellable?
+    private var hasLoadedInitialThreadData: Bool = false
+    private var isLoadingMore: Bool = false
+    private var isAutoLoadingNextPage: Bool = false
+    private var viewHasAppeared: Bool = false
+    
+    // MARK: - Intialization
+    
+    init() {
+        Storage.shared.addObserver(viewModel.pagedDataObserver)
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        preconditionFailure("Use init() instead.")
     }
     
-    private lazy var dbConnection: YapDatabaseConnection = {
-        let result = OWSPrimaryStorage.shared().newDatabaseConnection()
-        result.objectCacheLimit = 500
-        
-        return result
-    }()
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     // MARK: - UI
-        
+
     private lazy var tableView: UITableView = {
         let result: UITableView = UITableView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.backgroundColor = .clear
         result.separatorStyle = .none
-        result.register(MessageRequestsCell.self, forCellReuseIdentifier: MessageRequestsCell.reuseIdentifier)
-        result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
+        result.register(view: FullConversationCell.self)
         result.dataSource = self
         result.delegate = self
-        
+
         let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
         result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
         result.showsVerticalScrollIndicator = false
         
+        if #available(iOS 15.0, *) {
+            result.sectionHeaderTopPadding = 0
+        }
+
         return result
     }()
-    
+
     private lazy var emptyStateLabel: UILabel = {
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
@@ -54,19 +65,19 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         result.textAlignment = .center
         result.numberOfLines = 0
         result.isHidden = true
-        
+
         return result
     }()
-    
+
     private lazy var fadeView: UIView = {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.isUserInteractionEnabled = false
         result.setGradient(Gradients.homeVCFade)
-        
+
         return result
     }()
-    
+
     private lazy var clearAllButton: Button = {
         let result: Button = Button(style: .destructiveOutline, size: .large)
         result.translatesAutoresizingMaskIntoConstraints = false
@@ -78,17 +89,21 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             for: .highlighted
         )
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
-        
+
         return result
     }()
-    
+
     // MARK: - Lifecycle
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        ViewControllerUtilities.setUpDefaultSessionStyle(for: self, title: NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: ""), hasCustomBackButton: false)
-        
+
+        ViewControllerUtilities.setUpDefaultSessionStyle(
+            for: self,
+               title: "MESSAGE_REQUESTS_TITLE".localized(),
+               hasCustomBackButton: false
+        )
+
         // Add the UI (MUST be done after the thread freeze so the 'tableView' creation and setting
         // the dataSource has the correct data)
         view.addSubview(tableView)
@@ -96,58 +111,69 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         view.addSubview(fadeView)
         view.addSubview(clearAllButton)
         setupLayout()
-        
+
         // Notifications
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleYapDatabaseModifiedNotification(_:)),
-            name: .YapDatabaseModified,
-            object: OWSPrimaryStorage.shared().dbNotificationObject
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleProfileDidChangeNotification(_:)),
-            name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange),
+            selector: #selector(applicationDidBecomeActive(_:)),
+            name: UIApplication.didBecomeActiveNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleBlockedContactsUpdatedNotification(_:)),
-            name: .blockedContactsUpdated,
-            object: nil
+            selector: #selector(applicationDidResignActive(_:)),
+            name: UIApplication.didEnterBackgroundNotification, object: nil
         )
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
-        reload()
+        startObservingChanges()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        reload()
+        
+        self.viewHasAppeared = true
+        self.autoLoadNextPageIfNeeded()
     }
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Stop observing database changes
+        dataChangeObservable?.cancel()
     }
     
+    @objc func applicationDidBecomeActive(_ notification: Notification) {
+        startObservingChanges(didReturnFromBackground: true)
+    }
+    
+    @objc func applicationDidResignActive(_ notification: Notification) {
+        // Stop observing database changes
+        dataChangeObservable?.cancel()
+    }
+
     // MARK: - Layout
-    
+
     private func setupLayout() {
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.smallSpacing),
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
+
             emptyStateLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.massiveSpacing),
             emptyStateLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.mediumSpacing),
             emptyStateLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.mediumSpacing),
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
+
             fadeView.topAnchor.constraint(equalTo: view.topAnchor, constant: (0.15 * view.bounds.height)),
             fadeView.leftAnchor.constraint(equalTo: view.leftAnchor),
             fadeView.rightAnchor.constraint(equalTo: view.rightAnchor),
             fadeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
+
             clearAllButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             clearAllButton.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
@@ -158,277 +184,285 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         ])
     }
     
-    // MARK: - UITableViewDataSource
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Int(messageRequestCount)
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ConversationCell.reuseIdentifier) as! ConversationCell
-        cell.threadViewModel = threadViewModel(at: indexPath.row)
-        return cell
-    }
-        
     // MARK: - Updating
     
-    private func reload() {
-        AssertIsOnMainThread()
-        dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
-        dbConnection.read { transaction in
-            self.threads.update(with: transaction)
+    private func startObservingChanges(didReturnFromBackground: Bool = false) {
+        self.viewModel.onThreadChange = { [weak self] updatedThreadData in
+            self?.handleThreadUpdates(updatedThreadData)
         }
-        threadViewModelCache.removeAll()
-        tableView.reloadData()
-        clearAllButton.isHidden = (messageRequestCount == 0)
-        emptyStateLabel.isHidden = (messageRequestCount != 0)
+        
+        // Note: When returning from the background we could have received notifications but the
+        // PagedDatabaseObserver won't have them so we need to force a re-fetch of the current
+        // data to ensure everything is up to date
+        if didReturnFromBackground {
+            self.viewModel.pagedDataObserver?.reload()
+        }
     }
     
-    @objc private func handleYapDatabaseModifiedNotification(_ yapDatabase: YapDatabase) {
-        // NOTE: This code is very finicky and crashes easily. Modify with care.
-        AssertIsOnMainThread()
+    private func handleThreadUpdates(_ updatedData: [MessageRequestsViewModel.SectionModel], initialLoad: Bool = false) {
+        // Ensure the first load runs without animations (if we don't do this the cells will animate
+        // in from a frame of CGRect.zero)
+        guard hasLoadedInitialThreadData else {
+            hasLoadedInitialThreadData = true
+            UIView.performWithoutAnimation { handleThreadUpdates(updatedData, initialLoad: true) }
+            return
+        }
         
-        // If we don't capture `threads` here, a race condition can occur where the
-        // `thread.snapshotOfLastUpdate != firstSnapshot - 1` check below evaluates to
-        // `false`, but `threads` then changes between that check and the
-        // `ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)`
-        // line. This causes `tableView.endUpdates()` to crash with an `NSInternalInconsistencyException`.
-        let threads = threads!
+        // Show the empty state if there is no data
+        clearAllButton.isHidden = updatedData.isEmpty
+        emptyStateLabel.isHidden = !updatedData.isEmpty
         
-        // Create a stable state for the connection and jump to the latest commit
-        let notifications = dbConnection.beginLongLivedReadTransaction()
+        CATransaction.begin()
+        CATransaction.setCompletionBlock { [weak self] in
+            // Complete page loading
+            self?.isLoadingMore = false
+            self?.autoLoadNextPageIfNeeded()
+        }
         
-        guard !notifications.isEmpty else { return }
+        // Reload the table content (animate changes after the first load)
+        tableView.reload(
+            using: StagedChangeset(source: viewModel.threadData, target: updatedData),
+            deleteSectionsAnimation: .none,
+            insertSectionsAnimation: .none,
+            reloadSectionsAnimation: .none,
+            deleteRowsAnimation: .bottom,
+            insertRowsAnimation: .top,
+            reloadRowsAnimation: .none,
+            interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
+        ) { [weak self] updatedData in
+            self?.viewModel.updateThreadData(updatedData)
+        }
         
-        let ext = dbConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
-        let hasChanges = ext.hasChanges(forGroup: TSMessageRequestGroup, in: notifications)
+        CATransaction.commit()
+    }
+    
+    private func autoLoadNextPageIfNeeded() {
+        guard !self.isAutoLoadingNextPage && !self.isLoadingMore else { return }
         
-        guard hasChanges else { return }
+        self.isAutoLoadingNextPage = true
         
-        if let firstChangeSet = notifications[0].userInfo {
-            let firstSnapshot = firstChangeSet[YapDatabaseSnapshotKey] as! UInt64
+        DispatchQueue.main.asyncAfter(deadline: .now() + PagedData.autoLoadNextPageDelay) { [weak self] in
+            self?.isAutoLoadingNextPage = false
             
-            if threads.snapshotOfLastUpdate != firstSnapshot - 1 {
-                return reload() // The code below will crash if we try to process multiple commits at once
-            }
-        }
-        
-        var sectionChanges = NSArray()
-        var rowChanges = NSArray()
-        ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)
-        
-        guard sectionChanges.count > 0 || rowChanges.count > 0 else { return }
-        
-        tableView.beginUpdates()
-        
-        rowChanges.forEach { rowChange in
-            let rowChange = rowChange as! YapDatabaseViewRowChange
-            let key = rowChange.collectionKey.key
-            threadViewModelCache[key] = nil
-            switch rowChange.type {
-                case .delete: tableView.deleteRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
-                case .insert: tableView.insertRows(at: [ rowChange.newIndexPath! ], with: UITableView.RowAnimation.automatic)
-                case .update: tableView.reloadRows(at: [ rowChange.indexPath! ], with: UITableView.RowAnimation.automatic)
-                default: break
-            }
-        }
-        tableView.endUpdates()
-        
-        // HACK: Moves can have conflicts with the other 3 types of change.
-        // Just batch perform all the moves separately to prevent crashing.
-        // Since all the changes are from the original state to the final state,
-        // it will still be correct if we pick the moves out.
-        
-        tableView.beginUpdates()
-        
-        rowChanges.forEach { rowChange in
-            let rowChange = rowChange as! YapDatabaseViewRowChange
-            let key = rowChange.collectionKey.key
-            threadViewModelCache[key] = nil
+            // Note: We sort the headers as we want to prioritise loading newer pages over older ones
+            let sections: [(MessageRequestsViewModel.Section, CGRect)] = (self?.viewModel.threadData
+                .enumerated()
+                .map { index, section in (section.model, (self?.tableView.rectForHeader(inSection: index) ?? .zero)) })
+                .defaulting(to: [])
+            let shouldLoadMore: Bool = sections
+                .contains { section, headerRect in
+                    section == .loadMore &&
+                    headerRect != .zero &&
+                    (self?.tableView.bounds.contains(headerRect) == true)
+                }
             
-            switch rowChange.type {
-                case .move: tableView.moveRow(at: rowChange.indexPath!, to: rowChange.newIndexPath!)
-                default: break
+            guard shouldLoadMore else { return }
+            
+            self?.isLoadingMore = true
+            
+            DispatchQueue.global(qos: .default).async { [weak self] in
+                self?.viewModel.pagedDataObserver?.load(.pageAfter)
             }
         }
-        
-        tableView.endUpdates()
-        clearAllButton.isHidden = (messageRequestCount == 0)
-        emptyStateLabel.isHidden = (messageRequestCount != 0)
-    }
-    
-    @objc private func handleProfileDidChangeNotification(_ notification: Notification) {
-        tableView.reloadData() // TODO: Just reload the affected cell
-    }
-    
-    @objc private func handleBlockedContactsUpdatedNotification(_ notification: Notification) {
-        tableView.reloadData() // TODO: Just reload the affected cell
     }
 
     @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
         super.handleAppModeChangedNotification(notification)
-        
+
         let gradient = Gradients.homeVCFade
         fadeView.setGradient(gradient) // Re-do the gradient
         tableView.reloadData()
     }
     
+    // MARK: - UITableViewDataSource
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return viewModel.threadData.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        
+        return section.elements.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[indexPath.section]
+        
+        switch section.model {
+            case .threads:
+                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
+                let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
+                cell.update(with: threadViewModel)
+                return cell
+                
+            default: preconditionFailure("Other sections should have no content")
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore:
+                let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
+                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.alpha = 0.5
+                loadingIndicator.startAnimating()
+                
+                let view: UIView = UIView()
+                view.addSubview(loadingIndicator)
+                loadingIndicator.center(in: view)
+                
+                return view
+            
+            default: return nil
+        }
+    }
+
     // MARK: - UITableViewDelegate
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore: return MessageRequestsViewController.loadingHeaderHeight
+            default: return 0
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard self.hasLoadedInitialThreadData && self.viewHasAppeared && !self.isLoadingMore else { return }
+        
+        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[section]
+        
+        switch section.model {
+            case .loadMore:
+                self.isLoadingMore = true
+                
+                DispatchQueue.global(qos: .default).async { [weak self] in
+                    self?.viewModel.pagedDataObserver?.load(.pageAfter)
+                }
+                
+            default: break
+        }
+    }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let thread = self.thread(at: indexPath.row) else { return }
+        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
         
-        let conversationVC = ConversationVC(thread: thread)
-        self.navigationController?.pushViewController(conversationVC, animated: true)
+        switch section.model {
+            case .threads:
+                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
+                let conversationVC: ConversationVC = ConversationVC(
+                    threadId: threadViewModel.threadId,
+                    threadVariant: threadViewModel.threadVariant
+                )
+                self.navigationController?.pushViewController(conversationVC, animated: true)
+                
+            default: break
+        }
     }
-    
+
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    
+
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        guard let thread = self.thread(at: indexPath.row) else { return [] }
+        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
         
-        let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("TXT_DELETE_TITLE", comment: "")) { [weak self] _, _ in
-            self?.delete(thread)
+        switch section.model {
+            case .threads:
+                let threadId: String = section.elements[indexPath.row].threadId
+                let delete = UITableViewRowAction(
+                    style: .destructive,
+                    title: "TXT_DELETE_TITLE".localized()
+                ) { [weak self] _, _ in
+                    self?.delete(threadId)
+                }
+                delete.backgroundColor = Colors.destructive
+
+                return [ delete ]
+                
+            default: return []
         }
-        delete.backgroundColor = Colors.destructive
-        
-        return [ delete ]
     }
-    
+
     // MARK: - Interaction
     
-    private func updateContactAndThread(thread: TSThread, with transaction: YapDatabaseReadWriteTransaction, onComplete: ((Bool) -> ())? = nil) {
-        guard let contactThread: TSContactThread = thread as? TSContactThread else {
-            onComplete?(false)
+    @objc private func clearAllTapped() {
+        guard viewModel.threadData.first(where: { $0.model == .threads })?.elements.isEmpty == false else {
             return
         }
         
-        var needsSync: Bool = false
-        
-        // Update the contact
-        let sessionId: String = contactThread.contactSessionID()
-        
-        if let contact: Contact = Storage.shared.getContact(with: sessionId), (contact.isApproved || !contact.isBlocked) {
-            contact.isApproved = false
-            contact.isBlocked = true
-            
-            Storage.shared.setContact(contact, using: transaction)
-            needsSync = true
-        }
-        
-        // Delete all thread content
-        thread.removeAllThreadInteractions(with: transaction)
-        thread.remove(with: transaction)
-        
-        onComplete?(needsSync)
-    }
-    
-    @objc private func clearAllTapped() {
-        let threadCount: Int = Int(messageRequestCount)
-        let threads: [TSThread] = (0..<threadCount).compactMap { self.thread(at: $0) }
-        var needsSync: Bool = false
-        
-        let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE", comment: ""), message: nil, preferredStyle: .actionSheet)
-        alertVC.addAction(UIAlertAction(title: NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON", comment: ""), style: .destructive) { _ in
+        let threadIds: [String] = (viewModel.threadData
+            .first { $0.model == .threads }?
+            .elements
+            .map { $0.threadId })
+            .defaulting(to: [])
+        let alertVC: UIAlertController = UIAlertController(
+            title: "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE".localized(),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction(
+            title: "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON".localized(),
+            style: .destructive
+        ) { _ in
             // Clear the requests
-            Storage.write(
-                with: { [weak self] transaction in
-                    threads.forEach { thread in
-                        if let uniqueId: String = thread.uniqueId {
-                            Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                        }
-                        
-                        self?.updateContactAndThread(thread: thread, with: transaction) { threadNeedsSync in
-                            if threadNeedsSync {
-                                needsSync = true
-                            }
-                        }
-                        
-                        // Block the contact
-                        if
-                            let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
-                            !thread.isBlocked(),
-                            let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
-                        {
-                            contact.isBlocked = true
-                            Storage.shared.setContact(contact, using: transaction)
-                            needsSync = true
-                        }
-                    }
-                },
-                completion: {
-                    // Force a config sync
-                    if needsSync {
-                        MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                    }
+            Storage.shared.write { db in
+                _ = try SessionThread
+                    .filter(ids: threadIds)
+                    .deleteAll(db)
+                
+                try threadIds.forEach { threadId in
+                    _ = try Contact
+                        .fetchOrCreate(db, id: threadId)
+                        .with(
+                            isApproved: false,
+                            isBlocked: true
+                        )
+                        .saved(db)
                 }
-            )
-        })
-        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
-        self.present(alertVC, animated: true, completion: nil)
-    }
-    
-    private func delete(_ thread: TSThread) {
-        guard let uniqueId: String = thread.uniqueId else { return }
-        
-        let alertVC: UIAlertController = UIAlertController(title: NSLocalizedString("MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON", comment: ""), message: nil, preferredStyle: .actionSheet)
-        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
-            Storage.write(
-                with: { [weak self] transaction in
-                    Storage.shared.cancelPendingMessageSendJobs(for: uniqueId, using: transaction)
-                    self?.updateContactAndThread(thread: thread, with: transaction)
-                    
-                    // Block the contact
-                    if
-                        let sessionId: String = (thread as? TSContactThread)?.contactSessionID(),
-                        !thread.isBlocked(),
-                        let contact: Contact = Storage.shared.getContact(with: sessionId, using: transaction)
-                    {
-                        contact.isBlocked = true
-                        Storage.shared.setContact(contact, using: transaction)
-                    }
-                },
-                completion: {
-                    // Force a config sync
-                    MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
-                }
-            )
-        })
-        alertVC.addAction(UIAlertAction(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel, handler: nil))
-        self.present(alertVC, animated: true, completion: nil)
-    }
-    
-    // MARK: - Convenience
-
-    private func thread(at index: Int) -> TSThread? {
-        var thread: TSThread? = nil
-        
-        dbConnection.read { transaction in
-            let ext: YapDatabaseViewTransaction? = transaction.ext(TSThreadDatabaseViewExtensionName) as? YapDatabaseViewTransaction
-            thread = ext?.object(atRow: UInt(index), inSection: 0, with: self.threads) as? TSThread
-        }
-        
-        return thread
-    }
-    
-    private func threadViewModel(at index: Int) -> ThreadViewModel? {
-        guard let thread = thread(at: index), let uniqueId: String = thread.uniqueId else { return nil }
-        
-        if let cachedThreadViewModel = threadViewModelCache[uniqueId] {
-            return cachedThreadViewModel
-        }
-        else {
-            var threadViewModel: ThreadViewModel? = nil
-            dbConnection.read { transaction in
-                threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                
+                // Force a config sync
+                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
-            threadViewModelCache[uniqueId] = threadViewModel
-            
-            return threadViewModel
-        }
+        })
+        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
+        self.present(alertVC, animated: true, completion: nil)
+    }
+
+    private func delete(_ threadId: String) {
+        let alertVC: UIAlertController = UIAlertController(
+            title: "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON".localized(),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction(
+            title: "TXT_DELETE_TITLE".localized(),
+            style: .destructive
+        ) { _ in
+            Storage.shared.write { db in
+                _ = try SessionThread
+                    .filter(id: threadId)
+                    .deleteAll(db)
+                _ = try Contact
+                    .fetchOrCreate(db, id: threadId)
+                    .with(
+                        isApproved: false,
+                        isBlocked: true
+                    )
+                    .saved(db)
+                
+                // Force a config sync
+                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+            }
+        })
+        
+        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
+        self.present(alertVC, animated: true, completion: nil)
     }
 }

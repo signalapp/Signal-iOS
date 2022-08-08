@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import GRDB
 import SessionMessagingKit
 
 @objc public class BlockListUIUtils: NSObject {
@@ -9,15 +10,15 @@ import SessionMessagingKit
     /// This method shows an alert to unblock a contact in a ContactThread and will update the `isBlocked` flag of the contact if the user decides to continue
     ///
     /// **Note:** Make sure to force a config sync in the `completionBlock` if the blocked state was successfully changed
-    @objc public static func showBlockThreadActionSheet(_ thread: TSContactThread, from viewController: UIViewController, completionBlock: ((Bool) -> ())? = nil) {
+    @objc public static func showBlockThreadActionSheet(_ threadId: String, from viewController: UIViewController, completionBlock: ((Bool) -> ())? = nil) {
         let userPublicKey = getUserHexEncodedPublicKey()
         
-        guard thread.contactSessionID() != userPublicKey, let contact: Contact = Storage.shared.getContact(with: thread.contactSessionID()) else {
+        guard threadId != userPublicKey else {
             completionBlock?(false)
             return
         }
         
-        let displayName: String = (contact.displayName(for: .regular) ?? thread.contactSessionID())
+        let displayName: String = Profile.displayName(id: threadId)
         let actionSheet: UIAlertController = UIAlertController(
             title: String(
                 format: "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT".localized(),
@@ -31,12 +32,14 @@ import SessionMessagingKit
             accessibilityIdentifier: "\(type(of: self).self).block",
             style: .destructive,
             handler: { _ in
-                Storage.write(
-                    with: { transaction in
-                        contact.isBlocked = true
-                        Storage.shared.setContact(contact, using: transaction)
+                Storage.shared.writeAsync(
+                    updates: { db in
+                        try Contact
+                            .fetchOrCreate(db, id: threadId)
+                            .with(isBlocked: true)
+                            .save(db)
                     },
-                    completion: {
+                    completion: { _, _ in
                         self.showOkAlert(
                             title: "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE".localized(),
                             message: String(
@@ -46,7 +49,8 @@ import SessionMessagingKit
                             from: viewController,
                             completionBlock: { _ in completionBlock?(true) }
                         )
-                    })
+                    }
+                )
             }
         ))
         actionSheet.addAction(UIAlertAction(
@@ -64,13 +68,8 @@ import SessionMessagingKit
     /// This method shows an alert to unblock a contact in a ContactThread and will update the `isBlocked` flag of the contact if the user decides to continue
     ///
     /// **Note:** Make sure to force a config sync in the `completionBlock` if the blocked state was successfully changed
-    @objc public static func showUnblockThreadActionSheet(_ thread: TSContactThread, from viewController: UIViewController, completionBlock: ((Bool) -> ())? = nil) {
-        guard let contact: Contact = Storage.shared.getContact(with: thread.contactSessionID()) else {
-            completionBlock?(true)
-            return
-        }
-        
-        let displayName: String = (contact.displayName(for: .regular) ?? thread.contactSessionID())
+    @objc public static func showUnblockThreadActionSheet(_ threadId: String, from viewController: UIViewController, completionBlock: ((Bool) -> ())? = nil) {
+        let displayName: String = Profile.displayName(id: threadId)
         let actionSheet: UIAlertController = UIAlertController(
             title: String(
                 format: "BLOCK_LIST_UNBLOCK_TITLE_FORMAT".localized(),
@@ -84,12 +83,14 @@ import SessionMessagingKit
             accessibilityIdentifier: "\(type(of: self).self).unblock",
             style: .destructive,
             handler: { _ in
-                Storage.write(
-                    with: { transaction in
-                        contact.isBlocked = false
-                        Storage.shared.setContact(contact, using: transaction)
+                Storage.shared.writeAsync(
+                    updates: { db in
+                        try Contact
+                            .fetchOrCreate(db, id: threadId)
+                            .with(isBlocked: false)
+                            .save(db)
                     },
-                    completion: {
+                    completion: { _, _ in
                         self.showOkAlert(
                             title: String(
                                 format: "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT".localized(),

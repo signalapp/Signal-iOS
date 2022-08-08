@@ -1,7 +1,12 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import PromiseKit
 import WebRTC
+import SessionUtilitiesKit
 
-public protocol WebRTCSessionDelegate : AnyObject {
+public protocol WebRTCSessionDelegate: AnyObject {
     var videoCapturer: RTCVideoCapturer { get }
     
     func webRTCIsConnected()
@@ -15,7 +20,7 @@ public protocol WebRTCSessionDelegate : AnyObject {
 public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     public weak var delegate: WebRTCSessionDelegate?
     public let uuid: String
-    private let contactSessionID: String
+    private let contactSessionId: String
     private var queuedICECandidates: [RTCIceCandidate] = []
     private var iceCandidateSendTimer: Timer?
     
@@ -73,13 +78,14 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     // Data Channel
     internal var dataChannel: RTCDataChannel?
     
-    // MARK: Error
+    // MARK: - Error
+    
     public enum Error : LocalizedError {
         case noThread
         
         public var errorDescription: String? {
             switch self {
-            case .noThread: return "Couldn't find thread for contact."
+                case .noThread: return "Couldn't find thread for contact."
             }
         }
     }
@@ -87,15 +93,20 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     // MARK: Initialization
     public static var current: WebRTCSession?
     
-    public init(for contactSessionID: String, with uuid: String) {
+    public init(for contactSessionId: String, with uuid: String) {
         RTCAudioSession.sharedInstance().useManualAudio = true
         RTCAudioSession.sharedInstance().isAudioEnabled = false
-        self.contactSessionID = contactSessionID
+        
+        self.contactSessionId = contactSessionId
         self.uuid = uuid
+        
         super.init()
+        
         let mediaStreamTrackIDS = ["ARDAMS"]
+        
         peerConnection?.add(audioTrack, streamIds: mediaStreamTrackIDS)
         peerConnection?.add(localVideoTrack, streamIds: mediaStreamTrackIDS)
+        
         // Configure audio session
         configureAudioSession()
         
@@ -106,81 +117,136 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
         }
     }
     
-    // MARK: Signaling
-    public func sendPreOffer(_ message: CallMessage, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    // MARK: - Signaling
+    
+    public func sendPreOffer(
+        _ db: Database,
+        message: CallMessage,
+        interactionId: Int64?,
+        in thread: SessionThread
+    ) throws -> Promise<Void> {
         SNLog("[Calls] Sending pre-offer message.")
-        let (promise, seal) = Promise<Void>.pending()
-        DispatchQueue.main.async {
-            MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
+        
+        return try MessageSender
+            .sendNonDurably(
+                db,
+                message: message,
+                interactionId: interactionId,
+                in: thread
+            )
+            .done2 {
                 SNLog("[Calls] Pre-offer message has been sent.")
-                seal.fulfill(())
-            }.catch2 { error in
-                seal.reject(error)
             }
-        }
-        return promise
     }
     
-    public func sendOffer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction, isRestartingICEConnection: Bool = false) -> Promise<Void> {
+    public func sendOffer(
+        _ db: Database,
+        to sessionId: String,
+        isRestartingICEConnection: Bool = false
+    ) -> Promise<Void> {
         SNLog("[Calls] Sending offer message.")
-        guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
-        peerConnection?.offer(for: mediaConstraints(isRestartingICEConnection)) { [weak self] sdp, error in
+        let uuid: String = self.uuid
+        let mediaConstraints: RTCMediaConstraints = mediaConstraints(isRestartingICEConnection)
+        
+        guard let thread: SessionThread = try? SessionThread.fetchOne(db, id: sessionId) else {
+            return Promise(error: Error.noThread)
+        }
+        
+        self.peerConnection?.offer(for: mediaConstraints) { [weak self] sdp, error in
             if let error = error {
                 seal.reject(error)
-            } else {
-                guard let self = self, let sdp = self.correctSessionDescription(sdp: sdp) else { preconditionFailure() }
-                self.peerConnection?.setLocalDescription(sdp) { error in
-                    if let error = error {
-                        print("Couldn't initiate call due to error: \(error).")
-                        return seal.reject(error)
-                    }
-                }
-                DispatchQueue.main.async {
-                    let message = CallMessage()
-                    message.sentTimestamp = NSDate.millisecondTimestamp()
-                    message.uuid = self.uuid
-                    message.kind = .offer
-                    message.sdps = [ sdp.sdp ]
-                    MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
-                        seal.fulfill(())
-                    }.catch2 { error in
-                        seal.reject(error)
-                    }
+                return
+            }
+            
+            guard let sdp: RTCSessionDescription = self?.correctSessionDescription(sdp: sdp) else {
+                preconditionFailure()
+            }
+            
+            self?.peerConnection?.setLocalDescription(sdp) { error in
+                if let error = error {
+                    print("Couldn't initiate call due to error: \(error).")
+                    return seal.reject(error)
                 }
             }
+            
+            Storage.shared
+                .writeAsync { db in
+                    try MessageSender
+                        .sendNonDurably(
+                            db,
+                            message: CallMessage(
+                                uuid: uuid,
+                                kind: .offer,
+                                sdps: [ sdp.sdp ],
+                                sentTimestampMs: UInt64(floor(Date().timeIntervalSince1970 * 1000))
+                            ),
+                            interactionId: nil,
+                            in: thread
+                        )
+                }
+                .done2 {
+                    seal.fulfill(())
+                }
+                .catch2 { error in
+                    seal.reject(error)
+                }
+                .retainUntilComplete()
         }
+        
         return promise
     }
     
-    public func sendAnswer(to sessionID: String, using transaction: YapDatabaseReadWriteTransaction) -> Promise<Void> {
+    public func sendAnswer(to sessionId: String) -> Promise<Void> {
         SNLog("[Calls] Sending answer message.")
-        guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return Promise(error: Error.noThread) }
         let (promise, seal) = Promise<Void>.pending()
-        peerConnection?.answer(for: mediaConstraints(false)) { [weak self] sdp, error in
-            if let error = error {
-                seal.reject(error)
-            } else {
-                guard let self = self, let sdp = self.correctSessionDescription(sdp: sdp) else { preconditionFailure() }
-                self.peerConnection?.setLocalDescription(sdp) { error in
+        let uuid: String = self.uuid
+        let mediaConstraints: RTCMediaConstraints = mediaConstraints(false)
+        
+        Storage.shared.writeAsync { [weak self] db in
+            guard let thread: SessionThread = try? SessionThread.fetchOne(db, id: sessionId) else {
+                seal.reject(Error.noThread)
+                return
+            }
+        
+            self?.peerConnection?.answer(for: mediaConstraints) { [weak self] sdp, error in
+                if let error = error {
+                    seal.reject(error)
+                    return
+                }
+                
+                guard let sdp: RTCSessionDescription = self?.correctSessionDescription(sdp: sdp) else {
+                    preconditionFailure()
+                }
+                
+                self?.peerConnection?.setLocalDescription(sdp) { error in
                     if let error = error {
                         print("Couldn't accept call due to error: \(error).")
                         return seal.reject(error)
                     }
                 }
-                DispatchQueue.main.async {
-                    let message = CallMessage()
-                    message.uuid = self.uuid
-                    message.kind = .answer
-                    message.sdps = [ sdp.sdp ]
-                    MessageSender.sendNonDurably(message, in: thread, using: transaction).done2 {
+                
+                try? MessageSender
+                    .sendNonDurably(
+                        db,
+                        message: CallMessage(
+                            uuid: uuid,
+                            kind: .answer,
+                            sdps: [ sdp.sdp ]
+                        ),
+                        interactionId: nil,
+                        in: thread
+                    )
+                    .done2 {
                         seal.fulfill(())
-                    }.catch2 { error in
+                    }
+                    .catch2 { error in
                         seal.reject(error)
                     }
-                }
+                    .retainUntilComplete()
             }
         }
+        
         return promise
     }
     
@@ -195,29 +261,51 @@ public final class WebRTCSession : NSObject, RTCPeerConnectionDelegate {
     }
     
     private func sendICECandidates() {
-        Storage.write { transaction in
-            let candidates = self.queuedICECandidates
-            guard let thread = TSContactThread.fetch(for: self.contactSessionID, using: transaction) else { return }
+        let candidates: [RTCIceCandidate] = self.queuedICECandidates
+        let uuid: String = self.uuid
+        let contactSessionId: String = self.contactSessionId
+        
+        // Empty the queue
+        self.queuedICECandidates.removeAll()
+        
+        Storage.shared.writeAsync { db in
+            guard let thread: SessionThread = try SessionThread.fetchOne(db, id: contactSessionId) else { return }
+            
             SNLog("[Calls] Batch sending \(candidates.count) ICE candidates.")
-            let message = CallMessage()
-            let sdps = candidates.map { $0.sdp }
-            let sdpMLineIndexes = candidates.map { UInt32($0.sdpMLineIndex) }
-            let sdpMids = candidates.map { $0.sdpMid! }
-            message.uuid = self.uuid
-            message.kind = .iceCandidates(sdpMLineIndexes: sdpMLineIndexes, sdpMids: sdpMids)
-            message.sdps = sdps
-            self.queuedICECandidates.removeAll()
-            MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
+            
+            try MessageSender.sendNonDurably(
+                db,
+                message: CallMessage(
+                    uuid: uuid,
+                    kind: .iceCandidates(
+                        sdpMLineIndexes: candidates.map { UInt32($0.sdpMLineIndex) },
+                        sdpMids: candidates.map { $0.sdpMid! }
+                    ),
+                    sdps: candidates.map { $0.sdp }
+                ),
+                interactionId: nil,
+                in: thread
+            )
+            .retainUntilComplete()
         }
     }
     
-    public func endCall(with sessionID: String, using transaction: YapDatabaseReadWriteTransaction) {
-        guard let thread = TSContactThread.fetch(for: sessionID, using: transaction) else { return }
-        let message = CallMessage()
-        message.uuid = self.uuid
-        message.kind = .endCall
+    public func endCall(_ db: Database, with sessionId: String) throws {
+        guard let thread: SessionThread = try SessionThread.fetchOne(db, id: sessionId) else { return }
+        
         SNLog("[Calls] Sending end call message.")
-        MessageSender.sendNonDurably(message, in: thread, using: transaction).retainUntilComplete()
+        
+        try MessageSender.sendNonDurably(
+            db,
+            message: CallMessage(
+                uuid: self.uuid,
+                kind: .endCall,
+                sdps: []
+            ),
+            interactionId: nil,
+            in: thread
+        )
+        .retainUntilComplete()
     }
     
     public func dropConnection() {

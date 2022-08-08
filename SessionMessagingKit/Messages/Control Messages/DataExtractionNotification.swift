@@ -1,66 +1,70 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
-public final class DataExtractionNotification : ControlMessage {
+public final class DataExtractionNotification: ControlMessage {
+    private enum CodingKeys: String, CodingKey {
+        case kind
+    }
+    
     public var kind: Kind?
     
-    // MARK: Kind
-    public enum Kind : CustomStringConvertible {
+    // MARK: - Kind
+    
+    public enum Kind: CustomStringConvertible, Codable {
         case screenshot
-        case mediaSaved(timestamp: UInt64)
+        case mediaSaved(timestamp: UInt64)  // Note: The 'timestamp' should the original message timestamp
 
         public var description: String {
             switch self {
-            case .screenshot: return "screenshot"
-            case .mediaSaved: return "mediaSaved"
+                case .screenshot: return "screenshot"
+                case .mediaSaved: return "mediaSaved"
             }
         }
     }
 
-    // MARK: Initialization
-    public override init() { super.init() }
-
-    internal init(kind: Kind) {
+    // MARK: - Initialization
+    
+    public init(kind: Kind) {
         super.init()
+        
         self.kind = kind
     }
 
-    // MARK: Validation
+    // MARK: - Validation
+    
     public override var isValid: Bool {
         guard super.isValid, let kind = kind else { return false }
+        
         switch kind {
-        case .screenshot: return true
-        case .mediaSaved(let timestamp): return timestamp > 0
+            case .screenshot: return true
+            case .mediaSaved(let timestamp): return timestamp > 0
         }
     }
-
-    // MARK: Coding
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        guard let rawKind = coder.decodeObject(forKey: "kind") as? String else { return nil }
-        switch rawKind {
-        case "screenshot":
-            self.kind = .screenshot
-        case "mediaSaved":
-            guard let timestamp = coder.decodeObject(forKey: "timestamp") as? UInt64 else { return nil }
-            self.kind = .mediaSaved(timestamp: timestamp)
-        default: return nil
-        }
+    
+    // MARK: - Codable
+    
+    required init(from decoder: Decoder) throws {
+        try super.init(from: decoder)
+        
+        let container: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+        
+        kind = try? container.decode(Kind.self, forKey: .kind)
+    }
+    
+    public override func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
+        
+        var container: KeyedEncodingContainer<CodingKeys> = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encodeIfPresent(kind, forKey: .kind)
     }
 
-    public override func encode(with coder: NSCoder) {
-        super.encode(with: coder)
-        guard let kind = kind else { return }
-        switch kind {
-        case .screenshot:
-            coder.encode("screenshot", forKey: "kind")
-        case .mediaSaved(let timestamp):
-            coder.encode("mediaSaved", forKey: "kind")
-            coder.encode(timestamp, forKey: "timestamp")
-        }
-    }
-
-    // MARK: Proto Conversion
-    public override class func fromProto(_ proto: SNProtoContent) -> DataExtractionNotification? {
+    // MARK: - Proto Conversion
+    
+    public override class func fromProto(_ proto: SNProtoContent, sender: String) -> DataExtractionNotification? {
         guard let dataExtractionNotification = proto.dataExtractionNotification else { return nil }
         let kind: Kind
         switch dataExtractionNotification.type {
@@ -72,7 +76,7 @@ public final class DataExtractionNotification : ControlMessage {
         return DataExtractionNotification(kind: kind)
     }
 
-    public override func toProto(using transaction: YapDatabaseReadWriteTransaction) -> SNProtoContent? {
+    public override func toProto(_ db: Database) -> SNProtoContent? {
         guard let kind = kind else {
             SNLog("Couldn't construct data extraction notification proto from: \(self).")
             return nil
@@ -95,8 +99,9 @@ public final class DataExtractionNotification : ControlMessage {
         }
     }
 
-    // MARK: Description
-    public override var description: String {
+    // MARK: - Description
+    
+    public var description: String {
         """
         DataExtractionNotification(
             kind: \(kind?.description ?? "null")

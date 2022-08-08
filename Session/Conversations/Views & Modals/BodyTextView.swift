@@ -1,20 +1,37 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 
 // Requirements:
-// • Links should show up properly and be tappable.
-// • Text should * not * be selectable.
-// • The long press interaction that shows the context menu should still work.
-
-final class BodyTextView : UITextView {
-    private let snDelegate: BodyTextViewDelegate
+// • Links should show up properly and be tappable
+// • Text should * not * be selectable (this is handled via the 'textViewDidChangeSelection(_:)'
+// delegate method)
+// • The long press interaction that shows the context menu should still work
+final class BodyTextView: UITextView {
+    private let snDelegate: BodyTextViewDelegate?
+    private let highlightedMentionBackgroundView: HighlightMentionBackgroundView = HighlightMentionBackgroundView()
     
-    override var selectedTextRange: UITextRange? {
-        get { return nil }
-        set { }
+    override var attributedText: NSAttributedString! {
+        didSet {
+            guard attributedText != nil else { return }
+            
+            highlightedMentionBackgroundView.maxPadding = highlightedMentionBackgroundView
+                .calculateMaxPadding(for: attributedText)
+            highlightedMentionBackgroundView.frame = self.bounds.insetBy(
+                dx: -highlightedMentionBackgroundView.maxPadding,
+                dy: -highlightedMentionBackgroundView.maxPadding
+            )
+        }
     }
     
-    init(snDelegate: BodyTextViewDelegate) {
+    init(snDelegate: BodyTextViewDelegate?) {
         self.snDelegate = snDelegate
+        
         super.init(frame: CGRect.zero, textContainer: nil)
+        
+        self.clipsToBounds = false  // Needed for the 'HighlightMentionBackgroundView'
+        addSubview(highlightedMentionBackgroundView)
+        
         setUpGestureRecognizers()
     }
     
@@ -35,11 +52,20 @@ final class BodyTextView : UITextView {
     }
     
     @objc private func handleLongPress() {
-        snDelegate.handleLongPress()
+        snDelegate?.handleLongPress()
     }
     
     @objc private func handleDoubleTap() {
         // Do nothing
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        highlightedMentionBackgroundView.frame = self.bounds.insetBy(
+            dx: -highlightedMentionBackgroundView.maxPadding,
+            dy: -highlightedMentionBackgroundView.maxPadding
+        )
     }
 }
 

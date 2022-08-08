@@ -1,13 +1,26 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-public struct SNSnodeKitConfiguration {
-    public let storage: SessionSnodeKitStorageProtocol
-
-    internal static var shared: SNSnodeKitConfiguration!
-}
+import Foundation
+import SessionUtilitiesKit
 
 public enum SNSnodeKit { // Just to make the external API nice
+    public static func migrations() -> TargetMigrations {
+        return TargetMigrations(
+            identifier: .snodeKit,
+            migrations: [
+                [
+                    _001_InitialSetupMigration.self,
+                    _002_SetupStandardJobs.self
+                ],
+                [
+                    _003_YDBToGRDBMigration.self
+                ]
+            ]
+        )
+    }
 
-    public static func configure(storage: SessionSnodeKitStorageProtocol) {
-        SNSnodeKitConfiguration.shared = SNSnodeKitConfiguration(storage: storage)
+    public static func configure() {
+        // Configure the job executors
+        JobRunner.add(executor: GetSnodePoolJob.self, for: .getSnodePool)
     }
 }

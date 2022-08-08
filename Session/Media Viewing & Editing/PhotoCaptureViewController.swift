@@ -115,12 +115,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         init(imageName: String, block: @escaping () -> Void) {
             self.button = OWSButton(imageName: imageName, tintColor: .ows_white, block: block)
-            if #available(iOS 10, *) {
-                button.autoPinToSquareAspectRatio()
-            } else {
-                button.sizeToFit()
-            }
-
+            button.autoPinToSquareAspectRatio()
             button.layer.shadowOffset = CGSize.zero
             button.layer.shadowOpacity = 0.35
             button.layer.shadowRadius = 4
@@ -600,20 +595,6 @@ class RecordingTimerView: UIView {
         return icon
     }()
 
-    // MARK: - Overrides  //
-
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        if #available(iOS 10, *) {
-            return super.sizeThatFits(size)
-        } else {
-            // iOS9 manual layout sizing required for items in the navigation bar
-            var baseSize = label.frame.size
-            baseSize.width = baseSize.width + stackViewSpacing + RecordingTimerView.iconWidth + layoutMargins.left + layoutMargins.right
-            baseSize.height = baseSize.height + layoutMargins.top + layoutMargins.bottom
-            return baseSize
-        }
-    }
-
     // MARK: -
     var recordingStartTime: TimeInterval?
 
@@ -662,10 +643,5 @@ class RecordingTimerView: UIView {
         Logger.verbose("recordingDuration: \(recordingDuration)")
         let durationDate = Date(timeIntervalSinceReferenceDate: recordingDuration)
         label.text = timeFormatter.string(from: durationDate)
-        if #available(iOS 10, *) {
-            // do nothing
-        } else {
-            label.sizeToFit()
-        }
     }
 }

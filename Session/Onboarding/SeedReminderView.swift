@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class SeedReminderView : UIView {
+import UIKit
+import SessionUIKit
+
+final class SeedReminderView: UIView {
     private let hasContinueButton: Bool
     var title = NSAttributedString(string: "") { didSet { titleLabel.attributedText = title } }
     var subtitle = "" { didSet { subtitleLabel.text = subtitle } }

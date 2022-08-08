@@ -1,37 +1,33 @@
-import Foundation
-import WebRTC
-import SessionMessagingKit
-import PromiseKit
-import CallKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-public final class SessionCall: NSObject, WebRTCSessionDelegate {
-    
+import Foundation
+import CallKit
+import GRDB
+import WebRTC
+import PromiseKit
+import SignalUtilitiesKit
+import SessionMessagingKit
+
+public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
     @objc static let isEnabled = true
     
-    // MARK: Metadata Properties
-    let uuid: String
-    let callID: UUID // This is for CallKit
-    let sessionID: String
-    let mode: Mode
+    // MARK: - Metadata Properties
+    public let uuid: String
+    public let callId: UUID // This is for CallKit
+    let sessionId: String
+    let mode: CallMode
     var audioMode: AudioMode
-    let webRTCSession: WebRTCSession
+    public let webRTCSession: WebRTCSession
     let isOutgoing: Bool
     var remoteSDP: RTCSessionDescription? = nil
-    var callMessageID: String?
+    var callInteractionId: Int64?
     var answerCallAction: CXAnswerCallAction? = nil
-    var contactName: String {
-        let contact = Storage.shared.getContact(with: self.sessionID)
-        return contact?.displayName(for: Contact.Context.regular) ?? "\(self.sessionID.prefix(4))...\(self.sessionID.suffix(4))"
-    }
-    var profilePicture: UIImage {
-        if let result = OWSProfileManager.shared().profileAvatar(forRecipientId: sessionID) {
-            return result
-        } else {
-            return Identicon.generatePlaceholderIcon(seed: sessionID, text: contactName, size: 300)
-        }
-    }
     
-    // MARK: Control
+    let contactName: String
+    let profilePicture: UIImage
+    
+    // MARK: - Control
+    
     lazy public var videoCapturer: RTCVideoCapturer = {
         return RTCCameraVideoCapturer(delegate: webRTCSession.localVideoSource)
     }()
@@ -61,21 +57,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         }
     }
     
-    // MARK: Mode
-    enum Mode {
-        case offer
-        case answer
-    }
+    // MARK: - Audio I/O mode
     
-    // MARK: End call mode
-    enum EndCallMode {
-        case local
-        case remote
-        case unanswered
-        case answeredElsewhere
-    }
-    
-    // MARK: Audio I/O mode
     enum AudioMode {
         case earpiece
         case speaker
@@ -83,7 +66,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         case bluetooth
     }
     
-    // MARK: Call State Properties
+    // MARK: - Call State Properties
+    
     var connectingDate: Date? {
         didSet {
             stateDidChange?()
@@ -112,7 +96,8 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         }
     }
 
-    // MARK: State Change Callbacks
+    // MARK: - State Change Callbacks
+    
     var stateDidChange: (() -> Void)?
     var hasStartedConnectingDidChange: (() -> Void)?
     var hasConnectedDidChange: (() -> Void)?
@@ -121,8 +106,9 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     var hasStartedReconnecting: (() -> Void)?
     var hasReconnected: (() -> Void)?
     
-    // MARK: Derived Properties
-    var hasStartedConnecting: Bool {
+    // MARK: - Derived Properties
+    
+    public var hasStartedConnecting: Bool {
         get { return connectingDate != nil }
         set { connectingDate = newValue ? Date() : nil }
     }
@@ -153,73 +139,114 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     var reconnectTimer: Timer? = nil
     
-    // MARK: Initialization
-    init(for sessionID: String, uuid: String, mode: Mode, outgoing: Bool = false) {
-        self.sessionID = sessionID
+    // MARK: - Initialization
+    
+    init(_ db: Database, for sessionId: String, uuid: String, mode: CallMode, outgoing: Bool = false) {
+        self.sessionId = sessionId
         self.uuid = uuid
-        self.callID = UUID()
+        self.callId = UUID()
         self.mode = mode
         self.audioMode = .earpiece
-        self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionID, with: uuid)
+        self.webRTCSession = WebRTCSession.current ?? WebRTCSession(for: sessionId, with: uuid)
         self.isOutgoing = outgoing
+        
+        self.contactName = Profile.displayName(db, id: sessionId, threadVariant: .contact)
+        self.profilePicture = ProfileManager.profileAvatar(db, id: sessionId)
+            .map { UIImage(data: $0) }
+            .defaulting(to: Identicon.generatePlaceholderIcon(seed: sessionId, text: self.contactName, size: 300))
+        
         WebRTCSession.current = self.webRTCSession
-        super.init()
         self.webRTCSession.delegate = self
+        
         if AppEnvironment.shared.callManager.currentCall == nil {
             AppEnvironment.shared.callManager.currentCall = self
-        } else {
+        }
+        else {
             SNLog("[Calls] A call is ongoing.")
         }
     }
     
     func reportIncomingCallIfNeeded(completion: @escaping (Error?) -> Void) {
-        guard case .answer = mode else { return }
+        guard case .answer = mode else {
+            SessionCallManager.reportFakeCall(info: "Call not in answer mode")
+            return
+        }
+        
         setupTimeoutTimer()
         AppEnvironment.shared.callManager.reportIncomingCall(self, callerName: contactName) { error in
             completion(error)
         }
     }
     
-    func didReceiveRemoteSDP(sdp: RTCSessionDescription) {
+    public func didReceiveRemoteSDP(sdp: RTCSessionDescription) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.didReceiveRemoteSDP(sdp: sdp)
+            }
+            return
+        }
+        
         SNLog("[Calls] Did receive remote sdp.")
         remoteSDP = sdp
         if hasStartedConnecting {
-            webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+            webRTCSession.handleRemoteSDP(sdp, from: sessionId) // This sends an answer message internally
         }
     }
     
-    // MARK: Actions
-    func startSessionCall() {
-        guard case .offer = mode else { return }
-        guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadID(fromContactSessionID: sessionID)) else { return }
+    // MARK: - Actions
+    
+    public func startSessionCall(_ db: Database) {
+        let sessionId: String = self.sessionId
+        let messageInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(state: .outgoing)
         
-        let message = CallMessage()
-        message.sender = getUserHexEncodedPublicKey()
-        message.sentTimestamp = NSDate.millisecondTimestamp()
-        message.uuid = self.uuid
-        message.kind = .preOffer
-        let infoMessage = TSInfoMessage.from(message, associatedWith: thread)
-        infoMessage.save()
-        self.callMessageID = infoMessage.uniqueId
+        guard
+            case .offer = mode,
+            let messageInfoData: Data = try? JSONEncoder().encode(messageInfo),
+            let thread: SessionThread = try? SessionThread.fetchOne(db, id: sessionId)
+        else { return }
         
-        var promise: Promise<Void>!
-        Storage.write(with: { transaction in
-            promise = self.webRTCSession.sendPreOffer(message, in: thread, using: transaction)
-        }, completion: { [weak self] in
-            let _ = promise.done {
-                Storage.shared.write { transaction in
-                    self?.webRTCSession.sendOffer(to: self!.sessionID, using: transaction as! YapDatabaseReadWriteTransaction).retainUntilComplete()
+        let timestampMs: Int64 = Int64(floor(Date().timeIntervalSince1970 * 1000))
+        let message: CallMessage = CallMessage(
+            uuid: self.uuid,
+            kind: .preOffer,
+            sdps: [],
+            sentTimestampMs: UInt64(timestampMs)
+        )
+        let interaction: Interaction? = try? Interaction(
+            messageUuid: self.uuid,
+            threadId: sessionId,
+            authorId: getUserHexEncodedPublicKey(db),
+            variant: .infoCall,
+            body: String(data: messageInfoData, encoding: .utf8),
+            timestampMs: timestampMs
+        )
+        .inserted(db)
+        
+        self.callInteractionId = interaction?.id
+        try? self.webRTCSession
+            .sendPreOffer(
+                db,
+                message: message,
+                interactionId: interaction?.id,
+                in: thread
+            )
+            .done { [weak self] _ in
+                Storage.shared.writeAsync { db in
+                    self?.webRTCSession.sendOffer(db, to: sessionId)
                 }
+                
                 self?.setupTimeoutTimer()
             }
-        })
+            .retainUntilComplete()
     }
     
     func answerSessionCall() {
         guard case .answer = mode else { return }
+        
         hasStartedConnecting = true
+        
         if let sdp = remoteSDP {
-            webRTCSession.handleRemoteSDP(sdp, from: sessionID) // This sends an answer message internally
+            webRTCSession.handleRemoteSDP(sdp, from: sessionId) // This sends an answer message internally
         }
     }
     
@@ -230,47 +257,79 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     func endSessionCall() {
         guard !hasEnded else { return }
+        
+        let sessionId: String = self.sessionId
+        
         webRTCSession.hangUp()
-        Storage.write { transaction in
-            self.webRTCSession.endCall(with: self.sessionID, using: transaction)
+        
+        Storage.shared.writeAsync { [weak self] db in
+            try self?.webRTCSession.endCall(db, with: sessionId)
         }
+        
         hasEnded = true
     }
     
-    // MARK: Update call message
-    func updateCallMessage(mode: EndCallMode) {
-        guard let callMessageID = callMessageID else { return }
-        Storage.write { transaction in
-            let infoMessage = TSInfoMessage.fetch(uniqueId: callMessageID, transaction: transaction)
-            if let messageToUpdate = infoMessage {
-                var shouldMarkAsRead = false
-                if self.duration > 0 {
-                    shouldMarkAsRead = true
-                } else if self.hasStartedConnecting {
-                    shouldMarkAsRead = true
-                } else {
-                    switch mode {
-                    case .local:
-                        shouldMarkAsRead = true
-                        fallthrough
-                    case .remote:
-                        fallthrough
-                    case .unanswered:
-                        if messageToUpdate.callState == .incoming {
-                            messageToUpdate.updateCallInfoMessage(.missed, using: transaction)
-                        }
-                    case .answeredElsewhere:
-                        shouldMarkAsRead = true
-                    }
-                }
-                if shouldMarkAsRead {
-                    messageToUpdate.markAsRead(atTimestamp: NSDate.ows_millisecondTimeStamp(), trySendReadReceipt: false, transaction: transaction)
-                }
+    // MARK: - Call Message Handling
+    
+    public func updateCallMessage(mode: EndCallMode) {
+        guard let callInteractionId: Int64 = callInteractionId else { return }
+        
+        let duration: TimeInterval = self.duration
+        let hasStartedConnecting: Bool = self.hasStartedConnecting
+        
+        Storage.shared.writeAsync { db in
+            guard let interaction: Interaction = try? Interaction.fetchOne(db, id: callInteractionId) else {
+                return
             }
+            
+            let updateToMissedIfNeeded: () throws -> () = {
+                let missedCallInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(state: .missed)
+                
+                guard
+                    let infoMessageData: Data = (interaction.body ?? "").data(using: .utf8),
+                    let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
+                        CallMessage.MessageInfo.self,
+                        from: infoMessageData
+                    ),
+                    messageInfo.state == .incoming,
+                    let missedCallInfoData: Data = try? JSONEncoder().encode(missedCallInfo)
+                else { return }
+                
+                _ = try interaction
+                    .with(body: String(data: missedCallInfoData, encoding: .utf8))
+                    .saved(db)
+            }
+            let shouldMarkAsRead: Bool = try {
+                if duration > 0 { return true }
+                if hasStartedConnecting { return true }
+                
+                switch mode {
+                    case .local:
+                        try updateToMissedIfNeeded()
+                        return true
+                        
+                    case .remote, .unanswered:
+                        try updateToMissedIfNeeded()
+                        return false
+                        
+                    case .answeredElsewhere: return true
+                }
+            }()
+            
+            guard shouldMarkAsRead else { return }
+            
+            try Interaction.markAsRead(
+                db,
+                interactionId: interaction.id,
+                threadId: interaction.threadId,
+                includingOlder: false,
+                trySendReadReceipt: false
+            )
         }
     }
     
-    // MARK: Renderer
+    // MARK: - Renderer
+    
     func attachRemoteVideoRenderer(_ renderer: RTCVideoRenderer) {
         webRTCSession.attachRemoteRenderer(renderer)
     }
@@ -283,14 +342,17 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
         webRTCSession.attachLocalRenderer(renderer)
     }
     
-    // MARK: Delegate
+    // MARK: - Delegate
+    
     public func webRTCIsConnected() {
         self.invalidateTimeoutTimer()
         self.reconnectTimer?.invalidate()
+        
         guard !self.hasConnected else {
             hasReconnected?()
             return
         }
+        
         self.hasConnected = true
         self.answerCallAction?.fulfill()
     }
@@ -327,23 +389,32 @@ public final class SessionCall: NSObject, WebRTCSessionDelegate {
     
     private func tryToReconnect() {
         reconnectTimer?.invalidate()
-        if SSKEnvironment.shared.reachabilityManager.isReachable {
-            Storage.write { transaction in
-                self.webRTCSession.sendOffer(to: self.sessionID, using: transaction, isRestartingICEConnection: true).retainUntilComplete()
-            }
-        } else {
+        
+        guard Environment.shared?.reachabilityManager.isReachable == true else {
             reconnectTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: 5, repeats: false) { _ in
                 self.tryToReconnect()
             }
+            return
         }
+        
+        let sessionId: String = self.sessionId
+        let webRTCSession: WebRTCSession = self.webRTCSession
+        
+        Storage.shared
+            .read { db in webRTCSession.sendOffer(db, to: sessionId, isRestartingICEConnection: true) }
+            .retainUntilComplete()
     }
     
-    // MARK: Timeout
+    // MARK: - Timeout
+    
     public func setupTimeoutTimer() {
         invalidateTimeoutTimer()
-        let timeInterval: TimeInterval = hasConnected ? 60 : 30
+        
+        let timeInterval: TimeInterval = (hasConnected ? 60 : 30)
+        
         timeOutTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: timeInterval, repeats: false) { _ in
             self.didTimeout = true
+            
             AppEnvironment.shared.callManager.endCall(self) { error in
                 self.timeOutTimer = nil
             }

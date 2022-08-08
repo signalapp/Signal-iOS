@@ -8,14 +8,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class AvatarViewHelper;
 @class OWSContactsManager;
-@class SignalAccount;
-@class TSThread;
 
 @protocol AvatarViewHelperDelegate <NSObject>
 
 - (nullable NSString *)avatarActionSheetTitle;
 
-- (void)avatarDidChange:(UIImage *)image;
+- (void)avatarDidChange:(nullable UIImage *)image filePath:(nullable NSString *)filePath;
 
 - (UIViewController *)fromViewController;
 

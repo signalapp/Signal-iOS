@@ -1,15 +1,16 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import SessionSnodeKit
+import SessionUtilitiesKit
 
 public extension SNProtoEnvelope {
-
-    static func from(_ json: JSON) -> SNProtoEnvelope? {
-        guard let base64EncodedData = json["data"] as? String, let data = Data(base64Encoded: base64EncodedData) else {
-            SNLog("Failed to decode data for message: \(json).")
+    static func from(_ message: SnodeReceivedMessage) -> SNProtoEnvelope? {
+        guard let result = try? MessageWrapper.unwrap(data: message.data) else {
+            SNLog("Failed to unwrap data for message: \(String(reflecting: message)).")
             return nil
         }
-        guard let result = try? MessageWrapper.unwrap(data: data) else {
-            SNLog("Failed to unwrap data for message: \(json).")
-            return nil
-        }
+        
         return result
     }
 }

@@ -9,10 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol OWSConversationSettingsViewDelegate <NSObject>
 
-- (void)groupWasUpdated:(TSGroupModel *)groupModel;
 - (void)conversationSettingsDidRequestConversationSearch:(OWSConversationSettingsViewController *)conversationSettingsViewController;
-
-- (void)popAllConversationSettingsViewsWithCompletion:(void (^_Nullable)(void))completionBlock;
 
 @end
 

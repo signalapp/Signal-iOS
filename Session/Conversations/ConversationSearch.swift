@@ -1,143 +1,100 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
+import UIKit
+import SignalUtilitiesKit
 
-@objc
-public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate {
+public class ConversationSearchController: NSObject {
+    public static let minimumSearchTextLength: UInt = 2
 
-    @objc
-    func conversationSearchController(_ conversationSearchController: ConversationSearchController,
-                                      didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?)
-
-    @objc
-    func conversationSearchController(_ conversationSearchController: ConversationSearchController,
-                                      didSelectMessageId: String)
-}
-
-@objc
-public class ConversationSearchController : NSObject {
-
-    @objc
-    public static let kMinimumSearchTextLength: UInt = 2
-
-    @objc
-    public let uiSearchController =  UISearchController(searchResultsController: nil)
-
-    @objc
+    private let threadId: String
     public weak var delegate: ConversationSearchControllerDelegate?
-
-    let thread: TSThread
-
-    @objc
+    public let uiSearchController: UISearchController = UISearchController(searchResultsController: nil)
     public let resultsBar: SearchResultsBar = SearchResultsBar()
     
     private var lastSearchText: String?
 
     // MARK: Initializer
 
-    @objc
-    required public init(thread: TSThread) {
-        self.thread = thread
+    public init(threadId: String) {
+        self.threadId = threadId
+        
         super.init()
+        
+        self.resultsBar.resultsBarDelegate = self
+        self.uiSearchController.delegate = self
+        self.uiSearchController.searchResultsUpdater = self
 
-        resultsBar.resultsBarDelegate = self
-        uiSearchController.delegate = self
-        uiSearchController.searchResultsUpdater = self
-
-        uiSearchController.hidesNavigationBarDuringPresentation = false
-        if #available(iOS 13, *) {
-            // Do nothing
-        } else {
-            uiSearchController.dimsBackgroundDuringPresentation = false
-        }
-        uiSearchController.searchBar.inputAccessoryView = resultsBar
-    }
-
-    // MARK: Dependencies
-
-    var dbReadConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
+        self.uiSearchController.hidesNavigationBarDuringPresentation = false
+        self.uiSearchController.searchBar.inputAccessoryView = resultsBar
     }
 }
 
-extension ConversationSearchController : UISearchControllerDelegate {
-    
+// MARK: - UISearchControllerDelegate
+
+extension ConversationSearchController: UISearchControllerDelegate {
     public func didPresentSearchController(_ searchController: UISearchController) {
-        Logger.verbose("")
         delegate?.didPresentSearchController?(searchController)
     }
 
     public func didDismissSearchController(_ searchController: UISearchController) {
-        Logger.verbose("")
         delegate?.didDismissSearchController?(searchController)
     }
 }
 
-extension ConversationSearchController : UISearchResultsUpdating {
-    
-    var dbSearcher: FullTextSearcher {
-        return FullTextSearcher.shared
-    }
+// MARK: - UISearchResultsUpdating
 
+extension ConversationSearchController: UISearchResultsUpdating {
     public func updateSearchResults(for searchController: UISearchController) {
         Logger.verbose("searchBar.text: \( searchController.searchBar.text ?? "<blank>")")
 
-        guard let rawSearchText = searchController.searchBar.text?.stripped else {
-            self.resultsBar.updateResults(resultSet: nil)
-            self.delegate?.conversationSearchController(self, didUpdateSearchResults: nil)
+        guard
+            let searchText: String = searchController.searchBar.text?.stripped,
+            searchText.count >= ConversationSearchController.minimumSearchTextLength
+        else {
+            self.resultsBar.updateResults(results: nil)
+            self.delegate?.conversationSearchController(self, didUpdateSearchResults: nil, searchText: nil)
             return
         }
-        let searchText = FullTextSearchFinder.normalize(text: rawSearchText)
-        lastSearchText = searchText
-
-        guard searchText.count >= ConversationSearchController.kMinimumSearchTextLength else {
-            lastSearchText = nil
-            self.resultsBar.updateResults(resultSet: nil)
-            self.delegate?.conversationSearchController(self, didUpdateSearchResults: nil)
-            return
+        
+        let threadId: String = self.threadId
+        let results: [Int64] = Storage.shared.read { db -> [Int64] in
+            try Interaction.idsForTermWithin(
+                threadId: threadId,
+                pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
+            )
+            .fetchAll(db)
         }
-
-        var resultSet: ConversationScreenSearchResultSet?
-        self.dbReadConnection.asyncRead({ [weak self] transaction in
-            guard let self = self else {
-                return
-            }
-            resultSet = self.dbSearcher.searchWithinConversation(thread: self.thread, searchText: searchText, transaction: transaction)
-        }, completionBlock: { [weak self] in
-            guard let self = self, searchText == self.lastSearchText else {
-                return
-            }
-            self.resultsBar.updateResults(resultSet: resultSet)
-            self.delegate?.conversationSearchController(self, didUpdateSearchResults: resultSet)
-        })
+        .defaulting(to: [])
+        
+        self.resultsBar.updateResults(results: results)
+        self.delegate?.conversationSearchController(self, didUpdateSearchResults: results, searchText: searchText)
     }
 }
 
-extension ConversationSearchController : SearchResultsBarDelegate {
-    
-    func searchResultsBar(_ searchResultsBar: SearchResultsBar,
-                          setCurrentIndex currentIndex: Int,
-                          resultSet: ConversationScreenSearchResultSet) {
-        guard let searchResult = resultSet.messages[safe: currentIndex] else {
-            owsFailDebug("messageId was unexpectedly nil")
-            return
-        }
+// MARK: - SearchResultsBarDelegate
 
-        self.delegate?.conversationSearchController(self, didSelectMessageId: searchResult.messageId)
+extension ConversationSearchController: SearchResultsBarDelegate {
+    func searchResultsBar(
+        _ searchResultsBar: SearchResultsBar,
+        setCurrentIndex currentIndex: Int,
+        results: [Int64]
+    ) {
+        guard let interactionId: Int64 = results[safe: currentIndex] else { return }
+        
+        self.delegate?.conversationSearchController(self, didSelectInteractionId: interactionId)
     }
 }
 
-protocol SearchResultsBarDelegate : AnyObject {
-    
-    func searchResultsBar(_ searchResultsBar: SearchResultsBar,
-                          setCurrentIndex currentIndex: Int,
-                          resultSet: ConversationScreenSearchResultSet)
+protocol SearchResultsBarDelegate: AnyObject {
+    func searchResultsBar(
+        _ searchResultsBar: SearchResultsBar,
+        setCurrentIndex currentIndex: Int,
+        results: [Int64]
+    )
 }
 
-public final class SearchResultsBar : UIView {
-    private var resultSet: ConversationScreenSearchResultSet?
+public final class SearchResultsBar: UIView {
+    private var results: [Int64]?
     var currentIndex: Int?
     weak var resultsBarDelegate: SearchResultsBarDelegate?
     
@@ -145,7 +102,6 @@ public final class SearchResultsBar : UIView {
     
     private lazy var label: UILabel = {
         let result = UILabel()
-        result.text = "Test"
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.textColor = Colors.text
         return result
@@ -169,6 +125,14 @@ public final class SearchResultsBar : UIView {
         return result
     }()
     
+    private lazy var loadingIndicator: UIActivityIndicatorView = {
+        let result = UIActivityIndicatorView(style: .medium)
+        result.tintColor = Colors.text
+        result.alpha = 0.5
+        result.hidesWhenStopped = true
+        return result
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViewHierarchy()
@@ -181,6 +145,7 @@ public final class SearchResultsBar : UIView {
     
     private func setUpViewHierarchy() {
         autoresizingMask = .flexibleHeight
+        
         // Background & blur
         let backgroundView = UIView()
         backgroundView.backgroundColor = isLightMode ? .white : .black
@@ -190,18 +155,22 @@ public final class SearchResultsBar : UIView {
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         addSubview(blurView)
         blurView.pin(to: self)
+        
         // Separator
         let separator = UIView()
         separator.backgroundColor = Colors.text.withAlphaComponent(0.2)
         separator.set(.height, to: 1 / UIScreen.main.scale)
         addSubview(separator)
         separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.top, UIView.HorizontalEdge.trailing ], to: self)
+        
         // Spacers
         let spacer1 = UIView.hStretchingSpacer()
         let spacer2 = UIView.hStretchingSpacer()
+        
         // Button containers
         let upButtonContainer = UIView(wrapping: upButton, withInsets: UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 0))
         let downButtonContainer = UIView(wrapping: downButton, withInsets: UIEdgeInsets(top: 0, left: 0, bottom: 2, right: 0))
+        
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ upButtonContainer, downButtonContainer, spacer1, label, spacer2 ])
         mainStackView.axis = .horizontal
@@ -209,110 +178,116 @@ public final class SearchResultsBar : UIView {
         mainStackView.isLayoutMarginsRelativeArrangement = true
         mainStackView.layoutMargins = UIEdgeInsets(top: Values.smallSpacing, leading: Values.largeSpacing, bottom: Values.smallSpacing, trailing: Values.largeSpacing)
         addSubview(mainStackView)
+        
         mainStackView.pin(.top, to: .bottom, of: separator)
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
         mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -2)
+        
+        addSubview(loadingIndicator)
+        loadingIndicator.pin(.left, to: .right, of: label, withInset: 10)
+        loadingIndicator.centerYAnchor.constraint(equalTo: label.centerYAnchor).isActive = true
+        
         // Remaining constraints
         label.center(.horizontal, in: self)
     }
     
+    // MARK: - Functions
+    
     @objc
     public func handleUpButtonTapped() {
-        Logger.debug("")
-        guard let resultSet = resultSet else {
-            owsFailDebug("resultSet was unexpectedly nil")
-            return
-        }
-
-        guard let currentIndex = currentIndex else {
-            owsFailDebug("currentIndex was unexpectedly nil")
-            return
-        }
-
-        guard currentIndex + 1 < resultSet.messages.count else {
-            owsFailDebug("showLessRecent button should be disabled")
-            return
-        }
+        guard let results: [Int64] = results else { return }
+        guard let currentIndex: Int = currentIndex else { return }
+        guard currentIndex + 1 < results.count else { return }
 
         let newIndex = currentIndex + 1
         self.currentIndex = newIndex
         updateBarItems()
-        resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: newIndex, resultSet: resultSet)
+        resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: newIndex, results: results)
     }
 
     @objc
     public func handleDownButtonTapped() {
         Logger.debug("")
-        guard let resultSet = resultSet else {
-            owsFailDebug("resultSet was unexpectedly nil")
-            return
-        }
-
-        guard let currentIndex = currentIndex else {
-            owsFailDebug("currentIndex was unexpectedly nil")
-            return
-        }
-
-        guard currentIndex > 0 else {
-            owsFailDebug("showMoreRecent button should be disabled")
-            return
-        }
+        guard let results: [Int64] = results else { return }
+        guard let currentIndex: Int = currentIndex, currentIndex > 0 else { return }
 
         let newIndex = currentIndex - 1
         self.currentIndex = newIndex
         updateBarItems()
-        resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: newIndex, resultSet: resultSet)
+        resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: newIndex, results: results)
     }
 
-    func updateResults(resultSet: ConversationScreenSearchResultSet?) {
-        if let resultSet = resultSet {
-            if resultSet.messages.count > 0 {
-                currentIndex = min(currentIndex ?? 0, resultSet.messages.count - 1)
-            } else {
-                currentIndex = nil
+    func updateResults(results: [Int64]?) {
+        currentIndex = {
+            guard let results: [Int64] = results, !results.isEmpty else { return nil }
+            
+            if let currentIndex: Int = currentIndex {
+                return max(0, min(currentIndex, results.count - 1))
             }
-        } else {
-            currentIndex = nil
-        }
+            
+            return 0
+        }()
 
-        self.resultSet = resultSet
+        self.results = results
 
         updateBarItems()
-        if let currentIndex = currentIndex, let resultSet = resultSet {
-            resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: currentIndex, resultSet: resultSet)
+        
+        if let currentIndex = currentIndex, let results = results {
+            resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: currentIndex, results: results)
         }
     }
 
     func updateBarItems() {
-        guard let resultSet = resultSet else {
+        guard let results: [Int64] = results else {
             label.text = ""
             downButton.isEnabled = false
             upButton.isEnabled = false
             return
         }
 
-        switch resultSet.messages.count {
-        case 0:
-            label.text = NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "keyboard toolbar label when no messages match the search string")
-        case 1:
-            label.text = NSLocalizedString("CONVERSATION_SEARCH_ONE_RESULT", comment: "keyboard toolbar label when exactly 1 message matches the search string")
-        default:
-            let format = NSLocalizedString("CONVERSATION_SEARCH_RESULTS_FORMAT",
-                                           comment: "keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}}")
+        switch results.count {
+            case 0:
+                // Keyboard toolbar label when no messages match the search string
+                label.text = "CONVERSATION_SEARCH_NO_RESULTS".localized()
+            
+            case 1:
+                // Keyboard toolbar label when exactly 1 message matches the search string
+                label.text = "CONVERSATION_SEARCH_ONE_RESULT".localized()
+        
+            default:
+                // Keyboard toolbar label when more than 1 message matches the search string
+                //
+                // Embeds {{number/position of the 'currently viewed' result}} and
+                // the {{total number of results}}
+                let format = "CONVERSATION_SEARCH_RESULTS_FORMAT".localized()
 
-            guard let currentIndex = currentIndex else {
-                owsFailDebug("currentIndex was unexpectedly nil")
-                return
+                guard let currentIndex: Int = currentIndex else { return }
+                
+                label.text = String(format: format, currentIndex + 1, results.count)
             }
-            label.text = String(format: format, currentIndex + 1, resultSet.messages.count)
-        }
 
-        if let currentIndex = currentIndex {
+        if let currentIndex: Int = currentIndex {
             downButton.isEnabled = currentIndex > 0
-            upButton.isEnabled = currentIndex + 1 < resultSet.messages.count
-        } else {
+            upButton.isEnabled = (currentIndex + 1 < results.count)
+        }
+        else {
             downButton.isEnabled = false
             upButton.isEnabled = false
         }
     }
+    
+    public func startLoading() {
+        loadingIndicator.startAnimating()
+    }
+    
+    public func stopLoading() {
+        loadingIndicator.stopAnimating()
+    }
+}
+
+// MARK: - ConversationSearchControllerDelegate
+
+public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate {
+    func conversationSearchController(_ conversationSearchController: ConversationSearchController, didUpdateSearchResults results: [Int64]?, searchText: String?)
+    func conversationSearchController(_ conversationSearchController: ConversationSearchController, didSelectInteractionId: Int64)
 }

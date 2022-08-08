@@ -12,12 +12,16 @@ public extension UITableView {
     }
 
     func dequeue<T>(type: T.Type, for indexPath: IndexPath) -> T where T: UITableViewCell {
-        let reuseIdentifier = T.defaultReuseIdentifier
+        // Note: We need to use `type.defaultReuseIdentifier` rather than `T.defaultReuseIdentifier`
+        // otherwise we may get a subclass rather than the actual type we specified
+        let reuseIdentifier = type.defaultReuseIdentifier
         return dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! T
     }
 
     func dequeueHeaderFooterView<T>(type: T.Type) -> T where T: UITableViewHeaderFooterView {
-        let reuseIdentifier = T.defaultReuseIdentifier
+        // Note: We need to use `type.defaultReuseIdentifier` rather than `T.defaultReuseIdentifier`
+        // otherwise we may get a subclass rather than the actual type we specified
+        let reuseIdentifier = type.defaultReuseIdentifier
         return dequeueReusableHeaderFooterView(withIdentifier: reuseIdentifier) as! T
     }
 }

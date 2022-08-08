@@ -1,6 +1,6 @@
 import Foundation
 
-internal extension Data {
+public extension Data {
 
     init(from inputStream: InputStream) throws {
         self.init()

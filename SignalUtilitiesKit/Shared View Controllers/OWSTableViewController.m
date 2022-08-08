@@ -110,11 +110,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 + (void)configureCell:(UITableViewCell *)cell
 {
     cell.backgroundColor = LKColors.cellBackground;
-    if (@available(iOS 13, *)) {
-        cell.contentView.backgroundColor = UIColor.clearColor;
-    } else {
-        cell.contentView.backgroundColor = LKColors.cellBackground;
-    }
+    cell.contentView.backgroundColor = UIColor.clearColor;
     
     cell.textLabel.font = [UIFont systemFontOfSize:LKValues.mediumFontSize];
     cell.textLabel.textColor = LKColors.text;

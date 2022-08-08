@@ -1,36 +1,50 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDelegate {
-    var candidates: [Mention] = [] {
+import UIKit
+import SessionUIKit
+import SessionUtilitiesKit
+import SignalUtilitiesKit
+
+final class MentionSelectionView: UIView, UITableViewDataSource, UITableViewDelegate {
+    var candidates: [ConversationViewModel.MentionInfo] = [] {
         didSet {
             tableView.isScrollEnabled = (candidates.count > 4)
             tableView.reloadData()
         }
     }
-    var openGroupServer: String?
-    var openGroupChannel: UInt64?
-    var openGroupRoom: String?
+    
     weak var delegate: MentionSelectionViewDelegate?
+    
+    var contentOffset: CGPoint {
+        get { tableView.contentOffset }
+        set { tableView.contentOffset = newValue }
+    }
 
-    // MARK: Components
-    lazy var tableView: UITableView = { // TODO: Make this private
-        let result = UITableView()
+    // MARK: - Components
+    
+    private lazy var tableView: UITableView = {
+        let result: UITableView = UITableView()
         result.dataSource = self
         result.delegate = self
-        result.register(Cell.self, forCellReuseIdentifier: "Cell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
+        result.register(view: Cell.self)
+        
         return result
     }()
 
-    // MARK: Initialization
+    // MARK: - Initialization
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setUpViewHierarchy()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        
         setUpViewHierarchy()
     }
 
@@ -38,43 +52,54 @@ final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDel
         // Table view
         addSubview(tableView)
         tableView.pin(to: self)
+        
         // Top separator
-        let topSeparator = UIView()
+        let topSeparator: UIView = UIView()
         topSeparator.backgroundColor = Colors.separator
         topSeparator.set(.height, to: Values.separatorThickness)
         addSubview(topSeparator)
         topSeparator.pin(.leading, to: .leading, of: self)
         topSeparator.pin(.top, to: .top, of: self)
         topSeparator.pin(.trailing, to: .trailing, of: self)
+        
         // Bottom separator
-        let bottomSeparator = UIView()
+        let bottomSeparator: UIView = UIView()
         bottomSeparator.backgroundColor = Colors.separator
         bottomSeparator.set(.height, to: Values.separatorThickness)
         addSubview(bottomSeparator)
+        
         bottomSeparator.pin(.leading, to: .leading, of: self)
         bottomSeparator.pin(.trailing, to: .trailing, of: self)
         bottomSeparator.pin(.bottom, to: .bottom, of: self)
     }
 
-    // MARK: Data
+    // MARK: - Data
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return candidates.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! Cell
-        let mentionCandidate = candidates[indexPath.row]
-        cell.mentionCandidate = mentionCandidate
-        cell.openGroupServer = openGroupServer
-        cell.openGroupChannel = openGroupChannel
-        cell.openGroupRoom = openGroupRoom
-        cell.separator.isHidden = (indexPath.row == (candidates.count - 1))
+        let cell: Cell = tableView.dequeue(type: Cell.self, for: indexPath)
+        cell.update(
+            with: candidates[indexPath.row].profile,
+            threadVariant: candidates[indexPath.row].threadVariant,
+            isUserModeratorOrAdmin: OpenGroupManager.isUserModeratorOrAdmin(
+                candidates[indexPath.row].profile.id,
+                for: candidates[indexPath.row].openGroupRoomToken,
+                on: candidates[indexPath.row].openGroupServer
+            ),
+            isLast: (indexPath.row == (candidates.count - 1))
+        )
+        
         return cell
     }
 
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let mentionCandidate = candidates[indexPath.row]
+        
         delegate?.handleMentionSelected(mentionCandidate, from: self)
     }
 }
@@ -82,56 +107,59 @@ final class MentionSelectionView : UIView, UITableViewDataSource, UITableViewDel
 // MARK: - Cell
 
 private extension MentionSelectionView {
+    final class Cell: UITableViewCell {
+        // MARK: - UI
+        
+        private lazy var profilePictureView: ProfilePictureView = ProfilePictureView()
 
-    final class Cell : UITableViewCell {
-        var mentionCandidate = Mention(publicKey: "", displayName: "") { didSet { update() } }
-        var openGroupServer: String?
-        var openGroupChannel: UInt64?
-        var openGroupRoom: String?
-
-        // MARK: Components
-        private lazy var profilePictureView = ProfilePictureView()
-
-        private lazy var moderatorIconImageView = UIImageView(image: #imageLiteral(resourceName: "Crown"))
+        private lazy var moderatorIconImageView: UIImageView = UIImageView(image: #imageLiteral(resourceName: "Crown"))
 
         private lazy var displayNameLabel: UILabel = {
-            let result = UILabel()
+            let result: UILabel = UILabel()
             result.textColor = Colors.text
             result.font = .systemFont(ofSize: Values.smallFontSize)
             result.lineBreakMode = .byTruncatingTail
+            
             return result
         }()
 
         lazy var separator: UIView = {
-            let result = UIView()
+            let result: UIView = UIView()
             result.backgroundColor = Colors.separator
             result.set(.height, to: Values.separatorThickness)
+            
             return result
         }()
 
-        // MARK: Initialization
+        // MARK: - Initialization
+        
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
+            
             setUpViewHierarchy()
         }
 
         required init?(coder: NSCoder) {
             super.init(coder: coder)
+            
             setUpViewHierarchy()
         }
 
         private func setUpViewHierarchy() {
             // Cell background color
             backgroundColor = .clear
+            
             // Highlight color
             let selectedBackgroundView = UIView()
             selectedBackgroundView.backgroundColor = .clear
             self.selectedBackgroundView = selectedBackgroundView
+            
             // Profile picture image view
             let profilePictureViewSize = Values.smallProfilePictureSize
             profilePictureView.set(.width, to: profilePictureViewSize)
             profilePictureView.set(.height, to: profilePictureViewSize)
             profilePictureView.size = profilePictureViewSize
+            
             // Main stack view
             let mainStackView = UIStackView(arrangedSubviews: [ profilePictureView, displayNameLabel ])
             mainStackView.axis = .horizontal
@@ -144,12 +172,14 @@ private extension MentionSelectionView {
             contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.mediumSpacing)
             contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.smallSpacing)
             mainStackView.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
+            
             // Moderator icon image view
             moderatorIconImageView.set(.width, to: 20)
             moderatorIconImageView.set(.height, to: 20)
             contentView.addSubview(moderatorIconImageView)
             moderatorIconImageView.pin(.trailing, to: .trailing, of: profilePictureView, withInset: 1)
             moderatorIconImageView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: 4.5)
+            
             // Separator
             addSubview(separator)
             separator.pin(.leading, to: .leading, of: self)
@@ -157,24 +187,28 @@ private extension MentionSelectionView {
             separator.pin(.bottom, to: .bottom, of: self)
         }
 
-        // MARK: Updating
-        private func update() {
-            displayNameLabel.text = mentionCandidate.displayName
-            profilePictureView.publicKey = mentionCandidate.publicKey
-            profilePictureView.update()
-            if let server = openGroupServer, let room = openGroupRoom {
-                let isUserModerator = OpenGroupAPIV2.isUserModerator(mentionCandidate.publicKey, for: room, on: server)
-                moderatorIconImageView.isHidden = !isUserModerator
-            } else {
-                moderatorIconImageView.isHidden = true
-            }
+        // MARK: - Updating
+        
+        fileprivate func update(
+            with profile: Profile,
+            threadVariant: SessionThread.Variant,
+            isUserModeratorOrAdmin: Bool,
+            isLast: Bool
+        ) {
+            displayNameLabel.text = profile.displayName(for: threadVariant)
+            profilePictureView.update(
+                publicKey: profile.id,
+                profile: profile,
+                threadVariant: threadVariant
+            )
+            moderatorIconImageView.isHidden = !isUserModeratorOrAdmin
+            separator.isHidden = isLast
         }
     }
 }
 
 // MARK: - Delegate
 
-protocol MentionSelectionViewDelegate : class {
-
-    func handleMentionSelected(_ mention: Mention, from view: MentionSelectionView)
+protocol MentionSelectionViewDelegate: AnyObject {
+    func handleMentionSelected(_ mention: ConversationViewModel.MentionInfo, from view: MentionSelectionView)
 }

@@ -1,19 +1,21 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-@objc
-public class NoopNotificationsManager: NSObject, NotificationsProtocol {
+import Foundation
+import GRDB
+import SessionMessagingKit
 
-    public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+public class NoopNotificationsManager: NotificationsProtocol {
+    public init() {}
+    
+    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
         owsFailDebug("")
     }
     
-    public func notifyUser(forIncomingCall callInfoMessage: TSInfoMessage, in thread: TSThread, transaction: YapDatabaseReadTransaction) {
+    public func notifyUser(_ db: Database, forIncomingCall interaction: Interaction, in thread: SessionThread) {
         owsFailDebug("")
     }
     
-    public func cancelNotification(_ identifier: String) {
+    public func cancelNotifications(identifiers: [String]) {
         owsFailDebug("")
     }
 

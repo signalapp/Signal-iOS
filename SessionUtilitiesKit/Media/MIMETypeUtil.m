@@ -19,13 +19,14 @@ NSString *const OWSMimeTypeImageTiff1 = @"image/tiff";
 NSString *const OWSMimeTypeImageTiff2 = @"image/x-tiff";
 NSString *const OWSMimeTypeImageBmp1 = @"image/bmp";
 NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
-NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
+NSString *const OWSMimeTypeImageWebp = @"image/webp";
+NSString *const OWSMimeTypeImageHeic = @"image/heic";
+NSString *const OWSMimeTypeImageHeif = @"image/heif";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
 NSString *const OWSMimeTypeApplicationPdf = @"application/pdf";
 
-NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
-NSString *const kOversizeTextAttachmentFileExtension = @"txt";
+NSString *const kTextAttachmentFileExtension = @"txt";
 NSString *const kUnknownTestAttachmentUTI = @"org.whispersystems.unknown";
 NSString *const kSyncMessageFileExtension = @"bin";
 
@@ -87,7 +88,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/bmp" : @"bmp",
             @"image/x-windows-bmp" : @"bmp",
             @"image/gif" : @"gif",
-            @"image/x-icon": @"ico"
+            @"image/x-icon": @"ico",
+            OWSMimeTypeImageWebp : @"webp"
         };
     });
     return result;
@@ -99,6 +101,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     dispatch_once(&onceToken, ^{
         result = @{
             OWSMimeTypeImageGif : @"gif",
+            OWSMimeTypeImageWebp : @"image/webp",
         };
     });
     return result;
@@ -177,7 +180,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"jpeg" : @"image/jpeg",
             @"jpg" : @"image/jpeg",
             @"tif" : @"image/tiff",
-            @"tiff" : @"image/tiff"
+            @"tiff" : @"image/tiff",
+            @"webp" : OWSMimeTypeImageWebp
         };
     });
     return result;
@@ -189,6 +193,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     dispatch_once(&onceToken, ^{
         result = @{
             @"gif" : OWSMimeTypeImageGif,
+            @"image/webp" : OWSMimeTypeImageWebp
         };
     });
     return result;
@@ -409,12 +414,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
         return [MIMETypeUtil filePathForAnimated:uniqueId ofMIMEType:contentType inFolder:folder];
     } else if ([self isBinaryData:contentType]) {
         return [MIMETypeUtil filePathForBinaryData:uniqueId ofMIMEType:contentType inFolder:folder];
-    } else if ([contentType isEqualToString:OWSMimeTypeOversizeTextMessage]) {
-        // We need to use a ".txt" file extension since this file extension is used
-        // by UIActivityViewController to determine which kinds of sharing are
-        // appropriate for this text.
-        // be used outside the app.
-        return [self filePathForData:uniqueId withFileExtension:@"txt" inFolder:folder];
     } else if ([contentType isEqualToString:OWSMimeTypeUnknownForTests]) {
         // This file extension is arbitrary - it should never be exposed to the user or
         // be used outside the app.
@@ -560,6 +559,36 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         result = [self utiTypesForMIMETypes:[self supportedAnimatedMIMETypesToExtensionTypes].allKeys];
+    });
+    return result;
+}
+
++ (NSArray<NSString *> *)supportedImageMIMETypes
+{
+    static NSArray<NSString *> *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = [self supportedImageMIMETypesToExtensionTypes].allKeys;
+    });
+    return result;
+}
+
++ (NSArray<NSString *> *)supportedAnimatedImageMIMETypes
+{
+    static NSArray<NSString *> *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = [self supportedAnimatedMIMETypesToExtensionTypes].allKeys;
+    });
+    return result;
+}
+
++ (NSArray<NSString *> *)supportedVideoMIMETypes
+{
+    static NSArray<NSString *> *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        result = [self supportedVideoMIMETypesToExtensionTypes].allKeys;
     });
     return result;
 }
@@ -1394,6 +1423,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/fif" : @"fif",
             @"image/g3fax" : @"g3",
             @"image/gif" : @"gif",
+            @"image/heic" : @"heic",
+            @"image/heif" : @"heif",
             @"image/ief" : @"ief",
             @"image/jpeg" : @"jpg",
             @"image/jutvision" : @"jut",
@@ -1943,6 +1974,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"hal" : @"application/vnd.hal+xml",
             @"hbci" : @"application/vnd.hbci",
             @"hdf" : @"application/x-hdf",
+            @"heic" : @"image/heic",
+            @"heif" : @"image/heif",
             @"hh" : @"text/x-c",
             @"hlp" : @"application/winhlp",
             @"hpgl" : @"application/vnd.hp-hpgl",

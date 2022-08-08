@@ -1,6 +1,6 @@
 import Foundation
 
-internal enum Threading {
+public enum Threading {
 
-    internal static let workQueue = DispatchQueue(label: "SessionSnodeKit.workQueue", qos: .userInitiated) // It's important that this is a serial queue
+    public static let workQueue = DispatchQueue(label: "SessionSnodeKit.workQueue", qos: .userInitiated) // It's important that this is a serial queue
 }

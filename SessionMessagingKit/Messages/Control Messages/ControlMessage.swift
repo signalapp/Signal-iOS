@@ -1,3 +1,5 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-@objc(SNControlMessage)
-public class ControlMessage : Message { }
+import Foundation
+
+public class ControlMessage: Message { }

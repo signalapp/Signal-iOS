@@ -1,3 +1,6 @@
+import Foundation
+import GRDB
+import SessionSnodeKit
 
 final class IP2Country {
     var countryNamesCache: [String:String] = [:]
@@ -53,12 +56,8 @@ final class IP2Country {
     }
 
     func populateCacheIfNeeded() -> Bool {
-        if OnionRequestAPI.paths.isEmpty {
-            OnionRequestAPI.paths = Storage.shared.getOnionRequestPaths()
-        }
-        let paths = OnionRequestAPI.paths
-        guard !paths.isEmpty else { return false }
-        let pathToDisplay = paths.first!
+        guard let pathToDisplay: [Snode] = OnionRequestAPI.paths.first else { return false }
+        
         pathToDisplay.forEach { snode in
             let _ = self.cacheCountry(for: snode.ip) // Preload if needed
         }

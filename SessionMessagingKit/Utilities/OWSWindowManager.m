@@ -3,7 +3,7 @@
 //
 
 #import "OWSWindowManager.h"
-#import "Environment.h"
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,22 +14,7 @@ NSString *const IsScreenBlockActiveDidChangeNotification = @"IsScreenBlockActive
 
 const CGFloat OWSWindowManagerCallBannerHeight(void)
 {
-    if (@available(iOS 11.4, *)) {
-        return CurrentAppContext().statusBarHeight + 20;
-    }
-
-    if (![UIDevice currentDevice].hasIPhoneXNotch) {
-        return CurrentAppContext().statusBarHeight + 20;
-    }
-
-    // Hardcode CallBanner height for iPhone X's on older iOS.
-    //
-    // As of iOS11.4 and iOS12, this no longer seems to be an issue, but previously statusBarHeight returned
-    // something like 20pts (IIRC), meaning our call banner did not extend sufficiently past the iPhone X notch.
-    //
-    // Before noticing that this behavior changed, I actually assumed that notch height was intentionally excluded from
-    // the statusBarHeight, and that this was not a bug, else I'd have taken better notes.
-    return 64;
+    return CurrentAppContext().statusBarHeight + 20;
 }
 
 // Behind everything, especially the root window.
@@ -153,7 +138,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 + (instancetype)sharedManager
 {
-    return Environment.shared.windowManager;
+    return SMKEnvironment.shared.windowManager;
 }
 
 - (instancetype)initDefault
@@ -200,19 +185,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (UIWindow *)createMenuActionsWindowWithRoowWindow:(UIWindow *)rootWindow
 {
-    UIWindow *window;
-    if (@available(iOS 11, *)) {
-        // On iOS11, setting the windowLevel is insufficient, so we override
-        // the `windowLevel` getter.
-        window = [[MessageActionsWindow alloc] initWithFrame:rootWindow.bounds];
-    } else {
-        // On iOS9, 10 overriding the `windowLevel` getter does not cause the
-        // window to be displayed above the keyboard, but setting the window
-        // level works.
-        window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
-        window.windowLevel = UIWindowLevel_MessageActions();
-    }
-
+    UIWindow *window = [[MessageActionsWindow alloc] initWithFrame:rootWindow.bounds];
     window.hidden = YES;
     window.backgroundColor = UIColor.clearColor;
 

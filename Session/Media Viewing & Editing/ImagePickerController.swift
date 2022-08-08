@@ -5,6 +5,7 @@
 import Foundation
 import Photos
 import PromiseKit
+import SessionUIKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController)
@@ -46,6 +47,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.view.backgroundColor = Colors.navigationBarBackground
 
         library.add(delegate: self)
 
@@ -54,12 +57,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
+        collectionView.register(view: PhotoGridViewCell.self)
 
         // ensure images at the end of the list can be scrolled above the bottom buttons
         let bottomButtonInset = -1 * SendMediaNavigationController.bottomButtonsCenterOffset + SendMediaNavigationController.bottomButtonWidth / 2 + 16
         collectionView.contentInset.bottom = bottomButtonInset + 16
-        view.backgroundColor = .white
 
         // The PhotoCaptureVC needs a shadow behind it's cancel button, so we use a custom icon.
         // This VC has a visible navbar so doesn't need the shadow, but because the user can
@@ -69,24 +71,16 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let cancelImage = UIImage(imageLiteralResourceName: "X")
         let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
 
-        cancelButton.tintColor = .black
+        cancelButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = cancelButton
 
         let titleView = TitleView()
         titleView.delegate = self
         titleView.text = photoCollection.localizedTitle()
-        
-        if #available(iOS 11, *) {
-            // do nothing
-        } else {
-            // must assign titleView frame manually on older iOS
-            titleView.frame = CGRect(origin: .zero, size: titleView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))
-        }
-
         navigationItem.titleView = titleView
         self.titleView = titleView
 
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = Colors.navigationBarBackground
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
         selectionPanGesture.delegate = self
@@ -200,16 +194,15 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        // Loki: Set navigation bar background color
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = .white
-        (navigationBar as! OWSNavigationBar).respectsTheme = false
-        navigationBar.backgroundColor = .white
-        let backgroundImage = UIImage(color: .white)
-        navigationBar.setBackgroundImage(backgroundImage, for: .default)
+        let backgroundImage: UIImage = UIImage(color: Colors.navigationBarBackground)
+        self.navigationItem.title = nil
+        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.barTintColor = Colors.navigationBarBackground
+        (self.navigationController?.navigationBar as? OWSNavigationBar)?.respectsTheme = true
+        self.navigationController?.navigationBar.backgroundColor = Colors.navigationBarBackground
+        self.navigationController?.navigationBar.setBackgroundImage(backgroundImage, for: .default)
         
         // Determine the size of the thumbnails to request
         let scale = UIScreen.main.scale
@@ -268,11 +261,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: 
     
     var lastPageYOffset: CGFloat {
-        var yOffset = collectionView.contentSize.height - collectionView.bounds.height + collectionView.adjustedContentInset.bottom
-        if #available(iOS 11.0, *) {
-            yOffset += view.safeAreaInsets.bottom
-        }
-        return yOffset
+        return (collectionView.contentSize.height - collectionView.bounds.height + collectionView.adjustedContentInset.bottom + view.safeAreaInsets.bottom)
     }
 
     func scrollToBottom(animated: Bool) {
@@ -343,10 +332,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     static let kInterItemSpacing: CGFloat = 2
     private class func buildLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
-
-        if #available(iOS 11, *) {
-            layout.sectionInsetReference = .fromSafeArea
-        }
+        layout.sectionInsetReference = .fromSafeArea
         layout.minimumInteritemSpacing = kInterItemSpacing
         layout.minimumLineSpacing = kInterItemSpacing
         layout.sectionHeadersPinToVisibleBounds = true
@@ -355,13 +341,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func updateLayout() {
-        let containerWidth: CGFloat
-        if #available(iOS 11.0, *) {
-            containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
-        } else {
-            containerWidth = self.view.frame.size.width
-        }
-
+        let containerWidth: CGFloat = self.view.safeAreaLayoutGuide.layoutFrame.size.width
         let kItemsPerPortraitRow = 4
         let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
         let approxItemWidth = screenWidth / CGFloat(kItemsPerPortraitRow)
@@ -556,11 +536,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return UICollectionViewCell(forAutoLayout: ())
         }
 
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
-            owsFail("cell was unexpectedly nil")
-        }
-
+        let cell: PhotoGridViewCell = collectionView.dequeue(type: PhotoGridViewCell.self, for: indexPath)
         cell.loadingColor = UIColor(white: 0.2, alpha: 1)
+        
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
 
@@ -587,7 +565,7 @@ extension ImagePickerGridController: UIGestureRecognizerDelegate {
     }
 }
 
-protocol TitleViewDelegate: class {
+protocol TitleViewDelegate: AnyObject {
     func titleViewWasTapped(_ titleView: TitleView)
 }
 
@@ -615,10 +593,10 @@ class TitleView: UIView {
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
 
-        label.textColor = .black
+        label.textColor = Colors.text
         label.font = .boldSystemFont(ofSize: Values.mediumFontSize)
 
-        iconView.tintColor = .black
+        iconView.tintColor = Colors.text
         iconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))

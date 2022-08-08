@@ -104,8 +104,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (atomic, readonly) NSDate *appLaunchTime;
 
-- (id<SSKKeychainStorage>)keychainStorage;
-
 - (NSString *)appDocumentDirectoryPath;
 
 - (NSString *)appSharedDataDirectoryPath;

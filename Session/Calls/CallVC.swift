@@ -5,7 +5,7 @@ import SessionUtilitiesKit
 import UIKit
 import MediaPlayer
 
-final class CallVC : UIViewController, VideoPreviewDelegate {
+final class CallVC: UIViewController, VideoPreviewDelegate {
     let call: SessionCall
     var latestKnownAudioOutputDeviceName: String?
     var durationTimer: Timer?

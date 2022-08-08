@@ -1,24 +1,26 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
-import SignalUtilitiesKit
+import GRDB
+import PromiseKit
+import DifferenceKit
+import Sodium
 import SessionUIKit
+import SignalUtilitiesKit
 import SessionMessagingKit
-import SessionUtilitiesKit
 
 final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableViewDelegate, AttachmentApprovalViewControllerDelegate {
-    private var threads: YapDatabaseViewMappings!
-    private var threadViewModelCache: [String: ThreadViewModel] = [:] // Thread ID to ThreadViewModel
-    private var selectedThread: TSThread?
+    private let viewModel: ThreadPickerViewModel = ThreadPickerViewModel()
+    private var dataChangeObservable: DatabaseCancellable?
+    private var hasLoadedInitialData: Bool = false
+    
     var shareVC: ShareVC?
     
-    private var threadCount: UInt {
-        threads.numberOfItems(inGroup: TSShareExtensionGroup)
-    }
+    // MARK: - Intialization
     
-    private lazy var dbConnection: YapDatabaseConnection = {
-        let result = OWSPrimaryStorage.shared().newDatabaseConnection()
-        result.objectCacheLimit = 500
-        return result
-    }()
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     // MARK: - UI
     
@@ -63,14 +65,6 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         view.backgroundColor = .clear
         view.setGradient(Gradients.defaultBackground)
         
-        // Threads
-        dbConnection.beginLongLivedReadTransaction() // Freeze the connection for use on the main thread (this gives us a stable data source that doesn't change until we tell it to)
-        threads = YapDatabaseViewMappings(groups: [ TSShareExtensionGroup ], view: TSThreadShareExtensionDatabaseViewExtensionName) // The extension should be registered at this point
-        threads.setIsReversed(true, forGroup: TSShareExtensionGroup)
-        dbConnection.read { transaction in
-            self.threads.update(with: transaction) // Perform the initial update
-        }
-        
         // Title
         navigationItem.titleView = titleLabel
         
@@ -80,8 +74,41 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         view.addSubview(fadeView)
         
         setupLayout()
-        // Reload
-        reload()
+        
+        // Notifications
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive(_:)),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidResignActive(_:)),
+            name: UIApplication.didEnterBackgroundNotification, object: nil
+        )
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        startObservingChanges()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Stop observing database changes
+        dataChangeObservable?.cancel()
+    }
+    
+    @objc func applicationDidBecomeActive(_ notification: Notification) {
+        startObservingChanges()
+    }
+    
+    @objc func applicationDidResignActive(_ notification: Notification) {
+        // Stop observing database changes
+        dataChangeObservable?.cancel()
     }
     
     private func setupNavBar() {
@@ -112,28 +139,50 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         fadeView.pin(.bottom, to: .bottom, of: view)
     }
     
-    // MARK: Table View Data Source
+    // MARK: - Updating
+    
+    private func startObservingChanges() {
+        // Start observing for data changes
+        dataChangeObservable = Storage.shared.start(
+            viewModel.observableViewData,
+            onError:  { _ in },
+            onChange: { [weak self] viewData in
+                // The defaul scheduler emits changes on the main thread
+                self?.handleUpdates(viewData)
+            }
+        )
+    }
+    
+    private func handleUpdates(_ updatedViewData: [SessionThreadViewModel]) {
+        // Ensure the first load runs without animations (if we don't do this the cells will animate
+        // in from a frame of CGRect.zero)
+        guard hasLoadedInitialData else {
+            hasLoadedInitialData = true
+            UIView.performWithoutAnimation { handleUpdates(updatedViewData) }
+            return
+        }
+        
+        // Reload the table content (animate changes after the first load)
+        tableView.reload(
+            using: StagedChangeset(source: viewModel.viewData, target: updatedViewData),
+            with: .automatic,
+            interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
+        ) { [weak self] updatedData in
+            self?.viewModel.updateData(updatedData)
+        }
+    }
+    
+    // MARK: - UITableViewDataSource
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Int(threadCount)
+        return self.viewModel.viewData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: SimplifiedConversationCell = tableView.dequeue(type: SimplifiedConversationCell.self, for: indexPath)
-        cell.threadViewModel = threadViewModel(at: indexPath.row)
+        cell.update(with: self.viewModel.viewData[indexPath.row])
         
         return cell
-    }
-    
-    // MARK: - Updating
-    
-    private func reload() {
-        AssertIsOnMainThread()
-        dbConnection.beginLongLivedReadTransaction() // Jump to the latest commit
-        dbConnection.read { transaction in
-            self.threads.update(with: transaction)
-        }
-        threadViewModelCache.removeAll()
-        tableView.reloadData()
     }
     
     // MARK: - Interaction
@@ -141,26 +190,24 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        guard let thread = self.thread(at: indexPath.row), let attachments = ShareVC.attachmentPrepPromise?.value else {
-            return
-        }
+        guard let attachments: [SignalAttachment] = ShareVC.attachmentPrepPromise?.value else { return }
         
-        self.selectedThread = thread
-        
-        let approvalVC = AttachmentApprovalViewController.wrappedInNavController(attachments: attachments, approvalDelegate: self)
-        navigationController!.present(approvalVC, animated: true, completion: nil)
+        let approvalVC: OWSNavigationController = AttachmentApprovalViewController.wrappedInNavController(
+            threadId: self.viewModel.viewData[indexPath.row].threadId,
+            attachments: attachments,
+            approvalDelegate: self
+        )
+        self.navigationController?.present(approvalVC, animated: true, completion: nil)
     }
     
-    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], messageText: String?) {
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didApproveAttachments attachments: [SignalAttachment], forThreadId threadId: String, messageText: String?) {
         // Sharing a URL or plain text will populate the 'messageText' field so in those
         // cases we should ignore the attachments
         let isSharingUrl: Bool = (attachments.count == 1 && attachments[0].isUrl)
         let isSharingText: Bool = (attachments.count == 1 && attachments[0].isText)
         let finalAttachments: [SignalAttachment] = (isSharingUrl || isSharingText ? [] : attachments)
-        
-        let message = VisibleMessage()
-        message.sentTimestamp = NSDate.millisecondTimestamp()
-        message.text = (isSharingUrl && (messageText?.isEmpty == true || attachments[0].linkPreviewDraft == nil) ?
+        let body: String? = (
+            isSharingUrl && (messageText?.isEmpty == true || attachments[0].linkPreviewDraft == nil) ?
             (
                 (messageText?.isEmpty == true || (attachments[0].text() == messageText) ?
                     attachments[0].text() :
@@ -169,35 +216,54 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
             ) :
             messageText
         )
-
-        let tsMessage = TSOutgoingMessage.from(message, associatedWith: selectedThread!)
-        Storage.write(
-            with: { transaction in
-                if isSharingUrl {
-                    message.linkPreview = VisibleMessage.LinkPreview.from(
-                        attachments[0].linkPreviewDraft,
-                        using: transaction
-                    )
-                }
-                else {
-                    tsMessage.save(with: transaction)
-                }
-            },
-            completion: {
-                if isSharingUrl {
-                    tsMessage.linkPreview = OWSLinkPreview.from(message.linkPreview)
-                    
-                    Storage.write { transaction in
-                        tsMessage.save(with: transaction)
-                    }
-                }
-            }
-        )
         
-        shareVC!.dismiss(animated: true, completion: nil)
+        shareVC?.dismiss(animated: true, completion: nil)
         
         ModalActivityIndicatorViewController.present(fromViewController: shareVC!, canCancel: false, message: "vc_share_sending_message".localized()) { activityIndicator in
-            MessageSender.sendNonDurably(message, with: finalAttachments, in: self.selectedThread!)
+            Storage.shared
+                .writeAsync { [weak self] db -> Promise<Void> in
+                    guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
+                        activityIndicator.dismiss { }
+                        self?.shareVC?.shareViewFailed(error: MessageSenderError.noThread)
+                        return Promise(error: MessageSenderError.noThread)
+                    }
+                    
+                    // Create the interaction
+                    let interaction: Interaction = try Interaction(
+                        threadId: threadId,
+                        authorId: getUserHexEncodedPublicKey(db),
+                        variant: .standardOutgoing,
+                        body: body,
+                        timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),
+                        hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: body),
+                        linkPreviewUrl: (isSharingUrl ? attachments.first?.linkPreviewDraft?.urlString : nil)
+                    ).inserted(db)
+
+                    // If the user is sharing a Url, there is a LinkPreview and it doesn't match an existing
+                    // one then add it now
+                    if
+                        isSharingUrl,
+                        let linkPreviewDraft: LinkPreviewDraft = attachments.first?.linkPreviewDraft,
+                        (try? interaction.linkPreview.isEmpty(db)) == true
+                    {
+                        try LinkPreview(
+                            url: linkPreviewDraft.urlString,
+                            title: linkPreviewDraft.title,
+                            attachmentId: LinkPreview.saveAttachmentIfPossible(
+                                db,
+                                imageData: linkPreviewDraft.jpegImageData,
+                                mimeType: OWSMimeTypeImageJpeg
+                            )
+                        ).insert(db)
+                    }
+
+                    return try MessageSender.sendNonDurably(
+                        db,
+                        interaction: interaction,
+                        with: finalAttachments,
+                        in: thread
+                    )
+                }
                 .done { [weak self] _ in
                     activityIndicator.dismiss { }
                     self?.shareVC?.shareViewWasCompleted()
@@ -214,33 +280,11 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {
-        // Do nothing
     }
     
-    // MARK: - Convenience
-    
-    private func thread(at index: Int) -> TSThread? {
-        var thread: TSThread? = nil
-        dbConnection.read { transaction in
-            let ext = transaction.ext(TSThreadShareExtensionDatabaseViewExtensionName) as! YapDatabaseViewTransaction
-            thread = ext.object(atRow: UInt(index), inSection: 0, with: self.threads) as! TSThread?
-        }
-        return thread
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
     }
     
-    private func threadViewModel(at index: Int) -> ThreadViewModel? {
-        guard let thread = thread(at: index) else { return nil }
-        
-        if let cachedThreadViewModel = threadViewModelCache[thread.uniqueId!] {
-            return cachedThreadViewModel
-        }
-        else {
-            var threadViewModel: ThreadViewModel? = nil
-            dbConnection.read { transaction in
-                threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
-            }
-            threadViewModelCache[thread.uniqueId!] = threadViewModel
-            return threadViewModel
-        }
+    func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) {
     }
 }

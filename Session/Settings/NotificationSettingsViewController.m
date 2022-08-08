@@ -7,9 +7,7 @@
 #import "NotificationSettingsViewController.h"
 #import "NotificationSettingsOptionsViewController.h"
 #import "OWSSoundSettingsViewController.h"
-#import <SessionMessagingKit/Environment.h>
-#import <SessionMessagingKit/OWSPreferences.h>
-#import <SessionMessagingKit/OWSSounds.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/UIUtil.h>
 #import "Session-Swift.h"
 
@@ -40,8 +38,6 @@
 
     __weak NotificationSettingsViewController *weakSelf = self;
 
-    OWSPreferences *prefs = Environment.shared.preferences;
-
     OWSTableSection *strategySection = [OWSTableSection new];
     strategySection.headerTitle = NSLocalizedString(@"preferences_notifications_strategy_category_title", @"");
     [strategySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"vc_notification_settings_notification_mode_title", @"")
@@ -66,7 +62,7 @@
         addItem:[OWSTableItem disclosureItemWithText:
                                   NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                                       @"Label for settings view that allows user to change the notification sound.")
-                                          detailText:[OWSSounds displayNameForSound:[OWSSounds globalNotificationSound]]
+                                          detailText:[SMKSound displayNameFor:[SMKSound defaultNotificationSound]]
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"message_sound")
                                          actionBlock:^{
                                              OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
@@ -79,7 +75,7 @@
     [soundsSection addItem:[OWSTableItem switchItemWithText:inAppSoundsLabelText
                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"in_app_sounds")
                                isOnBlock:^{
-                                   return [prefs soundInForeground];
+                                   return [SMKPreferences playNotificationSoundInForeground];
                                }
                                isEnabledBlock:^{
                                    return YES;
@@ -93,7 +89,7 @@
     [backgroundSection
         addItem:[OWSTableItem
                      disclosureItemWithText:NSLocalizedString(@"NOTIFICATIONS_SHOW", nil)
-                                 detailText:[prefs nameForNotificationPreviewType:[prefs notificationPreviewType]]
+                                 detailText:[SMKPreferences nameForNotificationPreviewType:[SMKPreferences notificationPreviewType]]
                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"options")
                                 actionBlock:^{
                                     NotificationSettingsOptionsViewController *vc =
@@ -111,15 +107,13 @@
 
 - (void)didToggleSoundNotificationsSwitch:(UISwitch *)sender
 {
-    [Environment.shared.preferences setSoundInForeground:sender.on];
+    [SMKPreferences setPlayNotificationSoundInForeground:sender.on];
 }
 
 - (void)didToggleAPNsSwitch:(UISwitch *)sender
 {
     [NSUserDefaults.standardUserDefaults setBool:sender.on forKey:@"isUsingFullAPNs"];
-    OWSSyncPushTokensJob *syncTokensJob = [[OWSSyncPushTokensJob alloc] initWithAccountManager:AppEnvironment.shared.accountManager preferences:Environment.shared.preferences];
-    syncTokensJob.uploadOnlyIfStale = NO;
-    [[syncTokensJob run] retainUntilComplete];
+    [OWSSyncPushTokensJob run]; // FIXME: Only usage of 'OWSSyncPushTokensJob' - remove when gone
 }
 
 @end

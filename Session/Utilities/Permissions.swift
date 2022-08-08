@@ -50,7 +50,7 @@ public func requestLibraryPermissionIfNeeded(onAuthorized: @escaping () -> Void)
             // the picker view then will dismiss, too. The selection process cannot be finished
             // this way. So we add a flag (isRequestingPermission) to prevent the ScreenLockUI
             // from showing when we request the photo library permission.
-            Environment.shared.isRequestingPermission = true
+            Environment.shared?.isRequestingPermission = true
             let appMode = AppModeManager.shared.currentAppMode
             // FIXME: Rather than setting the app mode to light and then to dark again once we're done,
             // it'd be better to just customize the appearance of the image picker. There doesn't currently
@@ -60,7 +60,7 @@ public func requestLibraryPermissionIfNeeded(onAuthorized: @escaping () -> Void)
                 DispatchQueue.main.async {
                     AppModeManager.shared.setCurrentAppMode(to: appMode)
                 }
-                Environment.shared.isRequestingPermission = false
+                Environment.shared?.isRequestingPermission = false
                 if [ PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited ].contains(status) {
                     onAuthorized()
                 }
