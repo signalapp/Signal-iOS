@@ -97,13 +97,8 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     }
 
     @objc
-    public override var shouldBeSaved: Bool {
-        return false
-    }
-
-    override var shouldRecordSendLog: Bool {
-        false // TODO: story MSL support
-    }
+    public override var shouldBeSaved: Bool { false }
+    override var contentHint: SealedSenderContentHint { .implicit }
 
     public override func contentBuilder(
         thread: TSThread,
