@@ -22,6 +22,7 @@
 		179E8C33276A713300AF640F /* AFQueryString.h in Headers */ = {isa = PBXBuildFile; fileRef = 179E8C32276A713300AF640F /* AFQueryString.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		17ACF11E267D71E0009BE867 /* OWSAudioSession+WebRTC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17ACF11D267D71E0009BE867 /* OWSAudioSession+WebRTC.swift */; };
 		17B78E0E260529E900E24A9E /* newlyInitializedSessionState in Resources */ = {isa = PBXBuildFile; fileRef = 17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */; };
+		17E6049028A17BD300127680 /* ZkGroupIntegrationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */; };
 		23B9887F4A95010141FCF725 /* Pods_SignalUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E36B9FCE67E9FFDA471A085 /* Pods_SignalUI.framework */; };
 		3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3236FCC32592B67B006D33B9 /* NameCollisionReviewCell.swift */; };
 		32525F9527C74B1A0099E801 /* LightweightCallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32525F9427C74B1A0099E801 /* LightweightCallManager.swift */; };
@@ -2121,6 +2122,7 @@
 		179E8C32276A713300AF640F /* AFQueryString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFQueryString.h; sourceTree = "<group>"; };
 		17ACF11D267D71E0009BE867 /* OWSAudioSession+WebRTC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OWSAudioSession+WebRTC.swift"; sourceTree = "<group>"; };
 		17B78E0C2605299E00E24A9E /* newlyInitializedSessionState */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = newlyInitializedSessionState; sourceTree = "<group>"; };
+		17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkGroupIntegrationTest.swift; sourceTree = "<group>"; };
 		1BC279B87E730B066A5AFB2A /* Pods-SignalPerformanceTests.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalPerformanceTests.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalPerformanceTests/Pods-SignalPerformanceTests.app store release.xcconfig"; sourceTree = "<group>"; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
@@ -4993,6 +4995,7 @@
 			isa = PBXGroup;
 			children = (
 				349BC860253A2651003C949A /* GroupsV2MigrationTest.swift */,
+				17E6048F28A17BD200127680 /* ZkGroupIntegrationTest.swift */,
 			);
 			path = Groups;
 			sourceTree = "<group>";
@@ -10301,6 +10304,7 @@
 				3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */,
 				3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */,
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
+				17E6049028A17BD300127680 /* ZkGroupIntegrationTest.swift in Sources */,
 				349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */,
 				45A3579B27DBD5BB0051CE8B /* OWSProfileManagerTest.swift in Sources */,
 				3421981C21061D2E00C57195 /* ByteParserTest.swift in Sources */,
