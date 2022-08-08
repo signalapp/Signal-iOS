@@ -327,8 +327,7 @@ extension MessageReceiver {
         let sortId = Reaction.getSortId(
             db,
             interactionId: interactionId,
-            emoji: reaction.emoji,
-            timestamp: Int64(messageSentTimestamp * 1000)
+            emoji: reaction.emoji
         )
         
         switch reaction.kind {

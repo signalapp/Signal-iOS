@@ -108,8 +108,7 @@ public extension Reaction {
     static func getSortId(
         _ db: Database,
         interactionId: Int64,
-        emoji: String,
-        timestamp: Int64
+        emoji: String
     ) -> Int64 {
         if let existingSortId: Int64 = try? Reaction
             .select(Columns.sortId)
@@ -121,6 +120,15 @@ public extension Reaction {
             return existingSortId
         }
         
-        return timestamp
+        if let existingLargestSortId: Int64 = try? Reaction
+            .select(max(Columns.sortId))
+            .filter(Columns.interactionId == interactionId)
+            .asRequest(of: Int64.self)
+            .fetchOne(db)
+        {
+            return existingLargestSortId + 1
+        }
+        
+        return 0
     }
 }

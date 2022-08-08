@@ -515,10 +515,6 @@ public final class OpenGroupManager: NSObject {
         
         // Process the messages
         sortedMessages.forEach { message in
-            if message.base64EncodedData == nil && message.reactions == nil {
-                return
-            }
-            
             // Handle messages
             if let base64EncodedString: String = message.base64EncodedData,
                let data = Data(base64Encoded: base64EncodedString)
@@ -560,26 +556,24 @@ public final class OpenGroupManager: NSObject {
             }
             
             // Handle reactions
-            if message.reactions != nil {
-                do {
-                    let reactions: [Reaction] = Message.processRawReceivedReactions(
+            do {
+                let reactions: [Reaction] = Message.processRawReceivedReactions(
+                    db,
+                    openGroupId: openGroup.id,
+                    message: message,
+                    dependencies: dependencies
+                )
+                
+                if !reactions.isEmpty {
+                    try MessageReceiver.handleOpenGroupReactions(
                         db,
-                        openGroupId: openGroup.id,
-                        message: message,
-                        dependencies: dependencies
+                        openGroupMessageServerId: message.id,
+                        openGroupReactions: reactions
                     )
-                    
-                    if !reactions.isEmpty {
-                        try MessageReceiver.handleOpenGroupReactions(
-                            db,
-                            openGroupMessageServerId: message.id,
-                            openGroupReactions: reactions
-                        )
-                    }
                 }
-                catch {
-                    SNLog("Couldn't handle open group reactions due to error: \(error).")
-                }
+            }
+            catch {
+                SNLog("Couldn't handle open group reactions due to error: \(error).")
             }
         }
 

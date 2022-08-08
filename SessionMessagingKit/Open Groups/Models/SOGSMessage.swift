@@ -40,16 +40,16 @@ extension OpenGroupAPI {
                 case count
                 case reactors
                 case you
-                case first
+                case index
             }
             
             public let count: Int64
             public let reactors: [String]?
             public let you: Bool
-            public let first: TimeInterval
+            public let index: Int64
         }
         
-        public let reactions: [String:Reaction]?
+        public let reactions: [String:Reaction]
     }
 }
 
@@ -107,7 +107,7 @@ extension OpenGroupAPI.Message {
             whisperTo: try? container.decode(String.self, forKey: .whisperTo),
             base64EncodedData: maybeBase64EncodedData,
             base64EncodedSignature: maybeBase64EncodedSignature,
-            reactions: maybeReactions
+            reactions: maybeReactions ?? [:]
         )
     }
 }
@@ -120,7 +120,7 @@ extension OpenGroupAPI.Message.Reaction {
             count: try container.decode(Int64.self, forKey: .count),
             reactors: try? container.decode([String].self, forKey: .reactors),
             you: (try? container.decode(Bool.self, forKey: .you)) ?? false,
-            first: ((try? container.decode(TimeInterval.self, forKey: .first)) ?? Date().timeIntervalSince1970)
+            index: (try container.decode(Int64.self, forKey: .index))
         )
     }
 }

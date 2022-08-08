@@ -356,20 +356,19 @@ public extension Message {
         dependencies: SMKDependencies = SMKDependencies()
     ) -> [Reaction] {
         var results: [Reaction] = []
-        guard let reactions = message.reactions else { return results }
         let userPublicKey: String = getUserHexEncodedPublicKey(db)
         let blindedUserPublicKey: String? = SessionThread
             .getUserHexEncodedBlindedKey(
                 threadId: openGroupId,
                 threadVariant: .openGroup
             )
-        for (encodedEmoji, rawReaction) in reactions {
+        for (encodedEmoji, rawReaction) in message.reactions {
             if let emoji = encodedEmoji.removingPercentEncoding,
                rawReaction.count > 0,
                let reactors = rawReaction.reactors
             {
                 var count = rawReaction.count
-                let sortId: Int64 = Int64(floor((rawReaction.first * 1000)))
+                let sortId: Int64 = rawReaction.index
                 for reactor in reactors {
                     if reactor == blindedUserPublicKey { continue } // Will add a reaction for this case outside of the loop
                     let reaction = Reaction(
