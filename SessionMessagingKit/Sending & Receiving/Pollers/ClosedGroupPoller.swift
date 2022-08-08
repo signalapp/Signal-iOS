@@ -65,18 +65,12 @@ public final class ClosedGroupPoller {
         setUpPolling(for: groupPublicKey)
     }
 
-    @objc public func stop() {
-        Storage.shared
-            .read { db in
-                try ClosedGroup
-                    .select(.threadId)
-                    .asRequest(of: String.self)
-                    .fetchAll(db)
-            }
-            .defaulting(to: [])
-            .forEach { [weak self] groupPublicKey in
-                self?.stopPolling(for: groupPublicKey)
-            }
+    public func stopAllPollers() {
+        let pollers: [String] = Array(isPolling.wrappedValue.keys)
+        
+        pollers.forEach { groupPublicKey in
+            self.stopPolling(for: groupPublicKey)
+        }
     }
 
     public func stopPolling(for groupPublicKey: String) {
