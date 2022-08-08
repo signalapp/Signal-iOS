@@ -7,9 +7,11 @@ import SignalServiceKit
 import UIKit
 import SignalUI
 
+private let loadingQueue = DispatchQueue(label: "StoriesViewController.loadingQueue", qos: .userInitiated)
+
 class StoriesViewController: OWSViewController {
     let tableView = UITableView()
-    private var models = AtomicArray<StoryViewModel>()
+    private let syncingModels = SyncingStoryViewModelArray()
     private var myStoryModel = AtomicOptional<MyStoryViewModel>(nil)
 
     private lazy var emptyStateLabel: UILabel = {
@@ -213,25 +215,23 @@ class StoriesViewController: OWSViewController {
         presentFormSheet(AppSettingsViewController.inModalNavigationController(), animated: true)
     }
 
-    private static let loadingQueue = DispatchQueue(label: "StoriesViewController.loadingQueue", qos: .userInitiated)
     private func reloadStories() {
-        Self.loadingQueue.async {
-            let (listStories, outgoingStories) = Self.databaseStorage.read {
-                (
-                    StoryFinder.storiesForListView(transaction: $0),
-                    StoryFinder.outgoingStories(limit: 2, transaction: $0)
-                )
-            }
-            let groupedMessages = Dictionary(grouping: listStories) { $0.context }
-            let newModels = Self.databaseStorage.read { transaction in
-                groupedMessages.compactMap { try? StoryViewModel(messages: $1, transaction: transaction) }
-            }.sorted(by: self.sortStoryModels)
-            let myStoryModel = Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
-
-            self.models.set(newModels)
-            self.myStoryModel.set(myStoryModel)
-
-            DispatchQueue.main.async {
+        loadingQueue.async {
+            self.syncingModels.mutate { _ -> ([StoryViewModel], Void)? in
+                let (listStories, outgoingStories) = Self.databaseStorage.read {
+                    (
+                        StoryFinder.storiesForListView(transaction: $0),
+                        StoryFinder.outgoingStories(limit: 2, transaction: $0)
+                    )
+                }
+                let myStoryModel = Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
+                let groupedMessages = Dictionary(grouping: listStories) { $0.context }
+                self.myStoryModel.set(myStoryModel)
+                let newValues = Self.databaseStorage.read { transaction in
+                    groupedMessages.compactMap { try? StoryViewModel(messages: $1, transaction: transaction) }
+                }.sorted(by: self.sortStoryModels)
+                return (newValues, ())
+            } sync: { (_, _) in
                 self.tableView.reloadData()
             }
         }
@@ -242,77 +242,73 @@ class StoriesViewController: OWSViewController {
 
         guard !rowIds.isEmpty else { return }
 
-        Self.loadingQueue.async {
-            let models = self.models.get()
-            let myStoryModel = self.myStoryModel.get()
+        loadingQueue.async {
+            let ok =
+            self.syncingModels.mutate { models -> ([StoryViewModel], (Bool, [BatchUpdate<StoryContext>.Item]))? in
+                let myStoryModel = self.myStoryModel.get()
 
-            let (updatedListMessages, outgoingStories) = Self.databaseStorage.read {
-                (
-                    StoryFinder.listStoriesWithRowIds(Array(rowIds), transaction: $0),
-                    StoryFinder.outgoingStories(limit: 2, transaction: $0)
-                )
-            }
-            var deletedRowIds = rowIds.subtracting(updatedListMessages.lazy.map { $0.id! })
-            var groupedMessages = Dictionary(grouping: updatedListMessages) { $0.context }
+                let (updatedListMessages, outgoingStories) = Self.databaseStorage.read {
+                    (
+                        StoryFinder.listStoriesWithRowIds(Array(rowIds), transaction: $0),
+                        StoryFinder.outgoingStories(limit: 2, transaction: $0)
+                    )
+                }
+                var deletedRowIds = rowIds.subtracting(updatedListMessages.lazy.map { $0.id! })
+                var groupedMessages = Dictionary(grouping: updatedListMessages) { $0.context }
 
-            let oldContexts = models.map { $0.context }
-            var changedContexts = [StoryContext]()
+                let oldContexts = models.map { $0.context }
+                var changedContexts = [StoryContext]()
 
-            let newModels: [StoryViewModel]
-            do {
-                newModels = try Self.databaseStorage.read { transaction in
-                    try models.compactMap { model in
-                        guard let latestMessage = model.messages.first else { return model }
+                let newModels: [StoryViewModel]
+                do {
+                    newModels = try Self.databaseStorage.read { transaction in
+                        try models.compactMap { model in
+                            guard let latestMessage = model.messages.first else { return model }
 
-                        let modelDeletedRowIds: [Int64] = model.messages.lazy.compactMap { $0.id }.filter { deletedRowIds.contains($0) }
-                        deletedRowIds.subtract(modelDeletedRowIds)
+                            let modelDeletedRowIds: [Int64] = model.messages.lazy.compactMap { $0.id }.filter { deletedRowIds.contains($0) }
+                            deletedRowIds.subtract(modelDeletedRowIds)
 
-                        let modelUpdatedMessages = groupedMessages.removeValue(forKey: latestMessage.context) ?? []
+                            let modelUpdatedMessages = groupedMessages.removeValue(forKey: latestMessage.context) ?? []
 
-                        guard !modelUpdatedMessages.isEmpty || !modelDeletedRowIds.isEmpty else { return model }
+                            guard !modelUpdatedMessages.isEmpty || !modelDeletedRowIds.isEmpty else { return model }
 
-                        changedContexts.append(model.context)
+                            changedContexts.append(model.context)
 
-                        return try model.copy(
-                            updatedMessages: modelUpdatedMessages,
-                            deletedMessageRowIds: modelDeletedRowIds,
-                            transaction: transaction
-                        )
-                    } + groupedMessages.map { try StoryViewModel(messages: $1, transaction: transaction) }
-                }.sorted(by: self.sortStoryModels)
-            } catch {
-                owsFailDebug("Failed to build new models, hard reloading \(error)")
-                DispatchQueue.main.async { self.reloadStories() }
-                return
-            }
+                            return try model.copy(
+                                updatedMessages: modelUpdatedMessages,
+                                deletedMessageRowIds: modelDeletedRowIds,
+                                transaction: transaction
+                            )
+                        } + groupedMessages.map { try StoryViewModel(messages: $1, transaction: transaction) }
+                    }.sorted(by: self.sortStoryModels)
+                } catch {
+                    owsFailDebug("Failed to build new models, hard reloading \(error)")
+                    return nil
+                }
+                let myStoryChanged = rowIds.intersection(outgoingStories.map { $0.id! }).count > 0
+                    || Set(myStoryModel?.messages.map { $0.uniqueId } ?? []) != Set(outgoingStories.map { $0.uniqueId })
+                let newMyStoryModel = myStoryChanged
+                    ? Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
+                    : myStoryModel
 
-            let myStoryChanged = rowIds.intersection(outgoingStories.map { $0.id! }).count > 0
-                || Set(myStoryModel?.messages.map { $0.uniqueId } ?? []) != Set(outgoingStories.map { $0.uniqueId })
-            let newMyStoryModel = myStoryChanged
-                ? Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
-                : myStoryModel
-
-            let batchUpdateItems: [BatchUpdate<StoryContext>.Item]
-            do {
-                batchUpdateItems = try BatchUpdate.build(
-                    viewType: .uiTableView,
-                    oldValues: oldContexts,
-                    newValues: newModels.map { $0.context },
-                    changedValues: changedContexts
-                )
-            } catch {
-                owsFailDebug("Failed to calculate batch updates, hard reloading \(error)")
-                DispatchQueue.main.async { self.reloadStories() }
-                return
-            }
-
-            self.models.set(newModels)
-            self.myStoryModel.set(newMyStoryModel)
-
-            DispatchQueue.main.async {
+                let batchUpdateItems: [BatchUpdate<StoryContext>.Item]
+                do {
+                    batchUpdateItems = try BatchUpdate.build(
+                        viewType: .uiTableView,
+                        oldValues: oldContexts,
+                        newValues: newModels.map { $0.context },
+                        changedValues: changedContexts
+                    )
+                } catch {
+                    owsFailDebug("Failed to calculate batch updates, hard reloading \(error)")
+                    return nil
+                }
+                self.myStoryModel.set(newMyStoryModel)
+                return (newModels, (myStoryChanged, batchUpdateItems))
+            } sync: { (newModels, userInfo: (Bool, [BatchUpdate<StoryContext>.Item])) in
+                let (myStoryChanged, batchUpdateItems) = userInfo
                 guard self.isViewLoaded else { return }
                 self.tableView.beginUpdates()
-
                 if myStoryChanged {
                     self.tableView.reloadRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .automatic)
                 }
@@ -331,7 +327,7 @@ class StoriesViewController: OWSViewController {
                         let path = IndexPath(row: newIndex, section: Section.visibleStories.rawValue)
                         if (self.tableView.indexPathsForVisibleRows ?? []).contains(path),
                             let visibleCell = self.tableView.cellForRow(at: path) as? StoryCell {
-                            guard let model = self.models.get()[safe: newIndex] else {
+                            guard let model = newModels[safe: newIndex] else {
                                 return owsFailDebug("Missing model for story")
                             }
                             visibleCell.configure(with: model)
@@ -341,6 +337,11 @@ class StoriesViewController: OWSViewController {
                     }
                 }
                 self.tableView.endUpdates()
+            }
+
+            if !ok {
+                DispatchQueue.main.async { self.reloadStories() }
+                return
             }
         }
     }
@@ -420,15 +421,15 @@ extension StoriesViewController: UITableViewDataSource {
     func model(for indexPath: IndexPath) -> StoryViewModel? {
         // TODO: Hidden stories
         guard indexPath.section == Section.visibleStories.rawValue else { return nil }
-        return models.get()[safe: indexPath.row]
+        return syncingModels.get()[safe: indexPath.row]
     }
 
     func model(for context: StoryContext) -> StoryViewModel? {
-        models.get().first { $0.context == context }
+        syncingModels.get().first { $0.context == context }
     }
 
     func cell(for context: StoryContext) -> StoryCell? {
-        guard let row = models.get().firstIndex(where: { $0.context == context }) else { return nil }
+        guard let row = syncingModels.get().firstIndex(where: { $0.context == context }) else { return nil }
         let indexPath = IndexPath(row: row, section: Section.visibleStories.rawValue)
         guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return nil }
         return tableView.cellForRow(at: indexPath) as? StoryCell
@@ -465,13 +466,13 @@ extension StoriesViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        emptyStateLabel.isHidden = models.get().count > 0 || myStoryModel.get()?.messages.isEmpty == false
+        emptyStateLabel.isHidden = syncingModels.get().count > 0 || myStoryModel.get()?.messages.isEmpty == false
 
         switch Section(rawValue: section) {
         case .myStory:
             return 1
         case .visibleStories:
-            return models.count
+            return syncingModels.get().count
         case .hiddenStories:
             return 0 // TODO: Hidden stories
         default:
@@ -483,7 +484,7 @@ extension StoriesViewController: UITableViewDataSource {
 
 extension StoriesViewController: StoryPageViewControllerDataSource {
     func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
-        models.get().map { $0.context }
+        syncingModels.get().map { $0.context }
     }
 }
 
@@ -645,5 +646,65 @@ extension StoriesViewController: ForwardMessageDelegate {
 
     public func forwardMessageFlowDidCancel() {
         self.dismiss(animated: true)
+    }
+}
+
+@propertyWrapper
+struct ThreadBoundValue<T> {
+    private var value: T
+    private var queue: DispatchQueue
+
+    var wrappedValue: T {
+        get {
+            dispatchPrecondition(condition: .onQueue(queue))
+            return value
+        }
+        set {
+            dispatchPrecondition(condition: .onQueue(queue))
+            value = newValue
+        }
+    }
+
+    init(wrappedValue: T, queue: DispatchQueue) {
+        self.value = wrappedValue
+        self.queue = queue
+    }
+}
+
+private class SyncingStoryViewModelArray {
+    // This is always the most up-to-date collection of models.
+    @ThreadBoundValue(wrappedValue: [], queue: loadingQueue) private var trueModels: [StoryViewModel]
+
+    // This may lag behind `trueModels` and is eventually consistent. It is exposed to UITableView.
+    @ThreadBoundValue(wrappedValue: [], queue: .main) private var exposedModels: [StoryViewModel]
+
+    /// Safely modify the list of models. This method must be called on the loading queue.
+    ///
+    /// - Parameters
+    ///   - closure: Called synchronously. Returns nil to abort mutation without side-effects. Otherwise, it returns the new values for the models array and user data to pass to `sync`.
+    ///   - models: The existing array of models.
+    ///   - sync: Runs asynchronously on the main queue after `closure` returns.
+    ///   - newModels: The array of models returned by `closure`.
+    ///   - userData: The second value returned by `closure`.
+    ///
+    /// - Returns whether the closure returned a nonnil list of models.
+    @discardableResult
+    func mutate<T>(_ closure: (_ models: [StoryViewModel]) -> ([StoryViewModel], T)?,
+                   sync: @escaping (_ newModels: [StoryViewModel], _ userData: T) -> Void) -> Bool {
+        dispatchPrecondition(condition: .onQueue(loadingQueue))
+
+        guard let (newModels, userInfo) = closure(trueModels) else {
+            return false
+        }
+        trueModels = newModels
+        DispatchQueue.main.async {
+            self.exposedModels = newModels
+            sync(newModels, userInfo)
+        }
+        return true
+    }
+
+    func get() -> [StoryViewModel] {
+        return exposedModels
     }
 }
