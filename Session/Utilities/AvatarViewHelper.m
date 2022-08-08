@@ -9,9 +9,6 @@
 
 #import <SignalUtilitiesKit/UIUtil.h>
 
-#import <SessionMessagingKit/TSGroupModel.h>
-#import <SessionMessagingKit/TSGroupThread.h>
-#import <SessionMessagingKit/TSThread.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -126,19 +123,34 @@ NS_ASSUME_NONNULL_BEGIN
 
     [SNAppearance switchToSessionAppearance];
     
+    
+    NSURL* imageURL = [info objectForKey:UIImagePickerControllerImageURL];
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];
-
+    
     [self.delegate.fromViewController
         dismissViewControllerAnimated:YES
                            completion:^{
+                               OWSAssertIsOnMainThread();
+        
+                               // Check if the user selected an animated image (if so then don't crop, just
+                               // set the avatar directly
+                               NSString *type;
+                               if ([imageURL getResourceValue:&type forKey:NSURLTypeIdentifierKey error:nil]) {
+                                   if ([[MIMETypeUtil supportedAnimatedImageUTITypes] containsObject:type]) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                           [self.delegate avatarDidChange:nil filePath: imageURL.path];
+                                       });
+                                       
+                                       return;
+                                   }
+                               }
+        
                                if (rawAvatar) {
-                                   OWSAssertIsOnMainThread();
-
                                    CropScaleImageViewController *vc = [[CropScaleImageViewController alloc]
                                         initWithSrcImage:rawAvatar
                                        successCompletion:^(UIImage *_Nonnull dstImage) {
                                            dispatch_async(dispatch_get_main_queue(), ^{
-                                               [self.delegate avatarDidChange:dstImage];
+                                               [self.delegate avatarDidChange:dstImage filePath:nil];
                                            });
                                        }];
                                    [self.delegate.fromViewController presentViewController:vc

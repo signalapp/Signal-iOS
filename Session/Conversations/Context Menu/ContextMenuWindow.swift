@@ -11,7 +11,6 @@ final class ContextMenuWindow : UIWindow {
         initialize()
     }
 
-    @available(iOS 13.0, *)
     override init(windowScene: UIWindowScene) {
         super.init(windowScene: windowScene)
         initialize()

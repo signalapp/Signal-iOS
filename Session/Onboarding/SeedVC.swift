@@ -1,14 +1,16 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class SeedVC : BaseVC {
-    
+import UIKit
+import SessionUtilitiesKit
+
+final class SeedVC: BaseVC {
     private let mnemonic: String = {
-        let identityManager = OWSIdentityManager.shared()
-        let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
-        var hexEncodedSeed: String! = databaseConnection.object(forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection) as! String?
-        if hexEncodedSeed == nil {
-            hexEncodedSeed = identityManager.identityKeyPair()!.hexEncodedPrivateKey // Legacy account
+        if let hexEncodedSeed: String = Identity.fetchHexEncodedSeed() {
+            return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
         }
-        return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
+        
+        // Legacy account
+        return Mnemonic.encode(hexEncodedString: Identity.fetchUserPrivateKey()!.toHexString())
     }()
     
     private lazy var redactedMnemonic: String = {
@@ -168,8 +170,8 @@ final class SeedVC : BaseVC {
             self.seedReminderView.subtitle = NSLocalizedString("view_seed_reminder_subtitle_3", comment: "")
         }, completion: nil)
         seedReminderView.setProgress(1, animated: true)
-        UserDefaults.standard[.hasViewedSeed] = true
-        NotificationCenter.default.post(name: .seedViewed, object: nil)
+        
+        Storage.shared.writeAsync { db in db[.hasViewedSeed] = true }
     }
     
     @objc private func copyMnemonic() {

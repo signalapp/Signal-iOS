@@ -3,7 +3,6 @@
 //
 
 #import "OWSAudioPlayer.h"
-#import "TSAttachmentStream.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SessionUtilitiesKit/SessionUtilitiesKit.h>
 #import <SessionMessagingKit/SessionMessagingKit-Swift.h>
@@ -61,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl
                         audioBehavior:(OWSAudioBehavior)audioBehavior
-                        delegate:(id<OWSAudioPlayerDelegate>)delegate
+                        delegate:(nullable id<OWSAudioPlayerDelegate>)delegate
 {
     self = [super init];
     if (!self) {
@@ -95,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSAudioSession *)audioSession
 {
-    return Environment.shared.audioSession;
+    return SMKEnvironment.shared.audioSession;
 }
 
 #pragma mark

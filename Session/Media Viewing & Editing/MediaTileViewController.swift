@@ -1,531 +1,628 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
-import SessionUIKit
 import UIKit
+import QuartzCore
+import GRDB
+import DifferenceKit
+import SessionUIKit
+import SignalUtilitiesKit
 
-public protocol MediaTileViewControllerDelegate: class {
-    func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)
-}
-
-public class MediaTileViewController: UICollectionViewController, MediaGalleryDataSourceDelegate, UICollectionViewDelegateFlowLayout {
-
-    private weak var mediaGalleryDataSource: MediaGalleryDataSource?
-
-    private var galleryItems: [GalleryDate: [MediaGalleryItem]] {
-        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
-            return [:]
+public class MediaTileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    
+    /// This should be larger than one screen size so we don't have to call it multiple times in rapid succession, but not
+    /// so large that loading get's really chopping
+    static let itemPageSize: Int = Int(11 * itemsPerPortraitRow)
+    static let itemsPerPortraitRow: CGFloat = 4
+    static let interItemSpacing: CGFloat = 2
+    static let footerBarHeight: CGFloat = 40
+    static let loadMoreHeaderHeight: CGFloat = 100
+    
+    private let viewModel: MediaGalleryViewModel
+    private var hasLoadedInitialData: Bool = false
+    private var didFinishInitialLayout: Bool = false
+    private var isAutoLoadingNextPage: Bool = false
+    private var currentTargetOffset: CGPoint?
+    
+    var isInBatchSelectMode = false {
+        didSet {
+            collectionView.allowsMultipleSelection = isInBatchSelectMode
+            updateSelectButton(updatedData: self.viewModel.galleryData, inBatchSelectMode: isInBatchSelectMode)
+            updateDeleteButton()
         }
-        return mediaGalleryDataSource.sections
     }
+    
+    // MARK: - Initialization
 
-    private var galleryDates: [GalleryDate] {
-        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
-            return []
-        }
-        return mediaGalleryDataSource.sectionDates
-    }
-    public var focusedItem: MediaGalleryItem?
+    init(viewModel: MediaGalleryViewModel) {
+        self.viewModel = viewModel
+        Storage.shared.addObserver(viewModel.pagedDataObserver)
 
-    private let uiDatabaseConnection: YapDatabaseConnection
-
-    public weak var delegate: MediaTileViewControllerDelegate?
-
-    deinit {
-        Logger.debug("deinit")
-    }
-
-    fileprivate let mediaTileViewLayout: MediaTileViewLayout
-
-    init(mediaGalleryDataSource: MediaGalleryDataSource, uiDatabaseConnection: YapDatabaseConnection) {
-
-        self.mediaGalleryDataSource = mediaGalleryDataSource
-        assert(uiDatabaseConnection.isInLongLivedReadTransaction())
-        self.uiDatabaseConnection = uiDatabaseConnection
-
-        let layout: MediaTileViewLayout = type(of: self).buildLayout()
-        self.mediaTileViewLayout = layout
-        super.init(collectionViewLayout: layout)
+        super.init(nibName: nil, bundle: nil)
     }
 
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - UI
+    
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .allButUpsideDown
+    }
+    
+    var footerBarBottomConstraint: NSLayoutConstraint?
 
-    // MARK: Subviews
+    fileprivate lazy var mediaTileViewLayout: MediaTileViewLayout = {
+        let result: MediaTileViewLayout = MediaTileViewLayout()
+        result.sectionInsetReference = .fromSafeArea
+        result.minimumInteritemSpacing = MediaTileViewController.interItemSpacing
+        result.minimumLineSpacing = MediaTileViewController.interItemSpacing
+        result.sectionHeadersPinToVisibleBounds = true
+
+        return result
+    }()
+    
+    lazy var collectionView: UICollectionView = {
+        let result: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: mediaTileViewLayout)
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.backgroundColor = Colors.navigationBarBackground
+        result.delegate = self
+        result.dataSource = self
+        result.register(view: PhotoGridViewCell.self)
+        result.register(view: MediaGallerySectionHeader.self, ofKind: UICollectionView.elementKindSectionHeader)
+        result.register(view: MediaGalleryStaticHeader.self, ofKind: UICollectionView.elementKindSectionHeader)
+        
+        // Feels a bit weird to have content smashed all the way to the bottom edge.
+        result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+        
+        return result
+    }()
 
     lazy var footerBar: UIToolbar = {
-        let footerBar = UIToolbar()
-        let footerItems = [
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
-            deleteButton,
-            UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        ]
-        footerBar.setItems(footerItems, animated: false)
+        let result: UIToolbar = UIToolbar()
+        result.setItems(
+            [
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
+                deleteButton,
+                UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+            ],
+            animated: false
+        )
 
-        footerBar.barTintColor = Colors.navigationBarBackground
-        footerBar.tintColor = Colors.text
+        result.barTintColor = Colors.navigationBarBackground
+        result.tintColor = Colors.text
 
-        return footerBar
+        return result
     }()
 
     lazy var deleteButton: UIBarButtonItem = {
-        let deleteButton = UIBarButtonItem(barButtonSystemItem: .trash,
-                                           target: self,
-                                           action: #selector(didPressDelete))
-        deleteButton.tintColor = Colors.text
+        let result: UIBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .trash,
+            target: self,
+            action: #selector(didPressDelete)
+        )
+        result.tintColor = Colors.text
 
-        return deleteButton
+        return result
     }()
 
-    // MARK: View Lifecycle Overrides
+    // MARK: - Lifecycle
 
     override public func viewDidLoad() {
         super.viewDidLoad()
+
+        // Add a custom back button if this is the only view controller
+        if self.navigationController?.viewControllers.first == self {
+            let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
+            self.navigationItem.leftBarButtonItem = backButton
+        }
         
-        ViewControllerUtilities.setUpDefaultSessionStyle(for: self, title: MediaStrings.allMedia, hasCustomBackButton: false)
+        ViewControllerUtilities.setUpDefaultSessionStyle(
+            for: self,
+            title: MediaStrings.allMedia,
+            hasCustomBackButton: false
+        )
 
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        collectionView.backgroundColor = Colors.navigationBarBackground
-
-        collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
-        collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)
-        collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
-
-        collectionView.delegate = self
-
-        // feels a bit weird to have content smashed all the way to the bottom edge.
-        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
-
-        self.view.addSubview(self.footerBar)
+        view.addSubview(self.collectionView)
+        collectionView.autoPin(toEdgesOf: view)
+        
+        view.addSubview(self.footerBar)
         footerBar.autoPinWidthToSuperview()
-        footerBar.autoSetDimension(.height, toSize: kFooterBarHeight)
-        self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
+        footerBar.autoSetDimension(.height, toSize: MediaTileViewController.footerBarHeight)
+        self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -MediaTileViewController.footerBarHeight)
 
-        updateSelectButton()
+        self.updateSelectButton(updatedData: self.viewModel.galleryData, inBatchSelectMode: false)
         self.mediaTileViewLayout.invalidateLayout()
+        
+        // Notifications
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive(_:)),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidResignActive(_:)),
+            name: UIApplication.didEnterBackgroundNotification, object: nil
+        )
     }
-
-    private func indexPath(galleryItem: MediaGalleryItem) -> IndexPath? {
-        guard let sectionIdx = galleryDates.firstIndex(of: galleryItem.galleryDate) else {
-            return nil
-        }
-        guard let rowIdx = galleryItems[galleryItem.galleryDate]!.firstIndex(of: galleryItem) else {
-            return nil
-        }
-
-        return IndexPath(row: rowIdx, section: sectionIdx + 1)
-    }
-
-    override public func viewWillAppear(_ animated: Bool) {
+    
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        guard let focusedItem = self.focusedItem else {
-            return
-        }
-
-        guard let indexPath = self.indexPath(galleryItem: focusedItem) else {
-            owsFailDebug("unexpectedly unable to find indexPath for focusedItem: \(focusedItem)")
-            return
-        }
-
-        Logger.debug("scrolling to focused item at indexPath: \(indexPath)")
-        self.view.layoutIfNeeded()
-        self.collectionView?.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
-        self.autoLoadMoreIfNecessary()
+        
+        startObservingChanges()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        self.didFinishInitialLayout = true
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        stopObservingChanges()
+    }
+    
+    @objc func applicationDidBecomeActive(_ notification: Notification) {
+        startObservingChanges(didReturnFromBackground: true)
+    }
+    
+    @objc func applicationDidResignActive(_ notification: Notification) {
+        stopObservingChanges()
     }
 
-    override public func viewWillTransition(to size: CGSize,
-                                            with coordinator: UIViewControllerTransitionCoordinator) {
+    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         self.mediaTileViewLayout.invalidateLayout()
     }
 
     public override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+        
         self.updateLayout()
     }
-
-    // MARK: Orientation
-
-    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .allButUpsideDown
+    
+    // MARK: - Updating
+    
+    private func performInitialScrollIfNeeded() {
+        // Ensure this hasn't run before and that we have data (The 'galleryData' will always
+        // contain something as the 'empty' state is a section within 'galleryData')
+        guard !self.didFinishInitialLayout && self.hasLoadedInitialData else { return }
+        
+        // If we have a focused item then we want to scroll to it
+        guard let focusedIndexPath: IndexPath = self.viewModel.focusedIndexPath else { return }
+        
+        Logger.debug("scrolling to focused item at indexPath: \(focusedIndexPath)")
+        self.view.layoutIfNeeded()
+        self.collectionView.scrollToItem(at: focusedIndexPath, at: .centeredVertically, animated: false)
+        
+        // Now that the data has loaded we need to check if either of the "load more" sections are
+        // visible and trigger them if so
+        //
+        // Note: We do it this way as we want to trigger the load behaviour for the first section
+        // if it has one before trying to trigger the load behaviour for the last section
+        self.autoLoadNextPageIfNeeded()
     }
-
-    // MARK: UICollectionViewDelegate
-
-    override public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        self.autoLoadMoreIfNecessary()
-    }
-
-    override public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        self.isUserScrolling = true
-    }
-
-    override public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        self.isUserScrolling = false
-    }
-
-    override public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-
-        Logger.debug("")
-
-        guard galleryDates.count > 0 else {
-            return false
-        }
-
-        switch indexPath.section {
-        case kLoadOlderSectionIdx, loadNewerSectionIdx:
-            return false
-        default:
-            return true
-        }
-    }
-
-    override public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
-
-        Logger.debug("")
-
-        guard galleryDates.count > 0 else {
-            return false
-        }
-
-        switch indexPath.section {
-        case kLoadOlderSectionIdx, loadNewerSectionIdx:
-            return false
-        default:
-            return true
-        }
-    }
-
-    public override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-
-        Logger.debug("")
-
-        guard galleryDates.count > 0 else {
-            return false
-        }
-
-        switch indexPath.section {
-        case kLoadOlderSectionIdx, loadNewerSectionIdx:
-            return false
-        default:
-            return true
+    
+    private func autoLoadNextPageIfNeeded() {
+        guard !self.isAutoLoadingNextPage else { return }
+        
+        self.isAutoLoadingNextPage = true
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + PagedData.autoLoadNextPageDelay) { [weak self] in
+            self?.isAutoLoadingNextPage = false
+            
+            // Note: We sort the headers as we want to prioritise loading newer pages over older ones
+            let sortedVisibleIndexPaths: [IndexPath] = (self?.collectionView
+                .indexPathsForVisibleSupplementaryElements(ofKind: UICollectionView.elementKindSectionHeader))
+                .defaulting(to: [])
+                .sorted()
+            
+            for headerIndexPath in sortedVisibleIndexPaths {
+                let section: MediaGalleryViewModel.SectionModel? = self?.viewModel.galleryData[safe: headerIndexPath.section]
+                
+                switch section?.model {
+                    case .loadNewer, .loadOlder:
+                        // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
+                        // 'pageAfter' in this case
+                        self?.viewModel.pagedDataObserver?.load(section?.model == .loadOlder ?
+                            .pageAfter :
+                            .pageBefore
+                        )
+                        return
+                        
+                    default: continue
+                }
+            }
         }
     }
-
-    override public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        Logger.debug("")
-
-        guard let gridCell = self.collectionView(collectionView, cellForItemAt: indexPath) as? PhotoGridViewCell else {
-            owsFailDebug("galleryCell was unexpectedly nil")
+    
+    private func startObservingChanges(didReturnFromBackground: Bool = false) {
+        // Start observing for data changes (will callback on the main thread)
+        self.viewModel.onGalleryChange = { [weak self] updatedGalleryData in
+            self?.handleUpdates(updatedGalleryData)
+        }
+        
+        // Note: When returning from the background we could have received notifications but the
+        // PagedDatabaseObserver won't have them so we need to force a re-fetch of the current
+        // data to ensure everything is up to date
+        if didReturnFromBackground {
+            self.viewModel.pagedDataObserver?.reload()
+        }
+    }
+    
+    private func stopObservingChanges() {
+        // Note: The 'pagedDataObserver' will continue to get changes but
+        // we don't want to trigger any UI updates
+        self.viewModel.onGalleryChange = nil
+    }
+    
+    private func handleUpdates(_ updatedGalleryData: [MediaGalleryViewModel.SectionModel]) {
+        // Ensure the first load runs without animations (if we don't do this the cells will animate
+        // in from a frame of CGRect.zero)
+        guard hasLoadedInitialData else {
+            self.hasLoadedInitialData = true
+            self.viewModel.updateGalleryData(updatedGalleryData)
+            
+            UIView.performWithoutAnimation {
+                self.collectionView.reloadData()
+                self.performInitialScrollIfNeeded()
+            }
             return
         }
-
-        guard let galleryItem = (gridCell.item as? GalleryGridCellItem)?.galleryItem else {
-            owsFailDebug("galleryItem was unexpectedly nil")
+        
+        // Determine if we are inserting content at the top of the collectionView
+        let isInsertingAtTop: Bool = {
+            let oldFirstSectionIsLoadMore: Bool = (
+                self.viewModel.galleryData.first?.model == .loadNewer ||
+                self.viewModel.galleryData.first?.model == .loadOlder
+            )
+            let oldTargetSectionIndex: Int = (oldFirstSectionIsLoadMore ? 1 : 0)
+            
+            guard
+                let newTargetSectionIndex = updatedGalleryData
+                    .firstIndex(where: { $0.model == self.viewModel.galleryData[safe: oldTargetSectionIndex]?.model }),
+                let oldFirstItem: MediaGalleryViewModel.Item = self.viewModel.galleryData[safe: oldTargetSectionIndex]?.elements.first,
+                let newFirstItemIndex = updatedGalleryData[safe: newTargetSectionIndex]?.elements.firstIndex(of: oldFirstItem)
+            else { return false }
+            
+            return (newTargetSectionIndex > oldTargetSectionIndex || newFirstItemIndex > 0)
+        }()
+        
+        // We want to maintain the same content offset between the updates if content was added to
+        // the top, the mediaTileViewLayout will adjust content offset to compensate for the change
+        // in content height so that the same content is visible after the update
+        //
+        // Using the `CollectionViewLayout.prepare` approach (rather than calling setContentOffset
+        // in the batchUpdate completion block) avoids a distinct flicker (we also have to
+        // disable animations for this to avoid buggy animations)
+        CATransaction.begin()
+        
+        if isInsertingAtTop { CATransaction.setDisableActions(true) }
+        
+        self.mediaTileViewLayout.isInsertingCellsToTop = isInsertingAtTop
+        self.mediaTileViewLayout.contentSizeBeforeInsertingToTop = self.collectionView.contentSize
+        self.collectionView.reload(
+            using: StagedChangeset(source: self.viewModel.galleryData, target: updatedGalleryData),
+            interrupt: { $0.changeCount > MediaTileViewController.itemPageSize }
+        ) { [weak self] updatedData in
+            self?.viewModel.updateGalleryData(updatedData)
+        }
+        
+        CATransaction.setCompletionBlock { [weak self] in
+            // Need to manually reset these here as the 'reload' method above can actually trigger
+            // multiple updates (eg. inserting sections and then items)
+            self?.mediaTileViewLayout.isInsertingCellsToTop = false
+            self?.mediaTileViewLayout.contentSizeBeforeInsertingToTop = nil
+            
+            // If one of the "load more" sections is still visible once the animation completes then
+            // trigger another "load more" (after a small delay to minimize animation bugginess)
+            self?.autoLoadNextPageIfNeeded()
+        }
+        CATransaction.commit()
+        
+        // Update the select button (should be hidden if there is no data)
+        self.updateSelectButton(updatedData: updatedGalleryData, inBatchSelectMode: isInBatchSelectMode)
+    }
+    
+    // MARK: - Interactions
+    
+    @objc public func didPressDismissButton() {
+        let presentedNavController: UINavigationController? = (self.presentingViewController as? UINavigationController)
+        let mediaPageViewController: MediaPageViewController? = (
+            (presentedNavController?.viewControllers.last as? MediaPageViewController) ??
+            (self.presentingViewController as? MediaPageViewController)
+        )
+        
+        // If the album was presented from a 'MediaPageViewController' and it has no more data (ie.
+        // all album items had been deleted) then dismiss to the screen before that one
+        guard mediaPageViewController?.viewModel.albumData.isEmpty != true else {
+            presentedNavController?.presentingViewController?.dismiss(animated: true, completion: nil)
             return
         }
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    // MARK: - UIScrollViewDelegate
+    
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        self.currentTargetOffset = nil
+    }
+    
+    public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        self.currentTargetOffset = targetContentOffset.pointee
+    }
+    
+    // MARK: - UICollectionViewDataSource
 
+    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return self.viewModel.galleryData.count
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[section]
+        
+        return section.elements.count
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[indexPath.section]
+        
+        switch section.model {
+            case .emptyGallery, .loadOlder, .loadNewer:
+                let sectionHeader: MediaGalleryStaticHeader = collectionView.dequeue(type: MediaGalleryStaticHeader.self, ofKind: kind, for: indexPath)
+                sectionHeader.configure(
+                    title: {
+                        switch section.model {
+                            case .emptyGallery: return "GALLERY_TILES_EMPTY_GALLERY".localized()
+                            case .loadOlder: return "GALLERY_TILES_LOADING_OLDER_LABEL".localized()
+                            case .loadNewer: return "GALLERY_TILES_LOADING_MORE_RECENT_LABEL".localized()
+                            case .galleryMonth: return ""   // Impossible case
+                        }
+                    }()
+                )
+                
+                return sectionHeader
+                
+            case .galleryMonth(let date):
+                let sectionHeader: MediaGallerySectionHeader = collectionView.dequeue(type: MediaGallerySectionHeader.self, ofKind: kind, for: indexPath)
+                sectionHeader.configure(
+                    title: date.localizedString
+                )
+                
+                return sectionHeader
+        }
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[indexPath.section]
+        let cell: PhotoGridViewCell = collectionView.dequeue(type: PhotoGridViewCell.self, for: indexPath)
+        cell.configure(
+            item: GalleryGridCellItem(
+                galleryItem: section.elements[indexPath.row]
+            )
+        )
+
+        return cell
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
+        // Want to ensure the initial content load has completed before we try to load any more data
+        guard self.didFinishInitialLayout else { return }
+        
+        let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[indexPath.section]
+        
+        switch section.model {
+            case .loadOlder, .loadNewer:
+                UIScrollView.fastEndScrollingThen(collectionView, self.currentTargetOffset) { [weak self] in
+                    // Attachments are loaded in descending order so 'loadOlder' actually corresponds with
+                    // 'pageAfter' in this case
+                    self?.viewModel.pagedDataObserver?.load(section.model == .loadOlder ?
+                        .pageAfter :
+                        .pageBefore
+                    )
+                }
+                
+            case .emptyGallery, .galleryMonth: break
+        }
+    }
+
+    // MARK: - UICollectionViewDelegate
+
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        let section: MediaGalleryViewModel.Section = self.viewModel.galleryData[indexPath.section].model
+
+        switch section {
+            case .emptyGallery, .loadOlder, .loadNewer: return false
+            case .galleryMonth: return true
+        }
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        let section: MediaGalleryViewModel.Section = self.viewModel.galleryData[indexPath.section].model
+
+        switch section {
+            case .emptyGallery, .loadOlder, .loadNewer: return false
+            case .galleryMonth: return true
+        }
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+        let section: MediaGalleryViewModel.Section = self.viewModel.galleryData[indexPath.section].model
+
+        switch section {
+            case .emptyGallery, .loadOlder, .loadNewer: return false
+            case .galleryMonth: return true
+        }
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[indexPath.section]
+        
+        switch section.model {
+            case .emptyGallery, .loadOlder, .loadNewer: return
+            case .galleryMonth: break
+        }
+        
+        guard !isInBatchSelectMode else {
+            updateDeleteButton()
+            return
+        }
+        
+        collectionView.deselectItem(at: indexPath, animated: true)
+        
+        let galleryItem: MediaGalleryViewModel.Item = section.elements[indexPath.row]
+        
+        // First check if this screen was presented
+        guard let presentingViewController: UIViewController = self.presentingViewController else {
+            // If we got to the gallery via conversation settings, present the detail view
+            // on top of the tile view
+            //
+            // == ViewController Schematic ==
+            //
+            // [DetailView] <--,
+            // [TileView] -----'
+            // [ConversationSettingsView]
+            // [ConversationView]
+            //
+            guard
+                let viewControllers: [UIViewController] = self.navigationController?.viewControllers,
+                viewControllers.count > 1,
+                viewControllers[viewControllers.count - 2] is OWSConversationSettingsViewController
+            else { return }
+            
+            let detailViewController: UIViewController? = MediaGalleryViewModel.createDetailViewController(
+                for: self.viewModel.threadId,
+                threadVariant: self.viewModel.threadVariant,
+                interactionId: galleryItem.interactionId,
+                selectedAttachmentId: galleryItem.attachment.id,
+                options: [ .sliderEnabled ]
+            )
+            
+            guard let detailViewController: UIViewController = detailViewController else { return }
+            
+            self.present(detailViewController, animated: true)
+            return
+        }
+        
+        // Check if we were presented via the 'MediaPageViewController'
+        guard let existingDetailPageView: MediaPageViewController = (presentingViewController as? UINavigationController)?.viewControllers.first as? MediaPageViewController else {
+            self.navigationController?.dismiss(animated: true)
+            return
+        }
+        
+        // If we got to the gallery via the conversation view, pop the tile view
+        // to return to the detail view
+        //
+        // == ViewController Schematic ==
+        //
+        // [TileView] -----,
+        // [DetailView] <--'
+        // [ConversationView]
+        //
+        existingDetailPageView.setCurrentItem(galleryItem, direction: .forward, animated: false)
+        existingDetailPageView.willBePresentedAgain()
+        self.viewModel.updateFocusedItem(attachmentId: galleryItem.attachment.id, indexPath: indexPath)
+        self.navigationController?.dismiss(animated: true)
+    }
+
+    public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         if isInBatchSelectMode {
             updateDeleteButton()
-        } else {
-            collectionView.deselectItem(at: indexPath, animated: true)
-            self.delegate?.mediaTileViewController(self, didTapView: gridCell.imageView, mediaGalleryItem: galleryItem)
         }
     }
 
-    public override func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        Logger.debug("")
-
-        if isInBatchSelectMode {
-            updateDeleteButton()
-        }
-    }
-
-    private var isUserScrolling: Bool = false {
-        didSet {
-            autoLoadMoreIfNecessary()
-        }
-    }
-
-    // MARK: UICollectionViewDataSource
-
-    override public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        guard galleryDates.count > 0 else {
-            // empty gallery
-            return 1
-        }
-
-        // One for each galleryDate plus a "loading older" and "loading newer" section
-        return galleryItems.keys.count + 2
-    }
-
-    override public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
-
-        guard galleryDates.count > 0 else {
-            // empty gallery
-            return 0
-        }
-
-        if sectionIdx == kLoadOlderSectionIdx {
-            // load older
-            return 0
-        }
-
-        if sectionIdx == loadNewerSectionIdx {
-            // load more recent
-            return 0
-        }
-
-        guard let sectionDate = self.galleryDates[safe: sectionIdx - 1] else {
-            owsFailDebug("unknown section: \(sectionIdx)")
-            return 0
-        }
-
-        guard let section = self.galleryItems[sectionDate] else {
-            owsFailDebug("no section for date: \(sectionDate)")
-            return 0
-        }
-
-        return section.count
-    }
-
-    override public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
-        let defaultView = UICollectionReusableView()
-
-        guard galleryDates.count > 0 else {
-            guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier, for: indexPath) as? MediaGalleryStaticHeader else {
-
-                owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
-                return defaultView
-            }
-            let title = NSLocalizedString("GALLERY_TILES_EMPTY_GALLERY", comment: "Label indicating media gallery is empty")
-            sectionHeader.configure(title: title)
-            return sectionHeader
-        }
-
-        if (kind == UICollectionView.elementKindSectionHeader) {
-            switch indexPath.section {
-            case kLoadOlderSectionIdx:
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier, for: indexPath) as? MediaGalleryStaticHeader else {
-
-                    owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
-                    return defaultView
-                }
-                let title = NSLocalizedString("GALLERY_TILES_LOADING_OLDER_LABEL", comment: "Label indicating loading is in progress")
-                sectionHeader.configure(title: title)
-                return sectionHeader
-            case loadNewerSectionIdx:
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier, for: indexPath) as? MediaGalleryStaticHeader else {
-
-                    owsFailDebug("unable to build section header for kLoadOlderSectionIdx")
-                    return defaultView
-                }
-                let title = NSLocalizedString("GALLERY_TILES_LOADING_MORE_RECENT_LABEL", comment: "Label indicating loading is in progress")
-                sectionHeader.configure(title: title)
-                return sectionHeader
-            default:
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier, for: indexPath) as? MediaGallerySectionHeader else {
-                    owsFailDebug("unable to build section header for indexPath: \(indexPath)")
-                    return defaultView
-                }
-                guard let date = self.galleryDates[safe: indexPath.section - 1] else {
-                    owsFailDebug("unknown section for indexPath: \(indexPath)")
-                    return defaultView
-                }
-
-                sectionHeader.configure(title: date.localizedString)
-                return sectionHeader
-            }
-        }
-
-        return defaultView
-    }
-
-    override public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        Logger.debug("indexPath: \(indexPath)")
-
-        let defaultCell = UICollectionViewCell()
-
-        guard galleryDates.count > 0 else {
-            owsFailDebug("unexpected cell for loadNewerSectionIdx")
-            return defaultCell
-        }
-
-        switch indexPath.section {
-        case kLoadOlderSectionIdx:
-            owsFailDebug("unexpected cell for kLoadOlderSectionIdx")
-            return defaultCell
-        case loadNewerSectionIdx:
-            owsFailDebug("unexpected cell for loadNewerSectionIdx")
-            return defaultCell
-        default:
-            guard let galleryItem = galleryItem(at: indexPath) else {
-                owsFailDebug("no message for path: \(indexPath)")
-                return defaultCell
-            }
-
-            guard let cell = self.collectionView?.dequeueReusableCell(withReuseIdentifier: PhotoGridViewCell.reuseIdentifier, for: indexPath) as? PhotoGridViewCell else {
-                owsFailDebug("unexpected cell for indexPath: \(indexPath)")
-                return defaultCell
-            }
-
-            let gridCellItem = GalleryGridCellItem(galleryItem: galleryItem)
-            cell.configure(item: gridCellItem)
-
-            return cell
-        }
-    }
-
-    func galleryItem(at indexPath: IndexPath) -> MediaGalleryItem? {
-        guard let sectionDate = self.galleryDates[safe: indexPath.section - 1] else {
-            owsFailDebug("unknown section: \(indexPath.section)")
-            return nil
-        }
-
-        guard let sectionItems = self.galleryItems[sectionDate] else {
-            owsFailDebug("no section for date: \(sectionDate)")
-            return nil
-        }
-
-        guard let galleryItem = sectionItems[safe: indexPath.row] else {
-            owsFailDebug("no message for row: \(indexPath.row)")
-            return nil
-        }
-
-        return galleryItem
-    }
-
-    // MARK: UICollectionViewDelegateFlowLayout
-
-    static let kInterItemSpacing: CGFloat = 2
-    private class func buildLayout() -> MediaTileViewLayout {
-        let layout = MediaTileViewLayout()
-
-        if #available(iOS 11, *) {
-            layout.sectionInsetReference = .fromSafeArea
-        }
-        layout.minimumInteritemSpacing = kInterItemSpacing
-        layout.minimumLineSpacing = kInterItemSpacing
-        layout.sectionHeadersPinToVisibleBounds = true
-
-        return layout
-    }
-
+    // MARK: - UICollectionViewDelegateFlowLayout
+    
     func updateLayout() {
-        let containerWidth: CGFloat
-        if #available(iOS 11.0, *) {
-            containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
-        } else {
-            containerWidth = self.view.frame.size.width
-        }
-
-        let kItemsPerPortraitRow = 4
-        let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let approxItemWidth = screenWidth / CGFloat(kItemsPerPortraitRow)
-
-        let itemCount = round(containerWidth / approxItemWidth)
-        let spaceWidth = (itemCount + 1) * type(of: self).kInterItemSpacing
-        let availableWidth = containerWidth - spaceWidth
-
+        let screenWidth: CGFloat = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        let approxItemWidth: CGFloat = (screenWidth / MediaTileViewController.itemsPerPortraitRow)
+        let itemSectionInsets: UIEdgeInsets = self.collectionView(
+            collectionView,
+            layout: mediaTileViewLayout,
+            insetForSectionAt: 1
+        )
+        let widthInset: CGFloat = (itemSectionInsets.left + itemSectionInsets.right)
+        let containerWidth: CGFloat = (collectionView.frame.width > CGFloat.leastNonzeroMagnitude ?
+            collectionView.frame.width :
+            view.bounds.width
+        )
+        let collectionViewWidth: CGFloat = (containerWidth - widthInset)
+        let itemCount: CGFloat = round(collectionViewWidth / approxItemWidth)
+        let spaceWidth: CGFloat = ((itemCount - 1) * MediaTileViewController.interItemSpacing)
+        let availableWidth: CGFloat = (collectionViewWidth - spaceWidth)
+        
         let itemWidth = floor(availableWidth / CGFloat(itemCount))
         let newItemSize = CGSize(width: itemWidth, height: itemWidth)
 
-        if (newItemSize != mediaTileViewLayout.itemSize) {
+        if newItemSize != mediaTileViewLayout.itemSize {
             mediaTileViewLayout.itemSize = newItemSize
             mediaTileViewLayout.invalidateLayout()
         }
     }
+    
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return .zero
+    }
 
-    public func collectionView(_ collectionView: UICollectionView,
-                               layout collectionViewLayout: UICollectionViewLayout,
-                               referenceSizeForHeaderInSection section: Int) -> CGSize {
-
-        let kMonthHeaderSize: CGSize = CGSize(width: 0, height: 50)
-        let kStaticHeaderSize: CGSize = CGSize(width: 0, height: 100)
-
-        guard galleryDates.count > 0 else {
-            return kStaticHeaderSize
-        }
-
-        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
-            return CGSize.zero
-        }
-
-        switch section {
-        case kLoadOlderSectionIdx:
-            // Show "loading older..." iff there is still older data to be fetched
-            return mediaGalleryDataSource.hasFetchedOldest ? CGSize.zero : kStaticHeaderSize
-        case loadNewerSectionIdx:
-            // Show "loading newer..." iff there is still more recent data to be fetched
-            return mediaGalleryDataSource.hasFetchedMostRecent ? CGSize.zero : kStaticHeaderSize
-        default:
-            return kMonthHeaderSize
+    public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        let section: MediaGalleryViewModel.SectionModel = self.viewModel.galleryData[section]
+        
+        switch section.model {
+            case .emptyGallery, .loadOlder, .loadNewer:
+                return CGSize(width: 0, height: MediaTileViewController.loadMoreHeaderHeight)
+            
+            case .galleryMonth: return CGSize(width: 0, height: 50)
         }
     }
 
     // MARK: Batch Selection
 
-    var isInBatchSelectMode = false {
-        didSet {
-            collectionView!.allowsMultipleSelection = isInBatchSelectMode
-            updateSelectButton()
-            updateDeleteButton()
-        }
+    func updateDeleteButton() {
+        self.deleteButton.isEnabled = ((collectionView.indexPathsForSelectedItems?.count ?? 0) > 0)
     }
 
-    func updateDeleteButton() {
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
+    func updateSelectButton(updatedData: [MediaGalleryViewModel.SectionModel], inBatchSelectMode: Bool) {
+        guard !updatedData.isEmpty else {
+            self.navigationItem.rightBarButtonItem = nil
             return
         }
-
-        if let count = collectionView.indexPathsForSelectedItems?.count, count > 0 {
-            self.deleteButton.isEnabled = true
-        } else {
-            self.deleteButton.isEnabled = false
+        
+        if inBatchSelectMode {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didCancelSelect)
+            )
+        }
+        else {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: "BUTTON_SELECT".localized(),
+                style: .plain,
+                target: self,
+                action: #selector(didTapSelect)
+            )
         }
     }
 
-    func updateSelectButton() {
-        if isInBatchSelectMode {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didCancelSelect))
-        } else {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode"),
-                                                                     style: .plain,
-                                                                     target: self,
-                                                                     action: #selector(didTapSelect))
-        }
-    }
-
-    @objc
-    func didTapSelect(_ sender: Any) {
+    @objc func didTapSelect(_ sender: Any) {
         isInBatchSelectMode = true
 
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
         // show toolbar
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
-            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
-            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewSafeArea: .bottom)
+        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: { [weak self] in
+            self?.footerBarBottomConstraint?.isActive = false
+            self?.footerBarBottomConstraint = self?.footerBar.autoPinEdge(toSuperviewSafeArea: .bottom)
+            self?.footerBar.superview?.layoutIfNeeded()
 
-            self.footerBar.superview?.layoutIfNeeded()
-
-            // ensure toolbar doesn't cover bottom row.
-            collectionView.contentInset.bottom += self.kFooterBarHeight
+            // Ensure toolbar doesn't cover bottom row.
+            self?.collectionView.contentInset.bottom += MediaTileViewController.footerBarHeight
         }, completion: nil)
 
         // disabled until at least one item is selected
@@ -536,68 +633,79 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         self.navigationItem.hidesBackButton = true
     }
 
-    @objc
-    func didCancelSelect(_ sender: Any) {
+    @objc func didCancelSelect(_ sender: Any) {
         endSelectMode()
     }
 
     func endSelectMode() {
         isInBatchSelectMode = false
 
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
         // hide toolbar
-        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
-            NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
-            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -self.kFooterBarHeight)
-            self.footerBar.superview?.layoutIfNeeded()
+        UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: { [weak self] in
+            self?.footerBarBottomConstraint?.isActive = false
+            self?.footerBarBottomConstraint = self?.footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -MediaTileViewController.footerBarHeight)
+            self?.footerBar.superview?.layoutIfNeeded()
 
-            // undo "ensure toolbar doesn't cover bottom row."
-            collectionView.contentInset.bottom -= self.kFooterBarHeight
+            // Undo "Ensure toolbar doesn't cover bottom row."
+            self?.collectionView.contentInset.bottom -= MediaTileViewController.footerBarHeight
         }, completion: nil)
 
         self.navigationItem.hidesBackButton = false
 
-        // deselect any selected
+        // Deselect any selected
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
     }
 
-    @objc
-    func didPressDelete(_ sender: Any) {
-        Logger.debug("")
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
+    @objc func didPressDelete(_ sender: Any) {
         guard let indexPaths = collectionView.indexPathsForSelectedItems else {
             owsFailDebug("indexPaths was unexpectedly nil")
             return
         }
 
-        let items: [MediaGalleryItem] = indexPaths.compactMap { return self.galleryItem(at: $0) }
-
-        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
-            return
+        let items: [MediaGalleryViewModel.Item] = indexPaths.map {
+            self.viewModel.galleryData[$0.section].elements[$0.item]
         }
-
         let confirmationTitle: String = {
             if indexPaths.count == 1 {
-                return NSLocalizedString("MEDIA_GALLERY_DELETE_SINGLE_MESSAGE", comment: "Confirmation button text to delete selected media message from the gallery")
-            } else {
-                let format = NSLocalizedString("MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT", comment: "Confirmation button text to delete selected media from the gallery, embeds {{number of messages}}")
-                return String(format: format, indexPaths.count)
+                return "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE".localized()
             }
+            
+            return String(
+                format: "MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT".localized(),
+                indexPaths.count
+            )
         }()
 
-        let deleteAction = UIAlertAction(title: confirmationTitle, style: .destructive) { _ in
-            mediaGalleryDataSource.delete(items: items, initiatedBy: self)
-            self.endSelectMode()
+        let deleteAction = UIAlertAction(title: confirmationTitle, style: .destructive) { [weak self] _ in
+            Storage.shared.writeAsync { db in
+                let interactionIds: Set<Int64> = items
+                    .map { $0.interactionId }
+                    .asSet()
+                
+                _ = try Attachment
+                    .filter(ids: items.map { $0.attachment.id })
+                    .deleteAll(db)
+                
+                // Add the garbage collection job to delete orphaned attachment files
+                JobRunner.add(
+                    db,
+                    job: Job(
+                        variant: .garbageCollection,
+                        behaviour: .runOnce,
+                        details: GarbageCollectionJob.Details(
+                            typesToCollect: [.orphanedAttachmentFiles]
+                        )
+                    )
+                )
+                
+                // Delete any interactions which had all of their attachments removed
+                _ = try Interaction
+                    .filter(ids: interactionIds)
+                    .having(Interaction.interactionAttachments.isEmpty)
+                    .deleteAll(db)
+            }
+            
+            self?.endSelectMode()
         }
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -605,168 +713,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         actionSheet.addAction(OWSAlerts.cancelAction)
 
         presentAlert(actionSheet)
-    }
-
-    var footerBarBottomConstraint: NSLayoutConstraint!
-    let kFooterBarHeight: CGFloat = 40
-
-    // MARK: MediaGalleryDataSourceDelegate
-
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, willDelete items: [MediaGalleryItem], initiatedBy: AnyObject) {
-        Logger.debug("")
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        // We've got to lay out the collectionView before any changes are made to the date source
-        // otherwise we'll fail when we try to remove the deleted sections/rows
-        collectionView.layoutIfNeeded()
-    }
-
-    func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath]) {
-        Logger.debug("with deletedSections: \(deletedSections) deletedItems: \(deletedItems)")
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        guard mediaGalleryDataSource.galleryItemCount > 0  else {
-            // Show Empty
-            self.collectionView?.reloadData()
-            return
-        }
-
-        collectionView.performBatchUpdates({
-            collectionView.deleteSections(deletedSections)
-            collectionView.deleteItems(at: deletedItems)
-        })
-    }
-
-    // MARK: Lazy Loading
-
-    // This should be substantially larger than one screen size so we don't have to call it
-    // multiple times in a rapid succession, but not so large that loading get's really chopping
-    let kMediaTileViewLoadBatchSize: UInt = 40
-    var oldestLoadedItem: MediaGalleryItem? {
-        guard let oldestDate = galleryDates.first else {
-            return nil
-        }
-
-        return galleryItems[oldestDate]?.first
-    }
-
-    var mostRecentLoadedItem: MediaGalleryItem? {
-        guard let mostRecentDate = galleryDates.last else {
-            return nil
-        }
-
-        return galleryItems[mostRecentDate]?.last
-    }
-
-    var isFetchingMoreData: Bool = false
-
-    let kLoadOlderSectionIdx = 0
-    var loadNewerSectionIdx: Int {
-        return galleryDates.count + 1
-    }
-
-    public func autoLoadMoreIfNecessary() {
-        let kEdgeThreshold: CGFloat = 800
-
-        if (self.isUserScrolling) {
-            return
-        }
-
-        guard let collectionView = self.collectionView else {
-            owsFailDebug("collectionView was unexpectedly nil")
-            return
-        }
-
-        guard let mediaGalleryDataSource = self.mediaGalleryDataSource else {
-            owsFailDebug("mediaGalleryDataSource was unexpectedly nil")
-            return
-        }
-
-        let contentOffsetY = collectionView.contentOffset.y
-        let oldContentHeight = collectionView.contentSize.height
-
-        if contentOffsetY < kEdgeThreshold {
-            // Near the top, load older content
-
-            guard let oldestLoadedItem = self.oldestLoadedItem else {
-                Logger.debug("no oldest item")
-                return
-            }
-
-            guard !mediaGalleryDataSource.hasFetchedOldest else {
-                return
-            }
-
-            guard !isFetchingMoreData else {
-                Logger.debug("already fetching more data")
-                return
-            }
-            isFetchingMoreData = true
-
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
-
-            // mediaTileViewLayout will adjust content offset to compensate for the change in content height so that
-            // the same content is visible after the update. I considered doing something like setContentOffset in the
-            // batchUpdate completion block, but it caused a distinct flicker, which I was able to avoid with the
-            // `CollectionViewLayout.prepare` based approach.
-            mediaTileViewLayout.isInsertingCellsToTop = true
-            mediaTileViewLayout.contentSizeBeforeInsertingToTop = collectionView.contentSize
-            collectionView.performBatchUpdates({
-                mediaGalleryDataSource.ensureGalleryItemsLoaded(.before, item: oldestLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
-                    Logger.debug("insertingSections: \(addedSections) items: \(addedItems)")
-
-                    collectionView.insertSections(addedSections)
-                    collectionView.insertItems(at: addedItems)
-                }
-            }, completion: { finished in
-                Logger.debug("performBatchUpdates finished: \(finished)")
-                self.isFetchingMoreData = false
-                CATransaction.commit()
-            })
-
-        } else if oldContentHeight - contentOffsetY < kEdgeThreshold {
-            // Near the bottom, load newer content
-
-            guard let mostRecentLoadedItem = self.mostRecentLoadedItem else {
-                Logger.debug("no mostRecent item")
-                return
-            }
-
-            guard !mediaGalleryDataSource.hasFetchedMostRecent else {
-                return
-            }
-
-            guard !isFetchingMoreData else {
-                Logger.debug("already fetching more data")
-                return
-            }
-            isFetchingMoreData = true
-
-            CATransaction.begin()
-            CATransaction.setDisableActions(true)
-            UIView.performWithoutAnimation {
-                collectionView.performBatchUpdates({
-                    mediaGalleryDataSource.ensureGalleryItemsLoaded(.after, item: mostRecentLoadedItem, amount: self.kMediaTileViewLoadBatchSize) { addedSections, addedItems in
-                        Logger.debug("insertingSections: \(addedSections), items: \(addedItems)")
-                        collectionView.insertSections(addedSections)
-                        collectionView.insertItems(at: addedItems)
-                    }
-                }, completion: { finished in
-                    Logger.debug("performBatchUpdates finished: \(finished)")
-                    self.isFetchingMoreData = false
-                    CATransaction.commit()
-                })
-            }
-        }
     }
 }
 
@@ -776,7 +722,6 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 // into the top of a collectionView. There are multiple ways to solve this problem, but this
 // is the only one which avoided a perceptible flicker.
 private class MediaTileViewLayout: UICollectionViewFlowLayout {
-
     fileprivate var isInsertingCellsToTop: Bool = false
     fileprivate var contentSizeBeforeInsertingToTop: CGSize?
 
@@ -789,9 +734,10 @@ private class MediaTileViewLayout: UICollectionViewFlowLayout {
                 let contentOffsetY = collectionView.contentOffset.y + (newContentSize.height - oldContentSize.height)
                 let newOffset = CGPoint(x: collectionView.contentOffset.x, y: contentOffsetY)
                 collectionView.setContentOffset(newOffset, animated: false)
+                
+                // Update the content size in case there is a subsequent update
+                contentSizeBeforeInsertingToTop = newContentSize
             }
-            contentSizeBeforeInsertingToTop = nil
-            isInsertingCellsToTop = false
         }
     }
 }
@@ -815,11 +761,7 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
         get {
             // HACK: scrollbar incorrectly appears *behind* section headers
             // in collection view on iOS11 =(
-            if #available(iOS 11, *) {
-                return AlwaysOnTopLayer.self
-            } else {
-                return super.layerClass
-            }
+            return AlwaysOnTopLayer.self
         }
     }
 
@@ -894,23 +836,90 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
 }
 
 class GalleryGridCellItem: PhotoGridItem {
-    let galleryItem: MediaGalleryItem
+    let galleryItem: MediaGalleryViewModel.Item
 
-    init(galleryItem: MediaGalleryItem) {
+    init(galleryItem: MediaGalleryViewModel.Item) {
         self.galleryItem = galleryItem
     }
 
     var type: PhotoGridItemType {
         if galleryItem.isVideo {
             return .video
-        } else if galleryItem.isAnimated {
-            return .animated
-        } else {
-            return .photo
         }
+        
+        if galleryItem.isAnimated {
+            return .animated
+        }
+        
+        return .photo
     }
 
-    func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
-        return galleryItem.thumbnailImage(async: completion)
+    func asyncThumbnail(completion: @escaping (UIImage?) -> Void) {
+        galleryItem.thumbnailImage(async: completion)
+    }
+}
+
+// MARK: - UIViewControllerTransitioningDelegate
+
+extension MediaTileViewController: UIViewControllerTransitioningDelegate {
+    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard self == presented || self.navigationController == presented else { return nil }
+        guard let focusedIndexPath: IndexPath = self.viewModel.focusedIndexPath else { return nil }
+
+        return MediaDismissAnimationController(
+            galleryItem: self.viewModel.galleryData[focusedIndexPath.section].elements[focusedIndexPath.item]
+        )
+    }
+
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard self == dismissed || self.navigationController == dismissed else { return nil }
+        guard let focusedIndexPath: IndexPath = self.viewModel.focusedIndexPath else { return nil }
+
+        return MediaZoomAnimationController(
+            galleryItem: self.viewModel.galleryData[focusedIndexPath.section].elements[focusedIndexPath.item],
+            shouldBounce: false
+        )
+    }
+}
+
+// MARK: - MediaPresentationContextProvider
+
+extension MediaTileViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(mediaItem: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard case let .gallery(galleryItem) = mediaItem else { return nil }
+
+        // Note: According to Apple's docs the 'indexPathsForVisibleRows' method returns an
+        // unsorted array which means we can't use it to determine the desired 'visibleCell'
+        // we are after, due to this we will need to iterate all of the visible cells to find
+        // the one we want
+        let maybeGridCell: PhotoGridViewCell? = collectionView.visibleCells
+            .first { cell -> Bool in
+                guard
+                    let cell: PhotoGridViewCell = cell as? PhotoGridViewCell,
+                    let item: GalleryGridCellItem = cell.item as? GalleryGridCellItem,
+                    item.galleryItem.attachment.id == galleryItem.attachment.id
+                else { return false }
+                
+                return true
+            }
+            .map { $0 as? PhotoGridViewCell }
+        
+        guard
+            let gridCell: PhotoGridViewCell = maybeGridCell,
+            let mediaSuperview: UIView = gridCell.imageView.superview
+        else { return nil }
+        
+        let presentationFrame: CGRect = coordinateSpace.convert(gridCell.imageView.frame, from: mediaSuperview)
+        
+        return MediaPresentationContext(
+            mediaView: gridCell.imageView,
+            presentationFrame: presentationFrame,
+            cornerRadius: 0,
+            cornerMask: CACornerMask()
+        )
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return self.navigationController?.navigationBar.generateSnapshot(in: coordinateSpace)
     }
 }

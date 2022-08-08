@@ -41,18 +41,13 @@ class PhotoCapture: NSObject {
         self.session = AVCaptureSession()
         self.captureOutput = CaptureOutput()
     }
-    
-    // MARK: - Dependencies
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
 
     // MARK: -
     var audioDeviceInput: AVCaptureDeviceInput?
     func startAudioCapture() throws {
         assertIsOnSessionQueue()
 
-        guard audioSession.startAudioActivity(recordingAudioActivity) else {
+        guard Environment.shared?.audioSession.startAudioActivity(recordingAudioActivity) == true else {
             throw PhotoCaptureError.assertionError(description: "unable to capture audio activity")
         }
 
@@ -83,7 +78,7 @@ class PhotoCapture: NSObject {
         }
         session.removeInput(audioDeviceInput)
         self.audioDeviceInput = nil
-        audioSession.endAudioActivity(recordingAudioActivity)
+        Environment.shared?.audioSession.endAudioActivity(recordingAudioActivity)
     }
 
     func startCapture() -> Promise<Void> {
@@ -458,16 +453,10 @@ protocol ImageCaptureOutput: AnyObject {
 
 class CaptureOutput {
 
-    let imageOutput: ImageCaptureOutput
+    let imageOutput: ImageCaptureOutput = PhotoCaptureOutputAdaptee()
     let movieOutput: AVCaptureMovieFileOutput
 
     init() {
-        if #available(iOS 10.0, *) {
-            imageOutput = PhotoCaptureOutputAdaptee()
-        } else {
-            imageOutput = StillImageCaptureOutput()
-        }
-
         movieOutput = AVCaptureMovieFileOutput()
         // disable movie fragment writing since it's not supported on mp4
         // leaving it enabled causes all audio to be lost on videos longer
@@ -536,7 +525,6 @@ class CaptureOutput {
     }
 }
 
-@available(iOS 10.0, *)
 class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
 
     let photoOutput = AVCapturePhotoOutput()
@@ -591,7 +579,6 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
             self.completion = completion
         }
 
-        @available(iOS 11.0, *)
         func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
             var data = photo.fileDataRepresentation()!
             // Call normalized here to fix the orientation

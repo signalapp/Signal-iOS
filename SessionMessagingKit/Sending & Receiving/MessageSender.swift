@@ -1,424 +1,723 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import PromiseKit
 import SessionSnodeKit
 import SessionUtilitiesKit
+import Sodium
 
-@objc(SNMessageSender)
-public final class MessageSender : NSObject {
-
-    // MARK: Error
-    public enum Error : LocalizedError {
-        case invalidMessage
-        case protoConversionFailed
-        case noUserX25519KeyPair
-        case noUserED25519KeyPair
-        case signingFailed
-        case encryptionFailed
-        case noUsername
-        // Closed groups
-        case noThread
-        case noKeyPair
-        case invalidClosedGroupUpdate
-
-        internal var isRetryable: Bool {
-            switch self {
-            case .invalidMessage, .protoConversionFailed, .invalidClosedGroupUpdate, .signingFailed, .encryptionFailed: return false
-            default: return true
-            }
-        }
-        
-        public var errorDescription: String? {
-            switch self {
-            case .invalidMessage: return "Invalid message."
-            case .protoConversionFailed: return "Couldn't convert message to proto."
-            case .noUserX25519KeyPair: return "Couldn't find user X25519 key pair."
-            case .noUserED25519KeyPair: return "Couldn't find user ED25519 key pair."
-            case .signingFailed: return "Couldn't sign message."
-            case .encryptionFailed: return "Couldn't encrypt message."
-            case .noUsername: return "Missing username."
-            // Closed groups
-            case .noThread: return "Couldn't find a thread associated with the given group public key."
-            case .noKeyPair: return "Couldn't find a private key associated with the given group public key."
-            case .invalidClosedGroupUpdate: return "Invalid group update."
-            }
-        }
-    }
-
-    // MARK: Initialization
-    private override init() { }
-
-    // MARK: Preparation
-    public static func prep(_ signalAttachments: [SignalAttachment], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
-            #if DEBUG
-            preconditionFailure()
-            #else
-            return
-            #endif
-        }
-        var attachments: [TSAttachmentStream] = []
-        signalAttachments.forEach {
-            let attachment = TSAttachmentStream(contentType: $0.mimeType, byteCount: UInt32($0.dataLength), sourceFilename: $0.sourceFilename,
-                caption: $0.captionText, albumMessageId: tsMessage.uniqueId!)
-            attachment.attachmentType = $0.isVoiceMessage ? .voiceMessage : .default
-            attachments.append(attachment)
-            attachment.write($0.dataSource)
-            attachment.save(with: transaction)
-        }
-        prep(attachments, for: message, using: transaction)
-    }
+public final class MessageSender {
+    // MARK: - Preparation
     
-    @objc(prep:forMessage:usingTransaction:)
-    public static func prep(_ attachmentStreams: [TSAttachmentStream], for message: VisibleMessage, using transaction: YapDatabaseReadWriteTransaction) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else {
-            #if DEBUG
-            preconditionFailure()
-            #else
-            return
-            #endif
+    public static func prep(
+        _ db: Database,
+        signalAttachments: [SignalAttachment],
+        for interactionId: Int64
+    ) throws {
+        try signalAttachments.enumerated().forEach { index, signalAttachment in
+            let maybeAttachment: Attachment? = Attachment(
+                variant: (signalAttachment.isVoiceMessage ?
+                    .voiceMessage :
+                    .standard
+                ),
+                contentType: signalAttachment.mimeType,
+                dataSource: signalAttachment.dataSource,
+                sourceFilename: signalAttachment.sourceFilename,
+                caption: signalAttachment.captionText
+            )
+            
+            guard let attachment: Attachment = maybeAttachment else { return }
+            
+            let interactionAttachment: InteractionAttachment = InteractionAttachment(
+                albumIndex: index,
+                interactionId: interactionId,
+                attachmentId: attachment.id
+            )
+            
+            try attachment.insert(db)
+            try interactionAttachment.insert(db)
         }
-        var attachments = attachmentStreams
-        // The line below locally generates a thumbnail for the quoted attachment. It just needs to happen at some point during the
-        // message sending process.
-        tsMessage.quotedMessage?.createThumbnailAttachmentsIfNecessary(with: transaction)
-        var linkPreviewAttachmentID: String?
-        if let id = tsMessage.linkPreview?.imageAttachmentId,
-            let attachment = TSAttachment.fetch(uniqueId: id, transaction: transaction) as? TSAttachmentStream {
-            linkPreviewAttachmentID = id
-            attachments.append(attachment)
-        }
-        // Anything added to message.attachmentIDs will be uploaded by an UploadAttachmentJob. Any attachment IDs added to tsMessage will
-        // make it render as an attachment (not what we want in the case of a link preview or quoted attachment).
-        message.attachmentIDs = attachments.map { $0.uniqueId! }
-        tsMessage.attachmentIds.removeAllObjects()
-        tsMessage.attachmentIds.addObjects(from: message.attachmentIDs)
-        if let id = linkPreviewAttachmentID { tsMessage.attachmentIds.remove(id) }
-        tsMessage.save(with: transaction)
     }
 
-    // MARK: Convenience
-    public static func send(_ message: Message, to destination: Message.Destination, using transaction: Any) -> Promise<Void> {
+    // MARK: - Convenience
+    
+    public static func sendImmediate(_ db: Database, message: Message, to destination: Message.Destination, interactionId: Int64?) throws -> Promise<Void> {
         switch destination {
-        case .contact(_), .closedGroup(_): return sendToSnodeDestination(destination, message: message, using: transaction)
-        case .openGroup(_, _), .openGroupV2(_, _): return sendToOpenGroupDestination(destination, message: message, using: transaction)
+            case .contact, .closedGroup:
+                return try sendToSnodeDestination(db, message: message, to: destination, interactionId: interactionId)
+
+            case .openGroup:
+                return sendToOpenGroupDestination(db, message: message, to: destination, interactionId: interactionId)
+                
+            case .openGroupInbox:
+                return sendToOpenGroupInboxDestination(db, message: message, to: destination, interactionId: interactionId)
         }
     }
 
     // MARK: One-on-One Chats & Closed Groups
-    internal static func sendToSnodeDestination(_ destination: Message.Destination, message: Message, using transaction: Any, isSyncMessage: Bool = false) -> Promise<Void> {
+    
+    internal static func sendToSnodeDestination(
+        _ db: Database,
+        message: Message,
+        to destination: Message.Destination,
+        interactionId: Int64?,
+        isSyncMessage: Bool = false
+    ) throws -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        let storage = SNMessagingKitConfiguration.shared.storage
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        let userPublicKey = storage.getUserPublicKey()
-        var isMainAppAndActive = false
-        if let sharedUserDefaults = UserDefaults(suiteName: "group.com.loki-project.loki-messenger") {
-            isMainAppAndActive = sharedUserDefaults.bool(forKey: "isMainAppActive")
-        }
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        let isMainAppActive: Bool = (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false)
+        let messageSendTimestamp: Int64 = Int64(floor(Date().timeIntervalSince1970 * 1000))
+        
         // Set the timestamp, sender and recipient
-        if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
-            message.sentTimestamp = NSDate.millisecondTimestamp()
-        }
+        message.sentTimestamp = (
+            message.sentTimestamp ??     // Visible messages will already have their sent timestamp set
+            UInt64(messageSendTimestamp)
+        )
         message.sender = userPublicKey
-        switch destination {
-        case .contact(let publicKey): message.recipient = publicKey
-        case .closedGroup(let groupPublicKey): message.recipient = groupPublicKey
-        case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
-        }
-        let isSelfSend = (message.recipient == userPublicKey)
+        message.recipient = {
+            switch destination {
+                case .contact(let publicKey): return publicKey
+                case .closedGroup(let groupPublicKey): return groupPublicKey
+                case .openGroup, .openGroupInbox: preconditionFailure()
+            }
+        }()
+        
         // Set the failure handler (need it here already for precondition failure handling)
-        func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
-            MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
+        func handleFailure(_ db: Database, with error: MessageSenderError) {
+            MessageSender.handleFailedMessageSend(db, message: message, with: error, interactionId: interactionId)
             seal.reject(error)
         }
+        
         // Validate the message
-        guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
-        // Stop here if this is a self-send, unless it's:
-        // • a configuration message
-        // • a sync message
-        // • a closed group control message of type `new`
-        // • an unsend request
-        // • a call message of type `answer` or `endCall`
-        guard !isSelfSend || isSyncMessage || shouldSyncMessage(message) else {
-            storage.write(with: { transaction in
-                MessageSender.handleSuccessfulMessageSend(message, to: destination, using: transaction)
-                seal.fulfill(())
-            }, completion: { })
+        guard message.isValid else {
+            handleFailure(db, with: .invalidMessage)
             return promise
         }
+        
+        // Stop here if this is a self-send, unless we should sync the message
+        let isSelfSend: Bool = (message.recipient == userPublicKey)
+
+        guard
+            !isSelfSend ||
+            isSyncMessage ||
+            Message.shouldSync(message: message)
+        else {
+            try MessageSender.handleSuccessfulMessageSend(db, message: message, to: destination, interactionId: interactionId)
+            seal.fulfill(())
+            return promise
+        }
+        
         // Attach the user's profile if needed
-        if let message = message as? VisibleMessage {
-            guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
-            if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
-                message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
-            } else {
-                message.profile = VisibleMessage.Profile(displayName: name)
+        if let message: VisibleMessage = message as? VisibleMessage {
+            let profile: Profile = Profile.fetchOrCreateCurrentUser(db)
+            
+            if let profileKey: Data = profile.profileEncryptionKey?.keyData, let profilePictureUrl: String = profile.profilePictureUrl {
+                message.profile = VisibleMessage.VMProfile(
+                    displayName: profile.name,
+                    profileKey: profileKey,
+                    profilePictureUrl: profilePictureUrl
+                )
+            }
+            else {
+                message.profile = VisibleMessage.VMProfile(displayName: profile.name)
             }
         }
+        
         // Convert it to protobuf
-        guard let proto = message.toProto(using: transaction) else { handleFailure(with: Error.protoConversionFailed, using: transaction); return promise }
-        // Serialize the protobuf
-        let plaintext: Data
-        do {
-            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
-        } catch {
-            SNLog("Couldn't serialize proto due to error: \(error).")
-            handleFailure(with: error, using: transaction)
+        guard let proto = message.toProto(db) else {
+            handleFailure(db, with: .protoConversionFailed)
             return promise
         }
+        
+        // Serialize the protobuf
+        let plaintext: Data
+        
+        do {
+            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+        }
+        catch {
+            SNLog("Couldn't serialize proto due to error: \(error).")
+            handleFailure(db, with: .other(error))
+            return promise
+        }
+        
         // Encrypt the serialized protobuf
         let ciphertext: Data
         do {
             switch destination {
-            case .contact(let publicKey): ciphertext = try encryptWithSessionProtocol(plaintext, for: publicKey)
-            case .closedGroup(let groupPublicKey):
-                guard let encryptionKeyPair = Storage.shared.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey) else { throw Error.noKeyPair }
-                ciphertext = try encryptWithSessionProtocol(plaintext, for: encryptionKeyPair.hexEncodedPublicKey)
-            case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
+                case .contact(let publicKey):
+                    ciphertext = try encryptWithSessionProtocol(plaintext, for: publicKey)
+                    
+                case .closedGroup(let groupPublicKey):
+                    guard let encryptionKeyPair: ClosedGroupKeyPair = try? ClosedGroupKeyPair.fetchLatestKeyPair(db, threadId: groupPublicKey) else {
+                        throw MessageSenderError.noKeyPair
+                    }
+                    
+                    ciphertext = try encryptWithSessionProtocol(
+                        plaintext,
+                        for: SessionId(.standard, publicKey: encryptionKeyPair.publicKey.bytes).hexString
+                    )
+                    
+                case .openGroup, .openGroupInbox: preconditionFailure()
             }
-        } catch {
+        }
+        catch {
             SNLog("Couldn't encrypt message for destination: \(destination) due to error: \(error).")
-            handleFailure(with: error, using: transaction)
+            handleFailure(db, with: .other(error))
             return promise
         }
+        
         // Wrap the result
         let kind: SNProtoEnvelope.SNProtoEnvelopeType
         let senderPublicKey: String
+        
         switch destination {
-        case .contact(_):
-            kind = .sessionMessage
-            senderPublicKey = ""
-        case .closedGroup(let groupPublicKey):
-            kind = .closedGroupMessage
-            senderPublicKey = groupPublicKey
-        case .openGroup(_, _), .openGroupV2(_, _): preconditionFailure()
+            case .contact:
+                kind = .sessionMessage
+                senderPublicKey = ""
+                
+            case .closedGroup(let groupPublicKey):
+                kind = .closedGroupMessage
+                senderPublicKey = groupPublicKey
+            
+            case .openGroup, .openGroupInbox: preconditionFailure()
         }
+        
         let wrappedMessage: Data
         do {
             wrappedMessage = try MessageWrapper.wrap(type: kind, timestamp: message.sentTimestamp!,
                 senderPublicKey: senderPublicKey, base64EncodedContent: ciphertext.base64EncodedString())
-        } catch {
+        }
+        catch {
             SNLog("Couldn't wrap message due to error: \(error).")
-            handleFailure(with: error, using: transaction)
+            handleFailure(db, with: .other(error))
             return promise
         }
+        
         // Send the result
         let base64EncodedData = wrappedMessage.base64EncodedString()
-        let timestamp = UInt64(Int64(message.sentTimestamp!) + SnodeAPI.clockOffset)
-        let snodeMessage = SnodeMessage(recipient: message.recipient!, data: base64EncodedData, ttl: message.ttl, timestamp: timestamp)
-        SnodeAPI.sendMessage(snodeMessage,
-                             isClosedGroupMessage: (kind == .closedGroupMessage),
-                             isConfigMessage: message.isKind(of: ConfigurationMessage.self))
-        .done(on: DispatchQueue.global(qos: .userInitiated)) { promises in
-            var isSuccess = false
-            let promiseCount = promises.count
-            var errorCount = 0
-            promises.forEach {
-                let _ = $0.done(on: DispatchQueue.global(qos: .userInitiated)) { rawResponse in
-                    guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
-                    isSuccess = true
-                    storage.write(with: { transaction in
-                        let json = rawResponse as? JSON
-                        let hash = json?["hash"] as? String
-                        message.serverHash = hash
-                        MessageSender.handleSuccessfulMessageSend(message, to: destination, isSyncMessage: isSyncMessage, using: transaction)
-                        var shouldNotify = ((message is VisibleMessage || message is UnsendRequest) && !isSyncMessage)
-                        if let callMessage = message as? CallMessage, case .preOffer = callMessage.kind {
-                            shouldNotify = true
-                        }
-                        /*
-                        if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {
-                            shouldNotify = true
-                        }
-                         */
-                        if shouldNotify {
-                            let notifyPNServerJob = NotifyPNServerJob(message: snodeMessage)
-                            if isMainAppAndActive {
-                                JobQueue.shared.add(notifyPNServerJob, using: transaction)
-                                seal.fulfill(())
-                            } else {
-                                notifyPNServerJob.execute().done(on: DispatchQueue.global(qos: .userInitiated)) {
-                                    seal.fulfill(())
-                                }.catch(on: DispatchQueue.global(qos: .userInitiated)) { _ in
-                                    seal.fulfill(()) // Always fulfill because the notify PN server job isn't critical.
+
+        let snodeMessage = SnodeMessage(
+            recipient: message.recipient!,
+            data: base64EncodedData,
+            ttl: message.ttl,
+            timestampMs: UInt64(messageSendTimestamp + SnodeAPI.clockOffset)
+        )
+        
+        SnodeAPI
+            .sendMessage(
+                snodeMessage,
+                isClosedGroupMessage: (kind == .closedGroupMessage),
+                isConfigMessage: (message is ConfigurationMessage)
+            )
+            .done(on: DispatchQueue.global(qos: .default)) { promises in
+                let promiseCount = promises.count
+                var isSuccess = false
+                var errorCount = 0
+
+                promises.forEach {
+                    let _ = $0.done(on: DispatchQueue.global(qos: .default)) { responseData in
+                        guard !isSuccess else { return } // Succeed as soon as the first promise succeeds
+                        isSuccess = true
+
+                        Storage.shared.write { db in
+                            let responseJson: JSON? = try? JSONSerialization.jsonObject(with: responseData, options: [ .fragmentsAllowed ]) as? JSON
+                            message.serverHash = (responseJson?["hash"] as? String)
+                            
+                            try MessageSender.handleSuccessfulMessageSend(
+                                db,
+                                message: message,
+                                to: destination,
+                                interactionId: interactionId,
+                                isSyncMessage: isSyncMessage
+                            )
+                            
+                            let shouldNotify: Bool = {
+                                switch message {
+                                    case is VisibleMessage, is UnsendRequest: return !isSyncMessage
+                                    case let callMessage as CallMessage:
+                                        switch callMessage.kind {
+                                            case .preOffer: return true
+                                            default: return false
+                                        }
+                                        
+                                    default: return false
                                 }
+                            }()
+                            
+                            /*
+                            if let closedGroupControlMessage = message as? ClosedGroupControlMessage, case .new = closedGroupControlMessage.kind {
+                                shouldNotify = true
                             }
-                        } else {
-                            seal.fulfill(())
+                             */
+                            guard shouldNotify else {
+                                seal.fulfill(())
+                                return
+                            }
+                            
+                            let job: Job? = Job(
+                                variant: .notifyPushServer,
+                                behaviour: .runOnce,
+                                details: NotifyPushServerJob.Details(message: snodeMessage)
+                            )
+                            
+                            if isMainAppActive {
+                                JobRunner.add(db, job: job)
+                                seal.fulfill(())
+                            }
+                            else if let job: Job = job {
+                                NotifyPushServerJob.run(
+                                    job,
+                                    queue: DispatchQueue.global(qos: .default),
+                                    success: { _, _ in seal.fulfill(()) },
+                                    failure: { _, _, _ in
+                                        // Always fulfill because the notify PN server job isn't critical.
+                                        seal.fulfill(())
+                                    },
+                                    deferred: { _ in
+                                        // Always fulfill because the notify PN server job isn't critical.
+                                        seal.fulfill(())
+                                    }
+                                )
+                            }
+                            else {
+                                // Always fulfill because the notify PN server job isn't critical.
+                                seal.fulfill(())
+                            }
                         }
-                    }, completion: { })
-                }
-                $0.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-                    errorCount += 1
-                    guard errorCount == promiseCount else { return } // Only error out if all promises failed
-                    storage.write(with: { transaction in
-                        handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
-                    }, completion: { })
+                    }
+                    $0.catch(on: DispatchQueue.global(qos: .default)) { error in
+                        errorCount += 1
+                        guard errorCount == promiseCount else { return } // Only error out if all promises failed
+                        
+                        Storage.shared.read { db in
+                            handleFailure(db, with: .other(error))
+                        }
+                    }
                 }
             }
-        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            SNLog("Couldn't send message due to error: \(error).")
-            storage.write(with: { transaction in
-                handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
-            }, completion: { })
-        }
-        // Return
+            .catch(on: DispatchQueue.global(qos: .default)) { error in
+                SNLog("Couldn't send message due to error: \(error).")
+                
+                Storage.shared.read { db in
+                    handleFailure(db, with: .other(error))
+                }
+            }
+        
         return promise
     }
 
     // MARK: Open Groups
-    internal static func sendToOpenGroupDestination(_ destination: Message.Destination, message: Message, using transaction: Any) -> Promise<Void> {
+    
+    internal static func sendToOpenGroupDestination(
+        _ db: Database,
+        message: Message,
+        to destination: Message.Destination,
+        interactionId: Int64?,
+        dependencies: SMKDependencies = SMKDependencies()
+    ) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        let storage = SNMessagingKitConfiguration.shared.storage
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
+        let threadId: String
+        
         // Set the timestamp, sender and recipient
         if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
-            message.sentTimestamp = NSDate.millisecondTimestamp()
+            message.sentTimestamp = UInt64(floor(Date().timeIntervalSince1970 * 1000))
         }
-        message.sender = storage.getUserPublicKey()
+        
         switch destination {
-        case .contact(_): preconditionFailure()
-        case .closedGroup(_): preconditionFailure()
-        case .openGroup(let channel, let server): message.recipient = "\(server).\(channel)"
-        case .openGroupV2(let room, let server): message.recipient = "\(server).\(room)"
+            case .contact, .closedGroup, .openGroupInbox: preconditionFailure()
+            case .openGroup(let roomToken, let server, let whisperTo, let whisperMods, _):
+                threadId = OpenGroup.idFor(roomToken: roomToken, server: server)
+                message.recipient = [
+                    server,
+                    roomToken,
+                    whisperTo,
+                    (whisperMods ? "mods" : nil)
+                ]
+                .compactMap { $0 }
+                .joined(separator: ".")
         }
+        
+        // Note: It's possible to send a message and then delete the open group you sent the message to
+        // which would go into this case, so rather than handling it as an invalid state we just want to
+        // error in a non-retryable way
+        guard
+            let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: threadId),
+            let userEdKeyPair: Box.KeyPair = Identity.fetchUserEd25519KeyPair(db),
+            case .openGroup(let roomToken, let server, let whisperTo, let whisperMods, let fileIds) = destination
+        else {
+            seal.reject(MessageSenderError.invalidMessage)
+            return promise
+        }
+        
+        message.sender = {
+            let capabilities: [Capability.Variant] = (try? Capability
+                .select(.variant)
+                .filter(Capability.Columns.openGroupServer == server)
+                .filter(Capability.Columns.isMissing == false)
+                .asRequest(of: Capability.Variant.self)
+                .fetchAll(db))
+                .defaulting(to: [])
+            
+            // If the server doesn't support blinding then go with an unblinded id
+            guard capabilities.contains(.blind) else {
+                return SessionId(.unblinded, publicKey: userEdKeyPair.publicKey).hexString
+            }
+            guard let blindedKeyPair: Box.KeyPair = dependencies.sodium.blindedKeyPair(serverPublicKey: openGroup.publicKey, edKeyPair: userEdKeyPair, genericHash: dependencies.genericHash) else {
+                preconditionFailure()
+            }
+            
+            return SessionId(.blinded, publicKey: blindedKeyPair.publicKey).hexString
+        }()
+        
         // Set the failure handler (need it here already for precondition failure handling)
-        func handleFailure(with error: Swift.Error, using transaction: YapDatabaseReadWriteTransaction) {
-            MessageSender.handleFailedMessageSend(message, with: error, using: transaction)
+        func handleFailure(_ db: Database, with error: MessageSenderError) {
+            MessageSender.handleFailedMessageSend(db, message: message, with: error, interactionId: interactionId)
             seal.reject(error)
         }
+        
         // Validate the message
         guard let message = message as? VisibleMessage else {
             #if DEBUG
             preconditionFailure()
             #else
-            handleFailure(with: Error.invalidMessage, using: transaction)
+            handleFailure(db, with: MessageSenderError.invalidMessage)
             return promise
             #endif
         }
-        guard message.isValid else { handleFailure(with: Error.invalidMessage, using: transaction); return promise }
-        // Attach the user's profile
-        guard let name = storage.getUser()?.name else { handleFailure(with: Error.noUsername, using: transaction); return promise }
-        if let profileKey = storage.getUser()?.profileEncryptionKey?.keyData, let profilePictureURL = storage.getUser()?.profilePictureURL {
-            message.profile = VisibleMessage.Profile(displayName: name, profileKey: profileKey, profilePictureURL: profilePictureURL)
-        } else {
-            message.profile = VisibleMessage.Profile(displayName: name)
-        }
-        // Convert it to protobuf
-        guard let proto = message.toProto(using: transaction) else { handleFailure(with: Error.protoConversionFailed, using: transaction); return promise }
-        // Serialize the protobuf
-        let plaintext: Data
-        do {
-            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
-        } catch {
-            SNLog("Couldn't serialize proto due to error: \(error).")
-            handleFailure(with: error, using: transaction)
+        guard message.isValid else {
+            handleFailure(db, with: .invalidMessage)
             return promise
         }
-        // Send the result
-        guard case .openGroupV2(let room, let server) = destination else { preconditionFailure() }
-        let openGroupMessage = OpenGroupMessageV2(serverID: nil, sender: nil, sentTimestamp: message.sentTimestamp!,
-            base64EncodedData: plaintext.base64EncodedString(), base64EncodedSignature: nil)
-        OpenGroupAPIV2.send(openGroupMessage, to: room, on: server).done(on: DispatchQueue.global(qos: .userInitiated)) { openGroupMessage in
-            message.openGroupServerMessageID = given(openGroupMessage.serverID) { UInt64($0) }
+        
+        // Attach the user's profile
+        message.profile = VisibleMessage.VMProfile(
+            profile: Profile.fetchOrCreateCurrentUser()
+        )
 
-            storage.write(with: { transaction in
-                MessageSender.handleSuccessfulMessageSend(message, to: destination, serverTimestamp: openGroupMessage.sentTimestamp, using: transaction)
-                seal.fulfill(())
-            }, completion: { })
-        }.catch(on: DispatchQueue.global(qos: .userInitiated)) { error in
-            storage.write(with: { transaction in
-                handleFailure(with: error, using: transaction as! YapDatabaseReadWriteTransaction)
-            }, completion: { })
+        if (message.profile?.displayName ?? "").isEmpty {
+            handleFailure(db, with: .noUsername)
+            return promise
         }
-        // Return
+        
+        // Convert it to protobuf
+        guard let proto = message.toProto(db) else {
+            handleFailure(db, with: .protoConversionFailed)
+            return promise
+        }
+        
+        // Serialize the protobuf
+        let plaintext: Data
+        
+        do {
+            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+        }
+        catch {
+            SNLog("Couldn't serialize proto due to error: \(error).")
+            handleFailure(db, with: .other(error))
+            return promise
+        }
+        
+        // Send the result
+        OpenGroupAPI
+            .send(
+                db,
+                plaintext: plaintext,
+                to: roomToken,
+                on: server,
+                whisperTo: whisperTo,
+                whisperMods: whisperMods,
+                fileIds: fileIds,
+                using: dependencies
+            )
+            .done(on: DispatchQueue.global(qos: .default)) { responseInfo, data in
+                message.openGroupServerMessageId = UInt64(data.id)
+
+                dependencies.storage.write { db in
+                    // The `posted` value is in seconds but we sent it in ms so need that for de-duping
+                    try MessageSender.handleSuccessfulMessageSend(
+                        db,
+                        message: message,
+                        to: destination,
+                        interactionId: interactionId,
+                        serverTimestampMs: UInt64(floor(data.posted * 1000))
+                    )
+                    seal.fulfill(())
+                }
+            }
+            .catch(on: DispatchQueue.global(qos: .default)) { error in
+                dependencies.storage.read { db in
+                    handleFailure(db, with: .other(error))
+                }
+            }
+        
+        return promise
+    }
+
+    internal static func sendToOpenGroupInboxDestination(
+        _ db: Database,
+        message: Message,
+        to destination: Message.Destination,
+        interactionId: Int64?,
+        dependencies: SMKDependencies = SMKDependencies()
+    ) -> Promise<Void> {
+        let (promise, seal) = Promise<Void>.pending()
+        let userPublicKey: String = getUserHexEncodedPublicKey(db, dependencies: dependencies)
+        
+        guard case .openGroupInbox(let server, let openGroupPublicKey, let recipientBlindedPublicKey) = destination else {
+            preconditionFailure()
+        }
+        
+        // Set the timestamp, sender and recipient
+        if message.sentTimestamp == nil { // Visible messages will already have their sent timestamp set
+            message.sentTimestamp = UInt64(floor(Date().timeIntervalSince1970 * 1000))
+        }
+        
+        message.sender = userPublicKey
+        message.recipient = recipientBlindedPublicKey
+        
+        // Set the failure handler (need it here already for precondition failure handling)
+        func handleFailure(_ db: Database, with error: MessageSenderError) {
+            MessageSender.handleFailedMessageSend(db, message: message, with: error, interactionId: interactionId)
+            seal.reject(error)
+        }
+        
+        // Attach the user's profile if needed
+        if let message: VisibleMessage = message as? VisibleMessage {
+            let profile: Profile = Profile.fetchOrCreateCurrentUser(db)
+            
+            if let profileKey: Data = profile.profileEncryptionKey?.keyData, let profilePictureUrl: String = profile.profilePictureUrl {
+                message.profile = VisibleMessage.VMProfile(
+                    displayName: profile.name,
+                    profileKey: profileKey,
+                    profilePictureUrl: profilePictureUrl
+                )
+            }
+            else {
+                message.profile = VisibleMessage.VMProfile(displayName: profile.name)
+            }
+        }
+        
+        // Convert it to protobuf
+        guard let proto = message.toProto(db) else {
+            handleFailure(db, with: .protoConversionFailed)
+            return promise
+        }
+        
+        // Serialize the protobuf
+        let plaintext: Data
+        
+        do {
+            plaintext = (try proto.serializedData() as NSData).paddedMessageBody()
+        }
+        catch {
+            SNLog("Couldn't serialize proto due to error: \(error).")
+            handleFailure(db, with: .other(error))
+            return promise
+        }
+        
+        // Encrypt the serialized protobuf
+        let ciphertext: Data
+        
+        do {
+            ciphertext = try encryptWithSessionBlindingProtocol(
+                plaintext,
+                for: recipientBlindedPublicKey,
+                openGroupPublicKey: openGroupPublicKey,
+                using: dependencies
+            )
+        }
+        catch {
+            SNLog("Couldn't encrypt message for destination: \(destination) due to error: \(error).")
+            handleFailure(db, with: .other(error))
+            return promise
+        }
+        
+        // Send the result
+        OpenGroupAPI
+            .send(
+                db,
+                ciphertext: ciphertext,
+                toInboxFor: recipientBlindedPublicKey,
+                on: server,
+                using: dependencies
+            )
+            .done(on: DispatchQueue.global(qos: .default)) { responseInfo, data in
+                message.openGroupServerMessageId = UInt64(data.id)
+                
+                dependencies.storage.write { transaction in
+                    try MessageSender.handleSuccessfulMessageSend(
+                        db,
+                        message: message,
+                        to: destination,
+                        interactionId: interactionId
+                    )
+                    seal.fulfill(())
+                }
+            }
+            .catch(on: DispatchQueue.global(qos: .default)) { error in
+                dependencies.storage.read { db in
+                    handleFailure(db, with: .other(error))
+                }
+            }
+        
         return promise
     }
 
     // MARK: Success & Failure Handling
-    public static func handleSuccessfulMessageSend(_ message: Message, to destination: Message.Destination, serverTimestamp: UInt64? = nil, isSyncMessage: Bool = false, using transaction: Any) {
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
+    
+    private static func handleSuccessfulMessageSend(
+        _ db: Database,
+        message: Message,
+        to destination: Message.Destination,
+        interactionId: Int64?,
+        serverTimestampMs: UInt64? = nil,
+        isSyncMessage: Bool = false
+    ) throws {
+        let interaction: Interaction? = try interaction(db, for: message, interactionId: interactionId)
+        
         // Get the visible message if possible
-        if let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) {
+        if let interaction: Interaction = interaction {
             // When the sync message is successfully sent, the hash value of this TSOutgoingMessage
             // will be replaced by the hash value of the sync message. Since the hash value of the
             // real message has no use when we delete a message. It is OK to let it be.
-            tsMessage.serverHash = message.serverHash
-            // Track the open group server message ID and update server timestamp
-            if let openGroupServerMessageID = message.openGroupServerMessageID, let timestamp = serverTimestamp {
-                // Use server timestamp for open group messages
-                // Otherwise the quote messages may not be able
-                // to be found by the timestamp on other devices
-                tsMessage.updateOpenGroupServerID(openGroupServerMessageID, serverTimeStamp: timestamp)
+            try interaction.with(
+                serverHash: message.serverHash,
                 
-                // Create a lookup between the openGroupServerMessageId and the tsMessage id for easy lookup
-                switch destination {
-                    case .openGroupV2(let room, let server):
-                        Storage.shared.addOpenGroupServerIdLookup(
-                            openGroupServerMessageID,
-                            tsMessageId: tsMessage.uniqueId,
-                            in: room,
-                            on: server,
-                            using: transaction
-                        )
-                        
-                    default: break
-                }
-            }
+                // Track the open group server message ID and update server timestamp (use server
+                // timestamp for open group messages otherwise the quote messages may not be able
+                // to be found by the timestamp on other devices
+                timestampMs: (message.openGroupServerMessageId == nil ?
+                    nil :
+                    serverTimestampMs.map { Int64($0) }
+                ),
+                openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) }
+            ).update(db)
+            
             // Mark the message as sent
-            var recipients = [ message.recipient! ]
-            if case .closedGroup(_) = destination, let threadID = message.threadID, // threadID should always be set at this point
-                let thread = TSGroupThread.fetch(uniqueId: threadID, transaction: transaction), thread.isClosedGroup {
-                recipients = thread.groupModel.groupMemberIds
-            }
-            recipients.forEach { recipient in
-                tsMessage.update(withSentRecipient: recipient, wasSentByUD: true, transaction: transaction)
-            }
-            tsMessage.save(with: transaction)
-            NotificationCenter.default.post(name: .messageSentStatusDidChange, object: nil, userInfo: nil)
+            try interaction.recipientStates
+                .updateAll(db, RecipientState.Columns.state.set(to: RecipientState.State.sent))
+            
             // Start the disappearing messages timer if needed
-            OWSDisappearingMessagesJob.shared().startAnyExpiration(for: tsMessage, expirationStartedAt: NSDate.millisecondTimestamp(), transaction: transaction)
+            JobRunner.upsert(
+                db,
+                job: DisappearingMessagesJob.updateNextRunIfNeeded(
+                    db,
+                    interaction: interaction,
+                    startedAtMs: (Date().timeIntervalSince1970 * 1000)
+                )
+            )
         }
-        // Prevent the same ExpirationTimerUpdate to be handled twice
-        if let message = message as? ExpirationTimerUpdate {
-            Storage.shared.addReceivedMessageTimestamp(message.sentTimestamp!, using: transaction)
-        }
+        
+        // Prevent ControlMessages from being handled multiple times if not supported
+        try? ControlMessageProcessRecord(
+            threadId: {
+                switch destination {
+                    case .contact(let publicKey): return publicKey
+                    case .closedGroup(let groupPublicKey): return groupPublicKey
+                    case .openGroup(let roomToken, let server, _, _, _):
+                        return OpenGroup.idFor(roomToken: roomToken, server: server)
+                    
+                    case .openGroupInbox(_, _, let blindedPublicKey): return blindedPublicKey
+                }
+            }(),
+            message: message,
+            serverExpirationTimestamp: (Date().timeIntervalSince1970 + ControlMessageProcessRecord.defaultExpirationSeconds)
+        )?.insert(db)
+        
         // Sync the message if:
         // • it's a visible message or an expiration timer update
         // • the destination was a contact
         // • we didn't sync it already
-        let userPublicKey = getUserHexEncodedPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey(db)
         if case .contact(let publicKey) = destination, !isSyncMessage {
             if let message = message as? VisibleMessage { message.syncTarget = publicKey }
             if let message = message as? ExpirationTimerUpdate { message.syncTarget = publicKey }
+            
             // FIXME: Make this a job
-            sendToSnodeDestination(.contact(publicKey: userPublicKey), message: message, using: transaction, isSyncMessage: true).retainUntilComplete()
+            try sendToSnodeDestination(
+                db,
+                message: message,
+                to: .contact(publicKey: userPublicKey),
+                interactionId: interactionId,
+                isSyncMessage: true
+            ).retainUntilComplete()
         }
     }
 
-    public static func handleFailedMessageSend(_ message: Message, with error: Swift.Error, using transaction: Any) {
-        guard let tsMessage = TSOutgoingMessage.find(withTimestamp: message.sentTimestamp!) else { return }
-        // Remove the message timestamps if it fails
-        Storage.shared.removeReceivedMessageTimestamps([message.sentTimestamp!], using: transaction)
-        let transaction = transaction as! YapDatabaseReadWriteTransaction
-        tsMessage.update(sendingError: error, transaction: transaction)
-        MessageInvalidator.invalidate(tsMessage, with: transaction)
+    public static func handleFailedMessageSend(
+        _ db: Database,
+        message: Message,
+        with error: MessageSenderError,
+        interactionId: Int64?
+    ) {
+        // Check if we need to mark any "sending" recipients as "failed"
+        //
+        // Note: The 'db' could be either read-only or writeable so we determine
+        // if a change is required, and if so dispatch to a separate queue for the
+        // actual write
+        let rowIds: [Int64] = (try? RecipientState
+            .select(Column.rowID)
+            .filter(RecipientState.Columns.interactionId == interactionId)
+            .filter(RecipientState.Columns.state == RecipientState.State.sending)
+            .asRequest(of: Int64.self)
+            .fetchAll(db))
+            .defaulting(to: [])
+        
+        guard !rowIds.isEmpty else { return }
+        
+        // Need to dispatch to a different thread to prevent a potential db re-entrancy
+        // issue from occuring in some cases
+        DispatchQueue.global(qos: .background).async {
+            Storage.shared.write { db in
+                try RecipientState
+                    .filter(rowIds.contains(Column.rowID))
+                    .updateAll(
+                        db,
+                        RecipientState.Columns.state.set(to: RecipientState.State.failed),
+                        RecipientState.Columns.mostRecentFailureText.set(to: error.localizedDescription)
+                    )
+            }
+        }
     }
     
-    // MARK: Utils
-    private static func shouldSyncMessage(_ message: Message) -> Bool {
-        let isNewClosedGroupControlMessage = given(message as? ClosedGroupControlMessage) {
-            if case .new = $0.kind {
-                return true
-            } else {
-                return false
-            } } ?? false
-        let isCallControlMessage = given(message as? CallMessage) {
-            if case .answer = $0.kind {
-                return true
-            } else if case .endCall = $0.kind {
-                return true
-            } else {
-                return false
-            } } ?? false
-        return isNewClosedGroupControlMessage || isCallControlMessage || message is ConfigurationMessage || message is UnsendRequest
+    // MARK: - Convenience
+    
+    private static func interaction(_ db: Database, for message: Message, interactionId: Int64?) throws -> Interaction? {
+        if let interactionId: Int64 = interactionId {
+            return try Interaction.fetchOne(db, id: interactionId)
+        }
+        
+        if let sentTimestamp: Double = message.sentTimestamp.map({ Double($0) }) {
+            return try Interaction
+                .filter(Interaction.Columns.timestampMs == sentTimestamp)
+                .fetchOne(db)
+        }
+        
+        return nil
+    }
+}
+
+// MARK: - Objective-C Support
+
+// FIXME: Remove when possible
+
+@objc(SMKMessageSender)
+public class SMKMessageSender: NSObject {
+    @objc(leaveClosedGroupWithPublicKey:)
+    public static func objc_leave(_ groupPublicKey: String) -> AnyPromise {
+        let promise = Storage.shared.writeAsync { db in
+            try MessageSender.leave(db, groupPublicKey: groupPublicKey)
+        }
+        
+        return AnyPromise.from(promise)
+    }
+    
+    @objc(forceSyncConfigurationNow)
+    public static func objc_forceSyncConfigurationNow() {
+        Storage.shared.write { db in
+            try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+        }
     }
 }

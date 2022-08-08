@@ -1,9 +1,9 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
 import AVFoundation
+import SignalCoreKit
+import SessionUtilitiesKit
 
 @objc(OWSAudioActivity)
 public class AudioActivity: NSObject {
@@ -18,13 +18,7 @@ public class AudioActivity: NSObject {
     }
 
     deinit {
-        audioSession.ensureAudioSessionActivationStateAfterDelay()
-    }
-
-    // MARK: Dependencies
-
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
+        Environment.shared?.audioSession.ensureAudioSessionActivationStateAfterDelay()
     }
 
     // MARK: 
@@ -43,10 +37,6 @@ public class OWSAudioSession: NSObject {
     }
 
     // MARK: Dependencies
-
-    var proximityMonitoringManager: OWSProximityMonitoringManager {
-        return Environment.shared.proximityMonitoringManager
-    }
 
     private let avAudioSession = AVAudioSession.sharedInstance()
 
@@ -94,9 +84,9 @@ public class OWSAudioSession: NSObject {
 
     func ensureAudioCategory() throws {
         if aggregateBehaviors.contains(.audioMessagePlayback) {
-            self.proximityMonitoringManager.add(lifetime: self)
+            Environment.shared?.proximityMonitoringManager.add(lifetime: self)
         } else {
-            self.proximityMonitoringManager.remove(lifetime: self)
+            Environment.shared?.proximityMonitoringManager.remove(lifetime: self)
         }
 
         if aggregateBehaviors.contains(.call) {

@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-public protocol CaptionContainerViewDelegate: class {
+public protocol CaptionContainerViewDelegate: AnyObject {
     func captionContainerViewDidUpdateText(_ captionContainerView: CaptionContainerView)
 }
 

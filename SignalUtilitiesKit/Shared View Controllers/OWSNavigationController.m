@@ -161,28 +161,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogDebug(@"");
 
     [UIView setAnimationsEnabled:NO];
-
-    if (@available(iOS 11.0, *)) {
-        if (!CurrentAppContext().isMainApp) {
-            self.additionalSafeAreaInsets = UIEdgeInsetsZero;
-        } else if (OWSWindowManager.sharedManager.hasCall) {
-            self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
-        } else {
-            self.additionalSafeAreaInsets = UIEdgeInsetsZero;
-        }
-
-        // in iOS11 we have to ensure the navbar frame *in* layoutSubviews.
-        [navbar layoutSubviews];
+    
+    if (!CurrentAppContext().isMainApp) {
+        self.additionalSafeAreaInsets = UIEdgeInsetsZero;
+    } else if (OWSWindowManager.sharedManager.hasCall) {
+        self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
     } else {
-        // in iOS9/10 we only need to size the navbar once
-        [navbar sizeToFit];
-        [navbar layoutIfNeeded];
-
-        // Since the navbar's frame was updated, we need to be sure our child VC's
-        // container view is updated.
-        [self.view setNeedsLayout];
-        [self.view layoutSubviews];
+        self.additionalSafeAreaInsets = UIEdgeInsetsZero;
     }
+    
+    [navbar layoutSubviews];
     [UIView setAnimationsEnabled:YES];
 }
 

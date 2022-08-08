@@ -1,31 +1,37 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionMessagingKit
 
 @objc(SNUserSelectionVC)
-final class UserSelectionVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
+final class UserSelectionVC: BaseVC, UITableViewDataSource, UITableViewDelegate {
     private let navBarTitle: String
     private let usersToExclude: Set<String>
     private let completion: (Set<String>) -> Void
     private var selectedUsers: Set<String> = []
 
-    private lazy var users: [String] = {
-        var result = ContactUtilities.getAllContacts()
-        result.removeAll { usersToExclude.contains($0) }
-        return result
+    private lazy var users: [Profile] = {
+        return Profile
+            .fetchAllContactProfiles(excluding: usersToExclude)
     }()
 
-    // MARK: Components
+    // MARK: - Components
+    
     @objc private lazy var tableView: UITableView = {
-        let result = UITableView()
+        let result: UITableView = UITableView()
         result.dataSource = self
         result.delegate = self
-        result.register(UserCell.self, forCellReuseIdentifier: "UserCell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.alwaysBounceVertical = false
+        result.register(view: UserCell.self)
+        
         return result
     }()
 
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     @objc(initWithTitle:excluding:completion:)
     init(with title: String, excluding usersToExclude: Set<String>, completion: @escaping (Set<String>) -> Void) {
         self.navBarTitle = title
@@ -47,29 +53,36 @@ final class UserSelectionVC : BaseVC, UITableViewDataSource, UITableViewDelegate
         tableView.pin(to: view)
     }
 
-    // MARK: Data
+    // MARK: - UITableViewDataSource
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return users.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell") as! UserCell
-        let publicKey = users[indexPath.row]
-        cell.publicKey = publicKey
-        let isSelected = selectedUsers.contains(publicKey)
-        cell.accessory = .tick(isSelected: isSelected)
-        cell.update()
+        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        cell.update(
+            with: users[indexPath.row].id,
+            profile: users[indexPath.row],
+            isZombie: false,
+            accessory: .tick(isSelected: selectedUsers.contains(users[indexPath.row].id))
+        )
+        
         return cell
     }
 
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let publicKey = users[indexPath.row]
-        if !selectedUsers.contains(publicKey) { selectedUsers.insert(publicKey) } else { selectedUsers.remove(publicKey) }
-        guard let cell = tableView.cellForRow(at: indexPath) as? UserCell else { return }
-        let isSelected = selectedUsers.contains(publicKey)
-        cell.accessory = .tick(isSelected: isSelected)
-        cell.update()
+        if !selectedUsers.contains(users[indexPath.row].id) {
+            selectedUsers.insert(users[indexPath.row].id)
+        }
+        else {
+            selectedUsers.remove(users[indexPath.row].id)
+        }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.reloadRows(at: [indexPath], with: .none)
     }
 
     @objc private func handleDoneButtonTapped() {

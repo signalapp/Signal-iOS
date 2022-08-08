@@ -1,88 +1,62 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
+import GRDB
 import SessionUtilitiesKit
 
 extension ConfigurationMessage {
-
-    public static func getCurrent(with transaction: YapDatabaseReadTransaction) -> ConfigurationMessage? {
-        let storage = Storage.shared
-        guard let user = storage.getUser(using: transaction) else { return nil }
-        
-        let displayName = user.name
-        let profilePictureURL = user.profilePictureURL
-        let profileKey = user.profileEncryptionKey?.keyData
-        var closedGroups: Set<ClosedGroup> = []
-        var openGroups: Set<String> = []
-        var contacts: Set<ConfigurationMessage.Contact> = []
-        
-        TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
-            guard let thread = object as? TSGroupThread else { return }
-            
-            switch thread.groupModel.groupType {
-                case .closedGroup:
-                    guard thread.isCurrentUserMemberInGroup() else { return }
-                    
-                    let groupID = thread.groupModel.groupId
-                    let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupID)
-                    
-                    guard
-                        storage.isClosedGroup(groupPublicKey, using: transaction),
-                        let encryptionKeyPair = storage.getLatestClosedGroupEncryptionKeyPair(for: groupPublicKey, using: transaction)
-                    else {
-                        return
-                    }
-                    
-                    let closedGroup = ClosedGroup(
-                        publicKey: groupPublicKey,
-                        name: (thread.groupModel.groupName ?? ""),
-                        encryptionKeyPair: encryptionKeyPair,
-                        members: Set(thread.groupModel.groupMemberIds),
-                        admins: Set(thread.groupModel.groupAdminIds),
-                        expirationTimer: thread.disappearingMessagesDuration(with: transaction)
-                    )
-                    closedGroups.insert(closedGroup)
-                    
-                case .openGroup:
-                    if let threadId: String = thread.uniqueId, let v2OpenGroup = storage.getV2OpenGroup(for: threadId) {
-                        openGroups.insert("\(v2OpenGroup.server)/\(v2OpenGroup.room)?public_key=\(v2OpenGroup.publicKey)")
-                    }
-
-                default: break
-            }
-        }
-        
-        let currentUserPublicKey: String = getUserHexEncodedPublicKey()
-        
-        contacts = storage.getAllContacts(with: transaction)
-            .compactMap { contact -> ConfigurationMessage.Contact? in
-                let threadID = TSContactThread.threadID(fromContactSessionID: contact.sessionID)
-                
-                guard
-                    // Skip the current user
-                    contact.sessionID != currentUserPublicKey &&
-                    // Contacts which have visible threads
-                    TSContactThread.fetch(uniqueId: threadID, transaction: transaction)?.shouldBeVisible == true && (
-                        
-                        // Include already approved contacts
-                        contact.isApproved ||
-                        contact.didApproveMe ||
-                        
-                        // Sync blocked contacts
-                        contact.isBlocked ||
-                        contact.hasBeenBlocked
-                    )
-                else {
+    public static func getCurrent(_ db: Database) throws -> ConfigurationMessage {
+        let currentUserProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
+        let displayName: String = currentUserProfile.name
+        let profilePictureUrl: String? = currentUserProfile.profilePictureUrl
+        let profileKey: Data? = currentUserProfile.profileEncryptionKey?.keyData
+        let closedGroups: Set<CMClosedGroup> = try ClosedGroup.fetchAll(db)
+            .compactMap { closedGroup -> CMClosedGroup? in
+                guard let latestKeyPair: ClosedGroupKeyPair = try closedGroup.fetchLatestKeyPair(db) else {
                     return nil
                 }
                 
+                return CMClosedGroup(
+                    publicKey: closedGroup.publicKey,
+                    name: closedGroup.name,
+                    encryptionKeyPublicKey: latestKeyPair.publicKey,
+                    encryptionKeySecretKey: latestKeyPair.secretKey,
+                    members: try closedGroup.members
+                        .select(GroupMember.Columns.profileId)
+                        .asRequest(of: String.self)
+                        .fetchSet(db),
+                    admins: try closedGroup.admins
+                        .select(GroupMember.Columns.profileId)
+                        .asRequest(of: String.self)
+                        .fetchSet(db),
+                    expirationTimer: (try? DisappearingMessagesConfiguration
+                        .fetchOne(db, id: closedGroup.threadId)
+                        .map { ($0.isEnabled ? UInt32($0.durationSeconds) : 0) })
+                        .defaulting(to: 0)
+                )
+            }
+            .asSet()
+        // The default room promise creates an OpenGroup with an empty `roomToken` value,
+        // we don't want to start a poller for this as the user hasn't actually joined a room
+        let openGroups: Set<String> = try OpenGroup
+            .filter(OpenGroup.Columns.roomToken != "")
+            .filter(OpenGroup.Columns.isActive)
+            .fetchAll(db)
+            .map { "\($0.server)/\($0.roomToken)?public_key=\($0.publicKey)" }
+            .asSet()
+        let contacts: Set<CMContact> = try Contact
+            .filter(Contact.Columns.id != currentUserProfile.id)
+            .fetchAll(db)
+            .map { contact -> CMContact in
                 // Can just default the 'hasX' values to true as they will be set to this
                 // when converting to proto anyway
-                let profilePictureURL = contact.profilePictureURL
-                let profileKey = contact.profileEncryptionKey?.keyData
+                let profile: Profile? = try? Profile.fetchOne(db, id: contact.id)
                 
-                return ConfigurationMessage.Contact(
-                    publicKey: contact.sessionID,
-                    displayName: (contact.name ?? contact.sessionID),
-                    profilePictureURL: profilePictureURL,
-                    profileKey: profileKey,
+                return CMContact(
+                    publicKey: contact.id,
+                    displayName: (profile?.name ?? contact.id),
+                    profilePictureUrl: profile?.profilePictureUrl,
+                    profileKey: profile?.profileEncryptionKey?.keyData,
                     hasIsApproved: true,
                     isApproved: contact.isApproved,
                     hasIsBlocked: true,
@@ -95,7 +69,7 @@ extension ConfigurationMessage {
         
         return ConfigurationMessage(
             displayName: displayName,
-            profilePictureURL: profilePictureURL,
+            profilePictureUrl: profilePictureUrl,
             profileKey: profileKey,
             closedGroups: closedGroups,
             openGroups: openGroups,

@@ -1,3 +1,6 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import Foundation
 import CallKit
 import SessionUtilitiesKit
 
@@ -5,10 +8,12 @@ extension SessionCallManager {
     public func startCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
         guard case .offer = call.mode else { return }
         guard !call.hasConnected else { return }
+        
         reportOutgoingCall(call)
+        
         if callController != nil {
-            let handle = CXHandle(type: .generic, value: call.sessionID)
-            let startCallAction = CXStartCallAction(call: call.callID, handle: handle)
+            let handle = CXHandle(type: .generic, value: call.sessionId)
+            let startCallAction = CXStartCallAction(call: call.callId, handle: handle)
             
             startCallAction.isVideo = false
             
@@ -16,7 +21,8 @@ extension SessionCallManager {
             transaction.addAction(startCallAction)
             
             requestTransaction(transaction, completion: completion)
-        } else {
+        }
+        else {
             startCallAction()
             completion?(nil)
         }
@@ -24,12 +30,13 @@ extension SessionCallManager {
     
     public func answerCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
         if callController != nil {
-            let answerCallAction = CXAnswerCallAction(call: call.callID)
+            let answerCallAction = CXAnswerCallAction(call: call.callId)
             let transaction = CXTransaction()
             transaction.addAction(answerCallAction)
 
             requestTransaction(transaction, completion: completion)
-        } else {
+        }
+        else {
             answerCallAction()
             completion?(nil)
         }
@@ -37,12 +44,13 @@ extension SessionCallManager {
     
     public func endCall(_ call: SessionCall, completion: ((Error?) -> Void)?) {
         if callController != nil {
-            let endCallAction = CXEndCallAction(call: call.callID)
+            let endCallAction = CXEndCallAction(call: call.callId)
             let transaction = CXTransaction()
             transaction.addAction(endCallAction)
 
             requestTransaction(transaction, completion: completion)
-        } else {
+        }
+        else {
             endCallAction()
             completion?(nil)
         }
@@ -51,7 +59,7 @@ extension SessionCallManager {
     // Not currently in use
     public func setOnHoldStatus(for call: SessionCall) {
         if callController != nil {
-            let setHeldCallAction = CXSetHeldCallAction(call: call.callID, onHold: true)
+            let setHeldCallAction = CXSetHeldCallAction(call: call.callId, onHold: true)
             let transaction = CXTransaction()
             transaction.addAction(setHeldCallAction)
 
@@ -63,9 +71,11 @@ extension SessionCallManager {
         callController?.request(transaction) { error in
             if let error = error {
                 SNLog("Error requesting transaction: \(error)")
-            } else {
+            }
+            else {
                 SNLog("Requested transaction successfully")
             }
+            
             completion?(error)
         }
     }

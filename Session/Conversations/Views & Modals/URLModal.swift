@@ -1,8 +1,13 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class URLModal : Modal {
+import UIKit
+import SessionUIKit
+
+final class URLModal: Modal {
     private let url: URL
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init(url: URL) {
         self.url = url
         super.init(nibName: nil, bundle: nil)
@@ -23,6 +28,7 @@ final class URLModal : Modal {
         titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = NSLocalizedString("modal_open_url_title", comment: "")
         titleLabel.textAlignment = .center
+        
         // Message
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
@@ -34,6 +40,7 @@ final class URLModal : Modal {
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.textAlignment = .center
+        
         // Open button
         let openButton = UIButton()
         openButton.set(.height, to: Values.mediumButtonHeight)
@@ -42,16 +49,19 @@ final class URLModal : Modal {
         openButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         openButton.setTitleColor(Colors.text, for: UIControl.State.normal)
         openButton.setTitle(NSLocalizedString("modal_open_url_button_title", comment: ""), for: UIControl.State.normal)
-        openButton.addTarget(self, action: #selector(openURL), for: UIControl.Event.touchUpInside)
+        openButton.addTarget(self, action: #selector(openUrl), for: UIControl.Event.touchUpInside)
+        
         // Button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, openButton ])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = Values.mediumSpacing
         buttonStackView.distribution = .fillEqually
+        
         // Content stack view
         let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, messageLabel ])
         contentStackView.axis = .vertical
         contentStackView.spacing = Values.largeSpacing
+        
         // Main stack view
         let spacing = Values.largeSpacing - Values.smallFontSize / 2
         let mainStackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
@@ -64,9 +74,11 @@ final class URLModal : Modal {
         contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: spacing)
     }
     
-    // MARK: Interaction
-    @objc private func openURL() {
+    // MARK: - Interaction
+    
+    @objc private func openUrl() {
         let url = self.url
+        
         presentingViewController?.dismiss(animated: true, completion: {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         })

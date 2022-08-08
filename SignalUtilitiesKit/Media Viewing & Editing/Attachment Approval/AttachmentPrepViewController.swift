@@ -330,7 +330,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         }
     }
 
-    @objc public func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
+    public func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer) {
         UIView.animate(withDuration: 0.1) { [weak self] in
             self?.playVideoButton.alpha = 1.0
         }

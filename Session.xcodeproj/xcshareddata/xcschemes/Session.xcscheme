@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1020"
+   LastUpgradeVersion = "1320"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -20,27 +20,15 @@
                ReferencedContainer = "container:Session.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "11319FE11E0F163FEF714A606CCC265F"
-               BuildableName = "SignalServiceKit.framework"
-               BlueprintName = "SignalServiceKit"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "NO">
+      shouldUseLaunchSchemeArgsEnv = "NO"
+      codeCoverageEnabled = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -57,173 +45,87 @@
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D221A088169C9E5E00537ABF"
+            BuildableName = "Session.app"
+            BlueprintName = "Session"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "7BC01A3A241F40AB00BC7C55"
+            BuildableName = "SessionNotificationServiceExtension.appex"
+            BlueprintName = "SessionNotificationServiceExtension"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "453518671FC635DD00210559"
+            BuildableName = "SessionShareExtension.appex"
+            BlueprintName = "SessionShareExtension"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C3C2A6EF25539DE700C340D1"
+            BuildableName = "SessionMessagingKit.framework"
+            BlueprintName = "SessionMessagingKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C3C2A59E255385C100C340D1"
+            BuildableName = "SessionSnodeKit.framework"
+            BlueprintName = "SessionSnodeKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C331FF1A2558F9D300070591"
+            BuildableName = "SessionUIKit.framework"
+            BlueprintName = "SessionUIKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C3C2A678255388CC00C340D1"
+            BuildableName = "SessionUtilitiesKit.framework"
+            BlueprintName = "SessionUtilitiesKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "C33FD9AA255A548A00E217F9"
+            BuildableName = "SignalUtilitiesKit.framework"
+            BlueprintName = "SignalUtilitiesKit"
+            ReferencedContainer = "container:Session.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
       <Testables>
          <TestableReference
-            skipped = "NO">
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D221A0A9169C9E5F00537ABF"
-               BuildableName = "SignalTests.xctest"
-               BlueprintName = "SignalTests"
+               BlueprintIdentifier = "FDC4388D27B9FFC700C60D73"
+               BuildableName = "SessionMessagingKitTests.xctest"
+               BlueprintName = "SessionMessagingKitTests"
                ReferencedContainer = "container:Session.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "NO"
+            parallelizable = "YES"
+            testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B772E882F193AA2F25932C514BBF0805"
-               BuildableName = "SignalServiceKit-Unit-Tests.xctest"
-               BlueprintName = "SignalServiceKit-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "ContactSortingTest">
-               </Test>
-               <Test
-                  Identifier = "DeviceNamesTest">
-               </Test>
-               <Test
-                  Identifier = "JobQueueTest">
-               </Test>
-               <Test
-                  Identifier = "MessageSenderJobQueueTest">
-               </Test>
-               <Test
-                  Identifier = "OWSAnalyticsTests">
-               </Test>
-               <Test
-                  Identifier = "OWSDeviceProvisionerTest">
-               </Test>
-               <Test
-                  Identifier = "OWSDisappearingMessageFinderTest">
-               </Test>
-               <Test
-                  Identifier = "OWSDisappearingMessagesConfigurationTest">
-               </Test>
-               <Test
-                  Identifier = "OWSDisappearingMessagesJobTest">
-               </Test>
-               <Test
-                  Identifier = "OWSFingerprintTest">
-               </Test>
-               <Test
-                  Identifier = "OWSIncomingMessageFinderTest">
-               </Test>
-               <Test
-                  Identifier = "OWSLinkPreviewTest">
-               </Test>
-               <Test
-                  Identifier = "OWSMessageManagerTest">
-               </Test>
-               <Test
-                  Identifier = "OWSMessageSenderTest">
-               </Test>
-               <Test
-                  Identifier = "OWSProvisioningCipherTest">
-               </Test>
-               <Test
-                  Identifier = "OWSSignalAddressTest">
-               </Test>
-               <Test
-                  Identifier = "OWSUDManagerTest">
-               </Test>
-               <Test
-                  Identifier = "PhoneNumberTest">
-               </Test>
-               <Test
-                  Identifier = "PhoneNumberUtilTest">
-               </Test>
-               <Test
-                  Identifier = "SSKBaseTestObjC">
-               </Test>
-               <Test
-                  Identifier = "SSKBaseTestSwift">
-               </Test>
-               <Test
-                  Identifier = "SSKMessageSenderJobRecordTest">
-               </Test>
-               <Test
-                  Identifier = "SignalRecipientTest">
-               </Test>
-               <Test
-                  Identifier = "SignedPreKeyDeletionTests">
-               </Test>
-               <Test
-                  Identifier = "TSContactThreadTest">
-               </Test>
-               <Test
-                  Identifier = "TSGroupThreadTest">
-               </Test>
-               <Test
-                  Identifier = "TSMessageStorageTests">
-               </Test>
-               <Test
-                  Identifier = "TSMessageTest">
-               </Test>
-               <Test
-                  Identifier = "TSOutgoingMessageTest">
-               </Test>
-               <Test
-                  Identifier = "TSStorageIdentityKeyStoreTests">
-               </Test>
-               <Test
-                  Identifier = "TSStoragePreKeyStoreTests">
-               </Test>
-               <Test
-                  Identifier = "TSThreadTest">
-               </Test>
-            </SkippedTests>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5C9F6BA9ADC4724B2612C9F20FBE2076"
-               BuildableName = "SignalCoreKit-Unit-Tests.xctest"
-               BlueprintName = "SignalCoreKit-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BF2BCB29C9D47F15FB156F1EC64E5CC2"
-               BuildableName = "AxolotlKit-Unit-Tests.xctest"
-               BlueprintName = "AxolotlKit-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "78DE33AED82B26B4B8D899CC403003AF"
-               BuildableName = "Curve25519Kit-Unit-Tests.xctest"
-               BlueprintName = "Curve25519Kit-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AF7FC2C93AA68E33600807F168BD483A"
-               BuildableName = "HKDFKit-Unit-Tests.xctest"
-               BlueprintName = "HKDFKit-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B086B0C72F8A5814FF48795531F21635"
-               BuildableName = "SignalMetadataKit-Unit-Tests.xctest"
-               BlueprintName = "SignalMetadataKit-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
+               BlueprintIdentifier = "FD83B9AE27CF200A005E1583"
+               BuildableName = "SessionUtilitiesKitTests.xctest"
+               BlueprintName = "SessionUtilitiesKitTests"
+               ReferencedContainer = "container:Session.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

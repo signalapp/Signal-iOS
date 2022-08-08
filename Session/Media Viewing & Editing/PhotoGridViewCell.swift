@@ -9,15 +9,13 @@ public enum PhotoGridItemType {
     case photo, animated, video
 }
 
-public protocol PhotoGridItem: class {
+public protocol PhotoGridItem: AnyObject {
     var type: PhotoGridItemType { get }
-    func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage?
+    
+    func asyncThumbnail(completion: @escaping (UIImage?) -> Void)
 }
 
 public class PhotoGridViewCell: UICollectionViewCell {
-
-    static let reuseIdentifier = "PhotoGridViewCell"
-
     public let imageView: UIImageView
 
     private let contentTypeBadgeView: UIImageView
@@ -119,28 +117,23 @@ public class PhotoGridViewCell: UICollectionViewCell {
     public func configure(item: PhotoGridItem) {
         self.item = item
 
-        self.image = item.asyncThumbnail { image in
-            guard let currentItem = self.item else {
-                return
-            }
-
-            guard currentItem === item else {
-                return
-            }
+        item.asyncThumbnail { [weak self] image in
+            guard let currentItem = self?.item else { return }
+            guard currentItem === item else { return }
 
             if image == nil {
                 Logger.debug("image == nil")
             }
-            self.image = image
+            
+            DispatchQueue.main.async {
+                self?.image = image
+            }
         }
 
         switch item.type {
-        case .video:
-            self.contentTypeBadgeImage = PhotoGridViewCell.videoBadgeImage
-        case .animated:
-            self.contentTypeBadgeImage = PhotoGridViewCell.animatedBadgeImage
-        case .photo:
-            self.contentTypeBadgeImage = nil
+            case .video: self.contentTypeBadgeImage = PhotoGridViewCell.videoBadgeImage
+            case .animated: self.contentTypeBadgeImage = PhotoGridViewCell.animatedBadgeImage
+            case .photo: self.contentTypeBadgeImage = nil
         }
     }
 

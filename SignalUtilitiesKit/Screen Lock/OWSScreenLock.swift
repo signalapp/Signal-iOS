@@ -1,20 +1,21 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import LocalAuthentication
+import SessionMessagingKit
 
+// FIXME: Refactor this once the 'PrivacySettingsTableViewController' and 'OWSScreenLockUI' have been refactored
 @objc public class OWSScreenLock: NSObject {
 
     public enum OWSScreenLockOutcome {
         case success
         case cancel
-        case failure(error:String)
-        case unexpectedFailure(error:String)
+        case failure(error: String)
+        case unexpectedFailure(error: String)
     }
 
-    @objc public let screenLockTimeoutDefault = 15 * kMinuteInterval
+    @objc public let screenLockTimeoutDefault = (15 * kMinuteInterval)
     @objc public let screenLockTimeouts = [
         1 * kMinuteInterval,
         5 * kMinuteInterval,
@@ -26,22 +27,12 @@ import LocalAuthentication
 
     @objc public static let ScreenLockDidChange = Notification.Name("ScreenLockDidChange")
 
-    let primaryStorage: OWSPrimaryStorage
-    let dbConnection: YapDatabaseConnection
-
-    private let OWSScreenLock_Collection = "OWSScreenLock_Collection"
-    private let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
-    private let OWSScreenLock_Key_ScreenLockTimeoutSeconds = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
-
     // MARK: - Singleton class
 
     @objc(sharedManager)
     public static let shared = OWSScreenLock()
 
     private override init() {
-        self.primaryStorage = OWSPrimaryStorage.shared()
-        self.dbConnection = self.primaryStorage.newDatabaseConnection()
-
         super.init()
 
         SwiftSingletons.register(self)
@@ -50,44 +41,31 @@ import LocalAuthentication
     // MARK: - Properties
 
     @objc public func isScreenLockEnabled() -> Bool {
-        AssertIsOnMainThread()
-
-        if !OWSStorage.isStorageReady() {
-            owsFailDebug("accessed screen lock state before storage is ready.")
-            return false
-        }
-
-        return self.dbConnection.bool(forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection, defaultValue: false)
+        return Storage.shared[.isScreenLockEnabled]
     }
 
     @objc
     public func setIsScreenLockEnabled(_ value: Bool) {
-        AssertIsOnMainThread()
-        assert(OWSStorage.isStorageReady())
-
-        self.dbConnection.setBool(value, forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection)
-
-        NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+        Storage.shared.writeAsync(
+            updates: { db in db[.isScreenLockEnabled] = value },
+            completion: { _, _ in
+                NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+            }
+        )
     }
 
     @objc public func screenLockTimeout() -> TimeInterval {
-        AssertIsOnMainThread()
-
-        if !OWSStorage.isStorageReady() {
-            owsFailDebug("accessed screen lock state before storage is ready.")
-            return 0
-        }
-
-        return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: screenLockTimeoutDefault)
+        return Storage.shared[.screenLockTimeoutSeconds]
+            .defaulting(to: screenLockTimeoutDefault)
     }
 
     @objc public func setScreenLockTimeout(_ value: TimeInterval) {
-        AssertIsOnMainThread()
-        assert(OWSStorage.isStorageReady())
-
-        self.dbConnection.setDouble(value, forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection)
-
-        NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+        Storage.shared.writeAsync(
+            updates: { db in db[.screenLockTimeoutSeconds] = value },
+            completion: { _, _ in
+                NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
+            }
+        )
     }
 
     // MARK: - Methods
@@ -140,8 +118,7 @@ import LocalAuthentication
                                                 completion completionParam: @escaping ((OWSScreenLockOutcome) -> Void)) {
         AssertIsOnMainThread()
 
-        let defaultErrorDescription = NSLocalizedString("SCREEN_LOCK_ENABLE_UNKNOWN_ERROR",
-                                                        comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.")
+        let defaultErrorDescription = "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR".localized()
 
         // Ensure completion is always called on the main thread.
         let completion = { (outcome: OWSScreenLockOutcome) in
@@ -162,7 +139,7 @@ import LocalAuthentication
             switch outcome {
             case .success:
                 owsFailDebug("local authentication unexpected success")
-                completion(.failure(error:defaultErrorDescription))
+                completion(.failure(error: defaultErrorDescription))
             case .cancel, .failure, .unexpectedFailure:
                 completion(outcome)
             }
@@ -196,58 +173,49 @@ import LocalAuthentication
                 return .failure(error:defaultErrorDescription)
             }
 
-            if #available(iOS 11.0, *) {
-                switch laError.code {
+            switch laError.code {
                 case .biometryNotAvailable:
                     Logger.error("local authentication error: biometryNotAvailable.")
-                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
-                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."))
+                    return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE".localized())
                 case .biometryNotEnrolled:
                     Logger.error("local authentication error: biometryNotEnrolled.")
-                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
-                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."))
+                    return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED".localized())
                 case .biometryLockout:
                     Logger.error("local authentication error: biometryLockout.")
-                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
-                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
+                    return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT".localized())
                 default:
                     // Fall through to second switch
                     break
-                }
             }
 
             switch laError.code {
-            case .authenticationFailed:
-                Logger.error("local authentication error: authenticationFailed.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed."))
-            case .userCancel, .userFallback, .systemCancel, .appCancel:
-                Logger.info("local authentication cancelled.")
-                return .cancel
-            case .passcodeNotSet:
-                Logger.error("local authentication error: passcodeNotSet.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set."))
-            case .touchIDNotAvailable:
-                Logger.error("local authentication error: touchIDNotAvailable.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."))
-            case .touchIDNotEnrolled:
-                Logger.error("local authentication error: touchIDNotEnrolled.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."))
-            case .touchIDLockout:
-                Logger.error("local authentication error: touchIDLockout.")
-                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
-                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
-            case .invalidContext:
-                owsFailDebug("context not valid.")
-                return .unexpectedFailure(error:defaultErrorDescription)
-            case .notInteractive:
-                owsFailDebug("context not interactive.")
-                return .unexpectedFailure(error:defaultErrorDescription)
+                case .authenticationFailed:
+                    Logger.error("local authentication error: authenticationFailed.")
+                    return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED".localized())
+                case .userCancel, .userFallback, .systemCancel, .appCancel:
+                    Logger.info("local authentication cancelled.")
+                    return .cancel
+                case .passcodeNotSet:
+                    Logger.error("local authentication error: passcodeNotSet.")
+                    return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET".localized())
+                case .touchIDNotAvailable:
+                    Logger.error("local authentication error: touchIDNotAvailable.")
+                    return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE".localized())
+                case .touchIDNotEnrolled:
+                    Logger.error("local authentication error: touchIDNotEnrolled.")
+                    return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED".localized())
+                case .touchIDLockout:
+                    Logger.error("local authentication error: touchIDLockout.")
+                    return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT".localized())
+                case .invalidContext:
+                    owsFailDebug("context not valid.")
+                    return .unexpectedFailure(error:defaultErrorDescription)
+                case .notInteractive:
+                    owsFailDebug("context not interactive.")
+                    return .unexpectedFailure(error:defaultErrorDescription)
             }
         }
+        
         return .failure(error:defaultErrorDescription)
     }
 
@@ -263,10 +231,7 @@ import LocalAuthentication
 
         // Never recycle biometric auth.
         context.touchIDAuthenticationAllowableReuseDuration = TimeInterval(0)
-
-        if #available(iOS 11.0, *) {
-            assert(!context.interactionNotAllowed)
-        }
+        assert(!context.interactionNotAllowed)
 
         return context
     }

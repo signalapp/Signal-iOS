@@ -1,6 +1,7 @@
 // Copyright © 2021 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import SessionUtilitiesKit
 
 struct TurnServerInfo {
 
@@ -9,27 +10,20 @@ struct TurnServerInfo {
     let urls: [String]
 
     init?(attributes: JSON, random: Int? = nil) {
-        if let passwordAttribute = (attributes["password"] as? String) {
-            password = passwordAttribute
-        } else {
+        guard
+            let passwordAttribute = attributes["password"] as? String,
+            let usernameAttribute = attributes["username"] as? String,
+            let urlsAttribute = attributes["urls"] as? [String]
+        else {
             return nil
         }
-
-        if let usernameAttribute = attributes["username"] as? String {
-            username = usernameAttribute
-        } else {
-            return nil
-        }
-
-        if let urlsAttribute = attributes["urls"] as? [String] {
-            if let random = random {
-                urls = Array(urlsAttribute.shuffled()[0..<random])
-            } else {
-                urls = urlsAttribute
-            }
+        
+        password = passwordAttribute
+        username = usernameAttribute
+        urls = {
+            guard let random: Int = random else { return urlsAttribute }
             
-        } else {
-            return nil
-        }
+            return Array(urlsAttribute.shuffled()[0..<random])
+        }()
     }
 }

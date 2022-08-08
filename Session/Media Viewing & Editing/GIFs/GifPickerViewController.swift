@@ -8,11 +8,6 @@ import SignalUtilitiesKit
 import PromiseKit
 import SessionUIKit
 
-@objc
-protocol GifPickerViewControllerDelegate: class {
-    func gifPickerDidSelect(attachment: SignalAttachment)
-}
-
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
 
     // MARK: Properties
@@ -31,10 +26,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     var lastQuery: String = ""
 
-    @objc
     public weak var delegate: GifPickerViewControllerDelegate?
-
-    let thread: TSThread
 
     let searchBar: SearchBar
     let layout: GifPickerLayout
@@ -51,17 +43,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     var progressiveSearchTimer: Timer?
 
-    // MARK: Initializers
+    // MARK: - Initialization
 
     @available(*, unavailable, message:"use other constructor instead.")
     required init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
 
-    @objc
-    required init(thread: TSThread) {
-        self.thread = thread
-
+    required init() {
         self.searchBar = SearchBar()
         self.layout = GifPickerLayout()
         self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)
@@ -116,7 +105,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         
         // Loki: Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("GIF", comment: "")
+        titleLabel.text = "accessibility_gif_button".localized().uppercased()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
@@ -469,8 +458,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer = nil
 
         guard let text = searchBar.text else {
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("GIF_PICKER_VIEW_MISSING_QUERY",
-                                                           comment: "Alert message shown when user tries to search for GIFs without entering any search terms."))
+            // Alert message shown when user tries to search for GIFs without entering any search terms
+            OWSAlerts.showErrorAlert(message: "GIF_PICKER_VIEW_MISSING_QUERY".localized())
             return
         }
 
@@ -555,4 +544,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         layout.invalidateLayout()
     }
+}
+
+// MARK: - GifPickerViewControllerDelegate
+
+protocol GifPickerViewControllerDelegate: AnyObject {
+    func gifPickerDidSelect(attachment: SignalAttachment)
 }

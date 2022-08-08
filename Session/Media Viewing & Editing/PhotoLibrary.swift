@@ -7,7 +7,7 @@ import Photos
 import PromiseKit
 import CoreServices
 
-protocol PhotoLibraryDelegate: class {
+protocol PhotoLibraryDelegate: AnyObject {
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary)
 }
 
@@ -47,16 +47,13 @@ class PhotoPickerAssetItem: PhotoGridItem {
         return  .photo
     }
 
-    func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
-        var syncImageResult: UIImage?
+    func asyncThumbnail(completion: @escaping (UIImage?) -> Void) {
         var hasLoadedImage = false
 
         // Surprisingly, iOS will opportunistically run the completion block sync if the image is
         // already available.
         photoCollectionContents.requestThumbnail(for: self.asset, thumbnailSize: photoMediaSize.thumbnailSize) { image, _ in
             DispatchMainThreadSafe({
-                syncImageResult = image
-
                 // Once we've _successfully_ completed (e.g. invoked the completion with
                 // a non-nil image), don't invoke the completion again with a nil argument.
                 if !hasLoadedImage || image != nil {
@@ -68,7 +65,6 @@ class PhotoPickerAssetItem: PhotoGridItem {
                 }
             })
         }
-        return syncImageResult
     }
 }
 

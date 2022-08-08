@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class RestoreVC : BaseVC {
+import UIKit
+import SessionUtilitiesKit
+
+final class RestoreVC: BaseVC {
     private var spacer1HeightConstraint: NSLayoutConstraint!
     private var spacer2HeightConstraint: NSLayoutConstraint!
     private var spacer3HeightConstraint: NSLayoutConstraint!
@@ -9,6 +13,7 @@ final class RestoreVC : BaseVC {
     // MARK: Components
     private lazy var mnemonicTextView: TextView = {
         let result = TextView(placeholder: NSLocalizedString("vc_restore_seed_text_field_hint", comment: ""))
+        result.autocapitalizationType = .none
         result.layer.borderColor = Colors.text.cgColor
         result.accessibilityLabel = "Recovery phrase text view"
         return result
@@ -159,7 +164,7 @@ final class RestoreVC : BaseVC {
         do {
             let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
             let seed = Data(hex: hexEncodedSeed)
-            let (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
+            let (ed25519KeyPair, x25519KeyPair) = try! Identity.generate(from: seed)
             Onboarding.Flow.recover.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
             mnemonicTextView.resignFirstResponder()
             Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in

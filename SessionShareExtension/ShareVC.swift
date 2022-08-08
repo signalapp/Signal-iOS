@@ -43,12 +43,12 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         }
 
         AppSetup.setupEnvironment(
-            appSpecificSingletonBlock: {
-                SSKEnvironment.shared.notificationsManager = NoopNotificationsManager()
+            appSpecificBlock: {
+                Environment.shared?.notificationsManager.mutate {
+                    $0 = NoopNotificationsManager()
+                }
             },
-            migrationCompletion: { [weak self] _, needsConfigSync in
-                AssertIsOnMainThread()
-                
+            migrationsCompletion: { [weak self] _, needsConfigSync in
                 // performUpdateCheck must be invoked after Environment has been initialized because
                 // upgrade process may depend on Environment.
                 self?.versionMigrationsDidComplete(needsConfigSync: needsConfigSync)
@@ -56,13 +56,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         )
 
         // We don't need to use "screen protection" in the SAE.
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(storageIsReady),
-            name: .StorageIsReady,
-            object: nil
-        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationDidEnterBackground),
@@ -81,17 +74,10 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         
         // If we need a config sync then trigger it now
         if needsConfigSync {
-            MessageSender.syncConfiguration(forceSyncNow: true).retainUntilComplete()
+            Storage.shared.write { db in
+                try? MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+            }
         }
-
-        checkIsAppReady()
-    }
-
-    @objc
-    func storageIsReady() {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
 
         checkIsAppReady()
     }
@@ -102,7 +88,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         // App isn't ready until storage is ready AND all version migrations are complete.
         guard areVersionMigrationsComplete else { return }
-        guard OWSStorage.isStorageReady() else { return }
+        guard Storage.shared.isValid else { return }
         guard !AppReadiness.isAppReady() else {
             // Only mark the app as ready once.
             return
@@ -127,8 +113,6 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         // We don't need to use OWSMessageReceiver in the SAE.
         // We don't need to use OWSBatchMessageProcessor in the SAE.
         // We don't need to fetch the local profile in the SAE
-
-        OWSReadReceiptManager.shared().prepareCachedValues()
     }
     
     override func viewDidLoad() {
@@ -223,6 +207,13 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     }
     
     func shareViewFailed(error: Error) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                self?.shareViewFailed(error: error)
+            }
+            return
+        }
+        
         let alert = UIAlertController(title: "Session", message: error.localizedDescription, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: { _ in
             self.extensionContext!.cancelRequest(withError: error)
@@ -284,12 +275,8 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
     private class func createDataSource(utiType: String, url: URL, customFileName: String?) -> DataSource? {
         if utiType == (kUTTypeURL as String) {
-            // Share URLs as oversize text messages whose text content is the URL.
-            //
-            // NOTE: SharingThreadPickerViewController will try to unpack them
-            //       and send them as normal text messages if possible.
-            let urlString = url.absoluteString
-            return DataSourceValue.dataSource(withOversizeText: urlString)
+            // Share URLs as text messages whose text content is the URL
+            return DataSourceValue.dataSource(withText: url.absoluteString)
         }
         else if UTTypeConformsTo(utiType as CFString, kUTTypeText) {
             // Share text as oversize text messages.

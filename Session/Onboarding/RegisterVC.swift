@@ -1,4 +1,8 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import Sodium
+import Curve25519Kit
 
 final class RegisterVC : BaseVC {
     private var seed: Data! { didSet { updateKeyPair() } }
@@ -141,7 +145,7 @@ final class RegisterVC : BaseVC {
     }
     
     private func updateKeyPair() {
-        (ed25519KeyPair, x25519KeyPair) = KeyPairUtilities.generate(from: seed)
+        (ed25519KeyPair, x25519KeyPair) = try! Identity.generate(from: seed)
     }
     
     private func updatePublicKeyLabel() {

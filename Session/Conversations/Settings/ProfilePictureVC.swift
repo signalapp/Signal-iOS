@@ -1,13 +1,17 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 
 /// Shown when the user taps a profile picture in the conversation settings.
 @objc(SNProfilePictureVC)
-final class ProfilePictureVC : BaseVC {
+final class ProfilePictureVC: BaseVC {
     private let image: UIImage
     private let snTitle: String
     
     @objc init(image: UIImage, title: String) {
         self.image = image
         self.snTitle = title
+        
         super.init(nibName: nil, bundle: nil)
     }
     

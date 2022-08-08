@@ -9,6 +9,7 @@
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
+#import <SessionUIKit/SessionUIKit.h>
 
 #import <SessionUtilitiesKit/AppContext.h>
 
@@ -83,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
     const CGFloat kExtraRightPadding = isRTL ? -0 : +10;
 
     // Extra hit area above/below
-    const CGFloat kExtraHeightPadding = 4;
+    const CGFloat kExtraHeightPadding = 8;
 
     // Matching the default backbutton placement is tricky.
     // We can't just adjust the imageEdgeInsets on a UIBarButtonItem directly,
@@ -91,39 +92,19 @@ NS_ASSUME_NONNULL_BEGIN
     // in a UIBarButtonItem.
     [backButton addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
 
-    UIImage *backImage = [[UIImage imageNamed:(isRTL ? @"NavBarBackRTL" : @"NavBarBack")]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImageConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:22 weight:UIImageSymbolWeightMedium];
+    UIImage *backImage = [[UIImage systemImageNamed:@"chevron.backward" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     OWSAssertDebug(backImage);
     [backButton setImage:backImage forState:UIControlStateNormal];
-    backButton.tintColor = UIColor.lokiGreen;
+    backButton.tintColor = LKColors.text;
 
     backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    backButton.imageEdgeInsets = UIEdgeInsetsMake(0, kExtraLeftPadding, 0, 0);
 
-    // Default back button is 1.5 pixel lower than our extracted image.
-    const CGFloat kTopInsetPadding = 1.5;
-    backButton.imageEdgeInsets = UIEdgeInsetsMake(kTopInsetPadding, kExtraLeftPadding, 0, 0);
-
-    CGRect buttonFrame
-        = CGRectMake(0, 0, backImage.size.width + kExtraRightPadding, backImage.size.height + kExtraHeightPadding);
+    CGRect buttonFrame = CGRectMake(0, 0, backImage.size.width + kExtraRightPadding, backImage.size.height + kExtraHeightPadding);
     backButton.frame = buttonFrame;
 
-    // In iOS 11.1 beta, the hot area of custom bar button items is _only_
-    // the bounds of the custom view, making them very hard to hit.
-    //
-    // TODO: Remove this hack if the bug is fixed in iOS 11.1 by the time
-    //       it goes to production (or in a later release),
-    //       since it has two negative side effects: 1) the layout of the
-    //       back button isn't consistent with the iOS default back buttons
-    //       2) we can't add the unread count badge to the back button
-    //       with this hack.
-    return [[UIBarButtonItem alloc] initWithImage:backImage
-                                            style:UIBarButtonItemStylePlain
-                                           target:target
-                                           action:selector];
-
-    UIBarButtonItem *backItem =
-        [[UIBarButtonItem alloc] initWithCustomView:backButton
-                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
+    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
     backItem.width = buttonFrame.size.width;
 
     return backItem;

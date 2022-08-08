@@ -9,28 +9,13 @@ protocol SelectionHapticFeedbackAdapter {
 }
 
 class SelectionHapticFeedback: SelectionHapticFeedbackAdapter {
-    let adapter: SelectionHapticFeedbackAdapter
-
-    init() {
-        if #available(iOS 10, *) {
-            adapter = ModernSelectionHapticFeedbackAdapter()
-        } else {
-            adapter = LegacySelectionHapticFeedbackAdapter()
-        }
-    }
+    let adapter: SelectionHapticFeedbackAdapter = ModernSelectionHapticFeedbackAdapter()
 
     func selectionChanged() {
         adapter.selectionChanged()
     }
 }
 
-class LegacySelectionHapticFeedbackAdapter: NSObject, SelectionHapticFeedbackAdapter {
-    func selectionChanged() {
-        // do nothing
-    }
-}
-
-@available(iOS 10, *)
 class ModernSelectionHapticFeedbackAdapter: NSObject, SelectionHapticFeedbackAdapter {
     let selectionFeedbackGenerator: UISelectionFeedbackGenerator
 

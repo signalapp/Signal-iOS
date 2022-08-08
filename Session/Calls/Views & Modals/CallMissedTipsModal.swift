@@ -1,11 +1,13 @@
-import UIKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-@objc
-final class CallMissedTipsModal : Modal {
+import UIKit
+import SessionUIKit
+
+final class CallMissedTipsModal: Modal {
     private let caller: String
     
-    // MARK: Lifecycle
-    @objc
+    // MARK: - Lifecycle
+    
     init(caller: String) {
         self.caller = caller
         super.init(nibName: nil, bundle: nil)
@@ -26,27 +28,37 @@ final class CallMissedTipsModal : Modal {
         let tipsIconImageView = UIImageView(image: UIImage(named: "Tips")?.withTint(Colors.text))
         tipsIconImageView.set(.width, to: 19)
         tipsIconImageView.set(.height, to: 28)
+        
+        // Tips icon container view
+        let tipsIconContainerView = UIView()
+        tipsIconContainerView.addSubview(tipsIconImageView)
+        tipsIconImageView.pin(.top, to: .top, of: tipsIconContainerView)
+        tipsIconImageView.pin(.bottom, to: .bottom, of: tipsIconContainerView)
+        tipsIconImageView.center(in: tipsIconContainerView)
+        
         // Title
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        titleLabel.text = NSLocalizedString("modal_call_missed_tips_title", comment: "")
+        titleLabel.text = "modal_call_missed_tips_title".localized()
         titleLabel.textAlignment = .center
+        
         // Message
         let messageLabel = UILabel()
         messageLabel.textColor = Colors.text
         messageLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        let message = String(format: NSLocalizedString("modal_call_missed_tips_explanation", comment: ""), caller)
-        messageLabel.text = message
+        messageLabel.text = String(format: "modal_call_missed_tips_explanation".localized(), caller)
         messageLabel.numberOfLines = 0
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.textAlignment = .natural
+        
         // Cancel Button
-        cancelButton.setTitle(NSLocalizedString("OK", comment: ""), for: .normal)
+        cancelButton.setTitle("BUTTON_OK".localized(), for: .normal)
+        
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ tipsIconImageView, titleLabel, messageLabel, cancelButton ])
+        let mainStackView = UIStackView(arrangedSubviews: [ tipsIconContainerView, titleLabel, messageLabel, cancelButton ])
         mainStackView.axis = .vertical
-        mainStackView.alignment = .center
+        mainStackView.alignment = .fill
         mainStackView.spacing = Values.largeSpacing
         contentView.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
