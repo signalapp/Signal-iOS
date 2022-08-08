@@ -11,4 +11,6 @@ public enum JobRunnerError: Error {
     
     case missingRequiredDetails
     case missingDependencies
+    
+    case possibleDeferralLoop
 }

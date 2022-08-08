@@ -10,6 +10,7 @@ extension OpenGroupAPI {
             case sender = "session_id"
             case posted
             case edited
+            case deleted
             case seqNo = "seqno"
             case whisper
             case whisperMods = "whisper_mods"
@@ -25,6 +26,7 @@ extension OpenGroupAPI {
         public let sender: String?
         public let posted: TimeInterval
         public let edited: TimeInterval?
+        public let deleted: Bool?
         public let seqNo: Int64
         public let whisper: Bool
         public let whisperMods: Bool
@@ -98,6 +100,7 @@ extension OpenGroupAPI.Message {
             sender: try? container.decode(String.self, forKey: .sender),
             posted: ((try? container.decode(TimeInterval.self, forKey: .posted)) ?? Date().timeIntervalSince1970), // Reaction updates don't include posted
             edited: try? container.decode(TimeInterval.self, forKey: .edited),
+            deleted: try? container.decode(Bool.self, forKey: .deleted),
             seqNo: try container.decode(Int64.self, forKey: .seqNo),
             whisper: ((try? container.decode(Bool.self, forKey: .whisper)) ?? false),
             whisperMods: ((try? container.decode(Bool.self, forKey: .whisperMods)) ?? false),

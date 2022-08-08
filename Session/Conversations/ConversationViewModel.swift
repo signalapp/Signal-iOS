@@ -442,15 +442,34 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     // MARK: - Functions
     
     public func updateDraft(to draft: String) {
+        let threadId: String = self.threadId
+        let currentDraft: String = Storage.shared
+            .read { db in
+                try SessionThread
+                    .select(.messageDraft)
+                    .filter(id: threadId)
+                    .asRequest(of: String.self)
+                    .fetchOne(db)
+            }
+            .defaulting(to: "")
+        
+        // Only write the updated draft to the database if it's changed (avoid unnecessary writes)
+        guard draft != currentDraft else { return }
+        
         Storage.shared.writeAsync { db in
             try SessionThread
-                .filter(id: self.threadId)
+                .filter(id: threadId)
                 .updateAll(db, SessionThread.Columns.messageDraft.set(to: draft))
         }
     }
     
     public func markAllAsRead() {
-        guard let lastInteractionId: Int64 = self.threadData.interactionId else { return }
+        // Don't bother marking anything as read if there are no unread interactions (we can rely
+        // on the 'threadData.threadUnreadCount' to always be accurate)
+        guard
+            (self.threadData.threadUnreadCount ?? 0) > 0,
+            let lastInteractionId: Int64 = self.threadData.interactionId
+        else { return }
         
         let threadId: String = self.threadData.threadId
         let trySendReadReceipt: Bool = (self.threadData.threadIsMessageRequest == false)

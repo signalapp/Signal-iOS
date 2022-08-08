@@ -348,7 +348,7 @@ public final class OpenGroupManager: NSObject {
         capabilities.capabilities.forEach { capability in
             _ = try? Capability(
                 openGroupServer: server.lowercased(),
-                variant: Capability.Variant(from: capability.rawValue),
+                variant: capability,
                 isMissing: false
             )
             .saved(db)
@@ -356,7 +356,7 @@ public final class OpenGroupManager: NSObject {
         capabilities.missing?.forEach { capability in
             _ = try? Capability(
                 openGroupServer: server.lowercased(),
-                variant: Capability.Variant(from: capability.rawValue),
+                variant: capability,
                 isMissing: true
             )
             .saved(db)
@@ -499,9 +499,12 @@ public final class OpenGroupManager: NSObject {
         }
         
         let sortedMessages: [OpenGroupAPI.Message] = messages
+            .filter { $0.deleted != true }
             .sorted { lhs, rhs in lhs.id < rhs.id }
+        let messageServerIdsToRemove: [Int64] = messages
+            .filter { $0.deleted == true }
+            .map { $0.id }
         let seqNo: Int64? = sortedMessages.map { $0.seqNo }.max()
-        var messageServerIdsToRemove: [UInt64] = []
         
         // Update the 'openGroupSequenceNumber' value (Note: SOGS V4 uses the 'seqNo' instead of the 'serverId')
         if let seqNo: Int64 = seqNo {
@@ -513,8 +516,6 @@ public final class OpenGroupManager: NSObject {
         // Process the messages
         sortedMessages.forEach { message in
             if message.base64EncodedData == nil && message.reactions == nil {
-                // A message with no data has been deleted so add it to the list to remove
-                messageServerIdsToRemove.append(UInt64(message.id))
                 return
             }
             

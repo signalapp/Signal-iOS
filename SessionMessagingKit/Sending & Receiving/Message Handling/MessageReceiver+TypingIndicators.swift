@@ -13,14 +13,17 @@ extension MessageReceiver {
         
         switch message.kind {
             case .started:
-                TypingIndicators.didStartTyping(
-                    db,
+                let needsToStartTypingIndicator: Bool = TypingIndicators.didStartTypingNeedsToStart(
                     threadId: thread.id,
                     threadVariant: thread.variant,
                     threadIsMessageRequest: thread.isMessageRequest(db),
                     direction: .incoming,
                     timestampMs: message.sentTimestamp.map { Int64($0) }
                 )
+                
+                if needsToStartTypingIndicator {
+                    TypingIndicators.start(db, threadId: thread.id, direction: .incoming)
+                }
                 
             case .stopped:
                 TypingIndicators.didStopTyping(db, threadId: thread.id, direction: .incoming)
