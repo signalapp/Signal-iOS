@@ -151,7 +151,13 @@ public class OWSAudioSession: NSObject {
             // session handling.
         } else if aggregateBehaviors.contains(.playAndRecord) {
             assert(avAudioSession.recordPermission == .granted)
-            try avAudioSession.setCategory(.record)
+            try avAudioSession.setCategory(
+                .playAndRecord,
+                mode: .default,
+                options: [
+                    .defaultToSpeaker
+                ]
+            )
             if #available(iOS 13, *) {
                 try avAudioSession.setAllowHapticsAndSystemSoundsDuringRecording(true)
             }

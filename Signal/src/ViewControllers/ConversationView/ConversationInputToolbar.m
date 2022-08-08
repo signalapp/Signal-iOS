@@ -1109,6 +1109,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         completion:^(BOOL finished) {
             [self.voiceMemoRedRecordingCircle removeFromSuperview];
             [self.voiceMemoLockView removeFromSuperview];
+            UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, Nil);
         }];
 }
 
