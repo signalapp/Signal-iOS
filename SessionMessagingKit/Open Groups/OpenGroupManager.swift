@@ -501,7 +501,7 @@ public final class OpenGroupManager: NSObject {
         let sortedMessages: [OpenGroupAPI.Message] = messages
             .filter { $0.deleted != true }
             .sorted { lhs, rhs in lhs.id < rhs.id }
-        let messageServerIdsToRemove: [Int64] = messages
+        var messageServerIdsToRemove: [Int64] = messages
             .filter { $0.deleted == true }
             .map { $0.id }
         let seqNo: Int64? = sortedMessages.map { $0.seqNo }.max()
@@ -518,7 +518,11 @@ public final class OpenGroupManager: NSObject {
             guard
                 let base64EncodedString: String = message.base64EncodedData,
                 let data = Data(base64Encoded: base64EncodedString)
-            else { return }
+            else {
+                // FIXME: Once the SOGS Emoji Reacts update is live we should remove this line (deprecated by the `deleted` flag)
+                messageServerIdsToRemove.append(Int64(message.id))
+                return
+            }
             
             do {
                 let processedMessage: ProcessedMessage? = try Message.processReceivedOpenGroupMessage(
