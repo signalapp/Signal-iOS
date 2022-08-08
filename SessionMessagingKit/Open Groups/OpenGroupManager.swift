@@ -501,7 +501,7 @@ public final class OpenGroupManager: NSObject {
         let sortedMessages: [OpenGroupAPI.Message] = messages
             .filter { $0.deleted != true }
             .sorted { lhs, rhs in lhs.id < rhs.id }
-        let messageServerIdsToRemove: [Int64] = messages
+        var messageServerIdsToRemove: [Int64] = messages
             .filter { $0.deleted == true }
             .map { $0.id }
         let seqNo: Int64? = sortedMessages.map { $0.seqNo }.max()
