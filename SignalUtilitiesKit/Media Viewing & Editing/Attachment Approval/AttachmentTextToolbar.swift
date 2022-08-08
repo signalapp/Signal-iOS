@@ -164,7 +164,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()
 
-        placeholderTextView.text = NSLocalizedString("Message", comment: "")
+        placeholderTextView.text = "Message"
         placeholderTextView.isEditable = false
 
         return placeholderTextView
@@ -216,50 +216,47 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let existingText: String = textView.text ?? ""
+        let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
 
-        if !FeatureFlags.sendingMediaWithOversizeText {
-            let existingText: String = textView.text ?? ""
-            let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
+        // Don't complicate things by mixing media attachments with oversize text attachments
+        guard proposedText.utf8.count < kOversizeTextMessageSizeThreshold else {
+            Logger.debug("long text was truncated")
+            self.lengthLimitLabel.isHidden = false
 
-            // Don't complicate things by mixing media attachments with oversize text attachments
-            guard proposedText.utf8.count < kOversizeTextMessageSizeThreshold else {
-                Logger.debug("long text was truncated")
-                self.lengthLimitLabel.isHidden = false
+            // `range` represents the section of the existing text we will replace. We can re-use that space.
+            // Range is in units of NSStrings's standard UTF-16 characters. Since some of those chars could be
+            // represented as single bytes in utf-8, while others may be 8 or more, the only way to be sure is
+            // to just measure the utf8 encoded bytes of the replaced substring.
+            let bytesAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").utf8.count
 
-                // `range` represents the section of the existing text we will replace. We can re-use that space.
-                // Range is in units of NSStrings's standard UTF-16 characters. Since some of those chars could be
-                // represented as single bytes in utf-8, while others may be 8 or more, the only way to be sure is
-                // to just measure the utf8 encoded bytes of the replaced substring.
-                let bytesAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").utf8.count
-
-                // Accept as much of the input as we can
-                let byteBudget: Int = Int(kOversizeTextMessageSizeThreshold) - bytesAfterDelete
-                if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: UInt(byteBudget)) {
-                    textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
-                }
-
-                return false
+            // Accept as much of the input as we can
+            let byteBudget: Int = Int(kOversizeTextMessageSizeThreshold) - bytesAfterDelete
+            if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: UInt(byteBudget)) {
+                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
             }
-            self.lengthLimitLabel.isHidden = true
 
-            // After verifying the byte-length is sufficiently small, verify the character count is within bounds.
-            guard proposedText.count < kMaxMessageBodyCharacterCount else {
-                Logger.debug("hit attachment message body character count limit")
+            return false
+        }
+        self.lengthLimitLabel.isHidden = true
 
-                self.lengthLimitLabel.isHidden = false
+        // After verifying the byte-length is sufficiently small, verify the character count is within bounds.
+        guard proposedText.count < kMaxMessageBodyCharacterCount else {
+            Logger.debug("hit attachment message body character count limit")
 
-                // `range` represents the section of the existing text we will replace. We can re-use that space.
-                let charsAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").count
+            self.lengthLimitLabel.isHidden = false
 
-                // Accept as much of the input as we can
-                let charBudget: Int = Int(kMaxMessageBodyCharacterCount) - charsAfterDelete
-                if charBudget >= 0 {
-                    let acceptableNewText = String(text.prefix(charBudget))
-                    textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
-                }
+            // `range` represents the section of the existing text we will replace. We can re-use that space.
+            let charsAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").count
 
-                return false
+            // Accept as much of the input as we can
+            let charBudget: Int = Int(kMaxMessageBodyCharacterCount) - charsAfterDelete
+            if charBudget >= 0 {
+                let acceptableNewText = String(text.prefix(charBudget))
+                textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
             }
+
+            return false
         }
 
         // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
@@ -267,9 +264,9 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         if text == "\n" {
             textView.resignFirstResponder()
             return false
-        } else {
-            return true
         }
+     
+        return true
     }
 
     public func textViewDidBeginEditing(_ textView: UITextView) {

@@ -4,27 +4,22 @@
 
 import Foundation
 import AVFoundation
+import SessionMessagingKit
 
-@objc
-public protocol OWSVideoPlayerDelegate: class {
+public protocol OWSVideoPlayerDelegate: AnyObject {
     func videoPlayerDidPlayToCompletion(_ videoPlayer: OWSVideoPlayer)
 }
 
-@objc
-public class OWSVideoPlayer: NSObject {
+public class OWSVideoPlayer {
 
-    @objc
     public let avPlayer: AVPlayer
     let audioActivity: AudioActivity
 
-    @objc
     public weak var delegate: OWSVideoPlayerDelegate?
 
     @objc public init(url: URL) {
         self.avPlayer = AVPlayer(url: url)
         self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)", behavior: .playback)
-
-        super.init()
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(playerItemDidPlayToCompletion(_:)),
@@ -32,23 +27,17 @@ public class OWSVideoPlayer: NSObject {
                                                object: avPlayer.currentItem)
     }
 
-    // MARK: Dependencies
-
-    var audioSession: OWSAudioSession {
-        return Environment.shared.audioSession
-    }
-
     // MARK: Playback Controls
 
     @objc
     public func pause() {
         avPlayer.pause()
-        audioSession.endAudioActivity(self.audioActivity)
+        Environment.shared?.audioSession.endAudioActivity(self.audioActivity)
     }
 
     @objc
     public func play() {
-        let success = audioSession.startAudioActivity(self.audioActivity)
+        let success = (Environment.shared?.audioSession.startAudioActivity(self.audioActivity) == true)
         assert(success)
 
         guard let item = avPlayer.currentItem else {
@@ -68,7 +57,7 @@ public class OWSVideoPlayer: NSObject {
     public func stop() {
         avPlayer.pause()
         avPlayer.seek(to: CMTime.zero, toleranceBefore: .zero, toleranceAfter: .zero)
-        audioSession.endAudioActivity(self.audioActivity)
+        Environment.shared?.audioSession.endAudioActivity(self.audioActivity)
     }
 
     @objc(seekToTime:)
@@ -81,6 +70,6 @@ public class OWSVideoPlayer: NSObject {
     @objc
     private func playerItemDidPlayToCompletion(_ notification: Notification) {
         self.delegate?.videoPlayerDidPlayToCompletion(self)
-        audioSession.endAudioActivity(self.audioActivity)
+        Environment.shared?.audioSession.endAudioActivity(self.audioActivity)
     }
 }

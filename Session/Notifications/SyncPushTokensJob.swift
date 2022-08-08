@@ -1,107 +1,175 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
+import Foundation
+import GRDB
 import PromiseKit
-import SignalUtilitiesKit
+import SignalCoreKit
+import SessionMessagingKit
+import SessionUtilitiesKit
 
-@objc(OWSSyncPushTokensJob)
-class SyncPushTokensJob: NSObject {
-
-    @objc public static let PushTokensDidChange = Notification.Name("PushTokensDidChange")
-
-    // MARK: Dependencies
-    let accountManager: AccountManager
-    let preferences: OWSPreferences
-    var pushRegistrationManager: PushRegistrationManager {
-        return PushRegistrationManager.shared
-    }
-
-    @objc var uploadOnlyIfStale = true
-
-    @objc
-    required init(accountManager: AccountManager, preferences: OWSPreferences) {
-        self.accountManager = accountManager
-        self.preferences = preferences
-    }
-
-    class func run(accountManager: AccountManager, preferences: OWSPreferences) -> Promise<Void> {
-        let job = self.init(accountManager: accountManager, preferences: preferences)
-        return job.run()
-    }
-
-    func run() -> Promise<Void> {
-
-        let runPromise = firstly {
-            return self.pushRegistrationManager.requestPushTokens()
-        }.then { (pushToken: String, voipToken: String) -> Promise<Void> in
-            var shouldUploadTokens = false
-
-            if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
-                shouldUploadTokens = true
-            } else if !self.uploadOnlyIfStale {
-                shouldUploadTokens = true
-            }
-
-            if AppVersion.sharedInstance().lastAppVersion != AppVersion.sharedInstance().currentAppVersion {
-                shouldUploadTokens = true
-            }
-
-            guard shouldUploadTokens else {
-                return Promise.value(())
-            }
-
-            return firstly {
-                self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken, isForcedUpdate: shouldUploadTokens)
-            }.done { _ in
-                self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
-            }
+public enum SyncPushTokensJob: JobExecutor {
+    public static let maxFailureCount: Int = -1
+    public static let requiresThreadId: Bool = false
+    public static let requiresInteractionId: Bool = false
+    
+    public static func run(
+        _ job: Job,
+        queue: DispatchQueue,
+        success: @escaping (Job, Bool) -> (),
+        failure: @escaping (Job, Error?, Bool) -> (),
+        deferred: @escaping (Job) -> ()
+    ) {
+        // Don't run when inactive or not in main app
+        guard (UserDefaults.sharedLokiProject?[.isMainAppActive]).defaulting(to: false) else {
+            deferred(job) // Don't need to do anything if it's not the main app
+            return
         }
-
-        runPromise.retainUntilComplete()
-
-        return runPromise
-    }
-
-    // MARK: - objc wrappers, since objc can't use swift parameterized types
-
-    @objc
-    class func run(accountManager: AccountManager, preferences: OWSPreferences) -> AnyPromise {
-        let promise: Promise<Void> = self.run(accountManager: accountManager, preferences: preferences)
-        return AnyPromise(promise)
-    }
-
-    @objc
-    func run() -> AnyPromise {
-        let promise: Promise<Void> = self.run()
-        return AnyPromise(promise)
-    }
-
-    // MARK: 
-
-    private func recordPushTokensLocally(pushToken: String, voipToken: String) {
-        Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
-
-        var didTokensChange = false
-
-        if (pushToken != self.preferences.getPushToken()) {
-            Logger.info("Recording new plain push token")
-            self.preferences.setPushToken(pushToken)
-            didTokensChange = true
+        
+        // We need to check a UIApplication setting which needs to run on the main thread so if we aren't on
+        // the main thread then swap to it
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                run(job, queue: queue, success: success, failure: failure, deferred: deferred)
+            }
+            return
         }
-
-        if (voipToken != self.preferences.getVoipToken()) {
-            Logger.info("Recording new voip token")
-            self.preferences.setVoipToken(voipToken)
-            didTokensChange = true
+        
+        // Push tokens don't normally change while the app is launched, so checking once during launch is
+        // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
+        // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
+        // restart the app, so we check every activation for users who haven't yet registered.
+        guard job.behaviour != .recurringOnActive || !UIApplication.shared.isRegisteredForRemoteNotifications else {
+            deferred(job) // Don't need to do anything if push notifications are already registered
+            return
         }
+        
+        Logger.info("Retrying remote notification registration since user hasn't registered yet.")
+        
+        // Determine if we want to upload only if stale (Note: This should default to true, and be true if
+        // 'details' isn't provided)
+        let uploadOnlyIfStale: Bool = ((try? JSONDecoder().decode(Details.self, from: job.details ?? Data()))?.uploadOnlyIfStale ?? true)
+        
+        // Get the app version info (used to determine if we want to update the push tokens)
+        let lastAppVersion: String? = AppVersion.sharedInstance().lastAppVersion
+        let currentAppVersion: String? = AppVersion.sharedInstance().currentAppVersion
+        
+        PushRegistrationManager.shared.requestPushTokens()
+            .then(on: queue) { (pushToken: String, voipToken: String) -> Promise<Void> in
+                let lastPushToken: String? = Storage.shared[.lastRecordedPushToken]
+                let lastVoipToken: String? = Storage.shared[.lastRecordedVoipToken]
+                let shouldUploadTokens: Bool = (
+                    !uploadOnlyIfStale || (
+                        lastPushToken != pushToken ||
+                        lastVoipToken != voipToken
+                    ) ||
+                    lastAppVersion != currentAppVersion
+                )
 
-        if (didTokensChange) {
-            NotificationCenter.default.postNotificationNameAsync(SyncPushTokensJob.PushTokensDidChange, object: nil)
-        }
+                guard shouldUploadTokens else { return Promise.value(()) }
+                
+                let (promise, seal) = Promise<Void>.pending()
+                
+                SyncPushTokensJob.registerForPushNotifications(
+                    pushToken: pushToken,
+                    voipToken: voipToken,
+                    isForcedUpdate: shouldUploadTokens,
+                    success: { seal.fulfill(()) },
+                    failure: seal.reject
+                )
+                
+                return promise
+                    .done(on: queue) { _ in
+                        Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
+
+                        Storage.shared.write { db in
+                            db[.lastRecordedPushToken] = pushToken
+                            db[.lastRecordedVoipToken] = voipToken
+                        }
+                    }
+            }
+            .ensure(on: queue) { success(job, false) }    // We want to complete this job regardless of success or failure
+            .retainUntilComplete()
+    }
+    
+    public static func run(uploadOnlyIfStale: Bool) {
+        guard let job: Job = Job(
+            variant: .syncPushTokens,
+            details: SyncPushTokensJob.Details(
+                uploadOnlyIfStale: uploadOnlyIfStale
+            )
+        )
+        else { return }
+                                 
+        SyncPushTokensJob.run(
+            job,
+            queue: DispatchQueue.global(qos: .default),
+            success: { _, _ in },
+            failure: { _, _, _ in },
+            deferred: { _ in }
+        )
     }
 }
 
+// MARK: - SyncPushTokensJob.Details
+
+extension SyncPushTokensJob {
+    public struct Details: Codable {
+        public let uploadOnlyIfStale: Bool
+    }
+}
+
+// MARK: - Convenience
+
 private func redact(_ string: String) -> String {
     return OWSIsDebugBuild() ? string : "[ READACTED \(string.prefix(2))...\(string.suffix(2)) ]"
+}
+
+extension SyncPushTokensJob {
+    fileprivate static func registerForPushNotifications(
+        pushToken: String,
+        voipToken: String,
+        isForcedUpdate: Bool,
+        success: @escaping () -> (),
+        failure: @escaping (Error) -> (),
+        remainingRetries: Int = 3
+    ) {
+        let isUsingFullAPNs: Bool = UserDefaults.standard[.isUsingFullAPNs]
+        let pushTokenAsData = Data(hex: pushToken)
+        let promise: Promise<Void> = (isUsingFullAPNs ?
+            PushNotificationAPI.register(
+                with: pushTokenAsData,
+                publicKey: getUserHexEncodedPublicKey(),
+                isForcedUpdate: isForcedUpdate
+            ) :
+            PushNotificationAPI.unregister(pushTokenAsData)
+        )
+        
+        promise
+            .done { success() }
+            .catch { error in
+                guard remainingRetries == 0 else {
+                    SyncPushTokensJob.registerForPushNotifications(
+                        pushToken: pushToken,
+                        voipToken: voipToken,
+                        isForcedUpdate: isForcedUpdate,
+                        success: success,
+                        failure: failure,
+                        remainingRetries: (remainingRetries - 1)
+                    )
+                    return
+                }
+                
+                failure(error)
+            }
+            .retainUntilComplete()
+    }
+}
+
+// MARK: - Objective C Support
+
+@objc(OWSSyncPushTokensJob)
+class OWSSyncPushTokensJob: NSObject {
+    @objc static func run() {
+        SyncPushTokensJob.run(uploadOnlyIfStale: false)
+    }
 }

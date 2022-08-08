@@ -59,8 +59,8 @@ final class InputViewButton : UIView {
         isUserInteractionEnabled = true
         widthConstraint.isActive = true
         heightConstraint.isActive = true
-        let tint = isSendButton ? UIColor.black : Colors.text
-        let iconImageView = UIImageView(image: icon.withTint(tint))
+        let iconImageView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
+        iconImageView.tintColor = (isSendButton ? UIColor.black : Colors.text)
         iconImageView.contentMode = .scaleAspectFit
         let iconSize = InputViewButton.iconSize
         iconImageView.set(.width, to: iconSize)
@@ -141,17 +141,16 @@ final class InputViewButton : UIView {
     }
 }
 
-// MARK: Delegate
-protocol InputViewButtonDelegate : class {
-    
+// MARK: - Delegate
+
+protocol InputViewButtonDelegate: AnyObject {
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton)
     func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton)
     func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch)
     func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch)
 }
 
-extension InputViewButtonDelegate {
-    
+extension InputViewButtonDelegate {    
     func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton) { }
     func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch) { }
     func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch) { }

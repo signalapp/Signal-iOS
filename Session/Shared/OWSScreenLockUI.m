@@ -6,6 +6,7 @@
 #import "OWSWindowManager.h"
 #import "Session-Swift.h"
 #import <SignalUtilitiesKit/ScreenLockViewController.h>
+#import <SessionMessagingKit/SessionMessagingKit-Swift.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 #import <SessionUtilitiesKit/UIView+OWS.h>
 
@@ -348,11 +349,11 @@ NS_ASSUME_NONNULL_BEGIN
         return ScreenLockUIStateNone;
     }
     
-    if (Environment.shared.isRequestingPermission) {
+    if (SMKEnvironment.shared.isRequestingPermission) {
         return ScreenLockUIStateNone;
     }
-
-    if (Environment.shared.preferences.screenSecurityIsEnabled) {
+    
+    if ([SMKPreferences isScreenSecurityEnabled]) {
         OWSLogVerbose(@"desiredUIState: screen protection 4.");
         return ScreenLockUIStateScreenProtection;
     } else {

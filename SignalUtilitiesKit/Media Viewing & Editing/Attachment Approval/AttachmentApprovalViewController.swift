@@ -8,12 +8,13 @@ import MediaPlayer
 import PromiseKit
 import SessionUIKit
 import CoreServices
+import SessionMessagingKit
 
-@objc
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
     func attachmentApproval(
         _ attachmentApproval: AttachmentApprovalViewController,
         didApproveAttachments attachments: [SignalAttachment],
+        forThreadId threadId: String,
         messageText: String?
     )
 
@@ -24,14 +25,12 @@ public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
         didChangeMessageText newMessageText: String?
     )
 
-    @objc
-    optional func attachmentApproval(
+    func attachmentApproval(
         _ attachmentApproval: AttachmentApprovalViewController,
         didRemoveAttachment attachment: SignalAttachment
     )
 
-    @objc
-    optional func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
+    func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
 }
 
 // MARK: -
@@ -44,9 +43,8 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 
 // MARK: -
 
-@objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-    @objc public enum Mode: UInt {
+    public enum Mode: UInt {
         case modal
         case sharedNavigation
     }
@@ -54,6 +52,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - Properties
 
     private let mode: Mode
+    private let threadId: String
     private let isAddMoreVisible: Bool
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
@@ -120,13 +119,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         notImplemented()
     }
 
-    @objc
     required public init(
         mode: Mode,
+        threadId: String,
         attachments: [SignalAttachment]
     ) {
         assert(attachments.count > 0)
         self.mode = mode
+        self.threadId = threadId
         let attachmentItems = attachments.map { SignalAttachmentItem(attachment: $0 )}
         self.isAddMoreVisible = (mode == .sharedNavigation)
 
@@ -154,12 +154,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         NotificationCenter.default.removeObserver(self)
     }
 
-    @objc
     public class func wrappedInNavController(
+        threadId: String,
         attachments: [SignalAttachment],
         approvalDelegate: AttachmentApprovalViewControllerDelegate
     ) -> OWSNavigationController {
-        let vc = AttachmentApprovalViewController(mode: .modal, attachments: attachments)
+        let vc = AttachmentApprovalViewController(mode: .modal, threadId: threadId, attachments: attachments)
         vc.approvalDelegate = approvalDelegate
         
         let navController = OWSNavigationController(rootViewController: vc)
@@ -244,7 +244,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         
         // If the first item is just text, or is a URL and LinkPreviews are disabled
         // then just fill the 'message' box with it
-        if firstItem.attachment.isText || (firstItem.attachment.isUrl && OWSLinkPreview.previewURL(forRawBodyText: firstItem.attachment.text()) == nil) {
+        if firstItem.attachment.isText || (firstItem.attachment.isUrl && LinkPreview.previewUrl(for: firstItem.attachment.text()) == nil) {
             bottomToolView.attachmentTextToolbar.messageText = firstItem.attachment.text()
         }
 
@@ -436,7 +436,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - View Helpers
 
     func remove(attachmentItem: SignalAttachmentItem) {
-        if attachmentItem == currentItem {
+        if attachmentItem.isEqual(to: currentItem) {
             if let nextItem = attachmentItemCollection.itemAfter(item: attachmentItem) {
                 setCurrentItem(nextItem, direction: .forward, animated: true)
             }
@@ -449,30 +449,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        guard let cell = galleryRailView.cellViews.first(where: { $0.item === attachmentItem }) else {
-            owsFailDebug("cell was unexpectedly nil")
-            return
-        }
-
-        UIView.animate(
-            withDuration: 0.2,
-            animations: {
-                // shrink stack view item until it disappears
-                cell.isHidden = true
-                
-                // simultaneously fade out
-                cell.alpha = 0
-            },
-            completion: { [weak self] _ in
-                self?.attachmentItemCollection.remove(item: attachmentItem)
-                
-                if let strongSelf: AttachmentApprovalViewController = self {
-                    self?.approvalDelegate?.attachmentApproval?(strongSelf, didRemoveAttachment: attachmentItem.attachment)
-                }
-                
-                self?.updateMediaRail()
-            }
-        )
+        self.attachmentItemCollection.remove(item: attachmentItem)
+        self.approvalDelegate?.attachmentApproval(self, didRemoveAttachment: attachmentItem.attachment)
+        self.updateMediaRail()
     }
 
     // MARK: - UIPageViewControllerDelegate
@@ -603,9 +582,13 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                     return GalleryRailCellView()
             }
         }
-
+        
         galleryRailView.configureCellViews(
-            itemProvider: attachmentItemCollection,
+            album: (attachmentItemCollection.attachmentItems as [GalleryRailItem])
+                .appending(attachmentItemCollection.isAddMoreVisible ?
+                    AddMoreRailItem() :
+                    nil
+                ),
             focusedItem: currentItem,
             cellViewBuilder: cellViewBuilder
         )
@@ -760,7 +743,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         attachmentTextToolbar.isUserInteractionEnabled = false
         attachmentTextToolbar.isHidden = true
 
-        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
+        approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, forThreadId: threadId, messageText: attachmentTextToolbar.messageText)
     }
 
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
@@ -786,24 +769,16 @@ extension SignalAttachmentItem: GalleryRailItem {
     func buildRailItemView() -> UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
-
-        getThumbnailImage().map { image in
-            imageView.image = image
-        }.retainUntilComplete()
-
+        imageView.backgroundColor = UIColor.black.withAlphaComponent(0.33)
+        imageView.image = getThumbnailImage()
+        
         return imageView
     }
-}
-
-// MARK: -
-
-extension AttachmentItemCollection: GalleryRailItemProvider {
-    var railItems: [GalleryRailItem] {
-        if isAddMoreVisible {
-            return self.attachmentItems + [AddMoreRailItem()]
-        } else {
-            return self.attachmentItems
-        }
+    
+    func isEqual(to other: GalleryRailItem?) -> Bool {
+        guard let otherAttachmentItem: SignalAttachmentItem = other as? SignalAttachmentItem else { return false }
+        
+        return (self.attachment == otherAttachmentItem.attachment)
     }
 }
 
@@ -812,7 +787,7 @@ extension AttachmentItemCollection: GalleryRailItemProvider {
 extension AttachmentApprovalViewController: GalleryRailViewDelegate {
     public func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem) {
         if imageRailItem is AddMoreRailItem {
-            self.approvalDelegate?.attachmentApprovalDidTapAddMore?(self)
+            self.approvalDelegate?.attachmentApprovalDidTapAddMore(self)
             return
         }
 

@@ -4,8 +4,6 @@
 
 #import "NotificationSettingsOptionsViewController.h"
 #import "Session-Swift.h"
-#import "SignalApp.h"
-#import <SessionMessagingKit/Environment.h>
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 @implementation NotificationSettingsOptionsViewController
@@ -31,39 +29,28 @@
     OWSTableSection *section = [OWSTableSection new];
     // section.footerTitle = NSLocalizedString(@"NOTIFICATIONS_FOOTER_WARNING", nil);
 
-    OWSPreferences *prefs = Environment.shared.preferences;
-    NotificationType selectedNotifType = [prefs notificationPreviewType];
-    for (NSNumber *option in
-        @[ @(NotificationNamePreview), @(NotificationNameNoPreview), @(NotificationNoNameNoPreview) ]) {
-        NotificationType notificationType = (NotificationType)option.intValue;
-
+    NSInteger selectedNotifType = [SMKPreferences notificationPreviewType];
+    
+    for (NSNumber *option in [SMKPreferences notificationTypes]) {
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  UITableViewCell *cell = [OWSTableItem newCell];
                                  cell.tintColor = LKColors.accent;
-                                 [[cell textLabel] setText:[prefs nameForNotificationPreviewType:notificationType]];
-                                 if (selectedNotifType == notificationType) {
+                                 [[cell textLabel] setText:[SMKPreferences nameForNotificationPreviewType:option.intValue]];
+                                 if (selectedNotifType == option.intValue) {
                                      cell.accessoryType = UITableViewCellAccessoryCheckmark;
                                  }
-                                 cell.accessibilityIdentifier
-                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NotificationSettingsOptionsViewController,
-                                         NSStringForNotificationType(notificationType));
+                                 cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NotificationSettingsOptionsViewController, [SMKPreferences accessibilityIdentifierForNotificationPreviewType:option.intValue]);
                                  return cell;
                              }
                              actionBlock:^{
-                                 [weakSelf setNotificationType:notificationType];
+                                [SMKPreferences setNotificationPreviewType: option.intValue];
+                                [weakSelf.navigationController popViewControllerAnimated:YES];
                              }]];
     }
     [contents addSection:section];
 
     self.contents = contents;
-}
-
-- (void)setNotificationType:(NotificationType)notificationType
-{
-    [Environment.shared.preferences setNotificationPreviewType:notificationType];
-
-    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

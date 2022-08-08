@@ -23,15 +23,10 @@ public extension UISearchBar {
         setImage(searchImage, for: .search, state: .normal)
         let clearImage = #imageLiteral(resourceName: "searchbar_clear").withTint(Colors.searchBarPlaceholder)!
         setImage(clearImage, for: .clear, state: .normal)
-        let searchTextField: UITextField
-        if #available(iOS 13, *) {
-            searchTextField = self.searchTextField
-        } else {
-            searchTextField = self.value(forKey: "_searchField") as! UITextField
-        }
+        let searchTextField: UITextField = self.searchTextField
         searchTextField.backgroundColor = Colors.searchBarBackground // The search bar background color
         searchTextField.textColor = Colors.text
-        searchTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("Search", comment: ""), attributes: [ .foregroundColor : Colors.searchBarPlaceholder ])
+        searchTextField.attributedPlaceholder = NSAttributedString(string: "Search", attributes: [ .foregroundColor : Colors.searchBarPlaceholder ])
         setPositionAdjustment(UIOffset(horizontal: 4, vertical: 0), for: UISearchBar.Icon.search)
         searchTextPositionAdjustment = UIOffset(horizontal: 2, vertical: 0)
         setPositionAdjustment(UIOffset(horizontal: -4, vertical: 0), for: UISearchBar.Icon.clear)

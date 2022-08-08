@@ -1,25 +1,42 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
+import UIKit
 import PromiseKit
 import SessionUIKit
 
-public protocol GalleryRailItemProvider: class {
-    var railItems: [GalleryRailItem] { get }
-}
+// MARK: - GalleryRailItem
 
-public protocol GalleryRailItem: class {
+public protocol GalleryRailItem {
     func buildRailItemView() -> UIView
+    func isEqual(to other: GalleryRailItem?) -> Bool
 }
 
-protocol GalleryRailCellViewDelegate: class {
+// MARK: - GalleryRailCellViewDelegate
+
+protocol GalleryRailCellViewDelegate: AnyObject {
     func didTapGalleryRailCellView(_ galleryRailCellView: GalleryRailCellView)
 }
 
-public class GalleryRailCellView: UIView {
+// MARK: - GalleryRailCellView
 
-    weak var delegate: GalleryRailCellViewDelegate?
+public class GalleryRailCellView: UIView {
+    public let cellBorderWidth: CGFloat = 3
+    public var item: GalleryRailItem?
+    fileprivate weak var delegate: GalleryRailCellViewDelegate?
+    
+    private(set) var isSelected: Bool = false
+    
+    // MARK: - UI
+    
+    let contentContainer: UIView = {
+        let view = UIView()
+        view.autoPinToSquareAspectRatio()
+        view.clipsToBounds = true
+
+        return view
+    }()
+    
+    // MARK: - Initialization
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -38,16 +55,14 @@ public class GalleryRailCellView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: Actions
+    // MARK: - Actions
 
     @objc
     func didTap(sender: UITapGestureRecognizer) {
         self.delegate?.didTapGalleryRailCellView(self)
     }
 
-    // MARK: 
-
-    var item: GalleryRailItem?
+    // MARK: Content
 
     func configure(item: GalleryRailItem, delegate: GalleryRailCellViewDelegate) {
         self.item = item
@@ -62,11 +77,7 @@ public class GalleryRailCellView: UIView {
         itemView.autoPinEdgesToSuperviewEdges()
     }
 
-    // MARK: Selected
-
-    private(set) var isSelected: Bool = false
-
-    public let cellBorderWidth: CGFloat = 3
+    // MARK: - Selected
 
     func setIsSelected(_ isSelected: Bool) {
         self.isSelected = isSelected
@@ -81,134 +92,220 @@ public class GalleryRailCellView: UIView {
             contentContainer.layer.borderWidth = 0
         }
     }
-
-    // MARK: Subview Helpers
-
-    let contentContainer: UIView = {
-        let view = UIView()
-        view.autoPinToSquareAspectRatio()
-        view.clipsToBounds = true
-
-        return view
-    }()
 }
 
-public protocol GalleryRailViewDelegate: class {
+// MARK: - GalleryRailViewDelegate
+
+public protocol GalleryRailViewDelegate: AnyObject {
     func galleryRailView(_ galleryRailView: GalleryRailView, didTapItem imageRailItem: GalleryRailItem)
 }
 
+// MARK: - GalleryRailView
+
 public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
+    public enum ScrollFocusMode {
+        case keepCentered
+        case keepWithinBounds
+    }
 
-    public weak var delegate: GalleryRailViewDelegate?
-
+    public var scrollFocusMode: ScrollFocusMode = .keepCentered
     public var cellViews: [GalleryRailCellView] = []
+    public weak var delegate: GalleryRailViewDelegate?
+    
+    private var album: [GalleryRailItem]?
+    private var oldSize: CGSize = .zero
 
     var cellViewItems: [GalleryRailItem] {
         get { return cellViews.compactMap { $0.item } }
     }
 
-    // MARK: Initializers
+    // MARK: - Initializers
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         clipsToBounds = false
+        
         addSubview(scrollView)
-        scrollView.clipsToBounds = false
-        scrollView.layoutMargins = .zero
         scrollView.autoPinEdgesToSuperviewMargins()
+        
+        scrollView.addSubview(stackClippingView)
+        stackClippingView.addSubview(stackView)
+        
+        stackClippingView.autoPinEdgesToSuperviewEdges()
+        stackClippingView.autoMatch(.height, to: .height, of: scrollView)
+        stackView.autoPinEdgesToSuperviewEdges()
     }
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - UI
+    
+    private let scrollView: UIScrollView = {
+        let result: UIScrollView = UIScrollView()
+        result.clipsToBounds = false
+        result.layoutMargins = .zero
+        result.isScrollEnabled = true
+        result.scrollIndicatorInsets = UIEdgeInsets(top: 0, leading: 0, bottom: -10, trailing: 0)
+        
+        return result
+    }()
+    
+    private let stackClippingView: UIView = {
+        let result: UIView = UIView()
+        result.clipsToBounds = true
+        
+        return result
+    }()
+    
+    private let stackView: UIStackView = {
+        let result: UIStackView = UIStackView()
+        result.clipsToBounds = false
+        result.axis = .horizontal
+        result.spacing = 0
+        
+        return result
+    }()
 
-    // MARK: Public
+    // MARK: - Public
 
-    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) {
+    public func configureCellViews(album: [GalleryRailItem], focusedItem: GalleryRailItem?, cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) {
         let animationDuration: TimeInterval = 0.2
+        let zippedItems = zip(album, self.cellViewItems)
 
-        guard let itemProvider = itemProvider else {
-            UIView.animate(withDuration: animationDuration) {
-                self.isHidden = true
-            }
-            self.cellViews = []
-            return
-        }
-
-        let areRailItemsIdentical = { (lhs: [GalleryRailItem], rhs: [GalleryRailItem]) -> Bool in
-            guard lhs.count == rhs.count else {
-                return false
-            }
-            for (index, element) in lhs.enumerated() {
-                guard element === rhs[index] else {
-                    return false
-                }
-            }
-            return true
-        }
-
-        if itemProvider === self.itemProvider, areRailItemsIdentical(itemProvider.railItems, self.cellViewItems) {
+        // Check if the album has changed
+        guard
+            album.count != self.cellViewItems.count ||
+            zippedItems.contains(where: { lhs, rhs in !lhs.isEqual(to: rhs) })
+        else {
             UIView.animate(withDuration: animationDuration) {
                 self.updateFocusedItem(focusedItem)
                 self.layoutIfNeeded()
             }
-        }
-
-        self.itemProvider = itemProvider
-
-        guard itemProvider.railItems.count > 1 else {
-            let cellViews = scrollView.subviews
-
-            UIView.animate(withDuration: animationDuration,
-                           animations: {
-                            cellViews.forEach { $0.isHidden = true }
-                            self.isHidden = true
-            },
-                           completion: { _ in cellViews.forEach { $0.removeFromSuperview() } })
-            self.cellViews = []
             return
         }
 
-        scrollView.subviews.forEach { $0.removeFromSuperview() }
+        // If so update to the new album
+        self.album = album
 
-        UIView.animate(withDuration: animationDuration) {
-            self.isHidden = false
+        // Check if there are multiple items in the album (if not then just slide it away)
+        guard album.count > 1 else {
+            let oldFrame: CGRect = self.stackView.frame
+
+            UIView.animate(
+                withDuration: animationDuration,
+                animations: { [weak self] in
+                    self?.stackView.frame = oldFrame.offsetBy(
+                        dx: 0,
+                        dy: oldFrame.height
+                    )
+                },
+                completion: { [weak self] _ in
+                    self?.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+                    self?.stackView.frame = oldFrame
+                    self?.isHidden = true
+                    self?.cellViews = []
+                }
+            )
+            return
+        }
+        
+        // Otherwise slide it away, recreate it and then slide it back
+        let newCellViews: [GalleryRailCellView] = buildCellViews(
+            items: album,
+            cellViewBuilder: cellViewBuilder
+        )
+        
+        let animateOut: ((CGRect, @escaping (CGRect) -> CGRect, @escaping (CGRect) -> ()) -> ()) = { [weak self] oldFrame, layoutNewItems, animateIn in
+            UIView.animate(
+                withDuration: (animationDuration / 2),
+                delay: 0,
+                options: .curveEaseIn,
+                animations: {
+                    self?.stackView.frame = oldFrame.offsetBy(
+                        dx: 0,
+                        dy: oldFrame.height
+                    )
+                },
+                completion: { _ in
+                    let updatedOldFrame: CGRect = layoutNewItems(oldFrame)
+                    animateIn(updatedOldFrame)
+                }
+            )
+        }
+        let layoutNewItems: (CGRect) -> CGRect = { [weak self] oldFrame -> CGRect in
+            var updatedOldFrame: CGRect = oldFrame
+            
+            // Update the UI (need to re-offset it as the position gets reset during
+            // during these changes)
+            UIView.performWithoutAnimation {
+                self?.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+                newCellViews.forEach { cellView in
+                    self?.stackView.addArrangedSubview(cellView)
+                }
+                self?.cellViews = newCellViews
+                
+                self?.updateFocusedItem(focusedItem)
+                self?.stackView.layoutIfNeeded()
+                self?.isHidden = false
+                
+                updatedOldFrame = (self?.stackView.frame)
+                    .defaulting(to: oldFrame)
+                self?.stackView.frame = updatedOldFrame.offsetBy(
+                    dx: 0,
+                    dy: oldFrame.height
+                )
+            }
+            
+            return updatedOldFrame
+        }
+        let animateIn: (CGRect) -> () = { [weak self] oldFrame in
+            UIView.animate(
+                withDuration: (animationDuration / 2),
+                delay: 0,
+                options: .curveEaseOut,
+                animations: { [weak self] in
+                    self?.stackView.frame = oldFrame
+                },
+                completion: nil
+            )
+        }
+        
+        // If we don't have arranged subviews already we can skip the 'animateOut'
+        guard !self.stackView.arrangedSubviews.isEmpty else {
+            let updatedOldFrame: CGRect = layoutNewItems(self.stackView.frame)
+            animateIn(updatedOldFrame)
+            return
         }
 
-        let cellViews = buildCellViews(items: itemProvider.railItems, cellViewBuilder: cellViewBuilder)
-        self.cellViews = cellViews
-        let stackView = UIStackView(arrangedSubviews: cellViews)
-        stackView.axis = .horizontal
-        stackView.spacing = 0
-        stackView.clipsToBounds = false
-
-        scrollView.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewEdges()
-        stackView.autoMatch(.height, to: .height, of: scrollView)
-
-        updateFocusedItem(focusedItem)
+        animateOut(self.stackView.frame, layoutNewItems, animateIn)
     }
 
-    // MARK: GalleryRailCellViewDelegate
+    // MARK: - GalleryRailCellViewDelegate
 
     func didTapGalleryRailCellView(_ galleryRailCellView: GalleryRailCellView) {
-        guard let item = galleryRailCellView.item else {
-            owsFailDebug("item was unexpectedly nil")
-            return
-        }
+        guard let item = galleryRailCellView.item else { return }
 
         delegate?.galleryRailView(self, didTapItem: item)
     }
 
-    // MARK: Subview Helpers
-
-    private var itemProvider: GalleryRailItemProvider?
-
-    private let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.isScrollEnabled = true
-        return scrollView
-    }()
+    // MARK: - Subview Helpers
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        guard self.bounds.size != self.oldSize else { return }
+        
+        self.oldSize = self.bounds.size
+        
+        // If the bounds of the biew changed then update the focused item to ensure the
+        // alignment isn't broken
+        if let focusedItem: GalleryRailItem = self.cellViews.first(where: { $0.isSelected })?.item {
+            self.updateFocusedItem(focusedItem)
+        }
+    }
 
     private func buildCellViews(items: [GalleryRailItem], cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) -> [GalleryRailCellView] {
         return items.map { item in
@@ -218,49 +315,43 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
     }
 
-    enum ScrollFocusMode {
-        case keepCentered, keepWithinBounds
-    }
-    var scrollFocusMode: ScrollFocusMode = .keepCentered
     func updateFocusedItem(_ focusedItem: GalleryRailItem?) {
-        var selectedCellView: GalleryRailCellView?
-        cellViews.forEach { cellView in
-            if cellView.item === focusedItem {
-                assert(selectedCellView == nil)
-                selectedCellView = cellView
-                cellView.setIsSelected(true)
-            } else {
-                cellView.setIsSelected(false)
-            }
-        }
+        let selectedCellView: GalleryRailCellView? = cellViews.first(where: { cellView -> Bool in
+            (cellView.item?.isEqual(to: focusedItem) == true)
+        })
+        
+        cellViews.forEach { $0.setIsSelected(false) }
+        selectedCellView?.setIsSelected(true)
 
         self.layoutIfNeeded()
+        self.stackView.layoutIfNeeded()
+        
         switch scrollFocusMode {
-        case .keepCentered:
-            guard let selectedCell = selectedCellView else {
-                owsFailDebug("selectedCell was unexpectedly nil")
-                return
-            }
+            case .keepCentered:
+                guard
+                    let selectedCell: UIView = selectedCellView,
+                    let selectedCellSuperview: UIView = selectedCell.superview
+                else { return }
 
-            let cellViewCenter = selectedCell.superview!.convert(selectedCell.center, to: scrollView)
-            let additionalInset = scrollView.center.x - cellViewCenter.x
+                let cellViewCenter: CGPoint = selectedCellSuperview.convert(selectedCell.center, to: scrollView)
+                let additionalInset: CGFloat = ((scrollView.frame.width / 2) - cellViewCenter.x)
+                
+                var inset: UIEdgeInsets = scrollView.contentInset
+                inset.left = additionalInset
+                scrollView.contentInset = inset
 
-            var inset = scrollView.contentInset
-            inset.left = additionalInset
-            scrollView.contentInset = inset
+                var offset: CGPoint = scrollView.contentOffset
+                offset.x = -additionalInset
+                scrollView.contentOffset = offset
+                
+            case .keepWithinBounds:
+                guard
+                    let selectedCell: UIView = selectedCellView,
+                    let selectedCellSuperview: UIView = selectedCell.superview
+                else { return }
 
-            var offset = scrollView.contentOffset
-            offset.x = -additionalInset
-            scrollView.contentOffset = offset
-        case .keepWithinBounds:
-            guard let selectedCell = selectedCellView else {
-                owsFailDebug("selectedCell was unexpectedly nil")
-                return
-            }
-
-            let cellFrame = selectedCell.superview!.convert(selectedCell.frame, to: scrollView)
-
-            scrollView.scrollRectToVisible(cellFrame, animated: true)
+                let cellFrame: CGRect = selectedCellSuperview.convert(selectedCell.frame, to: scrollView)
+                scrollView.scrollRectToVisible(cellFrame, animated: true)
         }
     }
 }

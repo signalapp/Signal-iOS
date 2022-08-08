@@ -1,24 +1,34 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class DisplayNameVC : BaseVC {
+import UIKit
+import SessionUIKit
+import SessionMessagingKit
+
+final class DisplayNameVC: BaseVC {
     private var spacer1HeightConstraint: NSLayoutConstraint!
     private var spacer2HeightConstraint: NSLayoutConstraint!
     private var registerButtonBottomOffsetConstraint: NSLayoutConstraint!
     private var bottomConstraint: NSLayoutConstraint!
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var displayNameTextField: TextField = {
         let result = TextField(placeholder: NSLocalizedString("vc_display_name_text_field_hint", comment: ""))
         result.layer.borderColor = Colors.text.cgColor
         result.accessibilityLabel = "Display name text field"
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUpGradientBackground()
         setUpNavBarStyle()
         setUpNavBarSessionIcon()
+        
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
@@ -26,6 +36,7 @@ final class DisplayNameVC : BaseVC {
         titleLabel.text = NSLocalizedString("vc_display_name_title_2", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
+        
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
@@ -33,6 +44,7 @@ final class DisplayNameVC : BaseVC {
         explanationLabel.text = NSLocalizedString("vc_display_name_explanation", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
+        
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let spacer1 = UIView()
@@ -42,27 +54,32 @@ final class DisplayNameVC : BaseVC {
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButtonBottomOffsetSpacer = UIView()
         registerButtonBottomOffsetConstraint = registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
+        
         // Set up register button
         let registerButton = Button(style: .prominentFilled, size: .large)
         registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
         registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
+        
         // Set up register button container
         let registerButtonContainer = UIView()
         registerButtonContainer.addSubview(registerButton)
         if UIDevice.current.isIPad {
             registerButton.set(.width, to: Values.iPadButtonWidth)
             registerButton.center(in: registerButtonContainer)
-        } else {
+        }
+        else {
             registerButton.pin(.leading, to: .leading, of: registerButtonContainer, withInset: Values.massiveSpacing)
             registerButtonContainer.pin(.trailing, to: .trailing, of: registerButton, withInset: Values.massiveSpacing)
         }
         registerButton.pin(.top, to: .top, of: registerButtonContainer)
         registerButtonContainer.pin(.bottom, to: .bottom, of: registerButton)
+        
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, displayNameTextField ])
         topStackView.axis = .vertical
         topStackView.alignment = .fill
+        
         // Set up top stack view container
         let topStackViewContainer = UIView()
         topStackViewContainer.addSubview(topStackView)
@@ -70,6 +87,7 @@ final class DisplayNameVC : BaseVC {
         topStackView.pin(.top, to: .top, of: topStackViewContainer)
         topStackViewContainer.pin(.trailing, to: .trailing, of: topStackView, withInset: Values.veryLargeSpacing)
         topStackViewContainer.pin(.bottom, to: .bottom, of: topStackView)
+        
         // Set up main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, registerButtonContainer, registerButtonBottomOffsetSpacer ])
         mainStackView.axis = .vertical
@@ -80,9 +98,11 @@ final class DisplayNameVC : BaseVC {
         mainStackView.pin(.trailing, to: .trailing, of: view)
         bottomConstraint = mainStackView.pin(.bottom, to: .bottom, of: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
+        
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGestureRecognizer)
+        
         // Listen to keyboard notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -98,18 +118,22 @@ final class DisplayNameVC : BaseVC {
         NotificationCenter.default.removeObserver(self)
     }
     
-    // MARK: General
+    // MARK: - General
+    
     @objc private func dismissKeyboard() {
         displayNameTextField.resignFirstResponder()
     }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        
         bottomConstraint.constant = -newHeight // Negative due to how the constraint is set up
         registerButtonBottomOffsetConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing
         spacer1HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         spacer2HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -120,12 +144,14 @@ final class DisplayNameVC : BaseVC {
         registerButtonBottomOffsetConstraint.constant = Values.onboardingButtonBottomOffset
         spacer1HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
         spacer2HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
+        
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func register() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -136,11 +162,19 @@ final class DisplayNameVC : BaseVC {
         guard !displayName.isEmpty else {
             return showError(title: NSLocalizedString("vc_display_name_display_name_missing_error", comment: ""))
         }
-        guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
+        guard !ProfileManager.isToLong(profileName: displayName) else {
             return showError(title: NSLocalizedString("vc_display_name_display_name_too_long_error", comment: ""))
         }
-        OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { _ in }, requiresSync: false) // Try to save the user name but ignore the result
+        
+        // Try to save the user name but ignore the result
+        ProfileManager.updateLocal(
+            queue: DispatchQueue.global(qos: .default),
+            profileName: displayName,
+            image: nil,
+            imageFilePath: nil,
+            requiredSync: false
+        )
         let pnModeVC = PNModeVC()
-        navigationController!.pushViewController(pnModeVC, animated: true)
+        navigationController?.pushViewController(pnModeVC, animated: true)
     }
 }

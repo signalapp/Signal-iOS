@@ -28,13 +28,6 @@ NSError *OWSErrorMakeFailedToSendOutgoingMessageError()
         NSLocalizedString(@"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE", @"Generic notice when message failed to send."));
 }
 
-NSError *OWSErrorMakeNoSuchSignalRecipientError()
-{
-    return OWSErrorWithCodeDescription(OWSErrorCodeNoSuchSignalRecipient,
-        NSLocalizedString(
-            @"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT", @"Error message when attempting to send message"));
-}
-
 NSError *OWSErrorMakeAssertionError(NSString *description)
 {
     OWSCFailDebug(@"Assertion failed: %@", description);

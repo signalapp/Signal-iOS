@@ -1,97 +1,106 @@
-import NVActivityIndicatorView
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class LinkPreviewView : UIView {
-    private let viewItem: ConversationViewItem?
+import UIKit
+import NVActivityIndicatorView
+import SessionUIKit
+import SessionMessagingKit
+
+final class LinkPreviewView: UIView {
+    private static let loaderSize: CGFloat = 24
+    private static let cancelButtonSize: CGFloat = 45
+    
     private let maxWidth: CGFloat
-    private let delegate: LinkPreviewViewDelegate
-    var linkPreviewState: LinkPreviewState? { didSet { update() } }
+    private let onCancel: (() -> ())?
+
+    // MARK: - UI
+    
     private lazy var imageViewContainerWidthConstraint = imageView.set(.width, to: 100)
     private lazy var imageViewContainerHeightConstraint = imageView.set(.height, to: 100)
 
-    private lazy var sentLinkPreviewTextColor: UIColor = {
-        let isOutgoing = (viewItem?.interaction.interactionType() == .outgoingMessage)
-        switch (isOutgoing, AppModeManager.shared.currentAppMode) {
-        case (false, .light): return .black
-        case (true, .light): return Colors.grey
-        default: return .white
-        }
-    }()
-
     // MARK: UI Components
+
     private lazy var imageView: UIImageView = {
-        let result = UIImageView()
+        let result: UIImageView = UIImageView()
         result.contentMode = .scaleAspectFill
+        
         return result
     }()
 
     private lazy var imageViewContainer: UIView = {
-        let result = UIView()
+        let result: UIView = UIView()
         result.clipsToBounds = true
+        
         return result
     }()
 
     private lazy var loader: NVActivityIndicatorView = {
-        let color: UIColor = isLightMode ? .black : .white
+        // FIXME: This will have issues with theme transitions
+        let color: UIColor = (isLightMode ? .black : .white)
+        
         return NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: color, padding: nil)
     }()
 
     private lazy var titleLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.numberOfLines = 0
+        
         return result
     }()
 
-    private lazy var bodyTextViewContainer = UIView()
+    private lazy var bodyTextViewContainer: UIView = UIView()
 
-    private lazy var hStackViewContainer = UIView()
+    private lazy var hStackViewContainer: UIView = UIView()
 
-    private lazy var hStackView = UIStackView()
+    private lazy var hStackView: UIStackView = UIStackView()
 
     private lazy var cancelButton: UIButton = {
-        let result = UIButton(type: .custom)
-        let tint: UIColor = isLightMode ? .black : .white
-        result.setImage(UIImage(named: "X")?.withTint(tint), for: UIControl.State.normal)
+        // FIXME: This will have issues with theme transitions
+        let result: UIButton = UIButton(type: .custom)
+        result.setImage(UIImage(named: "X")?.withRenderingMode(.alwaysTemplate), for: UIControl.State.normal)
+        result.tintColor = (isLightMode ? .black : .white)
+        
         let cancelButtonSize = LinkPreviewView.cancelButtonSize
         result.set(.width, to: cancelButtonSize)
         result.set(.height, to: cancelButtonSize)
         result.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
-    
+
     var bodyTextView: UITextView?
 
-    // MARK: Settings
-    private static let loaderSize: CGFloat = 24
-    private static let cancelButtonSize: CGFloat = 45
-
-    // MARK: Lifecycle
-    init(for viewItem: ConversationViewItem?, maxWidth: CGFloat, delegate: LinkPreviewViewDelegate) {
-        self.viewItem = viewItem
+    // MARK: - Initialization
+    
+    init(maxWidth: CGFloat, onCancel: (() -> ())? = nil) {
         self.maxWidth = maxWidth
-        self.delegate = delegate
+        self.onCancel = onCancel
+        
         super.init(frame: CGRect.zero)
+        
         setUpViewHierarchy()
     }
-    
+
     override init(frame: CGRect) {
         preconditionFailure("Use init(for:maxWidth:delegate:) instead.")
     }
-    
+
     required init?(coder: NSCoder) {
         preconditionFailure("Use init(for:maxWidth:delegate:) instead.")
     }
-    
+
     private func setUpViewHierarchy() {
         // Image view
         imageViewContainerWidthConstraint.isActive = true
         imageViewContainerHeightConstraint.isActive = true
         imageViewContainer.addSubview(imageView)
         imageView.pin(to: imageViewContainer)
+        
         // Title label
         let titleLabelContainer = UIView()
         titleLabelContainer.addSubview(titleLabel)
         titleLabel.pin(to: titleLabelContainer, withInset: Values.smallSpacing)
+        
         // Horizontal stack view
         hStackView.addArrangedSubview(imageViewContainer)
         hStackView.addArrangedSubview(titleLabelContainer)
@@ -99,72 +108,106 @@ final class LinkPreviewView : UIView {
         hStackView.alignment = .center
         hStackViewContainer.addSubview(hStackView)
         hStackView.pin(to: hStackViewContainer)
+        
         // Vertical stack view
         let vStackView = UIStackView(arrangedSubviews: [ hStackViewContainer, bodyTextViewContainer ])
         vStackView.axis = .vertical
         addSubview(vStackView)
         vStackView.pin(to: self)
+        
         // Loader
         addSubview(loader)
+        
         let loaderSize = LinkPreviewView.loaderSize
         loader.set(.width, to: loaderSize)
         loader.set(.height, to: loaderSize)
         loader.center(in: self)
     }
 
-    // MARK: Updating
-    private func update() {
+    // MARK: - Updating
+    
+    public func update(
+        with state: LinkPreviewState,
+        isOutgoing: Bool,
+        delegate: (UITextViewDelegate & BodyTextViewDelegate)? = nil,
+        cellViewModel: MessageViewModel? = nil,
+        bodyLabelTextColor: UIColor? = nil,
+        lastSearchText: String? = nil
+    ) {
         cancelButton.removeFromSuperview()
-        guard let linkPreviewState = linkPreviewState else { return }
-        var image = linkPreviewState.image()
-        if image == nil && (linkPreviewState is LinkPreviewDraft || linkPreviewState is LinkPreviewSent) {
+        
+        var image: UIImage? = state.image
+        let stateHasImage: Bool = (image != nil)
+        if image == nil && (state is LinkPreview.DraftState || state is LinkPreview.SentState) {
             image = UIImage(named: "Link")?.withTint(isLightMode ? .black : .white)
         }
+        
         // Image view
-        let imageViewContainerSize: CGFloat = (linkPreviewState is LinkPreviewSent) ? 100 : 80
+        let imageViewContainerSize: CGFloat = (state is LinkPreview.SentState ? 100 : 80)
         imageViewContainerWidthConstraint.constant = imageViewContainerSize
         imageViewContainerHeightConstraint.constant = imageViewContainerSize
-        imageViewContainer.layer.cornerRadius = (linkPreviewState is LinkPreviewSent) ? 0 : 8
-        if linkPreviewState is LinkPreviewLoading {
+        imageViewContainer.layer.cornerRadius = (state is LinkPreview.SentState ? 0 : 8)
+        
+        if state is LinkPreview.LoadingState {
             imageViewContainer.backgroundColor = .clear
-        } else {
+        }
+        else {
             imageViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
         }
+        
         imageView.image = image
-        imageView.contentMode = (linkPreviewState.image() == nil) ? .center : .scaleAspectFill
+        imageView.contentMode = (stateHasImage ? .scaleAspectFill : .center)
+        
         // Loader
-        loader.alpha = (image != nil) ? 0 : 1
+        loader.alpha = (image != nil ? 0 : 1)
         if image != nil { loader.stopAnimating() } else { loader.startAnimating() }
+        
         // Title
+        let sentLinkPreviewTextColor: UIColor = {
+            switch (isOutgoing, AppModeManager.shared.currentAppMode) {
+                case (false, .light): return .black
+                case (true, .light): return Colors.grey
+                default: return .white
+            }
+        }()
         titleLabel.textColor = sentLinkPreviewTextColor
-        titleLabel.text = linkPreviewState.title()
+        titleLabel.text = state.title
+        
         // Horizontal stack view
-        switch linkPreviewState {
-        case is LinkPreviewSent: hStackViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
-        default: hStackViewContainer.backgroundColor = nil
+        switch state {
+            case is LinkPreview.SentState:
+                // FIXME: This will have issues with theme transitions
+                hStackViewContainer.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
+                
+            default:
+                hStackViewContainer.backgroundColor = nil
         }
+        
         // Body text view
         bodyTextViewContainer.subviews.forEach { $0.removeFromSuperview() }
-        if let viewItem = viewItem {
-            let bodyTextView = VisibleMessageCell.getBodyTextView(for: viewItem, with: maxWidth, textColor: sentLinkPreviewTextColor, delegate: delegate)
+        
+        if let cellViewModel: MessageViewModel = cellViewModel {
+            let bodyTextView = VisibleMessageCell.getBodyTextView(
+                for: cellViewModel,
+                with: maxWidth,
+                textColor: (bodyLabelTextColor ?? sentLinkPreviewTextColor),
+                searchText: lastSearchText,
+                delegate: delegate
+            )
+            
             self.bodyTextView = bodyTextView
             bodyTextViewContainer.addSubview(bodyTextView)
             bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
         }
-        if linkPreviewState is LinkPreviewDraft {
+        
+        if state is LinkPreview.DraftState {
             hStackView.addArrangedSubview(cancelButton)
         }
     }
 
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func cancel() {
-        delegate.handleLinkPreviewCanceled()
+        onCancel?()
     }
-}
-
-// MARK: Delegate
-protocol LinkPreviewViewDelegate : UITextViewDelegate & BodyTextViewDelegate {
-    var lastSearchedText: String? { get }
-
-    func handleLinkPreviewCanceled()
 }

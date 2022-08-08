@@ -6,12 +6,18 @@ import Foundation
 import SAMKeychain
 
 public enum KeychainStorageError: Error {
-    case failure(description: String)
+    case failure(code: Int32?, description: String)
+    
+    public var code: Int32? {
+        switch self {
+            case .failure(let code, _): return code
+        }
+    }
 }
 
 // MARK: -
 
-@objc public protocol SSKKeychainStorage: class {
+@objc public protocol SSKKeychainStorage: AnyObject {
 
     @objc func string(forService service: String, key: String) throws -> String
 
@@ -40,10 +46,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         var error: NSError?
         let result = SAMKeychain.password(forService: service, account: key, error: &error)
         if let error = error {
-            throw KeychainStorageError.failure(description: "\(logTag) error retrieving string: \(error)")
+            throw KeychainStorageError.failure(code: Int32(error.code), description: "\(logTag) error retrieving string: \(error)")
         }
         guard let string = result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not retrieve string")
+            throw KeychainStorageError.failure(code: nil, description: "\(logTag) could not retrieve string")
         }
         return string
     }
@@ -55,10 +61,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         var error: NSError?
         let result = SAMKeychain.setPassword(string, forService: service, account: key, error: &error)
         if let error = error {
-            throw KeychainStorageError.failure(description: "\(logTag) error setting string: \(error)")
+            throw KeychainStorageError.failure(code: Int32(error.code), description: "\(logTag) error setting string: \(error)")
         }
         guard result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not set string")
+            throw KeychainStorageError.failure(code: nil, description: "\(logTag) could not set string")
         }
     }
 
@@ -66,10 +72,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         var error: NSError?
         let result = SAMKeychain.passwordData(forService: service, account: key, error: &error)
         if let error = error {
-            throw KeychainStorageError.failure(description: "\(logTag) error retrieving data: \(error)")
+            throw KeychainStorageError.failure(code: Int32(error.code), description: "\(logTag) error retrieving data: \(error)")
         }
         guard let data = result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not retrieve data")
+            throw KeychainStorageError.failure(code: nil, description: "\(logTag) could not retrieve data")
         }
         return data
     }
@@ -81,10 +87,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         var error: NSError?
         let result = SAMKeychain.setPasswordData(data, forService: service, account: key, error: &error)
         if let error = error {
-            throw KeychainStorageError.failure(description: "\(logTag) error setting data: \(error)")
+            throw KeychainStorageError.failure(code: Int32(error.code), description: "\(logTag) error setting data: \(error)")
         }
         guard result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not set data")
+            throw KeychainStorageError.failure(code: nil, description: "\(logTag) could not set data")
         }
     }
 
@@ -96,10 +102,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
             if error.code == errSecItemNotFound {
                 return
             }
-            throw KeychainStorageError.failure(description: "\(logTag) error removing data: \(error)")
+            throw KeychainStorageError.failure(code: Int32(error.code), description: "\(logTag) error removing data: \(error)")
         }
         guard result else {
-            throw KeychainStorageError.failure(description: "\(logTag) could not remove data")
+            throw KeychainStorageError.failure(code: nil, description: "\(logTag) could not remove data")
         }
     }
 }

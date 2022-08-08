@@ -1,73 +1,88 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
+import SessionUIKit
 import SessionMessagingKit
 
-final class CallMessageCell : MessageCell {
+final class CallMessageCell: MessageCell {
+    private static let iconSize: CGFloat = 16
+    private static let inset = Values.mediumSpacing
+    private static let margin = UIScreen.main.bounds.width * 0.1
+    
     private lazy var iconImageViewWidthConstraint = iconImageView.set(.width, to: 0)
     private lazy var iconImageViewHeightConstraint = iconImageView.set(.height, to: 0)
     
     private lazy var infoImageViewWidthConstraint = infoImageView.set(.width, to: 0)
     private lazy var infoImageViewHeightConstraint = infoImageView.set(.height, to: 0)
     
-    // MARK: UI Components
-    private lazy var iconImageView = UIImageView()
+    // MARK: - UI
     
-    private lazy var infoImageView = UIImageView(image: UIImage(named: "ic_info")?.withTint(Colors.text))
+    private lazy var iconImageView: UIImageView = UIImageView()
+    private lazy var infoImageView: UIImageView = {
+        let result: UIImageView = UIImageView(image: UIImage(named: "ic_info")?.withRenderingMode(.alwaysTemplate))
+        result.tintColor = Colors.text
+        
+        return result
+    }()
     
     private lazy var timestampLabel: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
         result.textColor = Colors.text
         result.textAlignment = .center
+        
         return result
     }()
     
     private lazy var label: UILabel = {
-        let result = UILabel()
+        let result: UILabel = UILabel()
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.textColor = Colors.text
         result.textAlignment = .center
+        
         return result
     }()
     
     private lazy var container: UIView = {
-        let result = UIView()
+        let result: UIView = UIView()
         result.set(.height, to: 50)
         result.layer.cornerRadius = 18
         result.backgroundColor = Colors.callMessageBackground
         result.addSubview(label)
+        
         label.autoCenterInSuperview()
         result.addSubview(iconImageView)
+        
         iconImageView.autoVCenterInSuperview()
         iconImageView.pin(.left, to: .left, of: result, withInset: CallMessageCell.inset)
         result.addSubview(infoImageView)
+        
         infoImageView.autoVCenterInSuperview()
         infoImageView.pin(.right, to: .right, of: result, withInset: -CallMessageCell.inset)
+        
         return result
     }()
     
     private lazy var stackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ timestampLabel, container ])
+        let result: UIStackView = UIStackView(arrangedSubviews: [ timestampLabel, container ])
         result.axis = .vertical
         result.alignment = .center
         result.spacing = Values.smallSpacing
+        
         return result
     }()
     
-    // MARK: Settings
-    private static let iconSize: CGFloat = 16
-    private static let inset = Values.mediumSpacing
-    private static let margin = UIScreen.main.bounds.width * 0.1
+    // MARK: - Lifecycle
     
-    override class var identifier: String { "CallMessageCell" }
-    
-    // MARK: Lifecycle
     override func setUpViewHierarchy() {
         super.setUpViewHierarchy()
+        
         iconImageViewWidthConstraint.isActive = true
         iconImageViewHeightConstraint.isActive = true
         addSubview(stackView)
+        
         container.autoPinWidthToSuperview()
         stackView.pin(.left, to: .left, of: self, withInset: CallMessageCell.margin)
         stackView.pin(.top, to: .top, of: self, withInset: CallMessageCell.inset)
@@ -81,39 +96,71 @@ final class CallMessageCell : MessageCell {
         addGestureRecognizer(tapGestureRecognizer)
     }
     
-    // MARK: Updating
-    override func update() {
-        guard let message = viewItem?.interaction as? TSInfoMessage, message.messageType == .call else { return }
-        let icon: UIImage?
-        switch message.callState {
-        case .outgoing: icon = UIImage(named: "CallOutgoing")?.withTint(Colors.text)
-        case .incoming: icon = UIImage(named: "CallIncoming")?.withTint(Colors.text)
-        case .missed, .permissionDenied: icon = UIImage(named: "CallMissed")?.withTint(Colors.destructive)
-        default: icon = nil
-        }
-        iconImageView.image = icon
-        iconImageViewWidthConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
-        iconImageViewHeightConstraint.constant = (icon != nil) ? CallMessageCell.iconSize : 0
+    // MARK: - Updating
+    
+    override func update(
+        with cellViewModel: MessageViewModel,
+        mediaCache: NSCache<NSString, AnyObject>,
+        playbackInfo: ConversationViewModel.PlaybackInfo?,
+        lastSearchText: String?
+    ) {
+        guard
+            cellViewModel.variant == .infoCall,
+            let infoMessageData: Data = (cellViewModel.rawBody ?? "").data(using: .utf8),
+            let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
+                CallMessage.MessageInfo.self,
+                from: infoMessageData
+            )
+        else { return }
         
-        let shouldShowInfoIcon = message.callState == .permissionDenied && !SSKPreferences.areCallsEnabled
-        infoImageViewWidthConstraint.constant = shouldShowInfoIcon ? CallMessageCell.iconSize : 0
-        infoImageViewHeightConstraint.constant = shouldShowInfoIcon ? CallMessageCell.iconSize : 0
+        self.viewModel = cellViewModel
         
-        Storage.read { transaction in
-            self.label.text = message.previewText(with: transaction)
-        }
+        iconImageView.image = {
+            switch messageInfo.state {
+                case .outgoing: return UIImage(named: "CallOutgoing")?.withRenderingMode(.alwaysTemplate)
+                case .incoming: return UIImage(named: "CallIncoming")?.withRenderingMode(.alwaysTemplate)
+                case .missed, .permissionDenied: return UIImage(named: "CallMissed")?.withRenderingMode(.alwaysTemplate)
+                default: return nil
+            }
+        }()
+        iconImageView.tintColor = {
+            switch messageInfo.state {
+                case .outgoing, .incoming: return Colors.text
+                case .missed, .permissionDenied: return Colors.destructive
+                default: return nil
+            }
+        }()
+        iconImageViewWidthConstraint.constant = (iconImageView.image != nil ? CallMessageCell.iconSize : 0)
+        iconImageViewHeightConstraint.constant = (iconImageView.image != nil ? CallMessageCell.iconSize : 0)
         
-        let date = message.dateForUI()
-        let description = DateUtil.formatDate(forDisplay: date)
-        timestampLabel.text = description
+        let shouldShowInfoIcon: Bool = (
+            messageInfo.state == .permissionDenied &&
+            !Storage.shared[.areCallsEnabled]
+        )
+        infoImageViewWidthConstraint.constant = (shouldShowInfoIcon ? CallMessageCell.iconSize : 0)
+        infoImageViewHeightConstraint.constant = (shouldShowInfoIcon ? CallMessageCell.iconSize : 0)
+        
+        label.text = cellViewModel.body
+        timestampLabel.text = cellViewModel.dateForUI?.formattedForDisplay
+    }
+    
+    override func dynamicUpdate(with cellViewModel: MessageViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
     }
     
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
-        guard let viewItem = viewItem, let message = viewItem.interaction as? TSInfoMessage, message.messageType == .call else { return }
-        let shouldBeTappable = message.callState == .permissionDenied && !SSKPreferences.areCallsEnabled
-        if shouldBeTappable {
-            delegate?.handleViewItemTapped(viewItem, gestureRecognizer: gestureRecognizer)
-        }
+        guard
+            let cellViewModel: MessageViewModel = self.viewModel,
+            cellViewModel.variant == .infoCall,
+            let infoMessageData: Data = (cellViewModel.rawBody ?? "").data(using: .utf8),
+            let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
+                CallMessage.MessageInfo.self,
+                from: infoMessageData
+            )
+        else { return }
+        
+        // Should only be tappable if the info icon is visible
+        guard messageInfo.state == .permissionDenied && !Storage.shared[.areCallsEnabled] else { return }
+        
+        self.delegate?.handleItemTapped(cellViewModel, gestureRecognizer: gestureRecognizer)
     }
-
 }

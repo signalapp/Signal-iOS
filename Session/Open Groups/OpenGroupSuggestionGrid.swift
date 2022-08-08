@@ -1,14 +1,19 @@
 import PromiseKit
 import NVActivityIndicatorView
+import SessionMessagingKit
 import SessionUIKit
 
-final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let maxWidth: CGFloat
-    private var rooms: [OpenGroupAPIV2.Info] = [] { didSet { update() } }
+    private var rooms: [OpenGroupAPI.Room] = [] { didSet { update() } }
     private var heightConstraint: NSLayoutConstraint!
     var delegate: OpenGroupSuggestionGridDelegate?
     
-    // MARK: UI Components
+    // MARK: - UI
+    
+    private static let cellHeight: CGFloat = 40
+    private static let separatorWidth = 1 / UIScreen.main.scale
+    
     private lazy var layout: UICollectionViewFlowLayout = {
         let result = UICollectionViewFlowLayout()
         result.minimumLineSpacing = 0
@@ -32,7 +37,7 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         result.set(.height, to: OpenGroupSuggestionGrid.cellHeight)
         return result
     }()
-    
+
     private lazy var errorView: UIView = {
         let result: UIView = UIView()
         result.isHidden = true
@@ -69,11 +74,8 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         return result
     }()
     
-    // MARK: Settings
-    private static let cellHeight: CGFloat = 40
-    private static let separatorWidth = 1 / UIScreen.main.scale
+    // MARK: - Initialization
     
-    // MARK: Initialization
     init(maxWidth: CGFloat) {
         self.maxWidth = maxWidth
         super.init(frame: CGRect.zero)
@@ -118,7 +120,7 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         heightConstraint = set(.height, to: OpenGroupSuggestionGrid.cellHeight)
         widthAnchor.constraint(greaterThanOrEqualToConstant: OpenGroupSuggestionGrid.cellHeight).isActive = true
         
-        OpenGroupAPIV2.getDefaultRoomsIfNeeded()
+        OpenGroupManager.getDefaultRoomsIfNeeded()
             .done { [weak self] rooms in
                 self?.rooms = rooms
             }
@@ -127,7 +129,8 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
             }
     }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     private func update() {
         spinner.stopAnimating()
         spinner.isHidden = true
@@ -138,13 +141,15 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         errorView.isHidden = (roomCount > 0)
     }
     
-    // MARK: Layout
+    // MARK: - Layout
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let cellWidth = UIDevice.current.isIPad ? maxWidth / 4 : maxWidth / 2
         return CGSize(width: cellWidth, height: OpenGroupSuggestionGrid.cellHeight)
     }
     
-    // MARK: Data Source
+    // MARK: - Data Source
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return min(rooms.count, 8) // Cap to a maximum of 8 (4 rows of 2)
     }
@@ -155,18 +160,20 @@ final class OpenGroupSuggestionGrid : UIView, UICollectionViewDataSource, UIColl
         return cell
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let room = rooms[indexPath.item]
         delegate?.join(room)
     }
 }
 
-// MARK: Cell
+// MARK: - Cell
+
 extension OpenGroupSuggestionGrid {
     
     fileprivate final class Cell : UICollectionViewCell {
-        var room: OpenGroupAPIV2.Info? { didSet { update() } }
+        var room: OpenGroupAPI.Room? { didSet { update() } }
         
         static let identifier = "OpenGroupSuggestionGridCell"
         
@@ -233,8 +240,19 @@ extension OpenGroupSuggestionGrid {
         }
         
         private func update() {
-            guard let room = room else { return }
-            let promise = OpenGroupAPIV2.getGroupImage(for: room.id, on: OpenGroupAPIV2.defaultServer)
+            guard let room: OpenGroupAPI.Room = room else { return }
+            
+            label.text = room.name
+            
+            // Only continue if we have a room image
+            guard let imageId: String = room.imageId else {
+                imageView.isHidden = true
+                return
+            }
+            
+            let promise = Storage.shared.read { db in
+                OpenGroupManager.roomImage(db, fileId: imageId, for: room.token, on: OpenGroupAPI.defaultServer)
+            }
             
             if let imageData: Data = promise.value {
                 imageView.image = UIImage(data: imageData)
@@ -250,14 +268,12 @@ extension OpenGroupSuggestionGrid {
                     }
                 }
             }
-            
-            label.text = room.name
         }
     }
 }
 
-// MARK: Delegate
+// MARK: - Delegate
+
 protocol OpenGroupSuggestionGridDelegate {
-    
-    func join(_ room: OpenGroupAPIV2.Info)
+    func join(_ room: OpenGroupAPI.Room)
 }

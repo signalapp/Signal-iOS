@@ -53,25 +53,13 @@ public extension UIView {
     }
 
     func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage? {
-        if #available(iOS 10, *) {
-            let format = UIGraphicsImageRendererFormat()
-            format.scale = scale
-            format.opaque = opaque
-            let renderer = UIGraphicsImageRenderer(bounds: self.bounds,
-                                                   format: format)
-            return renderer.image { (context) in
-                self.layer.render(in: context.cgContext)
-            }
-        } else {
-            UIGraphicsBeginImageContextWithOptions(bounds.size, opaque, scale)
-            if let _ = UIGraphicsGetCurrentContext() {
-                drawHierarchy(in: bounds, afterScreenUpdates: true)
-                let image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                return image
-            }
-            owsFailDebug("Could not create graphics context.")
-            return nil
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = scale
+        format.opaque = opaque
+        let renderer = UIGraphicsImageRenderer(bounds: self.bounds,
+                                               format: format)
+        return renderer.image { (context) in
+            self.layer.render(in: context.cgContext)
         }
     }
 
@@ -137,23 +125,34 @@ public extension UIViewController {
     }
 
     func presentAlert(_ alert: UIAlertController, animated: Bool) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                self?.presentAlert(alert, animated: animated)
+            }
+            return
+        }
+        
         setupForIPadIfNeeded(alert: alert)
-        self.present(alert,
-                     animated: animated,
-                     completion: {
-                        alert.applyAccessibilityIdentifiers()
-        })
+        
+        self.present(alert, animated: animated) {
+            alert.applyAccessibilityIdentifiers()
+        }
     }
 
     func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { [weak self] in
+                self?.presentAlert(alert, completion: completion)
+            }
+            return
+        }
+        
         setupForIPadIfNeeded(alert: alert)
-        self.present(alert,
-                     animated: true,
-                     completion: {
-                        alert.applyAccessibilityIdentifiers()
-
-                        completion()
-        })
+        
+        self.present(alert, animated: true) {
+            alert.applyAccessibilityIdentifiers()
+            completion()
+        }
     }
     
     private func setupForIPadIfNeeded(alert: UIAlertController) {
