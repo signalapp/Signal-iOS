@@ -521,7 +521,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             poller.stop()
         }
         
-        ClosedGroupPoller.shared.stop()
+        ClosedGroupPoller.shared.stopAllPollers()
         OpenGroupManager.shared.stopPolling()
     }
     
