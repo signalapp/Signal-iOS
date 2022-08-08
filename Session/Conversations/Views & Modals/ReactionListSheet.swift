@@ -50,8 +50,8 @@ final class ReactionListSheet: BaseVC {
             bottom: 0,
             trailing: Values.smallSpacing
         )
-        result.minimumLineSpacing = 0
-        result.minimumInteritemSpacing = 0
+        result.minimumLineSpacing = Values.smallSpacing
+        result.minimumInteritemSpacing = Values.smallSpacing
         result.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         
         return result
