@@ -246,6 +246,8 @@ class MessageDetailViewController: OWSTableViewController2 {
         let cellContainer = UIView()
         cellContainer.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
 
+        cellContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCell)))
+
         cellContainer.addSubview(cellView)
         cellView.autoPinHeightToSuperviewMargins()
 
@@ -322,6 +324,16 @@ class MessageDetailViewController: OWSTableViewController2 {
         ))
 
         return section
+    }
+
+    @objc private func didTapCell(_ sender: UITapGestureRecognizer) {
+        // For now, only allow tapping on audio cells. The full gamut of cell types
+        // might result in unexpected behaviors if made tappable from the detail view.
+        guard renderItem?.componentState.audioAttachment != nil else {
+            return
+        }
+
+        _ = cellView.handleTap(sender: sender, componentDelegate: self)
     }
 
     private func buildSenderSection() -> OWSTableSection {
@@ -764,22 +776,34 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
         refreshContentForDatabaseUpdate()
     }
 
-    private func refreshContentForDatabaseUpdate() {
-        guard databaseUpdateTimer == nil else { return }
+    /// ForceImmediately should only be used based on user input, since it ignores any debouncing
+    /// and makes an update happen right away (killing any scheduled/debounced updates)
+    private func refreshContentForDatabaseUpdate(forceImmediately: Bool = false) {
         // Updating this view is slightly expensive and there will be tons of relevant
         // database updates when sending to a large group. Update latency isn't that
         // imporant, so we de-bounce to never update this view more than once every N seconds.
-        self.databaseUpdateTimer = Timer.scheduledTimer(
-            withTimeInterval: 2.0,
-            repeats: false
-        ) { [weak self] _ in
+
+        let updateBlock = { [weak self] in
             guard let self = self else {
                 return
             }
-            assert(self.databaseUpdateTimer != nil)
             self.databaseUpdateTimer?.invalidate()
             self.databaseUpdateTimer = nil
             self.refreshContent()
+        }
+        if forceImmediately {
+            updateBlock()
+            return
+        }
+
+        guard databaseUpdateTimer == nil else { return }
+
+        self.databaseUpdateTimer = Timer.scheduledTimer(
+            withTimeInterval: 2.0,
+            repeats: false
+        ) { _ in
+            assert(self.databaseUpdateTimer != nil)
+            updateBlock()
         }
     }
 
@@ -886,7 +910,7 @@ extension MessageDetailViewController: CVComponentDelegate {
     }
 
     func cvc_enqueueReloadWithoutCaches() {
-        self.refreshContentForDatabaseUpdate()
+        self.refreshContentForDatabaseUpdate(forceImmediately: true)
     }
 
     // MARK: - Body Text Items

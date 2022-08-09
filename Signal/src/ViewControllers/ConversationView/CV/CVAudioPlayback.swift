@@ -114,7 +114,17 @@ public class CVAudioPlayer: NSObject {
             audioPlayback.setPlaybackRate(1)
         }
         audioPlayback.delegate = self
+
+        let oldAudioPlayback = self.audioPlayback
         self.audioPlayback = audioPlayback
+
+        // Let the existing player know its state has changed.
+        if let oldId = oldAudioPlayback?.attachmentId {
+            for listener in listeners.elements {
+                listener.audioPlayerStateDidChange(attachmentId: oldId)
+            }
+        }
+
         return audioPlayback
     }
 
