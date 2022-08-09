@@ -248,6 +248,9 @@ static void uncaughtExceptionHandler(NSException *exception)
 {
     [self setupNSEInteroperation];
 
+    // Necessary in order to receive background-fetch notifications.
+    [UIApplication.sharedApplication setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
+
     if (CurrentAppContext().isRunningTests) {
         [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];
         return YES;
