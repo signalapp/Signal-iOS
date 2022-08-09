@@ -1536,7 +1536,9 @@ class CameraBottomBar: UIView {
                                                          comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera.")
 
         init() {
-            super.init(items: [ ContentTypeSelectionControl.titleCamera.uppercased(), ContentTypeSelectionControl.titleText.uppercased() ])
+            super.init(frame: .zero)
+            super.insertSegment(withTitle: ContentTypeSelectionControl.titleText.uppercased(), at: 0, animated: false)
+            super.insertSegment(withTitle: ContentTypeSelectionControl.titleCamera.uppercased(), at: 0, animated: false)
 
             backgroundColor = .clear
 
