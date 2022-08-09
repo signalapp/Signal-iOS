@@ -34,6 +34,7 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
         self.mediaTitleViewController = mediaTitleViewController
         self.documentTitleViewController = documentTitleViewController
         super.init(nibName: nil, bundle: nil)
+        self.documentTitleViewController.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -98,3 +99,36 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
         dismiss(animated: true, completion: nil)
     }
 }
+
+// MARK: - UIDocumentInteractionControllerDelegate
+
+extension AllMediaViewController: UIDocumentInteractionControllerDelegate {
+    public func documentInteractionControllerViewControllerForPreview(_ controller: UIDocumentInteractionController) -> UIViewController {
+        return self
+    }
+}
+
+// MARK: - DocumentTitleViewControllerDelegate
+
+extension AllMediaViewController: DocumentTileViewControllerDelegate {
+    public func share(fileUrl: URL) {
+        let shareVC = UIActivityViewController(activityItems: [ fileUrl ], applicationActivities: nil)
+        
+        if UIDevice.current.isIPad {
+            shareVC.excludedActivityTypes = []
+            shareVC.popoverPresentationController?.permittedArrowDirections = []
+            shareVC.popoverPresentationController?.sourceView = self.view
+            shareVC.popoverPresentationController?.sourceRect = self.view.bounds
+        }
+        
+        navigationController?.present(shareVC, animated: true, completion: nil)
+    }
+    
+    public func preview(fileUrl: URL) {
+        let interactionController: UIDocumentInteractionController = UIDocumentInteractionController(url: fileUrl)
+        interactionController.delegate = self
+        interactionController.presentPreview(animated: true)
+    }
+}
+
+

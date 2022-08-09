@@ -23,6 +23,8 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     private var isAutoLoadingNextPage: Bool = false
     private var currentTargetOffset: CGPoint?
     
+    public var delegate: DocumentTileViewControllerDelegate?
+    
     // MARK: - Initialization
 
     init(viewModel: MediaGalleryViewModel) {
@@ -313,8 +315,28 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
+        let attachment: Attachment = self.viewModel.galleryData[indexPath.section].elements[indexPath.row].attachment
+        guard let originalFilePath: String = attachment.originalFilePath else { return }
+        
+        let fileUrl: URL = URL(fileURLWithPath: originalFilePath)
+        
+        // Open a preview of the document for text, pdf or microsoft files
+        if
+            attachment.isText ||
+            attachment.isMicrosoftDoc ||
+            attachment.contentType == OWSMimeTypeApplicationPdf
+        {
+            
+            delegate?.preview(fileUrl: fileUrl)
+            return
+        }
+        
+        // Otherwise share the file
+        delegate?.share(fileUrl: fileUrl)
     }
 }
+
+// MARK: - View
 
 class DocumentCell: UITableViewCell {
 
@@ -471,4 +493,11 @@ class DocumentStaticHeaderView: UIView {
     public func configure(title: String) {
         self.label.text = title
     }
+}
+
+// MARK: - DocumentTitleViewControllerDelegate
+
+public protocol DocumentTileViewControllerDelegate: AnyObject {
+    func share(fileUrl: URL)
+    func preview(fileUrl: URL)
 }
