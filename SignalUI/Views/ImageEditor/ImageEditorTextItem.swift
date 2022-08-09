@@ -10,15 +10,56 @@ class ImageEditorTextItem: ImageEditorItem {
 
     let color: ImageEditorColor
 
-    let font: UIFont
-
-    enum Style: Int {
-        case regular = 0
+    enum DecorationStyle: Int {
+        case none = 0
         case inverted
         case underline
         case outline
     }
-    let style: Style
+    let decorationStyle: DecorationStyle
+
+    enum TextStyle: Int {
+        case regular = 0
+        case bold
+        case serif
+        case script
+        case condensed
+    }
+    let textStyle: TextStyle
+
+    let fontSize: CGFloat
+    static let defaultFontSize: CGFloat = 36
+    var font: UIFont {
+        ImageEditorTextItem.font(forTextStyle: textStyle, pointSize: fontSize)
+    }
+
+    class func font(forTextStyle textStyle: TextStyle, pointSize: CGFloat) -> UIFont {
+        // TODO: this is a copy-paste code from TextAttachmentView that needs to be consolidated in one place.
+        let attributes: [UIFontDescriptor.AttributeName: Any]
+
+        switch textStyle {
+        case .regular:
+            attributes = [.name: "Inter-Regular_Bold"]
+        case .bold:
+            attributes = [.name: "Inter-Regular_Black"]
+        case .serif:
+            attributes = [.name: "EBGaramond-Regular"]
+        case .script:
+            attributes = [.name: "Parisienne-Regular"]
+        case .condensed:
+            // TODO: Ideally we could set an attribute to make this font
+            // all caps, but iOS deprecated that ability and didn't add
+            // a new equivalent function.
+            attributes = [.name: "BarlowCondensed-Medium"]
+        }
+
+        // TODO: Eventually we'll want to provide a cascadeList here to fallback
+        // to different fonts for different scripts rather than just relying on
+        // the built in OS fallbacks that don't tend to match the desired style.
+        let descriptor = UIFontDescriptor(fontAttributes: attributes)
+
+        return UIFont(descriptor: descriptor, size: pointSize)
+    }
 
     // In order to render the text at a consistent size
     // in very differently sized contexts (canvas in
@@ -58,8 +99,9 @@ class ImageEditorTextItem: ImageEditorItem {
 
     init(text: String,
          color: ImageEditorColor,
-         font: UIFont,
-         style: Style = .regular,
+         fontSize: CGFloat,
+         textStyle: TextStyle = .regular,
+         decorationStyle: DecorationStyle = .none,
          fontReferenceImageWidth: CGFloat,
          unitCenter: ImageEditorSample = ImageEditorSample(x: 0.5, y: 0.5),
          unitWidth: CGFloat = ImageEditorTextItem.kDefaultUnitWidth,
@@ -67,8 +109,9 @@ class ImageEditorTextItem: ImageEditorItem {
          scaling: CGFloat = 1.0) {
         self.text = text
         self.color = color
-        self.font = font
-        self.style = style
+        self.fontSize = fontSize
+        self.textStyle = textStyle
+        self.decorationStyle = decorationStyle
         self.fontReferenceImageWidth = fontReferenceImageWidth
         self.unitCenter = unitCenter
         self.unitWidth = unitWidth
@@ -81,8 +124,9 @@ class ImageEditorTextItem: ImageEditorItem {
     private init(itemId: String,
                  text: String,
                  color: ImageEditorColor,
-                 font: UIFont,
-                 style: Style,
+                 fontSize: CGFloat,
+                 textStyle: TextStyle,
+                 decorationStyle: DecorationStyle,
                  fontReferenceImageWidth: CGFloat,
                  unitCenter: ImageEditorSample,
                  unitWidth: CGFloat,
@@ -90,8 +134,9 @@ class ImageEditorTextItem: ImageEditorItem {
                  scaling: CGFloat) {
         self.text = text
         self.color = color
-        self.font = font
-        self.style = style
+        self.fontSize = fontSize
+        self.textStyle = textStyle
+        self.decorationStyle = decorationStyle
         self.fontReferenceImageWidth = fontReferenceImageWidth
         self.unitCenter = unitCenter
         self.unitWidth = unitWidth
@@ -102,17 +147,17 @@ class ImageEditorTextItem: ImageEditorItem {
     }
 
     class func empty(withColor color: ImageEditorColor,
-                     style: Style,
+                     textStyle: TextStyle,
+                     decorationStyle: DecorationStyle,
                      unitWidth: CGFloat,
                      fontReferenceImageWidth: CGFloat,
                      scaling: CGFloat,
                      rotationRadians: CGFloat) -> ImageEditorTextItem {
-        // TODO: Tune the default font size.
-        let font = UIFont.boldSystemFont(ofSize: 36)
         return ImageEditorTextItem(text: "",
                                    color: color,
-                                   font: font,
-                                   style: style,
+                                   fontSize: ImageEditorTextItem.defaultFontSize,
+                                   textStyle: textStyle,
+                                   decorationStyle: decorationStyle,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitWidth: unitWidth,
                                    rotationRadians: rotationRadians,
@@ -123,8 +168,9 @@ class ImageEditorTextItem: ImageEditorItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: newText,
                                    color: newColor,
-                                   font: font,
-                                   style: style,
+                                   fontSize: fontSize,
+                                   textStyle: textStyle,
+                                   decorationStyle: decorationStyle,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitCenter: unitCenter,
                                    unitWidth: unitWidth,
@@ -136,8 +182,9 @@ class ImageEditorTextItem: ImageEditorItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
-                                   font: font,
-                                   style: style,
+                                   fontSize: fontSize,
+                                   textStyle: textStyle,
+                                   decorationStyle: decorationStyle,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitCenter: unitCenter,
                                    unitWidth: unitWidth,
@@ -149,8 +196,9 @@ class ImageEditorTextItem: ImageEditorItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
-                                   font: font,
-                                   style: style,
+                                   fontSize: fontSize,
+                                   textStyle: textStyle,
+                                   decorationStyle: decorationStyle,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitCenter: unitCenter,
                                    unitWidth: unitWidth,
@@ -162,8 +210,9 @@ class ImageEditorTextItem: ImageEditorItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
-                                   font: font,
-                                   style: style,
+                                   fontSize: fontSize,
+                                   textStyle: textStyle,
+                                   decorationStyle: decorationStyle,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitCenter: unitCenter,
                                    unitWidth: unitWidth,
@@ -171,12 +220,13 @@ class ImageEditorTextItem: ImageEditorItem {
                                    scaling: scaling)
     }
 
-    func copy(font: UIFont) -> ImageEditorTextItem {
+    func copy(fontSize: CGFloat) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
-                                   font: font,
-                                   style: style,
+                                   fontSize: fontSize,
+                                   textStyle: textStyle,
+                                   decorationStyle: decorationStyle,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitCenter: unitCenter,
                                    unitWidth: unitWidth,
@@ -188,8 +238,9 @@ class ImageEditorTextItem: ImageEditorItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
-                                   font: font,
-                                   style: style,
+                                   fontSize: fontSize,
+                                   textStyle: textStyle,
+                                   decorationStyle: decorationStyle,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitCenter: unitCenter,
                                    unitWidth: unitWidth,
@@ -197,12 +248,13 @@ class ImageEditorTextItem: ImageEditorItem {
                                    scaling: scaling)
     }
 
-    func copy(style: Style) -> ImageEditorTextItem {
+    func copy(textStyle: TextStyle, decorationStyle: DecorationStyle) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
-                                   font: font,
-                                   style: style,
+                                   fontSize: fontSize,
+                                   textStyle: textStyle,
+                                   decorationStyle: decorationStyle,
                                    fontReferenceImageWidth: fontReferenceImageWidth,
                                    unitCenter: unitCenter,
                                    unitWidth: unitWidth,
@@ -217,9 +269,9 @@ class ImageEditorTextItem: ImageEditorItem {
     static func == (left: ImageEditorTextItem, right: ImageEditorTextItem) -> Bool {
         return (left.text == right.text &&
                 left.color == right.color &&
-                left.font.fontName == right.font.fontName &&
-                left.style == right.style &&
-                left.font.pointSize.fuzzyEquals(right.font.pointSize) &&
+                left.textStyle == right.textStyle &&
+                left.decorationStyle == right.decorationStyle &&
+                left.fontSize.fuzzyEquals(right.fontSize) &&
                 left.fontReferenceImageWidth.fuzzyEquals(right.fontReferenceImageWidth) &&
                 left.unitCenter.fuzzyEquals(right.unitCenter) &&
                 left.unitWidth.fuzzyEquals(right.unitWidth) &&

@@ -138,7 +138,8 @@ class ImageEditorView: AttachmentPrepContentView {
     }
 
     func createNewTextItem(withColor color: ImageEditorColor? = nil,
-                           textStyle: ImageEditorTextItem.Style = .regular) -> ImageEditorTextItem {
+                           textStyle: ImageEditorTextItem.TextStyle = .regular,
+                           decorationStyle: ImageEditorTextItem.DecorationStyle = .none) -> ImageEditorTextItem {
         Logger.verbose("")
 
         let viewSize = canvasView.gestureReferenceView.bounds.size
@@ -156,7 +157,8 @@ class ImageEditorView: AttachmentPrepContentView {
         let scaling = 1 / model.currentTransform().scaling
 
         let textItem = ImageEditorTextItem.empty(withColor: color ?? model.color,
-                                                 style: textStyle,
+                                                 textStyle: textStyle,
+                                                 decorationStyle: decorationStyle,
                                                  unitWidth: textWidthUnit,
                                                  fontReferenceImageWidth: imageFrame.size.width,
                                                  scaling: scaling,

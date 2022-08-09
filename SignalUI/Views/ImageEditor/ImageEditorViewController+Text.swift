@@ -85,51 +85,36 @@ extension ImageEditorViewController {
      * This method needs to be called when text item editing is about to begin.
      */
     func updateTextViewAttributes(using textItem: ImageEditorTextItem) {
-        updateTextView(color: textItem.color.color, textStyle: textItem.style, font: textItem.font)
+        updateTextView(color: textItem.color.color, font: textItem.font, decorationStyle: textItem.decorationStyle)
     }
 
-    /**
-     * Change UITextView's color to a provided value.
-     * This method needs to be called when user changes text color while UITextView is active.
-     */
-    func updateTextViewAttributes(withColor color: UIColor) {
-        updateTextView(color: color, textStyle: textToolbar.textStyle, font: textView.font)
-    }
-
-    /**
-     * Change UITextView's style to a provided value.
-     * This method needs to be called when user changes text style while UITextView is active.
-     */
-    func updateTextViewAttributes(withTextStyle textStyle: ImageEditorTextItem.Style) {
+    // Update UITextView to use style (font, color, decoration) as selected in provided TextToolbar.
+    // This method needs to be called whenever user changes text styling while UITextView is active
+    // in order to reflect the changes right away.
+    func updateTextViewAttributes(using textToolbar: TextToolbar) {
+        let fontPointSize = textView.font?.pointSize ?? ImageEditorTextItem.defaultFontSize
         updateTextView(color: textToolbar.paletteView.selectedValue.color,
-                       textStyle: textStyle,
-                       font: textView.font)
+                       font: ImageEditorTextItem.font(forTextStyle: textToolbar.textStyle, pointSize: fontPointSize),
+                       decorationStyle: textToolbar.decorationStyle)
     }
 
-    private func updateTextView(color: UIColor,
-                                textStyle: ImageEditorTextItem.Style,
-                                font: UIFont?) {
-
-        var attributes: [NSAttributedString.Key: Any] = [:]
+    private func updateTextView(color: UIColor, font: UIFont, decorationStyle: ImageEditorTextItem.DecorationStyle) {
+        var attributes: [NSAttributedString.Key: Any] = [ .font: font]
 
         let textColor: UIColor = {
-            switch textStyle {
-            case .regular: return color
+            switch decorationStyle {
+            case .none: return color
             default: return .white
             }
         }()
         attributes[.foregroundColor] = textColor
-
-        if let font = font {
-            attributes[.font] = font
-        }
 
         if let paragraphStyle = NSParagraphStyle.default.mutableCopy() as? NSMutableParagraphStyle {
             paragraphStyle.alignment = .center
             attributes[.paragraphStyle] = paragraphStyle
         }
 
-        switch textStyle {
+        switch decorationStyle {
         case .underline:
             attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
             attributes[.underlineColor] = color
@@ -188,6 +173,12 @@ extension ImageEditorViewController {
         textToolbar.paletteView.selectedValue = textItem.color
         textViewAccessoryToolbar.paletteView.selectedValue = textItem.color
 
+        textToolbar.textStyle = textItem.textStyle
+        textViewAccessoryToolbar.textStyle = textItem.textStyle
+
+        textToolbar.decorationStyle = textItem.decorationStyle
+        textViewAccessoryToolbar.decorationStyle = textItem.decorationStyle
+
         textView.text = textItem.text
         updateTextViewAttributes(using: textItem)
 
@@ -235,13 +226,13 @@ extension ImageEditorViewController {
             textItem = textItem.copy(unitCenter: textCenterImageUnit)
         }
 
-        // Update font.
-        if let newFont = textView.font {
-            textItem = textItem.copy(font: newFont)
+        // Update font size.
+        if let textViewFont = textView.font {
+            textItem = textItem.copy(fontSize: textViewFont.pointSize)
         }
 
-        // Update text style.
-        textItem = textItem.copy(style: textToolbar.textStyle)
+        // Update text and decoration style.
+        textItem = textItem.copy(textStyle: textToolbar.textStyle, decorationStyle: textToolbar.decorationStyle)
 
         // Deleting all text results in text object being deleted.
         guard let text = textView.text?.ows_stripped(), !text.isEmpty else {
@@ -278,26 +269,24 @@ extension ImageEditorViewController {
             return
         }
 
+        guard let textViewFont = textView.font else {
+            owsFailDebug("Text View font is nil")
+            return
+        }
+
         switch gestureRecognizer.state {
         case .began:
-            pinchFontStart = textView.font
+            pinchFontSizeStart = textViewFont.pointSize
 
         case .changed, .ended:
-            guard let pinchFontStart = pinchFontStart else {
-                return
-            }
-            var pointSize: CGFloat = pinchFontStart.pointSize
+            var pointSize = pinchFontSizeStart
             if gestureRecognizer.pinchStateLast.distance > 0 {
                 pointSize *= gestureRecognizer.pinchStateLast.distance / gestureRecognizer.pinchStateStart.distance
             }
-            let minPointSize: CGFloat = 12
-            let maxPointSize: CGFloat = 64
-            pointSize = max(minPointSize, min(maxPointSize, pointSize))
-            let font = pinchFontStart.withSize(pointSize)
-            textView.font = font
+            textView.font = textViewFont.withSize(pointSize.clamp(12, 64))
 
         default:
-            pinchFontStart = nil
+            break
         }
     }
 
@@ -309,15 +298,12 @@ extension ImageEditorViewController {
     @objc
     func didTapTextStyleButton(sender: UIButton) {
         let currentTextStyle = textToolbar.textStyle
-        var nextTextStyle = ImageEditorTextItem.Style(rawValue: currentTextStyle.rawValue + 1) ?? .regular
-        if nextTextStyle == .outline {
-            nextTextStyle = .regular
-        }
+        let nextTextStyle = ImageEditorTextItem.TextStyle(rawValue: currentTextStyle.rawValue + 1) ?? .regular
 
         // Update selected text object if any.
         if let selectedTextItemId = imageEditorView.selectedTextItemId,
            let selectedTextItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
-            let newTextItem = selectedTextItem.copy(style: nextTextStyle)
+            let newTextItem = selectedTextItem.copy(textStyle: nextTextStyle, decorationStyle: textToolbar.decorationStyle)
             model.replace(item: newTextItem)
         }
 
@@ -327,7 +313,32 @@ extension ImageEditorViewController {
 
         // Update text view.
         if textView.isFirstResponder {
-            updateTextViewAttributes(withTextStyle: nextTextStyle)
+            updateTextViewAttributes(using: textToolbar)
+        }
+    }
+
+    @objc
+    func didTapDecorationStyleButton(sender: UIButton) {
+        let currentDecorationStyle = textToolbar.decorationStyle
+        var nextDecorationStyle = ImageEditorTextItem.DecorationStyle(rawValue: currentDecorationStyle.rawValue + 1) ?? .none
+        if nextDecorationStyle == .outline {
+            nextDecorationStyle = .none
+        }
+
+        // Update selected text object if any.
+        if let selectedTextItemId = imageEditorView.selectedTextItemId,
+           let selectedTextItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
+            let newTextItem = selectedTextItem.copy(textStyle: textToolbar.textStyle, decorationStyle: nextDecorationStyle)
+            model.replace(item: newTextItem)
+        }
+
+        // Update toolbar.
+        textToolbar.decorationStyle = nextDecorationStyle
+        textViewAccessoryToolbar.decorationStyle = nextDecorationStyle
+
+        // Update text view.
+        if textView.isFirstResponder {
+            updateTextViewAttributes(using: textToolbar)
         }
     }
 
@@ -337,10 +348,13 @@ extension ImageEditorViewController {
 
         let paletteView: ImageEditorPaletteView
 
-        let textStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-style-1"), backgroundStyle: .blur)
-        var textStyle: ImageEditorTextItem.Style = .regular {
+        let textStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-font"), backgroundStyle: .blur)
+        var textStyle: ImageEditorTextItem.TextStyle = .regular
+
+        let decorationStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-style-1"), backgroundStyle: .blur)
+        var decorationStyle: ImageEditorTextItem.DecorationStyle = .none {
             didSet {
-                textStyleButton.isSelected = (textStyle != .regular)
+                decorationStyleButton.isSelected = (decorationStyle != .none)
             }
         }
 
@@ -348,8 +362,8 @@ extension ImageEditorViewController {
             self.paletteView = ImageEditorPaletteView(currentColor: currentColor)
             super.init(frame: .zero)
 
-            textStyleButton.setContentCompressionResistancePriority(.required, for: .vertical)
-            textStyleButton.setImage(#imageLiteral(resourceName: "media-editor-text-style-2"), for: .selected)
+            decorationStyleButton.setContentCompressionResistancePriority(.required, for: .vertical)
+            decorationStyleButton.setImage(#imageLiteral(resourceName: "media-editor-text-style-2"), for: .selected)
 
             // A container with width capped at a predefined size,
             // centered in superview and constrained to layout margins.
@@ -368,15 +382,16 @@ extension ImageEditorViewController {
 
             // I had to use a custom layout guide because stack view isn't centered
             // but instead has slight offset towards the trailing edge.
-            let stackView = UIStackView(arrangedSubviews: [ paletteView, textStyleButton ])
+            let stackView = UIStackView(arrangedSubviews: [ paletteView, textStyleButton, decorationStyleButton ])
             stackView.translatesAutoresizingMaskIntoConstraints = false
             stackView.alignment = .center
             stackView.spacing = 8
+            stackView.setCustomSpacing(0, after: textStyleButton)
             addSubview(stackView)
             addConstraints([
                 stackView.leadingAnchor.constraint(equalTo: stackViewLayoutGuide.leadingAnchor),
                 stackView.trailingAnchor.constraint(equalTo: stackViewLayoutGuide.trailingAnchor,
-                                                    constant: textStyleButton.layoutMargins.trailing),
+                                                    constant: decorationStyleButton.layoutMargins.trailing),
                 stackView.topAnchor.constraint(equalTo: stackViewLayoutGuide.topAnchor),
                 stackView.bottomAnchor.constraint(equalTo: stackViewLayoutGuide.bottomAnchor) ])
         }
@@ -432,8 +447,11 @@ extension ImageEditorViewController: ImageEditorViewDelegate {
             textToolbar.paletteView.selectedValue = textItem.color
             textViewAccessoryToolbar.paletteView.selectedValue = textItem.color
 
-            textToolbar.textStyle = textItem.style
-            textViewAccessoryToolbar.textStyle = textItem.style
+            textToolbar.textStyle = textItem.textStyle
+            textViewAccessoryToolbar.textStyle = textItem.textStyle
+
+            textToolbar.decorationStyle = textItem.decorationStyle
+            textViewAccessoryToolbar.decorationStyle = textItem.decorationStyle
         } else {
             mode = .draw
         }

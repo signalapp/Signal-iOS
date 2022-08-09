@@ -752,20 +752,21 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
 
         // We need to adjust the font size to reflect the current output scale,
         // using the image width as reference.
-        let fontSize = item.font.pointSize * imageFrame.size.width / item.fontReferenceImageWidth
+        let fontSize = item.fontSize * imageFrame.size.width / item.fontReferenceImageWidth
+        let font = ImageEditorTextItem.font(forTextStyle: item.textStyle, pointSize: fontSize)
 
         let textColor: UIColor = {
-            switch item.style {
-            case .regular: return item.color.color
+            switch item.decorationStyle {
+            case .none: return item.color.color
             default: return UIColor.white
             }
         }()
 
         let text = item.text.filterForDisplay ?? ""
         let attributedString = NSMutableAttributedString(string: text,
-                                                         attributes: [ .font: item.font.withSize(fontSize),
+                                                         attributes: [ .font: font,
                                                                        .foregroundColor: textColor ])
-        switch item.style {
+        switch item.decorationStyle {
         case .underline:
             attributedString.addAttributes([ .underlineStyle: NSUnderlineStyle.single.rawValue,
                                              .underlineColor: item.color.color ],

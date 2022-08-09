@@ -186,7 +186,7 @@ class ImageEditorViewController: OWSViewController {
     var textUIInitialized = false
     var startEditingTextOnViewAppear = false
     var currentTextItem: (textItem: ImageEditorTextItem, isNewItem: Bool)?
-    var pinchFontStart: UIFont?
+    var pinchFontSizeStart: CGFloat = ImageEditorTextItem.defaultFontSize
     lazy var textViewContainer: UIView = {
         let view = UIView(frame: view.bounds)
         view.preservesSuperviewLayoutMargins = true
@@ -202,11 +202,8 @@ class ImageEditorViewController: OWSViewController {
         textView.tintColor = .white
         textView.isScrollEnabled = false
         textView.scrollsToTop = false
-        textView.isUserInteractionEnabled = true
         textView.textAlignment = .center
-        textView.textContainerInset = .zero
         textView.textContainer.lineFragmentPadding = 0
-        textView.contentInset = .zero
         return textView
     }()
     lazy var textToolbar: TextToolbar = {
@@ -214,6 +211,7 @@ class ImageEditorViewController: OWSViewController {
         toolbar.preservesSuperviewLayoutMargins = true
         toolbar.paletteView.delegate = self
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
+        toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton(sender:)), for: .touchUpInside)
         return toolbar
     }()
     lazy var textViewAccessoryToolbar: TextToolbar = {
@@ -221,6 +219,7 @@ class ImageEditorViewController: OWSViewController {
         toolbar.preservesSuperviewLayoutMargins = true
         toolbar.paletteView.delegate = self
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
+        toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton(sender:)), for: .touchUpInside)
         return toolbar
     }()
 
@@ -546,9 +545,9 @@ extension ImageEditorViewController {
     private func didTapAddText(sender: UIButton) {
         Logger.verbose("")
 
-        let textStyle = textToolbar.textStyle
+        let decorationStyle = textToolbar.decorationStyle
         let textColor = textToolbar.paletteView.selectedValue
-        let textItem = imageEditorView.createNewTextItem(withColor: textColor, textStyle: textStyle)
+        let textItem = imageEditorView.createNewTextItem(withColor: textColor, decorationStyle: decorationStyle)
         selectTextItem(textItem, isNewItem: true, startEditing: true)
     }
 
@@ -658,7 +657,7 @@ extension ImageEditorViewController: ImageEditorPaletteViewDelegate {
                 textToolbar.paletteView.selectedValue = color
             }
             if textView.isFirstResponder {
-                updateTextViewAttributes(withColor: color.color)
+                updateTextViewAttributes(using: textToolbar)
             }
 
         default:
