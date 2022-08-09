@@ -34,6 +34,7 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
         self.mediaTitleViewController = mediaTitleViewController
         self.documentTitleViewController = documentTitleViewController
         super.init(nibName: nil, bundle: nil)
+        self.mediaTitleViewController.delegate = self
         self.documentTitleViewController.delegate = self
     }
     
@@ -131,4 +132,23 @@ extension AllMediaViewController: DocumentTileViewControllerDelegate {
     }
 }
 
+// MARK: - DocumentTitleViewControllerDelegate
+
+extension AllMediaViewController: MediaTileViewControllerDelegate {
+    public func presentdetailViewController(_ detailViewController: UIViewController, animated: Bool) {
+        self.present(detailViewController, animated: animated)
+    }
+}
+
+// MARK: - MediaPresentationContextProvider
+
+extension AllMediaViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(mediaItem: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        return self.mediaTitleViewController.mediaPresentationContext(mediaItem: mediaItem, in: coordinateSpace)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return self.mediaTitleViewController.snapshotOverlayView(in: coordinateSpace)
+    }
+}
 

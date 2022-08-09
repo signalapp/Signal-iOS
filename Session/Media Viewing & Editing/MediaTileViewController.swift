@@ -17,11 +17,13 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     static let footerBarHeight: CGFloat = 40
     static let loadMoreHeaderHeight: CGFloat = 100
     
-    private let viewModel: MediaGalleryViewModel
+    public let viewModel: MediaGalleryViewModel
     private var hasLoadedInitialData: Bool = false
     private var didFinishInitialLayout: Bool = false
     private var isAutoLoadingNextPage: Bool = false
     private var currentTargetOffset: CGPoint?
+    
+    public var delegate: MediaTileViewControllerDelegate?
     
     var isInBatchSelectMode = false {
         didSet {
@@ -492,12 +494,6 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
             // [ConversationSettingsView]
             // [ConversationView]
             //
-            guard
-                let viewControllers: [UIViewController] = self.navigationController?.viewControllers,
-                viewControllers.count > 1,
-                viewControllers[viewControllers.count - 2] is OWSConversationSettingsViewController
-            else { return }
-            
             let detailViewController: UIViewController? = MediaGalleryViewModel.createDetailViewController(
                 for: self.viewModel.threadId,
                 threadVariant: self.viewModel.threadVariant,
@@ -508,7 +504,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
             
             guard let detailViewController: UIViewController = detailViewController else { return }
             
-            self.present(detailViewController, animated: true)
+            delegate?.presentdetailViewController(detailViewController, animated: true)
             return
         }
         
@@ -922,4 +918,10 @@ extension MediaTileViewController: MediaPresentationContextProvider {
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
         return self.navigationController?.navigationBar.generateSnapshot(in: coordinateSpace)
     }
+}
+
+// MARK: - MediaTileViewControllerDelegate
+
+public protocol MediaTileViewControllerDelegate: AnyObject {
+    func presentdetailViewController(_ detailViewController: UIViewController, animated: Bool)
 }
