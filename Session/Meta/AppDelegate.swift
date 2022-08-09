@@ -195,11 +195,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Resume database
         NotificationCenter.default.post(name: Database.resumeNotification, object: self)
         
+        // Background tasks only last for a certain amount of time (which can result in a crash and a
+        // prompt appearing for the user), we want to avoid this and need to make sure to suspend the
+        // database again before the background task ends so we start a timer that expires 1 second
+        // before the background task is due to expire in order to do so
+        let cancelTimer: Timer = Timer.scheduledTimerOnMainThread(
+            withTimeInterval: (application.backgroundTimeRemaining - 1),
+            repeats: false
+        ) { timer in
+            timer.invalidate()
+            
+            guard BackgroundPoller.isValid else { return }
+            
+            BackgroundPoller.isValid = false
+            
+            // Suspend database
+            NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            
+            SNLog("Background poll failed due to manual timeout")
+            completionHandler(.failed)
+        }
+        
+        // Flag the background poller as valid first and then trigger it to poll once the app is
+        // ready (we do this here rather than in `BackgroundPoller.poll` to avoid the rare edge-case
+        // that could happen when the timeout triggers before the app becomes ready which would have
+        // incorrectly set this 'isValid' flag to true after it should have timed out)
+        BackgroundPoller.isValid = true
+        
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             BackgroundPoller.poll { result in
+                guard BackgroundPoller.isValid else { return }
+                
+                BackgroundPoller.isValid = false
+                
                 // Suspend database
                 NotificationCenter.default.post(name: Database.suspendNotification, object: self)
                 
+                cancelTimer.invalidate()
                 completionHandler(result)
             }
         }
