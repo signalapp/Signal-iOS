@@ -202,7 +202,7 @@ extension OpenGroupAPI {
                 case .httpRequestFailedAtDestination(let statusCode, let data, _) = error,
                 statusCode == 400,
                 let dataString: String = String(data: data, encoding: .utf8),
-                dataString.contains("Invalid authentication: this server requires the use of blinded idse")
+                dataString.contains("Invalid authentication: this server requires the use of blinded ids")
             else { return Promise.value(false) }
             
             let (promise, seal) = Promise<Bool>.pending()
