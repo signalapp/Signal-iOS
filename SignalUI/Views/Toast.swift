@@ -28,13 +28,15 @@ public class ToastController: NSObject, ToastViewDelegate {
 
     // MARK: Public
 
-    @objc
-    public func presentToastView(fromBottomOfView view: UIView, inset: CGFloat) {
+    public func presentToastView(from edge: ALEdge, of view: UIView, inset: CGFloat) {
+        owsAssertDebug(edge == .bottom || edge == .top)
+        let offset = (edge == .top) ? inset : -inset
+
         Logger.debug("")
         toastView.alpha = 0
         view.addSubview(toastView)
         toastView.setCompressionResistanceHigh()
-        toastView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -inset)
+        toastView.autoPinEdge(edge, to: edge, of: view, withOffset: offset)
         toastView.autoPinWidthToSuperview(withMargin: 8)
 
         if let currentToastController = type(of: self).currentToastController {
@@ -190,6 +192,6 @@ public extension UIViewController {
         // TODO: There should be a better way to do this.
         // TODO: Take into account the keyboard height.
         let bottomInset = view.safeAreaInsets.bottom + 8 + extraVInset
-        toastController.presentToastView(fromBottomOfView: view, inset: bottomInset)
+        toastController.presentToastView(from: .bottom, of: view, inset: bottomInset)
     }
 }

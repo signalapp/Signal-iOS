@@ -748,7 +748,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         let bottomInset = (view.bounds.height - tableView.frame.height)
         let kToastInset: CGFloat = bottomInset + 10
-        toastController.presentToastView(fromBottomOfView: view, inset: kToastInset)
+        toastController.presentToastView(from: .bottom, of: view, inset: kToastInset)
     }
 }
 

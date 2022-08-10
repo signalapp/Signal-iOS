@@ -637,7 +637,7 @@ extension MessageDetailViewController {
             "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP",
             comment: "Toast indicating that the user has copied the sent timestamp."
         ))
-        toast.presentToastView(fromBottomOfView: view, inset: view.safeAreaInsets.bottom + 8)
+        toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
 }
 

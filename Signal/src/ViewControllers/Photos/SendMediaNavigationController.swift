@@ -276,7 +276,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
         let toastText = String.localizedStringWithFormat(toastFormat, SignalAttachment.maxAttachmentsAllowed)
         let toastController = ToastController(text: toastText)
-        toastController.presentToastView(fromBottomOfView: view, inset: view.layoutMargins.bottom + 10)
+        toastController.presentToastView(from: .bottom, of: view, inset: view.layoutMargins.bottom + 10)
     }
 }
 

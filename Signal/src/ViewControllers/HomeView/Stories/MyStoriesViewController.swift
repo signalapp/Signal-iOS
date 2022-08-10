@@ -243,7 +243,7 @@ extension MyStoriesViewController: ContextMenuInteractionDelegate {
                                         if didSucceed {
                                             let toastController = ToastController(text: OWSLocalizedString("STORIES_DID_SAVE",
                                                                                                            comment: "toast alert shown after user taps the 'save' button"))
-                                            toastController.presentToastView(fromBottomOfView: self.view, inset: 16)
+                                            toastController.presentToastView(from: .bottom, of: self.view, inset: 16)
                                         } else {
                                             owsFailDebug("error: \(String(describing: error))")
                                             OWSActionSheets.showErrorAlert(message: OWSLocalizedString("STORIES_SAVE_FAILED",

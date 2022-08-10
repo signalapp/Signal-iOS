@@ -809,7 +809,7 @@ extension AttachmentApprovalViewController {
                             let toastController = ToastController(text: OWSLocalizedString("ATTACHMENT_APPROVAL_MEDIA_DID_SAVE",
                                                                                            comment: "toast alert shown after user taps the 'save' button"))
                             let inset = self.bottomToolView.height + 16
-                            toastController.presentToastView(fromBottomOfView: self.view, inset: inset)
+                            toastController.presentToastView(from: .bottom, of: self.view, inset: inset)
                         } else {
                             owsFailDebug("error: \(String(describing: error))")
                             OWSActionSheets.showErrorAlert(message: errorText)

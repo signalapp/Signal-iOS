@@ -176,7 +176,7 @@ public extension ConversationViewController {
         let toastController = ToastController(text: toastText)
         let kToastInset: CGFloat = 10
         let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
-        toastController.presentToastView(fromBottomOfView: self.view, inset: bottomInset)
+        toastController.presentToastView(from: .bottom, of: self.view, inset: bottomInset)
     }
 
     func presentMissingQuotedReplyToast() {
