@@ -11,10 +11,6 @@ protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, Mes
     var inputToolbar: StoryReplyInputToolbar { get }
     var storyMessage: StoryMessage { get }
     var thread: TSThread? { get }
-    var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator? { get set }
-    var backdropView: UIView? { get }
-
-    var dismissHandler: (() -> Void)? { get set }
 
     var reactionPickerBackdrop: UIView? { get set }
     var reactionPicker: MessageReactionPicker? { get set }

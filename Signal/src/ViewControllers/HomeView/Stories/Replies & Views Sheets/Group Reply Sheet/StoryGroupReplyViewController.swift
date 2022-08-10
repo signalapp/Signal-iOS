@@ -6,13 +6,9 @@ import Foundation
 import UIKit
 import SignalServiceKit
 
-class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
-    override var interactiveScrollViews: [UIScrollView] { [tableView] }
-    override var minHeight: CGFloat { CurrentAppContext().frame.height * 0.6 }
-    override var sheetBackgroundColor: UIColor { .ows_gray90 }
-
-    private lazy var tableView = UITableView()
-    lazy var inputToolbar = StoryReplyInputToolbar()
+class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
+    private(set) lazy var tableView = UITableView()
+    private(set) lazy var inputToolbar = StoryReplyInputToolbar()
     private lazy var inputToolbarBottomConstraint = inputToolbar.autoPinEdge(toSuperviewEdge: .bottom)
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
@@ -36,12 +32,9 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
 
     let storyMessage: StoryMessage
     lazy var thread: TSThread? = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
-    weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
 
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?
-
-    var dismissHandler: (() -> Void)?
 
     init(storyMessage: StoryMessage) {
         self.storyMessage = storyMessage
@@ -52,10 +45,6 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
         if let thread = thread {
             bulkProfileFetch.fetchProfiles(addresses: thread.recipientAddressesWithSneakyTransaction)
         }
-    }
-
-    public required init() {
-        fatalError("init() has not been implemented")
     }
 
     fileprivate var replyLoader: StoryGroupReplyLoader?
@@ -70,11 +59,11 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
         tableView.backgroundColor = .ows_gray90
         tableView.addInteraction(contextMenu)
 
-        contentView.addSubview(tableView)
+        view.addSubview(tableView)
         tableView.autoPinEdgesToSuperviewEdges()
 
         inputToolbar.delegate = self
-        contentView.addSubview(inputToolbar)
+        view.addSubview(inputToolbar)
         inputToolbar.autoPinWidthToSuperview()
         inputToolbarBottomConstraint.isActive = true
 
@@ -84,7 +73,7 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
 
         replyLoader = StoryGroupReplyLoader(storyMessage: storyMessage, threadUniqueId: thread?.uniqueId, tableView: tableView)
 
-        contentView.addSubview(emptyStateView)
+        view.addSubview(emptyStateView)
         emptyStateView.autoPinWidthToSuperview()
         emptyStateView.autoPinEdge(toSuperviewEdge: .top)
         emptyStateView.autoPinEdge(.bottom, to: .top, of: inputToolbar)
@@ -92,20 +81,13 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryReplySheet {
 
     public override var inputAccessoryView: UIView? { inputAccessoryPlaceholder }
 
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag) { [dismissHandler] in
-            completion?()
-            dismissHandler?()
-        }
-    }
-
     func didSendMessage() {
         replyLoader?.reload()
         inputToolbar.messageBody = nil
     }
 }
 
-extension StoryGroupReplySheet: UIScrollViewDelegate {
+extension StoryGroupReplyViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard let visibleRows = tableView.indexPathsForVisibleRows?.map({ $0.row }),
               !visibleRows.isEmpty,
@@ -125,11 +107,11 @@ extension StoryGroupReplySheet: UIScrollViewDelegate {
     }
 }
 
-extension StoryGroupReplySheet: UITableViewDelegate {
+extension StoryGroupReplyViewController: UITableViewDelegate {
 
 }
 
-extension StoryGroupReplySheet: UITableViewDataSource {
+extension StoryGroupReplyViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let item = replyLoader?.replyItem(for: indexPath) else {
             owsFailDebug("Missing item for cell at indexPath \(indexPath)")
@@ -153,7 +135,7 @@ extension StoryGroupReplySheet: UITableViewDataSource {
     }
 }
 
-extension StoryGroupReplySheet: InputAccessoryViewPlaceholderDelegate {
+extension StoryGroupReplyViewController: InputAccessoryViewPlaceholderDelegate {
     public func inputAccessoryPlaceholderKeyboardIsPresenting(animationDuration: TimeInterval, animationCurve: UIView.AnimationCurve) {
         handleKeyboardStateChange(animationDuration: animationDuration, animationCurve: animationCurve)
     }
@@ -209,9 +191,10 @@ extension StoryGroupReplySheet: InputAccessoryViewPlaceholderDelegate {
     }
 }
 
-extension StoryGroupReplySheet: StoryReplyInputToolbarDelegate {
+extension StoryGroupReplyViewController: StoryReplyInputToolbarDelegate {
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
-        maximizeHeight()
+//        maximizeHeight()
+        // TODO:
     }
 
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
@@ -219,7 +202,7 @@ extension StoryGroupReplySheet: StoryReplyInputToolbarDelegate {
     }
 }
 
-extension StoryGroupReplySheet: ContextMenuInteractionDelegate {
+extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
         guard let indexPath = tableView.indexPathForRow(at: location),
               let item = replyLoader?.replyItem(for: indexPath) else { return nil }
@@ -278,43 +261,4 @@ extension StoryGroupReplySheet: ContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
 
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
-}
-
-extension StoryGroupReplySheet {
-    override func presentationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController?,
-        source: UIViewController
-    ) -> UIPresentationController? {
-        return nil
-    }
-
-    public func animationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController,
-        source: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: true,
-            isInteractive: interactiveTransitionCoordinator != nil,
-            backdropView: backdropView
-        )
-    }
-
-    public func animationController(
-        forDismissed dismissed: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: false,
-            isInteractive: false,
-            backdropView: backdropView
-        )
-    }
-
-    public func interactionControllerForPresentation(
-        using animator: UIViewControllerAnimatedTransitioning
-    ) -> UIViewControllerInteractiveTransitioning? {
-        interactiveTransitionCoordinator?.mode = .reply
-        return interactiveTransitionCoordinator
-    }
 }

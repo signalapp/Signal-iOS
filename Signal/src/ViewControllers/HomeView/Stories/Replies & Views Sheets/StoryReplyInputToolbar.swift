@@ -152,6 +152,16 @@ class StoryReplyInputToolbar: UIView {
         return textView
     }()
 
+    @discardableResult
+    override func becomeFirstResponder() -> Bool {
+        textView.becomeFirstResponder()
+    }
+
+    @discardableResult
+    override func resignFirstResponder() -> Bool {
+        textView.resignFirstResponder()
+    }
+
     private let placeholderText = OWSLocalizedString(
         "STORY_REPLY_TEXT_FIELD_PLACEHOLDER",
         comment: "placeholder text for replying to a story"

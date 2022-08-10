@@ -953,6 +953,7 @@
 		88ABB8B925349F6C00229EAA /* GroupCallVideoGridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */; };
 		88ABB8BB2535066100229EAA /* GroupCallVideoOverflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */; };
 		88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */; };
+		88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */; };
 		88B2234A283F290400A25048 /* StoryPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */; };
 		88B2234C284FABE600A25048 /* StoryThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B2234B284FABE600A25048 /* StoryThumbnailView.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
@@ -3275,6 +3276,7 @@
 		88ABB8B825349F6C00229EAA /* GroupCallVideoGridLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoGridLayout.swift; sourceTree = "<group>"; };
 		88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoOverflow.swift; sourceTree = "<group>"; };
 		88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberSheet.swift; sourceTree = "<group>"; };
+		88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewController.swift; sourceTree = "<group>"; };
 		88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		88B2234B284FABE600A25048 /* StoryThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryThumbnailView.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
@@ -5979,7 +5981,7 @@
 			path = Avatars;
 			sourceTree = "<group>";
 		};
-		88423A50280A1703007D2918 /* Reply Sheets */ = {
+		88423A50280A1703007D2918 /* Replies & Views Sheets */ = {
 			isa = PBXGroup;
 			children = (
 				8864072F27F21AA7009916B6 /* Group Reply Sheet */,
@@ -5988,7 +5990,7 @@
 				8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */,
 				88423A53280A2675007D2918 /* StoryReplyPreviewView.swift */,
 			);
-			path = "Reply Sheets";
+			path = "Replies & Views Sheets";
 			sourceTree = "<group>";
 		};
 		884DB94A27DE66E000C6A309 /* Context View */ = {
@@ -6014,7 +6016,7 @@
 				886292112835606D00AA0C3B /* MyStoryCell.swift */,
 				88B2234B284FABE600A25048 /* StoryThumbnailView.swift */,
 				884DB94A27DE66E000C6A309 /* Context View */,
-				88423A50280A1703007D2918 /* Reply Sheets */,
+				88423A50280A1703007D2918 /* Replies & Views Sheets */,
 				88863A4C280CADDC00977F69 /* Transitions */,
 			);
 			path = Stories;
@@ -6096,6 +6098,7 @@
 			isa = PBXGroup;
 			children = (
 				8864072727EEA658009916B6 /* StoryGroupReplySheet.swift */,
+				88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */,
 				8864072927F0D426009916B6 /* StoryGroupReplyLoader.swift */,
 				8864072B27F0DA37009916B6 /* StoryGroupReplyViewItem.swift */,
 				8864072D27F0E8DF009916B6 /* StoryGroupReplyCell.swift */,
@@ -10083,6 +10086,7 @@
 				88423A52280A171E007D2918 /* StoryDirectReplySheet.swift in Sources */,
 				34ACA7E42733159600E47AD4 /* OnboardingPermissionsViewController.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
+				88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */,
 				88ABB8BB2535066100229EAA /* GroupCallVideoOverflow.swift in Sources */,
