@@ -668,7 +668,7 @@ extension ConversationVC:
         self.contextMenuWindow = ContextMenuWindow()
         self.contextMenuVC = ContextMenuVC(
             snapshot: snapshot,
-            frame: cell.convert(cell.bubbleView.frame, to: keyWindow),
+            frame: cell.convert(cell.snContentView.frame, to: keyWindow),
             cellViewModel: cellViewModel,
             actions: actions
         ) { [weak self] in
