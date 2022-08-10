@@ -141,6 +141,10 @@ class StoryItemMediaView: UIView {
         }
     }
 
+    func stop() {
+        videoPlayer?.stop()
+    }
+
     var duration: CFTimeInterval {
         switch item.attachment {
         case .pointer:

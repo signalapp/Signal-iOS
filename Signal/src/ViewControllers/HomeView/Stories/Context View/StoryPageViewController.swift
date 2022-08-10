@@ -11,6 +11,9 @@ protocol StoryPageViewControllerDataSource: AnyObject {
 }
 
 class StoryPageViewController: UIPageViewController {
+
+    // MARK: - State
+
     var currentContext: StoryContext {
         get { currentContextViewController.context }
         set {
@@ -18,14 +21,24 @@ class StoryPageViewController: UIPageViewController {
         }
     }
     let onlyRenderMyStories: Bool
-    var currentContextViewController: StoryContextViewController {
-        viewControllers!.first as! StoryContextViewController
-    }
+
     weak var contextDataSource: StoryPageViewControllerDataSource? {
         didSet { initiallyAvailableContexts = contextDataSource?.storyPageViewControllerAvailableContexts(self) ?? [currentContext] }
     }
     lazy var initiallyAvailableContexts: [StoryContext] = [currentContext]
     private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
+
+    private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playback)
+
+    // MARK: View Controllers
+
+    var pendingTransitionViewControllers = [StoryContextViewController]()
+
+    var currentContextViewController: StoryContextViewController {
+        viewControllers!.first as! StoryContextViewController
+    }
+
+    // MARK: - Init
 
     required init(context: StoryContext, loadMessage: StoryMessage? = nil, onlyRenderMyStories: Bool = false) {
         self.onlyRenderMyStories = onlyRenderMyStories
@@ -55,15 +68,6 @@ class StoryPageViewController: UIPageViewController {
         interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        // For now, the design only allows for portrait layout on non-iPads
-        if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
-            UIDevice.current.ows_setOrientation(.portrait)
-        }
-    }
-
     private var displayLink: CADisplayLink?
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -75,12 +79,27 @@ class StoryPageViewController: UIPageViewController {
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
         }
+
+        // AudioSession's activities act like a stack; by adding a story-wide activity here we
+        // ensure the session configuration doesn't get needlessly changed every time a player
+        // for an individual story starts and stops. The config stays the same as long
+        // as the story viewer is up.
+        assert(audioSession.startAudioActivity(audioActivity))
+    }
+
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        // For now, the design only allows for portrait layout on non-iPads
+        if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
+            UIDevice.current.ows_setOrientation(.portrait)
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        displayLink?.isPaused = true
+        currentContextViewController.pause()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -90,6 +109,8 @@ class StoryPageViewController: UIPageViewController {
             displayLink?.invalidate()
             displayLink = nil
         }
+
+        audioSession.endAudioActivity(audioActivity)
     }
 
     @objc
@@ -100,10 +121,33 @@ class StoryPageViewController: UIPageViewController {
 
 extension StoryPageViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
-        pendingViewControllers
-            .lazy
+        self.pendingTransitionViewControllers = pendingViewControllers
             .map { $0 as! StoryContextViewController }
-            .forEach { $0.resetForPresentation() }
+        // Note: this also starts playing the next one transitioning in
+        pendingTransitionViewControllers.forEach { $0.resetForPresentation() }
+
+        currentContextViewController.pause()
+    }
+
+    func pageViewController(
+        _ pageViewController: UIPageViewController,
+        didFinishAnimating finished: Bool,
+        previousViewControllers: [UIViewController],
+        transitionCompleted completed: Bool
+    ) {
+        guard finished else {
+            return
+        }
+
+        if !completed {
+            // The transition was stopped, reverting to the previous controller.
+            // Stop the pending ones that are now cancelled.
+            pendingTransitionViewControllers.forEach { $0.pause() }
+            // Play the current one (which is the one we started out with and paused
+            // when the transition began)
+            currentContextViewController.play()
+        }
+        pendingTransitionViewControllers = []
     }
 }
 
@@ -173,6 +217,13 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
     }
 
     func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController) {
+        guard
+            storyContextViewController === currentContextViewController,
+            // Don't stop the displaylink during a transition, one of the two controllers is playing.
+            pendingTransitionViewControllers.isEmpty
+        else {
+            return
+        }
         displayLink?.isPaused = true
     }
 

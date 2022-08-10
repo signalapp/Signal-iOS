@@ -66,6 +66,8 @@ class StoryContextViewController: OWSViewController {
     }
 
     func resetForPresentation() {
+        pauseTime = nil
+        lastTransitionTime = nil
         if let currentItemMediaView = currentItemMediaView {
             // Restart playback for the current item
             currentItemMediaView.reset()
@@ -252,6 +254,7 @@ class StoryContextViewController: OWSViewController {
     }
 
     private func currentItemWasUpdated(messageDidChange: Bool) {
+        currentItemMediaView?.stop()
         currentItemMediaView?.removeFromSuperview()
 
         if let currentItem = currentItem {
