@@ -156,7 +156,7 @@ class StoryContextViewController: OWSViewController {
 
         view.addSubview(mediaViewContainer)
 
-        replyButton.setPressedBlock { [weak self] in self?.presentReplySheet() }
+        replyButton.setPressedBlock { [weak self] in self?.presentRepliesAndViewsSheet() }
         replyButton.setBackgroundColors(upColor: .clear)
         replyButton.autoSetDimension(.height, toSize: 64)
         replyButton.setTitleColor(Theme.darkThemePrimaryColor)
@@ -483,7 +483,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         delegate?.storyContextViewControllerDidResume(self)
     }
 
-    func presentReplySheet(interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator? = nil) {
+    func presentRepliesAndViewsSheet(interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator? = nil) {
         guard let currentItem = currentItem, currentItem.message.localUserAllowedToReply else {
             owsFailDebug("Unexpectedly attempting to present reply sheet")
             return
@@ -503,8 +503,10 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             self.pause()
             self.present(directReplyVC, animated: true)
         case .privateStory:
-            // TODO: Views sheet
-            break
+            let privateViewsVC = StoryPrivateViewsSheet(storyMessage: currentItem.message)
+            privateViewsVC.dismissHandler = { [weak self] in self?.play() }
+            self.pause()
+            self.present(privateViewsVC, animated: true)
         case .none:
             owsFailDebug("Unexpected context")
         }

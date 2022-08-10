@@ -59,7 +59,7 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
             case .leading, .top, .bottom:
                 pageViewController.dismiss(animated: true)
             case .trailing:
-                pageViewController.currentContextViewController.presentReplySheet(interactiveTransitionCoordinator: self)
+                pageViewController.currentContextViewController.presentRepliesAndViewsSheet(interactiveTransitionCoordinator: self)
             }
         case .changed:
             update(calculateProgress(gestureRecognizer))

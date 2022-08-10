@@ -954,6 +954,8 @@
 		88ABB8BB2535066100229EAA /* GroupCallVideoOverflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */; };
 		88ABB8BD25352B8300229EAA /* GroupCallMemberSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */; };
 		88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */; };
+		88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */; };
+		88B00D4F28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */; };
 		88B2234A283F290400A25048 /* StoryPrivacySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */; };
 		88B2234C284FABE600A25048 /* StoryThumbnailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B2234B284FABE600A25048 /* StoryThumbnailView.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
@@ -3277,6 +3279,8 @@
 		88ABB8BA2535066000229EAA /* GroupCallVideoOverflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallVideoOverflow.swift; sourceTree = "<group>"; };
 		88ABB8BC25352B8200229EAA /* GroupCallMemberSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupCallMemberSheet.swift; sourceTree = "<group>"; };
 		88B00D4A28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryGroupReplyViewController.swift; sourceTree = "<group>"; };
+		88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewsViewController.swift; sourceTree = "<group>"; };
+		88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPrivateViewsSheet.swift; sourceTree = "<group>"; };
 		88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPrivacySettingsViewController.swift; sourceTree = "<group>"; };
 		88B2234B284FABE600A25048 /* StoryThumbnailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryThumbnailView.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
@@ -5989,6 +5993,8 @@
 				88423A55280A373C007D2918 /* StoryReplySheet.swift */,
 				8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */,
 				88423A53280A2675007D2918 /* StoryReplyPreviewView.swift */,
+				88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */,
+				88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */,
 			);
 			path = "Replies & Views Sheets";
 			sourceTree = "<group>";
@@ -10077,6 +10083,7 @@
 				88588D26252E59CE00405414 /* CallService.swift in Sources */,
 				F9D83012282DBB1500399363 /* BadgeGiftingChooseBadgeViewController.swift in Sources */,
 				8822558D26B9D1D7001A33C4 /* SignalMe.swift in Sources */,
+				88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */,
 				F92074762888648A00B7F087 /* AppDelegate.swift in Sources */,
 				457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */,
 				34848D6325D44EBD00E5034B /* PaymentsTransferInViewController.swift in Sources */,
@@ -10261,6 +10268,7 @@
 				346EAA14250199A400E8AB6F /* MemberRequestView.swift in Sources */,
 				3426A37A2563F0EA0036407F /* CVComponentBottomButtons.swift in Sources */,
 				32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */,
+				88B00D4F28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift in Sources */,
 				88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */,
 				3497972125DAA86100E99FA4 /* SendPaymentViewController.swift in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
