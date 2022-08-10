@@ -271,6 +271,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         guard hasLoadedInitialData else {
             self.hasLoadedInitialData = true
             self.viewModel.updateGalleryData(updatedGalleryData)
+            self.updateSelectButton(updatedData: updatedGalleryData, inBatchSelectMode: isInBatchSelectMode)
             
             UIView.performWithoutAnimation {
                 self.collectionView.reloadData()
@@ -586,26 +587,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     }
 
     func updateSelectButton(updatedData: [MediaGalleryViewModel.SectionModel], inBatchSelectMode: Bool) {
-        guard !updatedData.isEmpty else {
-            self.navigationItem.rightBarButtonItem = nil
-            return
-        }
-        
-        if inBatchSelectMode {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-                barButtonSystemItem: .cancel,
-                target: self,
-                action: #selector(didCancelSelect)
-            )
-        }
-        else {
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-                title: "BUTTON_SELECT".localized(),
-                style: .plain,
-                target: self,
-                action: #selector(didTapSelect)
-            )
-        }
+        delegate?.updateSelectButton(updatedData: updatedData, inBatchSelectMode: inBatchSelectMode)
     }
 
     @objc func didTapSelect(_ sender: Any) {
@@ -620,13 +602,6 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
             // Ensure toolbar doesn't cover bottom row.
             self?.collectionView.contentInset.bottom += MediaTileViewController.footerBarHeight
         }, completion: nil)
-
-        // disabled until at least one item is selected
-        self.deleteButton.isEnabled = false
-
-        // Don't allow the user to leave mid-selection, so they realized they have
-        // to cancel (lose) their selection if they leave.
-        self.navigationItem.hidesBackButton = true
     }
 
     @objc func didCancelSelect(_ sender: Any) {
@@ -645,8 +620,6 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
             // Undo "Ensure toolbar doesn't cover bottom row."
             self?.collectionView.contentInset.bottom -= MediaTileViewController.footerBarHeight
         }, completion: nil)
-
-        self.navigationItem.hidesBackButton = false
 
         // Deselect any selected
         collectionView.indexPathsForSelectedItems?.forEach { collectionView.deselectItem(at: $0, animated: false)}
@@ -924,4 +897,5 @@ extension MediaTileViewController: MediaPresentationContextProvider {
 
 public protocol MediaTileViewControllerDelegate: AnyObject {
     func presentdetailViewController(_ detailViewController: UIViewController, animated: Bool)
+    func updateSelectButton(updatedData: [MediaGalleryViewModel.SectionModel], inBatchSelectMode: Bool)
 }

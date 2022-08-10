@@ -18,10 +18,13 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
             TabBar.Tab(title: MediaStrings.media) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
+                self.updateSelectButton(updatedData: self.mediaTitleViewController.viewModel.galleryData, inBatchSelectMode: self.mediaTitleViewController.isInBatchSelectMode)
             },
             TabBar.Tab(title: MediaStrings.document) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
+                self.endSelectMode()
+                self.navigationItem.rightBarButtonItem = nil
             }
         ]
         return TabBar(tabs: tabs)
@@ -99,6 +102,24 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
     @objc public func didPressDismissButton() {
         dismiss(animated: true, completion: nil)
     }
+    
+    // MARK: Batch Selection
+    @objc func didTapSelect(_ sender: Any) {
+        self.mediaTitleViewController.didTapSelect(sender)
+
+        // Don't allow the user to leave mid-selection, so they realized they have
+        // to cancel (lose) their selection if they leave.
+        self.navigationItem.hidesBackButton = true
+    }
+
+    @objc func didCancelSelect(_ sender: Any) {
+        endSelectMode()
+    }
+
+    func endSelectMode() {
+        self.mediaTitleViewController.endSelectMode()
+        self.navigationItem.hidesBackButton = false
+    }
 }
 
 // MARK: - UIDocumentInteractionControllerDelegate
@@ -137,6 +158,29 @@ extension AllMediaViewController: DocumentTileViewControllerDelegate {
 extension AllMediaViewController: MediaTileViewControllerDelegate {
     public func presentdetailViewController(_ detailViewController: UIViewController, animated: Bool) {
         self.present(detailViewController, animated: animated)
+    }
+    
+    public func updateSelectButton(updatedData: [MediaGalleryViewModel.SectionModel], inBatchSelectMode: Bool) {
+        guard !updatedData.isEmpty else {
+            self.navigationItem.rightBarButtonItem = nil
+            return
+        }
+        
+        if inBatchSelectMode {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didCancelSelect)
+            )
+        }
+        else {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                title: "BUTTON_SELECT".localized(),
+                style: .plain,
+                target: self,
+                action: #selector(didTapSelect)
+            )
+        }
     }
 }
 
