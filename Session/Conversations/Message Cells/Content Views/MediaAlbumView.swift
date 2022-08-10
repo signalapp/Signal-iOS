@@ -35,9 +35,6 @@ public class MediaAlbumView: UIStackView {
 
         super.init(frame: .zero)
 
-        // UIStackView's backgroundColor property has no effect.
-        addBackgroundView(withBackgroundColor: Colors.navigationBarBackground)
-
         createContents(maxMessageWidth: maxMessageWidth)
     }
 
