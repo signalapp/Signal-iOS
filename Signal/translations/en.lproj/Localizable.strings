@@ -6200,13 +6200,16 @@
 "STORY_PRIVACY_SETTINGS" = "Privacy";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Reply";
+"STORY_REPLY_BUTTON" = "Reply";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reacted to the story";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Reply";
+
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "Reply to Group";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";

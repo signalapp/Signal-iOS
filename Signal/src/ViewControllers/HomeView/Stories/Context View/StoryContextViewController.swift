@@ -138,7 +138,7 @@ class StoryContextViewController: OWSViewController {
     private lazy var closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white)
 
     private lazy var mediaViewContainer = UIView()
-    private lazy var repliesAndViewsButton = OWSFlatButton()
+    private lazy var repliesAndViewsButton = OWSButton()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -156,10 +156,9 @@ class StoryContextViewController: OWSViewController {
 
         view.addSubview(mediaViewContainer)
 
-        repliesAndViewsButton.setPressedBlock { [weak self] in self?.presentRepliesAndViewsSheet() }
-        repliesAndViewsButton.setBackgroundColors(upColor: .clear)
+        repliesAndViewsButton.block = { [weak self] in self?.presentRepliesAndViewsSheet() }
         repliesAndViewsButton.autoSetDimension(.height, toSize: 64)
-        repliesAndViewsButton.setTitleColor(Theme.darkThemePrimaryColor)
+        repliesAndViewsButton.setTitleColor(Theme.darkThemePrimaryColor, for: .normal)
         view.addSubview(repliesAndViewsButton)
         repliesAndViewsButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
         repliesAndViewsButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
@@ -274,12 +273,22 @@ class StoryContextViewController: OWSViewController {
 
                 let repliesAndViewsButtonText: String
 
+                var leadingIcon: UIImage?
+                var trailingIcon: UIImage?
+
                 switch currentItem.message.direction {
                 case .incoming:
                     if currentItem.numberOfReplies == 0 {
-                        repliesAndViewsButtonText = NSLocalizedString(
-                            "STORY_REPLY_BUTTON_WITH_NO_REPLIES",
-                            comment: "Button for replying to a story with no existing replies.")
+                        leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
+                        if case .groupId = context {
+                            repliesAndViewsButtonText = NSLocalizedString(
+                                "STORY_REPLY_TO_GROUP_BUTTON",
+                                comment: "Button for replying to a group story with no existing replies.")
+                        } else {
+                            repliesAndViewsButtonText = NSLocalizedString(
+                                "STORY_REPLY_BUTTON",
+                                comment: "Button for replying to a story with no existing replies.")
+                        }
                     } else {
                         let format = NSLocalizedString(
                             "STORY_REPLIES_COUNT_%d",
@@ -288,6 +297,7 @@ class StoryContextViewController: OWSViewController {
                         repliesAndViewsButtonText = String(format: format, currentItem.numberOfReplies)
                     }
                 case .outgoing:
+                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
                     if case .groupId = context {
                         let format = NSLocalizedString(
                             "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
@@ -303,9 +313,26 @@ class StoryContextViewController: OWSViewController {
                     }
                 }
 
+                repliesAndViewsButton.semanticContentAttribute = .unspecified
+
+                if let leadingIcon = leadingIcon {
+                    repliesAndViewsButton.setImage(leadingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
+                    repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 2, leading: 0, bottom: 0, trailing: 16)
+                } else if let trailingIcon = trailingIcon {
+                    repliesAndViewsButton.setImage(trailingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
+                    repliesAndViewsButton.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
+                    repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 3, leading: 0, bottom: 0, trailing: 0)
+                } else {
+                    repliesAndViewsButton.setImage(nil, for: .normal)
+                    repliesAndViewsButton.contentHorizontalAlignment = .center
+                }
+
                 let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
-                repliesAndViewsButton.setAttributedTitle(repliesAndViewsButtonText.styled(with: .font(.systemFont(ofSize: 17, weight: .regular)),
-                                                                                          .xmlRules([.style("bold", semiboldStyle)])))
+                repliesAndViewsButton.setAttributedTitle(
+                    repliesAndViewsButtonText.styled(
+                        with: .font(.systemFont(ofSize: 17)),
+                        .xmlRules([.style("bold", semiboldStyle)])),
+                    for: .normal)
             } else {
                 repliesAndViewsButton.isHidden = true
             }
