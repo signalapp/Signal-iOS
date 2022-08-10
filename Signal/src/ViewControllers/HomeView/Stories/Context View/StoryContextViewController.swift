@@ -102,7 +102,7 @@ class StoryContextViewController: OWSViewController {
 
         playbackProgressView.alpha = 1
         closeButton.alpha = 1
-        replyButton.alpha = 1
+        repliesAndViewsButton.alpha = 1
     }
 
     func updateMuteState() {
@@ -138,7 +138,7 @@ class StoryContextViewController: OWSViewController {
     private lazy var closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white)
 
     private lazy var mediaViewContainer = UIView()
-    private lazy var replyButton = OWSFlatButton()
+    private lazy var repliesAndViewsButton = OWSFlatButton()
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -156,13 +156,13 @@ class StoryContextViewController: OWSViewController {
 
         view.addSubview(mediaViewContainer)
 
-        replyButton.setPressedBlock { [weak self] in self?.presentRepliesAndViewsSheet() }
-        replyButton.setBackgroundColors(upColor: .clear)
-        replyButton.autoSetDimension(.height, toSize: 64)
-        replyButton.setTitleColor(Theme.darkThemePrimaryColor)
-        view.addSubview(replyButton)
-        replyButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
-        replyButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
+        repliesAndViewsButton.setPressedBlock { [weak self] in self?.presentRepliesAndViewsSheet() }
+        repliesAndViewsButton.setBackgroundColors(upColor: .clear)
+        repliesAndViewsButton.autoSetDimension(.height, toSize: 64)
+        repliesAndViewsButton.setTitleColor(Theme.darkThemePrimaryColor)
+        view.addSubview(repliesAndViewsButton)
+        repliesAndViewsButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
+        repliesAndViewsButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
 
         view.addSubview(playbackProgressView)
         playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
@@ -174,12 +174,12 @@ class StoryContextViewController: OWSViewController {
             // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
             mediaViewContainer.layer.cornerRadius = 18
             mediaViewContainer.clipsToBounds = true
-            replyButton.autoPinEdge(.top, to: .bottom, of: mediaViewContainer)
-            playbackProgressView.autoPinEdge(.bottom, to: .top, of: replyButton, withOffset: -OWSTableViewController2.defaultHOuterMargin)
+            repliesAndViewsButton.autoPinEdge(.top, to: .bottom, of: mediaViewContainer)
+            playbackProgressView.autoPinEdge(.bottom, to: .top, of: repliesAndViewsButton, withOffset: -OWSTableViewController2.defaultHOuterMargin)
         } else {
             // iPhone with home button (views/replies rendered on top of media, media is fullscreen)
-            replyButton.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer)
-            playbackProgressView.autoPinEdge(.bottom, to: .top, of: replyButton)
+            repliesAndViewsButton.autoPinEdge(.bottom, to: .bottom, of: mediaViewContainer)
+            playbackProgressView.autoPinEdge(.bottom, to: .top, of: repliesAndViewsButton)
             mediaViewContainer.autoPinEdge(toSuperviewSafeArea: .bottom)
         }
 
@@ -270,30 +270,47 @@ class StoryContextViewController: OWSViewController {
             itemView.autoPinEdgesToSuperviewEdges()
 
             if currentItem.message.localUserAllowedToReply {
-                replyButton.isHidden = false
+                repliesAndViewsButton.isHidden = false
 
-                let replyButtonText: String
-                switch currentItem.numberOfReplies {
-                case 0:
-                    replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_NO_REPLIES", comment: "Button for replying to a story with no existing replies.")
-                case 1:
-                    replyButtonText = NSLocalizedString("STORY_REPLY_BUTTON_WITH_1_REPLY", comment: "Button for replying to a story with a single existing reply.")
-                default:
-                    let format = NSLocalizedString("STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT", comment: "Button for replying to a story with N existing replies. {embeds the number of replies}")
-                    replyButtonText = String(format: format, "\(currentItem.numberOfReplies)")
+                let repliesAndViewsButtonText: String
+
+                switch currentItem.message.direction {
+                case .incoming:
+                    if currentItem.numberOfReplies == 0 {
+                        repliesAndViewsButtonText = NSLocalizedString(
+                            "STORY_REPLY_BUTTON_WITH_NO_REPLIES",
+                            comment: "Button for replying to a story with no existing replies.")
+                    } else {
+                        let format = NSLocalizedString(
+                            "STORY_REPLIES_COUNT_%d",
+                            tableName: "PluralAware",
+                            comment: "Button for replying to a story with N existing replies.")
+                        repliesAndViewsButtonText = String(format: format, currentItem.numberOfReplies)
+                    }
+                case .outgoing:
+                    if case .groupId = context {
+                        let format = NSLocalizedString(
+                            "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
+                            tableName: "PluralAware",
+                            comment: "Button for viewing the replies and views for a story sent to a group")
+                        repliesAndViewsButtonText = String(format: format, currentItem.message.remoteViewCount, currentItem.numberOfReplies)
+                    } else {
+                        let format = NSLocalizedString(
+                            "STORY_VIEWS_COUNT_%d",
+                            tableName: "PluralAware",
+                            comment: "Button for viewing the views for a story sent to a private list")
+                        repliesAndViewsButtonText = String(format: format, currentItem.message.remoteViewCount)
+                    }
                 }
 
                 let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
-                let attributedReplyButtonText = replyButtonText.styled(
-                    with: .font(.systemFont(ofSize: 17, weight: .regular)),
-                    .xmlRules([.style("bold", semiboldStyle)])
-                )
-                replyButton.setAttributedTitle(attributedReplyButtonText)
+                repliesAndViewsButton.setAttributedTitle(repliesAndViewsButtonText.styled(with: .font(.systemFont(ofSize: 17, weight: .regular)),
+                                                                                          .xmlRules([.style("bold", semiboldStyle)])))
             } else {
-                replyButton.isHidden = true
+                repliesAndViewsButton.isHidden = true
             }
         } else {
-            replyButton.isHidden = true
+            repliesAndViewsButton.isHidden = true
         }
 
         if messageDidChange { updateProgressState() }
@@ -464,7 +481,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             if hideChrome {
                 self.playbackProgressView.alpha = 0
                 self.closeButton.alpha = 0
-                self.replyButton.alpha = 0
+                self.repliesAndViewsButton.alpha = 0
             }
         }
     }
@@ -478,7 +495,7 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         currentItemMediaView?.play {
             self.playbackProgressView.alpha = 1
             self.closeButton.alpha = 1
-            self.replyButton.alpha = 1
+            self.repliesAndViewsButton.alpha = 1
         }
         delegate?.storyContextViewControllerDidResume(self)
     }
