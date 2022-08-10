@@ -184,6 +184,19 @@ extension AllMediaViewController: MediaTileViewControllerDelegate {
     }
 }
 
+// MARK: - UIViewControllerTransitioningDelegate
+
+extension AllMediaViewController: UIViewControllerTransitioningDelegate {
+    public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return self.mediaTitleViewController.animationController(forPresented: presented, presenting: presenting, source: source)
+    }
+
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return self.mediaTitleViewController.animationController(forDismissed: dismissed)
+    }
+}
+
+
 // MARK: - MediaPresentationContextProvider
 
 extension AllMediaViewController: MediaPresentationContextProvider {
