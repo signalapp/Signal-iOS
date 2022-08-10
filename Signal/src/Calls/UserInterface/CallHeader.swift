@@ -36,6 +36,10 @@ class CallHeader: UIView {
         view.layer.addSublayer(gradientLayer)
         return view
     }()
+
+    private let avatarView = ConversationAvatarView(sizeClass: .customDiameter(96),
+                                                    localUserDisplayMode: .asLocalUser,
+                                                    badged: false)
     private let callTitleLabel = MarqueeLabel()
     private let callStatusLabel = UILabel()
     private let groupMembersButton = GroupMembersButton()
@@ -47,8 +51,6 @@ class CallHeader: UIView {
         self.call = call
         self.delegate = delegate
         super.init(frame: .zero)
-
-        call.addObserverAndSyncState(observer: self)
 
         addSubview(gradientView)
         gradientView.autoPinEdgesToSuperviewEdges()
@@ -84,13 +86,25 @@ class CallHeader: UIView {
 
         let vStack = UIStackView()
         vStack.axis = .vertical
-        vStack.spacing = 4
+        vStack.alignment = .center
+        vStack.spacing = 8
+        vStack.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 0)
 
-        addSubview(vStack)
-        vStack.autoPinLeading(toTrailingEdgeOf: backButton, offset: 13)
-        vStack.autoPinTrailing(toLeadingEdgeOf: groupMembersButton, offset: 13)
-        vStack.autoPinTopToSuperviewMargin()
-        vStack.autoPinBottomToSuperviewMargin(withInset: 46)
+        // This view doesn't contain any interactable content, put it as low as possible.
+        insertSubview(vStack, aboveSubview: gradientView)
+        vStack.autoPinEdgesToSuperviewMargins()
+
+        // Avatar
+        let avatarPaddingView = UIView()
+        avatarView.updateWithSneakyTransactionIfNecessary {
+            $0.dataSource = .thread(call.thread)
+        }
+        avatarPaddingView.addSubview(avatarView)
+        avatarView.autoPinLeadingAndTrailingToSuperviewMargin()
+        avatarView.autoPinBottomToSuperviewMargin()
+
+        vStack.addArrangedSubview(avatarPaddingView)
+        vStack.setCustomSpacing(16, after: avatarPaddingView)
 
         // Name Label
 
@@ -110,21 +124,41 @@ class CallHeader: UIView {
 
         vStack.addArrangedSubview(callTitleLabel)
 
+        // Make the title view as wide as possible, but don't overlap either button.
+        // This gets combined with the vStack's centered alignment, so we won't ever get an unbalanced title label.
+        callTitleLabel.autoPinWidthToSuperview().forEach { $0.priority = .defaultHigh }
+        callTitleLabel.autoPinEdge(.leading, to: .trailing, of: backButton, withOffset: 13, relation: .greaterThanOrEqual)
+        callTitleLabel.autoPinEdge(.trailing, to: .leading, of: groupMembersButton, withOffset: -13, relation: .lessThanOrEqual)
+
         // Status label
 
         callStatusLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
         callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
+        callStatusLabel.numberOfLines = 0
+        // Cut off the status lines before cutting off anything else.
+        callStatusLabel.setContentCompressionResistancePriority(.defaultLow + 1, for: .vertical)
+        // But always fit at least one line, with moderate descenders.
+        callStatusLabel.autoSetDimension(.height, toSize: callStatusLabel.font.lineHeight * 1.2, relation: .greaterThanOrEqual)
         addShadow(to: callStatusLabel)
 
         vStack.addArrangedSubview(callStatusLabel)
 
-        updateCallTitleLabel()
-        updateCallStatusLabel()
-        updateGroupMembersButton()
+        call.addObserverAndSyncState(observer: self)
     }
 
     deinit { call.removeObserver(self) }
+
+    override func didMoveToSuperview() {
+        guard let superview = self.superview else {
+            return
+        }
+        // The bottom of the avatar must be no more than 25% down the screen.
+        // This constraint is on the avatar view container rather than the full view
+        // because the label may change its number of lines,
+        // and we don't want that to affect the vertical position.
+        avatarView.superview!.autoMatch(.height, to: .height, of: superview, withMultiplier: 0.25)
+    }
 
     private func addShadow(to view: UIView) {
         view.layer.shadowOffset = .zero
@@ -256,6 +290,7 @@ extension CallHeader: CallObserver {
 
         if call.groupCall.localDeviceState.joinState == .joined {
             gradientView.isHidden = false
+            avatarView.superview!.isHidden = true // hide the container
             if callDurationTimer == nil {
                 let kDurationUpdateFrequencySeconds = 1 / 20.0
                 callDurationTimer = WeakTimer.scheduledTimer(
@@ -269,6 +304,7 @@ extension CallHeader: CallObserver {
             }
         } else {
             gradientView.isHidden = true
+            avatarView.superview!.isHidden = false
             callDurationTimer?.invalidate()
             callDurationTimer = nil
         }
