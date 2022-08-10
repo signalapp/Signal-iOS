@@ -491,11 +491,20 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
 
         switch self.context {
         case .groupId:
-            let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
-            groupReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
-            groupReplyVC.dismissHandler = { [weak self] in self?.play() }
-            self.pause()
-            self.present(groupReplyVC, animated: true)
+            switch currentItem.message.direction {
+            case .outgoing:
+                let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(storyMessage: currentItem.message)
+                groupRepliesAndViewsVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
+                groupRepliesAndViewsVC.dismissHandler = { [weak self] in self?.play() }
+                self.pause()
+                self.present(groupRepliesAndViewsVC, animated: true)
+            case .incoming:
+                let groupReplyVC = StoryGroupReplySheet(storyMessage: currentItem.message)
+                groupReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
+                groupReplyVC.dismissHandler = { [weak self] in self?.play() }
+                self.pause()
+                self.present(groupReplyVC, animated: true)
+            }
         case .authorUuid:
             let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
             directReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator

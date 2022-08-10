@@ -6,7 +6,13 @@ import Foundation
 import UIKit
 import SignalServiceKit
 
+protocol StoryGroupReplyDelegate: AnyObject {
+    func storyGroupReplyViewControllerDidBeginEditing(_ storyGroupReplyViewController: StoryGroupReplyViewController)
+}
+
 class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
+    weak var delegate: StoryGroupReplyDelegate?
+
     private(set) lazy var tableView = UITableView()
     private(set) lazy var inputToolbar = StoryReplyInputToolbar()
     private lazy var inputToolbarBottomConstraint = inputToolbar.autoPinEdge(toSuperviewEdge: .bottom)
@@ -193,8 +199,7 @@ extension StoryGroupReplyViewController: InputAccessoryViewPlaceholderDelegate {
 
 extension StoryGroupReplyViewController: StoryReplyInputToolbarDelegate {
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar) {
-//        maximizeHeight()
-        // TODO:
+        delegate?.storyGroupReplyViewControllerDidBeginEditing(self)
     }
 
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {

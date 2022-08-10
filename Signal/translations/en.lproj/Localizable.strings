@@ -6154,6 +6154,9 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
 
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "Replies";
+
 /* alert notifying that the 'save' operation failed */
 "STORIES_SAVE_FAILED" = "Failed to Save Story";
 
@@ -6177,6 +6180,9 @@
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Stories";
+
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "Views";
 
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_CAMERA" = "Camera";
