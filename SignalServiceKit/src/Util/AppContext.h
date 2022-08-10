@@ -117,6 +117,9 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (atomic, readonly) NSDate *appLaunchTime;
 
+// Will be updated every time the app is foregrounded.
+@property (atomic, readonly) NSDate *appForegroundTime;
+
 - (id<SSKKeychainStorage>)keychainStorage;
 
 - (NSString *)appDocumentDirectoryPath;

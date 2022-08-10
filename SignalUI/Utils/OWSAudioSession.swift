@@ -89,6 +89,11 @@ public class OWSAudioSession: NSObject {
     }
 
     @objc
+    public var outputVolume: Float {
+        return avAudioSession.outputVolume
+    }
+
+    @objc
     public func startAudioActivity(_ audioActivity: AudioActivity) -> Bool {
         Logger.debug("with \(audioActivity)")
 
@@ -173,6 +178,8 @@ public class OWSAudioSession: NSObject {
             }
         } else if aggregateBehaviors.contains(.playback) {
             try avAudioSession.setCategory(.playback)
+        } else if aggregateBehaviors.contains(.playbackMixWithOthers) {
+            try avAudioSession.setCategory(.playback, options: .mixWithOthers)
         } else {
             if avAudioSession.category != AVAudioSession.Category.ambient {
                 Logger.debug("reverting to fallback audio category: ambient")

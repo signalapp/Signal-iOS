@@ -13,6 +13,8 @@ import CoreMedia
 protocol StoryItemMediaViewDelegate: AnyObject {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
     func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView)
+
+    func storyItemMediaViewShouldBeMuted(_ storyItemMediaView: StoryItemMediaView) -> Bool
 }
 
 class StoryItemMediaView: UIView {
@@ -34,8 +36,9 @@ class StoryItemMediaView: UIView {
 
     private let bottomContentVStack = UIStackView()
 
-    init(item: StoryItem) {
+    init(item: StoryItem, delegate: StoryItemMediaViewDelegate) {
         self.item = item
+        self.delegate = delegate
 
         super.init(frame: .zero)
 
@@ -582,12 +585,17 @@ class StoryItemMediaView: UIView {
         }
     }
 
+    public func updateMuteState() {
+        videoPlayer?.isMuted = delegate?.storyItemMediaViewShouldBeMuted(self) ?? false
+    }
+
     private var videoPlayerLoopCount = 0
     private var videoPlayer: OWSVideoPlayer?
     private func buildVideoView(originalMediaUrl: URL, shouldLoop: Bool) -> UIView {
-        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop)
+        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop, shouldMixAudioWithOthers: true)
         player.delegate = self
         self.videoPlayer = player
+        updateMuteState()
 
         videoPlayerLoopCount = 0
 

@@ -20,6 +20,8 @@ protocol StoryContextViewControllerDelegate: AnyObject {
     func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController)
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController)
     func storyContextViewControllerShouldOnlyRenderMyStories(_ storyContextViewController: StoryContextViewController) -> Bool
+
+    func storyContextViewControllerShouldBeMuted(_ storyContextViewController: StoryContextViewController) -> Bool
 }
 
 class StoryContextViewController: OWSViewController {
@@ -101,6 +103,10 @@ class StoryContextViewController: OWSViewController {
         playbackProgressView.alpha = 1
         closeButton.alpha = 1
         replyButton.alpha = 1
+    }
+
+    func updateMuteState() {
+        currentItemMediaView?.updateMuteState()
     }
 
     func transitionToNextItem(nextContextLoadPositionIfRead: LoadPosition = .default) {
@@ -258,8 +264,7 @@ class StoryContextViewController: OWSViewController {
         currentItemMediaView?.removeFromSuperview()
 
         if let currentItem = currentItem {
-            let itemView = StoryItemMediaView(item: currentItem)
-            itemView.delegate = self
+            let itemView = StoryItemMediaView(item: currentItem, delegate: self)
             self.currentItemMediaView = itemView
             mediaViewContainer.addSubview(itemView)
             itemView.autoPinEdgesToSuperviewEdges()
@@ -590,5 +595,9 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
 
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView) {
         pause()
+    }
+
+    func storyItemMediaViewShouldBeMuted(_ storyItemMediaView: StoryItemMediaView) -> Bool {
+        return delegate?.storyContextViewControllerShouldBeMuted(self) ?? false
     }
 }

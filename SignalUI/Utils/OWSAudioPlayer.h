@@ -26,6 +26,7 @@ typedef NS_CLOSED_ENUM(NSInteger, AudioPlaybackState) {
 typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
     OWSAudioBehavior_Unknown,
     OWSAudioBehavior_Playback,
+    OWSAudioBehavior_PlaybackMixWithOthers,
     OWSAudioBehavior_AudioMessagePlayback,
     OWSAudioBehavior_PlayAndRecord,
     OWSAudioBehavior_Call,

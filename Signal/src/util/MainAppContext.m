@@ -28,6 +28,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize appForegroundTime = _appForegroundTime;
 @synthesize buildTime = _buildTime;
 @synthesize reportedApplicationState = _reportedApplicationState;
 
@@ -41,7 +42,9 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    _appLaunchTime = [NSDate new];
+    NSDate *launchDate = [NSDate new];
+    _appLaunchTime = launchDate;
+    _appForegroundTime = launchDate;
     _mainApplicationStateOnLaunch = [UIApplication sharedApplication].applicationState;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -102,6 +105,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     OWSAssertIsOnMainThread();
 
     self.reportedApplicationState = UIApplicationStateInactive;
+    _appForegroundTime = [NSDate new];
 
     OWSLogInfo(@"");
 

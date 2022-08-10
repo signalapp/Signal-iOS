@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize appForegroundTime = _appForegroundTime;
 @synthesize buildTime = _buildTime;
 
 - (instancetype)initWithRootViewController:(UIViewController *)rootViewController
@@ -39,7 +40,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.reportedApplicationState = UIApplicationStateActive;
 
-    _appLaunchTime = [NSDate new];
+    NSDate *launchDate = [NSDate new];
+    _appLaunchTime = launchDate;
+    _appForegroundTime = launchDate;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(extensionHostDidBecomeActive:)

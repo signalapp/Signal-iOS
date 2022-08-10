@@ -28,7 +28,9 @@ class StoryPageViewController: UIPageViewController {
     lazy var initiallyAvailableContexts: [StoryContext] = [currentContext]
     private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
 
-    private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playback)
+    private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
+
+    private var volumePressTimer: Timer?
 
     // MARK: View Controllers
 
@@ -69,6 +71,9 @@ class StoryPageViewController: UIPageViewController {
     }
 
     private var displayLink: CADisplayLink?
+
+    private var isObserving = false
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -80,11 +85,24 @@ class StoryPageViewController: UIPageViewController {
             self.displayLink = displayLink
         }
 
-        // AudioSession's activities act like a stack; by adding a story-wide activity here we
-        // ensure the session configuration doesn't get needlessly changed every time a player
-        // for an individual story starts and stops. The config stays the same as long
-        // as the story viewer is up.
-        assert(audioSession.startAudioActivity(audioActivity))
+        if !isObserving {
+            // AudioSession's activities act like a stack; by adding a story-wide activity here we
+            // ensure the session configuration doesn't get needlessly changed every time a player
+            // for an individual story starts and stops. The config stays the same as long
+            // as the story viewer is up.
+            assert(audioSession.startAudioActivity(audioActivity))
+
+            VolumeButtons.shared?.addObserver(observer: self)
+            RingerSwitch.shared.addObserver(observer: self)
+
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(owsApplicationWillEnterForeground),
+                name: .OWSApplicationWillEnterForeground,
+                object: nil
+            )
+            isObserving = true
+        }
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -110,12 +128,64 @@ class StoryPageViewController: UIPageViewController {
             displayLink = nil
         }
 
-        audioSession.endAudioActivity(audioActivity)
+        if isObserving {
+            audioSession.endAudioActivity(audioActivity)
+            volumePressTimer?.invalidate()
+            VolumeButtons.shared?.removeObserver(self)
+            RingerSwitch.shared.removeObserver(self)
+            NotificationCenter.default.removeObserver(self, name: .OWSApplicationWillEnterForeground, object: nil)
+            isObserving = false
+        }
+    }
+
+    @objc func owsApplicationWillEnterForeground() {
+        // reset mute state if foregrounded while this is on screen.
+        self.isMuted = true
     }
 
     @objc
     func displayLinkStep(_ displayLink: CADisplayLink) {
         currentContextViewController.displayLinkStep(displayLink)
+    }
+
+    // MARK: - Muting
+
+    private struct MuteStatus {
+        let isMuted: Bool
+        let appForegroundTime: Date
+    }
+
+    // Once unmuted, stays that way until the app is backgrounded.
+    private static var muteStatus: MuteStatus?
+
+    private var isMuted: Bool {
+        get {
+            let appForegroundTime = CurrentAppContext().appForegroundTime
+            if
+                let muteStatus = Self.muteStatus,
+                // Mute status is only valid for one foregroundind session,
+                // dedupe by timestamp.
+                muteStatus.appForegroundTime == appForegroundTime
+            {
+                return muteStatus.isMuted
+            }
+            let muteStatus = MuteStatus(
+                // Audio starts muted until the user unmutes.
+                isMuted: true,
+                appForegroundTime: CurrentAppContext().appForegroundTime
+            )
+            Self.muteStatus = muteStatus
+            return muteStatus.isMuted
+        }
+        set {
+            Self.muteStatus = MuteStatus(
+                isMuted: newValue,
+                appForegroundTime: CurrentAppContext().appForegroundTime
+            )
+            viewControllers?.forEach {
+                ($0 as? StoryContextViewController)?.updateMuteState()
+            }
+        }
     }
 }
 
@@ -234,6 +304,10 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
     func storyContextViewControllerShouldOnlyRenderMyStories(_ storyContextViewController: StoryContextViewController) -> Bool {
         onlyRenderMyStories
     }
+
+    func storyContextViewControllerShouldBeMuted(_ storyContextViewController: StoryContextViewController) -> Bool {
+        return isMuted
+    }
 }
 
 extension StoryPageViewController: UIViewControllerTransitioningDelegate {
@@ -344,5 +418,60 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         storyView.clipsToBounds = true
 
         return storyView
+    }
+}
+
+extension StoryPageViewController: VolumeButtonObserver {
+
+    func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        volumePressTimer?.invalidate()
+        incrementVolume(for: identifier)
+    }
+
+    func didBeginLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        volumePressTimer?.invalidate()
+        var repeatCount = 0
+        volumePressTimer = Timer.scheduledTimer(
+            withTimeInterval: 0.1,
+            repeats: true
+        ) { [weak self] _ in
+            repeatCount += 1
+            // Skip the first few to imitate default apple behavior.
+            guard repeatCount > 3 else {
+                return
+            }
+            self?.incrementVolume(for: identifier)
+        }
+    }
+
+    func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        volumePressTimer?.invalidate()
+    }
+
+    func didCompleteLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        volumePressTimer?.invalidate()
+    }
+
+    private func incrementVolume(for buttonIdentifier: VolumeButtons.Identifier) {
+        VolumeButtons.shared?.incrementSystemVolume(for: buttonIdentifier)
+
+        guard isMuted else {
+            // Already unmuted, no need to do anything.
+            return
+        }
+        // Unmute when the user presses the volume buttons.
+        isMuted = false
+    }
+}
+
+extension StoryPageViewController: RingerSwitchObserver {
+
+    func didToggleRingerSwitch(_ isSilenced: Bool) {
+        guard !isMuted && isSilenced else {
+            // Not muting
+            return
+        }
+        // Mute if unmuted and toggling off.
+        isMuted = true
     }
 }
