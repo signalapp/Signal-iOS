@@ -9,11 +9,9 @@ import SessionUtilitiesKit
 
 public final class BackgroundPoller {
     private static var promises: [Promise<Void>] = []
-    private static var isValid: Bool = false
+    public static var isValid: Bool = false
 
     public static func poll(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        BackgroundPoller.isValid = true
-        
         promises = []
             .appending(pollForMessages())
             .appending(contentsOf: pollForClosedGroupMessages())
@@ -43,33 +41,18 @@ public final class BackgroundPoller {
                     }
             )
         
-        // Background tasks will automatically be terminated after 30 seconds (which results in a crash
-        // and a prompt to appear for the user) we want to avoid this so we start a timer which expires
-        // after 25 seconds allowing us to cancel all pending promises
-        let cancelTimer: Timer = Timer.scheduledTimerOnMainThread(withTimeInterval: 25, repeats: false) { timer in
-            timer.invalidate()
-            BackgroundPoller.isValid = false
-            
-            guard promises.contains(where: { !$0.isResolved }) else { return }
-            
-            SNLog("Background poll failed due to manual timeout")
-            completionHandler(.failed)
-        }
-        
         when(resolved: promises)
             .done { _ in
                 // If we have already invalidated the timer then do nothing (we essentially timed out)
-                guard cancelTimer.isValid else { return }
+                guard BackgroundPoller.isValid else { return }
                 
-                cancelTimer.invalidate()
                 completionHandler(.newData)
             }
             .catch { error in
                 // If we have already invalidated the timer then do nothing (we essentially timed out)
-                guard cancelTimer.isValid else { return }
+                guard BackgroundPoller.isValid else { return }
                 
                 SNLog("Background poll failed due to error: \(error)")
-                cancelTimer.invalidate()
                 completionHandler(.failed)
             }
     }
