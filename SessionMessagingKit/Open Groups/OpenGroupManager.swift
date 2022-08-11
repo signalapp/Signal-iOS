@@ -564,13 +564,11 @@ public final class OpenGroupManager: NSObject {
                     dependencies: dependencies
                 )
                 
-                if !reactions.isEmpty {
-                    try MessageReceiver.handleOpenGroupReactions(
-                        db,
-                        openGroupMessageServerId: message.id,
-                        openGroupReactions: reactions
-                    )
-                }
+                try MessageReceiver.handleOpenGroupReactions(
+                    db,
+                    openGroupMessageServerId: message.id,
+                    openGroupReactions: reactions
+                )
             }
             catch {
                 SNLog("Couldn't handle open group reactions due to error: \(error).")

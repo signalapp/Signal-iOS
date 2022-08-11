@@ -433,7 +433,8 @@ public final class MessageSender {
             )
             .done(on: DispatchQueue.global(qos: .default)) { responseInfo, data in
                 message.openGroupServerMessageId = UInt64(data.id)
-
+                let serverTimestampMs: UInt64? = (data.posted == nil) ? nil : UInt64(floor(data.posted! * 1000))
+                
                 dependencies.storage.write { db in
                     // The `posted` value is in seconds but we sent it in ms so need that for de-duping
                     try MessageSender.handleSuccessfulMessageSend(
@@ -441,7 +442,7 @@ public final class MessageSender {
                         message: message,
                         to: destination,
                         interactionId: interactionId,
-                        serverTimestampMs: UInt64(floor(data.posted * 1000))
+                        serverTimestampMs: serverTimestampMs
                     )
                     seal.fulfill(())
                 }
