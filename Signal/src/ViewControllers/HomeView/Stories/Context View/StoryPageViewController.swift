@@ -30,8 +30,6 @@ class StoryPageViewController: UIPageViewController {
 
     private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
 
-    private var volumePressTimer: Timer?
-
     // MARK: View Controllers
 
     var pendingTransitionViewControllers = [StoryContextViewController]()
@@ -72,7 +70,11 @@ class StoryPageViewController: UIPageViewController {
 
     private var displayLink: CADisplayLink?
 
-    private var isObserving = false
+    private var viewIsAppeared = false {
+        didSet {
+            updateVolumeObserversIfNeeded()
+        }
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -84,25 +86,7 @@ class StoryPageViewController: UIPageViewController {
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
         }
-
-        if !isObserving {
-            // AudioSession's activities act like a stack; by adding a story-wide activity here we
-            // ensure the session configuration doesn't get needlessly changed every time a player
-            // for an individual story starts and stops. The config stays the same as long
-            // as the story viewer is up.
-            assert(audioSession.startAudioActivity(audioActivity))
-
-            VolumeButtons.shared?.addObserver(observer: self)
-            RingerSwitch.shared.addObserver(observer: self)
-
-            NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(owsApplicationWillEnterForeground),
-                name: .OWSApplicationWillEnterForeground,
-                object: nil
-            )
-            isObserving = true
-        }
+        viewIsAppeared = true
     }
 
     public override func viewDidAppear(_ animated: Bool) {
@@ -127,15 +111,7 @@ class StoryPageViewController: UIPageViewController {
             displayLink?.invalidate()
             displayLink = nil
         }
-
-        if isObserving {
-            audioSession.endAudioActivity(audioActivity)
-            volumePressTimer?.invalidate()
-            VolumeButtons.shared?.removeObserver(self)
-            RingerSwitch.shared.removeObserver(self)
-            NotificationCenter.default.removeObserver(self, name: .OWSApplicationWillEnterForeground, object: nil)
-            isObserving = false
-        }
+        viewIsAppeared = false
     }
 
     @objc func owsApplicationWillEnterForeground() {
@@ -185,7 +161,79 @@ class StoryPageViewController: UIPageViewController {
             viewControllers?.forEach {
                 ($0 as? StoryContextViewController)?.updateMuteState()
             }
+            updateVolumeObserversIfNeeded()
         }
+    }
+
+    private var isAudioSessionActive = false
+    private var isObservingVolumeButtons = false
+
+    private func updateVolumeObserversIfNeeded() {
+        // Set audio session only if on screen.
+        if viewIsAppeared {
+            if isAudioSessionActive {
+                // Nothing to do, we are already listening
+            } else {
+                startAudioSession()
+            }
+        } else {
+            if isAudioSessionActive {
+                stopAudioSession()
+            } else {
+                // We were already not listening, nothing to do.
+            }
+        }
+
+        // Observe volume buttons only if on screen and muted.
+        if viewIsAppeared && isMuted {
+            if isObservingVolumeButtons {
+                // Nothing to do, we are already listening.
+            } else {
+                observeVolumeButtons()
+            }
+        } else {
+            if isObservingVolumeButtons {
+                stopObservingVolumeButtons()
+            } else {
+                // We were already not listening, nothing to do.
+            }
+        }
+    }
+
+    private func startAudioSession() {
+        // AudioSession's activities act like a stack; by adding a story-wide activity here we
+        // ensure the session configuration doesn't get needlessly changed every time a player
+        // for an individual story starts and stops. The config stays the same as long
+        // as the story viewer is up.
+        assert(audioSession.startAudioActivity(audioActivity))
+
+        RingerSwitch.shared.addObserver(observer: self)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(owsApplicationWillEnterForeground),
+            name: .OWSApplicationWillEnterForeground,
+            object: nil
+        )
+        isAudioSessionActive = true
+    }
+
+    private func stopAudioSession() {
+        // If the view disappeared and we were listening, stop.
+        audioSession.endAudioActivity(audioActivity)
+        RingerSwitch.shared.removeObserver(self)
+        NotificationCenter.default.removeObserver(self, name: .OWSApplicationWillEnterForeground, object: nil)
+        isAudioSessionActive = false
+    }
+
+    private func observeVolumeButtons() {
+        VolumeButtons.shared?.addObserver(observer: self)
+        isObservingVolumeButtons = true
+    }
+
+    private func stopObservingVolumeButtons() {
+        VolumeButtons.shared?.removeObserver(self)
+        isObservingVolumeButtons = false
     }
 }
 
@@ -424,36 +472,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
 extension StoryPageViewController: VolumeButtonObserver {
 
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
-        volumePressTimer?.invalidate()
-        incrementVolume(for: identifier)
-    }
-
-    func didBeginLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
-        volumePressTimer?.invalidate()
-        var repeatCount = 0
-        volumePressTimer = Timer.scheduledTimer(
-            withTimeInterval: 0.1,
-            repeats: true
-        ) { [weak self] _ in
-            repeatCount += 1
-            // Skip the first few to imitate default apple behavior.
-            guard repeatCount > 3 else {
-                return
-            }
-            self?.incrementVolume(for: identifier)
-        }
-    }
-
-    func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
-        volumePressTimer?.invalidate()
-    }
-
-    func didCompleteLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
-        volumePressTimer?.invalidate()
-    }
-
-    private func incrementVolume(for buttonIdentifier: VolumeButtons.Identifier) {
-        VolumeButtons.shared?.incrementSystemVolume(for: buttonIdentifier)
+        VolumeButtons.shared?.incrementSystemVolume(for: identifier)
 
         guard isMuted else {
             // Already unmuted, no need to do anything.
