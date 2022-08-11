@@ -485,6 +485,16 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     return self.inputTextView.messageBody;
 }
 
+- (nullable TSThreadReplyInfo *)draftReply
+{
+    OWSAssertDebug(self.inputTextView);
+    if (_quotedReply == nil) {
+        return nil;
+    }
+    return [[TSThreadReplyInfo alloc] initWithTimestamp:_quotedReply.timestamp
+                                          authorAddress:_quotedReply.authorAddress];
+}
+
 - (void)setMessageBody:(nullable MessageBody *)value animated:(BOOL)isAnimated
 {
     [self setMessageBody:value animated:isAnimated doLayout:YES];

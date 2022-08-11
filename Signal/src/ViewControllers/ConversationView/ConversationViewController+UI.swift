@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 extension ConversationViewController {
     public func updateNavigationTitle() {
@@ -262,6 +263,7 @@ extension ConversationViewController {
 
     public func buildInputToolbar(conversationStyle: ConversationStyle,
                                   messageDraft: MessageBody?,
+                                  draftReply: ThreadReplyInfo?,
                                   voiceMemoDraft: VoiceMessageModel?) -> ConversationInputToolbar {
         AssertIsOnMainThread()
         owsAssertDebug(hasViewWillAppearEverBegun)
@@ -273,13 +275,53 @@ extension ConversationViewController {
                                                     inputTextViewDelegate: self,
                                                     mentionDelegate: self)
         inputToolbar.accessibilityIdentifier = "inputToolbar"
-
+        if let draftReply = draftReply, let quotedReply = buildQuotedReply(draftReply) {
+            inputToolbar.quotedReply = quotedReply
+        }
         if let voiceMemoDraft = voiceMemoDraft {
             inputToolbar.showVoiceMemoDraft(voiceMemoDraft)
         }
 
         return inputToolbar
     }
+
+    // When responding to a message and quoting it, the input toolbar needs an OWSQuotedReplyModel.
+    // Building this is a little tricky because we're putting a square peg in a round hole, and this method helps.
+    // Historically, a quoted reply comes from an already-rendered message that's available at the moment that you
+    // choose to reply to a message via the UI. For saved drafts, that UI component may not exist.
+    // This method re-creates the steps that the app goes through when constructing a quoted reply from a message
+    // by making a temporary `CVComponentState`. The ThreadReplyInfo identifies the message being responded to.
+    // Since timestamps aren't unique, this is nondeterministic when things go wrong.
+    func buildQuotedReply(_ draftReply: ThreadReplyInfo) -> OWSQuotedReplyModel? {
+        return Self.databaseStorage.read { transaction in
+            guard let interaction = try? InteractionFinder.interactions(
+                withTimestamp: draftReply.timestamp,
+                filter: { candidate in
+                    if let incoming = candidate as? TSIncomingMessage {
+                        return incoming.authorAddress == draftReply.author
+                    }
+                    if candidate is TSOutgoingMessage {
+                        return draftReply.author.isLocalAddress
+                    }
+                    return false
+                },
+                transaction: transaction
+            ).first else {
+                return nil
+            }
+            guard let componentState = CVLoader.buildStandaloneComponentState(interaction: interaction,
+                                                                              transaction: transaction) else {
+                owsFailDebug("Failed to create component state.")
+                return nil
+            }
+            let wrapper = CVComponentStateWrapper(interaction: interaction,
+                                                  componentState: componentState)
+            return OWSQuotedReplyModel.quotedReplyForSending(withItem: wrapper,
+                                                             transaction: transaction)
+
+        }
+    }
+
 }
 // MARK: - Keyboard Shortcuts
 

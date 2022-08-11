@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalUI/BlockListUIUtils.h>
@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class PhotoCapture;
 @class SignalAttachment;
 @class StickerInfo;
+@class TSThreadReplyInfo;
 @class VoiceMessageModel;
 
 @protocol ConversationInputTextViewDelegate;
@@ -94,6 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isInputViewFirstResponder;
 
 - (nullable MessageBody *)messageBody;
+- (nullable TSThreadReplyInfo *)draftReply;
 - (void)setMessageBody:(nullable MessageBody *)value animated:(BOOL)isAnimated;
 - (void)acceptAutocorrectSuggestion;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;

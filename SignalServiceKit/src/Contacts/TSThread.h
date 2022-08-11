@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
+@class TSThreadReplyInfo;
 
 typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) {
     TSThreadMentionNotificationMode_Default = 0,
@@ -154,7 +155,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
  *  @param draftMessageBody Draft to be saved.
  *  @param transaction Database transaction.
  */
-- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody
+              replyInfo:(nullable TSThreadReplyInfo *)replyInfo
+            transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (atomic, readonly) uint64_t mutedUntilTimestampObsolete;
 @property (nonatomic, readonly, nullable) NSDate *mutedUntilDateObsolete;

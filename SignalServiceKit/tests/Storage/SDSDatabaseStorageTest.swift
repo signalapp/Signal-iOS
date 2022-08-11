@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -92,7 +92,10 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
                 return
             }
             XCTAssertNil(firstThread.messageDraft)
-            firstThread.update(withDraft: MessageBody(text: "Some draft", ranges: .empty), transaction: transaction)
+            firstThread.update(withDraft: MessageBody(text: "Some draft",
+                                                      ranges: .empty),
+                               replyInfo: nil,
+                               transaction: transaction)
         }
         storage.read { transaction in
             let threads = TSThread.anyFetchAll(transaction: transaction)

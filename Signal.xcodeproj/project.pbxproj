@@ -607,6 +607,7 @@
 		450C801220AD1D5B00F3A091 /* UIDevice+featureSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45BB93371E688E14001E3939 /* UIDevice+featureSupport.swift */; };
 		450D19131F85236600970622 /* RemoteVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 450D19121F85236600970622 /* RemoteVideoView.m */; };
 		451166C01FD86B98000739BA /* AccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451166BF1FD86B98000739BA /* AccountManager.swift */; };
+		45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */; };
 		45194F8F1FD71FF500333B2C /* ThreadUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129BE1FD2068600532771 /* ThreadUtil.m */; };
 		45194F901FD7200000333B2C /* ThreadUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129BD1FD2068600532771 /* ThreadUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45360B8C1F9521F800FA666C /* Searcher.swift */; };
@@ -2771,6 +2772,7 @@
 		450D19111F85236600970622 /* RemoteVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteVideoView.h; sourceTree = "<group>"; };
 		450D19121F85236600970622 /* RemoteVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RemoteVideoView.m; sourceTree = "<group>"; };
 		451166BF1FD86B98000739BA /* AccountManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountManager.swift; sourceTree = "<group>"; };
+		45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadReplyInfo.swift; sourceTree = "<group>"; };
 		451764291DE939FD00EDB8B9 /* ContactCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		452037CF1EE84975004E4CDF /* DebugUISessionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUISessionState.h; sourceTree = "<group>"; };
 		452037D01EE84975004E4CDF /* DebugUISessionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUISessionState.m; sourceTree = "<group>"; };
@@ -7414,6 +7416,7 @@
 		F9C5C9CC289453B100548EEE /* Contacts */ = {
 			isa = PBXGroup;
 			children = (
+				45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */,
 				F9C5C9CD289453B100548EEE /* Contact.m */,
 				F9C5C9CE289453B100548EEE /* SignalRecipient.m */,
 				F9C5C9CF289453B100548EEE /* SignalRecipient+SDS.swift */,
@@ -10775,6 +10778,7 @@
 				F9C5CCAF289453B300548EEE /* SSKEnvironment.m in Sources */,
 				F9C5CE72289453B400548EEE /* GroupMembership.swift in Sources */,
 				F9C5CBD0289453B300548EEE /* TSMessage+Builder.swift in Sources */,
+				45161BA928A2E54B0055AB45 /* ThreadReplyInfo.swift in Sources */,
 				F9C5CDB1289453B400548EEE /* GiphyAPI.swift in Sources */,
 				F9C5CDE3289453B400548EEE /* MailtoLink.swift in Sources */,
 				F9C5CD58289453B300548EEE /* BaseModel.m in Sources */,

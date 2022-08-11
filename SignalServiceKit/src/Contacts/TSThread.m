@@ -540,6 +540,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                              block:^(TSThread *thread) {
                                  thread.messageDraft = nil;
                                  thread.shouldThreadBeVisible = NO;
+                                 [TSThreadReplyInfo deleteWithThreadUniqueID:thread.uniqueId transaction:transaction];
                              }];
 
     // Delete any intents we previously donated for this thread.
@@ -587,13 +588,20 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
 }
 
-- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody
+              replyInfo:(nullable TSThreadReplyInfo *)replyInfo
+            transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  thread.messageDraft = draftMessageBody.text;
                                  thread.messageDraftBodyRanges = draftMessageBody.ranges;
                              }];
+    if (replyInfo != nil) {
+        [replyInfo saveWithThreadUniqueID:self.uniqueId transaction:transaction error:nil];
+    } else {
+        [TSThreadReplyInfo deleteWithThreadUniqueID:self.uniqueId transaction:transaction];
+    }
 }
 
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
