@@ -31,7 +31,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
     private var attachmentId: String { direction.attachmentId }
 
     public required init(direction: Direction,
-                         diameter: CGFloat,
+                         diameter: CGFloat = 44,
                          isDarkThemeEnabled: Bool,
                          mediaCache: CVMediaCache) {
         self.direction = direction

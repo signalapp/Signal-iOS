@@ -420,8 +420,6 @@ class StoryContextViewController: OWSViewController {
                     }
                 }
 
-                if subsequentItems.count >= Self.subsequentItemsToLoad { break }
-
                 context = nextContext
             }
 
