@@ -13,6 +13,7 @@ class StoriesViewController: OWSViewController {
     let tableView = UITableView()
     private let syncingModels = SyncingStoryViewModelArray()
     private var myStoryModel = AtomicOptional<MyStoryViewModel>(nil)
+    private var viewerContexts: [StoryContext]?
 
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
@@ -399,6 +400,15 @@ extension StoriesViewController: UITableViewDelegate {
                 owsFailDebug("Missing model for story")
                 return
             }
+
+            // If we tap on a story with unviewed stories, we only want the viewer
+            // to page through unviewed contexts.
+            if model.hasUnviewedMessages {
+                viewerContexts = syncingModels.get().lazy.filter { $0.hasUnviewedMessages }.map { $0.context }
+            } else {
+                viewerContexts = syncingModels.get().map { $0.context }
+            }
+
             let vc = StoryPageViewController(context: model.context)
             vc.contextDataSource = self
             presentFullScreen(vc, animated: true)
@@ -484,7 +494,7 @@ extension StoriesViewController: UITableViewDataSource {
 
 extension StoriesViewController: StoryPageViewControllerDataSource {
     func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
-        syncingModels.get().map { $0.context }
+        viewerContexts ?? []
     }
 }
 
