@@ -68,7 +68,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "Жаңа қатысушыны қосу";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Already a member";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "Топ мүшесі";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@бұрыннан  %@ тобының мүшесі";
@@ -116,7 +116,7 @@
 "ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "You have no members in common with this group. Review requests carefully before accepting to avoid unwanted messages.";
 
 /* Label for button to learn more about message requests. */
-"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "About Message Requests";
+"ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "Хат алмасуға өтініштер туралы ақпарат";
 
 /* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Жауап беру";
@@ -221,7 +221,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_QUALITY_STANDARD_OPTION_SUBTITLE" = "Жылдам, аз дерек";
 
 /* Title for the attachment approval media quality sheet */
-"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Media Quality";
+"ATTACHMENT_APPROVAL_MEDIA_QUALITY_TITLE" = "Мультимедиа сапасы";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Тіркеме";
@@ -383,7 +383,7 @@
 "BADGE_EXPIRED_GIFT_TITLE" = "Your Gift Badge Has Expired";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Learn more.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Толық ақпарат.";
 
 /* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
 "BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Signal-ды қолдана беруіңізге болады, бірақ сіз үшін жасалған технологияға қолдау көрсету үшін демеуші атанып, ай сайын демеушілік жасап тұрыңыз.";
@@ -419,7 +419,7 @@
 "BADGE_GIFTING_CHAT_EXPIRED" = "Мерзімі өтіп кетті";
 
 /* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
-"BADGE_GIFTING_CHAT_TITLE" = "Gift Badge";
+"BADGE_GIFTING_CHAT_TITLE" = "Сыйлық таңбасы";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Gift someone a badge by making a donation to Signal. They’ll receive a badge to display on their profile.";
@@ -776,7 +776,7 @@
 "CALLBACK_BUTTON_TITLE" = "Кері қоңырау соғу";
 
 /* Indicates to the user that their camera is currently off. */
-"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Your camera is off";
+"CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF" = "Камераңыз өшірулі";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal пайдаланушысы";
@@ -1283,7 +1283,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to edit this group and its members.";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Requests & Invites";
+"CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Өтініштер және шақырулар";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Always Notify";
@@ -1445,7 +1445,7 @@
 "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR" = "Қою";
 
 /* Title for the custom chat color settings view. */
-"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Custom Color";
+"CUSTOM_CHAT_COLOR_SETTINGS_TITLE" = "Реттелмелі түс";
 
 /* Tooltip highlighting the custom chat color controls. */
 "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP" = "Градиенттің бағытын өзгерту үшін тартыңыз";
@@ -1676,7 +1676,7 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this chat will disappear after %@.";
 
 /* Disappearing message option to define a custom time */
-"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Custom Time";
+"DISAPPEARING_MESSAGES_CUSTOM_TIME" = "Реттелмелі уақыт";
 
 /* The unit for a number of days */
 "DISAPPEARING_MESSAGES_DAYS" = "күн";
@@ -2222,7 +2222,7 @@
 "GROUP_CALL_CONTINUE_BUTTON" = "Қоңырауды жалғастыру";
 
 /* Text in conversation view for a group call that has since ended */
-"GROUP_CALL_ENDED_MESSAGE" = "The group call has ended";
+"GROUP_CALL_ENDED_MESSAGE" = "Топтық қоңырау аяқталды";
 
 /* A button to receive more info about not seeing a participant in group call grid */
 "GROUP_CALL_ERROR_DETAILS" = "Толығырақ ақпарат";
@@ -2297,7 +2297,7 @@
 "GROUP_CALL_START_TOOLTIP" = "Топтық қоңырау шалу үшін осы жерді басыңыз";
 
 /* Text explaining that you started a group call. */
-"GROUP_CALL_STARTED_BY_YOU" = "You started a group call";
+"GROUP_CALL_STARTED_BY_YOU" = "Топтық қоңырау бастадыңыз";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ started a group call";
@@ -2333,7 +2333,7 @@
 "GROUP_DESCRIPTION_MORE" = "толығырақ";
 
 /* Placeholder text for 'group description' field. */
-"GROUP_DESCRIPTION_PLACEHOLDER" = "Add group description...";
+"GROUP_DESCRIPTION_PLACEHOLDER" = "Топ сипаттамасын қосу...";
 
 /* Footer text when editing the group description */
 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER" = "Топ сипаттамалары осы топтың мүшелеріне және шақырылған адамдарға көрінетін болады.";
@@ -2486,10 +2486,10 @@
 "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE" = "Please try again.";
 
 /* Message for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "This is not a valid group link. Make sure the entire link is intact and correct before attempting to join.";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE" = "Бұл топ сілтемесі жарамсыз. Қосылуға әрекет жасамас бұрын сілтеме бүтін және дұрыс екеніне көз жеткізіңіз.";
 
 /* Title for the 'invalid group invite link' alert. */
-"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Invalid Link";
+"GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Сілтеме жарамсыз";
 
 /* Error message indicating that the local user does not support groups v2. */
 "GROUP_LINK_LOCAL_USER_DOES_NOT_SUPPORT_GROUPS_V2_ERROR_MESSAGE" = "Update Signal on this device to join this group.";
@@ -2747,7 +2747,7 @@
 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE" = "Шақырулар";
 
 /* The title for the 'group requests and invites' view. */
-"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Requests & Invites";
+"GROUP_REQUESTS_AND_INVITES_VIEW_TITLE" = "Өтініштер және шақырулар";
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
@@ -2780,16 +2780,16 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ аватарды жаңартты.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "The group description was removed.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "Топ сипаттамасы жойылды.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "You removed the group description.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "Топ сипаттамасын жойдыңыз.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group description.";
 
 /* Message indicating that the group's description was changed. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED" = "The group description was changed.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED" = "Топ сипаттамасы өзгертілді.";
 
 /* Message indicating that the group's description was changed by the local user.. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "Топтың сипаттамасын өзгерттіңіз.";
@@ -2816,7 +2816,7 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Топ қазір “%@” деп аталады.";
 
 /* Message indicating that the group was migrated. */
-"GROUP_WAS_MIGRATED" = "This group was upgraded to a New Group.";
+"GROUP_WAS_MIGRATED" = "Бұл топ Жаңа топ болып жаңартылды.";
 
 /* Message indicating that the local user was dropped while migrating the group. */
 "GROUP_WAS_MIGRATED_USERS_DROPPED_LOCAL_USER" = "You couldn’t be added to the New Group and has been removed from the group.";
@@ -2948,13 +2948,13 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_DROPPED_MEMBERS_N" = "These members were removed from the group and will not be able to rejoin the group until they upgrade:";
 
 /* Body text for the 'invites member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "This member will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_1" = "Бұл топ мүшесі топқа қайта қосылу үшін шақыруды қабылдауы керек. Ол шақыруды қабылдамайынша, топ хаттарын ала алмайды.";
 
 /* Body text for the 'invites members' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "These members will need to accept an invite to join this group again, and will not receive group messages until they accept:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "Бұл топ мүшелері топқа қайта қосылу үшін шақыруды қабылдауы керек. Олар шақыруды қабылдамайынша, топ хаттарын ала алмайды.";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "This member is not capable of joining New Groups, and will be removed from the group:";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "Бұл топ мүшесі Жаңа топтарға қосыла алмайды және топтан өшіріледі:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "Бұл топ мүшелері Жаңа топтарға қосыла алмайды және топтан өшіріледі:";
@@ -3406,6 +3406,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME түрінде";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Жоғалып кетеді";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Кімге жеткізілді";
 
@@ -3433,6 +3436,9 @@
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Көрген";
 
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "Ешқашан";
+
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Алынды";
 
@@ -3455,7 +3461,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Бұғаттау және жою";
 
 /* Action sheet action to confirm blocking and report spam for a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Report Spam and Block";
+"MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION" = "Спам деп хабарлап, блоктау";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Бұғатталған адамдар сізге қоңырау соға және хабарлама жібере алмайтын болады.";
@@ -3554,10 +3560,10 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON" = "Өтініштен бас тарту";
 
 /* Title for the confirmation alert when cancelling your request to join the group. */
-"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Cancel your request to join this group?";
+"MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Бұл топқа қосылуға өтінішіңізді қайтарып алғыңыз келе ме?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Your request to join has been sent to the group admin. You’ll be notified when they take action.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "Топқа қосылуға өтінішіңіз топ әкімшісіне жіберілді. Олар шара қолданған кезде сізге хабарланады.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Жеткізілді";
@@ -3992,10 +3998,10 @@
 "ONBOARDING_PROFILE_CREATION_TITLE" = "Your profile";
 
 /* Placeholder text for the family name field of the profile creation view. */
-"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Last Name (Optional)";
+"ONBOARDING_PROFILE_FAMILY_NAME_FIELD" = "Тегі (міндетті емес)";
 
 /* Placeholder text for the given name field of the profile creation view. */
-"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "First Name (Required)";
+"ONBOARDING_PROFILE_GIVEN_NAME_FIELD" = "Аты (міндетті)";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Шарттар және құпиялық саясаты";
@@ -4265,7 +4271,7 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Add “%@” to the group?";
 
 /* Title of 'deny member request to join group' button. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Deny Request";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Сұраудан бас тарту";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
@@ -4331,7 +4337,7 @@
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Қаралды";
 
 /* A user friendly name for the 'everybody' phone number discoverability mode. */
-"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_DISCOVERABILITY_EVERYBODY" = "Бәрі";
 
 /* A user friendly description of the 'everybody' phone number discoverability mode. */
 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION" = "Anyone who has your phone number in their contacts will see you as a contact on Signal. Others will be able to find you in Search.";
@@ -4346,13 +4352,13 @@
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Мысал: %@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "My Contacts";
+"PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "Менің контактілерім";
 
 /* A user friendly description of the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY_DESCRIPTION" = "Only your contacts will see your phone number on Signal.";
 
 /* A user friendly name for the 'everybody' phone number sharing mode. */
-"PHONE_NUMBER_SHARING_EVERYBODY" = "Everybody";
+"PHONE_NUMBER_SHARING_EVERYBODY" = "Бәрі";
 
 /* A user friendly description of the 'everybody' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION" = "Your phone number will be visible to people and groups you message. People who have your number in their phone contacts will also see it on Signal.";
@@ -4658,7 +4664,7 @@
 "PROFILE_BIO_VIEW_DEFAULT_BIO_FREE_TO_CHAT" = "Чат арқылы сөйлесуге дайын";
 
 /* The 'Speak Freely' default bio in the profile bio view. */
-"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Speak Freely";
+"PROFILE_BIO_VIEW_DEFAULT_BIO_SPEAK_FREELY" = "Еркін сөйлеңіз";
 
 /* The 'Taking a break' default bio in the profile bio view. */
 "PROFILE_BIO_VIEW_DEFAULT_BIO_TAKING_A_BREAK" = "Үзіліс";
@@ -4679,7 +4685,7 @@
 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ changed their profile name to %@.";
 
 /* Title for the profile name view. */
-"PROFILE_NAME_VIEW_TITLE" = "Your Name";
+"PROFILE_NAME_VIEW_TITLE" = "Сіздің атыңыз";
 
 /* Placeholder when the user doesn't have an 'about' for profile settings screen. */
 "PROFILE_SETTINGS_BIO_PLACEHOLDER" = "Мағлұмат";
@@ -4700,10 +4706,10 @@
 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Сіздің атыңыз тым ұзақ.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Last Name (Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "Тегі (міндетті емес)";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "First Name (Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "Аты (міндетті)";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
 "PROFILE_VIEW_NO_CONNECTION" = "Профильді тек Интернетке қосулы болғанда ғана жаңартуға болады.";
@@ -5138,7 +5144,7 @@
 "SENT_MEDIA_QUALITY_STANDARD" = "Стандарт";
 
 /* Description for the session refresh alert */
-"SESSION_REFRESH_ALERT_MESSAGE" = "Signal uses end-to-end encryption and it may need to refresh your chat session sometimes. This doesn’t affect your chat’s security but you may have missed a message from this contact and you can ask them to resend it.";
+"SESSION_REFRESH_ALERT_MESSAGE" = "Signal өтпелі шифрлау функциясын қолданады және ол чат сеансын арагідік жаңартып отыруы мүмкін. Ол чаттың қауіпсіздігіне әсер етпейді, бірақ осы контакт жіберген хатты жіберіп алған болуыңыз мүмкін, сондықтан хатты қайта жіберуін сұрауыңызға болады.";
 
 /* Title for the session refresh alert */
 "SESSION_REFRESH_ALERT_TITLE" = "Чат сеансы жаңартылды";
@@ -6029,10 +6035,10 @@
 "SOUNDS_NONE" = "Ешқайсы";
 
 /* Text for toast presented after spam verification has been completed */
-"SPAM_CAPTCHA_COMPLETED_TOAST" = "Verification complete.";
+"SPAM_CAPTCHA_COMPLETED_TOAST" = "Верификация аяқталды.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "If you choose to skip verification, you may miss messages from other people and your messages may fail to send.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Верификацияны өткізіп жіберуді таңдасаңыз, басқа адамдардың хаттарын өткізіп алуыңыз мүмкін және сіздің хаттарыңыз жіберілмейқ алуы ықтимал.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Continue Without Verifying?";
@@ -6674,7 +6680,7 @@
 "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE" = "Барлық чат түсін қайта орнатқыңыз келе ме?";
 
 /* Title of confirmation dialog when resetting the global wallpaper settings. */
-"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE" = "Чат түстерін қалпына келтіру";
 
 /* Reset conversation chat color action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR" = "Reset Chat Color";
@@ -6686,7 +6692,7 @@
 "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR" = "Reset Default Colors";
 
 /* Reset global chat colors action in wallpaper settings view. */
-"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Reset Chat Colors";
+"WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS" = "Чат түстерін қалпына келтіру";
 
 /* Label for 'reset default wallpaper' action in the global wallpaper settings. */
 "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER" = "Reset Default Wallpaper";

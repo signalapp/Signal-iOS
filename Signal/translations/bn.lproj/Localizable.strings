@@ -3406,6 +3406,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME ধরণ";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "অদৃশ্য হয়";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "যাকে ডেলিভার করা হয়েছে";
 
@@ -3432,6 +3435,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "যারা দেখেছেন";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "কখনও নয়";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "গৃহীত";
@@ -3617,10 +3623,10 @@
 "MISSED_CALL" = "ব্যর্থ কল";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "'বিরক্ত করবেন না' চালু থাকা অবস্থায় মিসড কল";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "ফোকাস ব্যবহার করা অবস্থায় মিসড কল";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Signal থেকে ভিডিও কল সমূহ করতে আপনি iOS সেটিংস অ্যাপ থেকে ক্যামেরা অ্যাক্সেস সক্ষম করতে পারেন। ";
@@ -6104,7 +6110,7 @@
 "STORIES_DELETE_STORY_ACTION" = "মুছুন";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "স্টোরি সেভ করা হয়েছে";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ফরওয়ার্ড";
@@ -6131,7 +6137,7 @@
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "উত্তর ও রিঅ্যাকশন অনুমোদন করুন";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "স্টোরি সেভ করতে ব্যর্থ হয়েছে";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "সংরক্ষণ করুন";

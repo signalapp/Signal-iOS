@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>私人限時動態 · %d 次觀看</string>
+			<string>私人限時動態 · %d 位瀏覽者</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d 位觀看者</string>
+			<string>%d 位瀏覽者</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -358,7 +358,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>群組限時動態 · %d 位觀看者</string>
+			<string>群組限時動態 · %d 位瀏覽者</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -778,7 +778,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d 位觀看者</string>
+			<string>%d 位瀏覽者</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>

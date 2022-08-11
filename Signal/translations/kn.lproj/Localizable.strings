@@ -3406,6 +3406,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME ವಿಧ";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "ಕಣ್ಮರೆಯಾಗುತ್ತದೆ";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "ಇವರಿಗೆ ತಲುಪಿಸಲಾಗಿದೆ";
 
@@ -3432,6 +3435,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "ವೀಕ್ಷಿಸಿದವರು";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "ಎಂದಿಗೂ ಇಲ್ಲ";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "ಸ್ವೀಕರಿಸಲಾಗಿದೆ";

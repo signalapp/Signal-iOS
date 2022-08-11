@@ -3406,6 +3406,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME टाइप";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "गायब हो जाता है";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "इनको डिलिवर किया गया";
 
@@ -3432,6 +3435,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "के द्वारा देखा गया";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "कभी नहीं";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "मिला";
@@ -3617,10 +3623,10 @@
 "MISSED_CALL" = "मिस कॉल";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "परेशान न करें के दौरान कॉल मिस हुई";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "फ़ोकस इस्तेमाल करने के दौरान कॉल मिस हुई";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "अब आप Signal से वीडियो कॉल करने के लिये अपने iOS सेटिंग्स ऐप से Signal को कैमेरा इस्तेमाल करने की अनुमति दे सकते हैं।";
@@ -6104,7 +6110,7 @@
 "STORIES_DELETE_STORY_ACTION" = "डिलीट करें";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "स्टोरी सेव की गई";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "आगे भेजें";
@@ -6131,7 +6137,7 @@
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "जवाब और प्रतिक्रियाओं की अनुमति दें";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "स्टोरी सेव नहीं की जा सकी";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "सेव करें";

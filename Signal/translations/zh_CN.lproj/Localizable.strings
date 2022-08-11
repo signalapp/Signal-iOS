@@ -3406,6 +3406,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME 类型";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "消失";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "送达";
 
@@ -3432,6 +3435,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "已查看：";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "永不";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "已接收";
@@ -3617,10 +3623,10 @@
 "MISSED_CALL" = "未接来电";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "使用“勿扰模式”时的未接来电";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "使用“专注模式”时的未接来电";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "在“iOS 设置”中启用摄像头权限后，即可进行 Signal 视频通话。";
@@ -6104,7 +6110,7 @@
 "STORIES_DELETE_STORY_ACTION" = "删除";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "动态已保存";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "转发";
@@ -6131,7 +6137,7 @@
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "允许回复和反应";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "无法保存动态";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "保存";

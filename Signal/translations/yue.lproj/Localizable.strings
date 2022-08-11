@@ -3406,6 +3406,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME 類型";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "過目化作雲煙";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "佢收到";
 
@@ -3432,6 +3435,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "佢睇過";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "唔使喇";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "收到";
@@ -3617,10 +3623,10 @@
 "MISSED_CALL" = "未接來電";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "用緊「請勿打擾」模式嗰陣嘅未接來電";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "用緊「專注模式」嗰陣嘅未接來電";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "您可以喺 iOS 設定 app 度啟用相機存取，以便喺 Signal 入面進行視像通話。";
@@ -3776,7 +3782,7 @@
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "限時動態名稱（一定要填㗎）";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "選擇觀看者";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "選擇瀏覽者";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "花生友";
@@ -4619,7 +4625,7 @@
 "PRIVACY_VERIFY_BUTTON" = "剔低話驗證咗";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "加入觀看者";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "加入瀏覽者";
 
 /* Button to delete the story on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "刪除私人限時動態";
@@ -4775,40 +4781,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "全部 · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "對你個訊息俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "用咗 %@ 回應你個訊息";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "對你個相簿俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "用咗 %@ 回應你個相簿";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "對你嘅音訊俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "用咗 %@ 回應你嘅音訊";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "對你分享嘅聯絡人俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "用咗 %@ 回應你分享嘅聯絡人";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "對你個檔案俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "用咗 %@ 回應你個檔案";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "對您個 GIF 俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "用咗 %@ 回應你個 GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "對你幅相俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "用咗 %@ 回應你張相";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "對你個貼圖俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "用咗 %@ 回應你個貼圖";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "俾咗 %@ 心情：「%@」";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "用咗 %@ 回應：「%@」";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "對你條片俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "用咗 %@ 回應你條片";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "對你嘅閱後即毀媒體俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "用咗 %@ 回應你嘅閱後即毀媒體";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "對你個語音訊息俾咗 %@ 心情";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "用咗 %@ 回應你嘅語音訊息";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "睇咗";
@@ -6104,7 +6110,7 @@
 "STORIES_DELETE_STORY_ACTION" = "刪除";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "限時動態已經儲存咗";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "轉寄";
@@ -6131,7 +6137,7 @@
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "允許回覆同心情回應";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "儲存唔到限時動態";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "儲存";

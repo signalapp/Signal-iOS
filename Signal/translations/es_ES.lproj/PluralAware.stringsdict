@@ -84,10 +84,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d artículos</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>1 artículo</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>%d artículos</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -887,10 +889,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d contactos excluidos</string>
 			<key>one</key>
-			<string>1 person excluded</string>
+			<string>1 contacto excluido</string>
 			<key>other</key>
-			<string>%d people excluded</string>
+			<string>%d contactos excluidos</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -903,10 +907,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d contactos</string>
 			<key>one</key>
-			<string>1 person</string>
+			<string>1 contacto</string>
 			<key>other</key>
-			<string>%d people</string>
+			<string>%d contactos</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_%d</key>
@@ -955,10 +961,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d vistas</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 vista</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d vistas</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1151,10 +1159,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d conexiones</string>
 			<key>one</key>
-			<string>1 Connection</string>
+			<string>1 conexión</string>
 			<key>other</key>
-			<string>%d Connections</string>
+			<string>%d conexiones</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1167,10 +1177,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d excluidos</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 excluido</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d excluidos</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

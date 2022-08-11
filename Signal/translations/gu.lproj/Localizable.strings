@@ -3406,6 +3406,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME પ્રકાર";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "ગાયબ થઈ જશે";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "આને મેસેજ પહોંચાડ્યો";
 
@@ -3432,6 +3435,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "આના દ્વારા જોવાયું";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "ક્યારેય નહિ";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "મળી ગયા";
@@ -3617,10 +3623,10 @@
 "MISSED_CALL" = "મિસ કૉલ";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "'ખલેલ ન કરશો'માં હતા ત્યારે મિસ્ડ કોલ આવ્યો";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "ફોકસનો ઉપયોગ કરતી વખતે મિસ્ડ કોલ આવ્યો";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "તમે Signal માં વિડિયો કૉલ કરવા માટે iOS સેટિંગ્સ એપ્લિકેશનમાં કૅમેરાના એક્સેસને સક્ષમ કરી શકો છો.";
@@ -6104,7 +6110,7 @@
 "STORIES_DELETE_STORY_ACTION" = "ડિલીટ કરો";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "સ્ટોરી સેવ કરી";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ફોરવર્ડ";
@@ -6131,7 +6137,7 @@
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "જવાબો અને પ્રતિક્રિયાઓને મંજૂરી આપો";
 
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "સ્ટોરી સેવ કરવામાં નિષ્ફળ";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "સેવ કરો";
