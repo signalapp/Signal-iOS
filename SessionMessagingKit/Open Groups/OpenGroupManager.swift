@@ -515,6 +515,11 @@ public final class OpenGroupManager: NSObject {
         
         // Process the messages
         sortedMessages.forEach { message in
+            if message.base64EncodedData == nil && message.reactions == nil {
+                messageServerIdsToRemove.append(Int64(message.id))
+                return
+            }
+            
             // Handle messages
             if let base64EncodedString: String = message.base64EncodedData,
                let data = Data(base64Encoded: base64EncodedString)
@@ -556,22 +561,24 @@ public final class OpenGroupManager: NSObject {
             }
             
             // Handle reactions
-            do {
-                let reactions: [Reaction] = Message.processRawReceivedReactions(
-                    db,
-                    openGroupId: openGroup.id,
-                    message: message,
-                    dependencies: dependencies
-                )
-                
-                try MessageReceiver.handleOpenGroupReactions(
-                    db,
-                    openGroupMessageServerId: message.id,
-                    openGroupReactions: reactions
-                )
-            }
-            catch {
-                SNLog("Couldn't handle open group reactions due to error: \(error).")
+            if message.reactions != nil {
+                do {
+                    let reactions: [Reaction] = Message.processRawReceivedReactions(
+                        db,
+                        openGroupId: openGroup.id,
+                        message: message,
+                        dependencies: dependencies
+                    )
+                    
+                    try MessageReceiver.handleOpenGroupReactions(
+                        db,
+                        openGroupMessageServerId: message.id,
+                        openGroupReactions: reactions
+                    )
+                }
+                catch {
+                    SNLog("Couldn't handle open group reactions due to error: \(error).")
+                }
             }
         }
 

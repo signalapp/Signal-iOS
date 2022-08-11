@@ -49,7 +49,7 @@ extension OpenGroupAPI {
             public let index: Int64
         }
         
-        public let reactions: [String:Reaction]
+        public let reactions: [String:Reaction]?
     }
 }
 
@@ -107,7 +107,7 @@ extension OpenGroupAPI.Message {
             whisperTo: try? container.decode(String.self, forKey: .whisperTo),
             base64EncodedData: maybeBase64EncodedData,
             base64EncodedSignature: maybeBase64EncodedSignature,
-            reactions: maybeReactions ?? [:]
+            reactions: !container.contains(.reactions) ? nil : (maybeReactions ?? [:])
         )
     }
 }
