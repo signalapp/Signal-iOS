@@ -233,6 +233,12 @@ public class SMKOpenGroup: NSObject {
                     authorId: userId,
                     variant: .standardOutgoing,
                     timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),
+                    expiresInSeconds: try? DisappearingMessagesConfiguration
+                        .select(.durationSeconds)
+                        .filter(id: userId)
+                        .filter(DisappearingMessagesConfiguration.Columns.isEnabled == true)
+                        .asRequest(of: TimeInterval.self)
+                        .fetchOne(db),
                     linkPreviewUrl: urlString
                 )
                 .saved(db)

@@ -369,9 +369,15 @@ extension ConversationVC:
                     body: text,
                     timestampMs: sentTimestampMs,
                     hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text),
+                    expiresInSeconds: try? DisappearingMessagesConfiguration
+                        .select(.durationSeconds)
+                        .filter(id: threadId)
+                        .filter(DisappearingMessagesConfiguration.Columns.isEnabled == true)
+                        .asRequest(of: TimeInterval.self)
+                        .fetchOne(db),
                     linkPreviewUrl: linkPreviewDraft?.urlString
                 ).inserted(db)
-
+                
                 // If there is a LinkPreview and it doesn't match an existing one then add it now
                 if
                     let linkPreviewDraft: LinkPreviewDraft = linkPreviewDraft,
@@ -459,7 +465,13 @@ extension ConversationVC:
                     variant: .standardOutgoing,
                     body: text,
                     timestampMs: sentTimestampMs,
-                    hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text)
+                    hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text),
+                    expiresInSeconds: try? DisappearingMessagesConfiguration
+                        .select(.durationSeconds)
+                        .filter(id: threadId)
+                        .filter(DisappearingMessagesConfiguration.Columns.isEnabled == true)
+                        .asRequest(of: TimeInterval.self)
+                        .fetchOne(db)
                 ).inserted(db)
 
                 try MessageSender.send(
