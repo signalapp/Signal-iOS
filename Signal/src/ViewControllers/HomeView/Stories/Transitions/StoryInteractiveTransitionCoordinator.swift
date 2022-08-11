@@ -23,7 +23,7 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
         }
     }
 
-    var interactionInProgress: Bool { interactiveEdge != .none }
+    private(set) var interactionInProgress: Bool = false
 
     enum Edge {
         case leading
@@ -45,8 +45,7 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
     func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began:
-            interactiveEdge = interactiveEdgeForCurrentGesture()
-
+            interactionInProgress = true
             gestureRecognizer.setTranslation(.zero, in: pageViewController.view)
 
             pageViewController.currentContextViewController.pause(hideChrome: true)
@@ -62,10 +61,12 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
                 pageViewController.currentContextViewController.presentRepliesAndViewsSheet(interactiveTransitionCoordinator: self)
             }
         case .changed:
+            interactionInProgress = true
             update(calculateProgress(gestureRecognizer))
         case .cancelled:
             pageViewController.currentContextViewController.play()
             cancel()
+            interactionInProgress = false
             interactiveEdge = .none
         case .ended:
             let progress = calculateProgress(gestureRecognizer)
@@ -77,9 +78,11 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
                 cancel()
             }
 
+            interactionInProgress = false
             interactiveEdge = .none
         default:
             cancel()
+            interactionInProgress = false
             interactiveEdge = .none
         }
     }
@@ -131,8 +134,8 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer == panGestureRecognizer else { return false }
-
-        return interactiveEdgeForCurrentGesture() != .none
+        self.interactiveEdge = interactiveEdgeForCurrentGesture()
+        return interactiveEdge != .none
     }
 
     func gestureRecognizer(
