@@ -656,7 +656,17 @@ public extension MessageViewModel {
                 LEFT JOIN \(DisappearingMessagesConfiguration.self) ON \(disappearingMessagesConfig[.threadId]) = \(interaction[.threadId])
                 LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(interaction[.threadId])
                 LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(interaction[.authorId])
-                LEFT JOIN \(Quote.self) ON \(quote[.interactionId]) = \(interaction[.id])
+                LEFT JOIN (
+                    SELECT \(quote[.interactionId]),
+                           \(quote[.authorId]),
+                           \(quote[.timestampMs]),
+                    FROM \(Quote.self)
+                    LEFT JOIN (
+                        SELECT \(interaction[.authorId]),
+                               \(interaction[.timestampMs]),
+                               \(interaction[.body]) 
+                    )
+                ) AS \(ViewModel.quoteKey) ON \(quote[.interactionId]) = \(interaction[.id])
                 LEFT JOIN \(Attachment.self) AS \(ViewModel.quoteAttachmentKey) ON \(ViewModel.quoteAttachmentKey).\(attachmentIdColumnLiteral) = \(quote[.attachmentId])
                 LEFT JOIN \(LinkPreview.self) ON (
                     \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
