@@ -218,6 +218,18 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         allAudioSources = Set(callService.audioService.availableInputs)
 
         self.shouldUseTheme = false
+
+        // We don't support a rotating call screen on phones,
+        // but we do still want to rotate some UI elements.
+        if !UIDevice.current.isIPad {
+            updateOrientationForPhone()
+
+            UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(updateOrientationForPhone),
+                                                   name: UIDevice.orientationDidChangeNotification,
+                                                   object: nil)
+        }
     }
 
     deinit {
@@ -225,6 +237,10 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         // we want to remove them so they are free'd when the call ends
         remoteVideoView.removeFromSuperview()
         localVideoView.removeFromSuperview()
+
+        if !UIDevice.current.isIPad {
+            UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        }
     }
 
     // MARK: - View Lifecycle
@@ -1024,6 +1040,25 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
     func updateCallDuration() {
         updateCallStatusLabel()
+    }
+
+    @objc
+    private func updateOrientationForPhone() {
+        let rotationAngle: CGFloat
+        switch UIDevice.current.orientation {
+        case .landscapeLeft:
+            rotationAngle = .halfPi
+        case .landscapeRight:
+            rotationAngle = -.halfPi
+        case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
+            fallthrough
+        @unknown default:
+            rotationAngle = 0
+        }
+
+        UIView.animate(withDuration: 0.3, delay: 0, options: .allowUserInteraction) {
+            self.contactAvatarView.transform = CGAffineTransform(rotationAngle: rotationAngle)
+        }
     }
 
     // MARK: - Video control timeout

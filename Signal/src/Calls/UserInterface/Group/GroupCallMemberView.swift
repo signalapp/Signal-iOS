@@ -67,15 +67,56 @@ class GroupCallMemberView: UIView {
         muteIndicatorImage.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
         addSubview(muteIndicatorImage)
         muteIndicatorImage.autoMatch(.width, to: .height, of: muteIndicatorImage)
+
+        // We don't support a rotating call screen on phones,
+        // but we do still want to rotate some UI elements.
+        if !UIDevice.current.isIPad {
+            updateOrientationForPhone()
+
+            UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(updateOrientationForPhone),
+                                                   name: UIDevice.orientationDidChangeNotification,
+                                                   object: nil)
+        }
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        if !UIDevice.current.isIPad {
+            UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        }
+    }
+
     enum ErrorState {
         case blocked(SignalServiceAddress)
         case noMediaKeys(SignalServiceAddress)
+    }
+
+    @objc
+    private func updateOrientationForPhone() {
+        let rotationAngle: CGFloat
+        switch UIDevice.current.orientation {
+        case .landscapeLeft:
+            rotationAngle = .halfPi
+        case .landscapeRight:
+            rotationAngle = -.halfPi
+        case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
+            fallthrough
+        @unknown default:
+            rotationAngle = 0
+        }
+
+        UIView.animate(withDuration: 0.3) {
+            self.rotateForPhoneOrientation(rotationAngle)
+        }
+    }
+
+    fileprivate func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
+        self.muteIndicatorImage.transform = CGAffineTransform(rotationAngle: rotationAngle)
     }
 }
 
@@ -244,6 +285,11 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         muteBottomConstraint.constant = -muteInsets
         muteHeightConstraint.constant = muteHeight
         videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
+    }
+
+    fileprivate override func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
+        super.rotateForPhoneOrientation(rotationAngle)
+        self.videoOffIndicatorImage.transform = CGAffineTransform(rotationAngle: rotationAngle)
     }
 }
 
@@ -463,6 +509,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                 self.delegate?.memberView(self, userRequestedInfoAboutError: .noMediaKeys(address))
             }
         }
+    }
+
+    fileprivate override func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
+        super.rotateForPhoneOrientation(rotationAngle)
+        self.avatarView.transform = CGAffineTransform(rotationAngle: rotationAngle)
     }
 }
 
