@@ -55,17 +55,27 @@ class StoryViewsViewController: OWSViewController {
     }
 
     private var viewers = [Viewer]()
-    private func updateViewers() {
+    private func updateViewers(reloadStoryMessage: Bool = false) {
         defer { tableView.reloadData() }
 
-        guard case .outgoing(let recipientStates) = storyMessage.manifest else {
-            owsFailDebug("Invalid story message for views")
-            self.viewers = []
-            return
-        }
+        databaseStorage.read { transaction in
+            if reloadStoryMessage {
+                guard let latestStoryMessage = StoryMessage.anyFetch(uniqueId: storyMessage.uniqueId, transaction: transaction) else {
+                    owsFailDebug("Missing story message")
+                    self.viewers = []
+                    return
+                }
 
-        self.viewers = databaseStorage.read { transaction in
-            recipientStates.compactMap {
+                self.storyMessage = latestStoryMessage
+            }
+
+            guard case .outgoing(let recipientStates) = storyMessage.manifest else {
+                owsFailDebug("Invalid story message for views")
+                self.viewers = []
+                return
+            }
+
+            self.viewers = recipientStates.compactMap {
                guard let viewedTimestamp = $0.value.viewedTimestamp else { return nil }
                 return Viewer(
                     address: .init(uuid: $0.key),
@@ -81,23 +91,9 @@ class StoryViewsViewController: OWSViewController {
             }
         }
     }
-
-    func reloadStoryMessage() {
-        guard let latestStoryMessage = databaseStorage.read(block: {
-            StoryMessage.anyFetch(uniqueId: storyMessage.uniqueId, transaction: $0)
-        }) else {
-            owsFailDebug("Missing story message")
-            return
-        }
-
-        self.storyMessage = latestStoryMessage
-        updateViewers()
-    }
 }
 
-extension StoryViewsViewController: UITableViewDelegate {
-
-}
+extension StoryViewsViewController: UITableViewDelegate {}
 
 extension StoryViewsViewController: UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -123,28 +119,31 @@ extension StoryViewsViewController: UITableViewDataSource {
 extension StoryViewsViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         if databaseChanges.storyMessageRowIds.contains(storyMessage.id!) {
-            reloadStoryMessage()
+            updateViewers(reloadStoryMessage: true)
         }
     }
 
     func databaseChangesDidUpdateExternally() {
-        reloadStoryMessage()
+        updateViewers(reloadStoryMessage: true)
     }
 
     func databaseChangesDidReset() {
-        reloadStoryMessage()
+        updateViewers(reloadStoryMessage: true)
     }
 }
 
 private class StoryViewCell: UITableViewCell {
     static let reuseIdentifier = "StoryViewCell"
+
     let avatarView = ConversationAvatarView(sizeClass: .thirtySix, localUserDisplayMode: .asUser, badged: true)
+
     lazy var nameLabel: UILabel = {
         let label = UILabel()
         label.font = .ows_dynamicTypeBodyClamped
         label.textColor = Theme.darkThemePrimaryColor
         return label
     }()
+
     lazy var timestampLabel: UILabel = {
         let label = UILabel()
         label.font = .ows_dynamicTypeFootnoteClamped
