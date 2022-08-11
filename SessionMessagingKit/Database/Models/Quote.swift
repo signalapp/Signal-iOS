@@ -76,21 +76,6 @@ public struct Quote: Codable, Equatable, Hashable, FetchableRecord, PersistableR
     }
 }
 
-public extension Quote {
-    /// This method updates the all Quotes before the quoted interation is deleted
-    ///
-    static func updateBeforeQuotedInterationDeletion(_ db: Database, timestampMs: Int64, authorId: String) throws {
-        try Quote
-            .filter(Columns.authorId == authorId)
-            .filter(Columns.timestampMs == timestampMs)
-            .updateAll(
-                db,
-                Columns.body.set(to: "QUOTED_MESSAGE_NOT_FOUND".localized()),
-                Columns.attachmentId.set(to: nil)
-            )
-    }
-}
-
 // MARK: - Protobuf
 
 public extension Quote {
