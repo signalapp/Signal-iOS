@@ -660,11 +660,12 @@ public extension MessageViewModel {
                     SELECT \(quote[.interactionId]),
                            \(quote[.authorId]),
                            \(quote[.timestampMs]),
+                           \(interaction[.body]) AS \(Quote.Columns.body),
+                           \(quote[.attachmentId])
                     FROM \(Quote.self)
-                    LEFT JOIN (
-                        SELECT \(interaction[.authorId]),
-                               \(interaction[.timestampMs]),
-                               \(interaction[.body]) 
+                    LEFT JOIN \(Interaction.self) ON (
+                        \(quote[.authorId]) = \(interaction[.authorId]) AND
+                        \(quote[.timestampMs]) = \(interaction[.timestampMs])
                     )
                 ) AS \(ViewModel.quoteKey) ON \(quote[.interactionId]) = \(interaction[.id])
                 LEFT JOIN \(Attachment.self) AS \(ViewModel.quoteAttachmentKey) ON \(ViewModel.quoteAttachmentKey).\(attachmentIdColumnLiteral) = \(quote[.attachmentId])
