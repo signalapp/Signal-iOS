@@ -327,10 +327,6 @@
 		3465F4DB27287859001663AF /* PaymentsHelperImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */; };
 		3465F4DD2728812B001663AF /* Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465F4DC2728812A001663AF /* Payments.swift */; };
 		34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 34661FB720C1C0D60056EDD6 /* message_sent.aiff */; };
-		34684DAF25C2228D00C5A93C /* determinate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */; };
-		34684DB025C2228D00C5A93C /* determinate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */; };
-		34684DB125C2228D00C5A93C /* indeterminate_spinner_blue.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */; };
-		34684DB225C2228D00C5A93C /* indeterminate_spinner_white.json in Resources */ = {isa = PBXBuildFile; fileRef = 34684DAE25C2228D00C5A93C /* indeterminate_spinner_white.json */; };
 		346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */; };
 		346C19DF25ACDF0B00061D3A /* DataSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */; };
 		346C19E125ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */; };
@@ -891,6 +887,10 @@
 		8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */; };
 		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
 		8878B2D6286636D8008368F2 /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8878B2D5286636D8008368F2 /* MyStorySettingsViewController.swift */; };
+		8878C88728A4740F00B2D9D4 /* indeterminate_spinner_44.json in Resources */ = {isa = PBXBuildFile; fileRef = 8878C88328A4740E00B2D9D4 /* indeterminate_spinner_44.json */; };
+		8878C88828A4740F00B2D9D4 /* indeterminate_spinner_56.json in Resources */ = {isa = PBXBuildFile; fileRef = 8878C88428A4740F00B2D9D4 /* indeterminate_spinner_56.json */; };
+		8878C88928A4740F00B2D9D4 /* determinate_spinner_44.json in Resources */ = {isa = PBXBuildFile; fileRef = 8878C88528A4740F00B2D9D4 /* determinate_spinner_44.json */; };
+		8878C88A28A4740F00B2D9D4 /* determinate_spinner_56.json in Resources */ = {isa = PBXBuildFile; fileRef = 8878C88628A4740F00B2D9D4 /* determinate_spinner_56.json */; };
 		887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380725F0355700685845 /* ChatsSettingsViewController.swift */; };
 		887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380925F0427F00685845 /* NotificationSettingsViewController.swift */; };
 		887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */; };
@@ -2333,10 +2333,6 @@
 		3465F4DA27287858001663AF /* PaymentsHelperImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsHelperImpl.swift; sourceTree = "<group>"; };
 		3465F4DC2728812A001663AF /* Payments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Payments.swift; sourceTree = "<group>"; };
 		34661FB720C1C0D60056EDD6 /* message_sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; name = message_sent.aiff; path = Signal/AudioFiles/message_sent.aiff; sourceTree = SOURCE_ROOT; };
-		34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_white.json; sourceTree = "<group>"; };
-		34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_blue.json; sourceTree = "<group>"; };
-		34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_blue.json; sourceTree = "<group>"; };
-		34684DAE25C2228D00C5A93C /* indeterminate_spinner_white.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_white.json; sourceTree = "<group>"; };
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSettingsTableViewController.swift; sourceTree = "<group>"; };
 		346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaDownloadSettingsViewController.swift; sourceTree = "<group>"; };
@@ -3152,6 +3148,10 @@
 		887889A8247718F7001B5FCF /* jv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = jv; path = translations/jv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889AB247E09B7001B5FCF /* kk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kk; path = translations/kk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8878B2D5286636D8008368F2 /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
+		8878C88328A4740E00B2D9D4 /* indeterminate_spinner_44.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_44.json; sourceTree = "<group>"; };
+		8878C88428A4740F00B2D9D4 /* indeterminate_spinner_56.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_56.json; sourceTree = "<group>"; };
+		8878C88528A4740F00B2D9D4 /* determinate_spinner_44.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_44.json; sourceTree = "<group>"; };
+		8878C88628A4740F00B2D9D4 /* determinate_spinner_56.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_56.json; sourceTree = "<group>"; };
 		887B380725F0355700685845 /* ChatsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380925F0427F00685845 /* NotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsContentViewController.swift; sourceTree = "<group>"; };
@@ -6350,12 +6350,12 @@
 				88A9419324099F6E000E9700 /* Attachment Keyboard */,
 				88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */,
 				34848D5A25D43ADD00E5034B /* cash-out.json */,
-				34684DAC25C2228D00C5A93C /* determinate_spinner_blue.json */,
-				34684DAB25C2228C00C5A93C /* determinate_spinner_white.json */,
-				34684DAD25C2228D00C5A93C /* indeterminate_spinner_blue.json */,
-				34684DAE25C2228D00C5A93C /* indeterminate_spinner_white.json */,
 				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
 				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
+				8878C88528A4740F00B2D9D4 /* determinate_spinner_44.json */,
+				8878C88628A4740F00B2D9D4 /* determinate_spinner_56.json */,
+				8878C88328A4740E00B2D9D4 /* indeterminate_spinner_44.json */,
+				8878C88428A4740F00B2D9D4 /* indeterminate_spinner_56.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
 				3406D33025DD832800885B14 /* payments_spinner_dark.json */,
 				3406D32725DD80D600885B14 /* payments_spinner_fail.json */,
@@ -8870,10 +8870,12 @@
 			files = (
 				3406D33225DD832800885B14 /* payments_spinner_dark.json in Resources */,
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
+				8878C88728A4740F00B2D9D4 /* indeterminate_spinner_44.json in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
 				346EFC3D25FFDC6A00F493C7 /* update-pin-dark.json in Resources */,
-				34684DB225C2228D00C5A93C /* indeterminate_spinner_white.json in Resources */,
 				88928A45263A2781009C9B30 /* state-change_confirm-up.caf in Resources */,
+				8878C88828A4740F00B2D9D4 /* indeterminate_spinner_56.json in Resources */,
+				8878C88928A4740F00B2D9D4 /* determinate_spinner_44.json in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				888017842741E5B400346E9A /* boost_badge.json in Resources */,
 				A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */,
@@ -8889,11 +8891,9 @@
 				8880178B2741E5DB00346E9A /* boost_clap.json in Resources */,
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
-				34684DB025C2228D00C5A93C /* determinate_spinner_blue.json in Resources */,
 				888017902741E5DB00346E9A /* boost_fire.json in Resources */,
 				887CD4872473587300FDD265 /* transfer.json in Resources */,
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,
-				34684DB125C2228D00C5A93C /* indeterminate_spinner_blue.json in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
 				4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */,
 				886CB07824E77E5B00753909 /* silence.aiff in Resources */,
@@ -8941,9 +8941,9 @@
 				888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */,
 				45B74A7F2044AAB600CD42F8 /* note-quiet.aifc in Resources */,
 				4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */,
+				8878C88A28A4740F00B2D9D4 /* determinate_spinner_56.json in Resources */,
 				346EFC3E25FFDC6A00F493C7 /* update-pin.json in Resources */,
 				45B74A842044AAB600CD42F8 /* popcorn.aifc in Resources */,
-				34684DAF25C2228D00C5A93C /* determinate_spinner_white.json in Resources */,
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
 				346EFC3B25FFDC6A00F493C7 /* restore.json in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,

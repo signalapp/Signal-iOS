@@ -171,7 +171,7 @@ class AudioMessageView: ManualStackView {
             leftView = playPauseContainer
         } else if let attachmentPointer = audioAttachment.attachmentPointer {
             leftView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                style: .withoutCircle(diameter: Constants.animationSize),
+                                                diameter: Constants.animationSize,
                                                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                                 mediaCache: mediaCache)
         } else {

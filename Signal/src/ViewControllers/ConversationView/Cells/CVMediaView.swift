@@ -112,7 +112,7 @@ public class CVMediaView: ManualLayoutViewWithLayer {
         }
 
         let progressView = CVAttachmentProgressView(direction: direction,
-                                                    style: .withCircle,
+                                                    diameter: 44,
                                                     isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                                     mediaCache: mediaCache)
         addSubviewToCenterOnSuperview(progressView, size: progressView.layoutSize)

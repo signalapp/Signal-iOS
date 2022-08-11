@@ -673,19 +673,20 @@ class StoryItemMediaView: UIView {
 
     private static let mediaCache = CVMediaCache()
     private func buildDownloadStateView(for pointer: TSAttachmentPointer) -> UIView {
-        let view = UIView()
-
         let progressView = CVAttachmentProgressView(
             direction: .download(attachmentPointer: pointer),
-            style: .withCircle,
+            diameter: 56,
             isDarkThemeEnabled: true,
             mediaCache: Self.mediaCache
         )
-        view.addSubview(progressView)
-        progressView.autoSetDimensions(to: progressView.layoutSize)
-        progressView.autoCenterInSuperview()
 
-        return view
+        let manualLayoutView = OWSLayerView(frame: .zero) { layerView in
+            progressView.frame.size = progressView.layoutSize
+            progressView.center = layerView.center
+        }
+        manualLayoutView.addSubview(progressView)
+
+        return manualLayoutView
     }
 
     private func buildContentUnavailableView() -> UIView {
