@@ -59,8 +59,7 @@ public class StoryManager: NSObject {
             transaction: transaction
         ) else { return }
 
-        // TODO: Optimistic downloading of story attachments.
-        attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
+        startAutomaticDownloadIfNecessary(for: message, transaction: transaction)
 
         OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
 
@@ -85,7 +84,6 @@ public class StoryManager: NSObject {
         } else {
             guard let message = try StoryMessage.create(withSentTranscript: proto, transaction: transaction) else { return }
 
-            // TODO: Optimistic downloading of story attachments.
             attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
 
             OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
@@ -109,6 +107,70 @@ public class StoryManager: NSObject {
     public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> NSNumber? {
         guard let timestamp = StoryFinder.oldestTimestamp(transaction: transaction) else { return nil }
         return NSNumber(value: timestamp + storyLifetimeMillis)
+    }
+
+    private static let perContextAutomaticDownloadLimit = 3
+    private static let recentContextAutomaticDownloadLimit: UInt = 10
+
+    /// We automatically download incoming stories IFF:
+    /// * The context has been recently interacted with (sent message to group, 1:1, viewed story, etc) OR is associated with a pinned thread
+    /// * We have not already exceeded the limit for how many unviewed stories we should download for this context
+    private class func startAutomaticDownloadIfNecessary(for message: StoryMessage, transaction: SDSAnyWriteTransaction) {
+        guard case .file(let attachmentId) = message.attachment else {
+            // We always auto-download non-file story attachments, this will generally only be link preview thumbnails.
+            Logger.info("Automatically enqueueing download of non-file based story with timestamp \(message.timestamp)")
+            attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
+            return
+        }
+
+        guard let attachmentPointer = TSAttachmentPointer.anyFetchAttachmentPointer(uniqueId: attachmentId, transaction: transaction) else {
+            // Already downloaded, nothing to do.
+            return
+        }
+
+        var unviewedDownloadedStoriesForContext = 0
+        StoryFinder.enumerateUnviewedIncomingStoriesForContext(message.context, transaction: transaction) { otherMessage, stop in
+            guard otherMessage.uniqueId != message.uniqueId else { return }
+            switch otherMessage.attachment {
+            case .text:
+                unviewedDownloadedStoriesForContext += 1
+            case .file(let attachmentId):
+                guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
+                    owsFailDebug("Missing attachment for attachmentId \(attachmentId)")
+                    return
+                }
+                if let pointer = attachment as? TSAttachmentPointer, [.downloading, .enqueued].contains(pointer.state) {
+                    unviewedDownloadedStoriesForContext += 1
+                } else if attachment is TSAttachmentStream {
+                    unviewedDownloadedStoriesForContext += 1
+                }
+            }
+
+            if unviewedDownloadedStoriesForContext >= perContextAutomaticDownloadLimit {
+                stop.pointee = true
+            }
+        }
+
+        guard unviewedDownloadedStoriesForContext < perContextAutomaticDownloadLimit else {
+            Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), automatic download limit exceeded for context \(message.context)")
+            attachmentPointer.updateAttachmentPointerState(.pendingManualDownload, transaction: transaction)
+            return
+        }
+
+        // See if the context has been recently active
+
+        let pinnedThreads = PinnedThreadManager.pinnedThreads(transaction: transaction)
+        let recentThreads = AnyThreadFinder().recentThreads(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
+        let autoDownloadContexts = (pinnedThreads + recentThreads).map { $0.storyContext }
+
+        if autoDownloadContexts.contains(message.context) {
+            Logger.info("Automatically downloading attachments for story with timestamp \(message.timestamp) and context \(message.context)")
+
+            attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
+        } else {
+            Logger.info("Skipping automatic download of attachments for story with timestamp \(message.timestamp), context \(message.context) not recently active")
+            attachmentPointer.updateAttachmentPointerState(.pendingManualDownload, transaction: transaction)
+        }
     }
 }
 

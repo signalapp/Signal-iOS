@@ -138,6 +138,33 @@ public class StoryFinder: NSObject {
         }
     }
 
+    public static func enumerateUnviewedIncomingStoriesForContext(_ context: StoryContext, transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+
+        guard let contextQuery = context.query else { return }
+
+        let sql = """
+            SELECT *
+            FROM \(StoryMessage.databaseTableName)
+            WHERE \(contextQuery)
+            AND json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.viewedTimestamp') is NULL
+            AND \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
+            ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
+        """
+
+        do {
+            let cursor = try StoryMessage.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+            while let message = try cursor.next() {
+                var stop: ObjCBool = false
+                block(message, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+    }
+
     // The stories should be enumerated in order from "next to expire" to "last to expire".
     public static func enumerateExpiredStories(transaction: SDSAnyReadTransaction, block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
