@@ -31,7 +31,7 @@ PODS:
     - libwebp/demux
   - libwebp/webp (1.2.3)
   - Logging (1.4.0)
-  - lottie-ios (3.1.3)
+  - lottie-ios (3.4.1)
   - Mantle (2.1.0):
     - Mantle/extobjc (= 2.1.0)
   - Mantle/extobjc (2.1.0)
@@ -219,7 +219,7 @@ SPEC CHECKSUMS:
   LibSignalClient: 3180d534297ae089f15af948eade74c3dcaf16de
   libwebp: 1cc63d45283a1349f4479e9618c5db59978d3d15
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
-  lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
+  lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   MobileCoin: fa887ccc409a21d66b123702d4eb5b720610417b
   MobileCoinMinimal: 627ed590d8a0d5d57c39ec25727bde3d976d2f7a
