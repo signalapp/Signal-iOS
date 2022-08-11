@@ -334,6 +334,14 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
         )
     }
 
+    func storyContextViewController(_ storyContextViewController: StoryContextViewController, contextAfter context: StoryContext) -> StoryContext? {
+        guard let contextIndex = availableContexts.firstIndex(of: context),
+              let contextAfter = availableContexts[safe: contextIndex.advanced(by: 1)] else {
+            return nil
+        }
+        return contextAfter
+    }
+
     func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController) {
         guard
             storyContextViewController === currentContextViewController,

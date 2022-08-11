@@ -194,36 +194,16 @@ class StoryItemMediaView: UIView {
         return CMTimeGetSeconds(currentTime) + loopedElapsedTime
     }
 
-    // MARK: - Downloading
-
     private func startAttachmentDownloadIfNecessary(_ gesture: UITapGestureRecognizer) -> Bool {
-        guard case .pointer(let pointer) = item.attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
-
         // Only start downloads when the user taps in the center of the view.
         let downloadHitRegion = CGRect(
             origin: CGPoint(x: frame.center.x - 30, y: frame.center.y - 30),
             size: CGSize(square: 60)
         )
         guard downloadHitRegion.contains(gesture.location(in: self)) else { return false }
-
-        attachmentDownloads.enqueueDownloadOfAttachments(
-            forStoryMessageId: item.message.uniqueId,
-            attachmentGroup: .allAttachmentsIncoming,
-            downloadBehavior: .bypassAll,
-            touchMessageImmediately: true) { [weak self] _ in
-                Logger.info("Successfully re-downloaded attachment.")
-                DispatchQueue.main.async { self?.updateMediaView() }
-            } failure: { [weak self] error in
-                Logger.warn("Failed to redownload attachment with error: \(error)")
-                DispatchQueue.main.async { self?.updateMediaView() }
-            }
-
-        return true
-    }
-
-    var isPendingDownload: Bool {
-        guard case .pointer = item.attachment else { return false }
-        return true
+        return item.startAttachmentDownloadIfNecessary { [weak self] in
+            self?.updateMediaView()
+        }
     }
 
     // MARK: - Author Row
@@ -709,6 +689,34 @@ class StoryItem: NSObject {
         self.message = message
         self.numberOfReplies = numberOfReplies
         self.attachment = attachment
+    }
+}
+
+extension StoryItem {
+    // MARK: - Downloading
+
+    @discardableResult
+    func startAttachmentDownloadIfNecessary(completion: (() -> Void)? = nil) -> Bool {
+        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
+
+        attachmentDownloads.enqueueDownloadOfAttachments(
+            forStoryMessageId: message.uniqueId,
+            attachmentGroup: .allAttachmentsIncoming,
+            downloadBehavior: .bypassAll,
+            touchMessageImmediately: true) { _ in
+                Logger.info("Successfully re-downloaded attachment.")
+                DispatchQueue.main.async { completion?() }
+            } failure: { error in
+                Logger.warn("Failed to redownload attachment with error: \(error)")
+                DispatchQueue.main.async { completion?() }
+            }
+
+        return true
+    }
+
+    var isPendingDownload: Bool {
+        guard case .pointer = attachment else { return false }
+        return true
     }
 }
 

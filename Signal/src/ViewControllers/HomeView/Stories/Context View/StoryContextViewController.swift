@@ -17,6 +17,7 @@ protocol StoryContextViewControllerDelegate: AnyObject {
         _ storyContextViewController: StoryContextViewController,
         loadPositionIfRead: StoryContextViewController.LoadPosition
     )
+    func storyContextViewController(_ storyContextViewController: StoryContextViewController, contextAfter context: StoryContext) -> StoryContext?
     func storyContextViewControllerDidPause(_ storyContextViewController: StoryContextViewController)
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController)
     func storyContextViewControllerShouldOnlyRenderMyStories(_ storyContextViewController: StoryContextViewController) -> Bool
@@ -340,7 +341,10 @@ class StoryContextViewController: OWSViewController {
             repliesAndViewsButton.isHidden = true
         }
 
-        if messageDidChange { updateProgressState() }
+        if messageDidChange {
+            ensureSubsequentItemsDownloaded()
+            updateProgressState()
+        }
     }
 
     private var pauseTime: CFTimeInterval?
@@ -356,7 +360,7 @@ class StoryContextViewController: OWSViewController {
         playbackProgressView.numberOfItems = items.count
         if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
             // When we present a story, mark it as viewed if it's not already, as long as it's downloaded.
-            if !currentItemView.isPendingDownload, currentItemView.item.message.localUserViewedTimestamp == nil {
+            if !currentItemView.item.isPendingDownload, currentItemView.item.message.localUserViewedTimestamp == nil {
                 databaseStorage.write { transaction in
                     currentItemView.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
@@ -364,7 +368,7 @@ class StoryContextViewController: OWSViewController {
 
             currentItemView.updateTimestampText()
 
-            if currentItemView.isPendingDownload {
+            if currentItemView.item.isPendingDownload {
                 // Don't progress stories that are pending download.
                 lastTransitionTime = CACurrentMediaTime()
                 playbackProgressView.itemState = .init(index: idx, value: 0)
@@ -391,6 +395,37 @@ class StoryContextViewController: OWSViewController {
             }
         } else {
             playbackProgressView.itemState = .init(index: 0, value: 0)
+        }
+    }
+
+    private static let subsequentItemsToLoad = 3
+    private func ensureSubsequentItemsDownloaded() {
+        guard let currentItem = currentItem, let currentItemIdx = items.firstIndex(of: currentItem) else { return }
+
+        let endingIdx = min((items.count - 1), currentItemIdx + Self.subsequentItemsToLoad)
+        var subsequentItems = items[currentItemIdx...endingIdx]
+        var context = context
+
+        DispatchQueue.sharedBackground.async {
+            // If the current context has less than 3 unloaded items, try the next context until we reach the end or the limit
+            while subsequentItems.count < Self.subsequentItemsToLoad {
+                guard let nextContext = self.delegate?.storyContextViewController(self, contextAfter: context) else { break }
+
+                Self.databaseStorage.read { transaction in
+                    StoryFinder.enumerateUnviewedIncomingStoriesForContext(self.context, transaction: transaction) { message, stop in
+                        if self.delegate?.storyContextViewControllerShouldOnlyRenderMyStories(self) == true && !message.authorAddress.isLocalAddress { return }
+                        guard let storyItem = self.buildStoryItem(for: message, transaction: transaction) else { return }
+                        subsequentItems.append(storyItem)
+                        if subsequentItems.count >= Self.subsequentItemsToLoad { stop.pointee = true }
+                    }
+                }
+
+                if subsequentItems.count >= Self.subsequentItemsToLoad { break }
+
+                context = nextContext
+            }
+
+            subsequentItems.forEach { $0.startAttachmentDownloadIfNecessary() }
         }
     }
 
