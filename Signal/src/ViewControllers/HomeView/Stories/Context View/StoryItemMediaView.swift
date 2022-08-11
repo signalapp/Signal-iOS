@@ -149,42 +149,54 @@ class StoryItemMediaView: UIView {
     }
 
     var duration: CFTimeInterval {
+        var duration: CFTimeInterval = 0
+        var glyphCount: Int?
         switch item.attachment {
         case .pointer:
             owsFailDebug("Undownloaded attachments should not progress.")
             return 0
         case .stream(let stream):
+            glyphCount = stream.caption?.glyphCount
+
             if let asset = videoPlayer?.avPlayer.currentItem?.asset {
                 let videoDuration = CMTimeGetSeconds(asset.duration)
                 if stream.isLoopingVideo {
                     // GIFs should loop 3 times, or play for 5 seconds
                     // whichever is longer.
-                    return max(5, videoDuration * 3)
+                    duration = max(5, videoDuration * 3)
                 } else {
-                    return videoDuration
+                    // Videos should play for their duration
+                    duration = videoDuration
+
+                    // For now, we don't want to factor captions into video durations,
+                    // as it would cause the video to loop leading to weird UX
+                    glyphCount = nil
                 }
             } else {
-                // Images should play for 5 seconds
-                return 5
+                // At base static images should play for 5 seconds
+                duration = 5
             }
         case .text(let attachment):
-            // As a base, all text attachments play for at least 3s,
-            // even if they have no text.
-            var duration: CFTimeInterval = 3
+            glyphCount = attachment.text?.glyphCount
 
-            if let text = attachment.text {
-                // For each bucket of glyphs after the first 15,
-                // add an additional 1s of playback time.
-                let fifteenGlyphBuckets = (max(0, CGFloat(text.glyphCount) - 15) / 15).rounded(.up)
-                duration += fifteenGlyphBuckets
-            }
+            // As a base, all text attachments play for at least 5s,
+            // even if they have no text.
+            duration = 5
 
             // If a text attachment includes a link preview, play
             // for an additional 2s
             if attachment.preview != nil { duration += 2 }
-
-            return duration
         }
+
+        // If we have a glyph count, increase the duration to allow it to be readable
+        if let glyphCount = glyphCount {
+            // For each bucket of glyphs after the first 15,
+            // add an additional 1s of playback time.
+            let fifteenGlyphBuckets = (max(0, CGFloat(glyphCount) - 15) / 15).rounded(.up)
+            duration += fifteenGlyphBuckets
+        }
+
+        return duration
     }
 
     var elapsedTime: CFTimeInterval? {
