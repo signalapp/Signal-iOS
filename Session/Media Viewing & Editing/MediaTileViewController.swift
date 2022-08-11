@@ -201,8 +201,35 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
         guard let focusedIndexPath: IndexPath = self.viewModel.focusedIndexPath else { return }
         
         Logger.debug("scrolling to focused item at indexPath: \(focusedIndexPath)")
+        
+        // Note: For some reason 'scrollToItem' doesn't always work properly so we need to manually
+        // calculate what the offset should be to do the initial scroll
         self.view.layoutIfNeeded()
-        self.collectionView.scrollToItem(at: focusedIndexPath, at: .centeredVertically, animated: false)
+        
+        let availableHeight: CGFloat = {
+            // Note: This height will be set before we have properly performed a layout and fitted
+            // this screen within it's parent UIPagedViewController so we need to try to calculate
+            // the "actual" height of the collection view
+            var finalHeight: CGFloat = self.collectionView.frame.height
+            
+            if let navController: UINavigationController = self.parent?.navigationController {
+                finalHeight -= navController.navigationBar.frame.height
+                finalHeight -= (UIApplication.shared.keyWindow?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0)
+            }
+            
+            if let tabBar: TabBar = self.parent?.parent?.view.subviews.first as? TabBar {
+                finalHeight -= tabBar.frame.height
+            }
+            
+            return finalHeight
+        }()
+        let focusedRect: CGRect = (self.collectionView.layoutAttributesForItem(at: focusedIndexPath)?.frame)
+            .defaulting(to: .zero)
+        self.collectionView.contentOffset = CGPoint(
+            x: 0,
+            y: (focusedRect.origin.y - (availableHeight / 2) + (focusedRect.height / 2))
+        )
+        self.collectionView.collectionViewLayout.invalidateLayout()
         
         // Now that the data has loaded we need to check if either of the "load more" sections are
         // visible and trigger them if so
@@ -832,7 +859,12 @@ class GalleryGridCellItem: PhotoGridItem {
 
 extension MediaTileViewController: UIViewControllerTransitioningDelegate {
     public func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard self == presented || self.navigationController == presented else { return nil }
+        guard
+            self == presented ||
+            self.navigationController == presented ||
+            self.parent == presented ||
+            self.parent?.navigationController == presented
+        else { return nil }
         guard let focusedIndexPath: IndexPath = self.viewModel.focusedIndexPath else { return nil }
 
         return MediaDismissAnimationController(
@@ -841,7 +873,12 @@ extension MediaTileViewController: UIViewControllerTransitioningDelegate {
     }
 
     public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        guard self == dismissed || self.navigationController == dismissed else { return nil }
+        guard
+            self == dismissed ||
+            self.navigationController == dismissed ||
+            self.parent == dismissed ||
+            self.parent?.navigationController == dismissed
+        else { return nil }
         guard let focusedIndexPath: IndexPath = self.viewModel.focusedIndexPath else { return nil }
 
         return MediaZoomAnimationController(

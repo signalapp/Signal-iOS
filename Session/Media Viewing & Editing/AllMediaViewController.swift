@@ -36,9 +36,13 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
     init(mediaTitleViewController: MediaTileViewController, documentTitleViewController: DocumentTileViewController) {
         self.mediaTitleViewController = mediaTitleViewController
         self.documentTitleViewController = documentTitleViewController
+        
         super.init(nibName: nil, bundle: nil)
+        
         self.mediaTitleViewController.delegate = self
         self.documentTitleViewController.delegate = self
+        addChild(self.mediaTitleViewController)
+        addChild(self.documentTitleViewController)
     }
     
     required init?(coder: NSCoder) {
@@ -66,6 +70,8 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
         pageVC.dataSource = self
         pageVC.delegate = self
         pageVC.setViewControllers([ mediaTitleViewController ], direction: .forward, animated: false, completion: nil)
+        addChild(pageVC)
+        
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: view)
