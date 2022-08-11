@@ -97,7 +97,10 @@ public enum OpenGroupAPI {
                                     .roomMessagesRecent(openGroup.roomToken) :
                                     .roomMessagesSince(openGroup.roomToken, seqNo: openGroup.sequenceNumber)
                                 ),
-                                queryParameters: [.reactors: "20"]
+                                queryParameters: [
+                                    .updateTypes: UpdateTypes.reaction.rawValue,
+                                    .reactors: "20"
+                                ]
                             ),
                             responseType: [Failable<Message>].self
                         )
@@ -620,7 +623,10 @@ public enum OpenGroupAPI {
                 request: Request<NoBody, Endpoint>(
                     server: server,
                     endpoint: .roomMessagesSince(roomToken, seqNo: seqNo),
-                    queryParameters: [.reactors: "20"]
+                    queryParameters: [
+                        .updateTypes: UpdateTypes.reaction.rawValue,
+                        .reactors: "20"
+                    ]
                 ),
                 using: dependencies
             )
