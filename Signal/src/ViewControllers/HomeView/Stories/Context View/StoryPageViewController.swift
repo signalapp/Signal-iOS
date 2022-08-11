@@ -22,10 +22,8 @@ class StoryPageViewController: UIPageViewController {
     }
     let onlyRenderMyStories: Bool
 
-    weak var contextDataSource: StoryPageViewControllerDataSource? {
-        didSet { initiallyAvailableContexts = contextDataSource?.storyPageViewControllerAvailableContexts(self) ?? [currentContext] }
-    }
-    lazy var initiallyAvailableContexts: [StoryContext] = [currentContext]
+    weak var contextDataSource: StoryPageViewControllerDataSource?
+    let viewableContexts: [StoryContext]
     private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
 
     private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
@@ -40,8 +38,9 @@ class StoryPageViewController: UIPageViewController {
 
     // MARK: - Init
 
-    required init(context: StoryContext, loadMessage: StoryMessage? = nil, onlyRenderMyStories: Bool = false) {
+    required init(context: StoryContext, viewableContexts: [StoryContext]? = nil, loadMessage: StoryMessage? = nil, onlyRenderMyStories: Bool = false) {
         self.onlyRenderMyStories = onlyRenderMyStories
+        self.viewableContexts = viewableContexts ?? [context]
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
         self.currentContext = context
         currentContextViewController.loadMessage = loadMessage
@@ -283,22 +282,22 @@ extension StoryPageViewController: UIPageViewControllerDataSource {
 
 extension StoryPageViewController: StoryContextViewControllerDelegate {
     var availableContexts: [StoryContext] {
-        guard let contextDataSource = contextDataSource else { return initiallyAvailableContexts }
+        guard let contextDataSource = contextDataSource else { return viewableContexts }
         let availableContexts = contextDataSource.storyPageViewControllerAvailableContexts(self)
-        return initiallyAvailableContexts.filter { availableContexts.contains($0) }
+        return viewableContexts.filter { availableContexts.contains($0) }
     }
 
     var previousStoryContext: StoryContext? {
-        guard let contextIndex = availableContexts.firstIndex(of: currentContext),
-              let contextBefore = availableContexts[safe: contextIndex.advanced(by: -1)] else {
+        guard let contextIndex = viewableContexts.firstIndex(of: currentContext),
+              let contextBefore = viewableContexts[safe: contextIndex.advanced(by: -1)] else {
             return nil
         }
         return contextBefore
     }
 
     var nextStoryContext: StoryContext? {
-        guard let contextIndex = availableContexts.firstIndex(of: currentContext),
-              let contextAfter = availableContexts[safe: contextIndex.advanced(by: 1)] else {
+        guard let contextIndex = viewableContexts.firstIndex(of: currentContext),
+              let contextAfter = viewableContexts[safe: contextIndex.advanced(by: 1)] else {
             return nil
         }
         return contextAfter
@@ -335,8 +334,8 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
     }
 
     func storyContextViewController(_ storyContextViewController: StoryContextViewController, contextAfter context: StoryContext) -> StoryContext? {
-        guard let contextIndex = availableContexts.firstIndex(of: context),
-              let contextAfter = availableContexts[safe: contextIndex.advanced(by: 1)] else {
+        guard let contextIndex = viewableContexts.firstIndex(of: context),
+              let contextAfter = viewableContexts[safe: contextIndex.advanced(by: 1)] else {
             return nil
         }
         return contextAfter

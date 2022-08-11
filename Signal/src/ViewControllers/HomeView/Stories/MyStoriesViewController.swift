@@ -125,7 +125,12 @@ extension MyStoriesViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
 
         guard let thread = thread(for: indexPath.section), let item = item(for: indexPath) else { return }
-        let vc = StoryPageViewController(context: thread.storyContext, loadMessage: item.message, onlyRenderMyStories: true)
+        let vc = StoryPageViewController(
+            context: thread.storyContext,
+            viewableContexts: items.orderedKeys.map { $0.storyContext },
+            loadMessage: item.message,
+            onlyRenderMyStories: true
+        )
         vc.contextDataSource = self
         present(vc, animated: true)
     }

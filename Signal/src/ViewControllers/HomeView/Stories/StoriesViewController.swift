@@ -13,7 +13,6 @@ class StoriesViewController: OWSViewController {
     let tableView = UITableView()
     private let syncingModels = SyncingStoryViewModelArray()
     private var myStoryModel = AtomicOptional<MyStoryViewModel>(nil)
-    private var viewerContexts: [StoryContext]?
 
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
@@ -403,13 +402,14 @@ extension StoriesViewController: UITableViewDelegate {
 
             // If we tap on a story with unviewed stories, we only want the viewer
             // to page through unviewed contexts.
+            let viewableContexts: [StoryContext]
             if model.hasUnviewedMessages {
-                viewerContexts = syncingModels.get().lazy.filter { $0.hasUnviewedMessages }.map { $0.context }
+                viewableContexts = syncingModels.get().lazy.filter { $0.hasUnviewedMessages }.map { $0.context }
             } else {
-                viewerContexts = syncingModels.get().map { $0.context }
+                viewableContexts = syncingModels.allContexts
             }
 
-            let vc = StoryPageViewController(context: model.context)
+            let vc = StoryPageViewController(context: model.context, viewableContexts: viewableContexts)
             vc.contextDataSource = self
             presentFullScreen(vc, animated: true)
         case .hiddenStories:
@@ -494,7 +494,7 @@ extension StoriesViewController: UITableViewDataSource {
 
 extension StoriesViewController: StoryPageViewControllerDataSource {
     func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
-        viewerContexts ?? []
+        syncingModels.allContexts
     }
 }
 
@@ -688,6 +688,8 @@ private class SyncingStoryViewModelArray {
     // This may lag behind `trueModels` and is eventually consistent. It is exposed to UITableView.
     @ThreadBoundValue(wrappedValue: [], queue: .main) private var exposedModels: [StoryViewModel]
 
+    private var contexts = AtomicArray<StoryContext>()
+
     /// Safely modify the list of models. This method must be called on the loading queue.
     ///
     /// - Parameters
@@ -708,6 +710,7 @@ private class SyncingStoryViewModelArray {
         }
         trueModels = newModels
         DispatchQueue.main.async {
+            self.contexts.set(newModels.map { $0.context })
             self.exposedModels = newModels
             sync(newModels, userInfo)
         }
@@ -716,5 +719,10 @@ private class SyncingStoryViewModelArray {
 
     func get() -> [StoryViewModel] {
         return exposedModels
+    }
+
+    /// Thread safe list of all contexts currently exposed
+    var allContexts: [StoryContext] {
+        contexts.get()
     }
 }
