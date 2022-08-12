@@ -22,7 +22,7 @@ class LocalVideoView: UIView {
         addSubview(localVideoCapturePreview)
 
         if Platform.isSimulator {
-            backgroundColor = .green
+            backgroundColor = .brown
         }
 
         NotificationCenter.default.addObserver(
