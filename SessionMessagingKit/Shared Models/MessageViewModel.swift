@@ -584,6 +584,7 @@ public extension MessageViewModel {
             let disappearingMessagesConfig: TypedTableAlias<DisappearingMessagesConfiguration> = TypedTableAlias()
             let profile: TypedTableAlias<Profile> = TypedTableAlias()
             let quote: TypedTableAlias<Quote> = TypedTableAlias()
+            let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
             let linkPreview: TypedTableAlias<LinkPreview> = TypedTableAlias()
             
             let threadProfileTableLiteral: SQL = SQL(stringLiteral: "threadProfile")
@@ -661,12 +662,13 @@ public extension MessageViewModel {
                            \(quote[.authorId]),
                            \(quote[.timestampMs]),
                            \(interaction[.body]) AS \(Quote.Columns.body),
-                           \(quote[.attachmentId])
+                           \(interactionAttachment[.attachmentId]) AS \(Quote.Columns.attachmentId)
                     FROM \(Quote.self)
                     LEFT JOIN \(Interaction.self) ON (
                         \(quote[.authorId]) = \(interaction[.authorId]) AND
                         \(quote[.timestampMs]) = \(interaction[.timestampMs])
                     )
+                    LEFT JOIN \(InteractionAttachment.self) ON \(interaction[.id]) = \(interactionAttachment[.interactionId])
                 ) AS \(ViewModel.quoteKey) ON \(quote[.interactionId]) = \(interaction[.id])
                 LEFT JOIN \(Attachment.self) AS \(ViewModel.quoteAttachmentKey) ON \(ViewModel.quoteAttachmentKey).\(attachmentIdColumnLiteral) = \(quote[.attachmentId])
                 LEFT JOIN \(LinkPreview.self) ON (
