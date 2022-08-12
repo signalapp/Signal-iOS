@@ -638,6 +638,7 @@
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Oletko varma että haluat poistaa kaikki viestipyynnöt?";
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Poista";
 "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Oletko varma että haluat poistaa tämän viestipyynnön?";
+"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON"  = "Are you sure you want to block this contact?";
 "MESSAGE_REQUESTS_INFO" = "Viestin lähettäminen tälle henkilölle hyväksyy automaattisesti viestipyynnön.";
 "MESSAGE_REQUESTS_ACCEPTED" = "Viestipyyntösi hyväksyttiin.";
 "MESSAGE_REQUESTS_NOTIFICATION" = "Sinulla on uusi viestipyyntö";

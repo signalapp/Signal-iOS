@@ -638,6 +638,7 @@
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Naozaj chcete vymazať všetky žiadosti o správu?";
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Vymazať";
 "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Naozaj chcete vymazať túto žiadosť o správu?";
+"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON"  = "Are you sure you want to block this contact?";
 "MESSAGE_REQUESTS_INFO" = "Poslanie správy tomuto používateľovi automaticky príjme ich žiadosť o správu.";
 "MESSAGE_REQUESTS_ACCEPTED" = "Vaša žiadosť o správu bola prijatá.";
 "MESSAGE_REQUESTS_NOTIFICATION" = "Máte novú žiadosť o správu";
