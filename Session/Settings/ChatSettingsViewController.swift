@@ -13,7 +13,7 @@ class ChatSettingsViewController: OWSTableViewController {
         
         self.updateTableContents()
         
-        ViewControllerUtilities.setUpDefaultSessionStyle(for: self, title: "CHATS_TITLE".localized(), hasCustomBackButton: false)
+        ViewControllerUtilities.setUpDefaultSessionStyle(for: self, title: "CONVERSATIONS_TITLE".localized(), hasCustomBackButton: false)
     }
     
     override func viewDidAppear(_ animated: Bool) {

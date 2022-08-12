@@ -41,8 +41,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // This block will be cleared in storageIsReady.
         DeviceSleepManager.sharedInstance.addBlock(blockObject: self)
         
-        let mainWindow: UIWindow = UIWindow(frame: UIScreen.main.bounds)
+        let mainWindow: UIWindow = TraitObservingWindow(frame: UIScreen.main.bounds)
         self.loadingViewController = LoadingViewController()
+        
+        // Store a weak reference in the ThemeManager so it can properly apply themes as needed
+        ThemeManager.mainWindow = mainWindow
         
         AppSetup.setupEnvironment(
             appSpecificBlock: {
@@ -75,8 +78,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 self?.completePostMigrationSetup(needsConfigSync: needsConfigSync)
             }
         )
-        
-        SNAppearance.switchToSessionAppearance()
         
         // No point continuing if we are running tests
         guard !CurrentAppContext().isRunningTests else { return true }

@@ -23,9 +23,7 @@ class MediaGalleryNavigationController: OWSNavigationController {
 
     // MARK: - View Lifecycle
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return (isLightMode ? .default : .lightContent)
-    }
+    override var preferredStatusBarStyle: UIStatusBarStyle { return ThemeManager.currentTheme.statusBarStyle }
 
     override func viewDidLoad() {
         super.viewDidLoad()

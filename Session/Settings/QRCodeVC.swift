@@ -2,6 +2,7 @@
 
 import UIKit
 import Curve25519Kit
+import SessionUIKit
 import SessionUtilitiesKit
 
 final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
@@ -10,14 +11,15 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     private var targetVCIndex: Int?
     private var tabBarTopConstraint: NSLayoutConstraint!
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("vc_qr_code_view_my_qr_code_tab_title", comment: "")) { [weak self] in
+            TabBar.Tab(title: "vc_qr_code_view_my_qr_code_tab_title".localized()) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
-            TabBar.Tab(title: NSLocalizedString("vc_qr_code_view_scan_qr_code_tab_title", comment: "")) { [weak self] in
+            TabBar.Tab(title: "vc_qr_code_view_scan_qr_code_tab_title".localized()) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
             }
@@ -28,50 +30,60 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     private lazy var viewMyQRCodeVC: ViewMyQRCodeVC = {
         let result = ViewMyQRCodeVC()
         result.qrCodeVC = self
+        
         return result
     }()
     
     private lazy var scanQRCodePlaceholderVC: ScanQRCodePlaceholderVC = {
         let result = ScanQRCodePlaceholderVC()
         result.qrCodeVC = self
+        
         return result
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("vc_qr_code_view_scan_qr_code_explanation", comment: "")
+        let message = "vc_qr_code_view_scan_qr_code_explanation".localized()
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("vc_qr_code_title", comment: ""))
-        let navigationBar = navigationController!.navigationBar
+        setNavBarTitle("vc_qr_code_title".localized())
+        
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ viewMyQRCodeVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
         pageVC.setViewControllers([ viewMyQRCodeVC ], direction: .forward, animated: false, completion: nil)
+        
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
         tabBarTopConstraint = tabBar.autoPinEdge(toSuperviewSafeArea: .top)
         view.pin(.trailing, to: .trailing, of: tabBar)
+        
         // Set up page VC constraints
         let pageVCView = pageVC.view!
         view.addSubview(pageVCView)
+        
         pageVCView.pin(.leading, to: .leading, of: view)
         pageVCView.pin(.top, to: .bottom, of: tabBar)
         view.pin(.trailing, to: .trailing, of: pageVCView)
         view.pin(.bottom, to: .bottom, of: pageVCView)
+        
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
-        let height: CGFloat = (navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight)
+        
+        let height: CGFloat = ((navigationController?.view.bounds.height ?? 0) - (navigationController?.navigationBar.height() ?? 0) - TabBar.snHeight)
         pageVCView.set(.height, to: height)
         viewMyQRCodeVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
@@ -82,7 +94,8 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
         tabBarTopConstraint.constant = navigationController!.navigationBar.height()
     }
     
-    // MARK: General
+    // MARK: - General
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let index = pages.firstIndex(of: viewController), index != 0 else { return nil }
         return pages[index - 1]
@@ -98,7 +111,8 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
         pageVC.setViewControllers([ scanQRCodeWrapperVC ], direction: .forward, animated: false, completion: nil)
     }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         guard let targetVC = pendingViewControllers.first, let index = pages.firstIndex(of: targetVC) else { return }
         targetVCIndex = index
@@ -109,7 +123,8 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
         tabBar.selectTab(at: index)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func close() {
         dismiss(animated: true, completion: nil)
     }
@@ -124,7 +139,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
             let alert = UIAlertController(
                 title: "invalid_session_id".localized(),
                 message: "INVALID_SESSION_ID_MESSAGE".localized(), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
             presentAlert(alert)
         }
         else {
@@ -145,7 +160,8 @@ private final class ViewMyQRCodeVC : UIViewController {
     weak var qrCodeVC: QRCodeVC!
     private var bottomConstraint: NSLayoutConstraint!
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
@@ -181,10 +197,12 @@ private final class ViewMyQRCodeVC : UIViewController {
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
+        
         // Set up share button
-        let shareButton = Button(style: .regular, size: .large)
-        shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
-        shareButton.addTarget(self, action: #selector(shareQRCode), for: UIControl.Event.touchUpInside)
+        let shareButton = OutlineButton(style: .regular, size: .large)
+        shareButton.setTitle("share".localized(), for: .normal)
+        shareButton.addTarget(self, action: #selector(shareQRCode), for: .touchUpInside)
+        
         // Set up share button container
         let shareButtonContainer = UIView()
         shareButtonContainer.addSubview(shareButton)
@@ -193,6 +211,7 @@ private final class ViewMyQRCodeVC : UIViewController {
         shareButtonContainer.pin(.trailing, to: .trailing, of: shareButton, withInset: 80)
         shareButtonContainer.pin(.bottom, to: .bottom, of: shareButton, withInset: isIPhone6OrSmaller ? Values.largeSpacing : Values.onboardingButtonBottomOffset)
         let spacing = isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing
+        
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: spacing), qrCodeImageViewContainer, UIView.spacer(withHeight: spacing),
             explanationLabel, UIView.vStretchingSpacer(), shareButtonContainer ])

@@ -453,7 +453,14 @@ public extension MessageViewModel {
     static let typingIndicatorId: Int64 = -2
     
     // Note: This init method is only used system-created cells or empty states
-    init(isTypingIndicator: Bool? = nil) {
+    init(
+        variant: Interaction.Variant = .standardOutgoing,
+        body: String? = nil,
+        quote: Quote? = nil,
+        cellType: CellType = .typingIndicator,
+        isTypingIndicator: Bool? = nil,
+        isLast: Bool = true
+    ) {
         self.threadId = "INVALID_THREAD_ID"
         self.threadVariant = .contact
         self.threadIsTrusted = false
@@ -470,11 +477,11 @@ public extension MessageViewModel {
         )
         self.rowId = targetId
         self.id = targetId
-        self.variant = .standardOutgoing
+        self.variant = variant
         self.timestampMs = Int64.max
         self.authorId = ""
         self.authorNameInternal = nil
-        self.body = nil
+        self.body = body
         self.rawBody = nil
         self.expiresStartedAtMs = nil
         self.expiresInSeconds = nil
@@ -485,7 +492,7 @@ public extension MessageViewModel {
         self.isSenderOpenGroupModerator = false
         self.isTypingIndicator = isTypingIndicator
         self.profile = nil
-        self.quote = nil
+        self.quote = quote
         self.quoteAttachment = nil
         self.linkPreview = nil
         self.linkPreviewAttachment = nil
@@ -494,7 +501,7 @@ public extension MessageViewModel {
         // Post-Query Processing Data
         
         self.attachments = nil
-        self.cellType = .typingIndicator
+        self.cellType = cellType
         self.authorName = ""
         self.senderName = nil
         self.shouldShowProfile = false
@@ -504,7 +511,7 @@ public extension MessageViewModel {
         self.previousVariant = nil
         self.positionInCluster = .middle
         self.isOnlyMessageInCluster = true
-        self.isLast = true
+        self.isLast = isLast
         self.currentUserBlindedPublicKey = nil
     }
 }

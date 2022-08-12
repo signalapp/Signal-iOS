@@ -160,7 +160,7 @@ extension ConversationVC:
         let documentPickerVC = UIDocumentPickerViewController(documentTypes: [ kUTTypeItem as String ], in: UIDocumentPickerMode.import)
         documentPickerVC.delegate = self
         documentPickerVC.modalPresentationStyle = .fullScreen
-        SNAppearance.switchToDocumentPickerAppearance()
+        
         present(documentPickerVC, animated: true, completion: nil)
     }
     
@@ -202,13 +202,8 @@ extension ConversationVC:
     }
     
     // MARK: - UIDocumentPickerDelegate
-
-    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        SNAppearance.switchToSessionAppearance() // Switch back to the correct appearance
-    }
-
+    
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        SNAppearance.switchToSessionAppearance()
         guard let url = urls.first else { return } // TODO: Handle multiple?
         
         let urlResourceValues: URLResourceValues

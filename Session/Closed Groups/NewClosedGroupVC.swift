@@ -67,16 +67,16 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     private func setUpViewHierarchy() {
         guard !contactProfiles.isEmpty else {
             let explanationLabel: UILabel = UILabel()
-            explanationLabel.textColor = Colors.text
             explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-            explanationLabel.numberOfLines = 0
-            explanationLabel.lineBreakMode = .byWordWrapping
+            explanationLabel.text = "vc_create_closed_group_empty_state_message".localized()
+            explanationLabel.textColor = Colors.text
             explanationLabel.textAlignment = .center
-            explanationLabel.text = NSLocalizedString("vc_create_closed_group_empty_state_message", comment: "")
+            explanationLabel.lineBreakMode = .byWordWrapping
+            explanationLabel.numberOfLines = 0
             
-            let createNewPrivateChatButton: Button = Button(style: .prominentOutline, size: .large)
-            createNewPrivateChatButton.setTitle(NSLocalizedString("vc_create_closed_group_empty_state_button_title", comment: ""), for: UIControl.State.normal)
-            createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: UIControl.Event.touchUpInside)
+            let createNewPrivateChatButton: OutlineButton = OutlineButton(style: .regular, size: .medium)
+            createNewPrivateChatButton.setTitle("vc_create_closed_group_empty_state_button_title".localized(), for: .normal)
+            createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: .touchUpInside)
             createNewPrivateChatButton.set(.width, to: 196)
             
             let stackView: UIStackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])

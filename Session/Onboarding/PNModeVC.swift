@@ -2,6 +2,7 @@
 
 import UIKit
 import PromiseKit
+import SessionUIKit
 import SessionMessagingKit
 import SessionSnodeKit
 
@@ -33,42 +34,51 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUpGradientBackground()
         setUpNavBarStyle()
         setUpNavBarSessionIcon()
+        
         let learnMoreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "ic_info"), style: .plain, target: self, action: #selector(learnMore))
         learnMoreButton.tintColor = Colors.text
         navigationItem.rightBarButtonItem = learnMoreButton
+        
         // Set up title label
         let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("vc_pn_mode_title", comment: "")
-        titleLabel.numberOfLines = 0
+        titleLabel.text = "vc_pn_mode_title".localized()
+        titleLabel.textColor = Colors.text
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 0
+        
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButtonBottomOffsetSpacer = UIView()
         registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
+        
         // Set up register button
-        let registerButton = Button(style: .prominentFilled, size: .large)
-        registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
-        registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        let registerButton = OutlineButton(style: .filled, size: .large)
+        registerButton.setTitle("continue_2".localized(), for: .normal)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
+        
         // Set up register button container
         let registerButtonContainer = UIView(wrapping: registerButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
+        
         // Set up options stack view
         let optionsStackView = UIStackView(arrangedSubviews: optionViews)
         optionsStackView.axis = .vertical
         optionsStackView.spacing = Values.smallSpacing
         optionsStackView.alignment = .fill
+        
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: isIPhone6OrSmaller ? Values.mediumSpacing : Values.veryLargeSpacing), optionsStackView ])
         topStackView.axis = .vertical
         topStackView.alignment = .fill
+        
         // Set up top stack view container
         let topStackViewContainer = UIView(wrapping: topStackView, withInsets: UIEdgeInsets(top: 0, leading: Values.veryLargeSpacing, bottom: 0, trailing: Values.veryLargeSpacing))
+        
         // Set up main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, registerButtonContainer, registerButtonBottomOffsetSpacer ])
         mainStackView.axis = .vertical
@@ -76,14 +86,16 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         view.addSubview(mainStackView)
         mainStackView.pin(to: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
+        
         // Preselect APNs mode
         optionViews[0].isSelected = true
     }
 
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func learnMore() {
-        let urlAsString = "https://getsession.org/faq/#privacy"
-        let url = URL(string: urlAsString)!
+        guard let url: URL = URL(string: "https://getsession.org/faq/#privacy") else { return }
+        
         UIApplication.shared.open(url)
     }
 
@@ -93,9 +105,9 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
 
     @objc private func register() {
         guard selectedOptionView != nil else {
-            let title = NSLocalizedString("vc_pn_mode_no_option_picked_modal_title", comment: "")
+            let title = "vc_pn_mode_no_option_picked_modal_title".localized()
             let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
             return presentAlert(alert)
         }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)

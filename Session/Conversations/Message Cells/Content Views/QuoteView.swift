@@ -119,15 +119,14 @@ final class QuoteView: UIView {
         contentView.rightAnchor.constraint(lessThanOrEqualTo: self.rightAnchor).isActive = true
         
         // Line view
-        let lineColor: UIColor = {
-            switch (mode, AppModeManager.shared.currentAppMode) {
-                case (.regular, .light), (.draft, .light): return .black
-                case (.regular, .dark): return (direction == .outgoing) ? .black : Colors.accent
-                case (.draft, .dark): return Colors.accent
+        let lineColor: ThemeValue = {
+            switch mode {
+                case .regular: return (direction == .outgoing ? .messageBubble_outgoingText : .primary)
+                case .draft: return .primary
             }
         }()
         let lineView = UIView()
-        lineView.backgroundColor = lineColor
+        lineView.themeBackgroundColor = lineColor
         lineView.set(.width, to: Values.accentLineThickness)
         
         if let attachment: Attachment = attachment {
@@ -141,7 +140,7 @@ final class QuoteView: UIView {
             
             imageView.tintColor = .white
             imageView.contentMode = .center
-            imageView.backgroundColor = lineColor
+            imageView.themeBackgroundColor = lineColor
             imageView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
             imageView.layer.masksToBounds = true
             imageView.set(.width, to: thumbnailSize)
@@ -180,14 +179,6 @@ final class QuoteView: UIView {
         }
         
         // Body label
-        let textColor: UIColor = {
-            guard mode != .draft else { return Colors.text }
-            
-            switch (direction, AppModeManager.shared.currentAppMode) {
-                case (.outgoing, .dark), (.incoming, .light): return .black
-                default: return .white
-            }
-        }()
         let bodyLabel = UILabel()
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byTruncatingTail
@@ -211,7 +202,10 @@ final class QuoteView: UIView {
                 }
             )
             .defaulting(to: NSAttributedString(string: "Document"))
-        bodyLabel.textColor = textColor
+        bodyLabel.themeTextColor = (direction == .outgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         
         let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
         
@@ -226,7 +220,7 @@ final class QuoteView: UIView {
             .asSet()
             .contains(authorId)
             let authorLabel = UILabel()
-            authorLabel.lineBreakMode = .byTruncatingTail
+            authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
             authorLabel.text = (isCurrentUser ?
                 "MEDIA_GALLERY_SENDER_NAME_YOU".localized() :
                 Profile.displayName(
@@ -234,11 +228,13 @@ final class QuoteView: UIView {
                     threadVariant: threadVariant
                 )
             )
-            authorLabel.textColor = textColor
-            authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
+            authorLabel.themeTextColor = .messageBubble_outgoingText
+            authorLabel.lineBreakMode = .byTruncatingTail
+            
             let authorLabelSize = authorLabel.systemLayoutSizeFitting(availableSpace)
             authorLabel.set(.height, to: authorLabelSize.height)
             authorLabelHeight = authorLabelSize.height
+            
             let labelStackView = UIStackView(arrangedSubviews: [ authorLabel, bodyLabel ])
             labelStackView.axis = .vertical
             labelStackView.spacing = labelStackViewSpacing

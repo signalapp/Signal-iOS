@@ -54,35 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate.fromViewController presentAlert:actionSheet];
 }
 
-- (void)takePicture
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(self.delegate);
-
-    [SNAppearance switchToImagePickerAppearance];
-    
-    [self.delegate.fromViewController ows_askForCameraPermissions:^(BOOL granted) {
-        if (!granted) {
-            OWSLogWarn(@"Camera permission denied.");
-            return;
-        }
-
-        UIImagePickerController *picker = [OWSImagePickerController new];
-        picker.delegate = self;
-        picker.allowsEditing = NO;
-        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-        picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage ];
-
-        [self.delegate.fromViewController presentViewController:picker animated:YES completion:nil];
-    }];
-}
-
 - (void)chooseFromLibrary
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
-
-    [SNAppearance switchToImagePickerAppearance];
     
     [self.delegate.fromViewController ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
@@ -107,8 +82,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
-
-    [SNAppearance switchToSessionAppearance];
     
     [self.delegate.fromViewController dismissViewControllerAnimated:YES completion:nil];
 }
@@ -120,9 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.delegate);
-
-    [SNAppearance switchToSessionAppearance];
-    
     
     NSURL* imageURL = [info objectForKey:UIImagePickerControllerImageURL];
     UIImage *rawAvatar = [info objectForKey:UIImagePickerControllerOriginalImage];

@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 import SessionMessagingKit
 
 final class UserDetailsSheet: Sheet {
@@ -60,8 +61,8 @@ final class UserDetailsSheet: Sheet {
         sessionIDLabelContainer.layer.borderColor = isLightMode ? UIColor.black.cgColor : UIColor.white.cgColor
         
         // Copy button
-        let copyButton = Button(style: .prominentOutline, size: .medium)
-        copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
+        let copyButton = OutlineButton(style: .regular, size: .medium)
+        copyButton.setTitle("copy".localized(), for: .normal)
         copyButton.addTarget(self, action: #selector(copySessionID), for: UIControl.Event.touchUpInside)
         copyButton.set(.width, to: 160)
         

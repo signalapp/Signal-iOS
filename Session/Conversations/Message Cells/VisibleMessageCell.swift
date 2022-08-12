@@ -94,11 +94,12 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         let size = VisibleMessageCell.replyButtonSize + 8
         result.set(.width, to: size)
         result.set(.height, to: size)
+        result.themeBorderColor = .textPrimary
         result.layer.borderWidth = 1
-        result.layer.borderColor = Colors.text.cgColor
-        result.layer.cornerRadius = size / 2
+        result.layer.cornerRadius = (size / 2)
         result.layer.masksToBounds = true
         result.alpha = 0
+        
         return result
     }()
 
@@ -108,7 +109,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         result.set(.width, to: size)
         result.set(.height, to: size)
         result.image = UIImage(named: "ic_reply")?.withRenderingMode(.alwaysTemplate)
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
+        
         return result
     }()
 
@@ -265,11 +267,13 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         )
-        bubbleView.backgroundColor = ((
+        
+        let bubbleBackgroundColor: ThemeValue = ((
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
-        ) ? Colors.receivedMessageBackground : Colors.sentMessageBackground)
-        bubbleBackgroundView.backgroundColor = bubbleView.backgroundColor
+        ) ? .messageBubble_incomingBackground : .messageBubble_outgoingBackground)
+        bubbleView.themeBackgroundColor = bubbleBackgroundColor
+        bubbleBackgroundView.themeBackgroundColor = bubbleBackgroundColor
         updateBubbleViewCorners()
         
         // Content view
@@ -286,9 +290,9 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         populateHeader(for: cellViewModel, shouldInsetHeader: shouldInsetHeader)
         
         // Author label
-        authorLabel.textColor = Colors.text
         authorLabel.isHidden = (cellViewModel.senderName == nil)
         authorLabel.text = cellViewModel.senderName
+        authorLabel.themeTextColor = .textPrimary
         
         let authorLabelAvailableWidth: CGFloat = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * VisibleMessageCell.authorLabelInset)
         let authorLabelAvailableSpace = CGSize(width: authorLabelAvailableWidth, height: .greatestFiniteMagnitude)
@@ -298,8 +302,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         // Message status image view
         let (image, tintColor, backgroundColor) = getMessageStatusImage(for: cellViewModel)
         messageStatusImageView.image = image
-        messageStatusImageView.tintColor = tintColor
-        messageStatusImageView.backgroundColor = backgroundColor
+        messageStatusImageView.themeTintColor = tintColor
+        messageStatusImageView.themeBackgroundColor = backgroundColor
         messageStatusImageView.isHidden = (
             cellViewModel.variant != .standardOutgoing ||
             cellViewModel.variant == .infoCall ||
@@ -323,9 +327,9 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             
             timerView.configure(
                 withExpirationTimestamp: UInt64(floor(expirationTimestampMs)),
-                initialDurationSeconds: UInt32(floor(expiresInSeconds)),
-                tintColor: Colors.text
+                initialDurationSeconds: UInt32(floor(expiresInSeconds))
             )
+            timerView.themeTintColor = .textPrimary
             timerView.isHidden = false
         }
         else {
@@ -352,9 +356,9 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         
         let dateBreakLabel: UILabel = UILabel()
         dateBreakLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        dateBreakLabel.textColor = Colors.text
-        dateBreakLabel.textAlignment = .center
         dateBreakLabel.text = date.formattedForDisplay
+        dateBreakLabel.themeTextColor = .textPrimary
+        dateBreakLabel.textAlignment = .center
         headerView.addSubview(dateBreakLabel)
         dateBreakLabel.pin(.top, to: .top, of: headerView, withInset: Values.smallSpacing)
         
@@ -374,18 +378,10 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         playbackInfo: ConversationViewModel.PlaybackInfo?,
         lastSearchText: String?
     ) {
-        let bodyLabelTextColor: UIColor = {
-            let direction: Direction = (cellViewModel.variant == .standardOutgoing ?
-                .outgoing :
-                .incoming
-            )
-            
-            switch (direction, AppModeManager.shared.currentAppMode) {
-                case (.outgoing, .dark), (.incoming, .light): return .black
-                case (.outgoing, .light): return Colors.grey
-                default: return .white
-            }
-        }()
+        let bodyLabelTextColor: ThemeValue = (cellViewModel.variant == .standardOutgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         
         snContentView.subviews.forEach { $0.removeFromSuperview() }
         albumView = nil
@@ -842,21 +838,21 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         }
     }
 
-    private func getMessageStatusImage(for cellViewModel: MessageViewModel) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
+    private func getMessageStatusImage(for cellViewModel: MessageViewModel) -> (image: UIImage?, tintColor: ThemeValue?, backgroundColor: ThemeValue?) {
         guard cellViewModel.variant == .standardOutgoing else { return (nil, nil, nil) }
 
         let image: UIImage
-        var tintColor: UIColor? = nil
-        var backgroundColor: UIColor? = nil
+        var tintColor: ThemeValue? = nil
+        var backgroundColor: ThemeValue? = nil
         
         switch (cellViewModel.state, cellViewModel.hasAtLeastOneReadReceipt) {
             case (.sending, _):
                 image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.text
+                tintColor = .textPrimary
             
             case (.sent, false), (.skipped, _):
                 image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.text
+                tintColor = .textPrimary
                 
             case (.sent, true):
                 image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
@@ -864,7 +860,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 
             case (.failed, _):
                 image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.destructive
+                tintColor = .danger
         }
 
         return (image, tintColor, backgroundColor)
@@ -939,7 +935,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     static func getBodyTextView(
         for cellViewModel: MessageViewModel,
         with availableWidth: CGFloat,
-        textColor: UIColor,
+        textColor: ThemeValue,
         searchText: String?,
         delegate: (UITextViewDelegate & BodyTextViewDelegate)?
     ) -> UITextView {
@@ -953,51 +949,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         let isOutgoing: Bool = (cellViewModel.variant == .standardOutgoing)
         let result: BodyTextView = BodyTextView(snDelegate: delegate)
         result.isEditable = false
-        
-        let attributedText: NSMutableAttributedString = NSMutableAttributedString(
-            attributedString: MentionUtilities.highlightMentions(
-                in: (cellViewModel.body ?? ""),
-                threadVariant: cellViewModel.threadVariant,
-                currentUserPublicKey: cellViewModel.currentUserPublicKey,
-                currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
-                isOutgoingMessage: isOutgoing,
-                attributes: [
-                    .foregroundColor : textColor,
-                    .font : UIFont.systemFont(ofSize: getFontSize(for: cellViewModel))
-                ]
-            )
-        )
-        
-        // If there is a valid search term then highlight each part that matched
-        if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
-            let normalizedBody: String = attributedText.string.lowercased()
-            
-            SessionThreadViewModel.searchTermParts(searchText)
-                .map { part -> String in
-                    guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
-                    
-                    return String(part[part.index(after: part.startIndex)..<part.endIndex])
-                }
-                .forEach { part in
-                    // Highlight all ranges of the text (Note: The search logic only finds results that start
-                    // with the term so we use the regex below to ensure we only highlight those cases)
-                    normalizedBody
-                        .ranges(
-                            of: (CurrentAppContext().isRTL ?
-                                 "\(part.lowercased())(^|[ ])" :
-                                 "(^|[ ])\(part.lowercased())"
-                            ),
-                            options: [.regularExpression]
-                        )
-                        .forEach { range in
-                            let legacyRange: NSRange = NSRange(range, in: normalizedBody)
-                            attributedText.addAttribute(.backgroundColor, value: UIColor.white, range: legacyRange)
-                            attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: legacyRange)
-                        }
-                }
-        }
-        
-        result.attributedText = attributedText
         result.dataDetectorTypes = .link
         result.backgroundColor = .clear
         result.isOpaque = false
@@ -1007,14 +958,70 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         result.isScrollEnabled = false
         result.isUserInteractionEnabled = true
         result.delegate = delegate
-        result.linkTextAttributes = [
-            .foregroundColor: textColor,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
         
-        let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
-        let size = result.sizeThatFits(availableSpace)
-        result.set(.height, to: size.height)
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard
+                let actualTextColor: UIColor = theme.colors[textColor],
+                let backgroundPrimaryColor: UIColor = theme.colors[.backgroundPrimary],
+                let textPrimaryColor: UIColor = theme.colors[.textPrimary]
+            else { return }
+            
+            let hasPreviousSetText: Bool = ((result?.attributedText?.length ?? 0) > 0)
+            
+            let attributedText: NSMutableAttributedString = NSMutableAttributedString(
+                attributedString: MentionUtilities.highlightMentions(
+                    in: (cellViewModel.body ?? ""),
+                    threadVariant: cellViewModel.threadVariant,
+                    currentUserPublicKey: cellViewModel.currentUserPublicKey,
+                    currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
+                    isOutgoingMessage: isOutgoing,
+                    attributes: [
+                        .foregroundColor: actualTextColor,
+                        .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel))
+                    ]
+                )
+            )
+            
+            // If there is a valid search term then highlight each part that matched
+            if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
+                let normalizedBody: String = attributedText.string.lowercased()
+                
+                SessionThreadViewModel.searchTermParts(searchText)
+                    .map { part -> String in
+                        guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
+                        
+                        return String(part[part.index(after: part.startIndex)..<part.endIndex])
+                    }
+                    .forEach { part in
+                        // Highlight all ranges of the text (Note: The search logic only finds results that start
+                        // with the term so we use the regex below to ensure we only highlight those cases)
+                        normalizedBody
+                            .ranges(
+                                of: (CurrentAppContext().isRTL ?
+                                     "\(part.lowercased())(^|[ ])" :
+                                     "(^|[ ])\(part.lowercased())"
+                                ),
+                                options: [.regularExpression]
+                            )
+                            .forEach { range in
+                                let legacyRange: NSRange = NSRange(range, in: normalizedBody)
+                                attributedText.addAttribute(.backgroundColor, value: backgroundPrimaryColor, range: legacyRange)
+                                attributedText.addAttribute(.foregroundColor, value: textPrimaryColor, range: legacyRange)
+                            }
+                    }
+            }
+            result?.attributedText = attributedText
+            result?.linkTextAttributes = [
+                .foregroundColor: actualTextColor,
+                .underlineStyle: NSUnderlineStyle.single.rawValue
+            ]
+            
+            if let result: BodyTextView = result, !hasPreviousSetText {
+                let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
+                let size = result.sizeThatFits(availableSpace)
+                result.set(.height, to: size.height)
+            }
+        }
         
         return result
     }

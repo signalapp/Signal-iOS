@@ -1,10 +1,17 @@
-import NVActivityIndicatorView
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
+import NVActivityIndicatorView
 import SessionMessagingKit
+import SessionUIKit
 
-final class PathVC : BaseVC {
+final class PathVC: BaseVC {
+    public static let dotSize: CGFloat = 8
+    public static let expandedDotSize: CGFloat = 16
+    private static let rowHeight: CGFloat = (isIPhone5OrSmaller ? 52 : 75)
 
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var pathStackView: UIStackView = {
         let result = UIStackView()
         result.axis = .vertical
@@ -18,21 +25,18 @@ final class PathVC : BaseVC {
         return result
     }()
 
-    private lazy var learnMoreButton: Button = {
-        let result = Button(style: .prominentOutline, size: .large)
-        result.setTitle(NSLocalizedString("vc_path_learn_more_button_title", comment: ""), for: UIControl.State.normal)
+    private lazy var learnMoreButton: OutlineButton = {
+        let result = OutlineButton(style: .regular, size: .large)
+        result.setTitle("vc_path_learn_more_button_title".localized(), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(learnMore), for: UIControl.Event.touchUpInside)
         return result
     }()
-    
-    // MARK: Settings
-    static let dotSize = CGFloat(8)
-    static let expandedDotSize = CGFloat(16)
-    static let rowHeight = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(75)
 
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUpGradientBackground()
         setUpNavBar()
         setUpViewHierarchy()
@@ -41,15 +45,15 @@ final class PathVC : BaseVC {
 
     private func setUpNavBar() {
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("vc_path_title", comment: ""))
+        setNavBarTitle("vc_path_title".localized())
     }
 
     private func setUpViewHierarchy() {
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_path_explanation", comment: "")
+        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        explanationLabel.text = "vc_path_explanation".localized()
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping

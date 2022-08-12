@@ -24,7 +24,7 @@ public extension UIView {
     static func separator() -> UIView {
         let result = UIView()
         result.set(.height, to: Values.separatorThickness)
-        result.backgroundColor = Colors.separator
+        result.themeBackgroundColor = .borderSeparator
         return result
     }
 }

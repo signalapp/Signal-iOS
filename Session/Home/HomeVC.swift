@@ -108,16 +108,18 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
 
     private lazy var emptyStateView: UIView = {
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.text = "vc_home_empty_state_message".localized()
+        explanationLabel.textColor = Colors.text
         explanationLabel.textAlignment = .center
-        explanationLabel.text = NSLocalizedString("vc_home_empty_state_message", comment: "")
-        let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
-        createNewPrivateChatButton.setTitle(NSLocalizedString("vc_home_empty_state_button_title", comment: ""), for: UIControl.State.normal)
-        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: UIControl.Event.touchUpInside)
+        explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
+        let createNewPrivateChatButton = OutlineButton(style: .regular, size: .large)
+        createNewPrivateChatButton.setTitle("vc_home_empty_state_button_title".localized(), for: .normal)
+        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: .touchUpInside)
         createNewPrivateChatButton.set(.width, to: Values.iPadButtonWidth)
+        
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
         result.axis = .vertical
         result.spacing = Values.mediumSpacing

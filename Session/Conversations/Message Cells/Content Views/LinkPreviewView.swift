@@ -131,7 +131,7 @@ final class LinkPreviewView: UIView {
         isOutgoing: Bool,
         delegate: (UITextViewDelegate & BodyTextViewDelegate)? = nil,
         cellViewModel: MessageViewModel? = nil,
-        bodyLabelTextColor: UIColor? = nil,
+        bodyLabelTextColor: ThemeValue? = nil,
         lastSearchText: String? = nil
     ) {
         cancelButton.removeFromSuperview()
@@ -139,7 +139,7 @@ final class LinkPreviewView: UIView {
         var image: UIImage? = state.image
         let stateHasImage: Bool = (image != nil)
         if image == nil && (state is LinkPreview.DraftState || state is LinkPreview.SentState) {
-            image = UIImage(named: "Link")?.withTint(isLightMode ? .black : .white)
+            image = UIImage(named: "Link")
         }
         
         // Image view
@@ -156,6 +156,7 @@ final class LinkPreviewView: UIView {
         }
         
         imageView.image = image
+        imageView.themeTintColor = .textPrimary
         imageView.contentMode = (stateHasImage ? .scaleAspectFill : .center)
         
         // Loader
@@ -190,7 +191,7 @@ final class LinkPreviewView: UIView {
             let bodyTextView = VisibleMessageCell.getBodyTextView(
                 for: cellViewModel,
                 with: maxWidth,
-                textColor: (bodyLabelTextColor ?? sentLinkPreviewTextColor),
+                textColor: (bodyLabelTextColor ?? .textPrimary),
                 searchText: lastSearchText,
                 delegate: delegate
             )

@@ -2,24 +2,26 @@
 
 import UIKit
 import PromiseKit
+import SessionUIKit
 import SessionUtilitiesKit
 import SessionSnodeKit
 
-final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
     private var tabBarTopConstraint: NSLayoutConstraint!
     private var activityIndicatorModal: ModalActivityIndicatorViewController?
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("vc_link_device_recovery_phrase_tab_title", comment: "")) { [weak self] in
+            TabBar.Tab(title: "vc_link_device_recovery_phrase_tab_title".localized()) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
-            TabBar.Tab(title: NSLocalizedString("vc_link_device_scan_qr_code_tab_title", comment: "")) { [weak self] in
+            TabBar.Tab(title: "vc_link_device_scan_qr_code_tab_title".localized()) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
             }
@@ -180,20 +182,23 @@ private final class RecoveryPhraseVC : UIViewController {
     // MARK: Lifecycle
     override func viewDidLoad() {
         view.backgroundColor = .clear
+        
         // Title label
         let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("vc_enter_recovery_phrase_title", comment: "")
-        titleLabel.numberOfLines = 0
+        titleLabel.text = "vc_enter_recovery_phrase_title".localized()
+        titleLabel.textColor = Colors.text
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 0
+        
         // Explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_enter_recovery_phrase_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_enter_recovery_phrase_explanation".localized()
+        explanationLabel.textColor = Colors.text
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
         // Spacers
         let topSpacer = UIView.vStretchingSpacer()
         let spacer1 = UIView()
@@ -203,17 +208,20 @@ private final class RecoveryPhraseVC : UIViewController {
         let bottomSpacer = UIView.vStretchingSpacer()
         let restoreButtonBottomOffsetSpacer = UIView()
         restoreButtonBottomOffsetConstraint = restoreButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
+        
         // Continue button
-        let continueButton = Button(style: .prominentFilled, size: .large)
-        continueButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
-        continueButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        let continueButton = OutlineButton(style: .filled, size: .large)
+        continueButton.setTitle("continue_2".localized(), for: UIControl.State.normal)
         continueButton.addTarget(self, action: #selector(handleContinueButtonTapped), for: UIControl.Event.touchUpInside)
+        
         // Continue button container
         let continueButtonContainer = UIView(wrapping: continueButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
+        
         // Top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextView ])
         topStackView.axis = .vertical
         topStackView.alignment = .fill
+        
         // Top stack view container
         let topStackViewContainer = UIView()
         topStackViewContainer.addSubview(topStackView)
@@ -221,6 +229,7 @@ private final class RecoveryPhraseVC : UIViewController {
         topStackView.pin(.top, to: .top, of: topStackViewContainer)
         topStackViewContainer.pin(.trailing, to: .trailing, of: topStackView, withInset: Values.veryLargeSpacing)
         topStackViewContainer.pin(.bottom, to: .bottom, of: topStackView)
+        
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, continueButtonContainer, restoreButtonBottomOffsetSpacer ])
         mainStackView.axis = .vertical
@@ -231,13 +240,16 @@ private final class RecoveryPhraseVC : UIViewController {
         mainStackView.pin(.trailing, to: .trailing, of: view)
         bottomConstraint = mainStackView.pin(.bottom, to: .bottom, of: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
+        
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGestureRecognizer)
+        
         // Listen to keyboard notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillHideNotification(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
         // Set up width constraint
         view.set(.width, to: UIScreen.main.bounds.width)
     }
@@ -246,7 +258,8 @@ private final class RecoveryPhraseVC : UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
     
-    // MARK: General
+    // MARK: - General
+    
     func constrainHeight(to height: CGFloat) {
         view.set(.height, to: height)
     }

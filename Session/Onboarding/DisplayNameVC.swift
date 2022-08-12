@@ -31,19 +31,19 @@ final class DisplayNameVC: BaseVC {
         
         // Set up title label
         let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("vc_display_name_title_2", comment: "")
-        titleLabel.numberOfLines = 0
+        titleLabel.text = "vc_display_name_title_2".localized()
+        titleLabel.textColor = Colors.text
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 0
         
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_display_name_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_display_name_explanation".localized()
+        explanationLabel.textColor = Colors.text
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
         
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
@@ -56,9 +56,8 @@ final class DisplayNameVC: BaseVC {
         registerButtonBottomOffsetConstraint = registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         
         // Set up register button
-        let registerButton = Button(style: .prominentFilled, size: .large)
-        registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
-        registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        let registerButton = OutlineButton(style: .filled, size: .large)
+        registerButton.setTitle("continue_2".localized(), for: UIControl.State.normal)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         
         // Set up register button container

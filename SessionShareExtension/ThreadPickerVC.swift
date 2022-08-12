@@ -26,16 +26,16 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     
     private lazy var titleLabel: UILabel = {
         let titleLabel: UILabel = UILabel()
-        titleLabel.text = "vc_share_title".localized()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.text = "vc_share_title".localized()
+        titleLabel.themeTextColor = .textPrimary
         
         return titleLabel
     }()
 
     private lazy var tableView: UITableView = {
         let tableView: UITableView = UITableView()
-        tableView.backgroundColor = .clear
+        tableView.themeBackgroundColor = .backgroundPrimary
         tableView.separatorStyle = .none
         tableView.register(view: SimplifiedConversationCell.self)
         tableView.showsVerticalScrollIndicator = false
@@ -62,8 +62,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         setupNavBar()
         
         // Gradient
-        view.backgroundColor = .clear
-        view.setGradient(Gradients.defaultBackground)
+        view.themeBackgroundColor = .backgroundPrimary
         
         // Title
         navigationItem.titleView = titleLabel
@@ -130,13 +129,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     // MARK: Layout
     
     private func setupLayout() {
-        let topInset = 0.15 * view.height()
-        
         tableView.pin(to: view)
-        fadeView.pin(.leading, to: .leading, of: view)
-        fadeView.pin(.top, to: .top, of: view, withInset: topInset)
-        fadeView.pin(.trailing, to: .trailing, of: view)
-        fadeView.pin(.bottom, to: .bottom, of: view)
     }
     
     // MARK: - Updating

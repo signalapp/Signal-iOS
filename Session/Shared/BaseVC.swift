@@ -1,28 +1,37 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-class BaseVC : UIViewController {
-    private var hasGradient = false
+import UIKit
+import SessionUIKit
 
-    override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
+class BaseVC: UIViewController {
+    override var preferredStatusBarStyle: UIStatusBarStyle { return ThemeManager.currentTheme.statusBarStyle }
 
     lazy var navBarTitleLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        result.alpha = 1
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.alpha = 1
+        
         return result
     }()
 
     lazy var crossfadeLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        result.alpha = 0
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.alpha = 0
+        
         return result
     }()
 
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        navigationItem.backButtonTitle = ""
+        view.themeBackgroundColor = .backgroundPrimary
+        
         setNeedsStatusBarAppearanceUpdate()
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
@@ -69,24 +78,31 @@ class BaseVC : UIViewController {
         let container = UIView()
         navBarTitleLabel.text = title
         crossfadeLabel.text = title
+        
         if let customFontSize = customFontSize {
             navBarTitleLabel.font = .boldSystemFont(ofSize: customFontSize)
             crossfadeLabel.font = .boldSystemFont(ofSize: customFontSize)
         }
+        
         container.addSubview(navBarTitleLabel)
-        navBarTitleLabel.pin(to: container)
         container.addSubview(crossfadeLabel)
+        
+        navBarTitleLabel.pin(to: container)
         crossfadeLabel.pin(to: container)
+        
         navigationItem.titleView = container
     }
     
     internal func setUpNavBarSessionHeading() {
-        let headingImageView = UIImageView()
-        headingImageView.tintColor = Colors.text
-        headingImageView.image = UIImage(named: "SessionHeading")?.withRenderingMode(.alwaysTemplate)
+        let headingImageView = UIImageView(
+            image: UIImage(named: "SessionHeading")?
+                .withRenderingMode(.alwaysTemplate)
+        )
+        headingImageView.themeTintColor = .textPrimary
         headingImageView.contentMode = .scaleAspectFit
         headingImageView.set(.width, to: 150)
         headingImageView.set(.height, to: Values.mediumFontSize)
+        
         navigationItem.titleView = headingImageView
     }
 
@@ -96,6 +112,7 @@ class BaseVC : UIViewController {
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.set(.width, to: 32)
         logoImageView.set(.height, to: 32)
+        
         navigationItem.titleView = logoImageView
     }
 

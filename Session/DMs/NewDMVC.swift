@@ -3,6 +3,7 @@
 import UIKit
 import GRDB
 import Curve25519Kit
+import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
@@ -14,11 +15,11 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     // MARK: Components
     private lazy var tabBar: TabBar = {
         let tabs = [
-            TabBar.Tab(title: NSLocalizedString("vc_create_private_chat_enter_session_id_tab_title", comment: "")) { [weak self] in
+            TabBar.Tab(title: "vc_create_private_chat_enter_session_id_tab_title".localized()) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
             },
-            TabBar.Tab(title: NSLocalizedString("vc_create_private_chat_scan_qr_code_tab_title", comment: "")) { [weak self] in
+            TabBar.Tab(title: "vc_create_private_chat_scan_qr_code_tab_title".localized()) { [weak self] in
                 guard let self = self else { return }
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
             }
@@ -201,10 +202,27 @@ private final class EnterPublicKeyVC : UIViewController {
         return result
     }()
     
-    private lazy var copyButton: Button = {
-        let result = Button(style: .unimportant, size: .medium)
-        result.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
+    private lazy var copyButton: OutlineButton = {
+        let result = OutlineButton(style: .regular, size: .small)
+        result.setTitle("copy".lowercased(), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
+        
+        return result
+    }()
+    
+    private lazy var shareButton: OutlineButton = {
+        let result = OutlineButton(style: .regular, size: .small)
+        result.setTitle("share".lowercased(), for: UIControl.State.normal)
+        result.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
+        
+        return result
+    }()
+    
+    private lazy var nextButton: OutlineButton = {
+        let result = OutlineButton(style: .regular, size: .small)
+        result.setTitle("next".lowercased(), for: UIControl.State.normal)
+        result.addTarget(self, action: #selector(startNewDMIfPossible), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
@@ -241,8 +259,10 @@ private final class EnterPublicKeyVC : UIViewController {
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
+        
         // User session id container
         let userPublicKeyContainer = UIView(wrapping: userPublicKeyLabel, withInsets: .zero, shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth)
+        
         // Explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
@@ -251,18 +271,13 @@ private final class EnterPublicKeyVC : UIViewController {
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        // Share button
-        let shareButton = Button(style: .unimportant, size: .medium)
-        shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
-        shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
+        
         // Button container
         buttonContainer.addArrangedSubview(copyButton)
         buttonContainer.addArrangedSubview(shareButton)
-        // Next button
-        let nextButton = Button(style: .prominentOutline, size: .large)
-        nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(startNewDMIfPossible), for: UIControl.Event.touchUpInside)
+
         let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
+        
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyContainer, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
         mainStackView.axis = .vertical
@@ -274,11 +289,14 @@ private final class EnterPublicKeyVC : UIViewController {
         mainStackView.pin(.top, to: .top, of: view)
         view.pin(.trailing, to: .trailing, of: mainStackView)
         bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView, withInset: bottomMargin)
+        
         // Width constraint
         view.set(.width, to: UIScreen.main.bounds.width)
+        
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGestureRecognizer)
+        
         // Listen to keyboard notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)

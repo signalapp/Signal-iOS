@@ -219,12 +219,12 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
     
     private lazy var suggestionGridTitleLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.textColor = Colors.text
+        result.setContentHuggingPriority(.required, for: .vertical)
         result.font = .boldSystemFont(ofSize: Values.largeFontSize)
         result.text = "vc_join_open_group_suggestions_title".localized()
-        result.numberOfLines = 0
+        result.textColor = Colors.text
         result.lineBreakMode = .byWordWrapping
-        result.setContentHuggingPriority(.required, for: .vertical)
+        result.numberOfLines = 0
         
         return result
     }()
@@ -244,9 +244,9 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         view.backgroundColor = .clear
         
         // Next button
-        let nextButton = Button(style: .prominentOutline, size: .large)
-        nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
+        let nextButton = OutlineButton(style: .regular, size: .large)
+        nextButton.setTitle("next".localized(), for: .normal)
+        nextButton.addTarget(self, action: #selector(joinOpenGroup), for: .touchUpInside)
         
         let nextButtonContainer = UIView(
             wrapping: nextButton,

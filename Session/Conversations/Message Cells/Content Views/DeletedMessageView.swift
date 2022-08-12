@@ -3,6 +3,7 @@
 import UIKit
 import SignalUtilitiesKit
 import SessionUtilitiesKit
+import SessionUIKit
 
 final class DeletedMessageView: UIView {
     private static let iconSize: CGFloat = 18
@@ -10,7 +11,7 @@ final class DeletedMessageView: UIView {
     
     // MARK: - Lifecycle
     
-    init(textColor: UIColor) {
+    init(textColor: ThemeValue) {
         super.init(frame: CGRect.zero)
         
         setUpViewHierarchy(textColor: textColor)
@@ -24,7 +25,7 @@ final class DeletedMessageView: UIView {
         preconditionFailure("Use init(textColor:) instead.")
     }
     
-    private func setUpViewHierarchy(textColor: UIColor) {
+    private func setUpViewHierarchy(textColor: ThemeValue) {
         // Image view
         let icon = UIImage(named: "ic_trash")?
             .resizedImage(to: CGSize(
@@ -34,17 +35,17 @@ final class DeletedMessageView: UIView {
             .withRenderingMode(.alwaysTemplate)
         
         let imageView = UIImageView(image: icon)
-        imageView.tintColor = textColor
+        imageView.themeTintColor = textColor
         imageView.contentMode = .center
         imageView.set(.width, to: DeletedMessageView.iconImageViewSize)
         imageView.set(.height, to: DeletedMessageView.iconImageViewSize)
         
         // Body label
         let titleLabel = UILabel()
-        titleLabel.lineBreakMode = .byTruncatingTail
-        titleLabel.text = "message_deleted".localized()
-        titleLabel.textColor = textColor
         titleLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        titleLabel.text = "message_deleted".localized()
+        titleLabel.themeTextColor = textColor
+        titleLabel.lineBreakMode = .byTruncatingTail
         
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ imageView, titleLabel ])

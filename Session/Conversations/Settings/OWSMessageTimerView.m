@@ -18,9 +18,6 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 
 @property (nonatomic) uint32_t initialDurationSeconds;
 @property (nonatomic) uint64_t expirationTimestamp;
-@property (nonatomic) UIColor *tintColor;
-
-@property (nonatomic) UIImageView *imageView;
 
 @property (nonatomic, nullable) NSTimer *animationTimer;
 
@@ -62,11 +59,9 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 
 - (void)configureWithExpirationTimestamp:(uint64_t)expirationTimestamp
                   initialDurationSeconds:(uint32_t)initialDurationSeconds
-                               tintColor:(UIColor *)tintColor;
 {
     self.expirationTimestamp = expirationTimestamp;
     self.initialDurationSeconds = initialDurationSeconds;
-    self.tintColor = tintColor;
 
     [self updateProgress12];
     [self updateIcon];
@@ -107,7 +102,6 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 - (void)updateIcon
 {
     self.imageView.image = [[self progressIcon] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    self.imageView.tintColor = self.tintColor;
 }
 
 - (UIImage *)progressIcon

@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
         // NOTE: result might end up NO if the super implementation cancels the
         //       the pop/back.
         [super navigationBar:navigationBar shouldPopItem:item];
-        result =  YES;
+        result = YES;
     }
     return result;
 }
@@ -126,14 +126,14 @@ NS_ASSUME_NONNULL_BEGIN
     if ([topViewController conformsToProtocol:@protocol(OWSNavigationView)]) {
         id<OWSNavigationView> navigationView = (id<OWSNavigationView>)topViewController;
         return ![navigationView shouldCancelNavigationBack];
-    } else {
-        UIViewController *rootViewController = self.viewControllers.firstObject;
-        if (topViewController == rootViewController) {
-            return NO;
-        } else {
-            return YES;
-        }
     }
+    
+    UIViewController *rootViewController = self.viewControllers.firstObject;
+    if (topViewController == rootViewController) {
+        return NO;
+    }
+    
+    return YES;
 }
 
 #pragma mark - NavBarLayoutDelegate
@@ -146,14 +146,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-    if (!CurrentAppContext().isMainApp) {
-        return super.preferredStatusBarStyle;
-    } else if (OWSWindowManager.sharedManager.hasCall) {
+    if (OWSWindowManager.sharedManager.hasCall) {
         // Status bar is overlaying the green "call banner"
         return UIStatusBarStyleLightContent;
-    } else {
-        return LKAppModeUtilities.isLightMode ? UIStatusBarStyleDefault : UIStatusBarStyleLightContent;
     }
+    
+    // Note: The view controllers contain the logic needed to get the correct statusBarStyle
+    // for the current theme
+    if (self.topViewController != nil) {
+        return [self.topViewController preferredStatusBarStyle];
+    }
+    
+    return super.preferredStatusBarStyle;
 }
 
 - (void)updateLayoutForNavbar:(OWSNavigationBar *)navbar
@@ -164,9 +168,11 @@ NS_ASSUME_NONNULL_BEGIN
     
     if (!CurrentAppContext().isMainApp) {
         self.additionalSafeAreaInsets = UIEdgeInsetsZero;
-    } else if (OWSWindowManager.sharedManager.hasCall) {
+    }
+    else if (OWSWindowManager.sharedManager.hasCall) {
         self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
-    } else {
+    }
+    else {
         self.additionalSafeAreaInsets = UIEdgeInsetsZero;
     }
     

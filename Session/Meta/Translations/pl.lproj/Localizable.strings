@@ -653,7 +653,7 @@
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "LOADING_CONVERSATIONS" = "Loading Conversations...";
 "DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database\n\nYou can export your application logs to be able to share for troubleshooting or you can restore your device\n\nWarning: Restoring your device will result in loss of any data older than two weeks";
-"CHATS_TITLE" = "Chats";
+"CONVERSATIONS_TITLE" = "Conversations";
 "MESSAGE_TRIMMING_TITLE" = "Message Trimming";
 "MESSAGE_TRIMMING_OPEN_GROUP_TITLE" = "Delete Old Open Group Messages";
 "MESSAGE_TRIMMING_OPEN_GROUP_DESCRIPTION" = "Automatically delete messages which are older than 6 months from open groups with over 2,000 messages when starting the app";
@@ -684,3 +684,12 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 "INVALID_SESSION_ID_MESSAGE" = "Please check the Session ID and try again.";
 "INVALID_RECOVERY_PHRASE_MESSAGE" = "Please check the Recovery Phrase and try again.";
+"APPEARANCE_TITLE" = "Appearance";
+"APPEARANCE_THEMES_TITLE" = "Themes";
+"APPEARANCE_PRIMARY_COLOR_TITLE" = "Primary colour";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_QUOTE" = "How are you?";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_MESSAGE" = "I'm good thanks, you?";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_OUT_MESSAGE" = "I'm doing great, thanks.";
+"APPEARANCE_NIGHT_MODE_TITLE" = "Auto night-mode";
+"APPEARANCE_NIGHT_MODE_TOGGLE" = "Match system settings";
+"HELP_TITLE" = "Help";

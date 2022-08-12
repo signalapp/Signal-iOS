@@ -77,7 +77,7 @@ public extension Setting.DoubleKey {
 }
 
 public enum Preferences {
-    public enum NotificationPreviewType: Int, CaseIterable, EnumSetting {
+    public enum NotificationPreviewType: Int, CaseIterable, EnumIntSetting {
         /// Notifications should include both the sender name and a preview of the message content
         case nameAndPreview
         
@@ -96,7 +96,7 @@ public enum Preferences {
         }
     }
     
-    public enum Sound: Int, Codable, DatabaseValueConvertible, EnumSetting {
+    public enum Sound: Int, Codable, DatabaseValueConvertible, EnumIntSetting {
         public static var defaultiOSIncomingRingtone: Sound = .opening
         public static var defaultNotificationSound: Sound = .note
         

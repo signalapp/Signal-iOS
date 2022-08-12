@@ -33,8 +33,8 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     
     private lazy var displayNameLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byTruncatingTail
         result.textAlignment = .center
         
@@ -42,7 +42,10 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     }()
     
     private lazy var displayNameTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("vc_settings_display_name_text_field_hint", comment: ""), usesDefaultHeight: false)
+        let result = TextField(
+            placeholder: "vc_settings_display_name_text_field_hint".localized(),
+            usesDefaultHeight: false
+        )
         result.textAlignment = .center
         result.accessibilityLabel = "Edit display name text field"
         
@@ -51,8 +54,8 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     
     private lazy var publicKeyLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = Fonts.spaceMono(ofSize: isIPhone5OrSmaller ? Values.mediumFontSize : Values.largeFontSize)
+        result.themeTextColor = .textPrimary
         result.numberOfLines = 0
         result.textAlignment = .center
         result.lineBreakMode = .byCharWrapping
@@ -61,14 +64,22 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         return result
     }()
     
-    private lazy var copyButton: Button = {
-        let result = Button(style: .prominentOutline, size: .medium)
-        result.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
+    private lazy var copyButton: OutlineButton = {
+        let result = OutlineButton(style: .regular, size: .medium)
+        result.setTitle("copy".localized(), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
         
         return result
     }()
 
+    private lazy var shareButton: OutlineButton = {
+        let result = OutlineButton(style: .regular, size: .medium)
+        result.setTitle("share".localized(), for: UIControl.State.normal)
+        result.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
+        
+        return result
+    }()
+    
     private lazy var settingButtonsStackView: UIStackView = {
         let result = UIStackView()
         result.axis = .vertical
@@ -77,74 +88,32 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         return result
     }()
     
-    private lazy var inviteButton: UIButton = {
-        let result = UIButton()
-        result.setTitle(NSLocalizedString("vc_settings_invite_a_friend_button_title", comment: ""), for: UIControl.State.normal)
-        result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.addTarget(self, action: #selector(sendInvitation), for: UIControl.Event.touchUpInside)
-        
-        return result
-    }()
-    
-    private lazy var faqButton: UIButton = {
-        let result = UIButton()
-        result.setTitle(NSLocalizedString("vc_settings_faq_button_title", comment: ""), for: UIControl.State.normal)
-        result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.addTarget(self, action: #selector(openFAQ), for: UIControl.Event.touchUpInside)
-        
-        return result
-    }()
-    
-    private lazy var surveyButton: UIButton = {
-        let result = UIButton()
-        result.setTitle(NSLocalizedString("vc_settings_survey_button_title", comment: ""), for: UIControl.State.normal)
-        result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.titleLabel?.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.addTarget(self, action: #selector(openSurvey), for: UIControl.Event.touchUpInside)
-        
-        return result
-    }()
-    
-    private lazy var supportButton: UIButton = {
-        let result = UIButton()
-        result.setTitle(NSLocalizedString("vc_settings_support_button_title", comment: ""), for: UIControl.State.normal)
-        result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.addTarget(self, action: #selector(shareLogs), for: UIControl.Event.touchUpInside)
-        
-        return result
-    }()
-    
-    private lazy var helpTranslateButton: UIButton = {
-        let result = UIButton()
-        result.setTitle(NSLocalizedString("vc_settings_help_us_translate_button_title", comment: ""), for: UIControl.State.normal)
-        result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.titleLabel!.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.addTarget(self, action: #selector(helpTranslate), for: UIControl.Event.touchUpInside)
-        
-        return result
-    }()
-    
     private lazy var logoImageView: UIImageView = {
-        let result = UIImageView()
-        result.set(.height, to: 24)
+        let result = UIImageView(
+            image: UIImage(named: "OxenLightMode")?
+                .withRenderingMode(.alwaysTemplate)
+        )
+        result.themeTintColor = .textPrimary
         result.contentMode = .scaleAspectFit
+        result.set(.height, to: 24)
         
         return result
     }()
     
     private lazy var versionLabel: UILabel = {
+        let version: String = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String)
+            .defaulting(to: "0.0.0")
+        let buildNumber: String = (Bundle.main.infoDictionary?["CFBundleVersion"] as? String)
+            .defaulting(to: "0")
+        
         let result = UILabel()
-        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        result.text = "Version \(version) (\(buildNumber))"
+        result.themeTextColor = .textPrimary
         result.numberOfLines = 0
         result.textAlignment = .center
         result.lineBreakMode = .byCharWrapping
-        let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
-        let buildNumber = Bundle.main.infoDictionary!["CFBundleVersion"]!
-        result.text = "Version \(version) (\(buildNumber))"
+        result.alpha = Values.mediumOpacity
         
         return result
     }()
@@ -160,7 +129,7 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         
         setUpGradientBackground()
         setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("vc_settings_title", comment: ""))
+        setNavBarTitle("vc_settings_title".localized())
         
         // Navigation bar buttons
         updateNavigationBarButtons()
@@ -198,12 +167,7 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         headerStackView.alignment = .center
         
         // Separator
-        let separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
-        
-        // Share button
-        let shareButton = Button(style: .regular, size: .medium)
-        shareButton.setTitle(NSLocalizedString("share", comment: ""), for: UIControl.State.normal)
-        shareButton.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
+        let separator = Separator(title: "your_session_id".localized())
         
         // Button container
         let buttonContainer = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
@@ -232,7 +196,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         }
         
         // Oxen logo
-        updateLogo()
         let logoContainer = UIView()
         logoContainer.addSubview(logoImageView)
         logoImageView.pin(.top, to: .top, of: logoContainer)
@@ -240,7 +203,7 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         logoImageView.centerXAnchor.constraint(equalTo: logoContainer.centerXAnchor, constant: -2).isActive = true
         
         // Main stack view
-        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, inviteButton, faqButton, surveyButton, supportButton, helpTranslateButton, logoContainer, versionLabel ])
+        let stackView = UIStackView(arrangedSubviews: [ topStackView, settingButtonsStackView, logoContainer, versionLabel ])
         stackView.axis = .vertical
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .fill
@@ -258,47 +221,25 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     }
     
     private func getSettingButtons() -> [UIView] {
-        func getSeparator() -> UIView {
-            let result = UIView()
-            result.backgroundColor = Colors.separator
-            result.set(.height, to: Values.separatorThickness)
+        func getSettingButton(
+            title: String,
+            color: ThemeValue = .textPrimary,
+            action selector: Selector
+        ) -> UIButton {
+            let result: UIButton = UIButton()
+            result.setTitle(title, for: UIControl.State.normal)
+            result.setThemeTitleColor(color, for: UIControl.State.normal)
+            result.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+            result.titleLabel?.textAlignment = .center
+            result.setThemeBackgroundColor(.settings_tabBackground, for: .normal)
+            result.setThemeBackgroundColor(.settings_tabHighlight, for: .highlighted)
+            result.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
+            result.set(.height, to: SettingsVC.buttonHeight)
             
             return result
         }
         
-        func getSettingButton(withTitle title: String, color: UIColor, action selector: Selector) -> UIButton {
-            let button = UIButton()
-            button.setTitle(title, for: UIControl.State.normal)
-            button.setTitleColor(color, for: UIControl.State.normal)
-            button.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-            button.titleLabel!.textAlignment = .center
-            
-            func getImage(withColor color: UIColor) -> UIImage {
-                let rect = CGRect(origin: CGPoint.zero, size: CGSize(width: 1, height: 1))
-                UIGraphicsBeginImageContext(rect.size)
-                
-                let context = UIGraphicsGetCurrentContext()!
-                context.setFillColor(color.cgColor)
-                context.fill(rect)
-                
-                let image = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                
-                return image!
-            }
-            
-            let backgroundColor = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
-            button.setBackgroundImage(getImage(withColor: backgroundColor), for: UIControl.State.normal)
-            
-            let selectedColor = isLightMode ? UIColor(hex: 0xDFDFDF) : UIColor(hex: 0x0C0C0C)
-            button.setBackgroundImage(getImage(withColor: selectedColor), for: UIControl.State.highlighted)
-            button.addTarget(self, action: selector, for: UIControl.Event.touchUpInside)
-            button.set(.height, to: SettingsVC.buttonHeight)
-            
-            return button
-        }
-        
-        let pathButton = getSettingButton(withTitle: NSLocalizedString("vc_path_title", comment: ""), color: Colors.text, action: #selector(showPath))
+        let pathButton = getSettingButton(title: "vc_path_title".localized(), action: #selector(showPath))
         let pathStatusView = PathStatusView()
         pathStatusView.set(.width, to: PathStatusView.size)
         pathStatusView.set(.height, to: PathStatusView.size)
@@ -308,21 +249,27 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         pathStatusView.autoVCenterInSuperview()
         
         return [
-            getSeparator(),
+            UIView.separator(),
             pathButton,
-            getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("vc_settings_privacy_button_title", comment: ""), color: Colors.text, action: #selector(showPrivacySettings)),
-            getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("vc_settings_notifications_button_title", comment: ""), color: Colors.text, action: #selector(showNotificationSettings)),
-            getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: ""), color: Colors.text, action: #selector(showMessageRequests)),
-            getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("CHATS_TITLE", comment: ""), color: Colors.text, action: #selector(showChatSettings)),
-            getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("vc_settings_recovery_phrase_button_title", comment: ""), color: Colors.text, action: #selector(showSeed)),
-            getSeparator(),
-            getSettingButton(withTitle: NSLocalizedString("vc_settings_clear_all_data_button_title", comment: ""), color: Colors.destructive, action: #selector(clearAllData)),
-            getSeparator()
+            UIView.separator(),
+            getSettingButton(title: "vc_settings_privacy_button_title".localized(), action: #selector(showPrivacySettings)),
+            UIView.separator(),
+            getSettingButton(title: "vc_settings_notifications_button_title".localized(), action: #selector(showNotificationSettings)),
+            UIView.separator(),
+            getSettingButton(title: "CONVERSATIONS_TITLE".localized(), action: #selector(showChatSettings)),
+            UIView.separator(),
+            getSettingButton(title: "MESSAGE_REQUESTS_TITLE".localized(), action: #selector(showMessageRequests)),
+            UIView.separator(),
+            getSettingButton(title: "APPEARANCE_TITLE".localized(), action: #selector(showAppearanceSettings)),
+            UIView.separator(),
+            getSettingButton(title: "vc_settings_invite_a_friend_button_title".localized(), action: #selector(sendInvitation)),
+            UIView.separator(),
+            getSettingButton(title: "vc_settings_recovery_phrase_button_title".localized(), action: #selector(showSeed)),
+            UIView.separator(),
+            getSettingButton(title: "HELP_TITLE".localized(), action: #selector(showHelp)),
+            UIView.separator(),
+            getSettingButton(title: "vc_settings_clear_all_data_button_title".localized(), color: .danger, action: #selector(clearAllData)),
+            UIView.separator()
         ]
     }
     
@@ -368,46 +315,35 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     private func updateNavigationBarButtons() {
         if isEditingDisplayName {
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancelDisplayNameEditingButtonTapped))
-            cancelButton.tintColor = Colors.text
+            cancelButton.themeTintColor = .textPrimary
             cancelButton.accessibilityLabel = "Cancel button"
             cancelButton.isAccessibilityElement = true
             navigationItem.leftBarButtonItem = cancelButton
             
             let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleSaveDisplayNameButtonTapped))
-            doneButton.tintColor = Colors.text
+            doneButton.themeTintColor = .textPrimary
             doneButton.accessibilityLabel = "Done button"
             doneButton.isAccessibilityElement = true
             navigationItem.rightBarButtonItem = doneButton
         }
         else {
             let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-            closeButton.tintColor = Colors.text
+            closeButton.themeTintColor = .textPrimary
             closeButton.accessibilityLabel = "Close button"
             closeButton.isAccessibilityElement = true
             navigationItem.leftBarButtonItem = closeButton
             
-            let appModeIcon: UIImage
-            if isSystemDefault {
-                appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_theme_auto").withTintColor(.white) : #imageLiteral(resourceName: "ic_theme_auto").withTintColor(.black)
-            }
-            else {
-                appModeIcon = isDarkMode ? #imageLiteral(resourceName: "ic_dark_theme_on").withTintColor(.white) : #imageLiteral(resourceName: "ic_dark_theme_off").withTintColor(.black)
-            }
-            
-            let appModeButton = UIButton()
-            appModeButton.setImage(appModeIcon, for: UIControl.State.normal)
-            appModeButton.tintColor = Colors.text
-            appModeButton.addTarget(self, action: #selector(switchAppMode), for: UIControl.Event.touchUpInside)
-            appModeButton.accessibilityLabel = "Switch app mode button"
-            
-            let qrCodeIcon = isDarkMode ? #imageLiteral(resourceName: "QRCode").withTintColor(.white) : #imageLiteral(resourceName: "QRCode").withTintColor(.black)
             let qrCodeButton = UIButton()
-            qrCodeButton.setImage(qrCodeIcon, for: UIControl.State.normal)
-            qrCodeButton.tintColor = Colors.text
+            qrCodeButton.setImage(
+                UIImage(named: "QRCode")?
+                    .withRenderingMode(.alwaysTemplate),
+                for: .normal
+            )
+            qrCodeButton.themeTintColor = .textPrimary
             qrCodeButton.addTarget(self, action: #selector(showQRCode), for: UIControl.Event.touchUpInside)
             qrCodeButton.accessibilityLabel = "Show QR code button"
             
-            let stackView = UIStackView(arrangedSubviews: [ appModeButton, qrCodeButton ])
+            let stackView = UIStackView(arrangedSubviews: [ qrCodeButton ])
             stackView.axis = .horizontal
             stackView.spacing = Values.mediumSpacing
             navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
@@ -601,17 +537,17 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     
     @objc private func showPath() {
         let pathVC = PathVC()
-        navigationController!.pushViewController(pathVC, animated: true)
+        self.navigationController?.pushViewController(pathVC, animated: true)
     }
     
     @objc private func showPrivacySettings() {
         let privacySettingsVC = PrivacySettingsTableViewController()
-        navigationController!.pushViewController(privacySettingsVC, animated: true)
+        self.navigationController?.pushViewController(privacySettingsVC, animated: true)
     }
     
     @objc private func showNotificationSettings() {
         let notificationSettingsVC = NotificationSettingsViewController()
-        navigationController!.pushViewController(notificationSettingsVC, animated: true)
+        self.navigationController?.pushViewController(notificationSettingsVC, animated: true)
     }
     
     @objc private func showMessageRequests() {
@@ -621,7 +557,12 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     
     @objc private func showChatSettings() {
         let chatSettingsVC = ChatSettingsViewController()
-        navigationController!.pushViewController(chatSettingsVC, animated: true)
+        self.navigationController?.pushViewController(chatSettingsVC, animated: true)
+    }
+    
+    @objc private func showAppearanceSettings() {
+        let appearanceViewController: AppearanceViewController = AppearanceViewController()
+        self.navigationController?.pushViewController(appearanceViewController, animated: true)
     }
     
     @objc private func showSeed() {
@@ -629,6 +570,10 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         seedModal.modalPresentationStyle = .overFullScreen
         seedModal.modalTransitionStyle = .crossDissolve
         present(seedModal, animated: true, completion: nil)
+    }
+    
+    @objc private func showHelp() {
+        
     }
     
     @objc private func clearAllData() {

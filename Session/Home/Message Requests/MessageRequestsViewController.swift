@@ -78,16 +78,10 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         return result
     }()
 
-    private lazy var clearAllButton: Button = {
-        let result: Button = Button(style: .destructiveOutline, size: .large)
+    private lazy var clearAllButton: OutlineButton = {
+        let result: OutlineButton = OutlineButton(style: .destructive, size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
-        result.setBackgroundImage(
-            Colors.destructive
-                .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
-                .toImage(isDarkMode: isDarkMode),
-            for: .highlighted
-        )
+        result.setTitle("MESSAGE_REQUESTS_CLEAR_ALL".localized(), for: .normal)
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
 
         return result

@@ -82,10 +82,10 @@ abstract_target 'GlobalDependencies' do
       end
     end
   end
+  
+  # No extra dependencies for this
+  target 'SessionUIKit'
 end
-
-# No dependencies for this
-target 'SessionUIKit'
 
 # Actions to perform post-install
 post_install do |installer|

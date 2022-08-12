@@ -45,8 +45,8 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         return result
     }()
 
-    private lazy var addMembersButton: Button = {
-        let result: Button = Button(style: .prominentOutline, size: .large)
+    private lazy var addMembersButton: OutlineButton = {
+        let result: OutlineButton = OutlineButton(style: .regular, size: .medium)
         result.setTitle("Add Members", for: UIControl.State.normal)
         result.addTarget(self, action: #selector(addMembers), for: UIControl.Event.touchUpInside)
         result.contentEdgeInsets = UIEdgeInsets(top: 0, leading: Values.mediumSpacing, bottom: 0, trailing: Values.mediumSpacing)

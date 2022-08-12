@@ -144,7 +144,8 @@ public extension Setting {
     }
 }
 
-public protocol EnumSetting: RawRepresentable where RawValue == Int {}
+public protocol EnumIntSetting: RawRepresentable where RawValue == Int {}
+public protocol EnumStringSetting: RawRepresentable where RawValue == String {}
 
 // MARK: - GRDB Interactions
 
@@ -159,7 +160,8 @@ public extension Storage {
     subscript(key: Setting.StringKey) -> String? { return read { db in db[key] } }
     subscript(key: Setting.DateKey) -> Date? { return read { db in db[key] } }
     
-    subscript<T: EnumSetting>(key: Setting.EnumKey) -> T? { return read { db in db[key] } }
+    subscript<T: EnumIntSetting>(key: Setting.EnumKey) -> T? { return read { db in db[key] } }
+    subscript<T: EnumStringSetting>(key: Setting.EnumKey) -> T? { return read { db in db[key] } }
 }
 
 public extension Database {
@@ -198,9 +200,20 @@ public extension Database {
         set { self[key.rawValue] = Setting(key: key.rawValue, value: newValue) }
     }
     
-    subscript<T: EnumSetting>(key: Setting.EnumKey) -> T? {
+    subscript<T: EnumIntSetting>(key: Setting.EnumKey) -> T? {
         get {
             guard let rawValue: Int = self[key.rawValue]?.value(as: Int.self) else {
+                return nil
+            }
+            
+            return T(rawValue: rawValue)
+        }
+        set { self[key.rawValue] = Setting(key: key.rawValue, value: newValue?.rawValue) }
+    }
+    
+    subscript<T: EnumStringSetting>(key: Setting.EnumKey) -> T? {
+        get {
+            guard let rawValue: String = self[key.rawValue]?.value(as: String.self) else {
                 return nil
             }
             
