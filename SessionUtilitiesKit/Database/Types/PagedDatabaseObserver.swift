@@ -516,8 +516,14 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                 limit: queryInfo.limit,
                 offset: queryInfo.offset
             )
-            let newData: [T] = try dataQuery(pageRowIds)
-                .fetchAll(db)
+            let newData: [T]
+            
+            do { newData = try dataQuery(pageRowIds).fetchAll(db) }
+            catch {
+                SNLog("PagedDatabaseObserver threw exception: \(error)")
+                throw error
+            }
+            
             let updatedLimitInfo: PagedData.PageInfo = PagedData.PageInfo(
                 pageSize: currentPageInfo.pageSize,
                 pageOffset: queryInfo.updatedCacheOffset,

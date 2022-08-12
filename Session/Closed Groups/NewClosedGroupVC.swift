@@ -45,9 +45,6 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
-        
         let customTitleFontSize = Values.largeFontSize
         setNavBarTitle("vc_create_closed_group_title".localized(), customFontSize: customTitleFontSize)
         

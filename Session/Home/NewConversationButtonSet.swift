@@ -8,7 +8,8 @@ final class NewConversationButtonSet : UIView {
     private var expandedButton: NewConversationButton?
     var delegate: NewConversationButtonSetDelegate?
     
-    // MARK: Settings
+    // MARK: - Settings
+    
     private let spacing = Values.veryLargeSpacing
     private let iconSize = CGFloat(24)
     private let maxDragDistance = CGFloat(56)
@@ -16,53 +17,81 @@ final class NewConversationButtonSet : UIView {
     static let collapsedButtonSize = CGFloat(60)
     static let expandedButtonSize = CGFloat(72)
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var mainButton = NewConversationButton(isMainButton: true, icon: #imageLiteral(resourceName: "Plus").scaled(to: CGSize(width: iconSize, height: iconSize)))
     private lazy var newDMButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Message").scaled(to: CGSize(width: iconSize, height: iconSize)))
     private lazy var createClosedGroupButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Group").scaled(to: CGSize(width: iconSize, height: iconSize)))
     private lazy var joinOpenGroupButton = NewConversationButton(isMainButton: false, icon: #imageLiteral(resourceName: "Globe").scaled(to: CGSize(width: iconSize, height: iconSize)))
     
-    private lazy var newDMLabel: UILabel = {
-        let result: UILabel = UILabel()
+    private lazy var newDMLabel: UIView = {
+        let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize, weight: .bold)
-        result.text = NSLocalizedString("NEW_CONVERSATION_MENU_DIRECT_MESSAGE", comment: "").uppercased()
-        result.textColor = Colors.grey
-        result.textAlignment = .center
+        result.themeBackgroundColor = .backgroundPrimary
+        result.layer.cornerRadius = 4
+        
+        let label: UILabel = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        label.text = "NEW_CONVERSATION_MENU_DIRECT_MESSAGE".localized().uppercased()
+        label.themeTextColor = .textPrimary
+        label.textAlignment = .center
+        result.addSubview(label)
+        
+        label.pin(to: result, withInset: 4)
         
         return result
     }()
     
-    private lazy var createClosedGroupLabel: UILabel = {
-        let result: UILabel = UILabel()
+    private lazy var createClosedGroupLabel: UIView = {
+        let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize, weight: .bold)
-        result.text = NSLocalizedString("NEW_CONVERSATION_MENU_CLOSED_GROUP", comment: "").uppercased()
-        result.textColor = Colors.grey
-        result.textAlignment = .center
+        result.themeBackgroundColor = .backgroundPrimary
+        result.layer.cornerRadius = 4
+        
+        let label: UILabel = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        label.text = "NEW_CONVERSATION_MENU_CLOSED_GROUP".localized().uppercased()
+        label.themeTextColor = .textPrimary
+        label.textAlignment = .center
+        result.addSubview(label)
+        
+        label.pin(to: result, withInset: 4)
         
         return result
     }()
     
-    private lazy var joinOpenGroupLabel: UILabel = {
-        let result: UILabel = UILabel()
+    private lazy var joinOpenGroupLabel: UIView = {
+        let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize, weight: .bold)
-        result.text = NSLocalizedString("NEW_CONVERSATION_MENU_OPEN_GROUP", comment: "").uppercased()
-        result.textColor = Colors.grey
-        result.textAlignment = .center
+        result.themeBackgroundColor = .backgroundPrimary
+        result.layer.cornerRadius = 4
+        
+        let label: UILabel = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+        label.text = "NEW_CONVERSATION_MENU_OPEN_GROUP".localized().uppercased()
+        label.themeTextColor = .textPrimary
+        label.textAlignment = .center
+        result.addSubview(label)
+        
+        label.pin(to: result, withInset: 4)
         
         return result
     }()
     
-    // MARK: Initialization
+    // MARK: - Initialization
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setUpViewHierarchy()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        
         setUpViewHierarchy()
     }
     
@@ -75,49 +104,61 @@ final class NewConversationButtonSet : UIView {
         createClosedGroupButton.isAccessibilityElement = true
         joinOpenGroupButton.accessibilityLabel = "Join open group button"
         joinOpenGroupButton.isAccessibilityElement = true
+        
         let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
         addSubview(joinOpenGroupLabel)
         addSubview(joinOpenGroupButton)
+        
         horizontalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.left, to: .left, of: self, withInset: inset)
         verticalButtonConstraints[joinOpenGroupButton] = joinOpenGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
         joinOpenGroupLabel.center(.horizontal, in: joinOpenGroupButton)
         joinOpenGroupLabel.pin(.top, to: .bottom, of: joinOpenGroupButton, withInset: 8)
         addSubview(newDMLabel)
         addSubview(newDMButton)
+        
         newDMButton.center(.horizontal, in: self)
         verticalButtonConstraints[newDMButton] = newDMButton.pin(.top, to: .top, of: self, withInset: inset)
         newDMLabel.center(.horizontal, in: newDMButton)
         newDMLabel.pin(.top, to: .bottom, of: newDMButton, withInset: 8)
         addSubview(createClosedGroupLabel)
         addSubview(createClosedGroupButton)
+        
         horizontalButtonConstraints[createClosedGroupButton] = createClosedGroupButton.pin(.right, to: .right, of: self, withInset: -inset)
         verticalButtonConstraints[createClosedGroupButton] = createClosedGroupButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
         createClosedGroupLabel.center(.horizontal, in: createClosedGroupButton)
         createClosedGroupLabel.pin(.top, to: .bottom, of: createClosedGroupButton, withInset: 8)
         addSubview(mainButton)
+        
         mainButton.center(.horizontal, in: self)
         mainButton.pin(.bottom, to: .bottom, of: self, withInset: -inset)
+        
         let width = 2 * NewConversationButtonSet.expandedButtonSize + 2 * spacing + NewConversationButtonSet.collapsedButtonSize
         set(.width, to: width)
+        
         let height = NewConversationButtonSet.expandedButtonSize + spacing + NewConversationButtonSet.collapsedButtonSize
         set(.height, to: height)
         collapse(withAnimation: false)
         isUserInteractionEnabled = true
+        
         let joinOpenGroupButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleJoinOpenGroupButtonTapped))
         joinOpenGroupButton.addGestureRecognizer(joinOpenGroupButtonTapGestureRecognizer)
+        
         let createNewPrivateChatButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCreateNewPrivateChatButtonTapped))
         newDMButton.addGestureRecognizer(createNewPrivateChatButtonTapGestureRecognizer)
+        
         let createNewClosedGroupButtonTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleCreateNewClosedGroupButtonTapped))
         createClosedGroupButton.addGestureRecognizer(createNewClosedGroupButtonTapGestureRecognizer)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func handleJoinOpenGroupButtonTapped() { delegate?.joinOpenGroup() }
     @objc private func handleCreateNewPrivateChatButtonTapped() { delegate?.createNewDM() }
     @objc private func handleCreateNewClosedGroupButtonTapped() { delegate?.createClosedGroup() }
     
     private func expand(isUserDragging: Bool) {
         let views = [ joinOpenGroupButton, joinOpenGroupLabel, newDMButton, newDMLabel, createClosedGroupButton, createClosedGroupLabel ]
+        
         UIView.animate(withDuration: 0.25, animations: {
             views.forEach { $0.alpha = 1 }
             let inset = (NewConversationButtonSet.expandedButtonSize - NewConversationButtonSet.collapsedButtonSize) / 2
@@ -137,6 +178,7 @@ final class NewConversationButtonSet : UIView {
         isUserDragging = false
         let buttons = [ joinOpenGroupButton, newDMButton, createClosedGroupButton ]
         let labels = [ joinOpenGroupLabel, newDMLabel, createClosedGroupLabel ]
+        
         UIView.animate(withDuration: isAnimated ? 0.25 : 0) {
             labels.forEach { label in
                 label.alpha = 0
@@ -264,27 +306,67 @@ final class NewConversationButtonSet : UIView {
     }
 }
 
-// MARK: Delegate
+// MARK: - Delegate
+
 protocol NewConversationButtonSetDelegate {
-    
     func joinOpenGroup()
     func createNewDM()
     func createClosedGroup()
 }
 
-// MARK: Button
-private final class NewConversationButton : UIImageView {
+// MARK: - Button
+
+private final class NewConversationButton: UIImageView {
     private let isMainButton: Bool
     private let icon: UIImage
     var widthConstraint: NSLayoutConstraint!
     var heightConstraint: NSLayoutConstraint!
+    
+    // MARK: - UI
+    
+    private let innerShadowLayer: CALayer = {
+        let result: CALayer = CALayer()
+        result.masksToBounds = true
+        result.themeShadowColor = .menuButton_innerShadow
+        result.position = CGPoint(
+            x: (NewConversationButtonSet.collapsedButtonSize / 2),
+            y: (NewConversationButtonSet.collapsedButtonSize / 2)
+        )
+        result.bounds = CGRect(
+            x: 0,
+            y: 0,
+            width: NewConversationButtonSet.collapsedButtonSize,
+            height: NewConversationButtonSet.collapsedButtonSize
+        )
+        result.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
+        result.shadowOffset = .zero
+        result.shadowOpacity = 0.4
+        result.shadowRadius = 2
+        
+        let cutout: UIBezierPath = UIBezierPath(
+            roundedRect: result.bounds
+                .insetBy(dx: result.shadowRadius, dy: result.shadowRadius),
+            cornerRadius: (NewConversationButtonSet.collapsedButtonSize / 2)
+        ).reversing()
+        let path: UIBezierPath = UIBezierPath(
+            roundedRect: result.bounds,
+            cornerRadius: (NewConversationButtonSet.collapsedButtonSize / 2)
+        )
+        path.append(cutout)
+        result.shadowPath = path.cgPath
+        
+        return result
+    }()
+    
+    // MARK: - Initialization
 
     init(isMainButton: Bool, icon: UIImage) {
         self.isMainButton = isMainButton
         self.icon = icon
+        
         super.init(frame: CGRect.zero)
+        
         setUpViewHierarchy()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
     }
     
     override init(frame: CGRect) {
@@ -294,26 +376,39 @@ private final class NewConversationButton : UIImageView {
     required init?(coder: NSCoder) {
         preconditionFailure("Use init(isMainButton:) instead.")
     }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
     
     private func setUpViewHierarchy(isUpdate: Bool = false) {
-        let newConversationButtonCollapsedBackground = isLightMode ? UIColor(hex: 0xF5F5F5) : UIColor(hex: 0x1F1F1F)
-        backgroundColor = isMainButton ? Colors.accent : newConversationButtonCollapsedBackground
-        let size = NewConversationButtonSet.collapsedButtonSize
-        layer.cornerRadius = size / 2
-        let glowColor = isMainButton ? Colors.expandedButtonGlowColor : (isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black)
-        let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: false, radius: isLightMode ? 4 : 6)
-        setCircularGlow(with: glowConfiguration)
-        layer.masksToBounds = false
-        let iconColor = (isMainButton && isLightMode) ? UIColor.white : (isLightMode ? UIColor.black : UIColor.white)
-        image = icon.asTintedImage(color: iconColor)!
+        clipsToBounds = false
+        image = icon.withRenderingMode(.alwaysTemplate)
         contentMode = .center
+        layer.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
+        
+        themeBackgroundColor = (isMainButton ? .menuButton_background : .backgroundTertiary)
+        themeTintColor = .menuButton_icon
+        
+        if isMainButton {
+            themeShadowColor = .menuButton_outerShadow
+            layer.shadowRadius = 15
+            layer.shadowOpacity = 0.3
+            layer.shadowOffset = .zero
+            layer.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
+            layer.shadowPath = UIBezierPath(
+                ovalIn: CGRect(
+                    origin: CGPoint.zero,
+                    size: CGSize(
+                        width: NewConversationButtonSet.collapsedButtonSize,
+                        height: NewConversationButtonSet.collapsedButtonSize
+                    )
+                )
+            ).cgPath
+            
+            self.layer.addSublayer(innerShadowLayer)
+            
+        }
+        
         if !isUpdate {
-            widthConstraint = set(.width, to: size)
-            heightConstraint = set(.height, to: size)
+            widthConstraint = set(.width, to: NewConversationButtonSet.collapsedButtonSize)
+            heightConstraint = set(.height, to: NewConversationButtonSet.collapsedButtonSize)
         }
     }
 

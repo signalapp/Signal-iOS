@@ -35,8 +35,6 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setUpNavBarSessionIcon()
         
         let learnMoreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "ic_info"), style: .plain, target: self, action: #selector(learnMore))

@@ -39,15 +39,13 @@ final class LandingVC: BaseVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setUpNavBarSessionIcon()
         
         // Title label
         let titleLabel = UILabel()
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = "vc_landing_title_2".localized()
-        titleLabel.textColor = Colors.text
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
         
@@ -67,7 +65,7 @@ final class LandingVC: BaseVC {
         let linkButton = UIButton()
         linkButton.titleLabel?.font = .boldSystemFont(ofSize: Values.smallFontSize)
         linkButton.setTitle("vc_landing_link_button_title".localized(), for: .normal)
-        linkButton.setTitleColor(Colors.text, for: UIControl.State.normal)
+        linkButton.setThemeTitleColor(.textPrimary, for: .normal)
         linkButton.addTarget(self, action: #selector(link), for: .touchUpInside)
         
         // Link button container

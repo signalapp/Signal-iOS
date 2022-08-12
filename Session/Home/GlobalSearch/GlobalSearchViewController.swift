@@ -50,9 +50,10 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
     internal lazy var searchBar: SearchBar = {
         let result: SearchBar = SearchBar()
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
         result.delegate = self
         result.showsCancelButton = true
+        
         return result
     }()
 
@@ -74,8 +75,6 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-
         tableView.dataSource = self
         tableView.delegate = self
         view.addSubview(tableView)
@@ -116,9 +115,10 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         if UIDevice.current.isIPad {
             let ipadCancelButton = UIButton()
             ipadCancelButton.setTitle("Cancel", for: .normal)
+            ipadCancelButton.setThemeTitleColor(.textPrimary, for: .normal)
             ipadCancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
-            ipadCancelButton.setTitleColor(Colors.text, for: .normal)
             searchBarContainer.addSubview(ipadCancelButton)
+            
             ipadCancelButton.pin(.trailing, to: .trailing, of: searchBarContainer)
             ipadCancelButton.autoVCenterInSuperview()
             searchBar.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .trailing)
@@ -312,16 +312,19 @@ extension GlobalSearchViewController {
         }
 
         let titleLabel = UILabel()
+        titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
         titleLabel.text = title
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        titleLabel.themeTextColor = .textPrimary
 
         let container = UIView()
-        container.backgroundColor = Colors.cellBackground
-        container.layoutMargins = UIEdgeInsets(top: Values.smallSpacing, left: Values.mediumSpacing, bottom: Values.smallSpacing, right: Values.mediumSpacing)
+        container.themeBackgroundColor = .backgroundPrimary
         container.addSubview(titleLabel)
-        titleLabel.autoPinEdgesToSuperviewMargins()
-
+        
+        titleLabel.pin(.top, to: .top, of: container, withInset: Values.mediumSpacing)
+        titleLabel.pin(.bottom, to: .bottom, of: container, withInset: -Values.mediumSpacing)
+        titleLabel.pin(.left, to: .left, of: container, withInset: Values.largeSpacing)
+        titleLabel.pin(.right, to: .right, of: container, withInset: -Values.largeSpacing)
+        
         return container
     }
 

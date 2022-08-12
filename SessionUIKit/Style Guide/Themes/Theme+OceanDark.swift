@@ -11,6 +11,7 @@ internal enum Theme_OceanDark: ThemeColors {
         .clear: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0),
         .backgroundPrimary: #colorLiteral(red: 0.1450980392, green: 0.1529411765, blue: 0.2078431373, alpha: 1),
         .backgroundSecondary: #colorLiteral(red: 0.1019607843, green: 0.1098039216, blue: 0.1568627451, alpha: 1),
+        .backgroundTertiary: #colorLiteral(red: 0.1725490196, green: 0.1803921569, blue: 0.2274509804, alpha: 1),
         .textPrimary: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
         .textSecondary: #colorLiteral(red: 0.6509803922, green: 0.662745098, blue: 0.8078431373, alpha: 1),
         .borderSeparator: #colorLiteral(red: 0.2392156863, green: 0.2901960784, blue: 0.3647058824, alpha: 1),
@@ -28,7 +29,8 @@ internal enum Theme_OceanDark: ThemeColors {
         // MenuButton
         .menuButton_background: .primary,
         .menuButton_icon: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
-        .menuButton_shadow: .primary,
+        .menuButton_outerShadow: .primary,
+        .menuButton_innerShadow: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
         
         // RadioButton
         .radioButton_selectedBackground: .primary,
@@ -54,12 +56,18 @@ internal enum Theme_OceanDark: ThemeColors {
         .settings_tabHighlight: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1),
         
         // Appearance
-        .appearance_sectionBackground: #colorLiteral(red: 0.1019607843, green: 0.1098039216, blue: 0.1568627451, alpha: 1),
-        .appearance_buttonBackground: #colorLiteral(red: 0.1019607843, green: 0.1098039216, blue: 0.1568627451, alpha: 1),
+        .appearance_sectionBackground: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1),
+        .appearance_buttonBackground: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1),
         .appearance_buttonHighlight: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1),
         
         // ConversationButton
         .conversationButton_background: #colorLiteral(red: 0.168627451, green: 0.168627451, blue: 0.2509803922, alpha: 1),
-        .conversationButton_highlight: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1)
+        .conversationButton_highlight: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1),
+        .conversationButton_unreadBackground: #colorLiteral(red: 0.1450980392, green: 0.1529411765, blue: 0.2078431373, alpha: 1),
+        .conversationButton_unreadHighlight: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1),
+        .conversationButton_unreadStripBackground: .primary,
+        .conversationButton_unreadBubbleBackground: Theme.PrimaryColor.blue.color,
+        .conversationButton_unreadBubbleText: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+        .conversationButton_pinBackground: Theme.PrimaryColor.yellow.color
     ]
 }

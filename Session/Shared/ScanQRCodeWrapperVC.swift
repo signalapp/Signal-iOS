@@ -28,7 +28,7 @@ final class ScanQRCodeWrapperVC : BaseVC {
         if isPresentedModally {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(close))
         }
-        setUpGradientBackground()
+        
         // Set up scan QR code VC
         scanQRCodeVC.scanDelegate = delegate
         let scanQRCodeVCView = scanQRCodeVC.view!

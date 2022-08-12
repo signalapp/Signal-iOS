@@ -18,8 +18,8 @@ final class SeedReminderView: UIView {
     private lazy var progressIndicatorView: UIProgressView = {
         let result = UIProgressView()
         result.progressViewStyle = .bar
-        result.progressTintColor = Colors.accent
-        result.backgroundColor = isLightMode ? UIColor(hex: 0x000000).withAlphaComponent(0.1) : UIColor(hex: 0xFFFFFF).withAlphaComponent(0.1)
+        result.themeProgressTintColor = .primary
+        result.themeBackgroundColor = .borderSeparator
         result.set(.height, to: SeedReminderView.progressBarThickness)
         
         return result
@@ -28,7 +28,7 @@ final class SeedReminderView: UIView {
     lazy var titleLabel: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byTruncatingTail
         
         return result
@@ -36,10 +36,11 @@ final class SeedReminderView: UIView {
     
     lazy var subtitleLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
-        result.lineBreakMode = .byWordWrapping
+        result.themeTextColor = .textSecondary
         result.numberOfLines = 0
+        result.lineBreakMode = .byWordWrapping
+        
         return result
     }()
     
@@ -63,7 +64,7 @@ final class SeedReminderView: UIView {
     
     private func setUpViewHierarchy() {
         // Set background color
-        backgroundColor = Colors.cellBackground
+        themeBackgroundColor = .conversationButton_background
         
         // Set up label stack view
         let labelStackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
@@ -92,7 +93,7 @@ final class SeedReminderView: UIView {
         // Set up separator
         let separator = UIView()
         separator.set(.height, to: Values.separatorThickness)
-        separator.backgroundColor = Colors.separator
+        separator.themeBackgroundColor = .borderSeparator
         
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ progressIndicatorView, contentStackView, separator ])

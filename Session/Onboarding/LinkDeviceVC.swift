@@ -51,9 +51,8 @@ final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewCont
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpGradientBackground()
-        setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("vc_link_device_title", comment: ""))
+        
+        setNavBarTitle("vc_link_device_title".localized())
         let navigationBar = navigationController!.navigationBar
         // Page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)

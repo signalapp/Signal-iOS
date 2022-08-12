@@ -82,8 +82,6 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setNavBarTitle("Edit Group")
         
         let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)

@@ -69,15 +69,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         return result
     }()
 
-    private lazy var fadeView: UIView = {
-        let result: UIView = UIView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.isUserInteractionEnabled = false
-        result.setGradient(Gradients.homeVCFade)
-
-        return result
-    }()
-
     private lazy var clearAllButton: OutlineButton = {
         let result: OutlineButton = OutlineButton(style: .destructive, size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
@@ -102,7 +93,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         // the dataSource has the correct data)
         view.addSubview(tableView)
         view.addSubview(emptyStateLabel)
-        view.addSubview(fadeView)
         view.addSubview(clearAllButton)
         setupLayout()
 
@@ -162,12 +152,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             emptyStateLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.mediumSpacing),
             emptyStateLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.mediumSpacing),
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-            fadeView.topAnchor.constraint(equalTo: view.topAnchor, constant: (0.15 * view.bounds.height)),
-            fadeView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            fadeView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            fadeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
+            
             clearAllButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             clearAllButton.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
@@ -258,14 +243,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 self?.viewModel.pagedDataObserver?.load(.pageAfter)
             }
         }
-    }
-
-    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
-        super.handleAppModeChangedNotification(notification)
-
-        let gradient = Gradients.homeVCFade
-        fadeView.setGradient(gradient) // Re-do the gradient
-        tableView.reloadData()
     }
     
     // MARK: - UITableViewDataSource

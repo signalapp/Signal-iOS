@@ -628,7 +628,7 @@
 "modal_call_missed_tips_explanation" = "Llamada perdida de '%@' porque necesitas habilitar el permiso de 'Llamadas de voz y video' en la configuración de privacidad.";
 "media_saved" = "Media saved by %@.";
 "screenshot_taken" = "%@ tomó una captura de pantalla.";
-"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_CONTACTS" = "Contacts & Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";
 "SEARCH_SECTION_RECENT" = "Recent";
 "RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";

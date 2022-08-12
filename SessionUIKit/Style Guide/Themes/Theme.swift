@@ -62,6 +62,7 @@ public enum ThemeValue {
     case clear
     case backgroundPrimary
     case backgroundSecondary
+    case backgroundTertiary
     case textPrimary
     case textSecondary
     case borderSeparator
@@ -79,7 +80,8 @@ public enum ThemeValue {
     // MenuButton
     case menuButton_background
     case menuButton_icon
-    case menuButton_shadow
+    case menuButton_outerShadow
+    case menuButton_innerShadow
     
     // RadioButton
     case radioButton_selectedBackground
@@ -112,4 +114,10 @@ public enum ThemeValue {
     // ConversationButton
     case conversationButton_background
     case conversationButton_highlight
+    case conversationButton_unreadBackground
+    case conversationButton_unreadHighlight
+    case conversationButton_unreadStripBackground
+    case conversationButton_unreadBubbleBackground
+    case conversationButton_unreadBubbleText
+    case conversationButton_pinBackground
 }

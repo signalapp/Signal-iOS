@@ -300,10 +300,12 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         authorLabelHeightConstraint.constant = (cellViewModel.senderName != nil ? authorLabelSize.height : 0)
         
         // Message status image view
-        let (image, tintColor, backgroundColor) = getMessageStatusImage(for: cellViewModel)
+        let (image, tintColor) = cellViewModel.state.statusIconInfo(
+            variant: cellViewModel.variant,
+            hasAtLeastOneReadReceipt: cellViewModel.hasAtLeastOneReadReceipt
+        )
         messageStatusImageView.image = image
         messageStatusImageView.themeTintColor = tintColor
-        messageStatusImageView.themeBackgroundColor = backgroundColor
         messageStatusImageView.isHidden = (
             cellViewModel.variant != .standardOutgoing ||
             cellViewModel.variant == .infoCall ||
@@ -838,34 +840,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         }
     }
 
-    private func getMessageStatusImage(for cellViewModel: MessageViewModel) -> (image: UIImage?, tintColor: ThemeValue?, backgroundColor: ThemeValue?) {
-        guard cellViewModel.variant == .standardOutgoing else { return (nil, nil, nil) }
-
-        let image: UIImage
-        var tintColor: ThemeValue? = nil
-        var backgroundColor: ThemeValue? = nil
-        
-        switch (cellViewModel.state, cellViewModel.hasAtLeastOneReadReceipt) {
-            case (.sending, _):
-                image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
-                tintColor = .textPrimary
-            
-            case (.sent, false), (.skipped, _):
-                image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
-                tintColor = .textPrimary
-                
-            case (.sent, true):
-                image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
-                backgroundColor = isLightMode ? .black : .white
-                
-            case (.failed, _):
-                image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
-                tintColor = .danger
-        }
-
-        return (image, tintColor, backgroundColor)
-    }
-
     private func getSize(for cellViewModel: MessageViewModel) -> CGSize {
         guard let mediaAttachments: [Attachment] = cellViewModel.attachments?.filter({ $0.isVisualMedia }) else {
             preconditionFailure()
@@ -959,7 +933,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         result.isUserInteractionEnabled = true
         result.delegate = delegate
         
-        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, primaryColor in
             guard
                 let actualTextColor: UIColor = theme.colors[textColor],
                 let backgroundPrimaryColor: UIColor = theme.colors[.backgroundPrimary],
@@ -975,6 +949,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     currentUserPublicKey: cellViewModel.currentUserPublicKey,
                     currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
                     isOutgoingMessage: isOutgoing,
+                    textColor: actualTextColor,
+                    primaryColor: primaryColor,
                     attributes: [
                         .foregroundColor: actualTextColor,
                         .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel))

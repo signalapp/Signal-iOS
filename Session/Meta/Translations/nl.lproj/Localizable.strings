@@ -628,7 +628,7 @@
 "modal_call_missed_tips_explanation" = "Oproep gemist van '%@' omdat je de 'Spraak- en video-oproep' permissie nodig hebt in de privacy-instellingen.";
 "media_saved" = "Media opgeslagen door %@.";
 "screenshot_taken" = "%@ heeft een schermafbeelding genomen.";
-"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_CONTACTS" = "Contacts & Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";
 "SEARCH_SECTION_RECENT" = "Recent";
 "RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";

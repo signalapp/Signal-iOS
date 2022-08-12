@@ -628,7 +628,7 @@
 "modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
 "media_saved" = "Media saved by %@.";
 "screenshot_taken" = "%@ took a screenshot.";
-"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_CONTACTS" = "Contacts & Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";
 "SEARCH_SECTION_RECENT" = "Recent";
 "RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";

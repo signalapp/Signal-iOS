@@ -25,9 +25,9 @@ final class ProfilePictureVC: BaseVC {
     
     override func viewDidLoad() {
         view.backgroundColor = .clear
-        setUpGradientBackground()
-        setUpNavBarStyle()
+        
         setNavBarTitle(snTitle)
+        
         // Close button
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text

@@ -54,8 +54,6 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setNavBarTitle("vc_qr_code_title".localized())
         
         // Set up page VC

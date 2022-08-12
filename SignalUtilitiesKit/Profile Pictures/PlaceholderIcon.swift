@@ -1,14 +1,14 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import CryptoSwift
+import SessionUIKit
 
 public class PlaceholderIcon {
     private let seed: Int
+    
     // Colour palette
-    private var colours: [UIColor] = [
-       0x5ff8b0,
-       0x26cdb9,
-       0xf3c615,
-       0xfcac5a
-    ].map { UIColor(hex: $0) }
+    private var colours: [UIColor] = Theme.PrimaryColor.allCases.map { $0.color }
     
     init(seed: Int, colours: [UIColor]? = nil) {
         self.seed = seed

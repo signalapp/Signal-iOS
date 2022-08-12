@@ -60,8 +60,6 @@ final class SeedVC: BaseVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setNavBarTitle("vc_seed_title".localized())
         
         // Set up navigation bar buttons

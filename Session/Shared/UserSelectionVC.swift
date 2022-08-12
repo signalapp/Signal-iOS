@@ -45,9 +45,9 @@ final class UserSelectionVC: BaseVC, UITableViewDataSource, UITableViewDelegate 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpGradientBackground()
-        setUpNavBarStyle()
+        
         setNavBarTitle(navBarTitle)
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleDoneButtonTapped))
         view.addSubview(tableView)
         tableView.pin(to: view)

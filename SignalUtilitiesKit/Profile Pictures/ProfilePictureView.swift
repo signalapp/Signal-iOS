@@ -19,8 +19,15 @@ public final class ProfilePictureView: UIView {
     
     // MARK: - Components
     
-    private lazy var imageView = getImageView()
-    private lazy var additionalImageView = getImageView()
+    private lazy var imageView: YYAnimatedImageView = getImageView()
+    private lazy var additionalImageView: YYAnimatedImageView = {
+        let result: YYAnimatedImageView = getImageView()
+        result.themeBackgroundColor = .backgroundTertiary
+        result.themeBorderColor = .backgroundPrimary
+        result.layer.borderWidth = Values.separatorThickness
+        
+        return result
+    }()
     
     // MARK: - Lifecycle
     

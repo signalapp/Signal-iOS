@@ -37,14 +37,12 @@ final class PathVC: BaseVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
         setUpNavBar()
         setUpViewHierarchy()
         registerObservers()
     }
 
     private func setUpNavBar() {
-        setUpNavBarStyle()
         setNavBarTitle("vc_path_title".localized())
     }
 

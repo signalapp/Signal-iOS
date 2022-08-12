@@ -45,32 +45,15 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         return tableView
     }()
     
-    private lazy var fadeView: UIView = {
-        let view = UIView()
-        let gradient = Gradients.homeVCFade
-        view.setGradient(gradient)
-        view.isUserInteractionEnabled = false
-        
-        return view
-    }()
-    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupNavBar()
-        
-        // Gradient
-        view.themeBackgroundColor = .backgroundPrimary
-        
-        // Title
         navigationItem.titleView = titleLabel
         
-        // Table view
-        
+        view.themeBackgroundColor = .backgroundPrimary
         view.addSubview(tableView)
-        view.addSubview(fadeView)
         
         setupLayout()
         
@@ -108,22 +91,6 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     @objc func applicationDidResignActive(_ notification: Notification) {
         // Stop observing database changes
         dataChangeObservable?.cancel()
-    }
-    
-    private func setupNavBar() {
-        guard let navigationBar = navigationController?.navigationBar else { return }
-        if #available(iOS 15.0, *) {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = Colors.navigationBarBackground
-            navigationBar.standardAppearance = appearance;
-            navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
-        }
-    }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        view.setGradient(Gradients.defaultBackground)
-        fadeView.setGradient(Gradients.homeVCFade)
     }
     
     // MARK: Layout

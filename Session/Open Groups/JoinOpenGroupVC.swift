@@ -55,8 +55,6 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setNavBarTitle("vc_join_public_chat_title".localized())
         
         // Navigation bar buttons

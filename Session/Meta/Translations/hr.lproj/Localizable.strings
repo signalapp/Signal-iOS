@@ -628,7 +628,7 @@
 "modal_call_missed_tips_explanation" = "Propušten poziv od '%@' jer 'Audio i video pozivi' nemaju dopuštenje u Postavkama privatnosti.";
 "media_saved" = "%@ je spremio/la medij.";
 "screenshot_taken" = "%@ je napravio/la snimku zaslona.";
-"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_CONTACTS" = "Contacts & Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";
 "SEARCH_SECTION_RECENT" = "Recent";
 "RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";

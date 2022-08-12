@@ -13,18 +13,18 @@ enum _001_ThemePreferences: Migration {
     static let minExpectedRunDuration: TimeInterval = 0.1
     
     static func migrate(_ db: Database) throws {
-        // Start by adding the jobs that don't have collections (in the jobs like these
-        // will be added via migrations)
+        // Determine if the user was matching the system setting
         let isMatchingSystemSetting: Bool = UserDefaults.standard.dictionaryRepresentation()
             .keys
             .contains("appMode")
-        // TODO: Test the migration works
+        
+        // Set the default theme settings sccordingly
         db[.themeMatchSystemDayNightCycle] = isMatchingSystemSetting
         db[.theme] = (isMatchingSystemSetting ?
-            Theme.classicDark : (
-                UserDefaults.standard.integer(forKey: "appMode") == 0 ?
-                    Theme.classicLight :
-                    Theme.classicDark
+            Theme.classicDark :
+            (UserDefaults.standard.integer(forKey: "appMode") == 0 ?
+                Theme.classicLight :
+                Theme.classicDark
             )
         )
         db[.themePrimaryColor] = Theme.PrimaryColor.green

@@ -185,32 +185,40 @@ final class QuoteView: UIView {
         
         let isOutgoing = (direction == .outgoing)
         bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        bodyLabel.attributedText = body
-            .map {
-                MentionUtilities.highlightMentions(
-                    in: $0,
-                    threadVariant: threadVariant,
-                    currentUserPublicKey: currentUserPublicKey,
-                    currentUserBlindedPublicKey: currentUserBlindedPublicKey,
-                    isOutgoingMessage: isOutgoing,
-                    attributes: [:]
-                )
-            }
-            .defaulting(
-                to: attachment.map {
-                    NSAttributedString(string: MIMETypeUtil.isAudio($0.contentType) ? "Audio" : "Document")
-                }
-            )
-            .defaulting(to: NSAttributedString(string: "Document"))
-        bodyLabel.themeTextColor = (direction == .outgoing ?
-            .messageBubble_outgoingText :
-            .messageBubble_incomingText
-        )
         
-        let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
+        ThemeManager.onThemeChange(observer: bodyLabel) { [weak bodyLabel] theme, primaryColor in
+            let targetThemeColor: ThemeValue = (direction == .outgoing ?
+                .messageBubble_outgoingText :
+                .messageBubble_incomingText
+            )
+            
+            guard let textColor: UIColor = theme.colors[targetThemeColor] else { return }
+            
+            bodyLabel?.attributedText = body
+                .map {
+                    MentionUtilities.highlightMentions(
+                        in: $0,
+                        threadVariant: threadVariant,
+                        currentUserPublicKey: currentUserPublicKey,
+                        currentUserBlindedPublicKey: currentUserBlindedPublicKey,
+                        isOutgoingMessage: isOutgoing,
+                        textColor: textColor,
+                        primaryColor: primaryColor,
+                        attributes: [:]
+                    )
+                }
+                .defaulting(
+                    to: attachment.map {
+                        NSAttributedString(string: MIMETypeUtil.isAudio($0.contentType) ? "Audio" : "Document")
+                    }
+                )
+                .defaulting(to: NSAttributedString(string: "Document"))
+        }
         
         // Label stack view
+        let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
         var authorLabelHeight: CGFloat?
+        
         if threadVariant == .openGroup || threadVariant == .closedGroup {
             let isCurrentUser: Bool = [
                 currentUserPublicKey,

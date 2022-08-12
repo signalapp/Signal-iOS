@@ -11,6 +11,7 @@ internal enum Theme_ClassicDark: ThemeColors {
         .clear: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0),
         .backgroundPrimary: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1),
         .backgroundSecondary: #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1),
+        .backgroundTertiary: #colorLiteral(red: 0.1764705882, green: 0.1764705882, blue: 0.1764705882, alpha: 1),
         .textPrimary: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
         .textSecondary: #colorLiteral(red: 0.631372549, green: 0.6352941176, blue: 0.631372549, alpha: 1),
         .borderSeparator: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
@@ -28,7 +29,8 @@ internal enum Theme_ClassicDark: ThemeColors {
         // MenuButton
         .menuButton_background: .primary,
         .menuButton_icon: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
-        .menuButton_shadow: .primary,
+        .menuButton_outerShadow: .primary,
+        .menuButton_innerShadow: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
         
         // RadioButton
         .radioButton_selectedBackground: .primary,
@@ -60,6 +62,12 @@ internal enum Theme_ClassicDark: ThemeColors {
         
         // ConversationButton
         .conversationButton_background: #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1),
-        .conversationButton_highlight: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1)
+        .conversationButton_highlight: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
+        .conversationButton_unreadBackground: #colorLiteral(red: 0.1764705882, green: 0.1764705882, blue: 0.1764705882, alpha: 1),
+        .conversationButton_unreadHighlight: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
+        .conversationButton_unreadStripBackground: .primary,
+        .conversationButton_unreadBubbleBackground: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
+        .conversationButton_unreadBubbleText: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+        .conversationButton_pinBackground: Theme.PrimaryColor.yellow.color
     ]
 }

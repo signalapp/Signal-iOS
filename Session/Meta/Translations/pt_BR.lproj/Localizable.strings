@@ -628,7 +628,7 @@
 "modal_call_missed_tips_explanation" = "Chamada perdida de '%@', você precisa habilitar a permissão de 'Voz e Video' nas configurações de Privacidade.";
 "media_saved" = "Mídia salva por %@.";
 "screenshot_taken" = "%@ fez uma captura de tela.";
-"SEARCH_SECTION_CONTACTS" = "Contacts and Groups";
+"SEARCH_SECTION_CONTACTS" = "Contacts & Groups";
 "SEARCH_SECTION_MESSAGES" = "Messages";
 "SEARCH_SECTION_RECENT" = "Recent";
 "RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "last message: %@";

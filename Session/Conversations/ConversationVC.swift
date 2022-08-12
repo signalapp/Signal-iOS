@@ -317,11 +317,6 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Gradient
-        setUpGradientBackground()
-        
-        // Nav bar
-        setUpNavBarStyle()
         navigationItem.titleView = titleView
         
         // Note: We need to update the nav bar buttons here (with invalid data) because if we don't the

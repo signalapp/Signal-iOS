@@ -232,7 +232,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         )
 
         DispatchQueue.main.async {
-            notificationBody = MentionUtilities.highlightMentions(
+            notificationBody = MentionUtilities.highlightMentionsNoAttributes(
                 in: (notificationBody ?? ""),
                 threadVariant: thread.variant,
                 currentUserPublicKey: userPublicKey,

@@ -41,13 +41,20 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     private lazy var seedReminderView: SeedReminderView = {
         let result = SeedReminderView(hasContinueButton: true)
         let title = "You're almost finished! 80%"
-        let attributedTitle = NSMutableAttributedString(string: title)
-        attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "80%"))
-        result.title = attributedTitle
-        result.subtitle = NSLocalizedString("view_seed_reminder_subtitle_1", comment: "")
+        result.subtitle = "view_seed_reminder_subtitle_1".localized()
         result.setProgress(0.8, animated: false)
         result.delegate = self
         result.isHidden = !self.viewModel.state.showViewedSeedBanner
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] _, primaryColor in
+            let attributedTitle = NSMutableAttributedString(string: title)
+            attributedTitle.addAttribute(
+                .foregroundColor,
+                value: primaryColor.color,
+                range: (title as NSString).range(of: "80%")
+            )
+            result?.title = attributedTitle
+        }
         
         return result
     }()
@@ -56,7 +63,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         let result: UILabel = UILabel()
         result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
         result.text = "LOADING_CONVERSATIONS".localized()
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
         result.numberOfLines = 0
         
@@ -65,7 +72,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
     private lazy var tableView: UITableView = {
         let result = UITableView()
-        result.backgroundColor = .clear
         result.separatorStyle = .none
         result.contentInset = UIEdgeInsets(
             top: 0,
@@ -94,23 +100,15 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     private lazy var newConversationButtonSet: NewConversationButtonSet = {
         let result = NewConversationButtonSet()
         result.delegate = self
-        return result
-    }()
-    
-    private lazy var fadeView: UIView = {
-        let result = UIView()
-        let gradient = Gradients.homeVCFade
-        result.setGradient(gradient)
-        result.isUserInteractionEnabled = false
         
         return result
     }()
-
+    
     private lazy var emptyStateView: UIView = {
         let explanationLabel = UILabel()
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = "vc_home_empty_state_message".localized()
-        explanationLabel.textColor = Colors.text
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.numberOfLines = 0
@@ -142,11 +140,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         // Preparation
         SessionApp.homeViewController.mutate { $0 = self }
         
-        // Gradient & nav bar
-        setUpGradientBackground()
-        if navigationController?.navigationBar != nil {
-            setUpNavBarStyle()
-        }
         updateNavBarButtons()
         setUpNavBarSessionHeading()
         
@@ -174,12 +167,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         }
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
-        view.addSubview(fadeView)
-        fadeView.pin(.leading, to: .leading, of: view)
-        let topInset = 0.15 * view.height()
-        fadeView.pin(.top, to: .top, of: view, withInset: topInset)
-        fadeView.pin(.trailing, to: .trailing, of: view)
-        fadeView.pin(.bottom, to: .bottom, of: view)
         
         // Empty state view
         view.addSubview(emptyStateView)
@@ -431,14 +418,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         rightBarButtonItem.isAccessibilityElement  = true
         navigationItem.rightBarButtonItem = rightBarButtonItem
     }
-
-    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
-        super.handleAppModeChangedNotification(notification)
-        
-        let gradient = Gradients.homeVCFade
-        fadeView.setGradient(gradient) // Re-do the gradient
-        tableView.reloadData()
-    }
     
     // MARK: - UITableViewDataSource
     
@@ -478,7 +457,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         switch section.model {
             case .loadMore:
                 let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
-                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.themeTintColor = .textPrimary
                 loadingIndicator.alpha = 0.5
                 loadingIndicator.startAnimating()
                 
@@ -557,7 +536,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 let hide = UITableViewRowAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { _, _ in
                     Storage.shared.write { db in db[.hasHiddenMessageRequests] = true }
                 }
-                hide.backgroundColor = Colors.destructive
+                hide.themeBackgroundColor = .danger
                 
                 return [hide]
                 
@@ -606,7 +585,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                     
                     self?.present(alert, animated: true, completion: nil)
                 }
-                delete.backgroundColor = Colors.destructive
+                delete.themeBackgroundColor = .danger
 
                 let pin: UITableViewRowAction = UITableViewRowAction(
                     style: .normal,
@@ -621,6 +600,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                             .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadViewModel.threadIsPinned))
                     }
                 }
+                pin.themeBackgroundColor = .conversationButton_pinBackground
                 
                 guard threadViewModel.threadVariant == .contact && !threadViewModel.threadIsNoteToSelf else {
                     return [ delete, pin ]
@@ -650,7 +630,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                             .retainUntilComplete()
                     }
                 }
-                block.backgroundColor = Colors.unimportant
+                block.themeBackgroundColor = .backgroundTertiary
                 
                 return [ delete, block, pin ]
                 

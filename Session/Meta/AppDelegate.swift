@@ -89,8 +89,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         mainWindow.rootViewController = self.loadingViewController
         mainWindow.makeKeyAndVisible()
 
-        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
-
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
         // miss notifications.
         // Setting the delegate also seems to prevent us from getting the legacy notification
@@ -156,7 +154,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UserDefaults.sharedLokiProject?[.isMainAppActive] = true
         
         ensureRootViewController()
-        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
 
         AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
             self?.handleActivation()

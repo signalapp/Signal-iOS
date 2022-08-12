@@ -127,8 +127,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setNavBarTitle("vc_settings_title".localized())
         
         // Navigation bar buttons

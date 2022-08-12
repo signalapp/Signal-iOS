@@ -6,7 +6,7 @@ import PromiseKit
 import SignalUtilitiesKit
 import SessionUIKit
 
-final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerDelegate {
+final class ShareVC: UINavigationController, ShareViewDelegate, AppModeManagerDelegate {
     private var areVersionMigrationsComplete = false
     public static var attachmentPrepPromise: Promise<[SignalAttachment]>?
     
@@ -29,6 +29,9 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         SetCurrentAppContext(appContext)
 
         AppModeManager.configure(delegate: self)
+        // Need to manually trigger these since we don't have a "mainWindow" here
+        ThemeManager.applyNavigationStyling()
+        ThemeManager.applyWindowStyling()
 
         Logger.info("")
 
@@ -65,6 +68,14 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
             name: .OWSApplicationDidEnterBackground,
             object: nil
         )
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // Note: The share extension doesn't have a proper window so we need to manually update
+        // the ThemeManager from here
+        ThemeManager.traitCollectionDidChange(previousTraitCollection)
     }
 
     @objc

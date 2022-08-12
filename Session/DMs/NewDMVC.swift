@@ -62,9 +62,8 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpGradientBackground()
-        setUpNavBarStyle()
-        setNavBarTitle(NSLocalizedString("vc_create_private_chat_title", comment: ""))
+        
+        setNavBarTitle("vc_create_private_chat_title".localized())
         let navigationBar = navigationController!.navigationBar
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))

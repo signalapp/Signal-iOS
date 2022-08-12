@@ -22,54 +22,6 @@ public extension Setting.BoolKey {
 // MARK: - ThemeManager
 
 public enum ThemeManager {
-    fileprivate class ThemeApplier {
-        enum InfoKey: String {
-            case keyPath
-            case controlState
-        }
-        
-        private let applyTheme: (Theme) -> ()
-        private let info: [AnyHashable]
-        private var otherAppliers: [ThemeManager.ThemeApplier]?
-        
-        init(
-            existingApplier: ThemeManager.ThemeApplier?,
-            info: [AnyHashable],
-            applyTheme: @escaping (Theme) -> ()
-        ) {
-            self.applyTheme = applyTheme
-            self.info = info
-            
-            // Store any existing "appliers" (removing their 'otherApplier' references to prevent
-            // loops and excluding any which match the current "info" as they should be replaced
-            // by this applier)
-            self.otherAppliers = [existingApplier]
-                .appending(contentsOf: existingApplier?.otherAppliers)
-                .compactMap { $0?.clearingOtherAppliers() }
-                .filter { $0.info != info }
-            
-            // Automatically apply the theme immediately
-            self.apply(theme: ThemeManager.currentTheme)
-        }
-        
-        // MARK: - Functions
-        
-        private func clearingOtherAppliers() -> ThemeManager.ThemeApplier {
-            self.otherAppliers = nil
-            
-            return self
-        }
-        
-        fileprivate func apply(theme: Theme) {
-            self.applyTheme(theme)
-            
-            // If there are otherAppliers stored against this one then trigger those as well
-            self.otherAppliers?.forEach { applier in
-                applier.applyTheme(theme)
-            }
-        }
-    }
-    
     /// **Note:** Using `weakToStrongObjects` means that the value types will continue to be maintained until the map table resizes
     /// itself (ie. until a new UI element is registered to the table)
     ///
@@ -126,13 +78,9 @@ public enum ThemeManager {
                 db[.themeMatchSystemDayNightCycle] = matchSystemNightModeSetting
             }
             
-            // If the user enabled the "match system" setting then update the UI if needed
-            guard
-                matchSystemNightModeSetting &&
-                UITraitCollection.current.userInterfaceStyle != ThemeManager.currentTheme.interfaceStyle
-            else { return }
-            
-            traitCollectionDidChange(UITraitCollection.current)
+            // Note: We have to trigger this directly or the 'TraitObservingWindow' won't actually
+            // trigger the trait change if the app launched with this setting switched off
+            applyWindowStyling()
         }
     }
     
@@ -248,9 +196,7 @@ public enum ThemeManager {
     
     public static func applyWindowStyling() {
         mainWindow?.overrideUserInterfaceStyle = {
-            guard !Storage.shared[.themeMatchSystemDayNightCycle] else {
-                return .unspecified
-            }
+            guard !ThemeManager.matchSystemNightModeSetting else { return .unspecified }
             
             switch ThemeManager.currentTheme.interfaceStyle {
                 case .light: return .light
@@ -263,7 +209,7 @@ public enum ThemeManager {
     
     public static func onThemeChange(observer: AnyObject, callback: @escaping (Theme, Theme.PrimaryColor) -> ()) {
         ThemeManager.uiRegistry.setObject(
-            ThemeManager.ThemeApplier(
+            ThemeApplier(
                 existingApplier: nil,
                 info: []
             ) { theme in callback(theme, ThemeManager.primaryColor) },
@@ -280,14 +226,14 @@ public enum ThemeManager {
         applyWindowStyling()
     }
     
-    fileprivate static func set<T: AnyObject>(
+    internal static func set<T: AnyObject>(
         _ view: T,
         keyPath: ReferenceWritableKeyPath<T, UIColor?>,
         to value: ThemeValue?,
         for state: UIControl.State = .normal
     ) {
         ThemeManager.uiRegistry.setObject(
-            ThemeManager.ThemeApplier(
+            ThemeApplier(
                 existingApplier: ThemeManager.get(for: view),
                 info: [ keyPath ]
             ) { [weak view] theme in
@@ -302,14 +248,14 @@ public enum ThemeManager {
         )
     }
     
-    fileprivate static func set<T: AnyObject>(
+    internal static func set<T: AnyObject>(
         _ view: T,
         keyPath: ReferenceWritableKeyPath<T, CGColor?>,
         to value: ThemeValue?,
         for state: UIControl.State = .normal
     ) {
         ThemeManager.uiRegistry.setObject(
-            ThemeManager.ThemeApplier(
+            ThemeApplier(
                 existingApplier: ThemeManager.get(for: view),
                 info: [ keyPath ]
             ) { [weak view] theme in
@@ -324,9 +270,9 @@ public enum ThemeManager {
         )
     }
     
-    fileprivate static func set<T: AnyObject>(
+    internal static func set<T: AnyObject>(
         _ view: T,
-        to applier: ThemeManager.ThemeApplier,
+        to applier: ThemeApplier,
         for state: UIControl.State = .normal
     ) {
         ThemeManager.uiRegistry.setObject(applier, forKey: view)
@@ -335,135 +281,62 @@ public enum ThemeManager {
     /// Using a `UIColor(dynamicProvider:)` unfortunately doesn't seem to work properly for some controls (eg. UISwitch) so
     /// since we are already explicitly updating all UI when changing colours & states we just force-resolve the primary colour to avoid
     /// running into these glitches
-    fileprivate static func resolvedColor(_ color: UIColor?) -> UIColor? {
+    internal static func resolvedColor(_ color: UIColor?) -> UIColor? {
         return color?.resolvedColor(with: UITraitCollection())
     }
     
-    fileprivate static func get(for view: AnyObject) -> ThemeApplier? {
+    internal static func get(for view: AnyObject) -> ThemeApplier? {
         return ThemeManager.uiRegistry.object(forKey: view)
     }
 }
 
-// MARK: - View Extensions
+// MARK: - ThemeApplier
 
-public extension UIView {
-    var themeBackgroundColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.backgroundColor, to: newValue) }
-        get { return nil }
+internal class ThemeApplier {
+    enum InfoKey: String {
+        case keyPath
+        case controlState
     }
     
-    var themeTintColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.tintColor, to: newValue) }
-        get { return nil }
-    }
+    private let applyTheme: (Theme) -> ()
+    private let info: [AnyHashable]
+    private var otherAppliers: [ThemeApplier]?
     
-    var themeBorderColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.layer.borderColor, to: newValue) }
-        get { return nil }
-    }
-    
-    var themeShadowColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.layer.shadowColor, to: newValue) }
-        get { return nil }
-    }
-}
-
-public extension UILabel {
-    var themeTextColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.textColor, to: newValue) }
-        get { return nil }
-    }
-}
-
-public extension UITextView {
-    var themeTextColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.textColor, to: newValue) }
-        get { return nil }
-    }
-}
-
-public extension UITextField {
-    var themeTextColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.textColor, to: newValue) }
-        get { return nil }
-    }
-}
-
-public extension UIButton {
-    func setThemeBackgroundColor(_ value: ThemeValue?, for state: UIControl.State) {
-        let keyPath: KeyPath<UIButton, UIImage?> = \.imageView?.image
+    init(
+        existingApplier: ThemeApplier?,
+        info: [AnyHashable],
+        applyTheme: @escaping (Theme) -> ()
+    ) {
+        self.applyTheme = applyTheme
+        self.info = info
         
-        ThemeManager.set(
-            self,
-            to: ThemeManager.ThemeApplier(
-                existingApplier: ThemeManager.get(for: self),
-                info: [
-                    keyPath,
-                    state.rawValue
-                ]
-            ) { [weak self] theme in
-                guard
-                    let value: ThemeValue = value,
-                    let color: UIColor = ThemeManager.resolvedColor(theme.colors[value])
-                else {
-                    self?.setBackgroundImage(nil, for: state)
-                    return
-                }
-                
-                self?.setBackgroundImage(color.toImage(), for: state)
-            }
-        )
-    }
-    
-    func setThemeTitleColor(_ value: ThemeValue?, for state: UIControl.State) {
-        let keyPath: KeyPath<UIButton, UIColor?> = \.titleLabel?.textColor
+        // Store any existing "appliers" (removing their 'otherApplier' references to prevent
+        // loops and excluding any which match the current "info" as they should be replaced
+        // by this applier)
+        self.otherAppliers = [existingApplier]
+            .appending(contentsOf: existingApplier?.otherAppliers)
+            .compactMap { $0?.clearingOtherAppliers() }
+            .filter { $0.info != info }
         
-        ThemeManager.set(
-            self,
-            to: ThemeManager.ThemeApplier(
-                existingApplier: ThemeManager.get(for: self),
-                info: [
-                    keyPath,
-                    state.rawValue
-                ]
-            ) { [weak self] theme in
-                guard let value: ThemeValue = value else {
-                    self?.setTitleColor(nil, for: state)
-                    return
-                }
-                
-                self?.setTitleColor(
-                    ThemeManager.resolvedColor(theme.colors[value]),
-                    for: state
-                )
-            }
-        )
-    }
-}
-
-public extension UISwitch {
-    var themeOnTintColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.onTintColor, to: newValue) }
-        get { return nil }
-    }
-}
-
-public extension UIBarButtonItem {
-    var themeTintColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.tintColor, to: newValue) }
-        get { return nil }
-    }
-}
-
-public extension CAShapeLayer {
-    var themeStrokeColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.strokeColor, to: newValue) }
-        get { return nil }
+        // Automatically apply the theme immediately
+        self.apply(theme: ThemeManager.currentTheme)
     }
     
-    var themeFillColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.fillColor, to: newValue) }
-        get { return nil }
+    // MARK: - Functions
+    
+    private func clearingOtherAppliers() -> ThemeApplier {
+        self.otherAppliers = nil
+        
+        return self
+    }
+    
+    fileprivate func apply(theme: Theme) {
+        self.applyTheme(theme)
+        
+        // If there are otherAppliers stored against this one then trigger those as well
+        self.otherAppliers?.forEach { applier in
+            applier.applyTheme(theme)
+        }
     }
 }
 

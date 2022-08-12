@@ -50,6 +50,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public static let interactionTimestampMsKey: SQL = SQL(stringLiteral: CodingKeys.interactionTimestampMs.stringValue)
     public static let interactionBodyKey: SQL = SQL(stringLiteral: CodingKeys.interactionBody.stringValue)
     public static let interactionStateKey: SQL = SQL(stringLiteral: CodingKeys.interactionState.stringValue)
+    public static let interactionHasAtLeastOneReadReceiptKey: SQL = SQL(stringLiteral: CodingKeys.interactionHasAtLeastOneReadReceipt.stringValue)
     public static let interactionIsOpenGroupInvitationKey: SQL = SQL(stringLiteral: CodingKeys.interactionIsOpenGroupInvitation.stringValue)
     public static let interactionAttachmentDescriptionInfoKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentDescriptionInfo.stringValue)
     public static let interactionAttachmentCountKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentCount.stringValue)
@@ -117,6 +118,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     private let interactionTimestampMs: Int64?
     public let interactionBody: String?
     public let interactionState: RecipientState.State?
+    public let interactionHasAtLeastOneReadReceipt: Bool?
     public let interactionIsOpenGroupInvitation: Bool?
     public let interactionAttachmentDescriptionInfo: Attachment.DescriptionInfo?
     public let interactionAttachmentCount: Int?
@@ -269,6 +271,7 @@ public extension SessionThreadViewModel {
         self.interactionTimestampMs = nil
         self.interactionBody = nil
         self.interactionState = nil
+        self.interactionHasAtLeastOneReadReceipt = nil
         self.interactionIsOpenGroupInvitation = nil
         self.interactionAttachmentDescriptionInfo = nil
         self.interactionAttachmentCount = nil
@@ -323,6 +326,7 @@ public extension SessionThreadViewModel {
             interactionTimestampMs: self.interactionTimestampMs,
             interactionBody: self.interactionBody,
             interactionState: self.interactionState,
+            interactionHasAtLeastOneReadReceipt: self.interactionHasAtLeastOneReadReceipt,
             interactionIsOpenGroupInvitation: self.interactionIsOpenGroupInvitation,
             interactionAttachmentDescriptionInfo: self.interactionAttachmentDescriptionInfo,
             interactionAttachmentCount: self.interactionAttachmentCount,
@@ -366,6 +370,9 @@ public extension SessionThreadViewModel {
             let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
             let profile: TypedTableAlias<Profile> = TypedTableAlias()
             
+            let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
+            let readReceiptTableLiteral: SQL = SQL(stringLiteral: "readReceipt")
+            let readReceiptReadTimestampMsColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.readTimestampMs.name)
             let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
             let profileNicknameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.nickname.name)
             let profileNameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.name.name)
@@ -380,7 +387,7 @@ public extension SessionThreadViewModel {
             ///
             /// Explicitly set default values for the fields ignored for search results
             let numColumnsBeforeProfiles: Int = 12
-            let numColumnsBetweenProfilesAndAttachmentInfo: Int = 10 // The attachment info columns will be combined
+            let numColumnsBetweenProfilesAndAttachmentInfo: Int = 11 // The attachment info columns will be combined
             
             let request: SQLRequest<ViewModel> = """
                 SELECT
@@ -415,6 +422,7 @@ public extension SessionThreadViewModel {
                     
                     -- Default to 'sending' assuming non-processed interaction when null
                     IFNULL(MIN(\(recipientState[.state])), \(SQL("\(RecipientState.State.sending)"))) AS \(ViewModel.interactionStateKey),
+                    (\(readReceiptTableLiteral).\(readReceiptReadTimestampMsColumnLiteral) IS NOT NULL) AS \(ViewModel.interactionHasAtLeastOneReadReceiptKey),
                     (\(linkPreview[.url]) IS NOT NULL) AS \(ViewModel.interactionIsOpenGroupInvitationKey),
             
                     -- These 4 properties will be combined into 'Attachment.DescriptionInfo'
@@ -455,6 +463,10 @@ public extension SessionThreadViewModel {
                     -- Ignore 'skipped' states
                     \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)")) AND
                     \(recipientState[.interactionId]) = \(Interaction.self).\(ViewModel.interactionIdKey)
+                )
+                LEFT JOIN \(RecipientState.self) AS \(readReceiptTableLiteral) ON (
+                    \(readReceiptTableLiteral).\(readReceiptReadTimestampMsColumnLiteral) IS NOT NULL AND
+                    \(Interaction.self).\(ViewModel.interactionIdKey) = \(readReceiptTableLiteral).\(interactionStateInteractionIdColumnLiteral)
                 )
                 LEFT JOIN \(LinkPreview.self) ON (
                     \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND

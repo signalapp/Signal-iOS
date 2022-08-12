@@ -9,10 +9,11 @@ import NVActivityIndicatorView
 class EmptySearchResultCell: UITableViewCell {
     private lazy var messageLabel: UILabel = {
         let result = UILabel()
+        result.text = "CONVERSATION_SEARCH_NO_RESULTS".localized()
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
         result.numberOfLines = 3
-        result.textColor = Colors.text
-        result.text = NSLocalizedString("CONVERSATION_SEARCH_NO_RESULTS", comment: "")
+        
         return result
     }()
     
@@ -20,12 +21,14 @@ class EmptySearchResultCell: UITableViewCell {
         let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
         result.set(.width, to: 40)
         result.set(.height, to: 40)
+        
         return result
     }()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        backgroundColor = .clear
+        themeBackgroundColor = .clear
         selectionStyle = .none
         
         contentView.addSubview(messageLabel)
@@ -54,7 +57,8 @@ class EmptySearchResultCell: UITableViewCell {
             spinner.stopAnimating()
             spinner.startAnimating()
             messageLabel.isHidden = true
-        } else {
+        }
+        else {
             spinner.stopAnimating()
             messageLabel.isHidden = false
         }
