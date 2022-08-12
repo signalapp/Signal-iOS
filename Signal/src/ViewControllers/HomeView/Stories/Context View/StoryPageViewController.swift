@@ -204,7 +204,8 @@ class StoryPageViewController: UIPageViewController {
         // ensure the session configuration doesn't get needlessly changed every time a player
         // for an individual story starts and stops. The config stays the same as long
         // as the story viewer is up.
-        assert(audioSession.startAudioActivity(audioActivity))
+        let startAudioActivitySuccess = audioSession.startAudioActivity(audioActivity)
+        owsAssertDebug(startAudioActivitySuccess, "Starting stories audio activity failed")
 
         RingerSwitch.shared.addObserver(observer: self)
 

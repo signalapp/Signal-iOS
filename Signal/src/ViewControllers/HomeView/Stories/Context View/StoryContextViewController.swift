@@ -260,7 +260,7 @@ class StoryContextViewController: OWSViewController {
     }
 
     private func currentItemWasUpdated(messageDidChange: Bool) {
-        currentItemMediaView?.stop()
+        currentItemMediaView?.pause()
         currentItemMediaView?.removeFromSuperview()
 
         if let currentItem = currentItem {

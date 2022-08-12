@@ -118,17 +118,17 @@ class StoryItemMediaView: UIView {
 
     // MARK: - Playback
 
-    func pause(hideChrome: Bool = false, animateAlongside: @escaping () -> Void) {
+    func pause(hideChrome: Bool = false, animateAlongside: (() -> Void)? = nil) {
         videoPlayer?.pause()
 
         if hideChrome {
             UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
                 self.bottomContentVStack.alpha = 0
                 self.gradientProtectionView.alpha = 0
-                animateAlongside()
+                animateAlongside?()
             } completion: { _ in }
         } else {
-            animateAlongside()
+            animateAlongside?()
         }
     }
 
@@ -142,10 +142,6 @@ class StoryItemMediaView: UIView {
         } completion: { _ in
 
         }
-    }
-
-    func stop() {
-        videoPlayer?.stop()
     }
 
     var duration: CFTimeInterval {
