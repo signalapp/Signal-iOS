@@ -1713,27 +1713,9 @@ extension ConversationVC {
             // Delete the request
             Storage.shared.writeAsync(
                 updates: { db in
-                    // Update the contact
-                    _ = try Contact
-                        .fetchOrCreate(db, id: threadId)
-                        .with(
-                            isApproved: false,
-                            isBlocked: true,
-
-                            // Note: We set this to true so the current user will be able to send a
-                            // message to the person who originally sent them the message request in
-                            // the future if they unblock them
-                            didApproveMe: true
-                        )
-                        .saved(db)
-                    
                     _ = try SessionThread
                         .filter(id: threadId)
                         .deleteAll(db)
-                    
-                    try MessageSender
-                        .syncConfiguration(db, forceSyncNow: true)
-                        .retainUntilComplete()
                 },
                 completion: { db, _ in
                     DispatchQueue.main.async { [weak self] in

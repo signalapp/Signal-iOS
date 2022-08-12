@@ -260,7 +260,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
         result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        result.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: .normal)
+        result.setTitle(NSLocalizedString("TXT_DECLINE_TITLE", comment: ""), for: .normal)
         result.setTitleColor(Colors.destructive, for: .normal)
         result.setBackgroundImage(
             Colors.destructive
