@@ -675,6 +675,8 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
+        /// URL(String:) won't convert raw emojis, so need to do a little encoding here.
+        /// The raw emoji will come back when calling url.path
         guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             return Promise(error: OpenGroupAPIError.invalidEmoji)
         }
@@ -700,6 +702,8 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
+        /// URL(String:) won't convert raw emojis, so need to do a little encoding here.
+        /// The raw emoji will come back when calling url.path
         guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             return Promise(error: OpenGroupAPIError.invalidEmoji)
         }
@@ -725,6 +729,8 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
+        /// URL(String:) won't convert raw emojis, so need to do a little encoding here.
+        /// The raw emoji will come back when calling url.path
         guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             return Promise(error: OpenGroupAPIError.invalidEmoji)
         }
@@ -750,6 +756,8 @@ public enum OpenGroupAPI {
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
     ) -> Promise<OnionRequestResponseInfoType> {
+        /// URL(String:) won't convert raw emojis, so need to do a little encoding here.
+        /// The raw emoji will come back when calling url.path
         guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             return Promise(error: OpenGroupAPIError.invalidEmoji)
         }
@@ -1331,7 +1339,7 @@ public enum OpenGroupAPI {
         guard let url: URL = request.url else { return nil }
         
         var updatedRequest: URLRequest = request
-        let path: String = url.path.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? url.path
+        let path: String = url.path
             .appending(url.query.map { value in "?\(value)" })
         let method: String = (request.httpMethod ?? "GET")
         let timestamp: Int = Int(floor(dependencies.date.timeIntervalSince1970))
