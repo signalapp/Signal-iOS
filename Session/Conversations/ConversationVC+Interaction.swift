@@ -1728,6 +1728,53 @@ extension ConversationVC {
         
         self.present(alertVC, animated: true, completion: nil)
     }
+    
+    @objc func block() {
+        guard self.viewModel.threadData.threadVariant == .contact else { return }
+        
+        let threadId: String = self.viewModel.threadData.threadId
+        let alertVC: UIAlertController = UIAlertController(
+            title: "MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON".localized(),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction(title: "TXT_DELETE_TITLE".localized(), style: .destructive) { _ in
+            // Delete the request
+            Storage.shared.writeAsync(
+                updates: { db in
+                    // Update the contact
+                    _ = try Contact
+                        .fetchOrCreate(db, id: threadId)
+                        .with(
+                            isApproved: false,
+                            isBlocked: true,
+
+                            // Note: We set this to true so the current user will be able to send a
+                            // message to the person who originally sent them the message request in
+                            // the future if they unblock them
+                            didApproveMe: true
+                        )
+                        .saved(db)
+                    
+                    _ = try SessionThread
+                        .filter(id: threadId)
+                        .deleteAll(db)
+                    
+                    try MessageSender
+                        .syncConfiguration(db, forceSyncNow: true)
+                        .retainUntilComplete()
+                },
+                completion: { db, _ in
+                    DispatchQueue.main.async { [weak self] in
+                        self?.navigationController?.popViewController(animated: true)
+                    }
+                }
+            )
+        })
+        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
+        
+        self.present(alertVC, animated: true, completion: nil)
+    }
 }
 
 // MARK: - MediaPresentationContextProvider
