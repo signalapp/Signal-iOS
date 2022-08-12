@@ -638,7 +638,7 @@
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Eliminare veramente tutte le richieste di messaggio?";
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Cancella";
 "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Sei sicuro di voler eliminare questa richiesta di messaggio?";
-"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON"  = "Are you sure you want to block this contact?";
+"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON" = "Are you sure you want to block this contact?";
 "MESSAGE_REQUESTS_INFO" = "L'invio di un messaggio a questo utente accetterà automaticamente la richiesta di messaggio.";
 "MESSAGE_REQUESTS_ACCEPTED" = "La tua richiesta di messaggio è stata accettata.";
 "MESSAGE_REQUESTS_NOTIFICATION" = "Hai una nuova richiesta di messaggio";

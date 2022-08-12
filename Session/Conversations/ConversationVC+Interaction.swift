@@ -1738,7 +1738,7 @@ extension ConversationVC {
             message: nil,
             preferredStyle: .actionSheet
         )
-        alertVC.addAction(UIAlertAction(title: "TXT_DELETE_TITLE".localized(), style: .destructive) { _ in
+        alertVC.addAction(UIAlertAction(title: "BLOCK_LIST_BLOCK_BUTTON".localized(), style: .destructive) { _ in
             // Delete the request
             Storage.shared.writeAsync(
                 updates: { db in

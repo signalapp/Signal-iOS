@@ -367,7 +367,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         messageRequestBlockButton.pin(.top, to: .top, of: messageRequestView, withInset: 10)
         messageRequestBlockButton.center(.horizontal, in: messageRequestView)
         
-        messageRequestDescriptionLabel.pin(.top, to: .bottom, of: messageRequestBlockButton, withInset: 20)
+        messageRequestDescriptionLabel.pin(.top, to: .bottom, of: messageRequestBlockButton, withInset: 5)
         messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
         messageRequestDescriptionLabel.pin(.right, to: .right, of: messageRequestView, withInset: -40)
 
