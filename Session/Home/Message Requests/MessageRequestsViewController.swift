@@ -425,19 +425,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 _ = try SessionThread
                     .filter(ids: threadIds)
                     .deleteAll(db)
-                
-                try threadIds.forEach { threadId in
-                    _ = try Contact
-                        .fetchOrCreate(db, id: threadId)
-                        .with(
-                            isApproved: false,
-                            isBlocked: true
-                        )
-                        .saved(db)
-                }
-                
-                // Force a config sync
-                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
         })
         alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
