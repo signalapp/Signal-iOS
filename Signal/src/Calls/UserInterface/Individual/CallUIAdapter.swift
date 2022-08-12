@@ -37,11 +37,16 @@ extension CallUIAdaptee {
 
     internal func showCall(_ call: SignalCall) {
         AssertIsOnMainThread()
+        if !call.isTerminatedIndividualCall {
+            Logger.info("showCall")
 
-        let callViewController = IndividualCallViewController(call: call)
-        callViewController.modalTransitionStyle = .crossDissolve
+            let callViewController = IndividualCallViewController(call: call)
+            callViewController.modalTransitionStyle = .crossDissolve
 
-        OWSWindowManager.shared.startCall(callViewController)
+            OWSWindowManager.shared.startCall(callViewController)
+        } else {
+            Logger.info("Not showing window for terminated individual call")
+        }
     }
 
     internal func reportMissedCall(_ call: SignalCall, callerName: String) {

@@ -192,6 +192,18 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
         }
     }
 
+    var hasTerminated: Bool {
+        switch state {
+        case .idle, .dialing, .answering, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer,
+                .accepting, .connected, .reconnecting:
+            return false
+
+        case .localFailure, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .remoteBusy, .answeredElsewhere,
+                .declinedElsewhere, .busyElsewhere:
+            return true
+        }
+    }
+
     public weak var delegate: IndividualCallDelegate?
 
     // MARK: Initializers and Factory Methods

@@ -90,6 +90,15 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
+    public var isTerminatedIndividualCall: Bool {
+        switch mode {
+        case .group:
+            return false
+        case .individual(let call):
+            return call.hasTerminated
+        }
+    }
+
     private(set) lazy var videoCaptureController = VideoCaptureController()
 
     // Should be used only on the main thread
