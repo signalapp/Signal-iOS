@@ -644,6 +644,8 @@
 "MESSAGE_REQUESTS_NOTIFICATION" = "Hai una nuova richiesta di messaggio";
 "TXT_HIDE_TITLE" = "Nascondi";
 "TXT_DELETE_ACCEPT" = "Accetta";
+"TXT_DECLINE_TITLE" = "Decline";
+"TXT_BLOCK_USER_TITLE" = "Block User";
 "ALERT_ERROR_TITLE" = "Errore";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Gruppo Aperto";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Messaggio Privato";

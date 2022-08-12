@@ -644,6 +644,8 @@
 "MESSAGE_REQUESTS_NOTIFICATION" = "Sinulla on uusi viestipyyntö";
 "TXT_HIDE_TITLE" = "Piilota";
 "TXT_DELETE_ACCEPT" = "Hyväksy";
+"TXT_DECLINE_TITLE" = "Decline";
+"TXT_BLOCK_USER_TITLE" = "Block User";
 "ALERT_ERROR_TITLE" = "Virhe";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Avoin ryhmä";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Yksityisviesti";
