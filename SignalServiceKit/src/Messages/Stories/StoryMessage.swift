@@ -221,6 +221,14 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             }
             record.manifest = .incoming(allowsReplies: allowsReplies, viewedTimestamp: timestamp)
         }
+
+        // Record on the context when the local user last viewed the story for this context
+        if let thread = context.thread(transaction: transaction) {
+            thread.updateWithLastViewedStoryTimestamp(NSNumber(value: timestamp), transaction: transaction)
+        } else {
+            owsFailDebug("Missing thread for story context \(context)")
+        }
+
         receiptManager.storyWasViewed(self, circumstance: circumstance, transaction: transaction)
     }
 
