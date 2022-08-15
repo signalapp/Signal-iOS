@@ -178,7 +178,10 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         content.userInfo = userInfo
         let isAppActive = CurrentAppContext().isMainAppAndActive
         if let sound = sound, sound != OWSStandardSound.none.rawValue {
+            Logger.info("[Notification Sounds] presenting notification with sound")
             content.sound = sound.notificationSound(isQuiet: isAppActive)
+        } else {
+            Logger.info("[Notification Sounds] presenting notification without sound")
         }
 
         var notificationIdentifier: String = UUID().uuidString
@@ -474,8 +477,14 @@ public protocol ConversationSplit {
 extension OWSSound {
     func notificationSound(isQuiet: Bool) -> UNNotificationSound {
         guard let filename = OWSSounds.filename(forSound: self, quiet: isQuiet) else {
-            owsFailDebug("filename was unexpectedly nil")
+            owsFailDebug("[Notification Sounds] sound filename was unexpectedly nil")
             return UNNotificationSound.default
+        }
+        if
+            !FileManager.default.fileExists(atPath: (OWSSounds.soundsDirectory() as NSString).appendingPathComponent(filename))
+            && !FileManager.default.fileExists(atPath: (Bundle.main.bundlePath as NSString).appendingPathComponent(filename))
+        {
+            Logger.info("[Notification Sounds] sound file doesn't exist!")
         }
         return UNNotificationSound(named: UNNotificationSoundName(rawValue: filename))
     }

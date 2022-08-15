@@ -1038,10 +1038,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     // This method is thread-safe.
     private func checkIfShouldPlaySound() -> Bool {
         guard CurrentAppContext().isMainAppAndActive else {
+            Logger.info("[Notification Sounds] not playing sound, app inactive")
             return true
         }
 
         guard preferences.soundInForeground() else {
+            Logger.info("[Notification Sounds] foreground sound disabled")
             return false
         }
 
@@ -1052,6 +1054,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
 
             guard recentNotifications.count < kAudioNotificationsThrottleCount else {
+                Logger.info("[Notification Sounds] sound throttled")
                 return false
             }
 
