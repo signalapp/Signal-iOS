@@ -5,7 +5,7 @@
 import XCTest
 import SignalServiceKit
 
-class OWSRequestFactoryTest: XCTestCase {
+class OWSRequestFactoryTest: SSKBaseTestSwift {
     private func getUdAccessKey() throws -> SMKUDAccessKey {
         let profileKey = Data(count: Int(kAES256_KeyByteLength))
         let result = try? SMKUDAccessKey(profileKey: profileKey)
@@ -21,6 +21,29 @@ class OWSRequestFactoryTest: XCTestCase {
             result[queryItem.name] = queryItem.value
         }
         return result
+    }
+
+    func testSubmitMessageRequest() throws {
+        let udAccessKey = try getUdAccessKey()
+
+        let recipientUuid = UUID()
+
+        let request = OWSRequestFactory.submitMessageRequest(
+            with: SignalServiceAddress(uuid: recipientUuid),
+            messages: [],
+            timeStamp: 1234,
+            udAccessKey: udAccessKey,
+            isOnline: true
+        )
+
+        let url = try XCTUnwrap(request.url, "request.url")
+        XCTAssertEqual(request.httpMethod, "PUT")
+        XCTAssertEqual(url.path, "v1/messages/\(recipientUuid.uuidString)")
+        XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online"]))
+        XCTAssertEqual(request.parameters["messages"] as? NSArray, [])
+        XCTAssertEqual(request.parameters["timestamp"] as? UInt, 1234)
+        XCTAssertEqual(request.parameters["online"] as? Bool, true)
+        XCTAssertEqual(request.allHTTPHeaderFields?["Unidentified-Access-Key"], udAccessKey.keyData.base64EncodedString())
     }
 
     func testSubmitMultiRecipientMessageRequest() throws {
