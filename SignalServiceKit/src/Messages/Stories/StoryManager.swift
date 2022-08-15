@@ -164,7 +164,7 @@ public class StoryManager: NSObject {
         let recentlyViewedThreads = AnyThreadFinder().threadsWithRecentlyViewedStories(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
         let autoDownloadContexts = (pinnedThreads + recentlyInteractedThreads + recentlyViewedThreads).map { $0.storyContext }
 
-        if autoDownloadContexts.contains(message.context) {
+        if autoDownloadContexts.contains(message.context) || autoDownloadContexts.contains(.authorUuid(message.authorUuid)) {
             Logger.info("Automatically downloading attachments for story with timestamp \(message.timestamp) and context \(message.context)")
 
             attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
