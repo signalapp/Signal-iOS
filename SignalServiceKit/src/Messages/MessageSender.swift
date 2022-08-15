@@ -1244,7 +1244,7 @@ extension MessageSender {
 
         // Returns the per-device-message parameters used when submitting a message to
         // the Signal Web Service.
-        // See: https://github.com/signalapp/Signal-Server/blob/9b3a8897cdfab4e830b3caa7f5f300ed25fedea9/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java
+        // See <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
         return [
             "type": messageType.rawValue,
             "destination": protocolAddress.name,
@@ -1296,7 +1296,7 @@ extension MessageSender {
 
         // Returns the per-device-message parameters used when submitting a message to
         // the Signal Web Service.
-        // See: https://github.com/signalapp/Signal-Server/blob/9b3a8897cdfab4e830b3caa7f5f300ed25fedea9/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessage.java
+        // See <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
         let session = try signalProtocolStore(for: .aci).sessionStore.loadSession(for: protocolAddress,
                                                                                   context: transaction)!
         return [

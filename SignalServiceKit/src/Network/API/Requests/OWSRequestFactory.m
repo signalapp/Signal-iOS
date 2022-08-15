@@ -537,8 +537,8 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
     // Returns the per-account-message parameters used when submitting a message to
     // the Signal Web Service.
-    // See:
-    // https://github.com/signalapp/Signal-Server/blob/9b3a8897cdfab4e830b3caa7f5f300ed25fedea9/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java
+    // See
+    // <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
     NSDictionary *parameters = @{ @"messages" : messages, @"timestamp" : @(timeStamp), @"online" : @(isOnline) };
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
