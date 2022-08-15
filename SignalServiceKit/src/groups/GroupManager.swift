@@ -509,7 +509,6 @@ public class GroupManager: NSObject {
         }
     }
 
-    #if TESTABLE_BUILD
     @objc
     public static let shouldForceV1Groups = AtomicBool(false)
 
@@ -517,7 +516,6 @@ public class GroupManager: NSObject {
     public class func forceV1Groups() {
         shouldForceV1Groups.set(true)
     }
-    #endif
 
     @objc
     public static func createGroupForTestsObjc(members: [SignalServiceAddress],
@@ -525,13 +523,9 @@ public class GroupManager: NSObject {
                                                avatarData: Data? = nil,
                                                transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         do {
-            #if TESTABLE_BUILD
             let groupsVersion = (shouldForceV1Groups.get()
                                     ? .V1
                                     : self.defaultGroupsVersion)
-            #else
-            let groupsVersion = self.defaultGroupsVersion
-            #endif
             return try createGroupForTests(members: members,
                                            name: name,
                                            avatarData: avatarData,
