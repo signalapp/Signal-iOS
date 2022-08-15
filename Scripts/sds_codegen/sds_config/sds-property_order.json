@@ -245,6 +245,7 @@
     "ThreadRecord.isMarkedUnreadObsolete": 12,
     "ThreadRecord.lastInteractionRowId": 4,
     "ThreadRecord.lastSentStoryTimestamp": 19,
+    "ThreadRecord.lastViewedStoryTimestamp": 23,
     "ThreadRecord.lastVisibleSortIdObsolete": 14,
     "ThreadRecord.lastVisibleSortIdOnScreenPercentageObsolete": 13,
     "ThreadRecord.mentionNotificationMode": 16,
