@@ -498,13 +498,13 @@ public final class OpenGroupManager: NSObject {
             return
         }
         
+        let seqNo: Int64? = messages.map { $0.seqNo }.max()
         let sortedMessages: [OpenGroupAPI.Message] = messages
             .filter { $0.deleted != true }
             .sorted { lhs, rhs in lhs.id < rhs.id }
         var messageServerIdsToRemove: [Int64] = messages
             .filter { $0.deleted == true }
             .map { $0.id }
-        let seqNo: Int64? = sortedMessages.map { $0.seqNo }.max()
         
         // Update the 'openGroupSequenceNumber' value (Note: SOGS V4 uses the 'seqNo' instead of the 'serverId')
         if let seqNo: Int64 = seqNo {
