@@ -485,9 +485,9 @@ public class ConversationViewController: OWSViewController {
         }
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
 
-        self.applyTheme()
-
         self.updateConversationStyle()
+
+        self.applyTheme()
     }
 
     public override func applyTheme() {
