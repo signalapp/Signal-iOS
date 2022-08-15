@@ -110,7 +110,7 @@ public class StoryManager: NSObject {
     }
 
     private static let perContextAutomaticDownloadLimit = 3
-    private static let recentContextAutomaticDownloadLimit: UInt = 10
+    private static let recentContextAutomaticDownloadLimit: UInt = 20
 
     /// We automatically download incoming stories IFF:
     /// * The context has been recently interacted with (sent message to group, 1:1, viewed story, etc) OR is associated with a pinned thread
@@ -160,8 +160,9 @@ public class StoryManager: NSObject {
         // See if the context has been recently active
 
         let pinnedThreads = PinnedThreadManager.pinnedThreads(transaction: transaction)
-        let recentThreads = AnyThreadFinder().recentThreads(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
-        let autoDownloadContexts = (pinnedThreads + recentThreads).map { $0.storyContext }
+        let recentlyInteractedThreads = AnyThreadFinder().threadsWithRecentInteractions(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
+        let recentlyViewedThreads = AnyThreadFinder().threadsWithRecentlyViewedStories(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
+        let autoDownloadContexts = (pinnedThreads + recentlyInteractedThreads + recentlyViewedThreads).map { $0.storyContext }
 
         if autoDownloadContexts.contains(message.context) {
             Logger.info("Automatically downloading attachments for story with timestamp \(message.timestamp) and context \(message.context)")

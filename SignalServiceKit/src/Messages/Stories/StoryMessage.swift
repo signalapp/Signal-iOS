@@ -307,18 +307,12 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         return threads
     }
 
-    public func downloadIfNecessary(transaction: SDSAnyReadTransaction) {
+    public func downloadIfNecessary(transaction: SDSAnyWriteTransaction) {
         guard case .file(let attachmentId) = attachment,
                 let pointer = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) as? TSAttachmentPointer,
                 ![.enqueued, .downloading].contains(pointer.state) else { return }
 
-        attachmentDownloads.enqueueDownloadOfAttachments(
-            forStoryMessageId: uniqueId,
-            attachmentGroup: .allAttachmentsIncoming,
-            downloadBehavior: .bypassAll,
-            touchMessageImmediately: true,
-            success: { _ in },
-            failure: { _ in })
+        attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
     }
 
     // MARK: -
