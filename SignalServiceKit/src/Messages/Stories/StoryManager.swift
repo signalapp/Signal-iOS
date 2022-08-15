@@ -113,7 +113,7 @@ public class StoryManager: NSObject {
     private static let recentContextAutomaticDownloadLimit: UInt = 20
 
     /// We automatically download incoming stories IFF:
-    /// * The context has been recently interacted with (sent message to group, 1:1, viewed story, etc) OR is associated with a pinned thread
+    /// * The context has been recently interacted with (sent message to group, 1:1, viewed story, etc), is associated with a pinned thread, or has been recently viewed
     /// * We have not already exceeded the limit for how many unviewed stories we should download for this context
     private class func startAutomaticDownloadIfNecessary(for message: StoryMessage, transaction: SDSAnyWriteTransaction) {
         guard case .file(let attachmentId) = message.attachment else {
