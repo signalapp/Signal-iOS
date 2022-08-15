@@ -229,6 +229,9 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             owsFailDebug("Missing thread for story context \(context)")
         }
 
+        // If we viewed this story, we should always make sure it's downloaded if it's not already.
+        downloadIfNecessary(transaction: transaction)
+
         receiptManager.storyWasViewed(self, circumstance: circumstance, transaction: transaction)
     }
 
@@ -302,6 +305,20 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
 
         return threads
+    }
+
+    public func downloadIfNecessary(transaction: SDSAnyReadTransaction) {
+        guard case .file(let attachmentId) = attachment,
+                let pointer = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) as? TSAttachmentPointer,
+                ![.enqueued, .downloading].contains(pointer.state) else { return }
+
+        attachmentDownloads.enqueueDownloadOfAttachments(
+            forStoryMessageId: uniqueId,
+            attachmentGroup: .allAttachmentsIncoming,
+            downloadBehavior: .bypassAll,
+            touchMessageImmediately: true,
+            success: { _ in },
+            failure: { _ in })
     }
 
     // MARK: -
