@@ -6,6 +6,43 @@ import XCTest
 import SignalServiceKit
 
 class OWSRequestFactoryTest: XCTestCase {
+    private func getUdAccessKey() throws -> SMKUDAccessKey {
+        let profileKey = Data(count: Int(kAES256_KeyByteLength))
+        let result = try? SMKUDAccessKey(profileKey: profileKey)
+        return try XCTUnwrap(result)
+    }
+
+    private func queryItemsAsDictionary(url: URL) throws -> [String: String] {
+        let urlComponents = try XCTUnwrap(URLComponents(url: url, resolvingAgainstBaseURL: false), "URL components")
+        let queryItems = urlComponents.queryItems ?? []
+        var result = [String: String]()
+        for queryItem in queryItems {
+            XCTAssertNil(result[queryItem.name], "Duplicate query item \(queryItem.name)")
+            result[queryItem.name] = queryItem.value
+        }
+        return result
+    }
+
+    func testSubmitMultiRecipientMessageRequest() throws {
+        let ciphertext = try XCTUnwrap("hello".data(using: .utf8))
+        let udAccessKey = try getUdAccessKey()
+
+        let request = OWSRequestFactory.submitMultiRecipientMessageRequest(
+            ciphertext: ciphertext,
+            compositeUDAccessKey: udAccessKey,
+            timestamp: 1234,
+            isOnline: true
+        )
+
+        let url = try XCTUnwrap(request.url, "request.url")
+        XCTAssertEqual(request.httpMethod, "PUT")
+        XCTAssertEqual(url.path, "v1/messages/multi_recipient")
+        XCTAssertEqual(try queryItemsAsDictionary(url: url), ["ts": "1234", "online": "true"])
+        XCTAssertEqual(request.allHTTPHeaderFields?["Content-Type"], "application/vnd.signal-messenger.mrm")
+        XCTAssertEqual(request.allHTTPHeaderFields?["Unidentified-Access-Key"], udAccessKey.keyData.base64EncodedString())
+        XCTAssertEqual(request.httpBody, ciphertext)
+    }
+
     func testBoostCreatePaymentIntentWithAmount() {
         let request = OWSRequestFactory.boostCreatePaymentIntent(withAmount: 123, inCurrencyCode: "CHF", level: 456)
 
