@@ -652,8 +652,8 @@ public extension NSString {
 // MARK: -
 
 public extension String {
-    static func formatDurationLossless(durationSeconds: UInt32, unitsStyle: DateComponentsFormatter.UnitsStyle = .full) -> String {
-        NSString.formatDurationLossless(durationSeconds: durationSeconds, unitsStyle: unitsStyle)
+    static func formatDurationLossless(durationSeconds: UInt32) -> String {
+        NSString.formatDurationLossless(durationSeconds: durationSeconds)
     }
 }
 
@@ -661,7 +661,7 @@ public extension String {
 
 @objc
 public extension NSString {
-    static func formatDurationLossless(durationSeconds: UInt32, unitsStyle: DateComponentsFormatter.UnitsStyle) -> String {
+    static func formatDurationLossless(durationSeconds: UInt32) -> String {
         let secondsPerMinute: UInt32 = 60
         let secondsPerHour: UInt32 = secondsPerMinute * 60
         let secondsPerDay: UInt32 = secondsPerHour * 24
@@ -695,7 +695,7 @@ public extension NSString {
         }()
 
         let durationFormatter = DateComponentsFormatter()
-        durationFormatter.unitsStyle = unitsStyle
+        durationFormatter.unitsStyle = .full
         durationFormatter.allowedUnits = [.year, .weekOfMonth, .day, .hour, .minute, .second]
         guard let formattedDuration = durationFormatter.string(from: dateComponents) else {
             owsFailDebug("Could not format duration")

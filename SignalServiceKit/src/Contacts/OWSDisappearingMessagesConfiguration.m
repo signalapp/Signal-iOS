@@ -127,8 +127,7 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 
 - (NSString *)durationString
 {
-    return [NSString formatDurationLosslessWithDurationSeconds:self.durationSeconds
-                                                    unitsStyle:NSDateComponentsFormatterUnitsStyleFull];
+    return [NSString formatDurationLosslessWithDurationSeconds:self.durationSeconds];
 }
 
 - (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction

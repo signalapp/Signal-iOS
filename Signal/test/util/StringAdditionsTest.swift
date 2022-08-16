@@ -167,16 +167,11 @@ class StringAdditionsTest: SignalBaseTest {
         let secondsPerWeek: UInt32 = secondsPerDay * 7
         let secondsPerYear: UInt32 = secondsPerDay * 365
 
-        func format(_ durationSeconds: UInt32, unitsStyle: DateComponentsFormatter.UnitsStyle = .full) -> String {
-            String.formatDurationLossless(durationSeconds: durationSeconds, unitsStyle: unitsStyle)
-        }
+        let format = String.formatDurationLossless
 
         XCTAssertEqual(format(0), "0 seconds")
         XCTAssertEqual(format(1), "1 second")
         XCTAssertEqual(format(2), "2 seconds")
-
-        XCTAssertEqual(format(0, unitsStyle: .abbreviated), "0s")
-        XCTAssertEqual(format(2, unitsStyle: .abbreviated), "2s")
 
         XCTAssertEqual(format(1 * secondsPerMinute - 1), "59 seconds")
         XCTAssertEqual(format(1 * secondsPerMinute), "1 minute")
@@ -257,7 +252,6 @@ class StringAdditionsTest: SignalBaseTest {
 
         let aVeryLongTime = 88 * secondsPerYear + 7 * secondsPerWeek + 6 * secondsPerDay + 5 * secondsPerHour + 4 * secondsPerMinute + 3
         XCTAssertEqual(format(aVeryLongTime), "88 years, 7 weeks, 6 days, 5 hours, 4 minutes, 3 seconds")
-        XCTAssertEqual(format(aVeryLongTime, unitsStyle: .abbreviated), "88y 7w 6d 5h 4m 3s")
     }
 
     func test_filterAsE164() {

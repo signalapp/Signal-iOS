@@ -72,6 +72,14 @@ class MessageDetailViewController: OWSTableViewController2 {
         )
     }
 
+    private lazy var expirationLabelFormatter: DateComponentsFormatter = {
+        let expirationLabelFormatter = DateComponentsFormatter()
+        expirationLabelFormatter.unitsStyle = .full
+        expirationLabelFormatter.allowedUnits = [.weekOfMonth, .day, .hour, .minute, .second]
+        expirationLabelFormatter.maximumUnitCount = 2
+        return expirationLabelFormatter
+    }()
+
     private var expiryLabelValue: String {
         let expiresAt = message.expiresAt
         guard expiresAt > 0 else {
@@ -83,16 +91,22 @@ class MessageDetailViewController: OWSTableViewController2 {
             )
         }
 
-        let remainingExpirySeconds: UInt32
-        let now = Date().ows_millisecondsSince1970
-        if expiresAt > now {
-            remainingExpirySeconds = UInt32((expiresAt - now) / 1000)
+        let now = Date()
+        let expiresAtDate = Date(millisecondsSince1970: expiresAt)
+
+        let result: String?
+        if expiresAtDate >= now {
+            result = expirationLabelFormatter.string(from: now, to: expiresAtDate)
         } else {
             // This is unusual, but could happen if you change your device clock.
-            remainingExpirySeconds = 0
+            result = expirationLabelFormatter.string(from: 0)
         }
 
-        return String.formatDurationLossless(durationSeconds: remainingExpirySeconds, unitsStyle: .abbreviated)
+        guard let result = result else {
+            owsFailDebug("Could not format duration")
+            return ""
+        }
+        return result
     }
 
     private var expiryLabelAttributedText: NSAttributedString {
