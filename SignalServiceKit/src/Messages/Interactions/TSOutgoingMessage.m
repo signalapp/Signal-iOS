@@ -272,30 +272,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return [builder buildWithSneakyTransaction];
 }
 
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-                            transaction:(SDSAnyReadTransaction *)transaction
-{
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    builder.groupMetaMessage = groupMetaMessage;
-    builder.expiresInSeconds = expiresInSeconds;
-    return [builder buildWithTransaction:transaction];
-}
-
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-                 changeActionsProtoData:(nullable NSData *)changeActionsProtoData
-                            transaction:(SDSAnyReadTransaction *)transaction
-{
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    builder.groupMetaMessage = groupMetaMessage;
-    builder.expiresInSeconds = expiresInSeconds;
-    builder.changeActionsProtoData = changeActionsProtoData;
-    return [builder buildWithTransaction:transaction];
-}
-
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                                    transaction:(SDSAnyReadTransaction *)transaction
 {

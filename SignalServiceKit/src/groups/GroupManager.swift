@@ -182,11 +182,6 @@ public class GroupManager: NSObject {
             Logger.warn("Member without UUID.")
             return false
         }
-        // NOTE: We do consider users to support groups v2 even if:
-        //
-        // * We don't know their profile key.
-        // * They've never done a versioned profile update.
-        // * We don't have a profile key credential for them.
         return true
     }
 
@@ -1287,56 +1282,25 @@ public class GroupManager: NSObject {
     public static func sendGroupUpdateMessage(thread: TSGroupThread,
                                               changeActionsProtoData: Data? = nil,
                                               singleRecipient: SignalServiceAddress? = nil) -> Promise<Void> {
-
-        // Only honor groupsV2dontSendUpdates for v2 groups.
-        let shouldSkipUpdate = thread.isGroupV2Thread && DebugFlags.groupsV2dontSendUpdates.get()
-        if shouldSkipUpdate {
+        guard thread.isGroupV2Thread, !DebugFlags.groupsV2dontSendUpdates.get() else {
             return Promise.value(())
         }
 
-        return databaseStorage.read(.promise) { transaction in
-            let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-            let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
-            messageBuilder.expiresInSeconds = expiresInSeconds
-            // V2 group update messages mostly ignore groupMetaMessage,
-            // but we set it to get the right behavior in shouldBeSaved.
-            // i.e. we need to flag this message as a group update that
-            // is "durable but transient" - it should not be saved.
-            messageBuilder.groupMetaMessage = .update
-
-            if thread.isGroupV2Thread {
-                messageBuilder.changeActionsProtoData = changeActionsProtoData
-                if singleRecipient == nil {
-                    self.addAdditionalRecipients(to: messageBuilder,
-                                                 groupThread: thread)
-                }
-            }
-            return messageBuilder.build(transaction: transaction)
-        }.then(on: .global()) { (message: TSOutgoingMessage) throws -> Promise<Void> in
+        return databaseStorage.write(.promise) { transaction in
+            let message = OutgoingGroupUpdateMessage(
+                in: thread,
+                groupMetaMessage: .update,
+                expiresInSeconds: thread.disappearingMessagesDuration(with: transaction),
+                changeActionsProtoData: changeActionsProtoData,
+                additionalRecipients: singleRecipient == nil ? Self.invitedMembers(in: thread) : [],
+                transaction: transaction
+            )
 
             if let singleRecipient = singleRecipient {
-                Self.databaseStorage.write { transaction in
-                    message.updateWithSending(toSingleGroupRecipient: singleRecipient, transaction: transaction)
-                }
+                message.updateWithSending(toSingleGroupRecipient: singleRecipient, transaction: transaction)
             }
 
-            let groupModel = thread.groupModel
-            // V1 group updates need to include the group avatar (if any)
-            // as an attachment.
-            if thread.isGroupV1Thread,
-               let avatarData = groupModel.avatarData,
-               avatarData.count > 0 {
-                let imageFormat = (avatarData as NSData).imageMetadata(withPath: nil, mimeType: nil).imageFormat
-                let fileExtension = (imageFormat == .png) ? "png" : "jpg"
-                let mimeType = (imageFormat == .png) ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg
-
-                if let dataSource = DataSourceValue.dataSource(with: avatarData, fileExtension: fileExtension) {
-                    let attachment = GroupUpdateMessageAttachment(contentType: mimeType, dataSource: dataSource)
-                    return self.sendGroupUpdateMessage(message, thread: thread, attachment: attachment)
-                }
-            }
-
-            return self.sendGroupUpdateMessage(message, thread: thread)
+            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 
@@ -1345,70 +1309,29 @@ public class GroupManager: NSObject {
         let dataSource: DataSource
     }
 
-    // v1 group update messages should be non-durable and have specific error handling.
-    // v2 group update messages should be durable.
-    private static func sendGroupUpdateMessage(_ message: TSOutgoingMessage,
-                                               thread: TSGroupThread,
-                                               attachment: GroupUpdateMessageAttachment? = nil) -> Promise<Void> {
-        if thread.isGroupV1Thread {
-            owsFailDebug("GV1 group updates no longer supported")
-            return Promise.value(())
-        } else {
-            // v2 group update.
-            //
-            // Enqueue the message for a durable send.
-            return databaseStorage.write(.promise) { transaction in
-                self.messageSenderJobQueue.add(message: message.asPreparer,
-                                               transaction: transaction)
-            }
-        }
-    }
-
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
-        // Only honor groupsV2dontSendUpdates for v2 groups.
-        let shouldSkipUpdate = thread.isGroupV2Thread && DebugFlags.groupsV2dontSendUpdates.get()
-        if shouldSkipUpdate {
+        guard thread.isGroupV2Thread, !DebugFlags.groupsV2dontSendUpdates.get() else {
             return Promise.value(())
         }
 
-        return firstly {
-            databaseStorage.write(.promise) { transaction in
-                let expiresInSeconds = thread.disappearingMessagesDuration(with: transaction)
-                let messageBuilder = TSOutgoingMessageBuilder(thread: thread)
-                messageBuilder.groupMetaMessage = .new
-                messageBuilder.expiresInSeconds = expiresInSeconds
-                self.addAdditionalRecipients(to: messageBuilder,
-                                             groupThread: thread)
-                let message = messageBuilder.build(transaction: transaction)
-                self.messageSenderJobQueue.add(message: message.asPreparer,
-                                               transaction: transaction)
-            }
-        }.then(on: .global()) { _ -> Promise<Void> in
-            // The "new group" update message for v1 groups doesn't support avatars.
-            // So, if a new v1 group has an avatar, we need to send a group update
-            // message.
-            guard thread.groupModel.groupsVersion == .V1,
-                  thread.groupModel.avatarHash != nil else {
-                return Promise.value(())
-            }
-            return self.sendGroupUpdateMessage(thread: thread)
+        return databaseStorage.write(.promise) { transaction in
+            let message = OutgoingGroupUpdateMessage(
+                in: thread,
+                groupMetaMessage: .new,
+                expiresInSeconds: thread.disappearingMessagesDuration(with: transaction),
+                additionalRecipients: Self.invitedMembers(in: thread),
+                transaction: transaction
+            )
+            Self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 
-    private static func addAdditionalRecipients(to messageBuilder: TSOutgoingMessageBuilder,
-                                                groupThread: TSGroupThread) {
-        guard groupThread.groupModel.groupsVersion == .V2 else {
-            // No need to add "additional recipients" to v1 groups.
-            return
-        }
-        // We need to send v2 group updates to pending members
-        // as well.  Normal group sends only include "full members".
-        assert(messageBuilder.additionalRecipients == nil)
-        let groupMembership = groupThread.groupModel.groupMembership
-        let additionalRecipients = groupMembership.invitedMembers.filter { address in
-            return doesUserSupportGroupsV2(address: address)
-        }
-        messageBuilder.additionalRecipients = Array(additionalRecipients)
+    private static func invitedMembers(in thread: TSGroupThread) -> Set<SignalServiceAddress> {
+        thread.groupModel.groupMembership.invitedMembers.filter { doesUserSupportGroupsV2(address: $0) }
+    }
+
+    private static func invitedOrRequestedMembers(in thread: TSGroupThread) -> Set<SignalServiceAddress> {
+        thread.groupModel.groupMembership.invitedOrRequestMembers.filter { doesUserSupportGroupsV2(address: $0) }
     }
 
     @objc
@@ -1432,10 +1355,9 @@ public class GroupManager: NSObject {
             return
         }
 
-        let message = TSOutgoingMessage(in: groupThread,
-                                        groupMetaMessage: .quit,
-                                        expiresInSeconds: 0,
-                                        transaction: transaction)
+        let message = OutgoingGroupUpdateMessage(in: groupThread,
+                                                 groupMetaMessage: .quit,
+                                                 transaction: transaction)
         messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
@@ -1446,21 +1368,13 @@ public class GroupManager: NSObject {
             return
         }
 
-        let messageBuilder = TSOutgoingMessageBuilder(thread: groupThread)
-        // V2 group update messages mostly ignore groupMetaMessage,
-        // but we set it to get the right behavior in shouldBeSaved.
-        // i.e. we need to flag this message as a group update that
-        // is "durable but transient" - it should not be saved.
-        messageBuilder.groupMetaMessage = .update
-        // We need to send v2 group updates to pending members
-        // as well.  Normal group sends only include "full members".
-        assert(messageBuilder.additionalRecipients == nil)
-        let groupMembership = groupThread.groupModel.groupMembership
-        let additionalRecipients = groupMembership.invitedOrRequestMembers.filter { address in
-            return doesUserSupportGroupsV2(address: address)
-        }
-        messageBuilder.additionalRecipients = Array(additionalRecipients)
-        let message = messageBuilder.build(transaction: transaction)
+        let message = OutgoingGroupUpdateMessage(
+            in: groupThread,
+            groupMetaMessage: .update,
+            additionalRecipients: Self.invitedOrRequestedMembers(in: groupThread),
+            transaction: transaction
+        )
+
         messageSenderJobQueue.add(
             .promise,
             message: message.asPreparer,
