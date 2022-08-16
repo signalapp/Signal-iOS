@@ -256,7 +256,8 @@ enum MockDataGenerator {
                     _ = try! GroupMember(
                         groupId: randomGroupPublicKey,
                         profileId: memberId,
-                        role: .standard
+                        role: .standard,
+                        isHidden: false
                     )
                     .saved(db)
                 }
@@ -264,7 +265,8 @@ enum MockDataGenerator {
                     _ = try! GroupMember(
                         groupId: randomGroupPublicKey,
                         profileId: adminId,
-                        role: .admin
+                        role: .admin,
+                        isHidden: false
                     )
                     .saved(db)
                 }
