@@ -106,10 +106,15 @@ public class GroupV2UpdatesImpl: NSObject {
                 transaction: transaction,
                 batched: true
             ) { (thread, stop) in
-                guard let groupThread = thread as? TSGroupThread,
-                      let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                guard
+                    let groupThread = thread as? TSGroupThread,
+                    let groupModel = groupThread.groupModel as? TSGroupModelV2,
+                    groupModel.groupMembership.isLocalUserFullOrInvitedMember
+                else {
+                    // Refreshing a group we're not a member of will throw errors
                     return
                 }
+
                 let storeKey = groupThread.groupId.hexadecimalString
                 guard let lastRefreshDate: Date = Self.groupRefreshStore.getDate(
                     storeKey,
