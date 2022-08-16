@@ -9,15 +9,15 @@ import SignalServiceKit
 public class ProvisioningController: NSObject {
 
     let onboardingController: OnboardingController
-    let provisioningCipher: ProvisioningCipher
 
-    let provisioningSocket: ProvisioningSocket
+    private let provisioningCipher: ProvisioningCipher
+    private let provisioningSocket: ProvisioningSocket
 
-    var deviceIdPromise: Promise<String>
-    var deviceIdFuture: Future<String>
+    private var deviceIdPromise: Promise<String>
+    private var deviceIdFuture: Future<String>
 
-    var provisionEnvelopePromise: Promise<ProvisioningProtoProvisionEnvelope>
-    var provisionEnvelopeFuture: Future<ProvisioningProtoProvisionEnvelope>
+    private var provisionEnvelopePromise: Promise<ProvisioningProtoProvisionEnvelope>
+    private var provisionEnvelopeFuture: Future<ProvisioningProtoProvisionEnvelope>
 
     public init(onboardingController: OnboardingController) {
         self.onboardingController = onboardingController
@@ -67,8 +67,8 @@ public class ProvisioningController: NSObject {
         awaitProvisioning(from: qrCodeViewController, navigationController: navigationController)
     }
 
-    func awaitProvisioning(from viewController: SecondaryLinkingQRCodeViewController,
-                           navigationController: UINavigationController) {
+    private func awaitProvisioning(from viewController: SecondaryLinkingQRCodeViewController,
+                                   navigationController: UINavigationController) {
 
         awaitProvisionMessage.done { [weak self, weak navigationController] message in
             guard let self = self else { throw PromiseError.cancelled }
@@ -190,7 +190,7 @@ public class ProvisioningController: NSObject {
     }
 
     private var _awaitProvisionMessage: Promise<ProvisionMessage>?
-    public var awaitProvisionMessage: Promise<ProvisionMessage> {
+    private var awaitProvisionMessage: Promise<ProvisionMessage> {
         if _awaitProvisionMessage == nil {
             _awaitProvisionMessage = provisionEnvelopePromise.map { [weak self] envelope in
                 guard let self = self else { throw PromiseError.cancelled }
@@ -200,7 +200,7 @@ public class ProvisioningController: NSObject {
         return _awaitProvisionMessage!
     }
 
-    public func completeLinking(deviceName: String) -> Promise<Void> {
+    private func completeLinking(deviceName: String) -> Promise<Void> {
         return awaitProvisionMessage.then { [weak self] provisionMessage -> Promise<Void> in
             guard let self = self else { throw PromiseError.cancelled }
 
