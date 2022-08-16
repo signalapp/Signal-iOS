@@ -241,7 +241,7 @@ public class SMKOpenGroup: NSObject {
                         .fetchOne(db),
                     linkPreviewUrl: urlString
                 )
-                .saved(db)
+                .inserted(db)
                 
                 try MessageSender.send(
                     db,

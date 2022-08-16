@@ -15,6 +15,9 @@ public enum SNMessagingKit { // Just to make the external API nice
                 ],
                 [
                     _004_RemoveLegacyYDB.self
+                ],
+                [
+                    _005_FixDeletedMessageReadState.self
                 ]
             ]
         )
