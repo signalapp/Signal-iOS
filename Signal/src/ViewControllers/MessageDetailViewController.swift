@@ -1000,9 +1000,11 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // MARK: - Messages
 
-    func cvc_didTapBodyMedia(itemViewModel: CVItemViewModelImpl,
-                         attachmentStream: TSAttachmentStream,
-                         imageView: UIView) {
+    func cvc_didTapBodyMedia(
+        itemViewModel: CVItemViewModelImpl,
+        attachmentStream: TSAttachmentStream,
+        imageView: UIView
+    ) {
         guard let thread = thread else {
             owsFailDebug("Missing thread.")
             return

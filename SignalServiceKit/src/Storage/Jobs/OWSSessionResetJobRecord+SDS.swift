@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSSessionResetJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchSessionResetJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSSessionResetJobRecord? {
+    class func anyFetchSessionResetJobRecord(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSSessionResetJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

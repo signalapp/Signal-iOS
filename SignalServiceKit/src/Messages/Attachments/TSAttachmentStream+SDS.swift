@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSAttachmentStream {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchAttachmentStream(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSAttachmentStream? {
+    class func anyFetchAttachmentStream(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSAttachmentStream? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

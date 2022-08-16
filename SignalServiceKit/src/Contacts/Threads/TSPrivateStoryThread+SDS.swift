@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSPrivateStoryThread {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchPrivateStoryThread(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSPrivateStoryThread? {
+    class func anyFetchPrivateStoryThread(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSPrivateStoryThread? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

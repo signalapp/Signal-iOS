@@ -40,8 +40,7 @@ open class ReminderView: UIView {
         fatalError("init(frame:) has not been implemented")
     }
 
-    public init(mode: ReminderViewMode,
-         text: String, tapAction: Action?) {
+    public init(mode: ReminderViewMode, text: String, tapAction: Action?) {
         self.mode = mode
         self.tapAction = tapAction
 

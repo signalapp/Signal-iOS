@@ -206,8 +206,10 @@ extension MobileCoinAPI {
             }
         }
 
-        private static func buildMrEnclave(mrEnclaveData: Data,
-                                          attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation.MrEnclave {
+        private static func buildMrEnclave(
+            mrEnclaveData: Data,
+            attestationInfo: AttestationInfo
+        ) throws -> MobileCoin.Attestation.MrEnclave {
             let result = MobileCoin.Attestation.MrEnclave.make(mrEnclave: mrEnclaveData,
                                                               allowedConfigAdvisories: attestationInfo.allowedConfigAdvisories,
                                                               allowedHardeningAdvisories: attestationInfo.allowedHardeningAdvisories)

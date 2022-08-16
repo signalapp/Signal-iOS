@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSBroadcastMediaMessageJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchBroadcastMediaMessageJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSBroadcastMediaMessageJobRecord? {
+    class func anyFetchBroadcastMediaMessageJobRecord(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSBroadcastMediaMessageJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

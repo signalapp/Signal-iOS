@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension SSKMessageSenderJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchMessageSenderJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> SSKMessageSenderJobRecord? {
+    class func anyFetchMessageSenderJobRecord(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> SSKMessageSenderJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

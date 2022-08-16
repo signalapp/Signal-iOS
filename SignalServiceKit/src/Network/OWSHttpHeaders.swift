@@ -96,8 +96,7 @@ public class OWSHttpHeaders: NSObject {
     }
 
     @objc
-    public func addHeaderList(_ newHttpHeaders: [String]?,
-                             overwriteOnConflict: Bool) {
+    public func addHeaderList(_ newHttpHeaders: [String]?, overwriteOnConflict: Bool) {
         guard let newHttpHeaders = newHttpHeaders else {
             return
         }

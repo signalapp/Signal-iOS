@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSGroupCallMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchGroupCallMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSGroupCallMessage? {
+    class func anyFetchGroupCallMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSGroupCallMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

@@ -6,8 +6,10 @@ import Foundation
 import GRDB
 
 extension OWSRecipientIdentity {
-    public class func groupContainsUnverifiedMember(_ groupUniqueID: String,
-                                             transaction: SDSAnyReadTransaction) -> Bool {
+    public class func groupContainsUnverifiedMember(
+        _ groupUniqueID: String,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         let members = groupMembers(ofGroupWithUniqueID: groupUniqueID,
                                    withVerificationState: .verified,
                                    negated: true,
@@ -17,9 +19,11 @@ extension OWSRecipientIdentity {
     }
 
     @objc(noLongerVerifiedAddressesInGroup:limit:transaction:)
-    public class func noLongerVerifiedAddresses(inGroup groupThreadID: String,
-                                         limit: Int,
-                                         transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    public class func noLongerVerifiedAddresses(
+        inGroup groupThreadID: String,
+        limit: Int,
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalServiceAddress] {
         return groupMembers(ofGroupWithUniqueID: groupThreadID,
                             withVerificationState: .noLongerVerified,
                             negated: false,
@@ -69,11 +73,13 @@ extension OWSRecipientIdentity {
         return sql
     }
 
-    private class func groupMembers(ofGroupWithUniqueID groupUniqueID: String,
-                            withVerificationState state: OWSVerificationState,
-                            negated: Bool,
-                            limit: Int,
-                            transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    private class func groupMembers(
+        ofGroupWithUniqueID groupUniqueID: String,
+        withVerificationState state: OWSVerificationState,
+        negated: Bool,
+        limit: Int,
+        transaction: SDSAnyReadTransaction
+    ) -> [SignalServiceAddress] {
         switch transaction.readTransaction {
         case .grdbRead(let grdbTransaction):
             // There should always be a recipient UUID, but just in case there isn't provide a fake value that won't

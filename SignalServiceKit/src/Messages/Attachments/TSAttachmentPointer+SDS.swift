@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSAttachmentPointer {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchAttachmentPointer(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSAttachmentPointer? {
+    class func anyFetchAttachmentPointer(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSAttachmentPointer? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

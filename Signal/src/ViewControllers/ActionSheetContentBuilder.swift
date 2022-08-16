@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -37,11 +37,13 @@ public class ActionSheetContentBuilder {
         add(UIView.spacer(withHeight: height))
     }
 
-    func addBottomButton(title: String,
-                                  titleColor: UIColor,
-                                  backgroundColor: UIColor,
-                                  target: Any,
-                                  selector: Selector) {
+    func addBottomButton(
+        title: String,
+        titleColor: UIColor,
+        backgroundColor: UIColor,
+        target: Any,
+        selector: Selector
+    ) {
         let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         let buttonHeight = OWSFlatButton.heightForFont(buttonFont)
         let upgradeButton = OWSFlatButton.button(title: title,

@@ -272,17 +272,21 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
 
     // MARK: - Incoming Messages
 
-    public func processIncomingPaymentRequest(thread: TSThread,
-                                       paymentRequest: TSPaymentRequest,
-                                       transaction: SDSAnyWriteTransaction) {
+    public func processIncomingPaymentRequest(
+        thread: TSThread,
+        paymentRequest: TSPaymentRequest,
+        transaction: SDSAnyWriteTransaction
+    ) {
         // TODO: Handle requests.
         owsFailDebug("Not yet implemented.")
     }
 
-    public func processIncomingPaymentNotification(thread: TSThread,
-                                            paymentNotification: TSPaymentNotification,
-                                            senderAddress: SignalServiceAddress,
-                                            transaction: SDSAnyWriteTransaction) {
+    public func processIncomingPaymentNotification(
+        thread: TSThread,
+        paymentNotification: TSPaymentNotification,
+        senderAddress: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) {
         Logger.info("")
         guard paymentNotification.isValid else {
             owsFailDebug("Invalid paymentNotification.")
@@ -298,9 +302,11 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
                                                          transaction: transaction)
     }
 
-    public func processIncomingPaymentCancellation(thread: TSThread,
-                                            paymentCancellation: TSPaymentCancellation,
-                                            transaction: SDSAnyWriteTransaction) {
+    public func processIncomingPaymentCancellation(
+        thread: TSThread,
+        paymentCancellation: TSPaymentCancellation,
+        transaction: SDSAnyWriteTransaction
+    ) {
         Logger.info("")
         guard paymentCancellation.isValid else {
             owsFailDebug("Invalid paymentNotification.")
@@ -318,10 +324,12 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
         paymentRequestModel.anyRemove(transaction: transaction)
     }
 
-    public func processReceivedTranscriptPaymentRequest(thread: TSThread,
-                                                 paymentRequest: TSPaymentRequest,
-                                                 messageTimestamp: UInt64,
-                                                 transaction: SDSAnyWriteTransaction) {
+    public func processReceivedTranscriptPaymentRequest(
+        thread: TSThread,
+        paymentRequest: TSPaymentRequest,
+        messageTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) {
         Logger.info("")
         do {
             guard let contactThread = thread as? TSContactThread else {
@@ -346,17 +354,21 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
         }
     }
 
-    public func processReceivedTranscriptPaymentNotification(thread: TSThread,
-                                                      paymentNotification: TSPaymentNotification,
-                                                      messageTimestamp: UInt64,
-                                                      transaction: SDSAnyWriteTransaction) {
+    public func processReceivedTranscriptPaymentNotification(
+        thread: TSThread,
+        paymentNotification: TSPaymentNotification,
+        messageTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) {
         Logger.info("Ignoring payment notification from sync transcript.")
     }
 
-    public func processReceivedTranscriptPaymentCancellation(thread: TSThread,
-                                                      paymentCancellation: TSPaymentCancellation,
-                                                      messageTimestamp: UInt64,
-                                                      transaction: SDSAnyWriteTransaction) {
+    public func processReceivedTranscriptPaymentCancellation(
+        thread: TSThread,
+        paymentCancellation: TSPaymentCancellation,
+        messageTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) {
         Logger.info("")
         let requestUuidString = paymentCancellation.requestUuidString
         if let paymentRequestModel = Self.findPaymentRequestModel(forRequestUuidString: requestUuidString,
@@ -366,9 +378,11 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
         }
     }
 
-    public func processIncomingPaymentSyncMessage(_ paymentProto: SSKProtoSyncMessageOutgoingPayment,
-                                           messageTimestamp: UInt64,
-                                           transaction: SDSAnyWriteTransaction) {
+    public func processIncomingPaymentSyncMessage(
+        _ paymentProto: SSKProtoSyncMessageOutgoingPayment,
+        messageTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) {
         Logger.info("")
         do {
             guard let mobileCoinProto = paymentProto.mobileCoin else {
@@ -472,8 +486,10 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
     }
 
     // This method enforces invariants around TSPaymentModel.
-    public func tryToInsertPaymentModel(_ paymentModel: TSPaymentModel,
-                                        transaction: SDSAnyWriteTransaction) throws {
+    public func tryToInsertPaymentModel(
+        _ paymentModel: TSPaymentModel,
+        transaction: SDSAnyWriteTransaction
+    ) throws {
 
         Logger.info("Trying to insert: \(paymentModel.descriptionForLogs)")
 
@@ -500,9 +516,11 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
     }
 
     // Incoming requests are for outgoing payments and vice versa.
-    private class func findPaymentRequestModel(forRequestUuidString requestUuidString: String,
-                                               expectedIsIncomingRequest: Bool?,
-                                               transaction: SDSAnyReadTransaction) -> TSPaymentRequestModel? {
+    private class func findPaymentRequestModel(
+        forRequestUuidString requestUuidString: String,
+        expectedIsIncomingRequest: Bool?,
+        transaction: SDSAnyReadTransaction
+    ) -> TSPaymentRequestModel? {
 
         guard let paymentRequestModel = PaymentFinder.paymentRequestModel(forRequestUuidString: requestUuidString,
                                                                           transaction: transaction) else {
@@ -523,8 +541,10 @@ public class PaymentsHelperImpl: NSObject, PaymentsHelperSwift, PaymentsHelper {
     }
 
     // This method enforces invariants around TSPaymentModel.
-    private func isProposedPaymentModelRedundant(_ paymentModel: TSPaymentModel,
-                                                 transaction: SDSAnyWriteTransaction) throws -> Bool {
+    private func isProposedPaymentModelRedundant(
+        _ paymentModel: TSPaymentModel,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> Bool {
         guard paymentModel.isValid else {
             throw OWSAssertionError("Invalid paymentModel.")
         }

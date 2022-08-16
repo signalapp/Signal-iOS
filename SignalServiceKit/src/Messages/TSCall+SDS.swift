@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSCall {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchCall(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSCall? {
+    class func anyFetchCall(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSCall? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

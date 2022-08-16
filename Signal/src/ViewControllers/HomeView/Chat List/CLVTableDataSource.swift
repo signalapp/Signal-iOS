@@ -230,8 +230,7 @@ public enum ChatListSection: Int, CaseIterable {
 
 extension CLVTableDataSource: UITableViewDelegate {
 
-    public func tableView(_ tableView: UITableView,
-                   editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+    public func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
         return UITableViewCell.EditingStyle.none
     }
 

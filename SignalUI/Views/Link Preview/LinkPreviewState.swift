@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import YYImage
@@ -252,9 +252,11 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     }
 
     @objc
-    public required init(linkPreview: OWSLinkPreview,
-                  imageAttachment: TSAttachment?,
-                  conversationStyle: ConversationStyle) {
+    public required init(
+        linkPreview: OWSLinkPreview,
+        imageAttachment: TSAttachment?,
+        conversationStyle: ConversationStyle
+    ) {
         self.linkPreview = linkPreview
         self.imageAttachment = imageAttachment
         _conversationStyle = conversationStyle

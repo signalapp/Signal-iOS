@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSOutgoingPaymentMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchOutgoingPaymentMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSOutgoingPaymentMessage? {
+    class func anyFetchOutgoingPaymentMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSOutgoingPaymentMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

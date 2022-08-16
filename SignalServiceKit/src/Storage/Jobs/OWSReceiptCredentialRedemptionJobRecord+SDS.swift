@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSReceiptCredentialRedemptionJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchReceiptCredentialRedemptionJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSReceiptCredentialRedemptionJobRecord? {
+    class func anyFetchReceiptCredentialRedemptionJobRecord(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSReceiptCredentialRedemptionJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

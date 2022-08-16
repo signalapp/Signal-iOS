@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSAddToContactsOfferMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchAddToContactsOfferMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSAddToContactsOfferMessage? {
+    class func anyFetchAddToContactsOfferMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSAddToContactsOfferMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

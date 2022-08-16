@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSContactThread {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchContactThread(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSContactThread? {
+    class func anyFetchContactThread(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSContactThread? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

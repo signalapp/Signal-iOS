@@ -675,8 +675,10 @@ public class GroupManager: NSObject {
         let newGroupModel: TSGroupModel
     }
 
-    fileprivate static func localUpdateExistingGroupV1(groupModel proposedGroupModel: TSGroupModel,
-                                                   groupUpdateSourceAddress: SignalServiceAddress?) -> Promise<TSGroupThread> {
+    fileprivate static func localUpdateExistingGroupV1(
+        groupModel proposedGroupModel: TSGroupModel,
+        groupUpdateSourceAddress: SignalServiceAddress?
+    ) -> Promise<TSGroupThread> {
 
         return self.databaseStorage.write(.promise) { (transaction) throws -> UpsertGroupResult in
             let updateInfo = try self.updateInfoV1(groupModel: proposedGroupModel,

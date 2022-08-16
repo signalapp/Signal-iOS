@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSDisappearingConfigurationUpdateInfoMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchDisappearingConfigurationUpdateInfoMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSDisappearingConfigurationUpdateInfoMessage? {
+    class func anyFetchDisappearingConfigurationUpdateInfoMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSDisappearingConfigurationUpdateInfoMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

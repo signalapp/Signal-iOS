@@ -256,18 +256,22 @@ public extension SDSTransactable {
 @objc
 public extension SDSTransactable {
     @available(*, deprecated, message: "Use DatabaseStorageWrite() instead")
-    func __private_objc_write(file: String = #file,
-                               function: String = #function,
-                               line: Int = #line,
-                               block: (SDSAnyWriteTransaction) -> Void) {
+    func __private_objc_write(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: (SDSAnyWriteTransaction) -> Void
+    ) {
         write(file: file, function: function, line: line, block: block)
     }
 
     @available(*, deprecated, message: "Use DatabaseStorageAsyncWrite() instead")
-    func __private_objc_asyncWrite(file: String = #file,
-                    function: String = #function,
-                    line: Int = #line,
-                    block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    func __private_objc_asyncWrite(
+        file: String = #file,
+        function: String = #function,
+        line: Int = #line,
+        block: @escaping (SDSAnyWriteTransaction) -> Void
+    ) {
         asyncWrite(file: file,
                    function: function,
                    line: line,

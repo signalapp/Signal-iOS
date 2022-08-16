@@ -41,9 +41,11 @@ public class OWSButton: UIButton {
     }
 
     @objc
-    public init(imageName: String,
-         tintColor: UIColor?,
-         block: @escaping () -> Void = { }) {
+    public init(
+        imageName: String,
+        tintColor: UIColor?,
+        block: @escaping () -> Void = {}
+    ) {
         super.init(frame: .zero)
 
         self.block = block

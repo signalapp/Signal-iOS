@@ -587,13 +587,15 @@ public extension PaymentsImpl {
         }
     }
 
-    private func prepareOutgoingPayment(recipientAddress: SignalServiceAddress?,
-                                          recipientPublicAddress: MobileCoin.PublicAddress,
-                                          paymentAmount: TSPaymentAmount,
-                                          memoMessage: String?,
-                                          paymentRequestModel: TSPaymentRequestModel?,
-                                          isOutgoingTransfer: Bool,
-                                          canDefragment: Bool) -> Promise<PreparedPayment> {
+    private func prepareOutgoingPayment(
+        recipientAddress: SignalServiceAddress?,
+        recipientPublicAddress: MobileCoin.PublicAddress,
+        paymentAmount: TSPaymentAmount,
+        memoMessage: String?,
+        paymentRequestModel: TSPaymentRequestModel?,
+        isOutgoingTransfer: Bool,
+        canDefragment: Bool
+    ) -> Promise<PreparedPayment> {
 
         guard !isKillSwitchActive else {
             return Promise(error: PaymentsError.killSwitch)

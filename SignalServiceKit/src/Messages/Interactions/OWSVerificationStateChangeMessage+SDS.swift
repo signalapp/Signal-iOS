@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSVerificationStateChangeMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchVerificationStateChangeMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSVerificationStateChangeMessage? {
+    class func anyFetchVerificationStateChangeMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSVerificationStateChangeMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

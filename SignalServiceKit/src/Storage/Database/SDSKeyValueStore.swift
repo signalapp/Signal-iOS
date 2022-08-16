@@ -680,9 +680,11 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    private class func update(transaction: GRDBWriteTransaction,
-                        sql: String,
-                        arguments: [DatabaseValueConvertible]) throws {
+    private class func update(
+        transaction: GRDBWriteTransaction,
+        sql: String,
+        arguments: [DatabaseValueConvertible]
+    ) throws {
 
         let statement = try transaction.database.cachedStatement(sql: sql)
         guard let statementArguments = StatementArguments(arguments) else {

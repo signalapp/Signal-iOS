@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSMessage? {
+    class func anyFetchMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

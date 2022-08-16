@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSIncomingGroupSyncJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchIncomingGroupSyncJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSIncomingGroupSyncJobRecord? {
+    class func anyFetchIncomingGroupSyncJobRecord(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSIncomingGroupSyncJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSSendGiftBadgeJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchSendGiftBadgeJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSSendGiftBadgeJobRecord? {
+    class func anyFetchSendGiftBadgeJobRecord(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSSendGiftBadgeJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

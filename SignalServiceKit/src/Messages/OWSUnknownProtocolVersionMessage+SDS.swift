@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSUnknownProtocolVersionMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchUnknownProtocolVersionMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSUnknownProtocolVersionMessage? {
+    class func anyFetchUnknownProtocolVersionMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSUnknownProtocolVersionMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

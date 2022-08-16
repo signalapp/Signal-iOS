@@ -1770,8 +1770,10 @@ public extension %(class_name)s {
         }
     }
 
-    class func anyExists(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> Bool {
+    class func anyExists(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -1850,8 +1852,10 @@ public extension %(class_name)s {
 @objc
 public extension %s {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetch%s(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> %s? {
+    class func anyFetch%s(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> %s? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

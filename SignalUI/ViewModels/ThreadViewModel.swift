@@ -159,10 +159,12 @@ public class ChatListInfo: Dependencies {
                                            transaction: transaction)
     }
 
-    private static func buildCLVSnippet(thread: TSThread,
-                                       hasPendingMessageRequest: Bool,
-                                       lastMessageForInbox: TSInteraction?,
-                                       transaction: SDSAnyReadTransaction) -> CLVSnippet {
+    private static func buildCLVSnippet(
+        thread: TSThread,
+        hasPendingMessageRequest: Bool,
+        lastMessageForInbox: TSInteraction?,
+        transaction: SDSAnyReadTransaction
+    ) -> CLVSnippet {
 
         let isBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
 
