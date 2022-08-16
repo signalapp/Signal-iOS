@@ -89,7 +89,7 @@ DEPENDENCIES:
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
   - LibSignalClient (from `https://github.com/signalapp/libsignal-client.git`)
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal-client.git`)
-  - libwebp (from `./ThirdParty/libwebp.podspec.json`)
+  - libwebp
   - lottie-ios
   - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift.git`, tag `v1.2.0-pre10`)
@@ -116,6 +116,7 @@ SPEC REPOS:
     - BonMot
     - CocoaLumberjack
     - GRDB.swift
+    - libwebp
     - Logging
     - lottie-ios
     - PureLayout
@@ -140,8 +141,6 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal-client.git
-  libwebp:
-    :podspec: "./ThirdParty/libwebp.podspec.json"
   Mantle:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
@@ -217,7 +216,7 @@ SPEC CHECKSUMS:
   LibMobileCoin: 40d2d7d685321a6128871b6c6b4bb7cba25e848f
   libPhoneNumber-iOS: 2d26d0a38933eee2702962a4dbdec2fc20e5ef9f
   LibSignalClient: 3180d534297ae089f15af948eade74c3dcaf16de
-  libwebp: 1cc63d45283a1349f4479e9618c5db59978d3d15
+  libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: 016449b5d8be0c3dcbcfa0a9988469999cd04c5d
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
@@ -236,6 +235,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: 3320217e9d8fb75f36b40282e78c482640fd75dd
   YYImage: f1ddd15ac032a58b78bbed1e012b50302d318331
 
-PODFILE CHECKSUM: 13b96c9d81b40df47a41e693f45f52f8009d7dd8
+PODFILE CHECKSUM: 6167219bbf96e6c0bdd9f9e04c6ab4d8fc6ff152
 
 COCOAPODS: 1.11.3
