@@ -37,7 +37,7 @@ class CapabilitiesSpec: QuickSpec {
         describe("a Capability") {
             context("when initializing") {
                 it("succeeeds with a valid case") {
-                    let capability: OpenGroupAPI.Capabilities.Capability = OpenGroupAPI.Capabilities.Capability(
+                    let capability: Capability.Variant = Capability.Variant(
                         from: "sogs"
                     )
                     
@@ -45,7 +45,7 @@ class CapabilitiesSpec: QuickSpec {
                 }
                 
                 it("wraps an unknown value in the unsupported case") {
-                    let capability: OpenGroupAPI.Capabilities.Capability = OpenGroupAPI.Capabilities.Capability(
+                    let capability: Capability.Variant = Capability.Variant(
                         from: "test"
                     )
                     
@@ -55,12 +55,12 @@ class CapabilitiesSpec: QuickSpec {
             
             context("when accessing the rawValue") {
                 it("provides known cases exactly") {
-                    expect(OpenGroupAPI.Capabilities.Capability.sogs.rawValue).to(equal("sogs"))
-                    expect(OpenGroupAPI.Capabilities.Capability.blind.rawValue).to(equal("blind"))
+                    expect(Capability.Variant.sogs.rawValue).to(equal("sogs"))
+                    expect(Capability.Variant.blind.rawValue).to(equal("blind"))
                 }
                 
                 it("provides the wrapped value for unsupported cases") {
-                    expect(OpenGroupAPI.Capabilities.Capability.unsupported("test").rawValue).to(equal("test"))
+                    expect(Capability.Variant.unsupported("test").rawValue).to(equal("test"))
                 }
             }
             
@@ -68,14 +68,14 @@ class CapabilitiesSpec: QuickSpec {
                 it("decodes known cases exactly") {
                     expect(
                         try? JSONDecoder().decode(
-                            OpenGroupAPI.Capabilities.Capability.self,
+                            Capability.Variant.self,
                             from: "\"sogs\"".data(using: .utf8)!
                         )
                     )
                     .to(equal(.sogs))
                     expect(
                         try? JSONDecoder().decode(
-                            OpenGroupAPI.Capabilities.Capability.self,
+                            Capability.Variant.self,
                             from: "\"blind\"".data(using: .utf8)!
                         )
                     )
@@ -85,7 +85,7 @@ class CapabilitiesSpec: QuickSpec {
                 it("decodes unknown cases into the unsupported case") {
                     expect(
                         try? JSONDecoder().decode(
-                            OpenGroupAPI.Capabilities.Capability.self,
+                            Capability.Variant.self,
                             from: "\"test\"".data(using: .utf8)!
                         )
                     )

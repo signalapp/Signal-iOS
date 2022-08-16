@@ -89,7 +89,8 @@ extension MessageReceiver {
                 try GroupMember(
                     groupId: groupPublicKey,
                     profileId: memberId,
-                    role: .standard
+                    role: .standard,
+                    isHidden: false
                 ).save(db)
             }
             
@@ -97,7 +98,8 @@ extension MessageReceiver {
                 try GroupMember(
                     groupId: groupPublicKey,
                     profileId: adminId,
-                    role: .admin
+                    role: .admin,
+                    isHidden: false
                 ).save(db)
             }
             
@@ -254,7 +256,8 @@ extension MessageReceiver {
                     try GroupMember(
                         groupId: id,
                         profileId: memberId,
-                        role: .standard
+                        role: .standard,
+                        isHidden: false
                     ).insert(db)
                 }
             
@@ -440,7 +443,8 @@ extension MessageReceiver {
                 try GroupMember(
                     groupId: id,
                     profileId: sender,
-                    role: .zombie
+                    role: .zombie,
+                    isHidden: false
                 ).insert(db)
             }
             

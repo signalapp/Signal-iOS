@@ -422,17 +422,41 @@ public final class OpenGroupManager: NSObject {
                 _ = try GroupMember(
                     groupId: threadId,
                     profileId: adminId,
-                    role: .admin
+                    role: .admin,
+                    isHidden: false
                 ).saved(db)
             }
+            
+            try roomDetails.hiddenAdmins
+                .defaulting(to: [])
+                .forEach { adminId in
+                    _ = try GroupMember(
+                        groupId: threadId,
+                        profileId: adminId,
+                        role: .admin,
+                        isHidden: true
+                    ).saved(db)
+                }
             
             try roomDetails.moderators.forEach { moderatorId in
                 _ = try GroupMember(
                     groupId: threadId,
                     profileId: moderatorId,
-                    role: .moderator
+                    role: .moderator,
+                    isHidden: false
                 ).saved(db)
             }
+            
+            try roomDetails.hiddenModerators
+                .defaulting(to: [])
+                .forEach { moderatorId in
+                    _ = try GroupMember(
+                        groupId: threadId,
+                        profileId: moderatorId,
+                        role: .moderator,
+                        isHidden: true
+                    ).saved(db)
+                }
         }
         
         db.afterNextTransactionCommit { db in
