@@ -346,6 +346,8 @@ public extension SessionThreadViewModel {
 // MARK: --SessionThreadViewModel
 
 public extension SessionThreadViewModel {
+    /// **Note:** This query **will not** include deleted incoming messages in it's unread count (they should never be marked as unread
+    /// but including this warning just in case there is a discrepancy)
     static func baseQuery(
         userPublicKey: String,
         filterSQL: SQL,
@@ -610,6 +612,8 @@ public extension SessionThreadViewModel {
 // MARK: - ConversationVC
 
 public extension SessionThreadViewModel {
+    /// **Note:** This query **will** include deleted incoming messages in it's unread count (they should never be marked as unread
+    /// but including this warning just in case there is a discrepancy)
     static func conversationQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
