@@ -644,6 +644,7 @@
 		FD245C6B2850667400B966DD /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
 		FD245C6C2850669200B966DD /* MessageReceiveJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A31225574F5200338F3E /* MessageReceiveJob.swift */; };
 		FD245C6D285066A400B966DD /* NotifyPushServerJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A32E2557549C00338F3E /* NotifyPushServerJob.swift */; };
+		FD37EA0D28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA0C28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift */; };
 		FD3AABE928306BBD00E5099A /* ThreadPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3AABE828306BBD00E5099A /* ThreadPickerViewModel.swift */; };
 		FD3C905C27E3FBEF00CD579F /* BatchRequestInfoSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905B27E3FBEF00CD579F /* BatchRequestInfoSpec.swift */; };
 		FD3C906027E410F700CD579F /* FileUploadResponseSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */; };
@@ -1683,6 +1684,7 @@
 		FD245C612850664300B966DD /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		FD28A4F327EA79F800FF65E7 /* BlockListUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListUIUtils.swift; sourceTree = "<group>"; };
 		FD28A4F527EAD44C00FF65E7 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		FD37EA0C28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _005_FixDeletedMessageReadState.swift; sourceTree = "<group>"; };
 		FD3AABE828306BBD00E5099A /* ThreadPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPickerViewModel.swift; sourceTree = "<group>"; };
 		FD3C905B27E3FBEF00CD579F /* BatchRequestInfoSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRequestInfoSpec.swift; sourceTree = "<group>"; };
 		FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadResponseSpec.swift; sourceTree = "<group>"; };
@@ -3454,6 +3456,7 @@
 				FDF0B7412804EA4F004C14C5 /* _002_SetupStandardJobs.swift */,
 				FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */,
 				FDF40CDD2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift */,
+				FD37EA0C28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift */,
 			);
 			path = Migrations;
 			sourceTree = "<group>";
@@ -5191,6 +5194,7 @@
 				FD716E682850318E00C96BF4 /* CallMode.swift in Sources */,
 				FD09799527FE7B8E00936362 /* Interaction.swift in Sources */,
 				FD5C72FF284F0F120029977D /* MessageReceiver+ConfigurationMessages.swift in Sources */,
+				FD37EA0D28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift in Sources */,
 				FDC4380927B31D4E00C60D73 /* OpenGroupAPIError.swift in Sources */,
 				FDC4382027B36ADC00C60D73 /* SOGSEndpoint.swift in Sources */,
 				FDC438C927BB706500C60D73 /* SendDirectMessageRequest.swift in Sources */,
