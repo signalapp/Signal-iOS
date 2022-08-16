@@ -91,8 +91,7 @@ class ImageEditorCropViewController: OWSViewController {
         let button = RoundMediaButton(image: nil, backgroundStyle: .blur)
         let buttonTitle = OWSLocalizedString("MEDIA_EDITOR_RESET", comment: "Title for the button that resets photo to its initial state.")
         button.setTitle(buttonTitle, for: .normal)
-        button.contentEdgeInsets = UIEdgeInsets(hMargin: 18, vMargin: 7) // Make button 36pts tall at default text size.
-        button.layoutMargins = .zero
+        button.contentEdgeInsets = UIEdgeInsets(hMargin: 26, vMargin: 15) // Make button 36pts tall at default text size.
         button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
         return button
     }()
@@ -194,9 +193,13 @@ class ImageEditorCropViewController: OWSViewController {
             finalStateContentLayoutGuide.bottomAnchor.constraint(equalTo: footerView.topAnchor) ])
 
         // MARK: - Reset Button
-        view.addSubview(resetButton)
-        resetButton.autoPinTopToSuperviewMargin()
-        resetButton.autoPinTrailingToSuperviewMargin()
+        resetButton.translatesAutoresizingMaskIntoConstraints = false
+        let mediaTopBar = MediaTopBar()
+        mediaTopBar.addSubview(resetButton)
+        mediaTopBar.addConstraints([ resetButton.topAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.topAnchor),
+                                     resetButton.trailingAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.trailingAnchor),
+                                     resetButton.bottomAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.bottomAnchor) ])
+        mediaTopBar.install(in: view)
         updateResetButtonAppearance(animated: false)
 
         transitionUI(toState: .initial, animated: false)
@@ -208,6 +211,10 @@ class ImageEditorCropViewController: OWSViewController {
         super.viewDidAppear(animated)
 
         transitionUI(toState: .final, animated: true)
+    }
+
+    public override var prefersStatusBarHidden: Bool {
+        !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !CurrentAppContext().hasActiveCall
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
