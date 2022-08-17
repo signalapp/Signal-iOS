@@ -111,8 +111,11 @@ public protocol GroupsV2Swift: GroupsV2 {
     func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
                                       requiredRevision: UInt32?) -> Promise<TSGroupThread>
 
-    func updateGroupV2(groupModel: TSGroupModelV2,
-                       changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void) -> Promise<TSGroupThread>
+    func updateGroupV2(
+        groupId: Data,
+        groupSecretParamsData: Data,
+        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+    ) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 
@@ -566,8 +569,11 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func updateGroupV2(groupModel: TSGroupModelV2,
-                              changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void) -> Promise<TSGroupThread> {
+    public func updateGroupV2(
+        groupId: Data,
+        groupSecretParamsData: Data,
+        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+    ) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 

@@ -830,16 +830,23 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     // MARK: - Generic Group Change
 
-    public func updateGroupV2(groupModel: TSGroupModelV2,
-                              changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void) -> Promise<TSGroupThread> {
+    public func updateGroupV2(
+        groupId: Data,
+        groupSecretParamsData: Data,
+        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+    ) -> Promise<TSGroupThread> {
         return firstly(on: .global()) { () throws -> GroupsV2OutgoingChanges in
-            let changes = GroupsV2OutgoingChangesImpl(groupId: groupModel.groupId,
-                                                      groupSecretParamsData: groupModel.secretParamsData)
+            let changes = GroupsV2OutgoingChangesImpl(
+                groupId: groupId,
+                groupSecretParamsData: groupSecretParamsData
+            )
             changesBlock(changes)
             return changes
         }.then(on: .global()) { (changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> in
-            return self.updateExistingGroupOnService(changes: changes,
-                                                     requiredRevision: nil)
+            return self.updateExistingGroupOnService(
+                changes: changes,
+                requiredRevision: nil
+            )
         }
     }
 
@@ -1660,7 +1667,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 // We're already an invited member; try to join by accepting the invite.
                 // That will make us a full member; requesting to join via
                 // the invite link might make us a requesting member.
-                return self.updateGroupV2(groupModel: groupModelV2) { groupChangeSet in
+                return self.updateGroupV2(
+                    groupId: groupModelV2.groupId,
+                    groupSecretParamsData: groupModelV2.secretParamsData
+                ) { groupChangeSet in
                     groupChangeSet.promoteInvitedMember(localUuid)
                 }
             } else {
