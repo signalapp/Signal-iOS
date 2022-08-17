@@ -122,6 +122,7 @@ class CallControls: UIView {
         let controlsStack = UIStackView(arrangedSubviews: [topStackView, bottomStackView])
         controlsStack.axis = .vertical
         controlsStack.spacing = 40
+        controlsStack.alignment = .center
 
         addSubview(controlsStack)
         controlsStack.autoPinWidthToSuperview()
@@ -141,18 +142,11 @@ class CallControls: UIView {
         stackView.axis = .horizontal
         stackView.spacing = 16
 
-        let leadingSpacer = UIView.hStretchingSpacer()
-        let trailingSpacer = UIView.hStretchingSpacer()
-
-        stackView.addArrangedSubview(leadingSpacer)
         stackView.addArrangedSubview(audioSourceButton)
         stackView.addArrangedSubview(flipCameraButton)
         stackView.addArrangedSubview(muteButton)
         stackView.addArrangedSubview(videoButton)
         stackView.addArrangedSubview(hangUpButton)
-        stackView.addArrangedSubview(trailingSpacer)
-
-        leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
 
         return stackView
     }
@@ -191,10 +185,16 @@ class CallControls: UIView {
         muteButton.isSelected = call.groupCall.isOutgoingAudioMuted
         hangUpButton.isHidden = call.groupCall.localDeviceState.joinState != .joined
 
-        // Use small controls if video is enabled and we have external
-        // audio inputs, because we have five buttons now.
-        [audioSourceButton, flipCameraButton, videoButton, muteButton, hangUpButton].forEach {
-            $0.isSmall = hasExternalAudioInputs && !isLocalVideoMuted
+        if !UIDevice.current.isIPad {
+            // Use small controls if video is enabled and we have external
+            // audio inputs, because we have five buttons now.
+            [audioSourceButton, flipCameraButton, videoButton, muteButton, hangUpButton].forEach {
+                let isSmall = hasExternalAudioInputs && !isLocalVideoMuted
+                $0.isSmall = isSmall
+                if UIDevice.current.isNarrowerThanIPhone6 {
+                    topStackView.spacing = isSmall ? 12 : 16
+                }
+            }
         }
 
         // Audio Source Handling
