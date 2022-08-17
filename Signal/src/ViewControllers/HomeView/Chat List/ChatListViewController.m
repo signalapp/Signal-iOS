@@ -148,7 +148,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             } else {
                 self.getStartedBanner.view.alpha = 1;
             }
-            [self adjustContextMenuPosition];
         }
                         completion:nil];
 }
@@ -511,23 +510,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     // Settings button.
-    UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    avatarButton.accessibilityLabel = CommonStrings.openSettingsButton;
-    [avatarButton addTarget:self action:@selector(showOrHideMenu:) forControlEvents:UIControlEventTouchDown];
-
-    UIView *avatarImageView = [self createAvatarBarButtonViewWithSneakyTransaction];
-    [avatarButton addSubview:avatarImageView];
-    [avatarImageView autoPinEdgesToSuperviewEdges];
-
-    UIView *avatarWrapper = [UIView containerView];
-    [avatarWrapper addSubview:avatarButton];
-    [avatarButton autoPinEdgesToSuperviewEdges];
-
-    if (self.unreadPaymentNotificationsCount > 0) {
-        [PaymentsViewUtils addUnreadBadgeToView:avatarWrapper];
-    }
-
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarWrapper];
+    UIBarButtonItem *settingsButton = [self createSettingsBarButtonItem];
 
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
