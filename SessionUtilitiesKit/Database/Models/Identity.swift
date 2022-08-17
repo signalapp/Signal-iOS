@@ -129,14 +129,16 @@ public extension Identity {
         )
     }
     
-    static func fetchHexEncodedSeed() -> String? {
-        return Storage.shared.read { db in
-            guard let data: Data = try? Identity.fetchOne(db, id: .seed)?.data else {
-                return nil
-            }
-            
-            return data.toHexString()
+    static func fetchHexEncodedSeed(_ db: Database? = nil) -> String? {
+        guard let db: Database = db else {
+            return Storage.shared.read { db in fetchHexEncodedSeed(db) }
         }
+        
+        guard let data: Data = try? Identity.fetchOne(db, id: .seed)?.data else {
+            return nil
+        }
+        
+        return data.toHexString()
     }
 }
 

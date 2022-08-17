@@ -37,7 +37,8 @@ extension MessageSender {
             try GroupMember(
                 groupId: groupPublicKey,
                 profileId: adminId,
-                role: .admin
+                role: .admin,
+                isHidden: false
             ).insert(db)
         }
         
@@ -48,7 +49,8 @@ extension MessageSender {
             try GroupMember(
                 groupId: groupPublicKey,
                 profileId: memberId,
-                role: .standard
+                role: .standard,
+                isHidden: false
             ).insert(db)
         }
         
@@ -374,7 +376,8 @@ extension MessageSender {
             try GroupMember(
                 groupId: closedGroup.id,
                 profileId: member,
-                role: .standard
+                role: .standard,
+                isHidden: false
             ).insert(db)
         }
     }

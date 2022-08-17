@@ -5,7 +5,7 @@ import GRDB
 import SessionUtilitiesKit
 
 /// This migration adds the new types needed for Emoji Reacts
-enum _005_EmojiReacts: Migration {
+enum _007_EmojiReacts: Migration {
     static let target: TargetMigrations.Identifier = .messagingKit
     static let identifier: String = "EmojiReacts"
     static let needsConfigSync: Bool = false
