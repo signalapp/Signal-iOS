@@ -78,7 +78,8 @@ class CallControls: UIView {
         button.setTitleColor(.ows_whiteAlpha40, for: .disabled)
         joinButtonActivityIndicator.autoCenterInSuperview()
 
-        button.autoSetDimension(.width, toSize: 168)
+        // Expand the button to fit text if necessary.
+        button.autoSetDimension(.width, toSize: 168, relation: .greaterThanOrEqual)
         button.autoSetDimension(.height, toSize: height)
         return button
     }()
@@ -113,7 +114,13 @@ class CallControls: UIView {
         addSubview(gradientView)
         gradientView.autoPinEdgesToSuperviewEdges()
 
-        let controlsStack = UIStackView(arrangedSubviews: [topStackView, joinButton])
+        let joinButtonContainer = UIView()
+        joinButtonContainer.addSubview(joinButton)
+        joinButtonContainer.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 0)
+        joinButton.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
+        joinButton.autoPinHeightToSuperview()
+
+        let controlsStack = UIStackView(arrangedSubviews: [topStackView, joinButtonContainer])
         controlsStack.axis = .vertical
         controlsStack.spacing = 40
         controlsStack.alignment = .center
@@ -204,7 +211,8 @@ class CallControls: UIView {
             audioSourceButton.showDropdownArrow = false
         }
 
-        joinButton.isHidden = joinState == .joined
+        // Show/hide the superview to adjust the containing stack.
+        joinButton.superview?.isHidden = joinState == .joined
         gradientView.isHidden = joinState != .joined
 
         let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
