@@ -865,6 +865,7 @@
 		88588D26252E59CE00405414 /* CallService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88588D25252E59CE00405414 /* CallService.swift */; };
 		88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88594E592335B08000390B19 /* AudioMessageView.swift */; };
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
+		885F3D3128AC33E700FE8AFE /* ContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885F3D3028AC33E700FE8AFE /* ContextMenuButton.swift */; };
 		8862921028355B8000AA0C3B /* MyStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */; };
 		886292122835606D00AA0C3B /* MyStoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886292112835606D00AA0C3B /* MyStoryCell.swift */; };
 		8862A55925F090C5005D65DB /* InternalSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */; };
@@ -3119,6 +3120,7 @@
 		88588D25252E59CE00405414 /* CallService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallService.swift; sourceTree = "<group>"; };
 		88594E592335B08000390B19 /* AudioMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessageView.swift; sourceTree = "<group>"; };
 		885C354F2370DFD50004BA35 /* OWSSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSSyncManager.swift; sourceTree = "<group>"; };
+		885F3D3028AC33E700FE8AFE /* ContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuButton.swift; sourceTree = "<group>"; };
 		8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStoryViewModel.swift; sourceTree = "<group>"; };
 		886292112835606D00AA0C3B /* MyStoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStoryCell.swift; sourceTree = "<group>"; };
 		8862A55825F090C5005D65DB /* InternalSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalSettingsViewController.swift; sourceTree = "<group>"; };
@@ -6736,6 +6738,7 @@
 			isa = PBXGroup;
 			children = (
 				F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */,
+				885F3D3028AC33E700FE8AFE /* ContextMenuButton.swift */,
 				F0B872B7269D079B00D26481 /* ContextMenuConfiguration.swift */,
 				F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */,
 				F05F51C826A90D6B00861034 /* ContextMenuActionsAccessory.swift */,
@@ -9987,6 +9990,7 @@
 				34E20D4E2425672B002C011E /* ConversationSettingsViewController+Contents.swift in Sources */,
 				3498AC912518E92B00B1F315 /* PaymentsHistory.swift in Sources */,
 				88238EBC24F21EE400F28079 /* EmojiSkinTonePicker.swift in Sources */,
+				885F3D3128AC33E700FE8AFE /* ContextMenuButton.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				341D392925472F3B00996E7B /* CVViewState.swift in Sources */,
 				880B969B2880C23E00718C6D /* PrivateStorySettingsViewController.swift in Sources */,

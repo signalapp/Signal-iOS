@@ -513,10 +513,6 @@ public class ConversationViewController: OWSViewController {
         self.updateBarButtonItems()
         self.ensureBannerState()
 
-        // Re-styling the message actions is tricky,
-        // since this happens rarely just dismiss
-        dismissMessageContextMenu(animated: false)
-
         dismissReactionsDetailSheet(animated: false)
     }
 
@@ -561,8 +557,6 @@ public class ConversationViewController: OWSViewController {
         AssertIsOnMainThread()
 
         super.viewWillTransition(to: size, with: coordinator)
-
-        dismissMessageContextMenu(animated: false)
 
         dismissReactionsDetailSheet(animated: false)
 
