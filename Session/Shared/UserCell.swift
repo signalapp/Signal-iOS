@@ -122,11 +122,15 @@ final class UserCell: UITableViewCell {
             .systemFont(ofSize: Values.mediumFontSize) :
             .boldSystemFont(ofSize: Values.mediumFontSize)
         )
-        displayNameLabel.text = Profile.displayName(
-            for: .contact,
-            id: publicKey,
-            name: profile?.name,
-            nickname: profile?.nickname
+
+        displayNameLabel.text = (getUserHexEncodedPublicKey() == publicKey ?
+            "MEDIA_GALLERY_SENDER_NAME_YOU".localized() :
+            Profile.displayName(
+                for: .contact,
+                id: publicKey,
+                name: profile?.name,
+                nickname: profile?.nickname
+            )
         )
         
         switch accessory {
