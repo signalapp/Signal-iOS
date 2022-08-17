@@ -152,7 +152,7 @@ class EmojiPickerCollectionView: UICollectionView {
     func searchWithText(_ searchText: String?) {
         if let searchText = searchText {
             emojiSearchResults = allSendableEmoji.filter { emoji in
-                return emoji.baseEmoji.name.range(of: searchText, options: [.caseInsensitive, .anchored]) != nil
+                return emoji.baseEmoji.name.range(of: searchText, options: [.caseInsensitive]) != nil
             }
         } else {
             emojiSearchResults = []
