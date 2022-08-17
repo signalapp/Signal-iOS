@@ -262,7 +262,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         self.body = body
         self.timestampMs = timestampMs
         self.receivedAtTimestampMs = receivedAtTimestampMs
-        self.wasRead = wasRead
+        self.wasRead = (wasRead && variant.canBeUnread)
         self.hasMention = hasMention
         self.expiresInSeconds = expiresInSeconds
         self.expiresStartedAtMs = expiresStartedAtMs
@@ -304,7 +304,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                 default: return timestampMs
             }
         }()
-        self.wasRead = wasRead
+        self.wasRead = (wasRead && variant.canBeUnread)
         self.hasMention = hasMention
         self.expiresInSeconds = expiresInSeconds
         self.expiresStartedAtMs = expiresStartedAtMs
@@ -497,8 +497,6 @@ public extension Interaction {
             .filter(Interaction.Columns.threadId == threadId)
             .filter(Interaction.Columns.timestampMs <= interactionInfo.timestampMs)
             .filter(Interaction.Columns.wasRead == false)
-            // The `wasRead` flag doesn't apply to `standardOutgoing` or `standardIncomingDeleted`
-            .filter(Columns.variant != Variant.standardOutgoing && Columns.variant != Variant.standardIncomingDeleted)
         let interactionIdsToMarkAsRead: [Int64] = try interactionQuery
             .select(.id)
             .asRequest(of: Int64.self)
@@ -600,7 +598,7 @@ public extension Interaction {
             body: nil,
             timestampMs: timestampMs,
             receivedAtTimestampMs: receivedAtTimestampMs,
-            wasRead: wasRead,
+            wasRead: (wasRead && Variant.standardIncomingDeleted.canBeUnread),
             hasMention: hasMention,
             expiresInSeconds: expiresInSeconds,
             expiresStartedAtMs: expiresStartedAtMs,

@@ -193,6 +193,7 @@ extension MessageReceiver {
             )
         )
         .inserted(db)
+        
         try MessageSender
             .sendNonDurably(
                 db,
