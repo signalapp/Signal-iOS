@@ -89,7 +89,7 @@ extension MessageReceiver {
         }()
         
         // Handle emoji reacts first (otherwise it's essentially an invalid message)
-        if let interactionId: Int64 = try handleEmojiReactIfNeeded(db, message: message, associatedWithProto: proto, sender: sender, messageSentTimestamp: messageSentTimestamp, openGroupId: openGroupId, threadId: threadInfo.id) {
+        if let interactionId: Int64 = try handleEmojiReactIfNeeded(db, message: message, associatedWithProto: proto, sender: sender, messageSentTimestamp: messageSentTimestamp, openGroupId: openGroupId, thread: thread) {
             return interactionId
         }
         
@@ -304,7 +304,7 @@ extension MessageReceiver {
         sender: String,
         messageSentTimestamp: TimeInterval,
         openGroupId: String?,
-        threadId: String
+        thread: SessionThread
     ) throws -> Int64? {
         guard
             let reaction: VisibleMessage.VMReaction = message.reaction,
@@ -313,7 +313,7 @@ extension MessageReceiver {
         
         let maybeInteractionId: Int64? = try? Interaction
             .select(.id)
-            .filter(Interaction.Columns.threadId == threadId)
+            .filter(Interaction.Columns.threadId == thread.id)
             .filter(Interaction.Columns.timestampMs == reaction.timestamp)
             .filter(Interaction.Columns.authorId == reaction.publicKey)
             .filter(Interaction.Columns.variant != Interaction.Variant.standardIncomingDeleted)
@@ -332,7 +332,7 @@ extension MessageReceiver {
         
         switch reaction.kind {
             case .react:
-                try Reaction(
+                let reaction = Reaction(
                     interactionId: interactionId,
                     serverHash: message.serverHash,
                     timestampMs: Int64(messageSentTimestamp * 1000),
@@ -340,7 +340,14 @@ extension MessageReceiver {
                     emoji: reaction.emoji,
                     count: 1,
                     sortId: sortId
-                ).insert(db)
+                )
+                try reaction.insert(db)
+                Environment.shared?.notificationsManager.wrappedValue?
+                    .notifyUser(
+                        db,
+                        forReaction: reaction,
+                        in: thread
+                    )
                 
             case .remove:
                 try Reaction
