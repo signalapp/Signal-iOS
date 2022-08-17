@@ -644,6 +644,10 @@
 		FD245C6B2850667400B966DD /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
 		FD245C6C2850669200B966DD /* MessageReceiveJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A31225574F5200338F3E /* MessageReceiveJob.swift */; };
 		FD245C6D285066A400B966DD /* NotifyPushServerJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A32E2557549C00338F3E /* NotifyPushServerJob.swift */; };
+		FD37EA0D28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA0C28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift */; };
+		FD37EA0F28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA0E28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift */; };
+		FD37EA1128AB34B3003AE748 /* TypedTableAlteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA1028AB34B3003AE748 /* TypedTableAlteration.swift */; };
+		FD37EA1528AB42CB003AE748 /* IdentitySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA1428AB42CB003AE748 /* IdentitySpec.swift */; };
 		FD3AABE928306BBD00E5099A /* ThreadPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3AABE828306BBD00E5099A /* ThreadPickerViewModel.swift */; };
 		FD3C905C27E3FBEF00CD579F /* BatchRequestInfoSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905B27E3FBEF00CD579F /* BatchRequestInfoSpec.swift */; };
 		FD3C906027E410F700CD579F /* FileUploadResponseSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */; };
@@ -1683,6 +1687,10 @@
 		FD245C612850664300B966DD /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		FD28A4F327EA79F800FF65E7 /* BlockListUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListUIUtils.swift; sourceTree = "<group>"; };
 		FD28A4F527EAD44C00FF65E7 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		FD37EA0C28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _005_FixDeletedMessageReadState.swift; sourceTree = "<group>"; };
+		FD37EA0E28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _006_FixHiddenModAdminSupport.swift; sourceTree = "<group>"; };
+		FD37EA1028AB34B3003AE748 /* TypedTableAlteration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedTableAlteration.swift; sourceTree = "<group>"; };
+		FD37EA1428AB42CB003AE748 /* IdentitySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentitySpec.swift; sourceTree = "<group>"; };
 		FD3AABE828306BBD00E5099A /* ThreadPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPickerViewModel.swift; sourceTree = "<group>"; };
 		FD3C905B27E3FBEF00CD579F /* BatchRequestInfoSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRequestInfoSpec.swift; sourceTree = "<group>"; };
 		FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadResponseSpec.swift; sourceTree = "<group>"; };
@@ -3454,6 +3462,8 @@
 				FDF0B7412804EA4F004C14C5 /* _002_SetupStandardJobs.swift */,
 				FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */,
 				FDF40CDD2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift */,
+				FD37EA0C28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift */,
+				FD37EA0E28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift */,
 			);
 			path = Migrations;
 			sourceTree = "<group>";
@@ -3520,6 +3530,7 @@
 				FD17D7B727F51ECA00122BE0 /* Migration.swift */,
 				FD17D7B927F51F2100122BE0 /* TargetMigrations.swift */,
 				FD17D7C027F5200100122BE0 /* TypedTableDefinition.swift */,
+				FD37EA1028AB34B3003AE748 /* TypedTableAlteration.swift */,
 				FD7162DA281B6C440060647B /* TypedTableAlias.swift */,
 				FD848B8A283DC509000E298B /* PagedDatabaseObserver.swift */,
 			);
@@ -3565,6 +3576,22 @@
 				FD17D7E927F6A1C600122BE0 /* SUKLegacy.swift */,
 			);
 			path = LegacyDatabase;
+			sourceTree = "<group>";
+		};
+		FD37EA1228AB3F60003AE748 /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				FD37EA1328AB42C1003AE748 /* Models */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
+		FD37EA1328AB42C1003AE748 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				FD37EA1428AB42CB003AE748 /* IdentitySpec.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		FD3C905D27E410DB00CD579F /* Common Networking */ = {
@@ -3656,6 +3683,7 @@
 		FD83B9B027CF200A005E1583 /* SessionUtilitiesKitTests */ = {
 			isa = PBXGroup;
 			children = (
+				FD37EA1228AB3F60003AE748 /* Database */,
 				FD83B9B927CF20A5005E1583 /* General */,
 			);
 			path = SessionUtilitiesKitTests;
@@ -5015,6 +5043,7 @@
 				FD17D7CA27F546D900122BE0 /* _001_InitialSetupMigration.swift in Sources */,
 				C3D9E4D12567777D0040E4F3 /* OWSMediaUtils.swift in Sources */,
 				C3BBE0AA2554D4DE0050F1E3 /* Dictionary+Utilities.swift in Sources */,
+				FD37EA1128AB34B3003AE748 /* TypedTableAlteration.swift in Sources */,
 				C3D9E4DA256778410040E4F3 /* UIImage+OWS.m in Sources */,
 				C32C600F256E07F5003C73A2 /* NSUserDefaults+OWS.m in Sources */,
 				C3D9E35E25675F640040E4F3 /* OWSFileSystem.m in Sources */,
@@ -5122,6 +5151,7 @@
 				7BFD1A8C2747150E00FB91B9 /* TurnServerInfo.swift in Sources */,
 				FDC4386527B4DE7600C60D73 /* RoomPollInfo.swift in Sources */,
 				FD245C6B2850667400B966DD /* VisibleMessage+Profile.swift in Sources */,
+				FD37EA0F28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift in Sources */,
 				C3D9E3BF25676AD70040E4F3 /* (null) in Sources */,
 				B8BF43BA26CC95FB007828D1 /* WebRTC+Utilities.swift in Sources */,
 				FDC438A627BB113A00C60D73 /* UserUnbanRequest.swift in Sources */,
@@ -5191,6 +5221,7 @@
 				FD716E682850318E00C96BF4 /* CallMode.swift in Sources */,
 				FD09799527FE7B8E00936362 /* Interaction.swift in Sources */,
 				FD5C72FF284F0F120029977D /* MessageReceiver+ConfigurationMessages.swift in Sources */,
+				FD37EA0D28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift in Sources */,
 				FDC4380927B31D4E00C60D73 /* OpenGroupAPIError.swift in Sources */,
 				FDC4382027B36ADC00C60D73 /* SOGSEndpoint.swift in Sources */,
 				FDC438C927BB706500C60D73 /* SendDirectMessageRequest.swift in Sources */,
@@ -5440,6 +5471,7 @@
 				FD83B9BF27CF2294005E1583 /* TestConstants.swift in Sources */,
 				FD83B9BB27CF20AF005E1583 /* SessionIdSpec.swift in Sources */,
 				FDC290A927D9B46D005DAE71 /* NimbleExtensions.swift in Sources */,
+				FD37EA1528AB42CB003AE748 /* IdentitySpec.swift in Sources */,
 				FDC290AA27D9B6FD005DAE71 /* Mock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -6818,7 +6850,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 366;
+				CURRENT_PROJECT_VERSION = 369;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6857,7 +6889,7 @@
 					"$(SRCROOT)",
 				);
 				LLVM_LTO = NO;
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
@@ -6890,7 +6922,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 366;
+				CURRENT_PROJECT_VERSION = 369;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -6929,7 +6961,7 @@
 					"$(SRCROOT)",
 				);
 				LLVM_LTO = NO;
-				MARKETING_VERSION = 2.0.0;
+				MARKETING_VERSION = 2.0.2;
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger";
 				PRODUCT_NAME = Session;

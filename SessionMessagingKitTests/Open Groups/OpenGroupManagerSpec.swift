@@ -186,6 +186,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     sender: "05\(TestConstants.publicKey)",
                     posted: 123,
                     edited: nil,
+                    deleted: nil,
                     seqNo: 124,
                     whisper: false,
                     whisperMods: false,
@@ -1277,7 +1278,12 @@ class OpenGroupManagerSpec: QuickSpec {
                             defaultWrite: nil,
                             upload: false,
                             defaultUpload: nil,
-                            details: TestCapabilitiesAndRoomApi.roomData.with(moderators: ["TestMod"], admins: [])
+                            details: TestCapabilitiesAndRoomApi.roomData.with(
+                                moderators: ["TestMod"],
+                                hiddenModerators: [],
+                                admins: [],
+                                hiddenAdmins: []
+                            )
                         )
                         
                         mockStorage.write { db in
@@ -1308,7 +1314,67 @@ class OpenGroupManagerSpec: QuickSpec {
                                     server: "testServer"
                                 ),
                                 profileId: "TestMod",
-                                role: .moderator
+                                role: .moderator,
+                                isHidden: false
+                            )
+                        ))
+                    }
+                    
+                    it("updates for hidden moderators") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
+                        testPollInfo = OpenGroupAPI.RoomPollInfo(
+                            token: "testRoom",
+                            activeUsers: 10,
+                            admin: false,
+                            globalAdmin: false,
+                            moderator: false,
+                            globalModerator: false,
+                            read: false,
+                            defaultRead: nil,
+                            defaultAccessible: nil,
+                            write: false,
+                            defaultWrite: nil,
+                            upload: false,
+                            defaultUpload: nil,
+                            details: TestCapabilitiesAndRoomApi.roomData.with(
+                                moderators: [],
+                                hiddenModerators: ["TestMod2"],
+                                admins: [],
+                                hiddenAdmins: []
+                            )
+                        )
+                        
+                        mockStorage.write { db in
+                            try OpenGroupManager.handlePollInfo(
+                                db,
+                                pollInfo: testPollInfo,
+                                publicKey: TestConstants.publicKey,
+                                for: "testRoom",
+                                on: "testServer",
+                                dependencies: dependencies
+                            ) { didComplete = true }
+                        }
+                        
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
+                        expect(
+                            mockStorage.read { db in
+                                try GroupMember
+                                    .filter(GroupMember.Columns.groupId == OpenGroup.idFor(
+                                        roomToken: "testRoom",
+                                        server: "testServer"
+                                    ))
+                                    .fetchOne(db)
+                            }
+                        ).to(equal(
+                            GroupMember(
+                                groupId: OpenGroup.idFor(
+                                    roomToken: "testRoom",
+                                    server: "testServer"
+                                ),
+                                profileId: "TestMod2",
+                                role: .moderator,
+                                isHidden: true
                             )
                         ))
                     }
@@ -1368,7 +1434,12 @@ class OpenGroupManagerSpec: QuickSpec {
                             defaultWrite: nil,
                             upload: false,
                             defaultUpload: nil,
-                            details: TestCapabilitiesAndRoomApi.roomData.with(moderators: [], admins: ["TestAdmin"])
+                            details: TestCapabilitiesAndRoomApi.roomData.with(
+                                moderators: [],
+                                hiddenModerators: [],
+                                admins: ["TestAdmin"],
+                                hiddenAdmins: []
+                            )
                         )
                         
                         mockStorage.write { db in
@@ -1399,7 +1470,67 @@ class OpenGroupManagerSpec: QuickSpec {
                                     server: "testServer"
                                 ),
                                 profileId: "TestAdmin",
-                                role: .admin
+                                role: .admin,
+                                isHidden: false
+                            )
+                        ))
+                    }
+                    
+                    it("updates for hidden admins") {
+                        var didComplete: Bool = false   // Prevent multi-threading test bugs
+                        
+                        testPollInfo = OpenGroupAPI.RoomPollInfo(
+                            token: "testRoom",
+                            activeUsers: 10,
+                            admin: false,
+                            globalAdmin: false,
+                            moderator: false,
+                            globalModerator: false,
+                            read: false,
+                            defaultRead: nil,
+                            defaultAccessible: nil,
+                            write: false,
+                            defaultWrite: nil,
+                            upload: false,
+                            defaultUpload: nil,
+                            details: TestCapabilitiesAndRoomApi.roomData.with(
+                                moderators: [],
+                                hiddenModerators: [],
+                                admins: [],
+                                hiddenAdmins: ["TestAdmin2"]
+                            )
+                        )
+                        
+                        mockStorage.write { db in
+                            try OpenGroupManager.handlePollInfo(
+                                db,
+                                pollInfo: testPollInfo,
+                                publicKey: TestConstants.publicKey,
+                                for: "testRoom",
+                                on: "testServer",
+                                dependencies: dependencies
+                            ) { didComplete = true }
+                        }
+                        
+                        expect(didComplete).toEventually(beTrue(), timeout: .milliseconds(50))
+                        expect(
+                            mockStorage.read { db in
+                                try GroupMember
+                                    .filter(GroupMember.Columns.groupId == OpenGroup.idFor(
+                                        roomToken: "testRoom",
+                                        server: "testServer"
+                                    ))
+                                    .fetchOne(db)
+                            }
+                        ).to(equal(
+                            GroupMember(
+                                groupId: OpenGroup.idFor(
+                                    roomToken: "testRoom",
+                                    server: "testServer"
+                                ),
+                                profileId: "TestAdmin2",
+                                role: .admin,
+                                isHidden: true
                             )
                         ))
                     }
@@ -1978,6 +2109,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     sender: nil,
                                     posted: 123,
                                     edited: nil,
+                                    deleted: nil,
                                     seqNo: 124,
                                     whisper: false,
                                     whisperMods: false,
@@ -2039,6 +2171,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     sender: nil,
                                     posted: 123,
                                     edited: nil,
+                                    deleted: nil,
                                     seqNo: 124,
                                     whisper: false,
                                     whisperMods: false,
@@ -2071,6 +2204,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     sender: "05\(TestConstants.publicKey)",
                                     posted: 123,
                                     edited: nil,
+                                    deleted: nil,
                                     seqNo: 124,
                                     whisper: false,
                                     whisperMods: false,
@@ -2114,6 +2248,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                     sender: "05\(TestConstants.publicKey)",
                                     posted: 122,
                                     edited: nil,
+                                    deleted: nil,
                                     seqNo: 123,
                                     whisper: false,
                                     whisperMods: false,
@@ -2152,6 +2287,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                         sender: "05\(TestConstants.publicKey)",
                                         posted: 123,
                                         edited: nil,
+                                        deleted: nil,
                                         seqNo: 123,
                                         whisper: false,
                                         whisperMods: false,
@@ -2180,6 +2316,7 @@ class OpenGroupManagerSpec: QuickSpec {
                                         sender: "05\(TestConstants.publicKey)",
                                         posted: 123,
                                         edited: nil,
+                                        deleted: nil,
                                         seqNo: 123,
                                         whisper: false,
                                         whisperMods: false,
@@ -2328,6 +2465,10 @@ class OpenGroupManagerSpec: QuickSpec {
                         mockSodium
                             .when { $0.combineKeys(lhsKeyBytes: anyArray(), rhsKeyBytes: anyArray()) }
                             .thenReturn(Data(hex: testDirectMessage.sender.removingIdPrefixIfNeeded()).bytes)
+                        
+                        mockSodium
+                            .when { $0.sessionId(any(), matchesBlindedId: any(), serverPublicKey: any(), genericHash: mockGenericHash) }
+                            .thenReturn(false)
                     }
                     
                     it("updates the inbox latest message id") {
@@ -2422,6 +2563,10 @@ class OpenGroupManagerSpec: QuickSpec {
                         mockSodium
                             .when { $0.combineKeys(lhsKeyBytes: anyArray(), rhsKeyBytes: anyArray()) }
                             .thenReturn(Data(hex: testDirectMessage.recipient.removingIdPrefixIfNeeded()).bytes)
+                        
+                        mockSodium
+                            .when { $0.sessionId(any(), matchesBlindedId: any(), serverPublicKey: any(), genericHash: mockGenericHash) }
+                            .thenReturn(false)
                     }
                     
                     it("updates the outbox latest message id") {
@@ -2602,7 +2747,8 @@ class OpenGroupManagerSpec: QuickSpec {
                         try GroupMember(
                             groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
                             profileId: "05\(TestConstants.publicKey)",
-                            role: .moderator
+                            role: .moderator,
+                            isHidden: false
                         ).insert(db)
                     }
                     
@@ -2621,7 +2767,48 @@ class OpenGroupManagerSpec: QuickSpec {
                         try GroupMember(
                             groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
                             profileId: "05\(TestConstants.publicKey)",
-                            role: .admin
+                            role: .admin,
+                            isHidden: false
+                        ).insert(db)
+                    }
+                    
+                    expect(
+                        OpenGroupManager.isUserModeratorOrAdmin(
+                            "05\(TestConstants.publicKey)",
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    ).to(beTrue())
+                }
+                
+                it("returns true if the moderator is hidden") {
+                    mockStorage.write { db in
+                        try GroupMember(
+                            groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
+                            profileId: "05\(TestConstants.publicKey)",
+                            role: .moderator,
+                            isHidden: true
+                        ).insert(db)
+                    }
+                    
+                    expect(
+                        OpenGroupManager.isUserModeratorOrAdmin(
+                            "05\(TestConstants.publicKey)",
+                            for: "testRoom",
+                            on: "testServer",
+                            using: dependencies
+                        )
+                    ).to(beTrue())
+                }
+                
+                it("returns true if the admin is hidden") {
+                    mockStorage.write { db in
+                        try GroupMember(
+                            groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
+                            profileId: "05\(TestConstants.publicKey)",
+                            role: .admin,
+                            isHidden: true
                         ).insert(db)
                     }
                     
@@ -2672,7 +2859,8 @@ class OpenGroupManagerSpec: QuickSpec {
                             try GroupMember(
                                 groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
                                 profileId: "00\(otherKey)",
-                                role: .moderator
+                                role: .moderator,
+                                isHidden: false
                             ).insert(db)
                             
                             try Identity(variant: .ed25519PublicKey, data: Data.data(fromHex: otherKey)!).save(db)
@@ -2709,7 +2897,8 @@ class OpenGroupManagerSpec: QuickSpec {
                             try GroupMember(
                                 groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
                                 profileId: "15\(otherKey)",
-                                role: .moderator
+                                role: .moderator,
+                                isHidden: false
                             ).insert(db)
                         }
                         
@@ -2766,7 +2955,8 @@ class OpenGroupManagerSpec: QuickSpec {
                             try GroupMember(
                                 groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
                                 profileId: "05\(otherKey)",
-                                role: .moderator
+                                role: .moderator,
+                                isHidden: false
                             ).insert(db)
                             
                             try Identity(variant: .x25519PublicKey, data: Data.data(fromHex: otherKey)!).save(db)
@@ -2805,7 +2995,8 @@ class OpenGroupManagerSpec: QuickSpec {
                             try GroupMember(
                                 groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
                                 profileId: "15\(otherKey)",
-                                role: .moderator
+                                role: .moderator,
+                                isHidden: false
                             ).insert(db)
                             
                             try Identity(variant: .x25519PublicKey, data: Data.data(fromHex: TestConstants.publicKey)!).save(db)
@@ -2911,7 +3102,8 @@ class OpenGroupManagerSpec: QuickSpec {
                             try GroupMember(
                                 groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
                                 profileId: "05\(otherKey)",
-                                role: .moderator
+                                role: .moderator,
+                                isHidden: false
                             ).insert(db)
                             
                             try Identity(variant: .x25519PublicKey, data: Data.data(fromHex: otherKey)!).save(db)
@@ -2951,7 +3143,8 @@ class OpenGroupManagerSpec: QuickSpec {
                             try GroupMember(
                                 groupId: OpenGroup.idFor(roomToken: "testRoom", server: "testServer"),
                                 profileId: "00\(otherKey)",
-                                role: .moderator
+                                role: .moderator,
+                                isHidden: false
                             ).insert(db)
                             
                             try Identity(variant: .x25519PublicKey, data: Data.data(fromHex: TestConstants.publicKey)!).save(db)
@@ -2977,6 +3170,7 @@ class OpenGroupManagerSpec: QuickSpec {
             context("when getting the default rooms if needed") {
                 beforeEach {
                     class TestRoomsApi: TestOnionRequestAPI {
+                        static let capabilitiesData: OpenGroupAPI.Capabilities = OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: nil)
                         static let roomsData: [OpenGroupAPI.Room] = [
                             TestCapabilitiesAndRoomApi.roomData,
                             OpenGroupAPI.Room(
@@ -3009,7 +3203,26 @@ class OpenGroupManagerSpec: QuickSpec {
                         ]
                         
                         override class var mockResponse: Data? {
-                            return try! JSONEncoder().encode(roomsData)
+                            let responses: [Data] = [
+                                try! JSONEncoder().encode(
+                                    OpenGroupAPI.BatchSubResponse(
+                                        code: 200,
+                                        headers: [:],
+                                        body: capabilitiesData,
+                                        failedToParseBody: false
+                                    )
+                                ),
+                                try! JSONEncoder().encode(
+                                    OpenGroupAPI.BatchSubResponse(
+                                        code: 200,
+                                        headers: [:],
+                                        body: roomsData,
+                                        failedToParseBody: false
+                                    )
+                                )
+                            ]
+                            
+                            return "[\(responses.map { String(data: $0, encoding: .utf8)! }.joined(separator: ","))]".data(using: .utf8)
                         }
                     }
                     dependencies = dependencies.with(onionApi: TestRoomsApi.self)
@@ -3178,6 +3391,7 @@ class OpenGroupManagerSpec: QuickSpec {
                 
                 it("fetches the image for any rooms with images") {
                     class TestRoomsApi: TestOnionRequestAPI {
+                        static let capabilitiesData: OpenGroupAPI.Capabilities = OpenGroupAPI.Capabilities(capabilities: [.sogs], missing: nil)
                         static let roomsData: [OpenGroupAPI.Room] = [
                             OpenGroupAPI.Room(
                                 token: "test2",
@@ -3209,7 +3423,26 @@ class OpenGroupManagerSpec: QuickSpec {
                         ]
                         
                         override class var mockResponse: Data? {
-                            return try! JSONEncoder().encode(roomsData)
+                            let responses: [Data] = [
+                                try! JSONEncoder().encode(
+                                    OpenGroupAPI.BatchSubResponse(
+                                        code: 200,
+                                        headers: [:],
+                                        body: capabilitiesData,
+                                        failedToParseBody: false
+                                    )
+                                ),
+                                try! JSONEncoder().encode(
+                                    OpenGroupAPI.BatchSubResponse(
+                                        code: 200,
+                                        headers: [:],
+                                        body: roomsData,
+                                        failedToParseBody: false
+                                    )
+                                )
+                            ]
+                            
+                            return "[\(responses.map { String(data: $0, encoding: .utf8)! }.joined(separator: ","))]".data(using: .utf8)
                         }
                     }
                     let testDate: Date = Date(timeIntervalSince1970: 1234567890)
@@ -3218,7 +3451,9 @@ class OpenGroupManagerSpec: QuickSpec {
                         date: testDate
                     )
                     
-                    OpenGroupManager.getDefaultRoomsIfNeeded(using: dependencies)
+                    OpenGroupManager
+                        .getDefaultRoomsIfNeeded(using: dependencies)
+                        .retainUntilComplete()
 
                     expect(mockUserDefaults)
                         .toEventually(
@@ -3674,7 +3909,12 @@ class OpenGroupManagerSpec: QuickSpec {
 // MARK: - Room Convenience Extensions
 
 extension OpenGroupAPI.Room {
-    func with(moderators: [String], admins: [String]) -> OpenGroupAPI.Room {
+    func with(
+        moderators: [String],
+        hiddenModerators: [String],
+        admins: [String],
+        hiddenAdmins: [String]
+    ) -> OpenGroupAPI.Room {
         return OpenGroupAPI.Room(
             token: self.token,
             name: self.name,
@@ -3689,11 +3929,11 @@ extension OpenGroupAPI.Room {
             admin: self.admin,
             globalAdmin: self.globalAdmin,
             admins: admins,
-            hiddenAdmins: self.hiddenAdmins,
+            hiddenAdmins: hiddenAdmins,
             moderator: self.moderator,
             globalModerator: self.globalModerator,
             moderators: moderators,
-            hiddenModerators: self.hiddenModerators,
+            hiddenModerators: hiddenModerators,
             read: self.read,
             defaultRead: self.defaultRead,
             defaultAccessible: self.defaultAccessible,

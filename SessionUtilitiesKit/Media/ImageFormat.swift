@@ -9,4 +9,5 @@ public enum ImageFormat {
     case tiff
     case jpeg
     case bmp
+    case webp
 }

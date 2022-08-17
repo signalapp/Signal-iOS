@@ -650,7 +650,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         try GroupMember(
                             groupId: threadId,
                             profileId: memberId,
-                            role: .standard
+                            role: .standard,
+                            isHidden: false
                         ).insert(db)
                         
                         if !validProfileIds.contains(memberId) {
@@ -662,7 +663,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         try GroupMember(
                             groupId: threadId,
                             profileId: adminId,
-                            role: .admin
+                            role: .admin,
+                            isHidden: false
                         ).insert(db)
                         
                         if !validProfileIds.contains(adminId) {
@@ -674,7 +676,8 @@ enum _003_YDBToGRDBMigration: Migration {
                         try GroupMember(
                             groupId: threadId,
                             profileId: zombieId,
-                            role: .zombie
+                            role: .zombie,
+                            isHidden: false
                         ).insert(db)
                         
                         if !validProfileIds.contains(zombieId) {
