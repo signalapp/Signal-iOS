@@ -234,7 +234,7 @@ public enum Preferences {
             let url: URL = URL(fileURLWithPath: filename)
             
             return Bundle.main.url(
-                forResource: url.deletingPathExtension().absoluteString,
+                forResource: url.deletingPathExtension().path,
                 withExtension: url.pathExtension
             )
         }
