@@ -17,7 +17,7 @@ public class MessageRequestsViewModel {
     
     // MARK: - Variables
     
-    public static let pageSize: Int = 20
+    public static let pageSize: Int = 15
     
     // MARK: - Initialization
     

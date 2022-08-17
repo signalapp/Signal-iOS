@@ -4,7 +4,7 @@ import UIKit.UIColor
 import SessionUtilitiesKit
 
 public extension Theme {
-    public enum PrimaryColor: String, Codable, CaseIterable, EnumStringSetting {
+    enum PrimaryColor: String, Codable, CaseIterable, EnumStringSetting {
         case green
         case blue
         case purple
@@ -24,7 +24,7 @@ public extension Theme {
         
         public var color: UIColor {
             switch self {
-                case .green: return #colorLiteral(red: 0.1882352941, green: 0.9411764706, blue: 0.6549019608, alpha: 1)
+                case .green: return #colorLiteral(red: 0.1921568627, green: 0.9450980392, blue: 0.5882352941, alpha: 1)
                 case .blue: return #colorLiteral(red: 0.3411764706, green: 0.7882352941, blue: 0.9803921569, alpha: 1)
                 case .purple: return #colorLiteral(red: 0.7882352941, green: 0.5764705882, blue: 1, alpha: 1)
                 case .pink: return #colorLiteral(red: 1, green: 0.5843137255, blue: 0.937254902, alpha: 1)

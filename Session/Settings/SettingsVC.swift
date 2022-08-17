@@ -254,7 +254,7 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             UIView.separator(),
             getSettingButton(title: "vc_settings_notifications_button_title".localized(), action: #selector(showNotificationSettings)),
             UIView.separator(),
-            getSettingButton(title: "CONVERSATIONS_TITLE".localized(), action: #selector(showChatSettings)),
+            getSettingButton(title: "CONVERSATIONS_TITLE".localized(), action: #selector(showConversationSettings)),
             UIView.separator(),
             getSettingButton(title: "MESSAGE_REQUESTS_TITLE".localized(), action: #selector(showMessageRequests)),
             UIView.separator(),
@@ -544,8 +544,10 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     }
     
     @objc private func showNotificationSettings() {
-        let notificationSettingsVC = NotificationSettingsViewController()
-        self.navigationController?.pushViewController(notificationSettingsVC, animated: true)
+        let settingsViewController: SettingsTableViewController = SettingsTableViewController(
+            viewModel: NotificationSettingsViewModel()
+        )
+        self.navigationController?.pushViewController(settingsViewController, animated: true)
     }
     
     @objc private func showMessageRequests() {
@@ -553,9 +555,9 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    @objc private func showChatSettings() {
-        let chatSettingsVC = ChatSettingsViewController()
-        self.navigationController?.pushViewController(chatSettingsVC, animated: true)
+    @objc private func showConversationSettings() {
+        let conversationSettingsVC = ConversationSettingsViewController()
+        self.navigationController?.pushViewController(conversationSettingsVC, animated: true)
     }
     
     @objc private func showAppearanceSettings() {
@@ -571,7 +573,10 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     }
     
     @objc private func showHelp() {
-        
+        let settingsViewController: SettingsTableViewController = SettingsTableViewController(
+            viewModel: HelpViewModel()
+        )
+        self.navigationController?.pushViewController(settingsViewController, animated: true)
     }
     
     @objc private func clearAllData() {

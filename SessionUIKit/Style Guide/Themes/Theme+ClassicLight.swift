@@ -8,6 +8,7 @@ internal enum Theme_ClassicLight: ThemeColors {
         .primary: .primary,
         .defaultPrimary: Theme.PrimaryColor.green.color,
         .danger: #colorLiteral(red: 0.8823529412, green: 0.1764705882, blue: 0.09803921569, alpha: 1),
+        .white: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
         .clear: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0),
         .backgroundPrimary: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
         .backgroundSecondary: #colorLiteral(red: 0.9764705882, green: 0.9764705882, blue: 0.9764705882, alpha: 1),
@@ -50,6 +51,10 @@ internal enum Theme_ClassicLight: ThemeColors {
         .outlineButton_destructiveBackground: .clear,
         .outlineButton_destructiveHighlight: #colorLiteral(red: 0.8823529412, green: 0.1764705882, blue: 0.09803921569, alpha: 0.3),
         .outlineButton_destructiveBorder: #colorLiteral(red: 0.8823529412, green: 0.1764705882, blue: 0.09803921569, alpha: 1),
+        
+        // SolidButton
+        .solidButton_background: #colorLiteral(red: 0.9411764706, green: 0.9411764706, blue: 0.9411764706, alpha: 1),
+        .solidButton_highlight: #colorLiteral(red: 0.8156862745, green: 0.8156862745, blue: 0.8156862745, alpha: 1),
         
         // Settings
         .settings_tabBackground: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),

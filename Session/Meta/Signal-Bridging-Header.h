@@ -9,7 +9,6 @@
 // Separate iOS Frameworks from other imports.
 #import "AvatarViewHelper.h"
 #import "AVAudioSession+OWS.h"
-#import "NotificationSettingsViewController.h"
 #import "OWSAudioPlayer.h"
 #import "OWSBezierPathView.h"
 #import "OWSConversationSettingsViewController.h"

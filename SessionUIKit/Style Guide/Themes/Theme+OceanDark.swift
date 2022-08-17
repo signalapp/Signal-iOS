@@ -8,6 +8,7 @@ internal enum Theme_OceanDark: ThemeColors {
         .primary: .primary,
         .defaultPrimary: Theme.PrimaryColor.blue.color,
         .danger: #colorLiteral(red: 1, green: 0.2274509804, blue: 0.2274509804, alpha: 1),
+        .white: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
         .clear: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0),
         .backgroundPrimary: #colorLiteral(red: 0.1450980392, green: 0.1529411765, blue: 0.2078431373, alpha: 1),
         .backgroundSecondary: #colorLiteral(red: 0.1019607843, green: 0.1098039216, blue: 0.1568627451, alpha: 1),
@@ -51,6 +52,10 @@ internal enum Theme_OceanDark: ThemeColors {
         .outlineButton_destructiveHighlight: #colorLiteral(red: 1, green: 0.2274509804, blue: 0.2274509804, alpha: 0.3),
         .outlineButton_destructiveBorder: #colorLiteral(red: 1, green: 0.2274509804, blue: 0.2274509804, alpha: 1),
         
+        // SolidButton
+        .solidButton_background: #colorLiteral(red: 0.1450980392, green: 0.1529411765, blue: 0.2078431373, alpha: 1),
+        .solidButton_highlight: #colorLiteral(red: 0.2117647059, green: 0.2196078431, blue: 0.3019607844, alpha: 1),
+        
         // Settings
         .settings_tabBackground: #colorLiteral(red: 0.1019607843, green: 0.1098039216, blue: 0.1568627451, alpha: 1),
         .settings_tabHighlight: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1),
@@ -66,8 +71,8 @@ internal enum Theme_OceanDark: ThemeColors {
         .conversationButton_unreadBackground: #colorLiteral(red: 0.1450980392, green: 0.1529411765, blue: 0.2078431373, alpha: 1),
         .conversationButton_unreadHighlight: #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1),
         .conversationButton_unreadStripBackground: .primary,
-        .conversationButton_unreadBubbleBackground: Theme.PrimaryColor.blue.color,
-        .conversationButton_unreadBubbleText: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+        .conversationButton_unreadBubbleBackground: .primary,
+        .conversationButton_unreadBubbleText: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1),
         .conversationButton_pinBackground: Theme.PrimaryColor.yellow.color
     ]
 }

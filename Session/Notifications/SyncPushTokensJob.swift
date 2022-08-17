@@ -164,12 +164,3 @@ extension SyncPushTokensJob {
             .retainUntilComplete()
     }
 }
-
-// MARK: - Objective C Support
-
-@objc(OWSSyncPushTokensJob)
-class OWSSyncPushTokensJob: NSObject {
-    @objc static func run() {
-        SyncPushTokensJob.run(uploadOnlyIfStale: false)
-    }
-}

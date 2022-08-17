@@ -118,8 +118,8 @@ class MessageRequestsCell: UITableViewCell {
             unreadCountView.heightAnchor.constraint(equalToConstant: FullConversationCell.unreadCountViewSize),
             
             unreadCountLabel.topAnchor.constraint(equalTo: unreadCountView.topAnchor),
-            unreadCountLabel.leftAnchor.constraint(equalTo: unreadCountView.leftAnchor),
-            unreadCountLabel.rightAnchor.constraint(equalTo: unreadCountView.rightAnchor),
+            unreadCountLabel.leftAnchor.constraint(equalTo: unreadCountView.leftAnchor, constant: 4),
+            unreadCountLabel.rightAnchor.constraint(equalTo: unreadCountView.rightAnchor, constant: -4),
             unreadCountLabel.bottomAnchor.constraint(equalTo: unreadCountView.bottomAnchor)
         ])
     }

@@ -83,7 +83,7 @@ extension Setting {
 // MARK: - Keys
 
 public extension Setting {
-    struct BoolKey: RawRepresentable, ExpressibleByStringLiteral {
+    struct BoolKey: RawRepresentable, ExpressibleByStringLiteral, Hashable {
         public let rawValue: String
         
         public init(_ rawValue: String) { self.rawValue = rawValue }
@@ -93,7 +93,7 @@ public extension Setting {
         public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
     }
     
-    struct DateKey: RawRepresentable, ExpressibleByStringLiteral {
+    struct DateKey: RawRepresentable, ExpressibleByStringLiteral, Hashable {
         public let rawValue: String
         
         public init(_ rawValue: String) { self.rawValue = rawValue }
@@ -103,7 +103,7 @@ public extension Setting {
         public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
     }
     
-    struct DoubleKey: RawRepresentable, ExpressibleByStringLiteral {
+    struct DoubleKey: RawRepresentable, ExpressibleByStringLiteral, Hashable {
         public let rawValue: String
         
         public init(_ rawValue: String) { self.rawValue = rawValue }
@@ -113,7 +113,7 @@ public extension Setting {
         public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
     }
     
-    struct IntKey: RawRepresentable, ExpressibleByStringLiteral {
+    struct IntKey: RawRepresentable, ExpressibleByStringLiteral, Hashable {
         public let rawValue: String
         
         public init(_ rawValue: String) { self.rawValue = rawValue }
@@ -123,7 +123,7 @@ public extension Setting {
         public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
     }
     
-    struct StringKey: RawRepresentable, ExpressibleByStringLiteral {
+    struct StringKey: RawRepresentable, ExpressibleByStringLiteral, Hashable {
         public let rawValue: String
         
         public init(_ rawValue: String) { self.rawValue = rawValue }
@@ -133,7 +133,7 @@ public extension Setting {
         public init(extendedGraphemeClusterLiteral value: String) { self.init(value) }
     }
     
-    struct EnumKey: RawRepresentable, ExpressibleByStringLiteral {
+    struct EnumKey: RawRepresentable, ExpressibleByStringLiteral, Hashable {
         public let rawValue: String
         
         public init(_ rawValue: String) { self.rawValue = rawValue }

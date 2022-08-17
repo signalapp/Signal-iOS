@@ -139,7 +139,7 @@ final class LinkPreviewView: UIView {
         var image: UIImage? = state.image
         let stateHasImage: Bool = (image != nil)
         if image == nil && (state is LinkPreview.DraftState || state is LinkPreview.SentState) {
-            image = UIImage(named: "Link")
+            image = UIImage(named: "Link")?.withRenderingMode(.alwaysTemplate)
         }
         
         // Image view
@@ -164,15 +164,8 @@ final class LinkPreviewView: UIView {
         if image != nil { loader.stopAnimating() } else { loader.startAnimating() }
         
         // Title
-        let sentLinkPreviewTextColor: UIColor = {
-            switch (isOutgoing, AppModeManager.shared.currentAppMode) {
-                case (false, .light): return .black
-                case (true, .light): return Colors.grey
-                default: return .white
-            }
-        }()
-        titleLabel.textColor = sentLinkPreviewTextColor
         titleLabel.text = state.title
+        titleLabel.themeTextColor = .textPrimary
         
         // Horizontal stack view
         switch state {

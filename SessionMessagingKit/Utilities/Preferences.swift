@@ -1,9 +1,10 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
-import GRDB
-import SessionUtilitiesKit
 import AudioToolbox
+import GRDB
+import DifferenceKit
+import SessionUtilitiesKit
 
 public extension Setting.EnumKey {
     /// Controls how notifications should appear for the user (See `NotificationPreviewType` for the options)
@@ -77,7 +78,7 @@ public extension Setting.DoubleKey {
 }
 
 public enum Preferences {
-    public enum NotificationPreviewType: Int, CaseIterable, EnumIntSetting {
+    public enum NotificationPreviewType: Int, CaseIterable, EnumIntSetting, Differentiable {
         /// Notifications should include both the sender name and a preview of the message content
         case nameAndPreview
         
@@ -87,7 +88,7 @@ public enum Preferences {
         /// Notifications should be a generic message
         case noNameNoPreview
         
-        var name: String {
+        public var name: String {
             switch self {
                 case .nameAndPreview: return "NOTIFICATIONS_SENDER_AND_MESSAGE".localized()
                 case .nameNoPreview: return "NOTIFICATIONS_SENDER_ONLY".localized()
@@ -96,7 +97,7 @@ public enum Preferences {
         }
     }
     
-    public enum Sound: Int, Codable, DatabaseValueConvertible, EnumIntSetting {
+    public enum Sound: Int, Codable, DatabaseValueConvertible, EnumIntSetting, Differentiable {
         public static var defaultiOSIncomingRingtone: Sound = .opening
         public static var defaultNotificationSound: Sound = .note
         
@@ -157,7 +158,7 @@ public enum Preferences {
             ]
         }
         
-        var displayName: String {
+        public var displayName: String {
             // TODO: Should we localize these sound names?
             switch self {
                 case .`default`: return ""
@@ -234,7 +235,7 @@ public enum Preferences {
             let url: URL = URL(fileURLWithPath: filename)
             
             return Bundle.main.url(
-                forResource: url.deletingPathExtension().absoluteString,
+                forResource: url.deletingPathExtension().path,
                 withExtension: url.pathExtension
             )
         }
@@ -306,50 +307,6 @@ public enum Preferences {
 
 @objc(SMKPreferences)
 public class SMKPreferences: NSObject {
-    @objc public static let notificationTypes: [Int] = Preferences.NotificationPreviewType
-        .allCases
-        .map { $0.rawValue }
-    
-    @objc public static func nameForNotificationPreviewType(_ previewType: Int) -> String {
-        return Preferences.NotificationPreviewType(rawValue: previewType)
-            .defaulting(to: .nameAndPreview)
-            .name
-    }
-    
-    @objc public static func notificationPreviewType() -> Int {
-        return Storage.shared[.preferencesNotificationPreviewType]
-            .defaulting(to: Preferences.NotificationPreviewType.nameAndPreview)
-            .rawValue
-    }
-    
-    @objc public static func setNotificationPreviewType(_ previewType: Int) {
-        Storage.shared.write { db in
-            db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: previewType)
-                .defaulting(to: .nameAndPreview)
-        }
-    }
-    
-    @objc public static func accessibilityIdentifierForNotificationPreviewType(_ previewType: Int) -> String {
-        let notificationPreviewType: Preferences.NotificationPreviewType = Preferences.NotificationPreviewType(rawValue: previewType)
-            .defaulting(to: .nameAndPreview)
-        
-        switch notificationPreviewType {
-            case .nameAndPreview: return "NotificationNamePreview"
-            case .nameNoPreview: return "NotificationNameNoPreview"
-            case .noNameNoPreview: return "NotificationNoNameNoPreview"
-        }
-    }
-    
-    @objc(setPlayNotificationSoundInForeground:)
-    static func objc_setPlayNotificationSoundInForeground(_ enabled: Bool) {
-        Storage.shared.write { db in db[.playNotificationSoundInForeground] = enabled }
-    }
-    
-    @objc(playNotificationSoundInForeground)
-    static func objc_playNotificationSoundInForeground() -> Bool {
-        return Storage.shared[.playNotificationSoundInForeground]
-    }
-    
     @objc(setScreenSecurity:)
     static func objc_setScreenSecurity(_ enabled: Bool) {
         Storage.shared.write { db in db[.appSwitcherPreviewEnabled] = enabled }

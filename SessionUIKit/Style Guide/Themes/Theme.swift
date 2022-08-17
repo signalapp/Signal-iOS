@@ -59,6 +59,7 @@ public enum ThemeValue {
     case primary
     case defaultPrimary
     case danger
+    case white
     case clear
     case backgroundPrimary
     case backgroundSecondary
@@ -101,6 +102,10 @@ public enum ThemeValue {
     case outlineButton_destructiveBackground
     case outlineButton_destructiveHighlight
     case outlineButton_destructiveBorder
+    
+    // SolidButton
+    case solidButton_background
+    case solidButton_highlight
     
     // Settings
     case settings_tabBackground

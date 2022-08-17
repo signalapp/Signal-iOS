@@ -5,7 +5,7 @@ import SessionUIKit
 import SignalUtilitiesKit
 
 // FIXME: Refactor to be MVVM and use database observation
-class ChatSettingsViewController: OWSTableViewController {
+class ConversationSettingsViewController: OWSTableViewController {
     // MARK: - Lifecycle
     
     override func viewDidLoad() {

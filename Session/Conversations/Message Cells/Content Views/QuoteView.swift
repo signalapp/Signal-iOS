@@ -138,7 +138,12 @@ final class QuoteView: UIView {
                     .withRenderingMode(.alwaysTemplate)
             )
             
-            imageView.tintColor = .white
+            imageView.themeTintColor = {
+                switch mode {
+                    case .regular: return (direction == .outgoing ? .white : .messageBubble_outgoingText)
+                    case .draft: return .messageBubble_outgoingText
+                }
+            }()
             imageView.contentMode = .center
             imageView.themeBackgroundColor = lineColor
             imageView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
@@ -204,7 +209,9 @@ final class QuoteView: UIView {
                         isOutgoingMessage: isOutgoing,
                         textColor: textColor,
                         primaryColor: primaryColor,
-                        attributes: [:]
+                        attributes: [
+                            .foregroundColor: textColor
+                        ]
                     )
                 }
                 .defaulting(
@@ -256,14 +263,6 @@ final class QuoteView: UIView {
             mainStackView.addArrangedSubview(bodyLabel)
         }
         
-        // Cancel button
-        let cancelButton = UIButton(type: .custom)
-        cancelButton.setImage(UIImage(named: "X")?.withRenderingMode(.alwaysTemplate), for: UIControl.State.normal)
-        cancelButton.tintColor = (isLightMode ? .black : .white)
-        cancelButton.set(.width, to: cancelButtonSize)
-        cancelButton.set(.height, to: cancelButtonSize)
-        cancelButton.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
-        
         // Constraints
         contentView.addSubview(mainStackView)
         mainStackView.pin(to: contentView)
@@ -292,6 +291,14 @@ final class QuoteView: UIView {
         lineView.set(.height, to: contentViewHeight - 8) // Add a small amount of spacing above and below the line
         
         if mode == .draft {
+            // Cancel button
+            let cancelButton = UIButton(type: .custom)
+            cancelButton.setImage(UIImage(named: "X")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            cancelButton.themeTintColor = .textPrimary
+            cancelButton.set(.width, to: cancelButtonSize)
+            cancelButton.set(.height, to: cancelButtonSize)
+            cancelButton.addTarget(self, action: #selector(cancel), for: UIControl.Event.touchUpInside)
+            
             addSubview(cancelButton)
             cancelButton.center(.vertical, in: self)
             cancelButton.pin(.right, to: .right, of: self)
