@@ -582,7 +582,7 @@ public extension Interaction {
     
     func notificationIdentifier(isBackgroundPoll: Bool) -> String {
         // When the app is in the background we want the notifications to be grouped to prevent spam
-        guard isBackgroundPoll else { return threadId }
+        guard !isBackgroundPoll else { return threadId }
         
         return "\(threadId)-\(id ?? 0)"
     }
