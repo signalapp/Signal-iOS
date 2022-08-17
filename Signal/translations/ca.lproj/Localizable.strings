@@ -811,6 +811,9 @@
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "Tanca";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "Automàtic";
 
@@ -2239,9 +2242,6 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Surt de la trucada";
 
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ i %3$@ més són a la trucada";
-
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "No es pot rebre ni àudio ni vídeo de %@,";
 
@@ -2301,9 +2301,6 @@
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ ha iniciat una trucada de grup.";
-
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ i 1 més són a la trucada";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ i %2$@ són a la trucada";
@@ -2835,6 +2832,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Envia un missatge a un administrador";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Sol·licitud de bloqueig";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Sol·licitud de bloqueig";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Bloqueig de la sol·licitud?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Trieu un administrador per a aquest grup abans d'abandonar-lo.";
@@ -3406,6 +3415,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Tipus MIME";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Desapareix";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Lliurat a";
 
@@ -3432,6 +3444,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Vist per";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "Mai";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Rebut";
@@ -3617,10 +3632,10 @@
 "MISSED_CALL" = "Telefonada perduda";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "Trucada perduda en mode \"No molestar\"";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "Trucada perduda en mode \"Focus\"";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Podeu activar l'accés a la càmera a la Configuració de l'iOS per fer videotrucades amb el Signal.";
@@ -6104,7 +6119,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Suprimits";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "S'ha guardat la història";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Reenvia";
@@ -6121,6 +6136,9 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Encara no té respostes";
 
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "Encara no té visualitzacions";
+
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Deixa que les persones que veuen la teva història puguin reaccionar i respondre.";
 
@@ -6130,8 +6148,11 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Permetre respostes i reaccions";
 
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "Respostes";
+
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "Error al guardar la història";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Desats";
@@ -6154,6 +6175,15 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "Històries";
 
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "Visualitzacions";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "Càmera";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "Text";
+
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Obre l'enllaç";
 
@@ -6163,14 +6193,8 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Privadesa";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> resposta";
-
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> respostes";
-
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Respon";
+"STORY_REPLY_BUTTON" = "Respon";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Ha reaccionat a la història";
@@ -6178,23 +6202,14 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Respon";
 
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "Respon al grup";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Contactes";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Contactes exclosos";
-
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Feu una donació";
-
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "El Signal és sostingut per persones com vós. Feu una donació i rebeu un distintiu.";
-
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Ara no";
-
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Converteix-te en donant";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "S'ha copiat l'identificador del subscriptor al porta-retalls.";

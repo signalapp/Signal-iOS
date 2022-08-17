@@ -811,6 +811,9 @@
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "បិទ";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "Automatic";
 
@@ -2239,9 +2242,6 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "បិទការហៅ";
 
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, និងមនុស្ស %3$@ នាក់ នៅក្នុងការហៅនេះ";
-
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "មិនអាចទទួលសំឡេងនិងវីដេអូពី %@";
 
@@ -2301,9 +2301,6 @@
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ បានចាប់ផ្តើមការហៅជាក្រុម";
-
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, និង 1 ផ្សេងទៀត នៅក្នុងការហៅនេះ";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ និង %2$@ នៅក្នុងការហៅនេះ";
@@ -2835,6 +2832,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "ផ្ញើសារទៅអ្នកអភិបាល";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "ទប់ស្កាត់សំណើ";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "ទប់ស្កាត់សំណើ";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "ទប់ស្កាត់ការស្នើសុំឬ?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "ជ្រើសរើសអ្នកគ្រប់គ្រងថ្មីសម្រាប់ក្រុមនេះ មុនពេលអ្នកចាកចេញ។";
@@ -3406,6 +3415,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "ប្រភេទ MIME";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "បាត់";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "បានបញ្ចូនទៅ";
 
@@ -3432,6 +3444,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "បានពិនិត្យដោយ";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "មិនធ្លាប់";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "បានទទួល";
@@ -6121,6 +6136,9 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "មិនទាន់មានការឆ្លើយតបទេ";
 
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "មិនទាន់មានចំនួនមើលទេ";
+
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "អនុញ្ញាតឲ្យមនុស្សដែលអាចមើលរឿងរ៉ាវរបស់អ្នកប្រតិកម្ម និងឆ្លើយតប។";
 
@@ -6129,6 +6147,9 @@
 
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Allow Replies & Reactions";
+
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "ការឆ្លើយតប";
 
 /* alert notifying that the 'save' operation failed */
 "STORIES_SAVE_FAILED" = "Failed to Save Story";
@@ -6154,6 +6175,15 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "រឿងរ៉ាវ";
 
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "ចំនួនមើល";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "កាមេរ៉ា";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "អក្សរ";
+
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "ចូលមើលតំណ";
 
@@ -6163,14 +6193,8 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "ឯកជនភាព";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "ចំនួនឆ្លើយតប <bold>1</bold> ";
-
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "ចំនួនឆ្លើយតប <bold>%@</bold>";
-
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "ឆ្លើយតប";
+"STORY_REPLY_BUTTON" = "ឆ្លើយតប";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "បានប្រតិកម្មទៅនឹងរឿងរ៉ាវ";
@@ -6178,23 +6202,14 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ឆ្លើយតប";
 
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "ឆ្លើយតបទៅក្រុម";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
-
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "ឧបត្ថម្ភ";
-
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal អាចដំណើរការបានដោយសារមនុស្សដូចអ្នក។ បរិច្ចាគរួចនឹងទទួលបានស្លាកមួយ។";
-
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "មិនមែនឥឡូវនេះ";
-
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "ក្លាយជាទ្រទ្រង់ម្នាក់";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "បានចម្លងលេខសម្គាល់អ្នកជាវទៅឃ្លីបបត";

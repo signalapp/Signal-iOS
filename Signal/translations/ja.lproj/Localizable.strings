@@ -811,6 +811,9 @@
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "閉じる";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "自動";
 
@@ -2239,9 +2242,6 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "通話から抜ける";
 
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, %3$@ などが参加中";
-
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ からの音声と映像を受信できません";
 
@@ -2301,9 +2301,6 @@
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ がグループ通話を開始しました";
-
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ ほか1人が参加中";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ と %2$@ が参加中";
@@ -2835,6 +2832,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "管理者に連絡";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "リクエストをブロック";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "リクエストをブロック";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "申請をブロックしますか？";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "グループから抜ける前に、新しい管理者を選択してください。";
@@ -3406,6 +3415,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIMEタイプ";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "消えるまで";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "配送済み";
 
@@ -3432,6 +3444,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "閲覧済み";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "なし";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "受信";
@@ -3617,10 +3632,10 @@
 "MISSED_CALL" = "不在着信";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "おやすみモード中の不在着信";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "集中モード使用中の不在着信";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Signalでビデオ通話ができるよう、iOSの設定でカメラのアクセス権限を設定できます。";
@@ -6104,7 +6119,7 @@
 "STORIES_DELETE_STORY_ACTION" = "削除";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "ストーリーが保存されました";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "転送";
@@ -6121,6 +6136,9 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "返信 なし";
 
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "閲覧 なし";
+
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "あなたのストーリーを閲覧可能なユーザーにリアクションと返信を許可します。";
 
@@ -6130,8 +6148,11 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "返信とリアクションを許可する";
 
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "返信";
+
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "ストーリーを保存できませんでした";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "保存";
@@ -6154,6 +6175,15 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "ストーリー";
 
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "閲覧";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "カメラ";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "テキスト";
+
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "表示する";
 
@@ -6163,14 +6193,8 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "プライバシー";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold>件の返信";
-
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold>件の返信";
-
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "返信";
+"STORY_REPLY_BUTTON" = "返信";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "ストーリーにリアクションがありました";
@@ -6178,23 +6202,14 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "返信";
 
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "グループへの返信";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "コネクション";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "除外されたコネクション";
-
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "寄付する";
-
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signalは、あなたのようなユーザーの皆様によって支えられています。\nぜひ寄付をして、バッジを手に入れましょう。";
-
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "今はしない";
-
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "サポーターになりませんか";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "サブスクリプションのIDをクリップボードにコピーしました。";

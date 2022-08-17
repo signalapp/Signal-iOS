@@ -473,10 +473,10 @@
 "BADGE_GIFTING_REDEEM" = "換領";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_BODY" = "無法兌換你的禮物。請檢查你的網絡連線，然後再試一次。";
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "無法兌換你的禮品。請檢查你的網絡連線，然後再試一次。";
 
 /* Shown as the title of an alert when failing to redeem a gift. */
-"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "無法兌換禮物";
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "無法兌換禮品";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "你可以稍後再兌換你的徽章";
@@ -810,6 +810,9 @@
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "關閉";
+
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "自動";
@@ -2159,10 +2162,10 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "請輸入您的搜尋字詞。";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%@ 送給你的禮物已過期，無法再兌換。";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%@ 送給你的禮品已過期，無法再兌換。";
 
 /* Title when trying to redeem a gift that's already expired. */
-"GIFT_NOT_REDEEMED_TITLE" = "你的禮物已過期";
+"GIFT_NOT_REDEEMED_TITLE" = "你的禮品已過期";
 
 /* Turn on permission view 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "前往設定";
@@ -2239,9 +2242,6 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "退出通話";
 
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@、%2$@ 和其他 %3$@ 人正在通話中";
-
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "無法接收 %@ 的音訊和影片";
 
@@ -2301,9 +2301,6 @@
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ 已發起群組通話";
-
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@、%2$@ 和另外 1 人正在通話中";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ 和 %2$@ 正在通話中";
@@ -2835,6 +2832,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "傳送訊息給管理員";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Block Request";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Block Request";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "要封鎖請求嗎？";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "離開此群組前，請選擇一位新的管理員。";
@@ -3406,6 +3415,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME 類型";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "消失倒數";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "已送達";
 
@@ -3432,6 +3444,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "已看過";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "永不";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "已收取";
@@ -3617,10 +3632,10 @@
 "MISSED_CALL" = "未接來電";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "使用「請勿打擾」模式時的未接來電";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "使用「專注模式」時的未接來電";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "您可以在 iOS 「設定」app 中允許存取相機，以便在 Signal 發起視像通話。";
@@ -3776,7 +3791,7 @@
 "NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "限時動態名稱 (必填)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "選擇觀看者";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "選擇瀏覽者";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "觀看者";
@@ -4619,7 +4634,7 @@
 "PRIVACY_VERIFY_BUTTON" = "標記為已驗證";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "新增觀看者";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "新增瀏覽者";
 
 /* Button to delete the story on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "刪除私人限時動態";
@@ -6104,7 +6119,7 @@
 "STORIES_DELETE_STORY_ACTION" = "刪除";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "限時動態已儲存";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "轉發";
@@ -6121,6 +6136,9 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "未有回覆";
 
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "未有觀看";
+
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "讓看到限時動態的人回應心情和回覆。";
 
@@ -6130,8 +6148,11 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "允許回覆及心情回應";
 
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "回覆";
+
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "無法儲存限時動態";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "儲存";
@@ -6154,6 +6175,15 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "限時動態";
 
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "觀看";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "相機";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "文字";
+
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "造訪連結";
 
@@ -6163,14 +6193,8 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "私隱";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> 個回覆";
-
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> 個回覆";
-
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "回覆";
+"STORY_REPLY_BUTTON" = "回覆";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "對此限時動態表達了心情";
@@ -6178,23 +6202,14 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "回覆";
 
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "Reply to Group";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "人脈";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "已排除的人脈";
-
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "捐款";
-
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "萬家燈火照，將點點光輝，放進 Signal。凡捐款即獲贈徽章。";
-
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "現在不要";
-
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "成為延續人";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "訂閱者識別碼已複製至剪貼簿";

@@ -811,6 +811,9 @@
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "Stäng";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "Automatisk";
 
@@ -1187,7 +1190,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Alltid";
 
 /* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ Ny Story";
+"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ Ny berättelse";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Endast administratörer kan skicka meddelanden i denna grupp.";
@@ -2239,9 +2242,6 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Lämna samtalet";
 
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ och %3$@ andra är i detta samtal";
-
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Kan inte ta emot ljud & video från %@";
 
@@ -2301,9 +2301,6 @@
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ startade ett gruppsamtal";
-
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ och 1 annan är i detta samtal";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ och %2$@ är i detta samtal";
@@ -2835,6 +2832,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Skicka ett meddelande till en administratör";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Blockera förfrågan";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Blockera förfrågan";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Blockera förfrågan?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Välj en ny administratör för denna grupp innan du lämnar.";
@@ -3406,6 +3415,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME-typ";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Försvinner";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Levererat till";
 
@@ -3432,6 +3444,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Visat av";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "Aldrig";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Mottaget";
@@ -3617,10 +3632,10 @@
 "MISSED_CALL" = "Missat samtal";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "Missat samtal i Stör ej-läge";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "Missat samtal i Fokusläge";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Du kan aktivera kameraåtkomst i appen Inställningar för att ringa videosamtal i Signal.";
@@ -3659,13 +3674,13 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Dölj din berättelse för specifika personer";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alla Signal-anslutningar utom ...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alla Signal-förbindelser utom ...";
 
 /* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Dela med alla kontakter";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Dela med alla förbindelser";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alla Signal-anslutningar";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alla Signal-förbindelser";
 
 /* Footer for the 'visibility' section of the my stories settings */
 "MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Välj vilka som kan se din berättelse. Ändringar påverkar inte berättelser som du redan har skickat.";
@@ -3761,19 +3776,19 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Hitta användare";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Namnge Story";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Namnge berättelse";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Skapa";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Ett Story-namn krävs.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Ett berättelsenamn krävs.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Saknar Story-namn";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Saknar berättelsenamn";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story-namn (krävs)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Berättelsenamn (krävs)";
 
 /* The title for the 'new private story' view. */
 "NEW_PRIVATE_STORY_VIEW_TITLE" = "Välj tittare";
@@ -3785,16 +3800,16 @@
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Dela till en befintlig grupp";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Ny gemensam Story";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Ny gruppberättelse";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Synlig endast för specifika personer";
 
 /* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Ny privat story";
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Ny privat berättelse";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Välj Story-typ";
+"NEW_STORY_SHEET_TITLE" = "Välj berättelsetyp";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Hitta kontakter via telefonnummer";
@@ -6104,7 +6119,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Ta bort";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "Berättelse sparad";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Vidarebefordra";
@@ -6116,10 +6131,13 @@
 "STORIES_HIDE_STORY_ACTION" = "Dölj berättelse";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "Inga uppdateringar att visa just nu.\nTryck på + för att lägga till din story.";
+"STORIES_NO_RECENT_MESSAGES" = "Inga uppdateringar att visa just nu.\nTryck på + för att lägga till din berättelse.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Inga svar ännu";
+
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "Inga visningar ännu";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Låt personer som kan se din berättelse reagera och svara.";
@@ -6130,29 +6148,41 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Tillåt svar och reaktioner";
 
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "Svar";
+
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "Det gick inte att spara berättelsen";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Spara";
 
 /* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "Ny privat story";
+"STORIES_SETTINGS_NEW_STORY" = "Ny privat berättelse";
 
 /* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Privata stories kan bara ses av de personer du lägger till i dem. Bara du kan se storyns namn.";
+"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Privata berättelser kan bara ses av de personer du lägger till i dem. Bara du kan se berättelsens namn.";
 
 /* Header for the 'Private Stories' section of the stories settings */
 "STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Privata stories";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story-integritet";
+"STORIES_SETTINGS_TITLE" = "Berättelseintegritet";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Dela";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Berättelser";
+
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "Visningar";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "Kamera";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "Text";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Besök länk";
@@ -6163,14 +6193,8 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Integritet";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> svar";
-
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> svar";
-
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Svara";
+"STORY_REPLY_BUTTON" = "Svara";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reagerade på berättelsen";
@@ -6178,23 +6202,14 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Svara";
 
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "Svara gruppen";
+
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Anslutningar";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Förbindelser";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Exkluderade anslutningar";
-
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Donera";
-
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal drivs av människor som du. Bidra och få ett märke.";
-
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Inte nu";
-
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Bli en upprätthållare";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Exkluderade förbindelser";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Kopierade prenumerant-id till urklipp";

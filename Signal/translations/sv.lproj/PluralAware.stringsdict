@@ -2,22 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CAMERA_VO_N_ITEMS</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 objekt</string>
-			<key>other</key>
-			<string>%d objekt</string>
-		</dict>
-	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -32,6 +16,22 @@
 			<string>Röstmeddelande 1 sekund</string>
 			<key>other</key>
 			<string>Röstmeddelande %d sekunder</string>
+		</dict>
+	</dict>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Lägg till medlem</string>
+			<key>other</key>
+			<string>Lägg till medlemmar</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -66,7 +66,7 @@
 			<string>Lägg till nya medlemmar</string>
 		</dict>
 	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
+	<key>CAMERA_VO_N_ITEMS</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -77,9 +77,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Lägg till medlem</string>
+			<string>1 objekt</string>
 			<key>other</key>
-			<string>Lägg till medlemmar</string>
+			<string>%d objekt</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -317,6 +317,70 @@
 			<string>Skicka %d meddelanden</string>
 		</dict>
 	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Denna grupp kan inte skapas eftersom 1 medlem använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med medlemmen efter att den har uppdaterat Signal eller ta bort den innan du skapar gruppen. %2$@</string>
+			<key>other</key>
+			<string>Denna grupp kan inte skapas eftersom %d medlemmar använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med dem efter att de har uppdaterat Signal eller ta bort dem innan du skapar gruppen. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Denna grupp kan inte skapas eftersom 1 medlem använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med medlemmen efter att den har uppdaterat Signal eller ta bort den innan du skapar gruppen.</string>
+			<key>other</key>
+			<string>Denna grupp kan inte skapas eftersom %d medlemmar använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med dem efter att de har uppdaterat Signal eller ta bort dem innan du skapar gruppen.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 medlem kunde inte läggas till igen i den Nya gruppen. Vill du lägga till medlemmen nu?</string>
+			<key>other</key>
+			<string>%d medlemmar kunde inte läggas till igen i den Nya gruppen. Vill du lägga till dem nu?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Signal-grupper fungerar bäst med 1 medlem eller färre. Om du lägger till fler medlemmar kommer det att orsaka förseningar när du skickar och tar emot meddelanden.</string>
+			<key>other</key>
+			<string>Signal-grupper fungerar bäst med %d medlemmar eller färre. Om du lägger till fler medlemmar kommer det att orsaka förseningar när du skickar och tar emot meddelanden.</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -347,70 +411,6 @@
 			<string>I detta samtal · 1 person</string>
 			<key>other</key>
 			<string>I detta samtal · %d personer</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 visning</string>
-			<key>other</key>
-			<string>%d visningar</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Privat berättelse · 1 tittare</string>
-			<key>other</key>
-			<string>Privat berättelse · %d tittare</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 tittare</string>
-			<key>other</key>
-			<string>%d tittare</string>
-		</dict>
-	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Gruppberättelse · 1 tittare</string>
-			<key>other</key>
-			<string>Gruppberättelse · %d tittare</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -477,38 +477,6 @@
 			<string>%d inbjudningar skickade</string>
 		</dict>
 	</dict>
-	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 medlem</string>
-			<key>other</key>
-			<string>%d medlemmar</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 medlem</string>
-			<key>other</key>
-			<string>%d medlemmar</string>
-		</dict>
-	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -557,7 +525,7 @@
 			<string>%d gruppmedlemmar har samma namn. Granska medlemmarna nedan eller välj att vidta åtgärder.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -568,15 +536,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Inbjudan till gruppen återkallades för 1 person.</string>
+			<string>1 medlem</string>
 			<key>other</key>
-			<string>Inbjudningar till gruppen återkallades för %d personer.</string>
+			<string>%d medlemmar</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
@@ -584,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ återkallade en inbjudan till gruppen för 1 person.</string>
+			<string>1 medlem</string>
 			<key>other</key>
-			<string>%2$@ återkallade en inbjudan till gruppen för %d personer.</string>
+			<string>%d medlemmar</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -621,6 +589,70 @@
 			<string>%2$@ bjöd in %d personer till gruppen.</string>
 		</dict>
 	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Inbjudan till gruppen återkallades för 1 person.</string>
+			<key>other</key>
+			<string>Inbjudningar till gruppen återkallades för %d personer.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@ återkallade en inbjudan till gruppen för 1 person.</string>
+			<key>other</key>
+			<string>%2$@ återkallade en inbjudan till gruppen för %d personer.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@ requested and canceled their request to join via the group link.</string>
+			<key>other</key>
+			<string>%2$@ requested and canceled %d requests to join via the group link.</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Gruppberättelse · 1 tittare</string>
+			<key>other</key>
+			<string>Gruppberättelse · %d tittare</string>
+		</dict>
+	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -651,70 +683,6 @@
 			<string>En medlem kunde inte läggas till i den Nya gruppen och har bjudits in att gå med.</string>
 			<key>other</key>
 			<string>%d medlemmar kunde inte läggas till i den Nya gruppen och har bjudits in att gå med.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Denna grupp kan inte skapas eftersom 1 medlem använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med medlemmen efter att den har uppdaterat Signal eller ta bort den innan du skapar gruppen. %2$@</string>
-			<key>other</key>
-			<string>Denna grupp kan inte skapas eftersom %d medlemmar använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med dem efter att de har uppdaterat Signal eller ta bort dem innan du skapar gruppen. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Denna grupp kan inte skapas eftersom 1 medlem använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med medlemmen efter att den har uppdaterat Signal eller ta bort den innan du skapar gruppen.</string>
-			<key>other</key>
-			<string>Denna grupp kan inte skapas eftersom %d medlemmar använder en gammal version av Signal. Du kan skapa en Ny formatgrupp med dem efter att de har uppdaterat Signal eller ta bort dem innan du skapar gruppen.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 medlem kunde inte läggas till igen i den Nya gruppen. Vill du lägga till medlemmen nu?</string>
-			<key>other</key>
-			<string>%d medlemmar kunde inte läggas till igen i den Nya gruppen. Vill du lägga till dem nu?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Signal-grupper fungerar bäst med 1 medlem eller färre. Om du lägger till fler medlemmar kommer det att orsaka förseningar när du skickar och tar emot meddelanden.</string>
-			<key>other</key>
-			<string>Signal-grupper fungerar bäst med %d medlemmar eller färre. Om du lägger till fler medlemmar kommer det att orsaka förseningar när du skickar och tar emot meddelanden.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -797,22 +765,6 @@
 			<string>%d objekt</string>
 		</dict>
 	</dict>
-	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>1 vald</string>
-			<key>other</key>
-			<string>%d valda</string>
-		</dict>
-	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -827,6 +779,22 @@
 			<string>Du blockerade 1 medlem i denna grupp</string>
 			<key>other</key>
 			<string>Du blockerade %d medlemmar i denna grupp</string>
+		</dict>
+	</dict>
+	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 vald</string>
+			<key>other</key>
+			<string>%d valda</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -859,6 +827,22 @@
 			<string>1 person</string>
 			<key>other</key>
 			<string>%d personer</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 tittare</string>
+			<key>other</key>
+			<string>%d tittare</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -957,22 +941,6 @@
 			<string>Återkalla %d ogiltiga inbjudningar</string>
 		</dict>
 	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Återkalla gruppinbjudan skickad av "%2$@"?</string>
-			<key>other</key>
-			<string>Återkalla %d inbjudningar skickade av "%2$@"?</string>
-		</dict>
-	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -989,6 +957,22 @@
 			<string>Återkalla inbjudningar</string>
 		</dict>
 	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Återkalla gruppinbjudan skickad av "%2$@"?</string>
+			<key>other</key>
+			<string>Återkalla %d inbjudningar skickade av "%2$@"?</string>
+		</dict>
+	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1003,6 +987,22 @@
 			<string>Vi påminner dig senare. Att skapa en pinkod blir obligatoriskt om 1 dag.</string>
 			<key>other</key>
 			<string>Vi påminner dig senare. Att skapa en pinkod blir obligatoriskt om %d dagar.</string>
+		</dict>
+	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Privat berättelse · 1 tittare</string>
+			<key>other</key>
+			<string>Privat berättelse · %d tittare</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1037,6 +1037,22 @@
 			<string>Du har %d försök kvar. Om dina försök tar slut kommer ditt konto att låsas. Efter 7 dagars inaktivitet kan du registrera dig igen utan din pinkod. Ditt konto rensas och allt innehåll tas bort.</string>
 		</dict>
 	</dict>
+	<key>STORY_REPLIES_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; replies</string>
+		</dict>
+	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1048,9 +1064,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 anslutning</string>
+			<string>1 förbindelse</string>
 			<key>other</key>
-			<string>%d anslutningar</string>
+			<string>%d förbindelser</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1067,6 +1083,65 @@
 			<string>1 exkluderad</string>
 			<key>other</key>
 			<string>%d exkluderade</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 visning</string>
+			<key>other</key>
+			<string>%d visningar</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@views@  %2$#@replies@</string>
+		<key>replies</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; replies</string>
+		</dict>
+		<key>views</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; views</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; views</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

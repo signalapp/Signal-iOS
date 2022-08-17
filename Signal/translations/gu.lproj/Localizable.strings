@@ -811,6 +811,9 @@
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "બંધ";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "ઓટોમેટિક";
 
@@ -2239,9 +2242,6 @@
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "કૉલ છોડી દો";
 
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@, અને %3$@ અન્યો આ કૉલમાં છે";
-
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ તરફથી ઓડિયો અને વિડિયો પ્રાપ્ત કરી શકતા નથી";
 
@@ -2301,9 +2301,6 @@
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@એ ગ્રુપ કૉલ શરૂ કર્યો";
-
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "આ કૉલમાં %1$@, %2$@, અને 1 અન્ય છે";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ અને %2$@ આ કૉલમાં છે";
@@ -2835,6 +2832,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "એડમિનને મેસેજ કરો";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "વિનંતી બ્લૉક કરો";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "વિનંતી બ્લૉક કરો";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "વિનંતી બ્લૉક કરવી છે?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "તમે છોડો તે પહેલાં આ ગ્રુપ માટે નવું એડમિન પસંદ કરો.";
@@ -3406,6 +3415,9 @@
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME પ્રકાર";
 
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "ગાયબ થઈ જશે";
+
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "આને મેસેજ પહોંચાડ્યો";
 
@@ -3432,6 +3444,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "આના દ્વારા જોવાયું";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "ક્યારેય નહિ";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "મળી ગયા";
@@ -3617,10 +3632,10 @@
 "MISSED_CALL" = "મિસ કૉલ";
 
 /* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
-"MISSED_CALL_DO_NOT_DISTURB" = "Missed call while on Do Not Disturb";
+"MISSED_CALL_DO_NOT_DISTURB" = "'ખલેલ ન કરશો'માં હતા ત્યારે મિસ્ડ કોલ આવ્યો";
 
 /* info message text in conversation view (use Apple's name for 'Focus') */
-"MISSED_CALL_FOCUS_MODE" = "Missed call while using Focus";
+"MISSED_CALL_FOCUS_MODE" = "ફોકસનો ઉપયોગ કરતી વખતે મિસ્ડ કોલ આવ્યો";
 
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "તમે Signal માં વિડિયો કૉલ કરવા માટે iOS સેટિંગ્સ એપ્લિકેશનમાં કૅમેરાના એક્સેસને સક્ષમ કરી શકો છો.";
@@ -6104,7 +6119,7 @@
 "STORIES_DELETE_STORY_ACTION" = "ડિલીટ કરો";
 
 /* toast alert shown after user taps the 'save' button */
-"STORIES_DID_SAVE" = "Story Saved";
+"STORIES_DID_SAVE" = "સ્ટોરી સેવ કરી";
 
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ફોરવર્ડ";
@@ -6121,6 +6136,9 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "હજી કોઈ જવાબો નથી";
 
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "હજી કોઈ દ્રશ્યો નથી";
+
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "જે લોકો તમારી સ્ટોરી જોઈ શકે છે તેમને પ્રતિક્રિયા અને જવાબ આપવા દો.";
 
@@ -6130,8 +6148,11 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "જવાબો અને પ્રતિક્રિયાઓને મંજૂરી આપો";
 
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "જવાબો";
+
 /* alert notifying that the 'save' operation failed */
-"STORIES_SAVE_FAILED" = "Failed to Save Story";
+"STORIES_SAVE_FAILED" = "સ્ટોરી સેવ કરવામાં નિષ્ફળ";
 
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "સેવ કરો";
@@ -6154,6 +6175,15 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "સ્ટોરી";
 
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "દ્રશ્યો";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "કૅમેરા";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "ટેક્સ્ટ";
+
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "લિંકની મુલાકાત લો";
 
@@ -6163,14 +6193,8 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "ગોપનીયતા";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> જવાબ";
-
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> javabo";
-
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "જવાબ";
+"STORY_REPLY_BUTTON" = "જવાબ આપો";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "સ્ટોરી પર પ્રતિક્રિયા આપી";
@@ -6178,23 +6202,14 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "જવાબ";
 
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "ગ્રુપમાં જવાબ આપો";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "કનેક્શન";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "બાકાત કરેલ કનેક્શન";
-
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "દાન કરો";
-
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal તમારા જેવા લોકોથી સંચાલિત છે. દાન કરો અને એક બૅજ મેળવો.";
-
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "અત્યારે નહીં";
-
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "સસ્ટેનર બનો";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "સબ્સ્ક્રાઇબરનું ID ક્લિપબોર્ડ પર કોપી કર્યું";
