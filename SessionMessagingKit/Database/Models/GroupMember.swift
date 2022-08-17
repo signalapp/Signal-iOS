@@ -17,6 +17,7 @@ public struct GroupMember: Codable, Equatable, FetchableRecord, PersistableRecor
         case groupId
         case profileId
         case role
+        case isHidden
     }
     
     public enum Role: Int, Codable, DatabaseValueConvertible {
@@ -29,6 +30,7 @@ public struct GroupMember: Codable, Equatable, FetchableRecord, PersistableRecor
     public let groupId: String
     public let profileId: String
     public let role: Role
+    public let isHidden: Bool
     
     // MARK: - Relationships
     
@@ -49,11 +51,13 @@ public struct GroupMember: Codable, Equatable, FetchableRecord, PersistableRecor
     public init(
         groupId: String,
         profileId: String,
-        role: Role
+        role: Role,
+        isHidden: Bool
     ) {
         self.groupId = groupId
         self.profileId = profileId
         self.role = role
+        self.isHidden = isHidden
     }
 }
 

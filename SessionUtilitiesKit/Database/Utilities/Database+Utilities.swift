@@ -16,6 +16,17 @@ public extension Database {
         }
     }
     
+    func alter<T>(
+        table: T.Type,
+        body: (TypedTableAlteration<T>) -> Void
+    ) throws where T: TableRecord, T: ColumnExpressible {
+        try alter(table: T.databaseTableName) { tableAlteration in
+            let typedAlteration: TypedTableAlteration<T> = TypedTableAlteration(alteration: tableAlteration)
+            
+            body(typedAlteration)
+        }
+    }
+    
     func makeFTS5Pattern<T>(rawPattern: String, forTable table: T.Type) throws -> FTS5Pattern where T: TableRecord, T: ColumnExpressible {
         return try makeFTS5Pattern(rawPattern: rawPattern, forTable: table.databaseTableName)
     }

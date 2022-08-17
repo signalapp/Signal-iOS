@@ -34,6 +34,8 @@ public extension Data {
             case (0x42, 0x4d): return .bmp
             case (0x4D, 0x4D): return .tiff // Motorola byte order TIFF
             case (0x49, 0x49): return .tiff // Intel byte order TIFF
+            case (0x52, 0x49): return .webp // First two letters of WebP
+                
             default: return .unknown
         }
     }
@@ -113,6 +115,9 @@ public extension Data {
                     mimeType == OWSMimeTypeImageBmp1 ||
                     mimeType == OWSMimeTypeImageBmp2
                 )
+                
+            case .webp:
+                return (mimeType == nil || mimeType == OWSMimeTypeImageWebp)
         }
     }
     

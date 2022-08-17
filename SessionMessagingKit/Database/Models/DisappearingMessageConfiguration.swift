@@ -208,7 +208,7 @@ public class SMKDisappearingMessagesConfiguration: NSObject {
                 body: config.messageInfoString(with: nil),
                 timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000))
             )
-            .saved(db)
+            .inserted(db)
             
             try MessageSender.send(
                 db,
