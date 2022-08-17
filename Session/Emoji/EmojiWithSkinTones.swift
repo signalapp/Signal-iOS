@@ -52,7 +52,7 @@ extension Emoji {
         guard withDefaultEmoji else { return recentReactionEmoji }
         
         // Add in our default emoji if desired
-        let defaultEmoji = ["🙈", "🙉", "🙊", "😈", "🥸", "🐀"]
+        let defaultEmoji = ["😂", "🥰", "😢", "😡", "😮", "😈"]
             .filter { !recentReactionEmoji.contains($0) }
         
         return Array(recentReactionEmoji
