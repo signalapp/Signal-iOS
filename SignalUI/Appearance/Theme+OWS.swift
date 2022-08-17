@@ -94,6 +94,7 @@ public enum ThemeIcon: UInt {
     case cancel24
     case xCircle24
     case open24
+    case more24
 
     case checkCircle
     case message
@@ -351,6 +352,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "x-circle-solid-24" : "x-circle-outline-24"
         case .open24:
             return "open-24"
+        case .more24:
+            return "more-horiz-24"
 
         case .trash24:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
