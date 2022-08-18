@@ -215,6 +215,7 @@ final class ContextMenuVC: UIViewController {
         let diffY = finalFrame.height + menuHeight + Self.actionViewHeight + 2 * spacing + topMargin + bottomMargin - UIScreen.main.bounds.height
         
         if diffY > 0 {
+            // The screenshot needs to be shrinked. Menu + emoji bar + screenshot will fill the entire screen.
             finalFrame.size.height -= diffY
             let newWidth = ratio * finalFrame.size.height
             if cellViewModel.variant == .standardOutgoing {
@@ -224,7 +225,15 @@ final class ContextMenuVC: UIViewController {
             finalFrame.origin.y = UIScreen.main.bounds.height - finalFrame.size.height - menuHeight - bottomMargin - spacing
         }
         else {
-            finalFrame.origin.y = (UIScreen.main.bounds.height - finalFrame.size.height) / 2
+            // The screenshot does NOT need to be shrinked.
+            if finalFrame.origin.y - Self.actionViewHeight - spacing < topMargin {
+                // Needs to move down
+                finalFrame.origin.y = topMargin + Self.actionViewHeight + spacing
+            }
+            if finalFrame.origin.y + finalFrame.size.height + spacing + menuHeight + bottomMargin > UIScreen.main.bounds.height {
+                // Needs to move up
+                finalFrame.origin.y = UIScreen.main.bounds.height - bottomMargin - menuHeight - spacing - finalFrame.size.height
+            }
         }
         
         return finalFrame
