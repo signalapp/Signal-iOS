@@ -7263,7 +7263,7 @@ extension EmojiWithSkinTones {
         } else if rawValue == "🏴󠁧󠁢󠁷󠁬󠁳󠁿" {
             self.init(baseEmoji: .flagWales, skinTones: nil)
         } else {
-            return nil
+            self.init(unsupportedValue: rawValue)
         }
     }
 }

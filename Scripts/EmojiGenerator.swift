@@ -301,7 +301,7 @@ extension EmojiGenerator {
 
                     fileHandle.writeLine("} else {")
                     fileHandle.indent {
-                        fileHandle.writeLine("return nil")
+                        fileHandle.writeLine("self.init(unsupportedValue: rawValue)")
                     }
                     fileHandle.writeLine("}")
                 }

@@ -6,8 +6,9 @@ import DifferenceKit
 import SessionMessagingKit
 
 public struct EmojiWithSkinTones: Hashable, Equatable, ContentEquatable, ContentIdentifiable {
-    let baseEmoji: Emoji
+    let baseEmoji: Emoji?
     let skinTones: [Emoji.SkinTone]?
+    let unsupportedValue: String?
     
     init(baseEmoji: Emoji, skinTones: [Emoji.SkinTone]? = nil) {
         self.baseEmoji = baseEmoji
@@ -20,23 +21,34 @@ public struct EmojiWithSkinTones: Hashable, Equatable, ContentEquatable, Content
             guard !result.contains(skinTone) else { return }
             result.append(skinTone)
         }
+        self.unsupportedValue = nil
+    }
+    
+    init(unsupportedValue: String) {
+        self.unsupportedValue = unsupportedValue
+        self.baseEmoji = nil
+        self.skinTones = nil
     }
 
     var rawValue: String {
-        if let skinTones = skinTones {
-            return baseEmoji.emojiPerSkinTonePermutation?[skinTones] ?? baseEmoji.rawValue
-        } else {
-            return baseEmoji.rawValue
+        if let baseEmoji = baseEmoji {
+            if let skinTones = skinTones {
+                return baseEmoji.emojiPerSkinTonePermutation?[skinTones] ?? baseEmoji.rawValue
+            } else {
+                return baseEmoji.rawValue
+            }
         }
+        if let unsupportedValue = unsupportedValue {
+            return unsupportedValue
+        }
+        return "" // Should not happen
     }
     
     var normalized: EmojiWithSkinTones {
-        switch (baseEmoji, skinTones) {
-        case (let base, nil) where base.normalized != base:
-            return EmojiWithSkinTones(baseEmoji: base.normalized)
-        default:
-            return self
+        if let baseEmoji = baseEmoji, baseEmoji.normalized != baseEmoji {
+            return EmojiWithSkinTones(baseEmoji: baseEmoji.normalized)
         }
+        return self
     }
 
     var isNormalized: Bool { self == normalized }
@@ -104,7 +116,11 @@ extension Emoji {
 
     init?(_ string: String) {
         guard let emojiWithSkinTonePermutation = EmojiWithSkinTones(rawValue: string) else { return nil }
-        self = emojiWithSkinTonePermutation.baseEmoji
+        if let baseEmoji = emojiWithSkinTonePermutation.baseEmoji {
+            self = baseEmoji
+        } else {
+            return nil
+        }
     }
 }
 
