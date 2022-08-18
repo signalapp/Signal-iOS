@@ -154,41 +154,6 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 
     lazy var videoOffIndicatorWidthConstraint = videoOffIndicatorImage.autoSetDimension(.width, toSize: videoOffIndicatorWidth)
 
-    lazy var callFullLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.font = .ows_dynamicTypeSubheadline
-        label.textAlignment = .center
-        label.textColor = Theme.darkThemePrimaryColor
-        return label
-    }()
-
-    lazy var callFullStack: UIStackView = {
-        let callFullStack = UIStackView()
-        callFullStack.axis = .vertical
-        callFullStack.spacing = 8
-
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "sad-cat"))
-        imageView.contentMode = .scaleAspectFit
-        imageView.autoSetDimensions(to: CGSize(square: 200))
-        callFullStack.addArrangedSubview(imageView)
-
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString(
-            "GROUP_CALL_IS_FULL",
-            comment: "Text explaining the group call is full"
-        )
-        titleLabel.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
-        titleLabel.textAlignment = .center
-        titleLabel.textColor = Theme.darkThemePrimaryColor
-        callFullStack.addArrangedSubview(titleLabel)
-
-        callFullStack.addArrangedSubview(callFullLabel)
-
-        return callFullStack
-    }()
-
     override init() {
         super.init()
 
@@ -211,10 +176,6 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         insertSubview(videoView, belowSubview: muteIndicatorImage)
         videoView.frame = bounds
 
-        addSubview(callFullStack)
-        callFullStack.autoAlignAxis(.horizontal, toSameAxisOf: self, withOffset: -30)
-        callFullStack.autoPinWidthToSuperview(withMargin: 16)
-
         layer.shadowOffset = .zero
         layer.shadowOpacity = 0.25
         layer.shadowRadius = 4
@@ -232,32 +193,8 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoView.captureSession = call.videoCaptureController.captureSession
         noVideoView.isHidden = !videoView.isHidden
 
-        if isFullScreen,
-           call.groupCall.isFull,
-           case .notJoined = call.groupCall.localDeviceState.joinState {
-
-            let text: String
-            if let maxDevices = call.groupCall.maxDevices {
-                let formatString = NSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
-                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
-                )
-                text = String.localizedStringWithFormat(formatString, maxDevices)
-            } else {
-                text = NSLocalizedString(
-                    "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
-                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
-                )
-            }
-
-            callFullLabel.text = text
-            callFullStack.isHidden = false
-            videoOffLabel.isHidden = true
-            videoOffIndicatorImage.isHidden = true
-        } else {
-            callFullStack.isHidden = true
-            videoOffLabel.isHidden = !videoView.isHidden || !isFullScreen
-            videoOffIndicatorImage.isHidden = !videoView.isHidden
-        }
+        videoOffLabel.isHidden = !videoView.isHidden || !isFullScreen
+        videoOffIndicatorImage.isHidden = !videoView.isHidden
 
         guard let localAddress = tsAccountManager.localAddress else {
             return owsFailDebug("missing local address")

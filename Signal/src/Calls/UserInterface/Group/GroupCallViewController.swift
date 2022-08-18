@@ -757,6 +757,29 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressJoin(sender: UIButton) {
+        guard !call.groupCall.isFull else {
+            let text: String
+            if let maxDevices = call.groupCall.maxDevices {
+                let formatString = NSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
+                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                )
+                text = String.localizedStringWithFormat(formatString, maxDevices)
+            } else {
+                text = NSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
+                )
+            }
+
+            let toastController = ToastController(text: text)
+            // Leave the toast up longer than usual because this message is pretty long.
+            toastController.presentToastView(from: .top,
+                                             of: view,
+                                             inset: view.safeAreaInsets.top + 8,
+                                             dismissAfter: .seconds(8))
+            return
+        }
+
         presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
             guard let self = self else { return }
             if success {

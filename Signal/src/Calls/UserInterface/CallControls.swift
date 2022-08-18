@@ -63,19 +63,11 @@ class CallControls: UIView {
         button.titleLabel?.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
         button.clipsToBounds = true
         button.layer.cornerRadius = height / 2
-        button.block = { [weak self] in
+        button.block = { [weak self, unowned button] in
             self?.delegate.didPressJoin(sender: button)
         }
         button.contentEdgeInsets = UIEdgeInsets(top: 17, leading: 17, bottom: 17, trailing: 17)
         button.addSubview(joinButtonActivityIndicator)
-        button.setTitle(
-            NSLocalizedString(
-                "GROUP_CALL_IS_FULL",
-                comment: "Text explaining the group call is full"
-            ),
-            for: .disabled
-        )
-        button.setTitleColor(.ows_whiteAlpha40, for: .disabled)
         joinButtonActivityIndicator.autoCenterInSuperview()
 
         // Expand the button to fit text if necessary.
@@ -215,21 +207,32 @@ class CallControls: UIView {
         joinButton.superview?.isHidden = joinState == .joined
         gradientView.isHidden = joinState != .joined
 
-        let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
-        let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
-
         if call.groupCall.isFull {
-            joinButton.isEnabled = false
+            // Make the button look disabled, but don't actually disable it.
+            // We want to show a toast if the user taps anyway.
+            joinButton.setTitleColor(.ows_whiteAlpha40, for: .normal)
+            joinButton.adjustsImageWhenHighlighted = false
+
+            joinButton.setTitle(
+                NSLocalizedString(
+                    "GROUP_CALL_IS_FULL",
+                    comment: "Text explaining the group call is full"),
+                for: .normal)
+
         } else if joinState == .joining {
-            joinButton.isEnabled = true
             joinButton.isUserInteractionEnabled = false
             joinButtonActivityIndicator.startAnimating()
 
             joinButton.setTitle("", for: .normal)
+
         } else {
-            joinButton.isEnabled = true
+            joinButton.setTitleColor(.white, for: .normal)
+            joinButton.adjustsImageWhenHighlighted = true
             joinButton.isUserInteractionEnabled = true
             joinButtonActivityIndicator.stopAnimating()
+
+            let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
+            let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
 
             joinButton.setTitle(devicesAlreadyInCall == 0 ? startCallText : joinCallText, for: .normal)
         }

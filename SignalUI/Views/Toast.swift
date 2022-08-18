@@ -28,7 +28,10 @@ public class ToastController: NSObject, ToastViewDelegate {
 
     // MARK: Public
 
-    public func presentToastView(from edge: ALEdge, of view: UIView, inset: CGFloat) {
+    public func presentToastView(from edge: ALEdge,
+                                 of view: UIView,
+                                 inset: CGFloat,
+                                 dismissAfter: DispatchTimeInterval = .seconds(4)) {
         owsAssertDebug(edge == .bottom || edge == .top)
         let offset = (edge == .top) ? inset : -inset
 
@@ -49,7 +52,7 @@ public class ToastController: NSObject, ToastViewDelegate {
             self.toastView.alpha = 1
         }
 
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 4) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + dismissAfter) {
             // intentional strong reference to self.
             // As with an AlertController, the caller likely expects toast to
             // be presented and dismissed without maintaining a strong reference to ToastController
