@@ -647,11 +647,10 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try groupModel.groupMemberIds.forEach { memberId in
-                        try GroupMember(
+                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
                             groupId: threadId,
                             profileId: memberId,
-                            role: .standard,
-                            isHidden: false
+                            role: .standard
                         ).insert(db)
                         
                         if !validProfileIds.contains(memberId) {
@@ -660,11 +659,10 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try groupModel.groupAdminIds.forEach { adminId in
-                        try GroupMember(
+                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
                             groupId: threadId,
                             profileId: adminId,
-                            role: .admin,
-                            isHidden: false
+                            role: .admin
                         ).insert(db)
                         
                         if !validProfileIds.contains(adminId) {
@@ -673,11 +671,10 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try (closedGroupZombieMemberIds[legacyThread.uniqueId] ?? []).forEach { zombieId in
-                        try GroupMember(
+                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
                             groupId: threadId,
                             profileId: zombieId,
-                            role: .zombie,
-                            isHidden: false
+                            role: .zombie
                         ).insert(db)
                         
                         if !validProfileIds.contains(zombieId) {
