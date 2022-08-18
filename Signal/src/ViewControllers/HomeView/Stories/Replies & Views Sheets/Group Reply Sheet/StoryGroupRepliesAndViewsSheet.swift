@@ -114,7 +114,7 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController {
 
     func createToggleButton(title: String, block: @escaping () -> Void) -> UIButton {
         let button = OWSButton()
-        button.block = {
+        button.block = { [unowned button] in
             guard !button.isSelected else { return }
             block()
         }
