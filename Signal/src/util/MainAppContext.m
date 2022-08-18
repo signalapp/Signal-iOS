@@ -12,8 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplicationStateDidChangeNotification";
-
 @interface MainAppContext ()
 
 @property (nonatomic, nullable) NSMutableArray<AppActiveBlock> *appActiveBlocks;
@@ -94,10 +92,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
         }
         _reportedApplicationState = reportedApplicationState;
     }
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:ReportedApplicationStateDidChangeNotification
-                                                        object:nil
-                                                      userInfo:nil];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
