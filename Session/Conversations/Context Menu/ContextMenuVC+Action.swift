@@ -105,6 +105,7 @@ extension ContextMenuVC {
         for cellViewModel: MessageViewModel,
         recentEmojis: [EmojiWithSkinTones],
         currentUserIsOpenGroupModerator: Bool,
+        currentThreadIsMessageRequest: Bool,
         delegate: ContextMenuActionDelegate?
     ) -> [Action]? {
         // No context items for info messages
@@ -156,6 +157,13 @@ extension ContextMenuVC {
             currentUserIsOpenGroupModerator
         )
         
+        let shouldShowEmojiActions: Bool = {
+            if cellViewModel.threadVariant == .openGroup {
+                return OpenGroupManager.isOpenGroupSupport(.reactions, on: cellViewModel.threadOpenGroupServer)
+            }
+            return currentThreadIsMessageRequest
+        }()
+        
         let generatedActions: [Action] = [
             (canReply ? Action.reply(cellViewModel, delegate) : nil),
             (canCopy ? Action.copy(cellViewModel, delegate) : nil),
@@ -165,7 +173,7 @@ extension ContextMenuVC {
             (canBan ? Action.ban(cellViewModel, delegate) : nil),
             (canBan ? Action.banAndDeleteAllMessages(cellViewModel, delegate) : nil),
         ]
-        .appending(contentsOf: recentEmojis.map { Action.react(cellViewModel, $0, delegate) })
+        .appending(contentsOf: (shouldShowEmojiActions ? recentEmojis : []).map { Action.react(cellViewModel, $0, delegate) })
         .appending(Action.emojiPlusButton(cellViewModel, delegate))
         .compactMap { $0 }
         

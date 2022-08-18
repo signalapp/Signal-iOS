@@ -671,14 +671,13 @@ extension ConversationVC:
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
-                recentEmojis: ((self.viewModel.threadData.threadIsMessageRequest == true) ? [] :
-                                (self.viewModel.threadData.recentReactionEmoji ?? [])
-                              ).compactMap { EmojiWithSkinTones(rawValue: $0) },
+                recentEmojis: (self.viewModel.threadData.recentReactionEmoji ?? []).compactMap { EmojiWithSkinTones(rawValue: $0) },
                 currentUserIsOpenGroupModerator: OpenGroupManager.isUserModeratorOrAdmin(
                     self.viewModel.threadData.currentUserPublicKey,
                     for: self.viewModel.threadData.openGroupRoomToken,
                     on: self.viewModel.threadData.openGroupServer
                 ),
+                currentThreadIsMessageRequest: (self.viewModel.threadData.threadIsMessageRequest == true),
                 delegate: self
             )
         else { return }
@@ -1125,7 +1124,9 @@ extension ConversationVC:
                     Emoji.addRecent(db, emoji: emoji)
                 }
                 
-                if let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: cellViewModel.threadId) {
+                if let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: cellViewModel.threadId),
+                   OpenGroupManager.isOpenGroupSupport(.reactions, on: openGroup.server)
+                {
                     // Send reaction to open groups
                     guard
                         let openGroupServerMessageId: Int64 = try? Interaction

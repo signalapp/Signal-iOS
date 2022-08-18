@@ -740,6 +740,29 @@ public final class OpenGroupManager: NSObject {
     
     // MARK: - Convenience
     
+    /// This method specifies if the given capability is supported on a specified Open Group
+    public static func isOpenGroupSupport(
+        _ capability: Capability.Variant,
+        on server: String?,
+        using dependencies: OGMDependencies = OGMDependencies()
+    ) -> Bool {
+        guard let server: String = server else { return false }
+        
+        return dependencies.storage
+            .read { db in
+                let capabilities: [Capability.Variant] = (try? Capability
+                    .select(.variant)
+                    .filter(Capability.Columns.openGroupServer == server)
+                    .filter(Capability.Columns.isMissing == false)
+                    .asRequest(of: Capability.Variant.self)
+                    .fetchAll(db))
+                    .defaulting(to: [])
+
+                return capabilities.contains(capability)
+            }
+            .defaulting(to: false)
+    }
+    
     /// This method specifies if the given publicKey is a moderator or an admin within a specified Open Group
     public static func isUserModeratorOrAdmin(
         _ publicKey: String,
