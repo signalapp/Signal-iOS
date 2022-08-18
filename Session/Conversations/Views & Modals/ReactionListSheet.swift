@@ -186,7 +186,8 @@ final class ReactionListSheet: BaseVC {
         _ allMessages: [MessageViewModel],
         selectedReaction: EmojiWithSkinTones? = nil,
         updatedReactionIndex: Int? = nil,
-        initialLoad: Bool = false
+        initialLoad: Bool = false,
+        shouldShowClearAllButton: Bool = false
     ) {
         guard let cellViewModel: MessageViewModel = allMessages.first(where: { $0.id == self.interactionId }) else {
             return
@@ -254,10 +255,8 @@ final class ReactionListSheet: BaseVC {
             }
         
         // Update the general UI
-        
         self.detailInfoLabel.text = updatedSummaries[safe: updatedSelectedReactionIndex]?.description
-        self.clearAllButton.isHidden = !cellViewModel.isSenderOpenGroupModerator
-        
+
         // Update general properties
         self.messageViewModel = cellViewModel
         self.lastSelectedReactionIndex = updatedSelectedReactionIndex
@@ -270,6 +269,9 @@ final class ReactionListSheet: BaseVC {
                 .orderedKeys[safe: updatedSelectedReactionIndex]
                 .map { updatedReactionInfo.value(forKey: $0) }
                 .defaulting(to: [])
+            
+            // Update clear all button visibility
+            self.clearAllButton.isHidden = !shouldShowClearAllButton
             
             UIView.performWithoutAnimation {
                 self.reactionContainer.reloadData()

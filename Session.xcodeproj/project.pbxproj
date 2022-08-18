@@ -3528,10 +3528,10 @@
 				FD17D79527F3E04600122BE0 /* _001_InitialSetupMigration.swift */,
 				FDF0B7412804EA4F004C14C5 /* _002_SetupStandardJobs.swift */,
 				FD17D79827F40AB800122BE0 /* _003_YDBToGRDBMigration.swift */,
-				FD09B7E4288670BB00ED0B66 /* _007_EmojiReacts.swift */,
 				FDF40CDD2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift */,
 				FD37EA0C28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift */,
 				FD37EA0E28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift */,
+				FD09B7E4288670BB00ED0B66 /* _007_EmojiReacts.swift */,
 			);
 			path = Migrations;
 			sourceTree = "<group>";

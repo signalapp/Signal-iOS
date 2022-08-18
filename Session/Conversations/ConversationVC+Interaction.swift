@@ -978,7 +978,12 @@ extension ConversationVC:
         reactionListSheet.handleInteractionUpdates(
             allMessages,
             selectedReaction: selectedReaction,
-            initialLoad: true
+            initialLoad: true,
+            shouldShowClearAllButton: OpenGroupManager.isUserModeratorOrAdmin(
+                self.viewModel.threadData.currentUserPublicKey,
+                for: self.viewModel.threadData.openGroupRoomToken,
+                on: self.viewModel.threadData.openGroupServer
+            )
         )
         reactionListSheet.modalPresentationStyle = .overFullScreen
         present(reactionListSheet, animated: true, completion: nil)
@@ -1176,9 +1181,6 @@ extension ConversationVC:
                         in: thread
                     )
                 }
-            },
-            completion: { [weak self] _, _ in
-                self?.handleMessageSent()
             }
         )
     }
