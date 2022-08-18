@@ -671,8 +671,9 @@ extension ConversationVC:
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
-                recentEmojis: (self.viewModel.threadData.recentReactionEmoji ?? [])
-                    .compactMap { EmojiWithSkinTones(rawValue: $0) },
+                recentEmojis: ((self.viewModel.threadData.threadIsMessageRequest == true) ? [] :
+                                (self.viewModel.threadData.recentReactionEmoji ?? [])
+                              ).compactMap { EmojiWithSkinTones(rawValue: $0) },
                 currentUserIsOpenGroupModerator: OpenGroupManager.isUserModeratorOrAdmin(
                     self.viewModel.threadData.currentUserPublicKey,
                     for: self.viewModel.threadData.openGroupRoomToken,
@@ -1060,6 +1061,9 @@ extension ConversationVC:
         guard cellViewModel.variant == .standardIncoming || cellViewModel.variant == .standardOutgoing else {
             return
         }
+        
+        let threadIsMessageRequest: Bool = (self.viewModel.threadData.threadIsMessageRequest == true)
+        guard !threadIsMessageRequest else { return }
         
         // Perform local rate limiting (don't allow more than 20 reactions within 60 seconds)
         let sentTimestamp: Int64 = Int64(floor(Date().timeIntervalSince1970 * 1000))
