@@ -152,7 +152,7 @@ class EmojiPickerCollectionView: UICollectionView {
     func searchWithText(_ searchText: String?) {
         if let searchText = searchText {
             emojiSearchResults = allSendableEmoji.filter { emoji in
-                return emoji.baseEmoji.name.range(of: searchText, options: [.caseInsensitive]) != nil
+                return emoji.baseEmoji?.name.range(of: searchText, options: [.caseInsensitive]) != nil
             }
         } else {
             emojiSearchResults = []
@@ -187,7 +187,7 @@ class EmojiPickerCollectionView: UICollectionView {
             currentSkinTonePicker = EmojiSkinTonePicker.present(referenceView: cell, emoji: emoji) { [weak self] emoji in
                 if let emoji: EmojiWithSkinTones = emoji {
                     Storage.shared.writeAsync { db in
-                        emoji.baseEmoji.setPreferredSkinTones(
+                        emoji.baseEmoji?.setPreferredSkinTones(
                             db,
                             preferredSkinTonePermutation: emoji.skinTones
                         )

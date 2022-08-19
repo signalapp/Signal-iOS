@@ -161,7 +161,7 @@ extension ContextMenuVC {
             if cellViewModel.threadVariant == .openGroup {
                 return OpenGroupManager.isOpenGroupSupport(.reactions, on: cellViewModel.threadOpenGroupServer)
             }
-            return currentThreadIsMessageRequest
+            return !currentThreadIsMessageRequest
         }()
         
         let generatedActions: [Action] = [
