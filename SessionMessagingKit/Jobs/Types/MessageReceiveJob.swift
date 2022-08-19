@@ -37,8 +37,7 @@ public enum MessageReceiveJob: JobExecutor {
                         db,
                         message: messageInfo.message,
                         associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
-                        openGroupId: nil,
-                        isBackgroundPoll: details.isBackgroundPoll
+                        openGroupId: nil
                     )
                 }
                 catch {
@@ -76,7 +75,7 @@ public enum MessageReceiveJob: JobExecutor {
                 .with(
                     details: Details(
                         messages: remainingMessagesToProcess,
-                        isBackgroundPoll: details.isBackgroundPoll
+                        calledFromBackgroundPoller: details.calledFromBackgroundPoller
                     )
                 )
                 .defaulting(to: job)
@@ -164,14 +163,18 @@ extension MessageReceiveJob {
         }
         
         public let messages: [MessageInfo]
-        public let isBackgroundPoll: Bool
+        private let isBackgroundPoll: Bool
+        
+        // Renamed variable for clarity (and didn't want to migrate old MessageReceiveJob
+        // values so didn't rename the original)
+        public var calledFromBackgroundPoller: Bool { isBackgroundPoll }
         
         public init(
             messages: [MessageInfo],
-            isBackgroundPoll: Bool
+            calledFromBackgroundPoller: Bool
         ) {
             self.messages = messages
-            self.isBackgroundPoll = isBackgroundPoll
+            self.isBackgroundPoll = calledFromBackgroundPoller
         }
     }
 }
