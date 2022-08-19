@@ -18,6 +18,8 @@ public protocol ConversationItem {
 
     func title(transaction: SDSAnyReadTransaction) -> String
 
+    var outgoingMessageClass: TSOutgoingMessage.Type { get }
+
     var image: UIImage? { get }
     var isBlocked: Bool { get }
     var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { get }
@@ -52,6 +54,8 @@ struct RecentConversationItem {
 // MARK: -
 
 extension RecentConversationItem: ConversationItem {
+    var outgoingMessageClass: TSOutgoingMessage.Type { unwrapped.outgoingMessageClass }
+
     var messageRecipient: MessageRecipient {
         return unwrapped.messageRecipient
     }
@@ -102,6 +106,7 @@ extension ContactConversationItem: Comparable {
 // MARK: -
 
 extension ContactConversationItem: ConversationItem {
+    var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
 
     var messageRecipient: MessageRecipient {
         .contact(address)
@@ -155,6 +160,8 @@ struct GroupConversationItem: Dependencies {
 // MARK: -
 
 extension GroupConversationItem: ConversationItem {
+    var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+
     var messageRecipient: MessageRecipient {
         .group(groupThreadId)
     }
@@ -204,6 +211,8 @@ public struct StoryConversationItem {
 // MARK: -
 
 extension StoryConversationItem: ConversationItem {
+    public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
+
     public var messageRecipient: MessageRecipient {
         unwrapped.messageRecipient
     }
@@ -280,6 +289,8 @@ struct PrivateStoryConversationItem: Dependencies {
 // MARK: -
 
 extension PrivateStoryConversationItem: ConversationItem {
+    var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
+
     var isBlocked: Bool { false }
 
     var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { nil }
