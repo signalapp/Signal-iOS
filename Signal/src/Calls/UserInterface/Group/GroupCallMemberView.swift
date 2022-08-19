@@ -124,7 +124,6 @@ class GroupCallLocalMemberView: GroupCallMemberView {
     let videoView = LocalVideoView()
 
     let videoOffIndicatorImage = UIImageView()
-    let videoOffLabel = UILabel()
 
     var videoOffIndicatorWidth: CGFloat {
         if width > 102 {
@@ -163,15 +162,6 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoOffIndicatorImage.autoMatch(.height, to: .width, of: videoOffIndicatorImage)
         videoOffIndicatorImage.autoCenterInSuperview()
 
-        videoOffLabel.font = .ows_dynamicTypeSubheadline
-        videoOffLabel.text = NSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
-                                               comment: "Indicates to the user that their camera is currently off.")
-        videoOffLabel.textAlignment = .center
-        videoOffLabel.textColor = Theme.darkThemePrimaryColor
-        noVideoView.addSubview(videoOffLabel)
-        videoOffLabel.autoPinWidthToSuperview()
-        videoOffLabel.autoPinEdge(.top, to: .bottom, of: videoOffIndicatorImage, withOffset: 10)
-
         videoView.contentMode = .scaleAspectFill
         insertSubview(videoView, belowSubview: muteIndicatorImage)
         videoView.frame = bounds
@@ -193,8 +183,8 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoView.captureSession = call.videoCaptureController.captureSession
         noVideoView.isHidden = !videoView.isHidden
 
-        videoOffLabel.isHidden = !videoView.isHidden || !isFullScreen
-        videoOffIndicatorImage.isHidden = !videoView.isHidden
+        // In full-screen mode the image is shown as part of the "Your camera is off" message.
+        videoOffIndicatorImage.isHidden = noVideoView.isHidden || isFullScreen
 
         guard let localAddress = tsAccountManager.localAddress else {
             return owsFailDebug("missing local address")
