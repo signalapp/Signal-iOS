@@ -374,6 +374,13 @@ if __name__ == "__main__":
     for file_path in file_paths:
         process(file_path)
 
+    print("Sorting Xcode project...")
+    print(
+        subprocess.getoutput(
+            'Scripts/sort-Xcode-project-file Signal.xcodeproj'
+        )
+    )
+
     print("git clang-format...")
     # we don't want to format .proto files, so we specify every other supported extension
     print(
