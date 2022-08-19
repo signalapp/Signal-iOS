@@ -1548,11 +1548,16 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return YES;
 }
 
-- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSThread *)localThread transaction:(SDSAnyWriteTransaction *)transaction
+- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSThread *)localThread
+                                                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(self.shouldSyncTranscript);
 
-    return [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread messageThread:[self threadWithTransaction:transaction] outgoingMessage:self isRecipientUpdate:self.hasSyncedTranscript transaction:transaction];
+    return [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread
+                                                           messageThread:[self threadWithTransaction:transaction]
+                                                         outgoingMessage:self
+                                                       isRecipientUpdate:self.hasSyncedTranscript
+                                                             transaction:transaction];
 }
 
 - (NSString *)statusDescription

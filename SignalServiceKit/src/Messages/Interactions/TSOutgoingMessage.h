@@ -241,7 +241,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
  */
 - (BOOL)shouldSyncTranscript;
 
-- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSThread *)localThread transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(buildTranscriptSyncMessage(localThread:transaction:));
+- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSThread *)localThread
+                                                                   transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(buildTranscriptSyncMessage(localThread:transaction:));
 
 // All recipients of this message.
 - (NSArray<SignalServiceAddress *> *)recipientAddresses;

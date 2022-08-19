@@ -1176,20 +1176,21 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         return success();
     }
 
-    [message sendSyncTranscript].doneInBackground(^(id value) {
-        OWSLogInfo(@"Successfully sent sync transcript.");
+    [message sendSyncTranscript]
+        .doneInBackground(^(id value) {
+            OWSLogInfo(@"Successfully sent sync transcript.");
 
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [message updateWithHasSyncedTranscript:YES transaction:transaction];
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                [message updateWithHasSyncedTranscript:YES transaction:transaction];
+            });
+
+            success();
+        })
+        .catchInBackground(^(NSError *error) {
+            OWSLogInfo(@"Failed to send sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
+
+            failure(error);
         });
-
-        success();
-    })
-    .catchInBackground(^(NSError *error) {
-        OWSLogInfo(@"Failed to send sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
-
-        failure(error);
-    });
 }
 
 - (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
