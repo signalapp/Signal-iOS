@@ -317,3 +317,54 @@ extension TSOutgoingMessage {
     @objc
     var encryptionStyle: EncryptionStyle { .whisper }
 }
+
+// MARK: - Transcripts
+
+public extension TSOutgoingMessage {
+    @objc
+    @available(swift, obsoleted: 1.0)
+    func sendSyncTranscript() -> AnyPromise {
+        AnyPromise(sendSyncTranscript())
+    }
+
+    func sendSyncTranscript() -> Promise<Void> {
+        guard shouldSyncTranscript() else {
+            return Promise(error: OWSAssertionError("Unexpectedly attempted to send sync transcript for message"))
+        }
+
+        return databaseStorage.write(.promise) { transaction in
+            guard let localThread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+                throw OWSAssertionError("Missing local thread")
+            }
+
+            guard let transcript = self.buildTranscriptSyncMessage(
+                localThread: localThread,
+                transaction: transaction
+            ) else {
+                throw OWSAssertionError("Failed to build transcript")
+            }
+
+            guard let plaintext = transcript.buildPlainTextData(localThread, transaction: transaction) else {
+                throw OWSAssertionError("Missing proto")
+            }
+
+            let payloadId = MessageSendLog.recordPayload(plaintext, forMessageBeingSent: transcript, transaction: transaction)
+
+            return OWSMessageSend(
+                message: transcript,
+                plaintextContent: plaintext,
+                plaintextPayloadId: payloadId,
+                thread: localThread,
+                address: Self.tsAccountManager.localAddress!,
+                udSendingAccess: nil,
+                localAddress: Self.tsAccountManager.localAddress!,
+                sendErrorBlock: nil
+            )
+        }.then { messageSend in
+            return MessageSender.ensureSessions(forMessageSends: [messageSend], ignoreErrors: true).map { messageSend }
+        }.then { messageSend -> Promise<Void> in
+            Self.messageSender.sendMessage(toRecipient: messageSend)
+            return messageSend.promise
+        }
+    }
+}

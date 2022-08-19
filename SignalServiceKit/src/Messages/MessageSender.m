@@ -1176,81 +1176,20 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         return success();
     }
 
-    BOOL isRecipientUpdate = message.hasSyncedTranscript;
-    [self sendSyncTranscriptForMessage:message
-                     isRecipientUpdate:isRecipientUpdate
-                               success:^{
-                                   DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                                       [message updateWithHasSyncedTranscript:YES transaction:transaction];
-                                   });
+    [message sendSyncTranscript].doneInBackground(^(id value) {
+        OWSLogInfo(@"Successfully sent sync transcript.");
 
-                                   success();
-                               }
-                               failure:failure];
-}
-
-- (void)sendSyncTranscriptForMessage:(TSOutgoingMessage *)message
-                   isRecipientUpdate:(BOOL)isRecipientUpdate
-                             success:(void (^)(void))success
-                             failure:(RetryableFailureHandler)failure
-{
-    OWSAssertDebug(!NSThread.isMainThread);
-
-    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
-    // After sending a message to its "message thread",
-    // we send a sync transcript to the "local thread".
-    __block TSThread *_Nullable localThread;
-    __block TSThread *_Nullable messageThread;
-    __block OWSOutgoingSentMessageTranscript *sentMessageTranscript;
-    __block NSData *_Nullable plaintext;
-    __block NSNumber *_Nullable plaintextPayloadId;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        localThread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-        messageThread = [self threadForMessage:message transaction:transaction];
-        sentMessageTranscript = [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread
-                                                                                messageThread:messageThread
-                                                                              outgoingMessage:message
-                                                                            isRecipientUpdate:isRecipientUpdate
-                                                                                  transaction:transaction];
-        plaintext = [sentMessageTranscript buildPlainTextData:localThread transaction:transaction];
-        plaintextPayloadId = [MessageSendLog recordPayload:plaintext
-                                       forMessageBeingSent:sentMessageTranscript
-                                               transaction:transaction];
-    });
-    if (localThread == nil) {
-        return failure(OWSErrorMakeAssertionError(@"Missing local thread"));
-    }
-    if (messageThread == nil) {
-        return failure(OWSErrorMakeAssertionError(@"Missing message thread"));
-    }
-    if (plaintext == nil) {
-        return failure(OWSErrorMakeAssertionError(@"Missing proto"));
-    }
-
-    OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
-                                                         plaintextContent:plaintext
-                                                       plaintextPayloadId:plaintextPayloadId
-                                                                   thread:localThread
-                                                                  address:localAddress
-                                                          udSendingAccess:nil
-                                                             localAddress:localAddress
-                                                           sendErrorBlock:nil];
-
-    [MessageSender ensureSessionsforMessageSendsObjc:@[ messageSend ] ignoreErrors:YES]
-        .thenInBackground(^(id value) {
-            [self sendMessageToRecipient:messageSend];
-            return messageSend.asAnyPromise;
-        })
-        .doneInBackground(^(id value) {
-            OWSLogInfo(@"Successfully sent sync transcript.");
-
-            success();
-        })
-        .catchInBackground(^(NSError *error) {
-            OWSLogInfo(@"Failed to send sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
-
-            failure(error);
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            [message updateWithHasSyncedTranscript:YES transaction:transaction];
         });
+
+        success();
+    })
+    .catchInBackground(^(NSError *error) {
+        OWSLogInfo(@"Failed to send sync transcript: %@ (isRetryable: %d)", error, [error isRetryable]);
+
+        failure(error);
+    });
 }
 
 - (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend

@@ -95,7 +95,7 @@ public class StoryManager: NSObject {
                 owsFailDebug("Missing existing story for recipient update with timestamp \(proto.timestamp)")
             }
         } else if existingStory == nil {
-            guard let message = try StoryMessage.create(withSentTranscript: proto, transaction: transaction) else { return }
+            let message = try StoryMessage.create(withSentTranscript: proto, transaction: transaction)
 
             attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
 

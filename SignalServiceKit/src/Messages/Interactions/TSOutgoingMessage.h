@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSOutgoingSyncMessage;
 @class SignalServiceAddress;
 
 typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
@@ -239,6 +240,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
  * (so we don't end up in an infinite loop).
  */
 - (BOOL)shouldSyncTranscript;
+
+- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSThread *)localThread transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(buildTranscriptSyncMessage(localThread:transaction:));
 
 // All recipients of this message.
 - (NSArray<SignalServiceAddress *> *)recipientAddresses;

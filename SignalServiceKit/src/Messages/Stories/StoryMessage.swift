@@ -163,7 +163,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     public static func create(
         withSentTranscript proto: SSKProtoSyncMessageSent,
         transaction: SDSAnyWriteTransaction
-    ) throws -> StoryMessage? {
+    ) throws -> StoryMessage {
         Logger.info("Processing StoryMessage from transcript with timestamp \(proto.timestamp)")
 
         guard let storyMessage = proto.storyMessage else {

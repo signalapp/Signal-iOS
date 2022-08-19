@@ -11,12 +11,20 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     public private(set) var storyAllowsReplies: NSNumber!
     @objc
     public private(set) var isPrivateStorySend: NSNumber!
+    @objc
+    public private(set) var skipSyncTranscript: NSNumber!
 
     @objc
-    public init(thread: TSThread, storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) {
+    public init(
+        thread: TSThread,
+        storyMessage: StoryMessage,
+        skipSyncTranscript: Bool = false,
+        transaction: SDSAnyReadTransaction
+    ) {
         self.storyMessageId = storyMessage.uniqueId
         self.storyAllowsReplies = NSNumber(value: (thread as? TSPrivateStoryThread)?.allowsReplies ?? true)
         self.isPrivateStorySend = NSNumber(value: thread is TSPrivateStoryThread)
+        self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.timestamp = storyMessage.timestamp
         super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
@@ -33,7 +41,23 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public override var isUrgent: Bool { false }
 
-    public override func shouldSyncTranscript() -> Bool { false }
+    public override func shouldSyncTranscript() -> Bool { !skipSyncTranscript.boolValue }
+
+    public override func buildTranscriptSyncMessage(
+        localThread: TSThread,
+        transaction: SDSAnyWriteTransaction
+    ) -> OWSOutgoingSyncMessage? {
+        guard let storyMessage = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
+            owsFailDebug("Missing story message")
+            return nil
+        }
+
+        return OutgoingStorySentMessageTranscript(
+            localThread: localThread,
+            storyMessage: storyMessage,
+            transaction: transaction
+        )
+    }
 
     public class func createUnsentMessage(
         attachment: TSAttachmentStream,
@@ -105,7 +129,15 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
         privateStoryThread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
 
-        let outgoingMessage = OutgoingStoryMessage(thread: privateStoryThread, storyMessage: storyMessage, transaction: transaction)
+        // We skip the sync transcript for this message, since it's for
+        // an already existing StoryMessage that has been sync'd to our
+        // linked devices by another message.
+        let outgoingMessage = OutgoingStoryMessage(
+            thread: privateStoryThread,
+            storyMessage: storyMessage,
+            skipSyncTranscript: true,
+            transaction: transaction
+        )
         return outgoingMessage
     }
 
