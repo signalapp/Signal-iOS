@@ -41,8 +41,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
     public var localUserViewedTimestamp: UInt64? {
         switch manifest {
-        case .incoming(_, let viewedTimestamp):
-            return viewedTimestamp
+        case .incoming(let receivedState):
+            return receivedState.viewedTimestamp
         case .outgoing:
             return timestamp
         }
@@ -59,8 +59,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
     public var localUserAllowedToReply: Bool {
         switch manifest {
-        case .incoming(let allowsReplies, _):
-            return allowsReplies
+        case .incoming(let receivedState):
+            return receivedState.allowsReplies
         case .outgoing:
             return true
         }
@@ -132,7 +132,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             return nil
         }
 
-        let manifest = StoryManifest.incoming(allowsReplies: storyMessage.allowsReplies, viewedTimestamp: nil)
+        let manifest = StoryManifest.incoming(receivedState: .init(allowsReplies: storyMessage.allowsReplies))
 
         let attachment: StoryMessageAttachment
         if let fileAttachment = storyMessage.fileAttachment {
@@ -222,10 +222,10 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     @objc
     public func markAsViewed(at timestamp: UInt64, circumstance: OWSReceiptCircumstance, transaction: SDSAnyWriteTransaction) {
         anyUpdate(transaction: transaction) { record in
-            guard case .incoming(let allowsReplies, _) = record.manifest else {
+            guard case .incoming(let receivedState) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark outgoing message as viewed with wrong method.")
             }
-            record.manifest = .incoming(allowsReplies: allowsReplies, viewedTimestamp: timestamp)
+            record.manifest = .incoming(receivedState: .init(allowsReplies: receivedState.allowsReplies, viewedTimestamp: timestamp))
         }
 
         // Record on the context when the local user last viewed the story for this context
@@ -462,8 +462,18 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 }
 
 public enum StoryManifest: Codable {
-    case incoming(allowsReplies: Bool, viewedTimestamp: UInt64?)
+    case incoming(receivedState: StoryReceivedState)
     case outgoing(recipientStates: [UUID: StoryRecipientState])
+}
+
+public struct StoryReceivedState: Codable {
+    public let allowsReplies: Bool
+    public var viewedTimestamp: UInt64?
+
+    init(allowsReplies: Bool, viewedTimestamp: UInt64? = nil) {
+        self.allowsReplies = allowsReplies
+        self.viewedTimestamp = viewedTimestamp
+    }
 }
 
 public struct StoryRecipientState: Codable {

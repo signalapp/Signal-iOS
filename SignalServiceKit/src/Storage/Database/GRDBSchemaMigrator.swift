@@ -170,6 +170,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addSchemaVersionToAttachments
         case makeAudioPlaybackRateColumnNonNull
         case addLastViewedStoryTimestampToTSThread
+        case convertStoryIncomingManifestStorageFormat
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -219,7 +220,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 41
+    public static let grdbSchemaVersionLatest: UInt = 42
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1879,6 +1880,30 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.alter(table: "model_TSThread") { table in
                     table.add(column: "lastViewedStoryTimestamp", .integer)
                 }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.convertStoryIncomingManifestStorageFormat) { db in
+            do {
+                // Nest the "incoming" state under the "receivedState" key to make
+                // future migrations more future proof.
+                try db.execute(sql: """
+                    UPDATE model_StoryMessage
+                    SET manifest = json_replace(
+                        manifest,
+                        '$.incoming',
+                        json_object(
+                            'receivedState',
+                            json_extract(
+                                manifest,
+                                '$.incoming'
+                            )
+                        )
+                    )
+                    WHERE json_extract(manifest, '$.incoming') IS NOT NULL;
+                """)
             } catch {
                 owsFail("Error: \(error)")
             }
