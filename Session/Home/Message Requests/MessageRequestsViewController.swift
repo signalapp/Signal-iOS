@@ -391,7 +391,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 ) { [weak self] _, _ in
                     self?.block(threadId)
                 }
-                block.backgroundColor = Colors.unimportant
+                block.backgroundColor = Colors.blockActionBackground
 
                 return [ delete, block ]
                 
