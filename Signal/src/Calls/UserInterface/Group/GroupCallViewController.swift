@@ -745,6 +745,9 @@ extension GroupCallViewController: CallControlsDelegate {
             let newShouldRing = !oldShouldRing
             sender.isSelected = newShouldRing
             call.userWantsToRing = newShouldRing
+
+            // Refresh the call header.
+            callHeader.groupCallLocalDeviceStateChanged(call)
         }
     }
 

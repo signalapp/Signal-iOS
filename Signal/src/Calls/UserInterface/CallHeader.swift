@@ -117,7 +117,7 @@ class CallHeader: UIView {
         // Add trailing space after the name scrolls before it wraps around and scrolls back in.
         callTitleLabel.trailingBuffer = ScaleFromIPhone5(80.0)
 
-        callTitleLabel.font = UIFont.ows_dynamicTypeHeadlineClamped.ows_semibold
+        callTitleLabel.font = UIFont.ows_dynamicTypeHeadline.ows_semibold
         callTitleLabel.textAlignment = .center
         callTitleLabel.textColor = UIColor.white
         addShadow(to: callTitleLabel)
@@ -132,7 +132,7 @@ class CallHeader: UIView {
 
         // Status label
 
-        callStatusLabel.font = UIFont.ows_dynamicTypeFootnoteClamped
+        callStatusLabel.font = UIFont.ows_dynamicTypeFootnote
         callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
         callStatusLabel.numberOfLines = 0
@@ -166,111 +166,178 @@ class CallHeader: UIView {
         view.layer.shadowRadius = 4
     }
 
+    private func describeMembers(count: Int,
+                                 names: [String],
+                                 zeroMemberString: @autoclosure () -> String,
+                                 oneMemberFormat: @autoclosure () -> String,
+                                 twoMemberFormat: @autoclosure () -> String,
+                                 manyMemberFormat: @autoclosure () -> String) -> String {
+        switch count {
+        case 0:
+            return zeroMemberString()
+        case 1:
+            return String(format: oneMemberFormat(), names[0])
+        case 2:
+            return String(format: twoMemberFormat(), names[0], names[1])
+        default:
+            return String.localizedStringWithFormat(manyMemberFormat(), count - 2, names[0], names[1])
+        }
+    }
+
+    private func fetchGroupSizeAndMemberNamesWithSneakyTransaction() -> (Int, [String]) {
+        guard let groupThread = call.thread as? TSGroupThread else {
+            return (0, [])
+        }
+        return databaseStorage.read { transaction in
+            // FIXME: Register for notifications so we can update if someone leaves the group while the screen is up?
+            let firstTwoNames = groupThread.sortedMemberNames(includingBlocked: false,
+                                                              limit: 2,
+                                                              transaction: transaction) {
+                contactsManager.shortDisplayName(for: $0, transaction: transaction)
+            }
+            if firstTwoNames.count < 2 {
+                return (firstTwoNames.count, firstTwoNames)
+            }
+
+            let count = groupThread.groupMembership.fullMembers.lazy.filter {
+                !$0.isLocalAddress && !self.blockingManager.isAddressBlocked($0, transaction: transaction)
+            }.count
+            return (count, firstTwoNames)
+        }
+    }
+
     private func updateCallStatusLabel() {
         let callStatusText: String
         switch call.groupCall.localDeviceState.joinState {
         case .notJoined, .joining:
-            callStatusText = ""
-        case .joined:
-            let callDuration = call.connectionDuration()
-            let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
-            var formattedDate = dateFormatter.string(from: callDurationDate)
-            if formattedDate.hasPrefix("00:") {
-                // Don't show the "hours" portion of the date format unless the
-                // call duration is at least 1 hour.
-                formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 3)...])
+            if let joinedMembers = call.groupCall.peekInfo?.joinedMembers, !joinedMembers.isEmpty {
+                let memberNames: [String] = databaseStorage.read { transaction in
+                    joinedMembers.prefix(2).map {
+                        contactsManager.shortDisplayName(for: SignalServiceAddress(uuid: $0),
+                                                         transaction: transaction)
+                    }
+                }
+                callStatusText = describeMembers(
+                    count: joinedMembers.count,
+                    names: memberNames,
+                    zeroMemberString: "",
+                    oneMemberFormat: NSLocalizedString(
+                        "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
+                        comment: "Text explaining that there is one person in the group call. Embeds {member name}"),
+                    twoMemberFormat: NSLocalizedString(
+                        "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
+                        comment: "Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
+                    manyMemberFormat: NSLocalizedString(
+                        "GROUP_CALL_MANY_PEOPLE_HERE_%d",
+                        tableName: "PluralAware",
+                        comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
+
             } else {
-                // If showing the "hours" portion of the date format, strip any leading
-                // zeroes.
-                if formattedDate.hasPrefix("0") {
-                    formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 1)...])
+                let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
+                if call.ringMode == .allowed && call.userWantsToRing {
+                    callStatusText = describeMembers(
+                        count: memberCount,
+                        names: firstTwoNames,
+                        zeroMemberString: "",
+                        oneMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"),
+                        twoMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
+                        manyMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_WILL_RING_MANY_PEOPLE_%d",
+                            tableName: "PluralAware",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
+                } else {
+                    callStatusText = describeMembers(
+                        count: memberCount,
+                        names: firstTwoNames,
+                        zeroMemberString: "",
+                        oneMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT",
+                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name}"),
+                        twoMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT",
+                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
+                        manyMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d",
+                            tableName: "PluralAware",
+                            comment: "Text shown before the user starts a group call if the user has not enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
                 }
             }
-            callStatusText = String(format: CallStrings.callStatusFormat, formattedDate)
+        case .joined:
+            if call.groupCall.localDeviceState.connectionState == .reconnecting {
+                callStatusText = NSLocalizedString(
+                    "GROUP_CALL_RECONNECTING",
+                    comment: "Text indicating that the user has lost their connection to the call and we are reconnecting.")
+
+            } else if call.groupCall.remoteDeviceStates.isEmpty && call.ringMode == .allowed && call.userWantsToRing {
+                let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
+                callStatusText = describeMembers(
+                    count: memberCount,
+                    names: firstTwoNames,
+                    zeroMemberString: "",
+                    oneMemberFormat: NSLocalizedString(
+                        "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT",
+                        comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"),
+                    twoMemberFormat: NSLocalizedString(
+                        "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT",
+                        comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
+                    manyMemberFormat: NSLocalizedString(
+                        "GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d",
+                        tableName: "PluralAware",
+                        comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
+
+            } else if call.groupCall.remoteDeviceStates.isEmpty {
+                callStatusText = NSLocalizedString(
+                    "GROUP_CALL_NO_ONE_HERE",
+                    comment: "Text explaining that you are the only person currently in the group call")
+
+            } else {
+                let callDuration = call.connectionDuration()
+                let callDurationDate = Date(timeIntervalSinceReferenceDate: callDuration)
+                var formattedDate = dateFormatter.string(from: callDurationDate)
+                if formattedDate.hasPrefix("00:") {
+                    // Don't show the "hours" portion of the date format unless the
+                    // call duration is at least 1 hour.
+                    formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 3)...])
+                } else {
+                    // If showing the "hours" portion of the date format, strip any leading
+                    // zeroes.
+                    if formattedDate.hasPrefix("0") {
+                        formattedDate = String(formattedDate[formattedDate.index(formattedDate.startIndex, offsetBy: 1)...])
+                    }
+                }
+                callStatusText = String(format: CallStrings.callStatusFormat, formattedDate)
+            }
         }
 
         callStatusLabel.text = callStatusText
-        callStatusLabel.isHidden = call.groupCall.localDeviceState.joinState != .joined || call.groupCall.remoteDeviceStates.count > 1
     }
 
-    func updateCallTitleLabel() {
+    private func updateCallTitleLabel() {
         let callTitleText: String
+        if call.groupCall.localDeviceState.joinState == .joined,
+           let firstMember = call.groupCall.remoteDeviceStates.sortedBySpeakerTime.first,
+           firstMember.presenting == true {
 
-        if call.groupCall.localDeviceState.connectionState == .reconnecting {
-            callTitleText = NSLocalizedString(
-                "GROUP_CALL_RECONNECTING",
-                comment: "Text indicating that the user has lost their connection to the call and we are reconnecting."
-            )
-        } else {
-            var isFirstMemberPresenting = false
-            let memberNames: [String] = databaseStorage.read { transaction in
-                if self.call.groupCall.localDeviceState.joinState == .joined {
-                    let sortedDeviceStates = self.call.groupCall.remoteDeviceStates.sortedByAddedTime
-                    isFirstMemberPresenting = sortedDeviceStates.first?.presenting == true
-                    return sortedDeviceStates.map { self.contactsManager.displayName(for: $0.address, transaction: transaction) }
-                } else {
-                    return self.call.groupCall.peekInfo?.joinedMembers
-                        .map { self.contactsManager.displayName(for: SignalServiceAddress(uuid: $0), transaction: transaction) } ?? []
-                }
+            let presentingName = databaseStorage.read { transaction in
+                contactsManager.shortDisplayName(for: SignalServiceAddress(uuid: firstMember.userId),
+                                                 transaction: transaction)
             }
-
-            switch call.groupCall.localDeviceState.joinState {
-            case .joined:
-                switch memberNames.count {
-                case 0:
-                    callTitleText = NSLocalizedString(
-                        "GROUP_CALL_NO_ONE_HERE",
-                        comment: "Text explaining that you are the only person currently in the group call"
-                    )
-                case 1:
-                    if isFirstMemberPresenting {
-                        let formatString = NSLocalizedString(
-                            "GROUP_CALL_PRESENTING_FORMAT",
-                            comment: "Text explaining that a member is presenting. Embeds {member name}"
-                        )
-                        callTitleText = String(format: formatString, memberNames[0])
-                    } else {
-                        callTitleText = memberNames[0]
-                    }
-                default:
-                    if isFirstMemberPresenting {
-                        let formatString = NSLocalizedString(
-                            "GROUP_CALL_PRESENTING_FORMAT",
-                            comment: "Text explaining that a member is presenting. Embeds {member name}"
-                        )
-                        callTitleText = String(format: formatString, memberNames[0])
-                    } else {
-                        callTitleText = ""
-                    }
-                }
-            default:
-                switch memberNames.count {
-                case 0:
-                    callTitleText = ""
-                case 1:
-                    let formatString = NSLocalizedString(
-                        "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
-                        comment: "Text explaining that there is one person in the group call. Embeds {member name}"
-                    )
-                    callTitleText = String(format: formatString, memberNames[0])
-                case 2:
-                    let formatString = NSLocalizedString(
-                        "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-                        comment: "Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }}"
-                    )
-                    callTitleText = String(format: formatString, memberNames[0], memberNames[1])
-                default:
-                    let formatString = NSLocalizedString(
-                        "GROUP_CALL_MANY_PEOPLE_HERE_%d", tableName: "PluralAware",
-                        comment: "Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"
-                    )
-                    callTitleText = String.localizedStringWithFormat(formatString, memberNames.count - 2, memberNames[0], memberNames[1])
-                }
+            let formatString = NSLocalizedString(
+                "GROUP_CALL_PRESENTING_FORMAT",
+                comment: "Text explaining that a member is presenting. Embeds {member name}")
+            callTitleText = String(format: formatString, presentingName)
+        } else {
+            // FIXME: This should auto-update if the group name changes.
+            callTitleText = databaseStorage.read { transaction in
+                contactsManager.displayName(for: call.thread, transaction: transaction)
             }
         }
 
         callTitleLabel.text = callTitleText
-        callTitleLabel.isHidden = callTitleText.isEmpty
     }
 
     func updateGroupMembersButton() {
@@ -309,18 +376,18 @@ extension CallHeader: CallObserver {
             callDurationTimer = nil
         }
 
-        updateCallTitleLabel()
         updateCallStatusLabel()
         updateGroupMembersButton()
     }
 
     func groupCallPeekChanged(_ call: SignalCall) {
-        updateCallTitleLabel()
+        updateCallStatusLabel()
         updateGroupMembersButton()
     }
 
     func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
         updateCallTitleLabel()
+        updateCallStatusLabel()
         updateGroupMembersButton()
     }
 
@@ -328,7 +395,6 @@ extension CallHeader: CallObserver {
         callDurationTimer?.invalidate()
         callDurationTimer = nil
 
-        updateCallTitleLabel()
         updateCallStatusLabel()
         updateGroupMembersButton()
     }

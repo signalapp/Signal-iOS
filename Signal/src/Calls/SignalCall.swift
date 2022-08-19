@@ -124,6 +124,9 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
     }
 
+    /// Before joining, indicates that the user wants to send a ring.
+    ///
+    /// After joining, indicates that the ring was sent but no one has responded yet.
     public var userWantsToRing: Bool = true {
         didSet {
             AssertIsOnMainThread()
@@ -350,6 +353,7 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onRemoteDeviceStatesChanged groupCall: GroupCall) {
+        userWantsToRing = false
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
