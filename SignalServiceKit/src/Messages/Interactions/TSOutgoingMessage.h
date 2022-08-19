@@ -33,8 +33,9 @@ typedef NS_CLOSED_ENUM(NSInteger, OWSOutgoingMessageRecipientState) {
     OWSOutgoingMessageRecipientStateFailed = 0,
     // Message is being sent to the recipient (enqueued, uploading or sending).
     OWSOutgoingMessageRecipientStateSending,
-    // The message was not sent because the recipient is not valid.
-    // For example, this recipient may have left the group.
+    // The message was not sent because the recipient is not valid
+    // or already has received the message via another channel.
+    // For example, this recipient may have left the group
     OWSOutgoingMessageRecipientStateSkipped,
     // The message has been sent to the service.  It may also have been delivered or read.
     OWSOutgoingMessageRecipientStateSent,

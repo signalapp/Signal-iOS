@@ -20,6 +20,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     public var changeActionsProtoData: Data?
     @objc
     public var additionalRecipients: [SignalServiceAddress]?
+    @objc
+    public var skippedRecipients: Set<SignalServiceAddress>?
 
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
@@ -37,6 +39,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                          isViewOnceMessage: Bool = false,
                          changeActionsProtoData: Data? = nil,
                          additionalRecipients: [SignalServiceAddress]? = nil,
+                         skippedRecipients: Set<SignalServiceAddress>? = nil,
                          storyAuthorAddress: SignalServiceAddress? = nil,
                          storyTimestamp: UInt64? = nil,
                          storyReactionEmoji: String? = nil,
@@ -64,6 +67,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         self.groupMetaMessage = groupMetaMessage
         self.changeActionsProtoData = changeActionsProtoData
         self.additionalRecipients = additionalRecipients
+        self.skippedRecipients = skippedRecipients
     }
 
     @objc
@@ -98,6 +102,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               isViewOnceMessage: Bool,
                               changeActionsProtoData: Data?,
                               additionalRecipients: [SignalServiceAddress]?,
+                              skippedRecipients: Set<SignalServiceAddress>?,
                               storyAuthorAddress: SignalServiceAddress?,
                               storyTimestamp: NSNumber?,
                               storyReactionEmoji: String?,
@@ -118,6 +123,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         isViewOnceMessage: isViewOnceMessage,
                                         changeActionsProtoData: changeActionsProtoData,
                                         additionalRecipients: additionalRecipients,
+                                        skippedRecipients: skippedRecipients,
                                         storyAuthorAddress: storyAuthorAddress,
                                         storyTimestamp: storyTimestamp?.uint64Value,
                                         storyReactionEmoji: storyReactionEmoji,

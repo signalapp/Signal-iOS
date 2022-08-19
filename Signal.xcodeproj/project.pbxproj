@@ -847,6 +847,7 @@
 		884DB95027DE67BB00C6A309 /* StoryContextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94E27DE67BB00C6A309 /* StoryContextViewController.swift */; };
 		884DB95227DE67D900C6A309 /* StoryItemMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB95127DE67D900C6A309 /* StoryItemMediaView.swift */; };
 		884DB95427DEB9E900C6A309 /* StoryPlaybackProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */; };
+		884E4C4828AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884E4C4728AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift */; };
 		8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */; };
 		8851DB4524CCFB93001EACD2 /* ConversationViewController+Mentions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */; };
 		8852572927DD366D0032073C /* StoriesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8852572827DD366D0032073C /* StoriesViewController.swift */; };
@@ -1214,7 +1215,6 @@
 		F9C5CBB0289453B300548EEE /* OWSSyncFetchLatestMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBB1289453B300548EEE /* OWSSyncRequestMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BC289453B100548EEE /* OWSSyncRequestMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB2289453B300548EEE /* OWSSyncContactsMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BD289453B100548EEE /* OWSSyncContactsMessage.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CBB3289453B300548EEE /* OWSOutgoingSentMessageTranscript.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BE289453B100548EEE /* OWSOutgoingSentMessageTranscript.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB4289453B300548EEE /* OutgoingPaymentSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8BF289453B100548EEE /* OutgoingPaymentSyncMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CBB5289453B300548EEE /* OWSOutgoingSentMessageTranscript.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C8C0289453B100548EEE /* OWSOutgoingSentMessageTranscript.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CBB6289453B300548EEE /* OWSSyncGroupsMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C8C1289453B100548EEE /* OWSSyncGroupsMessage.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3102,6 +3102,7 @@
 		884DB94E27DE67BB00C6A309 /* StoryContextViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryContextViewController.swift; sourceTree = "<group>"; };
 		884DB95127DE67D900C6A309 /* StoryItemMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryItemMediaView.swift; sourceTree = "<group>"; };
 		884DB95327DEB9E900C6A309 /* StoryPlaybackProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryPlaybackProgressView.swift; sourceTree = "<group>"; };
+		884E4C4728AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingStorySentMessageTranscript.swift; sourceTree = "<group>"; };
 		8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationInputTextView.swift; sourceTree = "<group>"; };
 		8851DB4424CCFB93001EACD2 /* ConversationViewController+Mentions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Mentions.swift"; sourceTree = "<group>"; };
 		8852572827DD366D0032073C /* StoriesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoriesViewController.swift; sourceTree = "<group>"; };
@@ -3573,7 +3574,6 @@
 		F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSyncFetchLatestMessage.h; sourceTree = "<group>"; };
 		F9C5C8BC289453B100548EEE /* OWSSyncRequestMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncRequestMessage.m; sourceTree = "<group>"; };
 		F9C5C8BD289453B100548EEE /* OWSSyncContactsMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSyncContactsMessage.m; sourceTree = "<group>"; };
-		F9C5C8BE289453B100548EEE /* OWSOutgoingSentMessageTranscript.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSOutgoingSentMessageTranscript.swift; sourceTree = "<group>"; };
 		F9C5C8BF289453B100548EEE /* OutgoingPaymentSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingPaymentSyncMessage.swift; sourceTree = "<group>"; };
 		F9C5C8C0289453B100548EEE /* OWSOutgoingSentMessageTranscript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingSentMessageTranscript.h; sourceTree = "<group>"; };
 		F9C5C8C1289453B100548EEE /* OWSSyncGroupsMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSyncGroupsMessage.swift; sourceTree = "<group>"; };
@@ -7149,7 +7149,6 @@
 				F9C5C8BB289453B100548EEE /* OWSSyncFetchLatestMessage.h */,
 				F9C5C8BC289453B100548EEE /* OWSSyncRequestMessage.m */,
 				F9C5C8BD289453B100548EEE /* OWSSyncContactsMessage.m */,
-				F9C5C8BE289453B100548EEE /* OWSOutgoingSentMessageTranscript.swift */,
 				F9C5C8BF289453B100548EEE /* OutgoingPaymentSyncMessage.swift */,
 				F9C5C8C0289453B100548EEE /* OWSOutgoingSentMessageTranscript.h */,
 				F9C5C8C1289453B100548EEE /* OWSSyncGroupsMessage.swift */,
@@ -7321,6 +7320,7 @@
 				F9C5C96A289453B100548EEE /* StoryMessage.swift */,
 				F9C5C96B289453B100548EEE /* StoryFinder.swift */,
 				F9C5C96C289453B100548EEE /* OutgoingStoryMessage.swift */,
+				884E4C4728AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -10565,6 +10565,7 @@
 				F9C5CC57289453B300548EEE /* StoryManager.swift in Sources */,
 				F9C5CD71289453B300548EEE /* SSKJobRecord.m in Sources */,
 				F9C5CC86289453B300548EEE /* FailedAttachmentDownloadsJob.swift in Sources */,
+				884E4C4828AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift in Sources */,
 				F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */,
 				F9C5CE51289453B400548EEE /* OWSError.m in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
@@ -10871,7 +10872,6 @@
 				F9C5CC19289453B300548EEE /* MessageSticker.swift in Sources */,
 				F9C5CC68289453B300548EEE /* OWSRecoverableDecryptionPlaceholder+Replace.swift in Sources */,
 				F9C5CE19289453B400548EEE /* SSKPreferences.swift in Sources */,
-				F9C5CBB3289453B300548EEE /* OWSOutgoingSentMessageTranscript.swift in Sources */,
 				F9C5CCF4289453B300548EEE /* GroupsInputStream.swift in Sources */,
 				F9C5CE3E289453B400548EEE /* NSData+messagePadding.m in Sources */,
 				F9C5CD0D289453B300548EEE /* OWSLinkedDeviceReadReceipt.m in Sources */,

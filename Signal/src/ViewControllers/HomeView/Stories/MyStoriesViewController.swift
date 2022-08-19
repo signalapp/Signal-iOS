@@ -209,8 +209,8 @@ extension MyStoriesViewController: ContextMenuInteractionDelegate {
                 comment: "Context menu action to delete the selected story"),
             image: Theme.iconImage(.trash24),
             attributes: .destructive,
-            handler: { _ in
-                OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Deleting stories is not yet implemented."))
+            handler: { [weak self] _ in
+                self?.tryToDeleteMessage(for: item)
             }))
 
         func appendSaveAction() {
@@ -284,6 +284,22 @@ extension MyStoriesViewController: ContextMenuInteractionDelegate {
         }
 
         return .init(actions)
+    }
+
+    private func tryToDeleteMessage(for item: OutgoingStoryItem) {
+        let actionSheet = ActionSheetController(
+            message: NSLocalizedString(
+                "STORIES_DELETE_STORY_ACTION_SHEET_TITLE",
+                comment: "Title asking the user if they are sure they want to delete their story"
+            )
+        )
+        actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
+            Self.databaseStorage.write { transaction in
+                item.message.remotelyDelete(for: item.thread, transaction: transaction)
+            }
+        }))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        presentActionSheet(actionSheet, animated: true)
     }
 
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {

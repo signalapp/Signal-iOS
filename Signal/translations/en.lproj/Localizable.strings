@@ -6121,6 +6121,9 @@
 /* Context menu action to delete the selected story */
 "STORIES_DELETE_STORY_ACTION" = "Delete";
 
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Delete this story? It will also be deleted for everyone who received it.";
+
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Story Saved";
 

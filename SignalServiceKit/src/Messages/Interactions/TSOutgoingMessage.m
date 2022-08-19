@@ -325,7 +325,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             continue;
         }
         TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
-        recipientState.state = OWSOutgoingMessageRecipientStateSending;
+        recipientState.state = [outgoingMessageBuilder.skippedRecipients containsObject:recipientAddress]
+            ? OWSOutgoingMessageRecipientStateSkipped
+            : OWSOutgoingMessageRecipientStateSending;
         recipientAddressStates[recipientAddress] = recipientState;
     }
     self.recipientAddressStates = [recipientAddressStates copy];

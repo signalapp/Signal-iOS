@@ -74,14 +74,27 @@ public class StoryManager: NSObject {
         // Drop all story messages until the feature is enabled.
         guard FeatureFlags.stories else { return }
 
-        if let existingStory = StoryFinder.story(
+        let existingStory = StoryFinder.story(
             timestamp: proto.timestamp,
             author: tsAccountManager.localAddress!,
             transaction: transaction
-        ) {
-            owsAssertDebug(proto.isRecipientUpdate)
-            existingStory.updateRecipients(proto.storyMessageRecipients, transaction: transaction)
-        } else {
+        )
+
+        if proto.isRecipientUpdate {
+            if let existingStory = existingStory {
+                existingStory.updateRecipients(proto.storyMessageRecipients, transaction: transaction)
+
+                // If there are no recipients remaining for a private story, delete the story model
+                if existingStory.groupId == nil,
+                   case .outgoing(let recipientStates) = existingStory.manifest,
+                   recipientStates.values.flatMap({ $0.contexts }).isEmpty {
+                    Logger.info("Deleting story with timestamp \(existingStory.timestamp) with no remaining contexts")
+                    existingStory.anyRemove(transaction: transaction)
+                }
+            } else {
+                owsFailDebug("Missing existing story for recipient update with timestamp \(proto.timestamp)")
+            }
+        } else if existingStory == nil {
             guard let message = try StoryMessage.create(withSentTranscript: proto, transaction: transaction) else { return }
 
             attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(message, transaction: transaction)
@@ -89,6 +102,8 @@ public class StoryManager: NSObject {
             OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
 
             earlyMessageManager.applyPendingMessages(for: message, transaction: transaction)
+        } else {
+            owsFailDebug("Ignoring sync transcript for story with timestamp \(proto.timestamp)")
         }
     }
 

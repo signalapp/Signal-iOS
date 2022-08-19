@@ -12,6 +12,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public private(set) var isPrivateStorySend: NSNumber!
 
+    @objc
     public init(thread: TSThread, storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) {
         self.storyMessageId = storyMessage.uniqueId
         self.storyAllowsReplies = NSNumber(value: (thread as? TSPrivateStoryThread)?.allowsReplies ?? true)
@@ -32,18 +33,23 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public override var isUrgent: Bool { false }
 
+    public override func shouldSyncTranscript() -> Bool { false }
+
     public class func createUnsentMessage(
         attachment: TSAttachmentStream,
         thread: TSThread,
         transaction: SDSAnyWriteTransaction
-    ) -> OutgoingStoryMessage {
+    ) throws -> OutgoingStoryMessage {
         let storyManifest: StoryManifest = .outgoing(
-            recipientStates: thread.recipientAddresses(with: transaction)
+            recipientStates: try thread.recipientAddresses(with: transaction)
                 .lazy
                 .compactMap { $0.uuid }
                 .dictionaryMappingToValues { _ in
                     if let privateStoryThread = thread as? TSPrivateStoryThread {
-                        return .init(allowsReplies: privateStoryThread.allowsReplies, contexts: [privateStoryThread.uniqueId])
+                        guard let threadUuid = UUID(uuidString: privateStoryThread.uniqueId) else {
+                            throw OWSAssertionError("Invalid uniqueId for thread \(privateStoryThread.uniqueId)")
+                        }
+                        return .init(allowsReplies: privateStoryThread.allowsReplies, contexts: [threadUuid])
                     } else {
                         return .init(allowsReplies: true, contexts: [])
                     }
@@ -73,6 +79,10 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             throw OWSAssertionError("Only private stories should share an existing story message context")
         }
 
+        guard let threadUuid = UUID(uuidString: privateStoryThread.uniqueId) else {
+            throw OWSAssertionError("Invalid uniqueId for thread \(privateStoryThread.uniqueId)")
+        }
+
         guard let storyMessage = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction),
                 case .outgoing(var recipientStates) = storyMessage.manifest else {
             throw OWSAssertionError("Missing existing story message")
@@ -83,11 +93,11 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         for address in recipientAddresses {
             guard let uuid = address.uuid else { continue }
             if var recipient = recipientStates[uuid] {
-                recipient.contexts.append(privateStoryThread.uniqueId)
+                recipient.contexts.append(threadUuid)
                 recipient.allowsReplies = recipient.allowsReplies || privateStoryThread.allowsReplies
                 recipientStates[uuid] = recipient
             } else {
-                recipientStates[uuid] = .init(allowsReplies: privateStoryThread.allowsReplies, contexts: [privateStoryThread.uniqueId])
+                recipientStates[uuid] = .init(allowsReplies: privateStoryThread.allowsReplies, contexts: [threadUuid])
             }
         }
 

@@ -162,11 +162,11 @@ public extension TSMessage {
     class func tryToRemotelyDeleteMessage(
         fromAddress authorAddress: SignalServiceAddress,
         sentAtTimestamp: UInt64,
-        threadUniqueId: String,
+        threadUniqueId: String?,
         serverTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) -> RemoteDeleteProcessingResult {
-        if let messageToDelete = InteractionFinder.findMessage(
+        if let threadUniqueId = threadUniqueId, let messageToDelete = InteractionFinder.findMessage(
             withTimestamp: sentAtTimestamp,
             threadId: threadUniqueId,
             author: authorAddress,
@@ -205,6 +205,13 @@ public extension TSMessage {
             author: authorAddress,
             transaction: transaction
         ) {
+            // If there are still valid contexts for this outgoing private story message, don't actually delete the model.
+            if storyMessage.groupId == nil,
+               case .outgoing(let recipientStates) = storyMessage.manifest,
+               !recipientStates.values.flatMap({ $0.contexts }).isEmpty {
+                return .success
+            }
+
             storyMessage.anyRemove(transaction: transaction)
             return .success
         } else {

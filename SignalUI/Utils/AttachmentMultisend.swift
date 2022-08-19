@@ -135,7 +135,7 @@ public class AttachmentMultisend: Dependencies {
                             transaction: transaction
                         )
                     } else {
-                        message = OutgoingStoryMessage.createUnsentMessage(
+                        message = try OutgoingStoryMessage.createUnsentMessage(
                             attachment: attachmentStream,
                             thread: thread,
                             transaction: transaction
@@ -143,6 +143,16 @@ public class AttachmentMultisend: Dependencies {
                         if thread is TSPrivateStoryThread {
                             privateStoryMessageIds.append(message.storyMessageId)
                         }
+
+                        // Queue up a sent transcript for our linked devices. We only do this in the
+                        // "else" case, because we don't want to sent multiple transcripts for the
+                        // same storyMessageId.
+                        let sentTranscript = OutgoingStorySentMessageTranscript(
+                            localThread: TSAccountManager.getOrCreateLocalThread(transaction: transaction)!,
+                            storyMessage: StoryMessage.anyFetch(uniqueId: message.storyMessageId, transaction: transaction)!,
+                            transaction: transaction
+                        )
+                        unsavedMessages.append(sentTranscript)
                     }
 
                     messages.append(message)

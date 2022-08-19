@@ -1652,22 +1652,13 @@ NS_ASSUME_NONNULL_BEGIN
                                             groupContext:groupContextV1
                                              transaction:transaction];
             } else if (dataMessage.reaction != nil) {
-                TSThread *_Nullable thread = nil;
-
-                NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-                if (groupId != nil) {
-                    thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-                } else {
-                    thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
-                                                                      transaction:transaction];
-                }
-                if (thread == nil) {
+                if (transcript.thread == nil) {
                     OWSFailDebug(@"Could not process reaction from sync transcript.");
                     return;
                 }
                 OWSReactionProcessingResult result =
                     [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                         thread:thread
+                                                         thread:transcript.thread
                                                         reactor:envelope.sourceAddress
                                                       timestamp:syncMessage.sent.timestamp
                                                 serverTimestamp:envelope.serverTimestamp
@@ -1688,23 +1679,10 @@ NS_ASSUME_NONNULL_BEGIN
                         break;
                 }
             } else if (dataMessage.delete != nil) {
-                TSThread *_Nullable thread = nil;
-
-                NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-                if (groupId != nil) {
-                    thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-                } else {
-                    thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
-                                                                      transaction:transaction];
-                }
-                if (thread == nil) {
-                    OWSFailDebug(@"Could not process delete from sync transcript.");
-                    return;
-                }
                 OWSRemoteDeleteProcessingResult result =
                     [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
                                                      sentAtTimestamp:dataMessage.delete.targetSentTimestamp
-                                                      threadUniqueId:thread.uniqueId
+                                                      threadUniqueId:transcript.thread.uniqueId
                                                      serverTimestamp:envelope.serverTimestamp
                                                          transaction:transaction];
 
@@ -1744,7 +1722,7 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 [OWSRecordTranscriptJob processIncomingSentMessageTranscript:transcript transaction:transaction];
             }
-        } else if (syncMessage.sent.storyMessage) {
+        } else if (syncMessage.sent.isStoryTranscript) {
             NSError *error;
             [StoryManager processStoryMessageTranscript:syncMessage.sent transaction:transaction error:&error];
             if (error) {

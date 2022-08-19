@@ -17,3 +17,10 @@ public extension SSKProtoGroupContext {
         return membersE164.map { SignalServiceAddress(phoneNumber: $0) }
     }
 }
+
+@objc
+public extension SSKProtoSyncMessageSent {
+    var isStoryTranscript: Bool {
+        storyMessage != nil || !storyMessageRecipients.isEmpty
+    }
+}

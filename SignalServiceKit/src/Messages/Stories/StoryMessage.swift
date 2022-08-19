@@ -183,7 +183,13 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                   let uuid = UUID(uuidString: uuidString) else {
                 throw OWSAssertionError("Invalid UUID on story recipient \(String(describing: recipient.destinationUuid))")
             }
-            return (uuid, StoryRecipientState(allowsReplies: recipient.isAllowedToReply, contexts: recipient.distributionListIds))
+            return (
+                key: uuid,
+                value: StoryRecipientState(
+                    allowsReplies: recipient.isAllowedToReply,
+                    contexts: recipient.distributionListIds.compactMap { UUID(uuidString: $0) }
+                )
+            )
         }))
 
         let attachment: StoryMessageAttachment
@@ -255,9 +261,11 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
     public func updateRecipients(_ recipients: [SSKProtoSyncMessageSentStoryMessageRecipient], transaction: SDSAnyWriteTransaction) {
         anyUpdate(transaction: transaction) { message in
-            guard case .outgoing(var recipientStates) = message.manifest else {
+            guard case .outgoing(let recipientStates) = message.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark incoming message as viewed with wrong method.")
             }
+
+            var newRecipientStates = [UUID: StoryRecipientState]()
 
             for recipient in recipients {
                 guard let uuidString = recipient.destinationUuid, let uuid = UUID(uuidString: uuidString) else {
@@ -265,15 +273,17 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                     continue
                 }
 
+                let newContexts = recipient.distributionListIds.compactMap { UUID(uuidString: $0) }
+
                 if var recipientState = recipientStates[uuid] {
-                    recipientState.contexts = recipient.distributionListIds
-                    recipientStates[uuid] = recipientState
+                    recipientState.contexts = newContexts
+                    newRecipientStates[uuid] = recipientState
                 } else {
-                    recipientStates[uuid] = .init(allowsReplies: recipient.isAllowedToReply, contexts: recipient.distributionListIds)
+                    newRecipientStates[uuid] = .init(allowsReplies: recipient.isAllowedToReply, contexts: newContexts)
                 }
             }
 
-            message.manifest = .outgoing(recipientStates: recipientStates)
+            message.manifest = .outgoing(recipientStates: newRecipientStates)
         }
     }
 
@@ -296,7 +306,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
         if case .outgoing(let recipientStates) = manifest {
             for context in Set(recipientStates.values.flatMap({ $0.contexts })) {
-                guard let thread = TSPrivateStoryThread.anyFetch(uniqueId: context, transaction: transaction) else {
+                guard let thread = TSPrivateStoryThread.anyFetch(uniqueId: context.uuidString, transaction: transaction) else {
                     owsFailDebug("Missing thread for story context \(context)")
                     continue
                 }
@@ -315,6 +325,79 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         else { return }
 
         attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
+    }
+
+    public func remotelyDelete(for thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        guard case .outgoing(var recipientStates) = manifest else {
+            return owsFailDebug("Cannot remotely delete incoming story.")
+        }
+
+        switch thread {
+        case thread as TSGroupThread:
+            // Group story deletes are simple, just delete for everyone in the group
+            let deleteMessage = TSOutgoingDeleteMessage(
+                thread: thread,
+                storyMessage: self,
+                skippedRecipients: nil,
+                transaction: transaction
+            )
+            messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+            anyRemove(transaction: transaction)
+        case thread as TSPrivateStoryThread:
+            // Private story deletes are complicated. We may have sent the private
+            // story to the same recipient from multiple contexts. We need to make
+            // sure we only delete the story for a given recipient if they can no
+            // longer access it from any contexts. We also need to make sure we
+            // only delete it for ourselves if nobody has access remaining.
+            var hasRemainingRecipients = false
+            var skippedRecipients = Set<SignalServiceAddress>()
+
+            guard let threadUuid = UUID(uuidString: thread.uniqueId) else {
+                return owsFailDebug("Thread has invalid uniqueId \(thread.uniqueId)")
+            }
+
+            for (uuid, var state) in recipientStates {
+                if state.contexts.contains(threadUuid) {
+                    state.contexts = state.contexts.filter { $0 != threadUuid }
+
+                    // This recipient still has access via other contexts, so
+                    // don't send them the delete message yet!
+                    if !state.contexts.isEmpty {
+                        skippedRecipients.insert(SignalServiceAddress(uuid: uuid))
+                    }
+                }
+
+                hasRemainingRecipients = hasRemainingRecipients || !state.contexts.isEmpty
+                recipientStates[uuid] = state
+            }
+
+            let deleteMessage = TSOutgoingDeleteMessage(
+                thread: thread,
+                storyMessage: self,
+                skippedRecipients: skippedRecipients,
+                transaction: transaction
+            )
+            messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+
+            if hasRemainingRecipients {
+                // Record the updated contexts, so we no longer render it for the one we deleted for.
+                updateRecipientStates(recipientStates, transaction: transaction)
+            } else {
+                // Nobody can see this story anymore, so it can go away entirely.
+                anyRemove(transaction: transaction)
+            }
+
+            // Send a sent transcript update notifying our linked devices of any context changes.
+            let sentTranscriptUpdate = OutgoingStorySentMessageTranscript(
+                localThread: TSAccountManager.getOrCreateLocalThread(transaction: transaction)!,
+                timestamp: timestamp,
+                recipientStates: recipientStates,
+                transaction: transaction
+            )
+            messageSenderJobQueue.add(message: sentTranscriptUpdate.asPreparer, transaction: transaction)
+        default:
+            owsFailDebug("Cannot remotely delete unexpected thread type \(type(of: thread))")
+        }
     }
 
     // MARK: -
@@ -384,10 +467,8 @@ public enum StoryManifest: Codable {
 }
 
 public struct StoryRecipientState: Codable {
-    public typealias DistributionListId = String
-
     public var allowsReplies: Bool
-    public var contexts: [DistributionListId]
+    public var contexts: [UUID]
     public var viewedTimestamp: UInt64?
 }
 

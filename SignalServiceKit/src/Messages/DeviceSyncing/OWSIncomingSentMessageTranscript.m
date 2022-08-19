@@ -95,11 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Invalid groupId.");
             return nil;
         }
-    } else {
-        if (sentProto.destinationAddress == nil) {
-            OWSFailDebug(@"Missing destinationAddress.");
-            return nil;
-        }
+    } else if (sentProto.destinationAddress) {
         _recipientAddress = sentProto.destinationAddress;
     }
 
@@ -191,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Missing group context.");
                 return nil;
             }
-        } else {
+        } else if (_recipientAddress) {
             _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];
         }
 
