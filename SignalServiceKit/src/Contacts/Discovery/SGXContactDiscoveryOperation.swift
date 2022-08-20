@@ -118,7 +118,7 @@ class SGXContactDiscoveryOperation: ContactDiscovering {
 
     func buildIntersectionQuery(e164sToLookup: [String], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
         let noncePlainTextData = Randomness.generateRandomBytes(32)
-        let addressPlainTextData = try encodeE164s(e164sToLookup)
+        let addressPlainTextData = try Self.encodeE164s(e164sToLookup)
         let queryData = Data.join([noncePlainTextData, addressPlainTextData])
 
         let key = OWSAES256Key.generateRandom()
