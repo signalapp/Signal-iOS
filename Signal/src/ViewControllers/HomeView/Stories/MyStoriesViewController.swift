@@ -10,7 +10,9 @@ import PhotosUI
 
 class MyStoriesViewController: OWSViewController {
     private let tableView = UITableView(frame: .zero, style: .grouped)
-    private var items = OrderedDictionary<TSThread, [OutgoingStoryItem]>()
+    private var items = OrderedDictionary<TSThread, [OutgoingStoryItem]>() {
+        didSet { emptyStateLabel.isHidden = items.orderedKeys.count > 0 }
+    }
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.textColor = Theme.secondaryTextAndIconColor
