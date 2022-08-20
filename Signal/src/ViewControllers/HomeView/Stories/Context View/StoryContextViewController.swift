@@ -279,23 +279,24 @@ class StoryContextViewController: OWSViewController {
 
                 switch currentItem.message.direction {
                 case .incoming:
-                    if currentItem.numberOfReplies == 0 {
-                        leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
-                        if case .groupId = context {
+                    if case .groupId = context {
+                        if currentItem.numberOfReplies == 0 {
+                            leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
                             repliesAndViewsButtonText = NSLocalizedString(
                                 "STORY_REPLY_TO_GROUP_BUTTON",
                                 comment: "Button for replying to a group story with no existing replies.")
                         } else {
-                            repliesAndViewsButtonText = NSLocalizedString(
-                                "STORY_REPLY_BUTTON",
-                                comment: "Button for replying to a story with no existing replies.")
+                            let format = NSLocalizedString(
+                                "STORY_REPLIES_COUNT_%d",
+                                tableName: "PluralAware",
+                                comment: "Button for replying to a story with N existing replies.")
+                            repliesAndViewsButtonText = String(format: format, currentItem.numberOfReplies)
                         }
                     } else {
-                        let format = NSLocalizedString(
-                            "STORY_REPLIES_COUNT_%d",
-                            tableName: "PluralAware",
-                            comment: "Button for replying to a story with N existing replies.")
-                        repliesAndViewsButtonText = String(format: format, currentItem.numberOfReplies)
+                        leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
+                        repliesAndViewsButtonText = NSLocalizedString(
+                            "STORY_REPLY_BUTTON",
+                            comment: "Button for replying to a story with no existing replies.")
                     }
                 case .outgoing:
                     trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
