@@ -1273,16 +1273,6 @@ CREATE
 ;
 
 CREATE
-    INDEX index_model_StoryMessage_on_incoming_viewedTimestamp
-        ON model_StoryMessage (
-        json_extract (
-            manifest
-            ,'$.incoming.viewedTimestamp'
-        )
-    )
-;
-
-CREATE
     INDEX index_model_TSInteraction_ConversationLoadInteractionCount
         ON model_TSInteraction (
         uniqueThreadId
@@ -1358,4 +1348,14 @@ CREATE
     ,"lastSentStoryTimestamp"
     ,"allowsReplies"
 )
+;
+
+CREATE
+    INDEX index_model_StoryMessage_on_incoming_receivedState_viewedTimestamp
+        ON model_StoryMessage (
+        json_extract (
+            manifest
+            ,'$.incoming.receivedState.viewedTimestamp'
+        )
+    )
 ;

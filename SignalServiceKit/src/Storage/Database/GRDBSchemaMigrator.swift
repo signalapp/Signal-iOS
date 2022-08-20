@@ -171,6 +171,7 @@ public class GRDBSchemaMigrator: NSObject {
         case makeAudioPlaybackRateColumnNonNull
         case addLastViewedStoryTimestampToTSThread
         case convertStoryIncomingManifestStorageFormat
+        case recreateStoryIncomingViewedTimestampIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -220,7 +221,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 42
+    public static let grdbSchemaVersionLatest: UInt = 43
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1903,6 +1904,25 @@ public class GRDBSchemaMigrator: NSObject {
                         )
                     )
                     WHERE json_extract(manifest, '$.incoming') IS NOT NULL;
+                """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.recreateStoryIncomingViewedTimestampIndex) { db in
+            do {
+                try db.drop(index: "index_model_StoryMessage_on_incoming_viewedTimestamp")
+                try db.execute(sql: """
+                    CREATE
+                        INDEX index_model_StoryMessage_on_incoming_receivedState_viewedTimestamp
+                            ON model_StoryMessage (
+                            json_extract (
+                                manifest
+                                ,'$.incoming.receivedState.viewedTimestamp'
+                            )
+                        )
+                    ;
                 """)
             } catch {
                 owsFail("Error: \(error)")

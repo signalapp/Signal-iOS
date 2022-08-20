@@ -11,7 +11,7 @@ public class StoryFinder: NSObject {
         let sql = """
             SELECT COUNT(*) OVER ()
             FROM \(StoryMessage.databaseTableName)
-            WHERE json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.viewedTimestamp') is NULL
+            WHERE json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.receivedState.viewedTimestamp') is NULL
             AND \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
             GROUP BY (
                 CASE
@@ -146,7 +146,7 @@ public class StoryFinder: NSObject {
             SELECT *
             FROM \(StoryMessage.databaseTableName)
             WHERE \(contextQuery)
-            AND json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.viewedTimestamp') is NULL
+            AND json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.receivedState.viewedTimestamp') is NULL
             AND \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
         """
