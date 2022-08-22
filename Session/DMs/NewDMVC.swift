@@ -39,8 +39,7 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("vc_create_private_chat_scan_qr_code_explanation", comment: "")
-        let result = ScanQRCodeWrapperVC(message: message)
+        let result = ScanQRCodeWrapperVC(message: nil)
         result.delegate = self
         return result
     }()
