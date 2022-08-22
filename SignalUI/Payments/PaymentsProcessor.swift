@@ -484,6 +484,7 @@ private class PaymentProcessingOperation: OWSOperation {
                      .invalidPassphrase,
                      .invalidEntropy,
                      .killSwitch,
+                     .fogOutOfSync,
                      .outgoingVerificationTakingTooLong,
                      .missingMemo:
                     owsFailDebugUnlessMCNetworkFailure(error)
@@ -554,6 +555,7 @@ private class PaymentProcessingOperation: OWSOperation {
                                                   retryDelayInteral: retryDelayInteral,
                                                   nextRetryDelayInteral: nextRetryDelayInteral)
             case .connectionFailure,
+                 .fogOutOfSync,
                  .timeout:
                 // Vanilla exponential backoff.
                 let retryDelayInteral = self.retryDelayInteral
