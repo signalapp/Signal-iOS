@@ -4,56 +4,52 @@
 
 import Foundation
 
-public extension OutgoingStoryMessage {
-    class func prepareForStoryMultisending(
-        destinations: [(TSThread, [SignalAttachment])],
-        approvalMessageBody: MessageBody?,
-        messages: inout [TSOutgoingMessage],
-        unsavedMessages: inout [TSOutgoingMessage],
-        threads: inout [TSThread],
-        correspondingAttachmentIds: inout [[String]],
+extension OutgoingStoryMessage {
+    override class func prepareForMultisending(
+        destinations: [MultisendDestination],
+        state: MultisendState,
         transaction: SDSAnyWriteTransaction
     ) throws {
         var privateStoryMessageIds: [String] = []
 
-        for (thread, attachments) in destinations {
-            for (idx, attachment) in attachments.enumerated() {
-                attachment.captionText = approvalMessageBody?.plaintextBody(transaction: transaction.unwrapGrdbRead)
+        for destination in destinations {
+            for (idx, attachment) in destination.attachments.enumerated() {
+                attachment.captionText = state.approvalMessageBody?.plaintextBody(transaction: transaction.unwrapGrdbRead)
                 let attachmentStream = try attachment
                     .buildOutgoingAttachmentInfo()
                     .asStreamConsumingDataSource(withIsVoiceMessage: attachment.isVoiceMessage)
                 attachmentStream.anyInsert(transaction: transaction)
 
-                if correspondingAttachmentIds.count > idx {
-                    correspondingAttachmentIds[idx] += [attachmentStream.uniqueId]
+                if state.correspondingAttachmentIds.count > idx {
+                    state.correspondingAttachmentIds[idx] += [attachmentStream.uniqueId]
                 } else {
-                    correspondingAttachmentIds.append([attachmentStream.uniqueId])
+                    state.correspondingAttachmentIds.append([attachmentStream.uniqueId])
                 }
 
                 let message: OutgoingStoryMessage
-                if thread is TSPrivateStoryThread, let privateStoryMessageId = privateStoryMessageIds[safe: idx] {
+                if destination.thread is TSPrivateStoryThread, let privateStoryMessageId = privateStoryMessageIds[safe: idx] {
                     message = try OutgoingStoryMessage.createUnsentMessage(
-                        thread: thread,
+                        thread: destination.thread,
                         storyMessageId: privateStoryMessageId,
                         transaction: transaction
                     )
                 } else {
                     message = try OutgoingStoryMessage.createUnsentMessage(
                         attachment: attachmentStream,
-                        thread: thread,
+                        thread: destination.thread,
                         transaction: transaction
                     )
-                    if thread is TSPrivateStoryThread {
+                    if destination.thread is TSPrivateStoryThread {
                         privateStoryMessageIds.append(message.storyMessageId)
                     }
                 }
 
-                messages.append(message)
-                unsavedMessages.append(message)
+                state.messages.append(message)
+                state.unsavedMessages.append(message)
             }
         }
 
-        dedupePrivateStoryRecipients(for: messages, transaction: transaction)
+        dedupePrivateStoryRecipients(for: state.messages, transaction: transaction)
     }
 
     /// When sending to private stories, each private story list may have overlap in recipients. We want to

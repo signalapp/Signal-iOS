@@ -4,47 +4,44 @@
 
 import Foundation
 
-public extension TSOutgoingMessage {
+extension TSOutgoingMessage {
+    @objc
     class func prepareForMultisending(
-        destinations: [(TSThread, [SignalAttachment])],
-        approvalMessageBody: MessageBody?,
-        messages: inout [TSOutgoingMessage],
-        unsavedMessages: inout [TSOutgoingMessage],
-        threads: inout [TSThread],
-        correspondingAttachmentIds: inout [[String]],
+        destinations: [MultisendDestination],
+        state: MultisendState,
         transaction: SDSAnyWriteTransaction
     ) throws {
-        for (thread, attachments) in destinations {
+        for destination in destinations {
             // If this thread has a pending message request, treat it as accepted.
             ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimer(
-                thread: thread,
+                thread: destination.thread,
                 transaction: transaction
             )
 
-            let messageBodyForContext = approvalMessageBody?.forNewContext(
-                thread,
+            let messageBodyForContext = state.approvalMessageBody?.forNewContext(
+                destination.thread,
                 transaction: transaction.unwrapGrdbRead
             )
 
             let message = try ThreadUtil.createUnsentMessage(
                 body: messageBodyForContext,
-                mediaAttachments: attachments,
-                thread: thread,
+                mediaAttachments: destination.attachments,
+                thread: destination.thread,
                 transaction: transaction
             )
 
-            messages.append(message)
-            threads.append(thread)
+            state.messages.append(message)
+            state.threads.append(destination.thread)
 
             for (idx, attachmentId) in message.attachmentIds.enumerated() {
-                if correspondingAttachmentIds.count > idx {
-                    correspondingAttachmentIds[idx] += [attachmentId]
+                if state.correspondingAttachmentIds.count > idx {
+                    state.correspondingAttachmentIds[idx] += [attachmentId]
                 } else {
-                    correspondingAttachmentIds.append([attachmentId])
+                    state.correspondingAttachmentIds.append([attachmentId])
                 }
             }
 
-            thread.donateSendMessageIntent(for: message, transaction: transaction)
+            destination.thread.donateSendMessageIntent(for: message, transaction: transaction)
         }
     }
 }

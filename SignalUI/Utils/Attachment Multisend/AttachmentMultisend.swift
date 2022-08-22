@@ -87,7 +87,6 @@ public class AttachmentMultisend: Dependencies {
         approvedAttachments: [SignalAttachment]
     ) throws -> PreparedMultisend {
         var attachmentsByMessageType = [TypeWrapper: [(ConversationItem, [SignalAttachment])]]()
-        var correspondingAttachmentIds: [[String]] = []
 
         for conversation in conversations {
             // Duplicate attachments per conversation
@@ -111,59 +110,33 @@ public class AttachmentMultisend: Dependencies {
                                           isLoopingVideo: attachment.isLoopingVideo)
         }
 
-        var threads: [TSThread] = []
-        var attachmentIdMap: [String: [String]] = [:]
-        var messages: [TSOutgoingMessage] = []
-        var unsavedMessages: [TSOutgoingMessage] = []
+        let state = MultisendState(approvalMessageBody: approvalMessageBody)
 
         try self.databaseStorage.write { transaction in
             for (wrapper, values) in attachmentsByMessageType {
-                let destinations = try values.lazy.map { conversation, attachments -> (TSThread, [SignalAttachment]) in
+                let destinations = try values.lazy.map { conversation, attachments -> MultisendDestination in
                     guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
                         throw OWSAssertionError("Missing thread for conversation")
                     }
-                    return (thread, attachments)
+                    return .init(thread: thread, attachments: attachments)
                 }
 
-                // TODO: If TSOutgoingMessage is ever converted to Swift,
-                // we can have `OutgoingStoryMessage` properly override
-                // `prepareForMultisending` and eliminate this overhead.
-                if wrapper.type === OutgoingStoryMessage.self {
-                    try OutgoingStoryMessage.prepareForStoryMultisending(
-                        destinations: destinations,
-                        approvalMessageBody: approvalMessageBody,
-                        messages: &messages,
-                        unsavedMessages: &unsavedMessages,
-                        threads: &threads,
-                        correspondingAttachmentIds: &correspondingAttachmentIds,
-                        transaction: transaction
-                    )
-                } else {
-                    try wrapper.type.prepareForMultisending(
-                        destinations: destinations,
-                        approvalMessageBody: approvalMessageBody,
-                        messages: &messages,
-                        unsavedMessages: &unsavedMessages,
-                        threads: &threads,
-                        correspondingAttachmentIds: &correspondingAttachmentIds,
-                        transaction: transaction
-                    )
-                }
+                try wrapper.type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
             }
 
             // Let N be the number of attachments, and M be the number of conversations each attachment
             // is being sent to. We should now have an array of N sub-arrays of size M, where each sub-array
             // represents a given attachment and contains the IDs of that attachment for each conversation
             // it is being sent to.
-            owsAssertDebug(correspondingAttachmentIds.count == attachmentsToUpload.count)
-            owsAssertDebug(correspondingAttachmentIds.allSatisfy({ attachmentIds in attachmentIds.count == conversations.count }))
+            owsAssertDebug(state.correspondingAttachmentIds.count == attachmentsToUpload.count)
+            owsAssertDebug(state.correspondingAttachmentIds.allSatisfy({ attachmentIds in attachmentIds.count == conversations.count }))
 
             for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
                 do {
                     let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
                     attachmentToUpload.anyInsert(transaction: transaction)
 
-                    attachmentIdMap[attachmentToUpload.uniqueId] = correspondingAttachmentIds[index]
+                    state.attachmentIdMap[attachmentToUpload.uniqueId] = state.correspondingAttachmentIds[index]
                 } catch {
                     owsFailDebug("error: \(error)")
                 }
@@ -171,9 +144,34 @@ public class AttachmentMultisend: Dependencies {
         }
 
         return PreparedMultisend(
-            attachmentIdMap: attachmentIdMap,
-            messages: messages,
-            unsavedMessages: unsavedMessages,
-            threads: threads)
+            attachmentIdMap: state.attachmentIdMap,
+            messages: state.messages,
+            unsavedMessages: state.unsavedMessages,
+            threads: state.threads)
+    }
+}
+
+@objc
+class MultisendDestination: NSObject {
+    let thread: TSThread
+    let attachments: [SignalAttachment]
+
+    init(thread: TSThread, attachments: [SignalAttachment]) {
+        self.thread = thread
+        self.attachments = attachments
+    }
+}
+
+@objc
+class MultisendState: NSObject {
+    let approvalMessageBody: MessageBody?
+    var messages: [TSOutgoingMessage] = []
+    var unsavedMessages: [TSOutgoingMessage] = []
+    var threads: [TSThread] = []
+    var correspondingAttachmentIds: [[String]] = []
+    var attachmentIdMap: [String: [String]] = [:]
+
+    init(approvalMessageBody: MessageBody?) {
+        self.approvalMessageBody = approvalMessageBody
     }
 }
