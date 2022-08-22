@@ -15,4 +15,5 @@ FOUNDATION_EXPORT const unsigned char SessionUtilitiesKitVersionString[];
 #import <SessionUtilitiesKit/OWSMath.h>
 #import <SessionUtilitiesKit/UIImage+OWS.h>
 #import <SessionUtilitiesKit/UIView+OWS.h>
+#import <SessionUtilitiesKit/OWSBackgroundTask.h>
 

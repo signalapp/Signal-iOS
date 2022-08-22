@@ -13,10 +13,34 @@ final class ContextMenuVC: UIViewController {
     private let cellViewModel: MessageViewModel
     private let actions: [Action]
     private let dismiss: () -> Void
-
+    
     // MARK: - UI
     
     private lazy var blurView: UIVisualEffectView = UIVisualEffectView(effect: nil)
+    
+    private lazy var emojiBar: UIView = {
+        let result = UIView()
+        result.layer.shadowColor = UIColor.black.cgColor
+        result.layer.shadowOffset = CGSize.zero
+        result.layer.shadowOpacity = 0.4
+        result.layer.shadowRadius = 4
+        result.set(.height, to: ContextMenuVC.actionViewHeight)
+        
+        return result
+    }()
+    
+    private lazy var emojiPlusButton: EmojiPlusButton = {
+        let result = EmojiPlusButton(
+            action: self.actions.first(where: { $0.isEmojiPlus }),
+            dismiss: snDismiss
+        )
+        result.set(.width, to: EmojiPlusButton.size)
+        result.set(.height, to: EmojiPlusButton.size)
+        result.layer.cornerRadius = EmojiPlusButton.size / 2
+        result.layer.masksToBounds = true
+        
+        return result
+    }()
 
     private lazy var menuView: UIView = {
         let result: UIView = UIView()
@@ -85,11 +109,6 @@ final class ContextMenuVC: UIViewController {
         snapshot.layer.shadowRadius = 4
         view.addSubview(snapshot)
         
-        snapshot.pin(.left, to: .left, of: view, withInset: frame.origin.x)
-        snapshot.pin(.top, to: .top, of: view, withInset: frame.origin.y)
-        snapshot.set(.width, to: frame.width)
-        snapshot.set(.height, to: frame.height)
-        
         // Timestamp
         view.addSubview(timestampLabel)
         timestampLabel.center(.vertical, in: snapshot)
@@ -101,6 +120,35 @@ final class ContextMenuVC: UIViewController {
             timestampLabel.pin(.left, to: .right, of: snapshot, withInset: Values.smallSpacing)
         }
         
+        // Emoji reacts
+        let emojiBarBackgroundView = UIView()
+        emojiBarBackgroundView.backgroundColor = Colors.receivedMessageBackground
+        emojiBarBackgroundView.layer.cornerRadius = ContextMenuVC.actionViewHeight / 2
+        emojiBarBackgroundView.layer.masksToBounds = true
+        emojiBar.addSubview(emojiBarBackgroundView)
+        emojiBarBackgroundView.pin(to: emojiBar)
+        
+        emojiBar.addSubview(emojiPlusButton)
+        emojiPlusButton.pin(.right, to: .right, of: emojiBar, withInset: -Values.smallSpacing)
+        emojiPlusButton.center(.vertical, in: emojiBar)
+        
+        let emojiBarStackView = UIStackView(
+            arrangedSubviews: actions
+                .filter { $0.isEmojiAction }
+                .map { action -> EmojiReactsView in EmojiReactsView(for: action, dismiss: snDismiss) }
+        )
+        emojiBarStackView.axis = .horizontal
+        emojiBarStackView.spacing = Values.smallSpacing
+        emojiBarStackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.smallSpacing, bottom: 0, right: Values.smallSpacing)
+        emojiBarStackView.isLayoutMarginsRelativeArrangement = true
+        emojiBar.addSubview(emojiBarStackView)
+        emojiBarStackView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.VerticalEdge.bottom ], to: emojiBar)
+        emojiBarStackView.pin(.right, to: .left, of: emojiPlusButton)
+        
+        // Hide the emoji bar if we have no emoji actions
+        emojiBar.isHidden = emojiBarStackView.arrangedSubviews.isEmpty
+        view.addSubview(emojiBar)
+        
         // Menu
         let menuBackgroundView = UIView()
         menuBackgroundView.backgroundColor = Colors.receivedMessageBackground
@@ -111,7 +159,7 @@ final class ContextMenuVC: UIViewController {
         
         let menuStackView = UIStackView(
             arrangedSubviews: actions
-                .filter { !$0.isDismissAction }
+                .filter { !$0.isEmojiAction && !$0.isEmojiPlus && !$0.isDismissAction }
                 .map { action -> ActionView in ActionView(for: action, dismiss: snDismiss) }
         )
         menuStackView.axis = .vertical
@@ -119,21 +167,27 @@ final class ContextMenuVC: UIViewController {
         menuStackView.pin(to: menuView)
         view.addSubview(menuView)
         
-        let menuHeight = (CGFloat(actions.count) * ContextMenuVC.actionViewHeight)
-        let spacing = Values.smallSpacing
-        // FIXME: Need to update this when an appropriate replacement is added (see https://teng.pub/technical/2021/11/9/uiapplication-key-window-replacement)
-        let margin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
+        // Constrains
+        let menuHeight: CGFloat = CGFloat(menuStackView.arrangedSubviews.count) * ContextMenuVC.actionViewHeight
+        let spacing: CGFloat = Values.smallSpacing
+        let targetFrame: CGRect = calculateFrame(menuHeight: menuHeight, spacing: spacing)
         
-        if frame.maxY + spacing + menuHeight > UIScreen.main.bounds.height - margin {
-            menuView.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
-        }
-        else {
-            menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
-        }
-
+        snapshot.pin(.left, to: .left, of: view, withInset: targetFrame.origin.x)
+        snapshot.pin(.top, to: .top, of: view, withInset: targetFrame.origin.y)
+        snapshot.set(.width, to: targetFrame.width)
+        snapshot.set(.height, to: targetFrame.height)
+        emojiBar.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
+        menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
+        
         switch cellViewModel.variant {
-            case .standardOutgoing: menuView.pin(.right, to: .right, of: snapshot)
-            case .standardIncoming: menuView.pin(.left, to: .left, of: snapshot)
+            case .standardOutgoing:
+                menuView.pin(.right, to: .right, of: snapshot)
+                emojiBar.pin(.right, to: .right, of: snapshot)
+                
+            case .standardIncoming:
+                menuView.pin(.left, to: .left, of: snapshot)
+                emojiBar.pin(.left, to: .left, of: snapshot)
+                
             default: break // Should never occur
         }
         
@@ -150,6 +204,40 @@ final class ContextMenuVC: UIViewController {
             self.menuView.alpha = 1
         }
     }
+    
+    func calculateFrame(menuHeight: CGFloat, spacing: CGFloat) -> CGRect {
+        var finalFrame: CGRect = frame
+        let ratio: CGFloat = (frame.width / frame.height)
+        
+        // FIXME: Need to update this when an appropriate replacement is added (see https://teng.pub/technical/2021/11/9/uiapplication-key-window-replacement)
+        let topMargin = max(UIApplication.shared.keyWindow!.safeAreaInsets.top, Values.mediumSpacing)
+        let bottomMargin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
+        let diffY = finalFrame.height + menuHeight + Self.actionViewHeight + 2 * spacing + topMargin + bottomMargin - UIScreen.main.bounds.height
+        
+        if diffY > 0 {
+            // The screenshot needs to be shrinked. Menu + emoji bar + screenshot will fill the entire screen.
+            finalFrame.size.height -= diffY
+            let newWidth = ratio * finalFrame.size.height
+            if cellViewModel.variant == .standardOutgoing {
+                finalFrame.origin.x += finalFrame.size.width - newWidth
+            }
+            finalFrame.size.width = newWidth
+            finalFrame.origin.y = UIScreen.main.bounds.height - finalFrame.size.height - menuHeight - bottomMargin - spacing
+        }
+        else {
+            // The screenshot does NOT need to be shrinked.
+            if finalFrame.origin.y - Self.actionViewHeight - spacing < topMargin {
+                // Needs to move down
+                finalFrame.origin.y = topMargin + Self.actionViewHeight + spacing
+            }
+            if finalFrame.origin.y + finalFrame.size.height + spacing + menuHeight + bottomMargin > UIScreen.main.bounds.height {
+                // Needs to move up
+                finalFrame.origin.y = UIScreen.main.bounds.height - bottomMargin - menuHeight - spacing - finalFrame.size.height
+            }
+        }
+        
+        return finalFrame
+    }
 
     // MARK: - Layout
     
@@ -159,6 +247,10 @@ final class ContextMenuVC: UIViewController {
         menuView.layer.shadowPath = UIBezierPath(
             roundedRect: menuView.bounds,
             cornerRadius: ContextMenuVC.menuCornerRadius
+        ).cgPath
+        emojiBar.layer.shadowPath = UIBezierPath(
+            roundedRect: emojiBar.bounds,
+            cornerRadius: (ContextMenuVC.actionViewHeight / 2)
         ).cgPath
     }
 
@@ -174,6 +266,7 @@ final class ContextMenuVC: UIViewController {
             animations: { [weak self] in
                 self?.blurView.effect = nil
                 self?.menuView.alpha = 0
+                self?.emojiBar.alpha = 0
                 self?.snapshot.alpha = 0
                 self?.timestampLabel.alpha = 0
             },
