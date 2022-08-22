@@ -283,6 +283,8 @@ private final class EnterPublicKeyVC : UIViewController {
         qrCodeImageView.contentMode = .scaleAspectFit
         qrCodeImageView.set(.height, to: isIPhone5OrSmaller ? 160 : 220)
         qrCodeImageView.set(.width, to: isIPhone5OrSmaller ? 160 : 220)
+        qrCodeImageView.layer.cornerRadius = 8
+        qrCodeImageView.layer.masksToBounds = true
         // Set up QR code image view container
         qrCodeImageViewContainer.addSubview(qrCodeImageView)
         qrCodeImageView.center(.horizontal, in: qrCodeImageViewContainer)
@@ -362,12 +364,12 @@ private final class EnterPublicKeyVC : UIViewController {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = newHeight + bottomMargin
         UIView.animate(withDuration: 0.25) {
+            self.nextButtonContainer.alpha = 1
+            self.nextButtonContainer.isHidden = false
             [ self.spacer1, self.separator, self.spacer2, self.qrCodeImageViewContainer, self.spacer3, self.userPublicKeyLabel, self.spacer4, self.buttonContainer ].forEach {
                 $0.alpha = 0
                 $0.isHidden = true
             }
-            self.nextButtonContainer.alpha = 1
-            self.nextButtonContainer.isHidden = false
             self.view.layoutIfNeeded()
         }
     }
@@ -377,12 +379,12 @@ private final class EnterPublicKeyVC : UIViewController {
         isKeyboardShowing = false
         bottomConstraint.constant = bottomMargin
         UIView.animate(withDuration: 0.25) {
+            self.nextButtonContainer.alpha = 0
+            self.nextButtonContainer.isHidden = true
             [ self.spacer1, self.separator, self.spacer2, self.qrCodeImageViewContainer, self.spacer3, self.userPublicKeyLabel, self.spacer4, self.buttonContainer ].forEach {
                 $0.alpha = 1
                 $0.isHidden = false
             }
-            self.nextButtonContainer.alpha = 0
-            self.nextButtonContainer.isHidden = true
             self.view.layoutIfNeeded()
         }
     }

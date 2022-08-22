@@ -111,6 +111,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         result.setCircularGlow(with: glowConfiguration)
         result.layer.masksToBounds = false
         result.tintColor = .white
+        result.addTarget(self, action: #selector(createNewDM), for: .touchUpInside)
         
         return result
     }()
