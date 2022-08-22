@@ -404,7 +404,6 @@ public extension SessionThreadViewModel {
     /// but including this warning just in case there is a discrepancy)
     static func baseQuery(
         userPublicKey: String,
-        filterSQL: SQL,
         groupSQL: SQL,
         orderSQL: SQL
     ) -> (([Int64]) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>>) {
@@ -422,6 +421,7 @@ public extension SessionThreadViewModel {
             let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
             let profile: TypedTableAlias<Profile> = TypedTableAlias()
             
+            let interactionTimestampMsColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
             let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
             let profileNicknameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.nickname.name)
             let profileNameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.name.name)
@@ -466,7 +466,7 @@ public extension SessionThreadViewModel {
                 
                     \(Interaction.self).\(ViewModel.interactionIdKey),
                     \(Interaction.self).\(ViewModel.interactionVariantKey),
-                    \(Interaction.self).\(ViewModel.interactionTimestampMsKey),
+                    \(Interaction.self).\(interactionTimestampMsColumnLiteral) AS \(ViewModel.interactionTimestampMsKey),
                     \(Interaction.self).\(ViewModel.interactionBodyKey),
                     
                     -- Default to 'sending' assuming non-processed interaction when null
@@ -494,7 +494,7 @@ public extension SessionThreadViewModel {
                         \(interaction[.id]) AS \(ViewModel.interactionIdKey),
                         \(interaction[.threadId]),
                         \(interaction[.variant]) AS \(ViewModel.interactionVariantKey),
-                        MAX(\(interaction[.timestampMs])) AS \(ViewModel.interactionTimestampMsKey),
+                        MAX(\(interaction[.timestampMs])) AS \(interactionTimestampMsColumnLiteral),
                         \(interaction[.body]) AS \(ViewModel.interactionBodyKey),
                         \(interaction[.authorId]),
                         \(interaction[.linkPreviewUrl]),
@@ -515,7 +515,7 @@ public extension SessionThreadViewModel {
                 LEFT JOIN \(LinkPreview.self) ON (
                     \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
                     \(SQL("\(linkPreview[.variant]) = \(LinkPreview.Variant.openGroupInvitation)")) AND
-                    \(Interaction.linkPreviewFilterLiteral(timestampColumn: ViewModel.interactionTimestampMsKey))
+                    \(Interaction.linkPreviewFilterLiteral(timestampColumn: interactionTimestampMsColumnLiteral))
                 )
                 LEFT JOIN \(InteractionAttachment.self) AS \(firstInteractionAttachmentLiteral) ON (
                     \(firstInteractionAttachmentLiteral).\(interactionAttachmentAlbumIndexColumnLiteral) = 0 AND
@@ -599,12 +599,14 @@ public extension SessionThreadViewModel {
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
+        let interactionTimestampMsColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
+        
         return """
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
             LEFT JOIN (
                 SELECT
                     \(interaction[.threadId]),
-                    MAX(\(interaction[.timestampMs])) AS \(ViewModel.interactionTimestampMsKey)
+                    MAX(\(interaction[.timestampMs])) AS \(interactionTimestampMsColumnLiteral)
                 FROM \(Interaction.self)
                 WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
                 GROUP BY \(interaction[.threadId])
@@ -615,6 +617,7 @@ public extension SessionThreadViewModel {
     static func homeFilterSQL(userPublicKey: String) -> SQL {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
         return """
             \(thread[.shouldBeVisible]) = true AND (
@@ -625,7 +628,7 @@ public extension SessionThreadViewModel {
             ) AND (
                 -- Only show the 'Note to Self' thread if it has an interaction
                 \(SQL("\(thread[.id]) != \(userPublicKey)")) OR
-                \(Interaction.self).\(ViewModel.interactionTimestampMsKey) IS NOT NULL
+                \(interaction[.timestampMs]) IS NOT NULL
             )
         """
     }
@@ -652,14 +655,16 @@ public extension SessionThreadViewModel {
     
     static let homeOrderSQL: SQL = {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
-        return SQL("\(thread[.isPinned]) DESC, IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
+        return SQL("\(thread[.isPinned]) DESC, IFNULL(\(interaction[.timestampMs]), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
     }()
     
     static let messageRequetsOrderSQL: SQL = {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
-        return SQL("IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
+        return SQL("IFNULL(\(interaction[.timestampMs]), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
     }()
 }
 
@@ -738,7 +743,7 @@ public extension SessionThreadViewModel {
                     SUM(\(interaction[.wasRead]) = false) AS \(ViewModel.threadUnreadCountKey)
                 
                 FROM \(Interaction.self)
-                GROUP BY \(interaction[.threadId])
+                WHERE \(SQL("\(interaction[.threadId]) = \(threadId)"))
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
@@ -752,17 +757,15 @@ public extension SessionThreadViewModel {
             LEFT JOIN (
                 SELECT
                     \(groupMember[.groupId]),
-                    COUNT(*) AS \(ViewModel.closedGroupUserCountKey)
+                    COUNT(\(groupMember.alias[Column.rowID])) AS \(ViewModel.closedGroupUserCountKey)
                 FROM \(GroupMember.self)
                 WHERE (
                     \(SQL("\(groupMember[.groupId]) = \(threadId)")) AND
                     \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)"))
                 )
-                GROUP BY \(groupMember[.groupId])
             ) AS \(closedGroupUserCountTableLiteral) ON \(SQL("\(closedGroupUserCountTableLiteral).\(groupMemberGroupIdColumnLiteral) = \(threadId)"))
             
             WHERE \(SQL("\(thread[.id]) = \(threadId)"))
-            GROUP BY \(thread[.id])
         """
         
         return request.adapted { db in
