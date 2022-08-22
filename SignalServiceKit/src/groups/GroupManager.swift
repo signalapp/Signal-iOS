@@ -195,28 +195,6 @@ public class GroupManager: NSObject {
     // "New" groups are being created for the first time; they might need to be created on the service.
 
     // NOTE: groupId param should only be set for tests.
-    public static func localCreateNewGroup(members: [SignalServiceAddress],
-                                           groupId: Data? = nil,
-                                           name: String? = nil,
-                                           avatarImage: UIImage?,
-                                           disappearingMessageToken: DisappearingMessageToken,
-                                           newGroupSeed: NewGroupSeed? = nil,
-                                           shouldSendMessage: Bool) -> Promise<TSGroupThread> {
-
-        return DispatchQueue.global().async(.promise) {
-            return TSGroupModel.data(forGroupAvatar: avatarImage)
-        }.then(on: .global()) { avatarData in
-            return localCreateNewGroup(members: members,
-                                       groupId: groupId,
-                                       name: name,
-                                       avatarData: avatarData,
-                                       disappearingMessageToken: disappearingMessageToken,
-                                       newGroupSeed: newGroupSeed,
-                                       shouldSendMessage: shouldSendMessage)
-        }
-    }
-
-    // NOTE: groupId param should only be set for tests.
     public static func localCreateNewGroup(members membersParam: [SignalServiceAddress],
                                            groupId: Data? = nil,
                                            name: String? = nil,
@@ -433,32 +411,6 @@ public class GroupManager: NSObject {
             }
         }
         return builder.build()
-    }
-
-    // success and failure are invoked on the main thread.
-    @objc
-    public static func localCreateNewGroupObjc(members: [SignalServiceAddress],
-                                               groupId: Data?,
-                                               name: String,
-                                               avatarImage: UIImage?,
-                                               disappearingMessageToken: DisappearingMessageToken,
-                                               newGroupSeed: NewGroupSeed?,
-                                               shouldSendMessage: Bool,
-                                               success: @escaping (TSGroupThread) -> Void,
-                                               failure: @escaping (Error) -> Void) {
-        firstly {
-            self.localCreateNewGroup(members: members,
-                                     groupId: groupId,
-                                     name: name,
-                                     avatarImage: avatarImage,
-                                     disappearingMessageToken: disappearingMessageToken,
-                                     newGroupSeed: newGroupSeed,
-                                     shouldSendMessage: shouldSendMessage)
-        }.done { thread in
-            success(thread)
-        }.catch { error in
-            failure(error)
-        }
     }
 
     // success and failure are invoked on the main thread.
