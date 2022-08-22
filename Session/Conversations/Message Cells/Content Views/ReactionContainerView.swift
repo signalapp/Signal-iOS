@@ -5,7 +5,6 @@ import SessionUIKit
 
 final class ReactionContainerView: UIView {
     var showingAllReactions = false
-    private var isOutgoingMessage = false
     private var showNumbers = true
     private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
     
@@ -68,9 +67,8 @@ final class ReactionContainerView: UIView {
         mainStackView.pin(to: self)
     }
     
-    public func update(_ reactions: [ReactionViewModel], isOutgoingMessage: Bool, showNumbers: Bool) {
+    public func update(_ reactions: [ReactionViewModel], showNumbers: Bool) {
         self.reactions = reactions
-        self.isOutgoingMessage = isOutgoingMessage
         self.showNumbers = showNumbers
         
         prepareForUpdate()
@@ -88,15 +86,6 @@ final class ReactionContainerView: UIView {
         stackView.axis = .horizontal
         stackView.spacing = Values.smallSpacing
         stackView.alignment = .center
-        
-        if isOutgoingMessage {
-            stackView.semanticContentAttribute = .forceRightToLeft
-            reactionContainerView.semanticContentAttribute = .forceRightToLeft
-        }
-        else {
-            stackView.semanticContentAttribute = .unspecified
-            reactionContainerView.semanticContentAttribute = .unspecified
-        }
         
         var displayedReactions: [ReactionViewModel]
         var expandButtonReactions: [EmojiWithSkinTones]
@@ -168,14 +157,14 @@ final class ReactionContainerView: UIView {
         guard !showingAllReactions else { return }
         
         showingAllReactions = true
-        update(reactions, isOutgoingMessage: isOutgoingMessage, showNumbers: showNumbers)
+        update(reactions, showNumbers: showNumbers)
     }
     
     public func showLessEmojis() {
         guard showingAllReactions else { return }
         
         showingAllReactions = false
-        update(reactions, isOutgoingMessage: isOutgoingMessage, showNumbers: showNumbers)
+        update(reactions, showNumbers: showNumbers)
     }
 }
 

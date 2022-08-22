@@ -641,7 +641,6 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         reactionContainerView.showingAllReactions = showExpandedReactions
         reactionContainerView.update(
             reactions.orderedValues,
-            isOutgoingMessage: (cellViewModel.variant == .standardOutgoing),
             showNumbers: (
                 cellViewModel.threadVariant == .closedGroup ||
                 cellViewModel.threadVariant == .openGroup
