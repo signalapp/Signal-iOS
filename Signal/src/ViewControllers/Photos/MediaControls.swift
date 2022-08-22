@@ -1410,6 +1410,9 @@ class CameraBottomBar: UIView {
         didSet {
             photoLibraryButton.isHidden = isRecordingVideo
             switchCameraButton.isHidden = isRecordingVideo
+            if isContentTypeSelectionControlAvailable {
+                contentTypeSelectionControl.isHidden = isRecordingVideo
+            }
         }
     }
 
