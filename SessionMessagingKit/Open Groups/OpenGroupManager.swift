@@ -512,7 +512,6 @@ public final class OpenGroupManager: NSObject {
         messages: [OpenGroupAPI.Message],
         for roomToken: String,
         on server: String,
-        isBackgroundPoll: Bool,
         dependencies: OGMDependencies = OGMDependencies()
     ) {
         // Sorting the messages by server ID before importing them fixes an issue where messages
@@ -539,47 +538,68 @@ public final class OpenGroupManager: NSObject {
         
         // Process the messages
         sortedMessages.forEach { message in
-            guard
-                let base64EncodedString: String = message.base64EncodedData,
-                let data = Data(base64Encoded: base64EncodedString)
-            else {
-                // FIXME: Once the SOGS Emoji Reacts update is live we should remove this line (deprecated by the `deleted` flag)
+            if message.base64EncodedData == nil && message.reactions == nil {
                 messageServerIdsToRemove.append(Int64(message.id))
                 return
             }
             
-            do {
-                let processedMessage: ProcessedMessage? = try Message.processReceivedOpenGroupMessage(
-                    db,
-                    openGroupId: openGroup.id,
-                    openGroupServerPublicKey: openGroup.publicKey,
-                    message: message,
-                    data: data,
-                    dependencies: dependencies
-                )
-                
-                if let messageInfo: MessageReceiveJob.Details.MessageInfo = processedMessage?.messageInfo {
-                    try MessageReceiver.handle(
+            // Handle messages
+            if let base64EncodedString: String = message.base64EncodedData,
+               let data = Data(base64Encoded: base64EncodedString)
+            {
+                do {
+                    let processedMessage: ProcessedMessage? = try Message.processReceivedOpenGroupMessage(
                         db,
-                        message: messageInfo.message,
-                        associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
                         openGroupId: openGroup.id,
-                        isBackgroundPoll: isBackgroundPoll,
+                        openGroupServerPublicKey: openGroup.publicKey,
+                        message: message,
+                        data: data,
                         dependencies: dependencies
                     )
+                    
+                    if let messageInfo: MessageReceiveJob.Details.MessageInfo = processedMessage?.messageInfo {
+                        try MessageReceiver.handle(
+                            db,
+                            message: messageInfo.message,
+                            associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
+                            openGroupId: openGroup.id,
+                            dependencies: dependencies
+                        )
+                    }
+                }
+                catch {
+                    switch error {
+                        // Ignore duplicate & selfSend message errors (and don't bother logging
+                        // them as there will be a lot since we each service node duplicates messages)
+                        case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
+                            MessageReceiverError.duplicateMessage,
+                            MessageReceiverError.duplicateControlMessage,
+                            MessageReceiverError.selfSend:
+                            break
+                        
+                        default: SNLog("Couldn't receive open group message due to error: \(error).")
+                    }
                 }
             }
-            catch {
-                switch error {
-                    // Ignore duplicate & selfSend message errors (and don't bother logging
-                    // them as there will be a lot since we each service node duplicates messages)
-                    case DatabaseError.SQLITE_CONSTRAINT_UNIQUE,
-                        MessageReceiverError.duplicateMessage,
-                        MessageReceiverError.duplicateControlMessage,
-                        MessageReceiverError.selfSend:
-                        break
+            
+            // Handle reactions
+            if message.reactions != nil {
+                do {
+                    let reactions: [Reaction] = Message.processRawReceivedReactions(
+                        db,
+                        openGroupId: openGroup.id,
+                        message: message,
+                        dependencies: dependencies
+                    )
                     
-                    default: SNLog("Couldn't receive open group message due to error: \(error).")
+                    try MessageReceiver.handleOpenGroupReactions(
+                        db,
+                        openGroupMessageServerId: message.id,
+                        openGroupReactions: reactions
+                    )
+                }
+                catch {
+                    SNLog("Couldn't handle open group reactions due to error: \(error).")
                 }
             }
         }
@@ -597,7 +617,6 @@ public final class OpenGroupManager: NSObject {
         messages: [OpenGroupAPI.DirectMessage],
         fromOutbox: Bool,
         on server: String,
-        isBackgroundPoll: Bool,
         dependencies: OGMDependencies = OGMDependencies()
     ) {
         // Don't need to do anything if we have no messages (it's a valid case)
@@ -694,7 +713,6 @@ public final class OpenGroupManager: NSObject {
                         message: messageInfo.message,
                         associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
                         openGroupId: nil,   // Intentionally nil as they are technically not open group messages
-                        isBackgroundPoll: isBackgroundPoll,
                         dependencies: dependencies
                     )
                 }
@@ -717,6 +735,29 @@ public final class OpenGroupManager: NSObject {
     }
     
     // MARK: - Convenience
+    
+    /// This method specifies if the given capability is supported on a specified Open Group
+    public static func isOpenGroupSupport(
+        _ capability: Capability.Variant,
+        on server: String?,
+        using dependencies: OGMDependencies = OGMDependencies()
+    ) -> Bool {
+        guard let server: String = server else { return false }
+        
+        return dependencies.storage
+            .read { db in
+                let capabilities: [Capability.Variant] = (try? Capability
+                    .select(.variant)
+                    .filter(Capability.Columns.openGroupServer == server)
+                    .filter(Capability.Columns.isMissing == false)
+                    .asRequest(of: Capability.Variant.self)
+                    .fetchAll(db))
+                    .defaulting(to: [])
+
+                return capabilities.contains(capability)
+            }
+            .defaulting(to: false)
+    }
     
     /// This method specifies if the given publicKey is a moderator or an admin within a specified Open Group
     public static func isUserModeratorOrAdmin(

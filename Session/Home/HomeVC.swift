@@ -233,9 +233,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         }
         
         // Onion request path countries cache
-        DispatchQueue.global(qos: .utility).sync {
-            let _ = IP2Country.shared.populateCacheIfNeeded()
-        }
+        IP2Country.shared.populateCacheIfNeededAsync()
     }
     
     override func viewWillAppear(_ animated: Bool) {

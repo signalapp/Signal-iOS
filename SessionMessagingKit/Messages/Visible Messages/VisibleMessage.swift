@@ -13,6 +13,7 @@ public final class VisibleMessage: Message {
         case linkPreview
         case profile
         case openGroupInvitation
+        case reaction
     }
     
     /// In the case of a sync message, the public key of the person the message was targeted at.
@@ -25,6 +26,7 @@ public final class VisibleMessage: Message {
     public let linkPreview: VMLinkPreview?
     public var profile: VMProfile?
     public let openGroupInvitation: VMOpenGroupInvitation?
+    public let reaction: VMReaction?
 
     public override var isSelfSendValid: Bool { true }
     
@@ -34,6 +36,7 @@ public final class VisibleMessage: Message {
         guard super.isValid else { return false }
         if !attachmentIds.isEmpty { return true }
         if openGroupInvitation != nil { return true }
+        if reaction != nil { return true }
         if let text = text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty { return true }
         return false
     }
@@ -50,7 +53,8 @@ public final class VisibleMessage: Message {
         quote: VMQuote? = nil,
         linkPreview: VMLinkPreview? = nil,
         profile: VMProfile? = nil,
-        openGroupInvitation: VMOpenGroupInvitation? = nil
+        openGroupInvitation: VMOpenGroupInvitation? = nil,
+        reaction: VMReaction? = nil
     ) {
         self.syncTarget = syncTarget
         self.text = text
@@ -59,6 +63,7 @@ public final class VisibleMessage: Message {
         self.linkPreview = linkPreview
         self.profile = profile
         self.openGroupInvitation = openGroupInvitation
+        self.reaction = reaction
         
         super.init(
             sentTimestamp: sentTimestamp,
@@ -79,6 +84,7 @@ public final class VisibleMessage: Message {
         linkPreview = try? container.decode(VMLinkPreview.self, forKey: .linkPreview)
         profile = try? container.decode(VMProfile.self, forKey: .profile)
         openGroupInvitation = try? container.decode(VMOpenGroupInvitation.self, forKey: .openGroupInvitation)
+        reaction = try? container.decode(VMReaction.self, forKey: .reaction)
         
         try super.init(from: decoder)
     }
@@ -95,6 +101,7 @@ public final class VisibleMessage: Message {
         try container.encodeIfPresent(linkPreview, forKey: .linkPreview)
         try container.encodeIfPresent(profile, forKey: .profile)
         try container.encodeIfPresent(openGroupInvitation, forKey: .openGroupInvitation)
+        try container.encodeIfPresent(reaction, forKey: .reaction)
     }
 
     // MARK: - Proto Conversion
@@ -109,7 +116,8 @@ public final class VisibleMessage: Message {
             quote: dataMessage.quote.map { VMQuote.fromProto($0) },
             linkPreview: dataMessage.preview.first.map { VMLinkPreview.fromProto($0) },
             profile: VMProfile.fromProto(dataMessage),
-            openGroupInvitation: dataMessage.openGroupInvitation.map { VMOpenGroupInvitation.fromProto($0) }
+            openGroupInvitation: dataMessage.openGroupInvitation.map { VMOpenGroupInvitation.fromProto($0) },
+            reaction: dataMessage.reaction.map { VMReaction.fromProto($0) }
         )
     }
 
@@ -168,6 +176,11 @@ public final class VisibleMessage: Message {
             dataMessage.setOpenGroupInvitation(openGroupInvitationProto)
         }
         
+        // Emoji react
+        if let reaction = reaction, let reactionProto = reaction.toProto() {
+            dataMessage.setReaction(reactionProto)
+        }
+        
         // Group context
         do {
             try setGroupContextIfNeeded(db, on: dataMessage)
@@ -175,10 +188,12 @@ public final class VisibleMessage: Message {
             SNLog("Couldn't construct visible message proto from: \(self).")
             return nil
         }
+        
         // Sync target
         if let syncTarget = syncTarget {
             dataMessage.setSyncTarget(syncTarget)
         }
+        
         // Build
         do {
             proto.setDataMessage(try dataMessage.build())
@@ -198,8 +213,9 @@ public final class VisibleMessage: Message {
             attachmentIds: \(attachmentIds),
             quote: \(quote?.description ?? "null"),
             linkPreview: \(linkPreview?.description ?? "null"),
-            profile: \(profile?.description ?? "null")
-            "openGroupInvitation": \(openGroupInvitation?.description ?? "null")
+            profile: \(profile?.description ?? "null"),
+            reaction: \(reaction?.description ?? "null"),
+            openGroupInvitation: \(openGroupInvitation?.description ?? "null")
         )
         """
     }
@@ -239,7 +255,8 @@ public extension VisibleMessage {
                     db,
                     linkPreview: linkPreview
                 )
-            }
+            },
+            reaction: nil   // Reactions are custom messages sent separately
         )
     }
 }

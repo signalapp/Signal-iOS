@@ -2,6 +2,7 @@
 
 import Foundation
 import DifferenceKit
+import SignalUtilitiesKit
 
 public extension ArraySection {
     init(section: Model, elements: [Element] = []) {
