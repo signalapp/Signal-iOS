@@ -241,6 +241,11 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
     self.shouldShowCallView = YES;
 
     [self ensureWindowState];
+    // This shouldn't be necessary, but in practice we've had at least one user end up with the
+    // call view laid out in landscape and then clipped to portrait.
+    // An earlier version of this method used UIDevice.ows_setOrientation();
+    // we don't want to revert to that because it messes up legitimate orientation detection.
+    [UIViewController attemptRotationToDeviceOrientation];
 }
 
 - (void)endCall:(UIViewController<CallViewControllerWindowReference> *)callViewController
