@@ -173,7 +173,7 @@ public final class Poller {
                                         threadId: threadId,
                                         details: MessageReceiveJob.Details(
                                             messages: threadMessages.map { $0.messageInfo },
-                                            isBackgroundPoll: false
+                                            calledFromBackgroundPoller: false
                                         )
                                     )
                                 )

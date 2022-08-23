@@ -512,7 +512,6 @@ public final class OpenGroupManager: NSObject {
         messages: [OpenGroupAPI.Message],
         for roomToken: String,
         on server: String,
-        isBackgroundPoll: Bool,
         dependencies: OGMDependencies = OGMDependencies()
     ) {
         // Sorting the messages by server ID before importing them fixes an issue where messages
@@ -564,7 +563,6 @@ public final class OpenGroupManager: NSObject {
                         message: messageInfo.message,
                         associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
                         openGroupId: openGroup.id,
-                        isBackgroundPoll: isBackgroundPoll,
                         dependencies: dependencies
                     )
                 }
@@ -597,7 +595,6 @@ public final class OpenGroupManager: NSObject {
         messages: [OpenGroupAPI.DirectMessage],
         fromOutbox: Bool,
         on server: String,
-        isBackgroundPoll: Bool,
         dependencies: OGMDependencies = OGMDependencies()
     ) {
         // Don't need to do anything if we have no messages (it's a valid case)
@@ -694,7 +691,6 @@ public final class OpenGroupManager: NSObject {
                         message: messageInfo.message,
                         associatedWithProto: try SNProtoContent.parseData(messageInfo.serializedProtoData),
                         openGroupId: nil,   // Intentionally nil as they are technically not open group messages
-                        isBackgroundPoll: isBackgroundPoll,
                         dependencies: dependencies
                     )
                 }

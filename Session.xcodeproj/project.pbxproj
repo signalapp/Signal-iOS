@@ -302,8 +302,6 @@
 		C32C5DD2256DD9E5003C73A2 /* LRUCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDAFD255A580600E217F9 /* LRUCache.swift */; };
 		C32C5DDB256DD9FF003C73A2 /* ContentProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB68255A580F00E217F9 /* ContentProxy.swift */; };
 		C32C5E0C256DDAFA003C73A2 /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA7A255A57FB00E217F9 /* NSRegularExpression+SSK.swift */; };
-		C32C5FBB256E0206003C73A2 /* OWSBackgroundTask.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDC1B255A581F00E217F9 /* OWSBackgroundTask.m */; };
-		C32C5FC4256E0209003C73A2 /* OWSBackgroundTask.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB38255A580B00E217F9 /* OWSBackgroundTask.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C32C600F256E07F5003C73A2 /* NSUserDefaults+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB77255A581000E217F9 /* NSUserDefaults+OWS.m */; };
 		C32C6018256E07F9003C73A2 /* NSUserDefaults+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB51255A580D00E217F9 /* NSUserDefaults+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33100082558FF6D00070591 /* NewConversationButtonSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B83F2B85240C7B8F000A54AB /* NewConversationButtonSet.swift */; };
@@ -648,6 +646,7 @@
 		FD37EA0F28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA0E28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift */; };
 		FD37EA1128AB34B3003AE748 /* TypedTableAlteration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA1028AB34B3003AE748 /* TypedTableAlteration.swift */; };
 		FD37EA1528AB42CB003AE748 /* IdentitySpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA1428AB42CB003AE748 /* IdentitySpec.swift */; };
+		FD37EA1B28ACB51F003AE748 /* _007_HomeQueryOptimisationIndexes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37EA1A28ACB51F003AE748 /* _007_HomeQueryOptimisationIndexes.swift */; };
 		FD3AABE928306BBD00E5099A /* ThreadPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3AABE828306BBD00E5099A /* ThreadPickerViewModel.swift */; };
 		FD3C905C27E3FBEF00CD579F /* BatchRequestInfoSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905B27E3FBEF00CD579F /* BatchRequestInfoSpec.swift */; };
 		FD3C906027E410F700CD579F /* FileUploadResponseSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */; };
@@ -661,6 +660,8 @@
 		FD3E0C84283B5835002A425C /* SessionThreadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD3E0C83283B5835002A425C /* SessionThreadViewModel.swift */; };
 		FD42F9A8285064B800A0C77D /* PushNotificationAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33FDBDE255A581900E217F9 /* PushNotificationAPI.swift */; };
 		FD4B200E283492210034334B /* InsetLockableTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD4B200D283492210034334B /* InsetLockableTableView.swift */; };
+		FD52090028AF6153006098F6 /* OWSBackgroundTask.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDC1B255A581F00E217F9 /* OWSBackgroundTask.m */; };
+		FD52090128AF61BA006098F6 /* OWSBackgroundTask.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB38255A580B00E217F9 /* OWSBackgroundTask.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FD5C72F7284F0E560029977D /* MessageReceiver+ReadReceipts.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5C72F6284F0E560029977D /* MessageReceiver+ReadReceipts.swift */; };
 		FD5C72F9284F0E880029977D /* MessageReceiver+TypingIndicators.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5C72F8284F0E880029977D /* MessageReceiver+TypingIndicators.swift */; };
 		FD5C72FB284F0EA10029977D /* MessageReceiver+DataExtractionNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5C72FA284F0EA10029977D /* MessageReceiver+DataExtractionNotification.swift */; };
@@ -780,7 +781,6 @@
 		FDCDB8DE2810F73B00352A0C /* Differentiable+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCDB8DD2810F73B00352A0C /* Differentiable+Utilities.swift */; };
 		FDCDB8E02811007F00352A0C /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCDB8DF2811007F00352A0C /* HomeViewModel.swift */; };
 		FDCDB8E42817819600352A0C /* (null) in Sources */ = {isa = PBXBuildFile; };
-		FDCDB8F12817ABE600352A0C /* Optional+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCDB8F02817ABE600352A0C /* Optional+Utilities.swift */; };
 		FDD2506E283711D600198BDA /* DifferenceKit+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD2506D283711D600198BDA /* DifferenceKit+Utilities.swift */; };
 		FDD250702837199200198BDA /* GarbageCollectionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD2506F2837199200198BDA /* GarbageCollectionJob.swift */; };
 		FDD250722837234B00198BDA /* MediaGalleryNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD250712837234B00198BDA /* MediaGalleryNavigationController.swift */; };
@@ -1691,6 +1691,7 @@
 		FD37EA0E28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _006_FixHiddenModAdminSupport.swift; sourceTree = "<group>"; };
 		FD37EA1028AB34B3003AE748 /* TypedTableAlteration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedTableAlteration.swift; sourceTree = "<group>"; };
 		FD37EA1428AB42CB003AE748 /* IdentitySpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentitySpec.swift; sourceTree = "<group>"; };
+		FD37EA1A28ACB51F003AE748 /* _007_HomeQueryOptimisationIndexes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _007_HomeQueryOptimisationIndexes.swift; sourceTree = "<group>"; };
 		FD3AABE828306BBD00E5099A /* ThreadPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadPickerViewModel.swift; sourceTree = "<group>"; };
 		FD3C905B27E3FBEF00CD579F /* BatchRequestInfoSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatchRequestInfoSpec.swift; sourceTree = "<group>"; };
 		FD3C905F27E410F700CD579F /* FileUploadResponseSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileUploadResponseSpec.swift; sourceTree = "<group>"; };
@@ -1816,7 +1817,6 @@
 		FDC6D75F2862B3F600B04575 /* Dependencies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dependencies.swift; sourceTree = "<group>"; };
 		FDCDB8DD2810F73B00352A0C /* Differentiable+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Differentiable+Utilities.swift"; sourceTree = "<group>"; };
 		FDCDB8DF2811007F00352A0C /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
-		FDCDB8F02817ABE600352A0C /* Optional+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Utilities.swift"; sourceTree = "<group>"; };
 		FDD2506D283711D600198BDA /* DifferenceKit+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DifferenceKit+Utilities.swift"; sourceTree = "<group>"; };
 		FDD2506F2837199200198BDA /* GarbageCollectionJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GarbageCollectionJob.swift; sourceTree = "<group>"; };
 		FDD250712837234B00198BDA /* MediaGalleryNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaGalleryNavigationController.swift; sourceTree = "<group>"; };
@@ -3057,8 +3057,6 @@
 				C38EF2F5255B6DBC007E1867 /* OWSAudioPlayer.h */,
 				C38EF2F7255B6DBC007E1867 /* OWSAudioPlayer.m */,
 				C38EF281255B6D84007E1867 /* OWSAudioSession.swift */,
-				C33FDB38255A580B00E217F9 /* OWSBackgroundTask.h */,
-				C33FDC1B255A581F00E217F9 /* OWSBackgroundTask.m */,
 				FDF0B75D280AAF35004C14C5 /* Preferences.swift */,
 				C38EF2FB255B6DBD007E1867 /* OWSWindowManager.h */,
 				C38EF306255B6DBE007E1867 /* OWSWindowManager.m */,
@@ -3126,7 +3124,6 @@
 				B8A582AE258C65D000AFD84C /* Networking */,
 				B8A582AD258C655E00AFD84C /* PromiseKit */,
 				FD09796527F6B0A800936362 /* Utilities */,
-				FDCDB8EF2817ABCE00352A0C /* Utilities */,
 				C3D9E43025676D3D0040E4F3 /* Configuration.swift */,
 			);
 			path = SessionUtilitiesKit;
@@ -3426,6 +3423,8 @@
 				FD09797127FAA2F500936362 /* Optional+Utilities.swift */,
 				FD09797C27FBDB2000936362 /* Notification+Utilities.swift */,
 				FDF222082818D2B0000A4995 /* NSAttributedString+Utilities.swift */,
+				C33FDB38255A580B00E217F9 /* OWSBackgroundTask.h */,
+				C33FDC1B255A581F00E217F9 /* OWSBackgroundTask.m */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -3464,6 +3463,7 @@
 				FDF40CDD2897A1BC006A0CC4 /* _004_RemoveLegacyYDB.swift */,
 				FD37EA0C28AB2A45003AE748 /* _005_FixDeletedMessageReadState.swift */,
 				FD37EA0E28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift */,
+				FD37EA1A28ACB51F003AE748 /* _007_HomeQueryOptimisationIndexes.swift */,
 			);
 			path = Migrations;
 			sourceTree = "<group>";
@@ -3884,14 +3884,6 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		FDCDB8EF2817ABCE00352A0C /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				FDCDB8F02817ABE600352A0C /* Optional+Utilities.swift */,
-			);
-			path = Utilities;
-			sourceTree = "<group>";
-		};
 		FDE7214E287E50D50093DF33 /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
@@ -4006,6 +3998,7 @@
 				C3C2A67D255388CC00C340D1 /* SessionUtilitiesKit.h in Headers */,
 				C32C6018256E07F9003C73A2 /* NSUserDefaults+OWS.h in Headers */,
 				B8856D8D256F1502001CE70E /* UIView+OWS.h in Headers */,
+				FD52090128AF61BA006098F6 /* OWSBackgroundTask.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4015,7 +4008,6 @@
 			files = (
 				C3C2A6F425539DE700C340D1 /* SessionMessagingKit.h in Headers */,
 				C32C5C46256DCBB2003C73A2 /* AppReadiness.h in Headers */,
-				C32C5FC4256E0209003C73A2 /* OWSBackgroundTask.h in Headers */,
 				FD716E732850647900C96BF4 /* NSData+messagePadding.h in Headers */,
 				B8856D72256F1421001CE70E /* OWSWindowManager.h in Headers */,
 				B8856CF7256F105E001CE70E /* OWSAudioPlayer.h in Headers */,
@@ -5022,7 +5014,6 @@
 				FDA8EB10280F8238002B68E5 /* Codable+Utilities.swift in Sources */,
 				C352A36D2557858E00338F3E /* NSTimer+Proxying.m in Sources */,
 				FD09797B27FBB25900936362 /* Updatable.swift in Sources */,
-				FDCDB8F12817ABE600352A0C /* Optional+Utilities.swift in Sources */,
 				7B7CB192271508AD0079FF93 /* CallRingTonePlayer.swift in Sources */,
 				C3C2ABD22553C6C900C340D1 /* Data+SecureRandom.swift in Sources */,
 				FD848B8B283DC509000E298B /* PagedDatabaseObserver.swift in Sources */,
@@ -5068,6 +5059,7 @@
 				FD17D7B827F51ECA00122BE0 /* Migration.swift in Sources */,
 				FD7728982849E8110018502F /* UITableView+ReusableView.swift in Sources */,
 				7B0EFDEE274F598600FFAAE7 /* TimestampUtils.swift in Sources */,
+				FD52090028AF6153006098F6 /* OWSBackgroundTask.m in Sources */,
 				C32C5DDB256DD9FF003C73A2 /* ContentProxy.swift in Sources */,
 				C3A71F892558BA9F0043A11F /* Mnemonic.swift in Sources */,
 				B8F5F58325EC94A6003BF8D4 /* Collection+Subscripting.swift in Sources */,
@@ -5114,6 +5106,7 @@
 			files = (
 				FD86585828507B24008B6CF9 /* NSData+messagePadding.m in Sources */,
 				FD245C52285065D500B966DD /* SignalAttachment.swift in Sources */,
+				FD37EA1B28ACB51F003AE748 /* _007_HomeQueryOptimisationIndexes.swift in Sources */,
 				B8856D08256F10F1001CE70E /* DeviceSleepManager.swift in Sources */,
 				C3471F4C25553AB000297E91 /* MessageReceiver+Decryption.swift in Sources */,
 				FD245C672850665E00B966DD /* AttachmentDownloadJob.swift in Sources */,
@@ -5241,7 +5234,6 @@
 				FD245C5C2850660A00B966DD /* ConfigurationMessage.swift in Sources */,
 				FD5C7301284F0F7A0029977D /* MessageReceiver+UnsendRequests.swift in Sources */,
 				C3C2A75F2553A3C500C340D1 /* VisibleMessage+LinkPreview.swift in Sources */,
-				C32C5FBB256E0206003C73A2 /* OWSBackgroundTask.m in Sources */,
 				FD245C642850664F00B966DD /* Threading.swift in Sources */,
 				FD848B8D283E0B26000E298B /* MessageInputTypes.swift in Sources */,
 				C32C5C3D256DCBAF003C73A2 /* AppReadiness.m in Sources */,

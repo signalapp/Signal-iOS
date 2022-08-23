@@ -103,6 +103,7 @@ public final class JobRunner {
     internal static var executorMap: Atomic<[Job.Variant: JobExecutor.Type]> = Atomic([:])
     fileprivate static var perSessionJobsCompleted: Atomic<Set<Int64>> = Atomic([])
     private static var hasCompletedInitialBecomeActive: Atomic<Bool> = Atomic(false)
+    private static var shutdownBackgroundTask: Atomic<OWSBackgroundTask?> = Atomic(nil)
     
     // MARK: - Configuration
     
@@ -222,6 +223,14 @@ public final class JobRunner {
     }
     
     public static func appDidBecomeActive() {
+        // If we have a running "sutdownBackgroundTask" then we want to cancel it as otherwise it
+        // can result in the database being suspended and us being unable to interact with it at all
+        shutdownBackgroundTask.mutate {
+            $0?.cancel()
+            $0 = nil
+        }
+        
+        // Retrieve any jobs which should run when becoming active
         let hasCompletedInitialBecomeActive: Bool = JobRunner.hasCompletedInitialBecomeActive.wrappedValue
         let jobsToRun: [Job] = Storage.shared
             .read { db in
@@ -259,9 +268,56 @@ public final class JobRunner {
     /// Calling this will clear the JobRunner queues and stop it from running new jobs, any currently executing jobs will continue to run
     /// though (this means if we suspend the database it's likely that any currently running jobs will fail to complete and fail to record their
     /// failure - they _should_ be picked up again the next time the app is launched)
-    public static func stopAndClearPendingJobs() {
-        queues.wrappedValue.values.forEach { queue in
-            queue.stopAndClearPendingJobs()
+    public static func stopAndClearPendingJobs(
+        exceptForVariant: Job.Variant? = nil,
+        onComplete: (() -> ())? = nil
+    ) {
+        // Stop all queues except for the one containing the `exceptForVariant`
+        queues.wrappedValue
+            .values
+            .filter { queue -> Bool in
+                guard let exceptForVariant: Job.Variant = exceptForVariant else { return true }
+                
+                return !queue.jobVariants.contains(exceptForVariant)
+            }
+            .forEach { $0.stopAndClearPendingJobs() }
+        
+        // Ensure the queue is actually running (if not the trigger the callback immediately)
+        guard
+            let exceptForVariant: Job.Variant = exceptForVariant,
+            let queue: JobQueue = queues.wrappedValue[exceptForVariant],
+            queue.isRunning.wrappedValue == true
+        else {
+            onComplete?()
+            return
+        }
+        
+        let oldQueueDrained: (() -> ())? = queue.onQueueDrained
+        
+        // Create a backgroundTask to give the queue the chance to properly be drained
+        shutdownBackgroundTask.mutate {
+            $0 = OWSBackgroundTask(labelStr: #function) { [weak queue] state in
+                // If the background task didn't succeed then trigger the onComplete (and hope we have
+                // enough time to complete it's logic)
+                guard state != .cancelled else {
+                    queue?.onQueueDrained = oldQueueDrained
+                    return
+                }
+                guard state != .success else { return }
+                
+                onComplete?()
+                queue?.onQueueDrained = oldQueueDrained
+                queue?.stopAndClearPendingJobs()
+            }
+        }
+        
+        // Add a callback to be triggered once the queue is drained
+        queue.onQueueDrained = { [weak queue] in
+            oldQueueDrained?()
+            queue?.onQueueDrained = oldQueueDrained
+            onComplete?()
+            
+            shutdownBackgroundTask.mutate { $0 = nil }
         }
     }
     
@@ -370,7 +426,7 @@ private final class JobQueue {
     /// The specific types of jobs this queue manages, if this is left empty it will handle all jobs not handled by other queues
     fileprivate let jobVariants: [Job.Variant]
     
-    private let onQueueDrained: (() -> ())?
+    fileprivate var onQueueDrained: (() -> ())?
     
     private lazy var internalQueue: DispatchQueue = {
         let result: DispatchQueue = DispatchQueue(

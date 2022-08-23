@@ -12,7 +12,6 @@ extension MessageReceiver {
         message: VisibleMessage,
         associatedWithProto proto: SNProtoContent,
         openGroupId: String?,
-        isBackgroundPoll: Bool,
         dependencies: Dependencies = Dependencies()
     ) throws -> Int64 {
         guard let sender: String = message.sender, let dataMessage = proto.dataMessage else {
@@ -285,8 +284,7 @@ extension MessageReceiver {
             .notifyUser(
                 db,
                 for: interaction,
-                in: thread,
-                isBackgroundPoll: isBackgroundPoll
+                in: thread
             )
         
         return interactionId

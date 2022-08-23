@@ -18,7 +18,8 @@ public enum SNMessagingKit { // Just to make the external API nice
                 ],
                 [
                     _005_FixDeletedMessageReadState.self,
-                    _006_FixHiddenModAdminSupport.self
+                    _006_FixHiddenModAdminSupport.self,
+                    _007_HomeQueryOptimisationIndexes.self
                 ]
             ]
         )
