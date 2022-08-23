@@ -59,7 +59,7 @@ public class ContactDiscoveryTask: NSObject {
         }
 
         let workQueue = DispatchQueue(
-            label: "org.whispersystems.signal.\(type(of: self))",
+            label: OWSDispatch.createLabel("\(type(of: self))"),
             qos: qos,
             autoreleaseFrequency: .workItem,
             target: targetQueue ?? .sharedQueue(at: qos))

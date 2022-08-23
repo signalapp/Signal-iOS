@@ -44,7 +44,13 @@ class AppUpdateNag: NSObject {
                 self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
             }
         }.catch { error in
-            Logger.warn("failed with error: \(error)")
+            // Only failDebug if we're looking up the true org.whispersystems.signal app store record
+            // If someone is building Signal with their own bundleID, it's less important that this succeeds.
+            if bundleIdentifier.hasPrefix("org.whispersystems") {
+                owsFailDebug("Failed to find Signal app store record")
+            } else {
+                Logger.warn("failed with error: \(error)")
+            }
         }
     }
 
@@ -231,7 +237,7 @@ class AppStoreVersionService: NSObject {
                 let decoder = JSONDecoder()
                 let resultSet = try decoder.decode(AppStoreLookupResultSet.self, from: data)
                 guard let appStoreRecord = resultSet.results.first else {
-                    future.reject(OWSAssertionError("Missing or invalid record."))
+                    future.reject(OWSGenericError("Missing or invalid record."))
                     return
                 }
 
