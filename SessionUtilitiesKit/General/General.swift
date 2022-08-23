@@ -6,11 +6,13 @@ import Curve25519Kit
 
 public protocol GeneralCacheType {
     var encodedPublicKey: String? { get set }
+    var recentReactionTimestamps: [Int64] { get set }
 }
 
 public enum General {
     public class Cache: GeneralCacheType {
         public var encodedPublicKey: String? = nil
+        public var recentReactionTimestamps: [Int64] = []
     }
     
     public static var cache: Atomic<GeneralCacheType> = Atomic(Cache())

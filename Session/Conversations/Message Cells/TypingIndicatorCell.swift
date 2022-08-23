@@ -39,7 +39,13 @@ final class TypingIndicatorCell: MessageCell {
 
     // MARK: - Updating
     
-    override func update(with cellViewModel: MessageViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+    override func update(
+        with cellViewModel: MessageViewModel,
+        mediaCache: NSCache<NSString, AnyObject>,
+        playbackInfo: ConversationViewModel.PlaybackInfo?,
+        showExpandedReactions: Bool,
+        lastSearchText: String?
+    ) {
         guard cellViewModel.cellType == .typingIndicator else { return }
         
         self.viewModel = cellViewModel

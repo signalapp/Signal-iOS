@@ -1250,7 +1250,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     threadId: processedMessage.threadId,
                     details: MessageReceiveJob.Details(
                         messages: [processedMessage.messageInfo],
-                        isBackgroundPoll: legacyJob.isBackgroundPoll
+                        calledFromBackgroundPoller: legacyJob.isBackgroundPoll
                     )
                 )?.inserted(db)
             }

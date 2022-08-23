@@ -53,6 +53,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     var didFinishInitialLayout = false
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
     var baselineKeyboardHeight: CGFloat = 0
+    
+    // Reaction
+    var currentReactionListSheet: ReactionListSheet?
+    var reactionExpandedMessageIds: Set<String> = []
 
     /// This flag is used to temporarily prevent the ConversationVC from becoming the first responder (primarily used with
     /// custom transitions from preventing them from being buggy
@@ -642,6 +646,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             return
         }
         
+        // Update the ReactionListSheet (if one exists)
+        if let messageUpdates: [MessageViewModel] = updatedData.first(where: { $0.model == .messages })?.elements {
+            self.currentReactionListSheet?.handleInteractionUpdates(messageUpdates)
+        }
+        
         // Store the 'sentMessageBeforeUpdate' state locally
         let didSendMessageBeforeUpdate: Bool = self.viewModel.sentMessageBeforeUpdate
         self.viewModel.sentMessageBeforeUpdate = false
@@ -688,6 +697,17 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         let wasLoadingMore: Bool = self.isLoadingMore
         let wasOffsetCloseToBottom: Bool = self.isCloseToBottom
         let numItemsInUpdatedData: [Int] = updatedData.map { $0.elements.count }
+        let didSwapAllContent: Bool = (updatedData
+            .first(where: { $0.model == .messages })?
+            .elements
+            .contains(where: {
+                $0.id == self.viewModel.interactionData
+                .first(where: { $0.model == .messages })?
+                .elements
+                .first?
+                .id
+            }))
+            .defaulting(to: false)
         let itemChangeInfo: ItemChangeInfo? = {
             guard
                 isInsert,
@@ -720,7 +740,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             )
         }()
         
-        guard !isInsert || wasLoadingMore || itemChangeInfo?.isInsertAtTop == true else {
+        guard !isInsert || itemChangeInfo?.isInsertAtTop == true else {
             self.viewModel.updateInteractionData(updatedData)
             self.tableView.reloadData()
             
@@ -729,22 +749,38 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             if let focusedInteractionId: Int64 = self.focusedInteractionId {
                 // If we had a focusedInteractionId then scroll to it (and hide the search
                 // result bar loading indicator)
-                DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
+                let delay: DispatchTime = (didSwapAllContent ?
+                    .now() :
+                    (.now() + .milliseconds(100))
+                )
+                
+                DispatchQueue.main.asyncAfter(deadline: delay) { [weak self] in
                     self?.searchController.resultsBar.stopLoading()
                     self?.scrollToInteractionIfNeeded(
                         with: focusedInteractionId,
                         isAnimated: true,
                         highlight: (self?.shouldHighlightNextScrollToInteraction == true)
                     )
+                    
+                    if wasLoadingMore {
+                        // Complete page loading
+                        self?.isLoadingMore = false
+                        self?.autoLoadNextPageIfNeeded()
+                    }
                 }
             }
-            else if wasOffsetCloseToBottom {
+            else if wasOffsetCloseToBottom && !wasLoadingMore {
                 // Scroll to the bottom if an interaction was just inserted and we either
                 // just sent a message or are close enough to the bottom (wait a tiny fraction
                 // to avoid buggy animation behaviour)
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
                     self?.scrollToBottom(isAnimated: true)
                 }
+            }
+            else if wasLoadingMore {
+                // Complete page loading
+                self.isLoadingMore = false
+                self.autoLoadNextPageIfNeeded()
             }
             return
         }
@@ -755,7 +791,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         ///
         /// Unfortunately the UITableView also does some weird things when updating (where it won't have updated it's internal data until
         /// after it performs the next layout); the below code checks a condition on layout and if it passes it calls a closure
-        if let itemChangeInfo: ItemChangeInfo = itemChangeInfo, (itemChangeInfo.isInsertAtTop || wasLoadingMore) {
+        if let itemChangeInfo: ItemChangeInfo = itemChangeInfo, itemChangeInfo.isInsertAtTop {
             let oldCellHeight: CGFloat = self.tableView.rectForRow(at: itemChangeInfo.oldVisibleIndexPath).height
             
             // The the user triggered the 'scrollToTop' animation (by tapping in the nav bar) then we
@@ -789,7 +825,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                             .rectForRow(at: itemChangeInfo.visibleIndexPath)
                             .height
                         let heightDiff: CGFloat = (oldCellHeight - (newTargetHeight ?? oldCellHeight))
-
+                        
                         self?.tableView.contentOffset.y += (calculatedRowHeights - heightDiff)
                     }
                     
@@ -805,14 +841,38 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                             )
                         }
                     }
-
+                    
                     // Complete page loading
                     self?.isLoadingMore = false
                     self?.autoLoadNextPageIfNeeded()
                 }
             )
         }
+        else if wasLoadingMore {
+            if let focusedInteractionId: Int64 = self.focusedInteractionId {
+                DispatchQueue.main.async { [weak self] in
+                    // If we had a focusedInteractionId then scroll to it (and hide the search
+                    // result bar loading indicator)
+                    self?.searchController.resultsBar.stopLoading()
+                    self?.scrollToInteractionIfNeeded(
+                        with: focusedInteractionId,
+                        isAnimated: true,
+                        highlight: (self?.shouldHighlightNextScrollToInteraction == true)
+                    )
+                    
+                    // Complete page loading
+                    self?.isLoadingMore = false
+                    self?.autoLoadNextPageIfNeeded()
+                }
+            }
+            else {
+                // Complete page loading
+                self.isLoadingMore = false
+                self.autoLoadNextPageIfNeeded()
+            }
+        }
         
+        // Update the messages
         self.tableView.reload(
             using: changeset,
             deleteSectionsAnimation: .none,
@@ -827,6 +887,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         }
     }
     
+    // MARK: Updating
+    
     private func performInitialScrollIfNeeded() {
         guard !hasPerformedInitialScroll && hasLoadedInitialThreadData && hasLoadedInitialInteractionData else {
             return
@@ -837,13 +899,13 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         // the screen will scroll to the bottom instead of the first unread message
         if let focusedInteractionId: Int64 = self.viewModel.focusedInteractionId {
             self.scrollToInteractionIfNeeded(with: focusedInteractionId, isAnimated: false, highlight: true)
-            self.unreadCountView.alpha = self.scrollButton.alpha
         }
         else {
             self.scrollToBottom(isAnimated: false)
         }
 
         self.scrollButton.alpha = self.getScrollButtonOpacity()
+        self.unreadCountView.alpha = self.scrollButton.alpha
         self.hasPerformedInitialScroll = true
         
         // Now that the data has loaded we need to check if either of the "load more" sections are
@@ -1018,6 +1080,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
             let scrollButtonOpacity: CGFloat = (self?.getScrollButtonOpacity() ?? 0)
             self?.scrollButton.alpha = scrollButtonOpacity
+            self?.unreadCountView.alpha = scrollButtonOpacity
 
             self?.view.setNeedsLayout()
             self?.view.layoutIfNeeded()
@@ -1132,6 +1195,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                             cell.dynamicUpdate(with: cellViewModel, playbackInfo: updatedInfo)
                         }
                     },
+                    showExpandedReactions: viewModel.reactionExpandedInteractionIds
+                        .contains(cellViewModel.id),
                     lastSearchText: viewModel.lastSearchedText
                 )
                 cell.delegate = self
@@ -1225,6 +1290,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             self.scrollToInteractionIfNeeded(
                 with: lastInteractionId,
                 position: .bottom,
+                isJumpingToLastInteraction: true,
                 isAnimated: true
             )
             return
@@ -1283,7 +1349,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         let contentOffsetY = tableView.contentOffset.y
         let x = (lastPageTop - ConversationVC.bottomInset - contentOffsetY).clamp(0, .greatestFiniteMagnitude)
         let a = 1 / (ConversationVC.scrollButtonFullVisibilityThreshold - ConversationVC.scrollButtonNoVisibilityThreshold)
-        return a * x
+        return max(0, min(1, a * x))
     }
 
     // MARK: - Search
@@ -1394,6 +1460,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     func scrollToInteractionIfNeeded(
         with interactionId: Int64,
         position: UITableView.ScrollPosition = .middle,
+        isJumpingToLastInteraction: Bool = false,
         isAnimated: Bool = true,
         highlight: Bool = false
     ) {
@@ -1417,10 +1484,18 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             self.searchController.resultsBar.startLoading()
             
             DispatchQueue.global(qos: .default).async { [weak self] in
-                self?.viewModel.pagedDataObserver?.load(.untilInclusive(
-                    id: interactionId,
-                    padding: 5
-                ))
+                if isJumpingToLastInteraction {
+                    self?.viewModel.pagedDataObserver?.load(.jumpTo(
+                        id: interactionId,
+                        paddingForInclusive: 5
+                    ))
+                }
+                else {
+                    self?.viewModel.pagedDataObserver?.load(.untilInclusive(
+                        id: interactionId,
+                        padding: 5
+                    ))
+                }
             }
             return
         }

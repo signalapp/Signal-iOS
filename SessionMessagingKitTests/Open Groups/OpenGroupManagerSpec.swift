@@ -2120,7 +2120,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             ],
                             for: "testRoom",
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2142,7 +2141,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             messages: [],
                             for: "testRoom",
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2182,7 +2180,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             ],
                             for: "testRoom",
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2215,7 +2212,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             ],
                             for: "testRoom",
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2230,7 +2226,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             messages: [testMessage],
                             for: "testRoom",
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2260,7 +2255,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             ],
                             for: "testRoom",
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2298,7 +2292,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 ],
                                 for: "testRoom",
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2327,7 +2320,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 ],
                                 for: "testRoom",
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2379,7 +2371,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             messages: [],
                             fromOutbox: false,
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2413,7 +2404,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             messages: [testDirectMessage],
                             fromOutbox: false,
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2452,7 +2442,6 @@ class OpenGroupManagerSpec: QuickSpec {
                             messages: [testDirectMessage],
                             fromOutbox: false,
                             on: "testServer",
-                            isBackgroundPoll: false,
                             dependencies: dependencies
                         )
                     }
@@ -2478,7 +2467,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 messages: [testDirectMessage],
                                 fromOutbox: false,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2509,7 +2497,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 messages: [testDirectMessage],
                                 fromOutbox: false,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2524,7 +2511,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 messages: [testDirectMessage],
                                 fromOutbox: false,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2549,7 +2535,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 ],
                                 fromOutbox: false,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2576,7 +2561,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 messages: [testDirectMessage],
                                 fromOutbox: true,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2607,7 +2591,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 messages: [testDirectMessage],
                                 fromOutbox: true,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2623,7 +2606,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 messages: [testDirectMessage],
                                 fromOutbox: true,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2659,7 +2641,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 messages: [testDirectMessage],
                                 fromOutbox: true,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2674,7 +2655,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 messages: [testDirectMessage],
                                 fromOutbox: true,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
@@ -2699,7 +2679,6 @@ class OpenGroupManagerSpec: QuickSpec {
                                 ],
                                 fromOutbox: true,
                                 on: "testServer",
-                                isBackgroundPoll: false,
                                 dependencies: dependencies
                             )
                         }
