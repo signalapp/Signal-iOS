@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumber.h"
@@ -36,6 +36,12 @@
 - (void)testTryParsePhoneNumberFromUserSpecifiedText_explicitRegionCode {
     PhoneNumber *actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"+33 1 70 39 38 00"];
     XCTAssertEqualObjects(@"+33170393800", [actual toE164]);
+}
+
+- (void)testTryParsePhoneNumberFromUserSpecifiedText_includingCountryCode
+{
+    PhoneNumber *actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"4915110000000" callingCode:@"49"];
+    XCTAssertEqualObjects(@"+4915110000000", [actual toE164]);
 }
 
 - (void)testTryParsePhoneNumberFromUserSpecifiedTextWithoutPlus {

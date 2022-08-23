@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable PhoneNumber *)phoneNumberFromE164:(NSString *)text;
 
 + (nullable PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text;
+
+/// `text` may omit the calling code or duplicate the value in `callingCode`.
++ (nullable PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text callingCode:(NSString *)callingCode;
 + (nullable PhoneNumber *)tryParsePhoneNumberFromE164:(NSString *)text;
 + (nullable PhoneNumber *)phoneNumberFromUserSpecifiedText:(NSString *)text;
 
