@@ -15,6 +15,10 @@ public class NoopNotificationsManager: NotificationsProtocol {
         owsFailDebug("")
     }
     
+    public func notifyUser(_ db: Database, forReaction reaction: Reaction, in thread: SessionThread) {
+        owsFailDebug("")
+    }
+    
     public func cancelNotifications(identifiers: [String]) {
         owsFailDebug("")
     }

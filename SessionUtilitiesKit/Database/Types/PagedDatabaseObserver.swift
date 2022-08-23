@@ -163,7 +163,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             associatedDataInfo.forEach { hasChanges, associatedData in
                 guard cacheHasChanges || hasChanges else { return }
                 
-                finalUpdatedDataCache = associatedData.attachAssociatedData(to: finalUpdatedDataCache)
+                finalUpdatedDataCache = associatedData.updateAssociatedData(to: finalUpdatedDataCache)
             }
             
             // Update the cache, pageInfo and the change callback
@@ -631,7 +631,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         var associatedLoadedData: DataCache<T> = DataCache(items: loadedPageData)
         
         self.associatedRecords.forEach { record in
-            associatedLoadedData = record.attachAssociatedData(to: associatedLoadedData)
+            associatedLoadedData = record.updateAssociatedData(to: associatedLoadedData)
         }
         
         // Update the cache and pageInfo
@@ -722,7 +722,7 @@ public protocol ErasedAssociatedRecord {
     ) -> Bool
     @discardableResult func updateCache(_ db: Database, rowIds: [Int64], hasOtherChanges: Bool) -> Bool
     func clearCache(_ db: Database)
-    func attachAssociatedData<O>(to unassociatedCache: DataCache<O>) -> DataCache<O>
+    func updateAssociatedData<O>(to unassociatedCache: DataCache<O>) -> DataCache<O>
 }
 
 // MARK: - DataCache
@@ -775,6 +775,8 @@ public struct DataCache<T: FetchableRecordWithRowId & Identifiable> {
     }
     
     public func upserting(items: [T]) -> DataCache<T> {
+        guard !items.isEmpty else { return self }
+        
         var updatedData: [Int64: T] = self.data
         var updatedLookup: [AnyHashable: Int64] = self.lookup
         
@@ -1230,7 +1232,7 @@ public class AssociatedRecord<T, PagedType>: ErasedAssociatedRecord where T: Fet
         dataCache.mutate { $0 = DataCache() }
     }
     
-    public func attachAssociatedData<O>(to unassociatedCache: DataCache<O>) -> DataCache<O> {
+    public func updateAssociatedData<O>(to unassociatedCache: DataCache<O>) -> DataCache<O> {
         guard let typedCache: DataCache<PagedType> = unassociatedCache as? DataCache<PagedType> else {
             return unassociatedCache
         }

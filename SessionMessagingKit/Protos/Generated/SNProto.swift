@@ -1633,6 +1633,171 @@ extension SNProtoDataMessagePreview.SNProtoDataMessagePreviewBuilder {
 
 #endif
 
+// MARK: - SNProtoDataMessageReaction
+
+@objc public class SNProtoDataMessageReaction: NSObject {
+
+    // MARK: - SNProtoDataMessageReactionAction
+
+    @objc public enum SNProtoDataMessageReactionAction: Int32 {
+        case react = 0
+        case remove = 1
+    }
+
+    private class func SNProtoDataMessageReactionActionWrap(_ value: SessionProtos_DataMessage.Reaction.Action) -> SNProtoDataMessageReactionAction {
+        switch value {
+        case .react: return .react
+        case .remove: return .remove
+        }
+    }
+
+    private class func SNProtoDataMessageReactionActionUnwrap(_ value: SNProtoDataMessageReactionAction) -> SessionProtos_DataMessage.Reaction.Action {
+        switch value {
+        case .react: return .react
+        case .remove: return .remove
+        }
+    }
+
+    // MARK: - SNProtoDataMessageReactionBuilder
+
+    @objc public class func builder(id: UInt64, author: String, action: SNProtoDataMessageReactionAction) -> SNProtoDataMessageReactionBuilder {
+        return SNProtoDataMessageReactionBuilder(id: id, author: author, action: action)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoDataMessageReactionBuilder {
+        let builder = SNProtoDataMessageReactionBuilder(id: id, author: author, action: action)
+        if let _value = emoji {
+            builder.setEmoji(_value)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoDataMessageReactionBuilder: NSObject {
+
+        private var proto = SessionProtos_DataMessage.Reaction()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(id: UInt64, author: String, action: SNProtoDataMessageReactionAction) {
+            super.init()
+
+            setId(id)
+            setAuthor(author)
+            setAction(action)
+        }
+
+        @objc public func setId(_ valueParam: UInt64) {
+            proto.id = valueParam
+        }
+
+        @objc public func setAuthor(_ valueParam: String) {
+            proto.author = valueParam
+        }
+
+        @objc public func setEmoji(_ valueParam: String) {
+            proto.emoji = valueParam
+        }
+
+        @objc public func setAction(_ valueParam: SNProtoDataMessageReactionAction) {
+            proto.action = SNProtoDataMessageReactionActionUnwrap(valueParam)
+        }
+
+        @objc public func build() throws -> SNProtoDataMessageReaction {
+            return try SNProtoDataMessageReaction.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoDataMessageReaction.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_DataMessage.Reaction
+
+    @objc public let id: UInt64
+
+    @objc public let author: String
+
+    @objc public let action: SNProtoDataMessageReactionAction
+
+    @objc public var emoji: String? {
+        guard proto.hasEmoji else {
+            return nil
+        }
+        return proto.emoji
+    }
+    @objc public var hasEmoji: Bool {
+        return proto.hasEmoji
+    }
+
+    private init(proto: SessionProtos_DataMessage.Reaction,
+                 id: UInt64,
+                 author: String,
+                 action: SNProtoDataMessageReactionAction) {
+        self.proto = proto
+        self.id = id
+        self.author = author
+        self.action = action
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoDataMessageReaction {
+        let proto = try SessionProtos_DataMessage.Reaction(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_DataMessage.Reaction) throws -> SNProtoDataMessageReaction {
+        guard proto.hasID else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
+        }
+        let id = proto.id
+
+        guard proto.hasAuthor else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: author")
+        }
+        let author = proto.author
+
+        guard proto.hasAction else {
+            throw SNProtoError.invalidProtobuf(description: "\(logTag) missing required field: action")
+        }
+        let action = SNProtoDataMessageReactionActionWrap(proto.action)
+
+        // MARK: - Begin Validation Logic for SNProtoDataMessageReaction -
+
+        // MARK: - End Validation Logic for SNProtoDataMessageReaction -
+
+        let result = SNProtoDataMessageReaction(proto: proto,
+                                                id: id,
+                                                author: author,
+                                                action: action)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoDataMessageReaction {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoDataMessageReaction.SNProtoDataMessageReactionBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoDataMessageReaction? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SNProtoDataMessageLokiProfile
 
 @objc public class SNProtoDataMessageLokiProfile: NSObject {
@@ -2269,6 +2434,9 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             builder.setQuote(_value)
         }
         builder.setPreview(preview)
+        if let _value = reaction {
+            builder.setReaction(_value)
+        }
         if let _value = profile {
             builder.setProfile(_value)
         }
@@ -2338,6 +2506,10 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             proto.preview = wrappedItems.map { $0.proto }
         }
 
+        @objc public func setReaction(_ valueParam: SNProtoDataMessageReaction) {
+            proto.reaction = valueParam.proto
+        }
+
         @objc public func setProfile(_ valueParam: SNProtoDataMessageLokiProfile) {
             proto.profile = valueParam.proto
         }
@@ -2372,6 +2544,8 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
     @objc public let quote: SNProtoDataMessageQuote?
 
     @objc public let preview: [SNProtoDataMessagePreview]
+
+    @objc public let reaction: SNProtoDataMessageReaction?
 
     @objc public let profile: SNProtoDataMessageLokiProfile?
 
@@ -2435,6 +2609,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                  group: SNProtoGroupContext?,
                  quote: SNProtoDataMessageQuote?,
                  preview: [SNProtoDataMessagePreview],
+                 reaction: SNProtoDataMessageReaction?,
                  profile: SNProtoDataMessageLokiProfile?,
                  openGroupInvitation: SNProtoDataMessageOpenGroupInvitation?,
                  closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?) {
@@ -2443,6 +2618,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
         self.group = group
         self.quote = quote
         self.preview = preview
+        self.reaction = reaction
         self.profile = profile
         self.openGroupInvitation = openGroupInvitation
         self.closedGroupControlMessage = closedGroupControlMessage
@@ -2475,6 +2651,11 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
         var preview: [SNProtoDataMessagePreview] = []
         preview = try proto.preview.map { try SNProtoDataMessagePreview.parseProto($0) }
 
+        var reaction: SNProtoDataMessageReaction? = nil
+        if proto.hasReaction {
+            reaction = try SNProtoDataMessageReaction.parseProto(proto.reaction)
+        }
+
         var profile: SNProtoDataMessageLokiProfile? = nil
         if proto.hasProfile {
             profile = try SNProtoDataMessageLokiProfile.parseProto(proto.profile)
@@ -2499,6 +2680,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                                         group: group,
                                         quote: quote,
                                         preview: preview,
+                                        reaction: reaction,
                                         profile: profile,
                                         openGroupInvitation: openGroupInvitation,
                                         closedGroupControlMessage: closedGroupControlMessage)

@@ -52,7 +52,13 @@ final class InfoMessageCell: MessageCell {
 
     // MARK: - Updating
     
-    override func update(with cellViewModel: MessageViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+    override func update(
+        with cellViewModel: MessageViewModel,
+        mediaCache: NSCache<NSString, AnyObject>,
+        playbackInfo: ConversationViewModel.PlaybackInfo?,
+        showExpandedReactions: Bool,
+        lastSearchText: String?
+    ) {
         guard cellViewModel.variant.isInfoMessage else { return }
         
         self.viewModel = cellViewModel

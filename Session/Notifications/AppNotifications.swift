@@ -339,6 +339,57 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             )
         }
     }
+    
+    public func notifyUser(_ db: Database, forReaction reaction: Reaction, in thread: SessionThread) {
+        let isMessageRequest: Bool = thread.isMessageRequest(db, includeNonVisible: true)
+        
+        // No reaction notifications for muted, group threads or message requests
+        guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
+        guard thread.variant != .closedGroup && thread.variant != .openGroup else { return }
+        guard !isMessageRequest else { return }
+        
+        let senderName: String = Profile.displayName(db, id: reaction.authorId, threadVariant: thread.variant)
+        let notificationTitle = "Session"
+        var notificationBody = String(format: "EMOJI_REACTS_NOTIFICATION".localized(), senderName, reaction.emoji)
+        
+        // Title & body
+        let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+            .defaulting(to: .nameAndPreview)
+        
+        switch previewType {
+            case .nameAndPreview: break
+            default: notificationBody = NotificationStrings.incomingMessageBody
+        }
+        
+        let category = AppNotificationCategory.incomingMessage
+
+        let userInfo = [
+            AppNotificationUserInfoKey.threadId: thread.id
+        ]
+        
+        let threadName: String = SessionThread.displayName(
+            threadId: thread.id,
+            variant: thread.variant,
+            closedGroupName: nil,       // Not supported
+            openGroupName: nil          // Not supported
+        )
+
+        DispatchQueue.main.async {
+            let sound = self.requestSound(thread: thread)
+            
+            self.adaptee.notify(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody,
+                userInfo: userInfo,
+                previewType: previewType,
+                sound: sound,
+                threadVariant: thread.variant,
+                threadName: threadName,
+                replacingIdentifier: UUID().uuidString
+            )
+        }
+    }
 
     public func notifyForFailedSend(_ db: Database, in thread: SessionThread) {
         let notificationTitle: String?

@@ -3,6 +3,7 @@
 import Foundation
 import GRDB
 import SessionSnodeKit
+import SessionUtilitiesKit
 
 /// Abstract base class for `VisibleMessage` and `ControlMessage`.
 public class Message: Codable {
@@ -291,10 +292,10 @@ public extension Message {
         dependencies: SMKDependencies = SMKDependencies()
     ) throws -> ProcessedMessage? {
         // Need a sender in order to process the message
-        guard let sender: String = message.sender else { return nil }
+        guard let sender: String = message.sender, let timestamp = message.posted else { return nil }
         
         // Note: The `posted` value is in seconds but all messages in the database use milliseconds for timestamps
-        let envelopeBuilder = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(message.posted * 1000)))
+        let envelopeBuilder = SNProtoEnvelope.builder(type: .sessionMessage, timestamp: UInt64(floor(timestamp * 1000)))
         envelopeBuilder.setContent(data)
         envelopeBuilder.setSource(sender)
         
@@ -346,6 +347,79 @@ public extension Message {
             handleClosedGroupKeyUpdateMessages: false,
             dependencies: dependencies
         )
+    }
+    
+    static func processRawReceivedReactions(
+        _ db: Database,
+        openGroupId: String,
+        message: OpenGroupAPI.Message,
+        dependencies: SMKDependencies = SMKDependencies()
+    ) -> [Reaction] {
+        var results: [Reaction] = []
+        guard let reactions = message.reactions else { return results }
+        let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        let blindedUserPublicKey: String? = SessionThread
+            .getUserHexEncodedBlindedKey(
+                threadId: openGroupId,
+                threadVariant: .openGroup
+            )
+        for (encodedEmoji, rawReaction) in reactions {
+            if let emoji = encodedEmoji.removingPercentEncoding,
+               rawReaction.count > 0,
+               let reactors = rawReaction.reactors
+            {
+                let timestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
+                let desiredReactorIds: [String] = reactors
+                    .filter { $0 != blindedUserPublicKey }
+
+                results = results
+                    .appending( // Add the first reaction (with the count)
+                        desiredReactorIds.first
+                            .map { reactor in
+                                Reaction(
+                                    interactionId: message.id,
+                                    serverHash: nil,
+                                    timestampMs: timestampMs,
+                                    authorId: reactor,
+                                    emoji: emoji,
+                                    count: rawReaction.count,
+                                    sortId: rawReaction.index
+                                )
+                            }
+                    )
+                    .appending( // Add all other reactions
+                        contentsOf: desiredReactorIds.count <= 1 ?
+                            [] :
+                            desiredReactorIds
+                                .suffix(from: 1)
+                                .map { reactor in
+                                    Reaction(
+                                        interactionId: message.id,
+                                        serverHash: nil,
+                                        timestampMs: timestampMs,
+                                        authorId: reactor,
+                                        emoji: emoji,
+                                        count: 0,   // Only want this on the first reaction
+                                        sortId: rawReaction.index
+                                    )
+                                }
+                    )
+                    .appending( // Add the current user reaction (if applicable and not already included)
+                        !rawReaction.you || reactors.contains(userPublicKey) ?
+                            nil :
+                            Reaction(
+                                interactionId: message.id,
+                                serverHash: nil,
+                                timestampMs: timestampMs,
+                                authorId: userPublicKey,
+                                emoji: emoji,
+                                count: (desiredReactorIds.isEmpty ? rawReaction.count : 0),
+                                sortId: rawReaction.index
+                            )
+                    )
+            }
+        }
+        return results
     }
     
     private static func processRawReceivedMessage(

@@ -53,6 +53,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     var didFinishInitialLayout = false
     var scrollDistanceToBottomBeforeUpdate: CGFloat?
     var baselineKeyboardHeight: CGFloat = 0
+    
+    // Reaction
+    var currentReactionListSheet: ReactionListSheet?
+    var reactionExpandedMessageIds: Set<String> = []
 
     /// This flag is used to temporarily prevent the ConversationVC from becoming the first responder (primarily used with
     /// custom transitions from preventing them from being buggy
@@ -642,6 +646,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             return
         }
         
+        // Update the ReactionListSheet (if one exists)
+        if let messageUpdates: [MessageViewModel] = updatedData.first(where: { $0.model == .messages })?.elements {
+            self.currentReactionListSheet?.handleInteractionUpdates(messageUpdates)
+        }
+        
         // Store the 'sentMessageBeforeUpdate' state locally
         let didSendMessageBeforeUpdate: Bool = self.viewModel.sentMessageBeforeUpdate
         self.viewModel.sentMessageBeforeUpdate = false
@@ -863,6 +872,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             }
         }
         
+        // Update the messages
         self.tableView.reload(
             using: changeset,
             deleteSectionsAnimation: .none,
@@ -876,6 +886,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             self?.viewModel.updateInteractionData(updatedData)
         }
     }
+    
+    // MARK: Updating
     
     private func performInitialScrollIfNeeded() {
         guard !hasPerformedInitialScroll && hasLoadedInitialThreadData && hasLoadedInitialInteractionData else {
@@ -1183,6 +1195,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                             cell.dynamicUpdate(with: cellViewModel, playbackInfo: updatedInfo)
                         }
                     },
+                    showExpandedReactions: viewModel.reactionExpandedInteractionIds
+                        .contains(cellViewModel.id),
                     lastSearchText: viewModel.lastSearchedText
                 )
                 cell.delegate = self

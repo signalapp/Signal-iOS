@@ -247,6 +247,29 @@ public enum MessageReceiver {
         }
     }
     
+    public static func handleOpenGroupReactions(
+        _ db: Database,
+        openGroupMessageServerId: Int64,
+        openGroupReactions: [Reaction]
+    ) throws {
+        guard let interactionId: Int64 = try? Interaction
+            .select(.id)
+            .filter(Interaction.Columns.openGroupServerMessageId == openGroupMessageServerId)
+            .asRequest(of: Int64.self)
+            .fetchOne(db)
+        else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        _ = try Reaction
+            .filter(Reaction.Columns.interactionId == interactionId)
+            .deleteAll(db)
+        
+        for reaction in openGroupReactions {
+            try reaction.with(interactionId: interactionId).insert(db)
+        }
+    }
+    
     // MARK: - Convenience
     
     internal static func threadInfo(_ db: Database, message: Message, openGroupId: String?) -> (id: String, variant: SessionThread.Variant)? {

@@ -117,24 +117,11 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             notificationContent.userInfo[NotificationServiceExtension.threadNotificationCounter] = numberOfNotifications
         }
         
-        let request = UNNotificationRequest(
+        addNotifcationRequest(
             identifier: identifier,
-            content: notificationContent,
+            notificationContent: notificationContent,
             trigger: trigger
         )
-        
-        SNLog("Add remote notification request: \(notificationContent.body)")
-        let semaphore = DispatchSemaphore(value: 0)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                SNLog("Failed to add notification request due to error:\(error)")
-            }
-            
-            self.notifications[identifier] = request
-            semaphore.signal()
-        }
-        semaphore.wait()
-        SNLog("Finish adding remote notification request")
     }
     
     public func notifyUser(_ db: Database, forIncomingCall interaction: Interaction, in thread: SessionThread) {
@@ -185,20 +172,46 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             )
         }
         
-        // Add request
-        let identifier = UUID().uuidString
-        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
+        addNotifcationRequest(
+            identifier: UUID().uuidString,
+            notificationContent: notificationContent,
+            trigger: nil
+        )
+    }
+    
+    public func notifyUser(_ db: Database, forReaction reaction: Reaction, in thread: SessionThread) {
+        let isMessageRequest: Bool = thread.isMessageRequest(db, includeNonVisible: true)
         
-        SNLog("Add remote notification request: \(notificationContent.body)")
-        let semaphore = DispatchSemaphore(value: 0)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                SNLog("Failed to add notification request due to error:\(error)")
-            }
-            semaphore.signal()
+        // No reaction notifications for muted, group threads or message requests
+        guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
+        guard thread.variant != .closedGroup && thread.variant != .openGroup else { return }
+        guard !isMessageRequest else { return }
+        
+        let senderName: String = Profile.displayName(db, id: reaction.authorId, threadVariant: thread.variant)
+        let notificationTitle = "Session"
+        var notificationBody = String(format: "EMOJI_REACTS_NOTIFICATION".localized(), senderName, reaction.emoji)
+        
+        // Title & body
+        let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+            .defaulting(to: .nameAndPreview)
+        
+        switch previewType {
+            case .nameAndPreview: break
+            default: notificationBody = NotificationStrings.incomingMessageBody
         }
-        semaphore.wait()
-        SNLog("Finish adding remote notification request")
+
+        var userInfo: [String: Any] = [ NotificationServiceExtension.isFromRemoteKey: true ]
+        userInfo[NotificationServiceExtension.threadIdKey] = thread.id
+        
+        let notificationContent = UNMutableNotificationContent()
+        notificationContent.userInfo = userInfo
+        notificationContent.sound = thread.notificationSound
+            .defaulting(to: db[.defaultNotificationSound] ?? Preferences.Sound.defaultNotificationSound)
+            .notificationSound(isQuiet: false)
+        notificationContent.title = notificationTitle
+        notificationContent.body = notificationBody
+        
+        addNotifcationRequest(identifier: UUID().uuidString, notificationContent: notificationContent, trigger: nil)
     }
     
     public func cancelNotifications(identifiers: [String]) {
@@ -211,6 +224,21 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
+    }
+    
+    private func addNotifcationRequest(identifier: String, notificationContent: UNNotificationContent, trigger: UNNotificationTrigger?) {
+        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)
+        
+        SNLog("Add remote notification request: \(notificationContent.body)")
+        let semaphore = DispatchSemaphore(value: 0)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                SNLog("Failed to add notification request due to error:\(error)")
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
+        SNLog("Finish adding remote notification request")
     }
 }
 
