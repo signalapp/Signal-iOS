@@ -9,7 +9,7 @@ import SignalUtilitiesKit
 
 final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedReminderViewDelegate {
     private static let loadingHeaderHeight: CGFloat = 20
-    private static let newConversationButtonSize: CGFloat = 60
+    public static let newConversationButtonSize: CGFloat = 60
     
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?
@@ -73,9 +73,8 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
             left: 0,
             bottom: (
                 Values.newConversationButtonBottomOffset +
-                NewConversationButtonSet.expandedButtonSize +
                 Values.largeSpacing +
-                NewConversationButtonSet.collapsedButtonSize
+                HomeVC.newConversationButtonSize
             ),
             right: 0
         )
@@ -749,7 +748,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
-        navigationController.modalPresentationCapturesStatusBarAppearance = true                                                                                                                                                                                                
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
     
