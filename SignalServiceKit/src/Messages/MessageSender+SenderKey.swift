@@ -97,20 +97,20 @@ extension MessageSender {
 
         @objc
         var fanoutParticipants: [SignalServiceAddress] {
-            Array(participants.filter { $0.value == .FanoutOnly }.keys)
+            Array(participants.lazy.filter { $0.value == .FanoutOnly }.map { $0.key })
         }
 
         @objc
         var allSenderKeyParticipants: [SignalServiceAddress] {
-            Array(participants.filter { $0.value != .FanoutOnly }.keys)
+            Array(participants.lazy.filter { $0.value != .FanoutOnly }.map { $0.key })
         }
 
         var participantsNeedingSKDM: [SignalServiceAddress] {
-            Array(participants.filter { $0.value == .NeedsSKDM }.keys)
+            Array(participants.lazy.filter { $0.value == .NeedsSKDM }.map { $0.key })
         }
 
         var readyParticipants: [SignalServiceAddress] {
-            Array(participants.filter { $0.value == .SenderKeyReady }.keys)
+            Array(participants.lazy.filter { $0.value == .SenderKeyReady }.map { $0.key })
         }
     }
 

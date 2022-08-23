@@ -459,31 +459,31 @@ public class GroupMembership: MTLModel {
 public extension GroupMembership {
 
     var fullMemberAdministrators: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isAdministrator && $0.value.isFullMember }.keys)
+        return Set(memberStates.lazy.filter { $0.value.isAdministrator && $0.value.isFullMember }.map { $0.key })
     }
 
     var fullMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isFullMember }.keys)
+        return Set(memberStates.lazy.filter { $0.value.isFullMember }.map { $0.key })
     }
 
     var invitedMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isInvited }.keys)
+        return Set(memberStates.lazy.filter { $0.value.isInvited }.map { $0.key })
     }
 
     var requestingMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isRequesting }.keys)
+        return Set(memberStates.lazy.filter { $0.value.isRequesting }.map { $0.key })
     }
 
     var fullOrInvitedMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter {
+        return Set(memberStates.lazy.filter {
             $0.value.isFullMember || $0.value.isInvited
-        }.keys)
+        }.map { $0.key })
     }
 
     var invitedOrRequestMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter {
+        return Set(memberStates.lazy.filter {
             $0.value.isInvited || $0.value.isRequesting
-        }.keys)
+        }.map { $0.key })
     }
 
     // allMembersOfAnyKind includes _all_ members:
@@ -499,11 +499,11 @@ public extension GroupMembership {
     // * Normal and administrator.
     // * Normal, pending profile key, requesting.
     var allMemberUuidsOfAnyKind: Set<UUID> {
-        return Set(memberStates.keys.compactMap { $0.uuid })
+        return Set(memberStates.keys.lazy.compactMap { $0.uuid })
     }
 
     var bannedMemberAddresses: Set<SignalServiceAddress> {
-        return Set(bannedMembers.keys.map { SignalServiceAddress(uuid: $0) })
+        return Set(bannedMembers.keys.lazy.map { SignalServiceAddress(uuid: $0) })
     }
 }
 
@@ -805,7 +805,7 @@ public extension GroupMembership {
         // MARK: Build
 
         public func build() -> GroupMembership {
-            owsAssertDebug(Set(bannedMembers.keys.map { SignalServiceAddress(uuid: $0) })
+            owsAssertDebug(Set(bannedMembers.keys.lazy.map { SignalServiceAddress(uuid: $0) })
                 .isDisjoint(with: Set(memberStates.keys)))
 
             var memberStates = self.memberStates

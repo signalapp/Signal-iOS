@@ -1177,7 +1177,7 @@ class StorageServiceOperation: OWSOperation {
         // of any items we don't know about locally. Since a new
         // id is always generated after a change, this should always
         // reflect the only items we need to fetch from the service.
-        let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.map { .init(data: $0.data, type: $0.type) })
+        let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.lazy.map { .init(data: $0.data, type: $0.type) })
 
         var newOrUpdatedItems = Array(allManifestItems.subtracting(state.allIdentifiers))
 

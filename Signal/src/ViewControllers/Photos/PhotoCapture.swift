@@ -1448,10 +1448,10 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
     func availableDeviceTypes(forPosition position: AVCaptureDevice.Position) -> [AVCaptureDevice.DeviceType] {
         switch position {
         case .front, .unspecified:
-            return availableFrontDeviceMap.keys.map { $0 }
+            return Array(availableFrontDeviceMap.keys)
 
         case .back:
-            return availableRearDeviceMap.keys.map { $0 }
+            return Array(availableRearDeviceMap.keys)
 
         @unknown default:
             owsFailDebug("Unknown AVCaptureDevice.Position: [\(position)]")

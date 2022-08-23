@@ -28,7 +28,7 @@ class FlagsViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.headerTitle = title
 
-        for key in Array(flagMap.keys).sorted() {
+        for key in flagMap.keys.sorted() {
             if let value = flagMap[key] {
                 section.add(OWSTableItem.label(withText: key, accessoryText: String(describing: value)))
             } else {

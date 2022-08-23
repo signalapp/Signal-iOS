@@ -507,7 +507,7 @@ public extension StorageService {
                 throw StorageError.assertion
             }
 
-            guard Set(latestManifest.keys.map { $0.data }) == Set(identifiersInManfest.map { $0.data }) else {
+            guard Set(latestManifest.keys.lazy.map { $0.data }) == Set(identifiersInManfest.lazy.map { $0.data }) else {
                 owsFailDebug("manifest should only contain our test keys")
                 throw StorageError.assertion
             }

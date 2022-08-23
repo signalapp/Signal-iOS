@@ -118,7 +118,7 @@ public class FeatureFlags: BaseFlags {
         }
 
         let flagMap = allFlags()
-        for key in Array(flagMap.keys).sorted() {
+        for key in flagMap.keys.sorted() {
             let value = flagMap[key]
             logFlag("FeatureFlag", key, value)
         }

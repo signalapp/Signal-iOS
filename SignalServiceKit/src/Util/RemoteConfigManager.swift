@@ -397,7 +397,7 @@ public class RemoteConfig: BaseFlags {
         }
 
         let flagMap = allFlags()
-        for key in Array(flagMap.keys).sorted() {
+        for key in flagMap.keys.sorted() {
             let value = flagMap[key]
             logFlag("Flag", key, value)
         }
