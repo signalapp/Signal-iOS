@@ -490,7 +490,7 @@
 "vc_path_service_node_row_title" = "Service Node";
 "vc_path_destination_row_title" = "Destination";
 "vc_path_learn_more_button_title" = "Learn More";
-"vc_create_private_chat_title" = "New Session";
+"vc_create_private_chat_title" = "New Message";
 "vc_create_private_chat_enter_session_id_tab_title" = "Enter Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Scan QR Code";
 "vc_create_private_chat_scan_qr_code_explanation" = "Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.";

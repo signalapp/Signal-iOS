@@ -749,6 +749,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
+        navigationController.modalPresentationCapturesStatusBarAppearance = true                                                                                                                                                                                                
         present(navigationController, animated: true, completion: nil)
     }
     
@@ -759,6 +760,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
     
