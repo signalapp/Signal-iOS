@@ -210,9 +210,9 @@ private class TSConstantsProduction: TSConstantsProtocol {
     }
 
     public let keyBackupEnclave = KeyBackupEnclave(
-        name: "0cedba03535b41b67729ce9924185f831d7767928a1d1689acb689bc079c375f",
-        mrenclave: "ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba",
-        serviceId: "187d2739d22be65e74b65f0055e74d31310e4267e5fac2b1246cc8beba81af39"
+        name: "e18376436159cda3ad7a45d9320e382e4a497f26b0dca34d8eab0bd0139483b5",
+        mrenclave: "45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c",
+        serviceId: "3a485adb56e2058ef7737764c738c4069dd62bc457637eafb6bbce1ce29ddb89"
     )
 
     // An array of previously used enclaves that we should try and restore
@@ -221,6 +221,11 @@ private class TSConstantsProduction: TSConstantsProtocol {
     // checking earlier enclaves.
     public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
         // Add the current `keyBackupEnclave` value here when replacing it.
+        KeyBackupEnclave(
+            name: "0cedba03535b41b67729ce9924185f831d7767928a1d1689acb689bc079c375f",
+            mrenclave: "ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba",
+            serviceId: "187d2739d22be65e74b65f0055e74d31310e4267e5fac2b1246cc8beba81af39"
+        )
     ]
 
     public let applicationGroup = "group.org.whispersystems.signal.group"
@@ -274,9 +279,9 @@ private class TSConstantsStaging: TSConstantsProtocol {
     ]
 
     public let keyBackupEnclave = KeyBackupEnclave(
-        name: "dd6f66d397d9e8cf6ec6db238e59a7be078dd50e9715427b9c89b409ffe53f99",
-        mrenclave: "ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba",
-        serviceId: "4200003414528c151e2dccafbc87aa6d3d66a5eb8f8c05979a6e97cb33cd493a"
+        name: "39963b736823d5780be96ab174869a9499d56d66497aa8f9b2244f777ebc366b",
+        mrenclave: "45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c",
+        serviceId: "9dbc6855c198e04f21b5cc35df839fdcd51b53658454dfa3f817afefaffc95ef"
     )
 
     // An array of previously used enclaves that we should try and restore
@@ -285,6 +290,11 @@ private class TSConstantsStaging: TSConstantsProtocol {
     // checking earlier enclaves.
     public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
         // Add the current `keyBackupEnclave` value here when replacing it.
+        KeyBackupEnclave(
+            name: "dd6f66d397d9e8cf6ec6db238e59a7be078dd50e9715427b9c89b409ffe53f99",
+            mrenclave: "ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba",
+            serviceId: "4200003414528c151e2dccafbc87aa6d3d66a5eb8f8c05979a6e97cb33cd493a"
+        )
     ]
 
     public let applicationGroup = "group.org.whispersystems.signal.group.staging"
