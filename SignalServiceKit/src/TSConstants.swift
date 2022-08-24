@@ -195,7 +195,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let keyBackupCensorshipPrefix = "backup"
     public let storageServiceCensorshipPrefix = "storage"
 
-    public let contactDiscoveryEnclaveName = "c98e00a4e3ff977a56afefe7362a27e4961e4f19e211febfbb19b897e6b80b15"
+    public let contactDiscoveryEnclaveName = "74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081"
     public var contactDiscoveryMrEnclave: String {
         return contactDiscoveryEnclaveName
     }
@@ -263,7 +263,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage-staging"
 
     // CDS uses the same EnclaveName and MrEnclave
-    public let contactDiscoveryEnclaveName = "c98e00a4e3ff977a56afefe7362a27e4961e4f19e211febfbb19b897e6b80b15"
+    public let contactDiscoveryEnclaveName = "74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081"
     public var contactDiscoveryMrEnclave: String {
         return contactDiscoveryEnclaveName
     }
