@@ -129,7 +129,7 @@ class ImageEditorView: AttachmentPrepContentView {
         }
     }
 
-    func updateSelectedTextItem(withColor color: ImageEditorColor) {
+    func updateSelectedTextItem(withColor color: ColorPickerBarColor) {
         if let selectedTextItemId = selectedTextItemId,
            let textItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
             let newTextItem = textItem.copy(color: color)
@@ -137,9 +137,9 @@ class ImageEditorView: AttachmentPrepContentView {
         }
     }
 
-    func createNewTextItem(withColor color: ImageEditorColor? = nil,
-                           textStyle: ImageEditorTextItem.TextStyle = .regular,
-                           decorationStyle: ImageEditorTextItem.DecorationStyle = .none) -> ImageEditorTextItem {
+    func createNewTextItem(withColor color: ColorPickerBarColor? = nil,
+                           textStyle: MediaTextView.TextStyle = .regular,
+                           decorationStyle: MediaTextView.DecorationStyle = .none) -> ImageEditorTextItem {
         Logger.verbose("")
 
         let viewSize = canvasView.gestureReferenceView.bounds.size

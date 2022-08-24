@@ -8,57 +8,16 @@ class ImageEditorTextItem: ImageEditorItem {
 
     let text: String
 
-    let color: ImageEditorColor
+    let color: ColorPickerBarColor
 
-    enum DecorationStyle: Int {
-        case none = 0
-        case inverted
-        case underline
-        case outline
-    }
-    let decorationStyle: DecorationStyle
+    let decorationStyle: MediaTextView.DecorationStyle
 
-    enum TextStyle: Int {
-        case regular = 0
-        case bold
-        case serif
-        case script
-        case condensed
-    }
-    let textStyle: TextStyle
+    let textStyle: MediaTextView.TextStyle
 
     let fontSize: CGFloat
     static let defaultFontSize: CGFloat = 36
     var font: UIFont {
-        ImageEditorTextItem.font(forTextStyle: textStyle, pointSize: fontSize)
-    }
-
-    class func font(forTextStyle textStyle: TextStyle, pointSize: CGFloat) -> UIFont {
-        // TODO: this is a copy-paste code from TextAttachmentView that needs to be consolidated in one place.
-        let attributes: [UIFontDescriptor.AttributeName: Any]
-
-        switch textStyle {
-        case .regular:
-            attributes = [.name: "Inter-Regular_Bold"]
-        case .bold:
-            attributes = [.name: "Inter-Regular_Black"]
-        case .serif:
-            attributes = [.name: "EBGaramond-Regular"]
-        case .script:
-            attributes = [.name: "Parisienne-Regular"]
-        case .condensed:
-            // TODO: Ideally we could set an attribute to make this font
-            // all caps, but iOS deprecated that ability and didn't add
-            // a new equivalent function.
-            attributes = [.name: "BarlowCondensed-Medium"]
-        }
-
-        // TODO: Eventually we'll want to provide a cascadeList here to fallback
-        // to different fonts for different scripts rather than just relying on
-        // the built in OS fallbacks that don't tend to match the desired style.
-        let descriptor = UIFontDescriptor(fontAttributes: attributes)
-
-        return UIFont(descriptor: descriptor, size: pointSize)
+        MediaTextView.font(forTextStyle: textStyle, pointSize: fontSize)
     }
 
     // In order to render the text at a consistent size
@@ -98,10 +57,10 @@ class ImageEditorTextItem: ImageEditorItem {
     let scaling: CGFloat
 
     init(text: String,
-         color: ImageEditorColor,
+         color: ColorPickerBarColor,
          fontSize: CGFloat,
-         textStyle: TextStyle = .regular,
-         decorationStyle: DecorationStyle = .none,
+         textStyle: MediaTextView.TextStyle = .regular,
+         decorationStyle: MediaTextView.DecorationStyle = .none,
          fontReferenceImageWidth: CGFloat,
          unitCenter: ImageEditorSample = ImageEditorSample(x: 0.5, y: 0.5),
          unitWidth: CGFloat = ImageEditorTextItem.kDefaultUnitWidth,
@@ -123,10 +82,10 @@ class ImageEditorTextItem: ImageEditorItem {
 
     private init(itemId: String,
                  text: String,
-                 color: ImageEditorColor,
+                 color: ColorPickerBarColor,
                  fontSize: CGFloat,
-                 textStyle: TextStyle,
-                 decorationStyle: DecorationStyle,
+                 textStyle: MediaTextView.TextStyle,
+                 decorationStyle: MediaTextView.DecorationStyle,
                  fontReferenceImageWidth: CGFloat,
                  unitCenter: ImageEditorSample,
                  unitWidth: CGFloat,
@@ -146,9 +105,9 @@ class ImageEditorTextItem: ImageEditorItem {
         super.init(itemId: itemId, itemType: .text)
     }
 
-    class func empty(withColor color: ImageEditorColor,
-                     textStyle: TextStyle,
-                     decorationStyle: DecorationStyle,
+    class func empty(withColor color: ColorPickerBarColor,
+                     textStyle: MediaTextView.TextStyle,
+                     decorationStyle: MediaTextView.DecorationStyle,
                      unitWidth: CGFloat,
                      fontReferenceImageWidth: CGFloat,
                      scaling: CGFloat,
@@ -164,7 +123,7 @@ class ImageEditorTextItem: ImageEditorItem {
                                    scaling: scaling)
     }
 
-    func copy(withText newText: String, color newColor: ImageEditorColor) -> ImageEditorTextItem {
+    func copy(withText newText: String, color newColor: ColorPickerBarColor) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: newText,
                                    color: newColor,
@@ -234,7 +193,7 @@ class ImageEditorTextItem: ImageEditorItem {
                                    scaling: scaling)
     }
 
-    func copy(color: ImageEditorColor) -> ImageEditorTextItem {
+    func copy(color: ColorPickerBarColor) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,
@@ -248,7 +207,7 @@ class ImageEditorTextItem: ImageEditorItem {
                                    scaling: scaling)
     }
 
-    func copy(textStyle: TextStyle, decorationStyle: DecorationStyle) -> ImageEditorTextItem {
+    func copy(textStyle: MediaTextView.TextStyle, decorationStyle: MediaTextView.DecorationStyle) -> ImageEditorTextItem {
         return ImageEditorTextItem(itemId: itemId,
                                    text: text,
                                    color: color,

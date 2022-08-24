@@ -158,7 +158,6 @@
 		3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553F271B510400B05242 /* CircleView.swift */; };
 		3402AA9E271D9E180084CBAE /* ContactsViewHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95565271B510400B05242 /* ContactsViewHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AA9F271D9E180084CBAE /* ViewOnceTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9554C271B510400B05242 /* ViewOnceTooltip.swift */; };
-		3402AAA0271D9E180084CBAE /* ImageEditorPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95561271B510400B05242 /* ImageEditorPaletteView.swift */; };
 		3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95534271B510400B05242 /* OWSBubbleView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AAA2271D9E180084CBAE /* OWSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9550D271B510400B05242 /* OWSTextView.m */; };
 		3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */; };
@@ -791,6 +790,8 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		768AE8BA280F713C00998C2D /* ImageEditorSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 768AE8B9280F713C00998C2D /* ImageEditorSliderView.swift */; };
 		76995F15283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */; };
+		76A2EB1028B578B800A29C24 /* MediaTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB0F28B578B800A29C24 /* MediaTextView.swift */; };
+		76A2EB1228B57AEE00A29C24 /* ColorPickerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		76FCCDBC27AB8FBE00BAA7F0 /* MediaControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76FCCDBB27AB8FBE00BAA7F0 /* MediaControls.swift */; };
@@ -2576,7 +2577,6 @@
 		34A9555D271B510400B05242 /* ImageEditorCanvasView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorCanvasView.swift; sourceTree = "<group>"; };
 		34A9555E271B510400B05242 /* ImageEditorItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorItem.swift; sourceTree = "<group>"; };
 		34A9555F271B510400B05242 /* ImageEditorContents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorContents.swift; sourceTree = "<group>"; };
-		34A95561271B510400B05242 /* ImageEditorPaletteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorPaletteView.swift; sourceTree = "<group>"; };
 		34A95562271B510400B05242 /* ImageEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorView.swift; sourceTree = "<group>"; };
 		34A95563271B510400B05242 /* ImageEditorTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorTransform.swift; sourceTree = "<group>"; };
 		34A95564271B510400B05242 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
@@ -3028,6 +3028,8 @@
 		768A1A2A17FC9CD300E00ED8 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		768AE8B9280F713C00998C2D /* ImageEditorSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorSliderView.swift; sourceTree = "<group>"; };
 		76995F14283868BD009DD4F4 /* ImageEditorViewController+StrokeWidthSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageEditorViewController+StrokeWidthSlider.swift"; sourceTree = "<group>"; };
+		76A2EB0F28B578B800A29C24 /* MediaTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTextView.swift; sourceTree = "<group>"; };
+		76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPickerBar.swift; sourceTree = "<group>"; };
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -5129,6 +5131,7 @@
 				34A95545271B510400B05242 /* AvatarImageView.swift */,
 				83B9573827C9A1FA00A678FD /* CaptchaView.swift */,
 				34A9553F271B510400B05242 /* CircleView.swift */,
+				76A2EB1128B57AEE00A29C24 /* ColorPickerBar.swift */,
 				451764291DE939FD00EDB8B9 /* ContactCell.swift */,
 				34A9550B271B510400B05242 /* ContactCellView.swift */,
 				34A95565271B510400B05242 /* ContactsViewHelper.h */,
@@ -5147,6 +5150,7 @@
 				34A9552F271B510400B05242 /* LoopingVideoView.swift */,
 				34A9551D271B510400B05242 /* ManualLayoutView.swift */,
 				34A9550C271B510400B05242 /* ManualStackView.swift */,
+				76A2EB0F28B578B800A29C24 /* MediaTextView.swift */,
 				34A9550A271B510400B05242 /* NonContactTableViewCell.swift */,
 				34A9553D271B510400B05242 /* OWSActionSheets.swift */,
 				34F308A01ECB469700BB7697 /* OWSBezierPathView.h */,
@@ -5244,7 +5248,6 @@
 				34A95556271B510400B05242 /* ImageEditorCropViewController.swift */,
 				34A9555E271B510400B05242 /* ImageEditorItem.swift */,
 				34A9555A271B510400B05242 /* ImageEditorModel.swift */,
-				34A95561271B510400B05242 /* ImageEditorPaletteView.swift */,
 				34A95552271B510400B05242 /* ImageEditorPanGestureRecognizer.swift */,
 				34A95558271B510400B05242 /* ImageEditorPinchGestureRecognizer.swift */,
 				768AE8B9280F713C00998C2D /* ImageEditorSliderView.swift */,
@@ -9521,6 +9524,7 @@
 				3402AA9D271D9E180084CBAE /* CircleView.swift in Sources */,
 				34A954E0271B4F3E00B05242 /* ColorOrGradient.swift in Sources */,
 				34A954E2271B4F3E00B05242 /* ColorOrGradientSwatchView.swift in Sources */,
+				76A2EB1228B57AEE00A29C24 /* ColorPickerBar.swift in Sources */,
 				88B9870A28808BF600F8C74D /* CompareSafetyNumbersActivity.swift in Sources */,
 				88B986FD28807F6400F8C74D /* ContactCell.swift in Sources */,
 				3402AA88271D9E180084CBAE /* ContactCellView.swift in Sources */,
@@ -9565,7 +9569,6 @@
 				3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */,
 				3402AA72271D9E180084CBAE /* ImageEditorItem.swift in Sources */,
 				3402AA90271D9E180084CBAE /* ImageEditorModel.swift in Sources */,
-				3402AAA0271D9E180084CBAE /* ImageEditorPaletteView.swift in Sources */,
 				3402AA98271D9E180084CBAE /* ImageEditorPanGestureRecognizer.swift in Sources */,
 				3402AA89271D9E180084CBAE /* ImageEditorPinchGestureRecognizer.swift in Sources */,
 				768AE8BA280F713C00998C2D /* ImageEditorSliderView.swift in Sources */,
@@ -9590,6 +9593,7 @@
 				3402AA9C271D9E180084CBAE /* ManualLayoutView.swift in Sources */,
 				3402AA8D271D9E180084CBAE /* ManualStackView.swift in Sources */,
 				3402AA57271D9DCD0084CBAE /* MediaMessageView.swift in Sources */,
+				76A2EB1028B578B800A29C24 /* MediaTextView.swift in Sources */,
 				766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */,
 				3402AAAF271D9E180084CBAE /* Mention.swift in Sources */,
 				3402AAA6271D9E180084CBAE /* MentionPicker.swift in Sources */,

@@ -52,7 +52,7 @@ class ImageEditorModel: NSObject {
 
     var blurredSourceImage: CGImage?
 
-    var color = ImageEditorColor.defaultColor()
+    var color = ColorPickerBarColor.defaultColor()
 
     // We don't want to allow editing of images if:
     //

@@ -59,7 +59,7 @@ class ImageEditorViewController: OWSViewController {
     lazy var drawToolbar: DrawToolbar = {
         let toolbar = DrawToolbar(currentColor: model.color)
         toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.paletteView.delegate = self
+        toolbar.colorPickerView.delegate = self
         toolbar.strokeTypeButton.addTarget(self, action: #selector(strokeTypeButtonTapped(sender:)), for: .touchUpInside)
         return toolbar
     }()
@@ -193,31 +193,23 @@ class ImageEditorViewController: OWSViewController {
         view.alpha = 0
         return view
     }()
-    lazy var textView: VAlignTextView = {
-        let textView = VAlignTextView()
+    lazy var textView: MediaTextView = {
+        let textView = MediaTextView()
         textView.delegate = self
-        textView.isEditable = true
-        textView.backgroundColor = .clear
-        textView.isOpaque = false
-        textView.tintColor = .white
-        textView.isScrollEnabled = false
-        textView.scrollsToTop = false
-        textView.textAlignment = .center
-        textView.textContainer.lineFragmentPadding = 0
         return textView
     }()
-    lazy var textToolbar: TextToolbar = {
-        let toolbar = TextToolbar(currentColor: currentTextItem?.textItem.color ?? model.color)
+    lazy var textToolbar: TextStylingToolbar = {
+        let toolbar = TextStylingToolbar(currentColor: currentTextItem?.textItem.color ?? model.color)
         toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.paletteView.delegate = self
+        toolbar.colorPickerView.delegate = self
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
         toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton(sender:)), for: .touchUpInside)
         return toolbar
     }()
-    lazy var textViewAccessoryToolbar: TextToolbar = {
-        let toolbar = TextToolbar(currentColor: currentTextItem?.textItem.color ?? model.color)
+    lazy var textViewAccessoryToolbar: TextStylingToolbar = {
+        let toolbar = TextStylingToolbar(currentColor: currentTextItem?.textItem.color ?? model.color)
         toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.paletteView.delegate = self
+        toolbar.colorPickerView.delegate = self
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
         toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton(sender:)), for: .touchUpInside)
         return toolbar
@@ -546,7 +538,7 @@ extension ImageEditorViewController {
         Logger.verbose("")
 
         let decorationStyle = textToolbar.decorationStyle
-        let textColor = textToolbar.paletteView.selectedValue
+        let textColor = textToolbar.colorPickerView.selectedValue
         let textItem = imageEditorView.createNewTextItem(withColor: textColor, decorationStyle: decorationStyle)
         selectTextItem(textItem, isNewItem: true, startEditing: true)
     }
@@ -641,9 +633,9 @@ extension ImageEditorViewController: ImageEditorModelObserver {
 
 // MARK: - ImageEditorPaletteViewDelegate
 
-extension ImageEditorViewController: ImageEditorPaletteViewDelegate {
+extension ImageEditorViewController: ColorPickerBarViewDelegate {
 
-    func imageEditorPaletteView(_ paletteView: ImageEditorPaletteView, didSelectColor color: ImageEditorColor) {
+    func colorPickerBarView(_ pickerView: ColorPickerBarView, didSelectColor color: ColorPickerBarColor) {
         switch mode {
         case .draw:
             model.color = color
@@ -651,10 +643,10 @@ extension ImageEditorViewController: ImageEditorPaletteViewDelegate {
 
         case .text:
             imageEditorView.updateSelectedTextItem(withColor: color)
-            if paletteView == textToolbar.paletteView {
-                textViewAccessoryToolbar.paletteView.selectedValue = color
-            } else if paletteView == textViewAccessoryToolbar.paletteView {
-                textToolbar.paletteView.selectedValue = color
+            if pickerView == textToolbar.colorPickerView {
+                textViewAccessoryToolbar.colorPickerView.selectedValue = color
+            } else if pickerView == textViewAccessoryToolbar.colorPickerView {
+                textToolbar.colorPickerView.selectedValue = color
             }
             if textView.isFirstResponder {
                 updateTextViewAttributes(using: textToolbar)

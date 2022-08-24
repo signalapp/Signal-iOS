@@ -4,16 +4,15 @@
 
 import UIKit
 
-protocol ImageEditorPaletteViewDelegate: AnyObject {
-    func imageEditorPaletteView(_ paletteView: ImageEditorPaletteView, didSelectColor color: ImageEditorColor)
+public protocol ColorPickerBarViewDelegate: AnyObject {
+    func colorPickerBarView(_ pickerView: ColorPickerBarView, didSelectColor color: ColorPickerBarColor)
 }
 
 // MARK: -
 
-// We represent image editor colors using this (color, phase)
-// tuple so that we can consistently restore palette view
-// state.
-class ImageEditorColor {
+// We represent picker colors using this (color, phase)
+// tuple so that we can consistently restore palette view state.
+public class ColorPickerBarColor {
     let color: UIColor
 
     // Colors are chosen from a spectrum of colors.
@@ -30,8 +29,8 @@ class ImageEditorColor {
         self.palettePhase = palettePhase
     }
 
-    class func defaultColor() -> ImageEditorColor {
-        return ImageEditorColor(color: UIColor(rgbHex: 0xff0000), palettePhase: 1/9)
+    class func defaultColor() -> ColorPickerBarColor {
+        return ColorPickerBarColor(color: UIColor(rgbHex: 0xff0000), palettePhase: 1/9)
     }
 
     static var gradientUIColors: [UIColor] {
@@ -52,14 +51,14 @@ class ImageEditorColor {
         return gradientUIColors.map { $0.cgColor }
     }
 
-    static func == (left: ImageEditorColor, right: ImageEditorColor) -> Bool {
+    static func == (left: ColorPickerBarColor, right: ColorPickerBarColor) -> Bool {
         return left.palettePhase.fuzzyEquals(right.palettePhase)
     }
 }
 
 // MARK: -
 
-private class PalettePreviewView: OWSLayerView {
+private class ColorPreviewView: OWSLayerView {
 
     private static let innerRadius: CGFloat = 32
     // The distance from the "inner circle" to the "teardrop".
@@ -94,9 +93,9 @@ private class PalettePreviewView: OWSLayerView {
         teardropLayer.fillColor = teardropColor.cgColor
 
         layoutCallback = { (view) in
-            PalettePreviewView.updateLayers(view: view,
-                                            circleLayer: circleLayer,
-                                            teardropLayer: teardropLayer)
+            ColorPreviewView.updateLayers(view: view,
+                                          circleLayer: circleLayer,
+                                          teardropLayer: teardropLayer)
         }
 
         // The bounding rect of the teardrop + shadow is non-trivial, so
@@ -104,7 +103,7 @@ private class PalettePreviewView: OWSLayerView {
         //
         // The size doesn't matter since this view is
         // mostly transparent and isn't hot.
-        autoSetDimensions(to: CGSize(square: PalettePreviewView.innerRadius * 4))
+        autoSetDimensions(to: CGSize(square: ColorPreviewView.innerRadius * 4))
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -165,17 +164,17 @@ private class PalettePreviewView: OWSLayerView {
 
 // MARK: -
 
-class ImageEditorPaletteView: UIView {
+public class ColorPickerBarView: UIView {
 
-    weak var delegate: ImageEditorPaletteViewDelegate?
+    weak var delegate: ColorPickerBarViewDelegate?
 
-    var selectedValue: ImageEditorColor {
+    var selectedValue: ColorPickerBarColor {
         didSet {
             updateState()
         }
     }
 
-    required init(currentColor: ImageEditorColor) {
+    required init(currentColor: ColorPickerBarColor) {
         self.selectedValue = currentColor
 
         super.init(frame: .zero)
@@ -208,7 +207,7 @@ class ImageEditorPaletteView: UIView {
     // imageWrapper is used to host the "selection view".
     private let imageWrapper = OWSLayerView()
     private var selectionConstraint: NSLayoutConstraint?
-    private let previewView = PalettePreviewView()
+    private let previewView = ColorPreviewView()
 
     private func createContents() {
         isOpaque = false
@@ -216,13 +215,13 @@ class ImageEditorPaletteView: UIView {
         layoutMargins.trailing = 0
 
         let borderWidth: CGFloat = 2
-        let image = ImageEditorPaletteView.buildPaletteGradientImage()
+        let image = ColorPickerBarView.buildPaletteGradientImage()
         imageView.image = image
         let imageRadius = image.size.height * 0.5
         imageView.layer.cornerRadius = imageRadius
         imageView.clipsToBounds = true
         addSubview(imageView)
-        imageView.autoSetDimension(.height, toSize: ImageEditorPaletteView.colorBarWidth)
+        imageView.autoSetDimension(.height, toSize: ColorPickerBarView.colorBarWidth)
         imageView.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(margin: borderWidth))
 
         // Create "outer border" that doesn't obscure any colors in the strip.
@@ -265,10 +264,10 @@ class ImageEditorPaletteView: UIView {
         let palettePhase = locationX.inverseLerp(0, imageView.width, shouldClamp: true)
         selectedValue = value(for: palettePhase)
 
-        delegate?.imageEditorPaletteView(self, didSelectColor: selectedValue)
+        delegate?.colorPickerBarView(self, didSelectColor: selectedValue)
     }
 
-    private func value(for palettePhase: CGFloat) -> ImageEditorColor {
+    private func value(for palettePhase: CGFloat) -> ColorPickerBarColor {
         // We find the color in the palette's gradient that corresponds
         // to the "phase".
         //
@@ -281,9 +280,9 @@ class ImageEditorPaletteView: UIView {
             let palettePhase1: CGFloat
         }
         var segments = [GradientSegment]()
-        let segmentCount = ImageEditorColor.gradientUIColors.count - 1
+        let segmentCount = ColorPickerBarColor.gradientUIColors.count - 1
         var prevColor: UIColor?
-        for color in ImageEditorColor.gradientUIColors {
+        for color in ColorPickerBarColor.gradientUIColors {
             if let color0 = prevColor {
                 let index = CGFloat(segments.count)
                 let color1 = color
@@ -301,18 +300,18 @@ class ImageEditorPaletteView: UIView {
         }
         guard let segment = bestSegment else {
             owsFailDebug("Couldn't find matching segment.")
-            return ImageEditorColor.defaultColor()
+            return ColorPickerBarColor.defaultColor()
         }
         guard palettePhase >= segment.palettePhase0,
               palettePhase <= segment.palettePhase1 else {
             owsFailDebug("Invalid segment.")
-            return ImageEditorColor.defaultColor()
+            return ColorPickerBarColor.defaultColor()
         }
         let segmentPhase = palettePhase.inverseLerp(segment.palettePhase0, segment.palettePhase1).clamp01()
         // If CAGradientLayer doesn't do naive RGB color interpolation,
         // this won't be WYSIWYG.
         let color = segment.color0.blended(with: segment.color1, alpha: segmentPhase)
-        return ImageEditorColor(color: color, palettePhase: palettePhase)
+        return ColorPickerBarColor(color: color, palettePhase: palettePhase)
     }
 
     private func updateState() {
@@ -354,7 +353,7 @@ class ImageEditorPaletteView: UIView {
         gradientView.layer.addSublayer(gradientLayer)
         gradientLayer.frame = gradientBounds
         // See: https://github.com/signalapp/Signal-Android/blob/42e94d8f921aba212b1ffebfae4f2590a6f3385a/res/values/arrays.xml#L267-L277
-        gradientLayer.colors = ImageEditorColor.gradientCGColors
+        gradientLayer.colors = ColorPickerBarColor.gradientCGColors
         gradientLayer.startPoint = CGPoint.zero
         gradientLayer.endPoint = CGPoint(x: 1, y: 0)
         return gradientView.renderAsImage(opaque: true, scale: UIScreen.main.scale)
