@@ -10,9 +10,8 @@ public enum CVAttachmentTapAction: Int {
     case `default`
 }
 
-// TODO: Remove cvc_ prefix once we've removed old CV logic.
-@objc
-public protocol CVComponentDelegate {
+// TODO: can remove the cvc_ prefix, was necessary when this was @objc
+public protocol CVComponentDelegate: AnyObject {
 
     func cvc_enqueueReload()
 
@@ -20,9 +19,9 @@ public protocol CVComponentDelegate {
 
     // MARK: - Body Text Items
 
-    func cvc_didTapBodyTextItem(_ item: CVTextLabel.ItemObject)
+    func cvc_didTapBodyTextItem(_ item: CVTextLabel.Item)
 
-    func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.ItemObject)
+    func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.Item)
 
     // MARK: - Long Press
 

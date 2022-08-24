@@ -381,7 +381,7 @@ public struct CVLongPressHandler {
 
         switch gestureLocation {
         case .bodyText(let item):
-            delegate.cvc_didLongPressBodyTextItem(.init(item: item))
+            delegate.cvc_didLongPressBodyTextItem(item)
         default:
             // Case will be handled by context menu gesture recognizer
             break

@@ -80,20 +80,6 @@ public class CVTextLabel: NSObject {
 
     // MARK: -
 
-    // TODO: This class is temporary until CVC's conformance to CVComponentDelegate
-    //       is pure Swift.
-    @objc(CVTextLabelItemObject)
-    public class ItemObject: NSObject {
-        public let item: Item
-
-        public init(item: Item) {
-            self.item = item
-
-            super.init()
-        }
-    }
-    // MARK: -
-
     public struct Config {
         public let attributedString: NSAttributedString
         public let font: UIFont

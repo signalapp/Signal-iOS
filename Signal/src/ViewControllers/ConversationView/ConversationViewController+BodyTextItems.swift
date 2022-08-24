@@ -25,14 +25,14 @@ import MessageUI
 //   * long press - show email address + new email message / facetime audio / facetime video / send message / add to contacts / copy email.
 extension ConversationViewController {
 
-    public func didTapBodyTextItem(_ item: CVTextLabel.ItemObject) {
+    public func didTapBodyTextItem(_ item: CVTextLabel.Item) {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 
-        switch item.item {
+        switch item {
         case .dataItem(let dataItem):
             switch dataItem.dataType {
             case .link:
@@ -67,14 +67,14 @@ extension ConversationViewController {
         }
     }
 
-    public func didLongPressBodyTextItem(_ item: CVTextLabel.ItemObject) {
+    public func didLongPressBodyTextItem(_ item: CVTextLabel.Item) {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 
-        switch item.item {
+        switch item {
         case .dataItem(let dataItem):
             switch dataItem.dataType {
             case .link:

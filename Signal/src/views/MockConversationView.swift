@@ -277,9 +277,9 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_enqueueReloadWithoutCaches() {}
 
-    func cvc_didTapBodyTextItem(_ item: CVTextLabel.ItemObject) {}
+    func cvc_didTapBodyTextItem(_ item: CVTextLabel.Item) {}
 
-    func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.ItemObject) {}
+    func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.Item) {}
 
     func cvc_didLongPressTextViewItem(_ cell: CVCell,
                                       itemViewModel: CVItemViewModelImpl,
@@ -366,7 +366,7 @@ extension MockConversationView: CVComponentDelegate {
         return {}
     }
 
-    var view: UIView { self }
+    var view: UIView! { self }
 
     var isConversationPreview: Bool { true }
 

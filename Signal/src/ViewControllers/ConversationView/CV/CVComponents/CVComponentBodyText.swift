@@ -797,7 +797,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         let bodyTextLabel = componentView.bodyTextLabel
         if let item = bodyTextLabel.itemForGesture(sender: sender) {
-            componentDelegate.cvc_didTapBodyTextItem(.init(item: item))
+            componentDelegate.cvc_didTapBodyTextItem(item)
             return true
         }
 
