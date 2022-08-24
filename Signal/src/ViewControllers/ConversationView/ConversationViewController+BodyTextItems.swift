@@ -183,16 +183,7 @@ extension ConversationViewController {
 
         if address.isLocalAddress ||
            Self.contactsManagerImpl.isKnownRegisteredUserWithSneakyTransaction(address: address) {
-            let groupViewHelper: GroupViewHelper? = {
-                guard threadViewModel.isGroupThread else {
-                    return nil
-                }
-                let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
-                groupViewHelper.delegate = self
-                return groupViewHelper
-            }()
-            let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
-            actionSheet.present(from: self)
+            showMemberActionSheet(forAddress: address, withHapticFeedback: false)
             return
         }
 
@@ -356,10 +347,6 @@ extension ConversationViewController {
     private func didTapOrLongPressMention(_ mention: Mention) {
         AssertIsOnMainThread()
 
-        ImpactHapticFeedback.impactOccured(style: .light)
-        let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
-        groupViewHelper.delegate = self
-        let actionSheet = MemberActionSheet(address: mention.address, groupViewHelper: groupViewHelper)
-        actionSheet.present(from: self)
+        showMemberActionSheet(forAddress: mention.address, withHapticFeedback: true)
     }
 }

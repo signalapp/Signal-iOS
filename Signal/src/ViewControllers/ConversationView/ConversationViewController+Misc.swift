@@ -275,6 +275,25 @@ public extension ConversationViewController {
 
         return Array(viewControllers.prefix(upTo: index + 1))
     }
+
+    // MARK: - Member Action Sheet
+
+    func showMemberActionSheet(forAddress address: SignalServiceAddress, withHapticFeedback: Bool) {
+        AssertIsOnMainThread()
+
+        if withHapticFeedback {
+            ImpactHapticFeedback.impactOccured(style: .light)
+        }
+
+        var groupViewHelper: GroupViewHelper?
+        if threadViewModel.isGroupThread {
+            groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
+            groupViewHelper!.delegate = self
+        }
+
+        let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+        actionSheet.present(from: self)
+    }
 }
 
 // MARK: -
