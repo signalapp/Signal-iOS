@@ -19,59 +19,6 @@ class ChangePhoneNumberController: Dependencies {
 
     public init(delegate: ChangePhoneNumberViewDelegate) {
         self.delegate = delegate
-
-        prepopulateIfNecessary()
-    }
-
-    private func prepopulateIfNecessary() {
-#if DEBUG
-        guard DebugFlags.internalLogging else {
-            return
-        }
-
-        guard tsAccountManager.isRegisteredAndReady,
-              let oldE164 = tsAccountManager.localNumber?.strippedOrNil else {
-            owsFailDebug("Missing localNumber.")
-            return
-        }
-
-        guard let oldPhoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: oldE164),
-              PhoneNumberValidator().isValidForRegistration(phoneNumber: oldPhoneNumber) else {
-                  owsFailDebug("Invalid oldE164.")
-                  return
-              }
-        self.oldPhoneNumber = RegistrationPhoneNumber(e164: oldPhoneNumber.toE164(), userInput: oldE164)
-        guard let oldCountryState = RegistrationCountryState.countryState(forE164: oldE164) else {
-            owsFailDebug("Missing oldCountryState.")
-            return
-        }
-        self.oldCountryState = oldCountryState
-
-        var testE164s = [
-            "+447897025383",
-            "+447897014056",
-            "+447897013389",
-            "+447897016764",
-            "+447897016072"
-        ]
-        testE164s = testE164s.filter { $0 != oldE164 }
-        guard let newE164 = testE164s.first else {
-            owsFailDebug("Missing newE164.")
-            return
-        }
-
-        guard let newPhoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: newE164),
-              PhoneNumberValidator().isValidForRegistration(phoneNumber: newPhoneNumber) else {
-                  owsFailDebug("Invalid newE164.")
-                  return
-              }
-        self.newPhoneNumber = RegistrationPhoneNumber(e164: newPhoneNumber.toE164(), userInput: newE164)
-        guard let newCountryState = RegistrationCountryState.countryState(forE164: newE164) else {
-            owsFailDebug("Missing newCountryState.")
-            return
-        }
-        self.newCountryState = newCountryState
-#endif
     }
 
 // MARK: -
