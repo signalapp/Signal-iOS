@@ -4,86 +4,130 @@
 
 import Foundation
 
-fileprivate extension OWSSignalService {
+extension Notification.Name {
+    public static var isCensorshipCircumventionActiveDidChange: Self {
+        return .init(rawValue: OWSSignalService.isCensorshipCircumventionActiveDidChangeNotificationName)
+    }
+}
 
-    enum SignalServiceType {
-        case mainSignalService
-        case storageService
-        case cdn0
-        case cdn2
-        case cds(host: String, censorshipCircumventionPrefix: String)
-        case remoteAttestation(host: String, censorshipCircumventionPrefix: String)
-        case kbs
-        case updates
-        case updates2
+@objc
+public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
 
-        static func type(forCdnNumber cdnNumber: UInt32) -> SignalServiceType {
-            switch cdnNumber {
-            case 0:
-                return cdn0
-            case 2:
-                return cdn2
-            default:
-                owsFailDebug("Unrecognized CDN number configuration requested: \(cdnNumber)")
-                return cdn2
+    // MARK: - Protocol Conformance
+
+    @objc
+    public let keyValueStore = SDSKeyValueStore(collection: "kTSStorageManager_OWSSignalService")
+
+    @objc
+    public static var isCensorshipCircumventionActiveDidChangeNotificationName: String {
+        return "NSNotificationNameIsCensorshipCircumventionActiveDidChange"
+    }
+
+    @Atomic
+    public private(set) var isCensorshipCircumventionActive: Bool = false {
+        didSet {
+            guard isCensorshipCircumventionActive != oldValue else {
+                return
+            }
+            NotificationCenter.default.postNotificationNameAsync(
+                .isCensorshipCircumventionActiveDidChange,
+                object: nil,
+                userInfo: nil
+            )
+        }
+    }
+
+    @objc
+    @Atomic
+    public private(set) var hasCensoredPhoneNumber: Bool = false
+
+    @objc
+    private let isCensorshipCircumventionManuallyActivatedLock = UnfairLock()
+
+    @objc
+    public var isCensorshipCircumventionManuallyActivated: Bool {
+        get {
+            isCensorshipCircumventionManuallyActivatedLock.withLock {
+                readIsCensorshipCircumventionManuallyActivated()
+            }
+        }
+        set {
+            isCensorshipCircumventionManuallyActivatedLock.withLock {
+                writeIsCensorshipCircumventionManuallyActivated(newValue)
             }
         }
     }
 
-    enum SerializerType {
-        case json
-        case binary
-    }
+    @objc
+    private let isCensorshipCircumventionManuallyDisabledLock = UnfairLock()
 
-    struct SignalServiceInfo {
-        let baseUrl: URL
-        let censorshipCircumventionPathPrefix: String
-        let shouldHandleRemoteDeprecation: Bool
-    }
-
-    func signalServiceInfo(for signalServiceType: SignalServiceType) -> SignalServiceInfo {
-        switch signalServiceType {
-        case .mainSignalService:
-            return SignalServiceInfo(baseUrl: URL(string: TSConstants.mainServiceURL)!,
-                                     censorshipCircumventionPathPrefix: TSConstants.serviceCensorshipPrefix,
-                                     shouldHandleRemoteDeprecation: true)
-        case .storageService:
-            return SignalServiceInfo(baseUrl: URL(string: TSConstants.storageServiceURL)!,
-                                     censorshipCircumventionPathPrefix: TSConstants.storageServiceCensorshipPrefix,
-                                     shouldHandleRemoteDeprecation: true)
-        case .cdn0:
-            return SignalServiceInfo(baseUrl: URL(string: TSConstants.textSecureCDN0ServerURL)!,
-                                     censorshipCircumventionPathPrefix: TSConstants.cdn0CensorshipPrefix,
-                                     shouldHandleRemoteDeprecation: false)
-        case .cdn2:
-            return SignalServiceInfo(baseUrl: URL(string: TSConstants.textSecureCDN2ServerURL)!,
-                                     censorshipCircumventionPathPrefix: TSConstants.cdn2CensorshipPrefix,
-                                     shouldHandleRemoteDeprecation: false)
-        case .cds(let host, let censorshipCircumventionPrefix):
-            return SignalServiceInfo(baseUrl: URL(string: host)!,
-                                     censorshipCircumventionPathPrefix: censorshipCircumventionPrefix,
-                                     shouldHandleRemoteDeprecation: false)
-        case .remoteAttestation(let host, let censorshipCircumventionPrefix):
-            return SignalServiceInfo(baseUrl: URL(string: host)!,
-                                     censorshipCircumventionPathPrefix: censorshipCircumventionPrefix,
-                                     shouldHandleRemoteDeprecation: false)
-        case .kbs:
-            return SignalServiceInfo(baseUrl: URL(string: TSConstants.keyBackupURL)!,
-                                     censorshipCircumventionPathPrefix: TSConstants.keyBackupCensorshipPrefix,
-                                     shouldHandleRemoteDeprecation: true)
-        case .updates:
-            return SignalServiceInfo(baseUrl: URL(string: TSConstants.updatesURL)!,
-                                     censorshipCircumventionPathPrefix: "unimplemented",
-                                     shouldHandleRemoteDeprecation: false)
-        case .updates2:
-            return SignalServiceInfo(baseUrl: URL(string: TSConstants.updates2URL)!,
-                                     censorshipCircumventionPathPrefix: "unimplemented", // BADGES TODO
-                                     shouldHandleRemoteDeprecation: false)
+    @objc
+    public var isCensorshipCircumventionManuallyDisabled: Bool {
+        get {
+            isCensorshipCircumventionManuallyDisabledLock.withLock {
+                readIsCensorshipCircumventionManuallyDisabled()
+            }
+        }
+        set {
+            isCensorshipCircumventionManuallyDisabledLock.withLock {
+                writeIsCensorshipCircumventionManuallyDisabled(newValue)
+            }
         }
     }
 
-    private func buildUrlSession(for signalServiceType: SignalServiceType) -> OWSURLSessionProtocol {
-        let signalServiceInfo = self.signalServiceInfo(for: signalServiceType)
+    @objc
+    private let manualCensorshipCircumventionCountryCodeLock = UnfairLock()
+
+    @objc
+    public var manualCensorshipCircumventionCountryCode: String? {
+        get {
+            manualCensorshipCircumventionCountryCodeLock.withLock {
+                readCensorshipCircumventionCountryCode()
+            }
+        }
+        set {
+            manualCensorshipCircumventionCountryCodeLock.withLock {
+                writeManualCensorshipCircumventionCountryCode(newValue)
+            }
+        }
+    }
+
+    @objc
+    public var domainFrontBaseURL: URL {
+        owsAssertDebug(self.isCensorshipCircumventionActive)
+        return self.buildCensorshipConfiguration().domainFrontBaseURL
+    }
+
+    @objc
+    public func buildCensorshipConfiguration() -> OWSCensorshipConfiguration {
+        owsAssertDebug(self.isCensorshipCircumventionActive)
+
+        if self.isCensorshipCircumventionManuallyActivated {
+            guard
+                let countryCode = self.manualCensorshipCircumventionCountryCode,
+                !countryCode.isEmpty
+            else {
+                owsFailDebug("manualCensorshipCircumventionCountryCode was unexpectedly 0")
+                return .default()
+            }
+
+            let configuration = OWSCensorshipConfiguration(countryCode: countryCode)
+
+            return configuration
+        }
+
+        guard
+            let localNumber = TSAccountManager.localNumber,
+            let configuration = OWSCensorshipConfiguration(phoneNumber: localNumber)
+        else {
+            return .default()
+        }
+        return configuration
+    }
+
+    @objc
+    public func typeUnsafe_buildUrlSession(for signalServiceType: Any) -> Any {
+        let signalServiceInfo = (signalServiceType as! SignalServiceType).signalServiceInfo()
         let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
         let urlSession: OWSURLSessionProtocol
         if isCensorshipCircumventionActive {
@@ -110,7 +154,7 @@ fileprivate extension OWSSignalService {
         } else {
             let baseUrl = signalServiceInfo.baseUrl
             let securityPolicy: OWSHTTPSecurityPolicy
-            switch signalServiceType {
+            switch signalServiceType as! SignalServiceType {
             case .updates:
                 securityPolicy = OWSURLSession.defaultSecurityPolicy
             default:
@@ -126,45 +170,152 @@ fileprivate extension OWSSignalService {
         urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation
         return urlSession
     }
+
+    // MARK: - Internal Implementation
+
+    public override init() {
+        super.init()
+
+        observeNotifications()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    // MARK: Setup
+
+    @objc
+    public func warmCaches() {
+        updateHasCensoredPhoneNumber()
+        updateIsCensorshipCircumventionActive()
+    }
+
+    private func observeNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange(_:)),
+            name: .registrationStateDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(localNumberDidChange(_:)),
+            name: .localNumberDidChange,
+            object: nil
+        )
+    }
+
+    private func updateHasCensoredPhoneNumber() {
+        let localNumber = TSAccountManager.localNumber
+
+        if let localNumber = localNumber {
+            self.hasCensoredPhoneNumber = OWSCensorshipConfiguration.isCensoredPhoneNumber(localNumber)
+        } else {
+            OWSLogger.error("no known phone number to check for censorship.")
+            self.hasCensoredPhoneNumber = false
+        }
+
+        updateIsCensorshipCircumventionActive()
+    }
+
+    private func updateIsCensorshipCircumventionActive() {
+        if self.isCensorshipCircumventionManuallyDisabled {
+            self.isCensorshipCircumventionActive = false
+        } else if self.isCensorshipCircumventionManuallyActivated {
+            self.isCensorshipCircumventionActive = true
+        } else if self.hasCensoredPhoneNumber {
+            self.isCensorshipCircumventionActive = true
+        } else {
+            self.isCensorshipCircumventionActive = false
+        }
+    }
+
+    // MARK: - Database operations
+
+    private func readIsCensorshipCircumventionManuallyActivated() -> Bool {
+        return self.databaseStorage.read { transaction in
+            return self.keyValueStore.getBool(
+                Constants.isCensorshipCircumventionManuallyActivatedKey,
+                defaultValue: false,
+                transaction: transaction
+            )
+        }
+    }
+
+    private func writeIsCensorshipCircumventionManuallyActivated(_ value: Bool) {
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.setBool(
+                value,
+                key: Constants.isCensorshipCircumventionManuallyActivatedKey,
+                transaction: transaction
+            )
+        }
+        updateIsCensorshipCircumventionActive()
+    }
+
+    private func readIsCensorshipCircumventionManuallyDisabled() -> Bool {
+        return self.databaseStorage.read { transaction in
+            return self.keyValueStore.getBool(
+                Constants.isCensorshipCircumventionManuallyDisabledKey,
+                defaultValue: false,
+                transaction: transaction
+            )
+        }
+    }
+
+    private func writeIsCensorshipCircumventionManuallyDisabled(_ value: Bool) {
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.setBool(
+                value,
+                key: Constants.isCensorshipCircumventionManuallyDisabledKey,
+                transaction: transaction
+            )
+        }
+        updateIsCensorshipCircumventionActive()
+    }
+
+    private func readCensorshipCircumventionCountryCode() -> String? {
+        return self.databaseStorage.read { transaction in
+            return self.keyValueStore.getString(
+                Constants.manualCensorshipCircumventionCountryCodeKey,
+                transaction: transaction
+            )
+        }
+    }
+
+    private func writeManualCensorshipCircumventionCountryCode(_ value: String?) {
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.setString(
+                value,
+                key: Constants.manualCensorshipCircumventionCountryCodeKey,
+                transaction: transaction
+            )
+        }
+    }
+
+    // MARK: - Events
+
+    @objc
+    private func registrationStateDidChange(_ notification: NSNotification) {
+        self.updateHasCensoredPhoneNumber()
+    }
+
+    @objc
+    private func localNumberDidChange(_ notification: NSNotification) {
+        self.updateHasCensoredPhoneNumber()
+    }
+
+    // MARK: - Constants
+
+    private enum Constants {
+        static let isCensorshipCircumventionManuallyActivatedKey = "kTSStorageManager_isCensorshipCircumventionManuallyActivated"
+        static let isCensorshipCircumventionManuallyDisabledKey = "kTSStorageManager_isCensorshipCircumventionManuallyDisabled"
+        static let manualCensorshipCircumventionCountryCodeKey = "kTSStorageManager_ManualCensorshipCircumventionCountryCode"
+    }
 }
 
-// MARK: -
-
-public extension OWSSignalService {
-
-    func urlSessionForMainSignalService() -> OWSURLSessionProtocol {
-        buildUrlSession(for: .mainSignalService)
-    }
-
-    func urlSessionForStorageService() -> OWSURLSessionProtocol {
-        buildUrlSession(for: .storageService)
-    }
-
-    func urlSessionForCdn(cdnNumber: UInt32) -> OWSURLSessionProtocol {
-        buildUrlSession(for: SignalServiceType.type(forCdnNumber: cdnNumber))
-    }
-
-    func urlSessionForCds(host: String,
-                          censorshipCircumventionPrefix: String) -> OWSURLSessionProtocol {
-        buildUrlSession(for: .cds(host: host,
-                                  censorshipCircumventionPrefix: censorshipCircumventionPrefix))
-    }
-
-    func urlSessionForRemoteAttestation(host: String,
-                                        censorshipCircumventionPrefix: String) -> OWSURLSessionProtocol {
-        buildUrlSession(for: .remoteAttestation(host: host,
-                                                censorshipCircumventionPrefix: censorshipCircumventionPrefix))
-    }
-
-    func urlSessionForKBS() -> OWSURLSessionProtocol {
-        buildUrlSession(for: .kbs)
-    }
-
-    func urlSessionForUpdates() -> OWSURLSessionProtocol {
-        buildUrlSession(for: .updates)
-    }
-
-    func urlSessionForUpdates2() -> OWSURLSessionProtocol {
-        buildUrlSession(for: .updates2)
-    }
+private enum SerializerType {
+    case json
+    case binary
 }

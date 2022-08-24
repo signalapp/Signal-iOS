@@ -60,6 +60,10 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         }
     }
 
+    // Note: not all protocol methods can be made visible to objc, but those
+    // that can be are declared so here. Objc callers must use this implementation
+    // directly and not touch the protocol.
+
     @objc
     public static var defaultSecurityPolicy: OWSHTTPSecurityPolicy {
         OWSHTTPSecurityPolicy.systemDefault()

@@ -282,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled
 {
     OWSCountryMetadata *countryMetadata = nil;
-    NSString *countryCode = OWSSignalService.shared.manualCensorshipCircumventionCountryCode;
+    NSString *countryCode = self.signalService.manualCensorshipCircumventionCountryCode;
     if (countryCode) {
         countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
     }
@@ -300,8 +300,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSAssertDebug(countryMetadata);
-    OWSSignalService.shared.manualCensorshipCircumventionCountryCode = countryCode;
-    OWSSignalService.shared.isCensorshipCircumventionManuallyActivated = isEnabled;
+    self.signalService.manualCensorshipCircumventionCountryCode = countryCode;
+    self.signalService.isCensorshipCircumventionManuallyActivated = isEnabled;
 }
 
 + (void)clearHasDismissedOffers

@@ -140,7 +140,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSSendGiftBadgeJobRecord.h>
 #import <SignalServiceKit/OWSSessionResetJobRecord.h>
-#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSStaticOutgoingMessage.h>
 #import <SignalServiceKit/OWSStickerPackSyncMessage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>

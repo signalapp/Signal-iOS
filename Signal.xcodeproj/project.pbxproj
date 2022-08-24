@@ -774,6 +774,9 @@
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		669E8FE828B4153C00043D28 /* OWSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSURLSession.swift */; };
 		669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */; };
+		669E8FED28B4177900043D28 /* OWSSignalServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */; };
+		669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEE28B417D500043D28 /* OWSSignalService.swift */; };
+		669E8FF028B4185300043D28 /* OWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
@@ -1693,7 +1696,7 @@
 		F9C5CD88289453B300548EEE /* TSPaymentRequestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAAE289453B200548EEE /* TSPaymentRequestModel.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD89289453B300548EEE /* PaymentFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAAF289453B200548EEE /* PaymentFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD8A289453B300548EEE /* TSPaymentModels.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB0289453B200548EEE /* TSPaymentModels.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CD8C289453B300548EEE /* OWSSignalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB3289453B200548EEE /* OWSSignalService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CD8C289453B300548EEE /* OWSSignalServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB3289453B200548EEE /* OWSSignalServiceProtocol.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD8D289453B300548EEE /* CaptchaChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB5289453B200548EEE /* CaptchaChallenge.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD8E289453B300548EEE /* SpamChallengeResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB6289453B200548EEE /* SpamChallengeResolver.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD8F289453B300548EEE /* SpamChallenge.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAB7289453B200548EEE /* SpamChallenge.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1706,7 +1709,6 @@
 		F9C5CD96289453B300548EEE /* SignalServiceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABE289453B200548EEE /* SignalServiceClient.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD97289453B300548EEE /* ProxiedContentDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD98289453B300548EEE /* OWSCountryMetadata.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC0289453B200548EEE /* OWSCountryMetadata.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CD99289453B400548EEE /* OWSSignalService.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC1289453B200548EEE /* OWSSignalService.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD9A289453B400548EEE /* OWSWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC3289453B200548EEE /* OWSWebSocket.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD9B289453B400548EEE /* SocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC4289453B200548EEE /* SocketManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CD9C289453B400548EEE /* OWSCensorshipConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAC5289453B200548EEE /* OWSCensorshipConfiguration.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1754,7 +1756,6 @@
 		F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC7289453B400548EEE /* OWSCountryMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAF4289453B200548EEE /* OWSCountryMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDC8289453B400548EEE /* MessageSenderJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDC9289453B400548EEE /* OWSSignalService.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAF6289453B200548EEE /* OWSSignalService.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDCA289453B400548EEE /* ContentProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF7289453B200548EEE /* ContentProxy.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDCB289453B400548EEE /* OWSQueues.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAF9289453B200548EEE /* OWSQueues.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDCC289453B400548EEE /* OWSFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAFA289453B200548EEE /* OWSFileSystem.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3015,6 +3016,8 @@
 		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
 		669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionMock.swift; sourceTree = "<group>"; };
 		669E8FE728B4153B00043D28 /* OWSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSession.swift; sourceTree = "<group>"; };
+		669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalServiceMock.swift; sourceTree = "<group>"; };
+		669E8FEE28B417D500043D28 /* OWSSignalService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalService.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -4060,7 +4063,7 @@
 		F9C5CAAE289453B200548EEE /* TSPaymentRequestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPaymentRequestModel.m; sourceTree = "<group>"; };
 		F9C5CAAF289453B200548EEE /* PaymentFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentFinder.swift; sourceTree = "<group>"; };
 		F9C5CAB0289453B200548EEE /* TSPaymentModels.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPaymentModels.m; sourceTree = "<group>"; };
-		F9C5CAB3289453B200548EEE /* OWSSignalService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalService.swift; sourceTree = "<group>"; };
+		F9C5CAB3289453B200548EEE /* OWSSignalServiceProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalServiceProtocol.swift; sourceTree = "<group>"; };
 		F9C5CAB5289453B200548EEE /* CaptchaChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CaptchaChallenge.swift; sourceTree = "<group>"; };
 		F9C5CAB6289453B200548EEE /* SpamChallengeResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpamChallengeResolver.swift; sourceTree = "<group>"; };
 		F9C5CAB7289453B200548EEE /* SpamChallenge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpamChallenge.swift; sourceTree = "<group>"; };
@@ -4073,7 +4076,6 @@
 		F9C5CABE289453B200548EEE /* SignalServiceClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceClient.swift; sourceTree = "<group>"; };
 		F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProxiedContentDownloader.swift; sourceTree = "<group>"; };
 		F9C5CAC0289453B200548EEE /* OWSCountryMetadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCountryMetadata.m; sourceTree = "<group>"; };
-		F9C5CAC1289453B200548EEE /* OWSSignalService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSignalService.m; sourceTree = "<group>"; };
 		F9C5CAC3289453B200548EEE /* OWSWebSocket.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSWebSocket.swift; sourceTree = "<group>"; };
 		F9C5CAC4289453B200548EEE /* SocketManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocketManager.swift; sourceTree = "<group>"; };
 		F9C5CAC5289453B200548EEE /* OWSCensorshipConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSCensorshipConfiguration.m; sourceTree = "<group>"; };
@@ -4121,7 +4123,6 @@
 		F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionProtocol.swift; sourceTree = "<group>"; };
 		F9C5CAF4289453B200548EEE /* OWSCountryMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCountryMetadata.h; sourceTree = "<group>"; };
 		F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSenderJobQueue.swift; sourceTree = "<group>"; };
-		F9C5CAF6289453B200548EEE /* OWSSignalService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSignalService.h; sourceTree = "<group>"; };
 		F9C5CAF7289453B200548EEE /* ContentProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentProxy.swift; sourceTree = "<group>"; };
 		F9C5CAF9289453B200548EEE /* OWSQueues.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQueues.h; sourceTree = "<group>"; };
 		F9C5CAFA289453B200548EEE /* OWSFileSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFileSystem.m; sourceTree = "<group>"; };
@@ -7805,9 +7806,9 @@
 				F9C5CAF2289453B200548EEE /* OWSHttpHeaders.swift */,
 				F9C5CABA289453B200548EEE /* OWSMultipart.h */,
 				F9C5CAC6289453B200548EEE /* OWSMultipart.m */,
-				F9C5CAF6289453B200548EEE /* OWSSignalService.h */,
-				F9C5CAC1289453B200548EEE /* OWSSignalService.m */,
-				F9C5CAB3289453B200548EEE /* OWSSignalService.swift */,
+				669E8FEE28B417D500043D28 /* OWSSignalService.swift */,
+				669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */,
+				F9C5CAB3289453B200548EEE /* OWSSignalServiceProtocol.swift */,
 				669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */,
 				669E8FE728B4153B00043D28 /* OWSURLSession.swift */,
 				669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */,
@@ -8306,7 +8307,6 @@
 				F9C5CDB7289453B400548EEE /* OWSRequestFactory.h in Headers */,
 				F9C5CD69289453B300548EEE /* OWSSendGiftBadgeJobRecord.h in Headers */,
 				F9C5CD64289453B300548EEE /* OWSSessionResetJobRecord.h in Headers */,
-				F9C5CDC9289453B400548EEE /* OWSSignalService.h in Headers */,
 				F9C5CBE9289453B300548EEE /* OWSStaticOutgoingMessage.h in Headers */,
 				F9C5CD09289453B300548EEE /* OWSStickerPackSyncMessage.h in Headers */,
 				F9C5CBBE289453B300548EEE /* OWSSyncConfigurationMessage.h in Headers */,
@@ -10705,8 +10705,9 @@
 				F9C5CD76289453B300548EEE /* OWSSendGiftBadgeJobRecord.m in Sources */,
 				F9C5CD62289453B300548EEE /* OWSSessionResetJobRecord+SDS.swift in Sources */,
 				F9C5CD6D289453B300548EEE /* OWSSessionResetJobRecord.m in Sources */,
-				F9C5CD99289453B400548EEE /* OWSSignalService.m in Sources */,
-				F9C5CD8C289453B300548EEE /* OWSSignalService.swift in Sources */,
+				669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */,
+				669E8FED28B4177900043D28 /* OWSSignalServiceMock.swift in Sources */,
+				F9C5CD8C289453B300548EEE /* OWSSignalServiceProtocol.swift in Sources */,
 				F9C5CBFE289453B300548EEE /* OWSStaticOutgoingMessage.m in Sources */,
 				F9C5CCF0289453B300548EEE /* OWSStickerPackSyncMessage.m in Sources */,
 				F9C5CBAD289453B300548EEE /* OWSSyncConfigurationMessage.m in Sources */,
@@ -10730,6 +10731,7 @@
 				F9C5CDBF289453B400548EEE /* OWSUploadOperation.m in Sources */,
 				669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */,
 				669E8FE828B4153C00043D28 /* OWSURLSession.swift in Sources */,
+				669E8FF028B4185300043D28 /* OWSURLSessionMock.swift in Sources */,
 				F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */,
 				F9C5CE41289453B400548EEE /* OWSUserProfile+SDS.swift in Sources */,
 				F9C5CE45289453B400548EEE /* OWSUserProfile.m in Sources */,

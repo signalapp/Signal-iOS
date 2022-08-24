@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUpload.h"
@@ -7,7 +7,6 @@
 #import "MIMETypeUtil.h"
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
-#import "OWSSignalService.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/Cryptography.h>

@@ -290,12 +290,12 @@ public extension NSObject {
         SSKEnvironment.shared.appExpiryRef
     }
 
-    final var signalService: OWSSignalService {
-        .shared()
+    final var signalService: OWSSignalServiceProtocol {
+        SSKEnvironment.shared.signalServiceRef
     }
 
-    static var signalService: OWSSignalService {
-        .shared()
+    static var signalService: OWSSignalServiceProtocol {
+        SSKEnvironment.shared.signalServiceRef
     }
 
     final var accountServiceClient: AccountServiceClient {
@@ -779,12 +779,12 @@ public extension Dependencies {
         SSKEnvironment.shared.appExpiryRef
     }
 
-    var signalService: OWSSignalService {
-        .shared()
+    var signalService: OWSSignalServiceProtocol {
+        SSKEnvironment.shared.signalServiceRef
     }
 
-    static var signalService: OWSSignalService {
-        .shared()
+    static var signalService: OWSSignalServiceProtocol {
+        SSKEnvironment.shared.signalServiceRef
     }
 
     var accountServiceClient: AccountServiceClient {

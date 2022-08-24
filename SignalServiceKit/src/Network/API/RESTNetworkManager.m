@@ -32,10 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
     
     self.pool = [NSMutableArray new];
 
-    [NSNotificationCenter.defaultCenter addObserver:self
-                                           selector:@selector(isCensorshipCircumventionActiveDidChange)
-                                               name:NSNotificationNameIsCensorshipCircumventionActiveDidChange
-                                             object:nil];
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(isCensorshipCircumventionActiveDidChange)
+               name:OWSSignalService.isCensorshipCircumventionActiveDidChangeNotificationName
+             object:nil];
 
     return self;
 }

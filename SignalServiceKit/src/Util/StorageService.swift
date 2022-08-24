@@ -377,7 +377,7 @@ public struct StorageService: Dependencies {
     // MARK: - Dependencies
 
     private static var urlSession: OWSURLSessionProtocol {
-        return OWSSignalService.shared().urlSessionForStorageService()
+        return self.signalService.urlSessionForStorageService()
     }
 
     // MARK: - Storage Requests

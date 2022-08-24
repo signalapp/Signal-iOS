@@ -48,6 +48,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol MobileCoinHelper;
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
+@protocol OWSSignalServiceProtocol;
 @protocol OWSTypingIndicators;
 @protocol OWSUDManager;
 @protocol PaymentsCurrencies;
@@ -99,6 +100,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                          stickerManager:(StickerManager *)stickerManager
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
+                          signalService:(id<OWSSignalServiceProtocol>)signalService
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
@@ -161,6 +163,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicatorsRef;
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloadsRef;
 @property (nonatomic, readonly) SignalServiceAddressCache *signalServiceAddressCacheRef;
+@property (nonatomic, readonly) id<OWSSignalServiceProtocol> signalServiceRef;
 @property (nonatomic, readonly) AccountServiceClient *accountServiceClientRef;
 @property (nonatomic, readonly) id<StorageServiceManagerProtocol> storageServiceManagerRef;
 @property (nonatomic, readonly) id<GroupsV2> groupsV2Ref;
