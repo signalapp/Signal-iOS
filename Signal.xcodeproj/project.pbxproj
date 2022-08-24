@@ -772,6 +772,8 @@
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
+		669E8FE828B4153C00043D28 /* OWSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSURLSession.swift */; };
+		669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
@@ -1096,7 +1098,7 @@
 		F942623D289B1B5500460798 /* OWSProvisioningCipherTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F94261CA289B1B5300460798 /* OWSProvisioningCipherTest.m */; };
 		F942623E289B1B5500460798 /* OWSFingerprintTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F94261CC289B1B5300460798 /* OWSFingerprintTest.m */; };
 		F9426241289B1B5500460798 /* MessageSenderJobRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */; };
-		F9426242289B1B5500460798 /* OWSURLSessionTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D1289B1B5400460798 /* OWSURLSessionTest.swift */; };
+		F9426242289B1B5500460798 /* OWSURLBuilderUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */; };
 		F9426243289B1B5500460798 /* OWSHttpHeadersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D2289B1B5400460798 /* OWSHttpHeadersTest.swift */; };
 		F9426244289B1B5500460798 /* OWSRequestFactoryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D3289B1B5400460798 /* OWSRequestFactoryTest.swift */; };
 		F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */; };
@@ -1749,7 +1751,7 @@
 		F9C5CDC3289453B400548EEE /* OWSDeviceProvisioningService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF0289453B200548EEE /* OWSDeviceProvisioningService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC5289453B400548EEE /* OWSHttpHeaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF2289453B200548EEE /* OWSHttpHeaders.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDC6289453B400548EEE /* OWSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF3289453B200548EEE /* OWSURLSession.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
+		F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC7289453B400548EEE /* OWSCountryMetadata.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAF4289453B200548EEE /* OWSCountryMetadata.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDC8289453B400548EEE /* MessageSenderJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDC9289453B400548EEE /* OWSSignalService.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CAF6289453B200548EEE /* OWSSignalService.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3010,6 +3012,9 @@
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
+		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
+		669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionMock.swift; sourceTree = "<group>"; };
+		669E8FE728B4153B00043D28 /* OWSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSession.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3460,7 +3465,7 @@
 		F94261CA289B1B5300460798 /* OWSProvisioningCipherTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProvisioningCipherTest.m; sourceTree = "<group>"; };
 		F94261CC289B1B5300460798 /* OWSFingerprintTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSFingerprintTest.m; sourceTree = "<group>"; };
 		F94261D0289B1B5400460798 /* MessageSenderJobRecordTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSenderJobRecordTest.swift; sourceTree = "<group>"; };
-		F94261D1289B1B5400460798 /* OWSURLSessionTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionTest.swift; sourceTree = "<group>"; };
+		F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtilTest.swift; sourceTree = "<group>"; };
 		F94261D2289B1B5400460798 /* OWSHttpHeadersTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSHttpHeadersTest.swift; sourceTree = "<group>"; };
 		F94261D3289B1B5400460798 /* OWSRequestFactoryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRequestFactoryTest.swift; sourceTree = "<group>"; };
 		F94261D4289B1B5400460798 /* HTMLMetadataTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTMLMetadataTests.swift; sourceTree = "<group>"; };
@@ -4113,7 +4118,7 @@
 		F9C5CAF0289453B200548EEE /* OWSDeviceProvisioningService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioningService.swift; sourceTree = "<group>"; };
 		F9C5CAF1289453B200548EEE /* NetworkInterfaceSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceSet.swift; sourceTree = "<group>"; };
 		F9C5CAF2289453B200548EEE /* OWSHttpHeaders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSHttpHeaders.swift; sourceTree = "<group>"; };
-		F9C5CAF3289453B200548EEE /* OWSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSession.swift; sourceTree = "<group>"; };
+		F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionProtocol.swift; sourceTree = "<group>"; };
 		F9C5CAF4289453B200548EEE /* OWSCountryMetadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSCountryMetadata.h; sourceTree = "<group>"; };
 		F9C5CAF5289453B200548EEE /* MessageSenderJobQueue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSenderJobQueue.swift; sourceTree = "<group>"; };
 		F9C5CAF6289453B200548EEE /* OWSSignalService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSignalService.h; sourceTree = "<group>"; };
@@ -6804,7 +6809,7 @@
 				F94261D5289B1B5400460798 /* MessageSendJobQueueTest.swift */,
 				F94261D2289B1B5400460798 /* OWSHttpHeadersTest.swift */,
 				F94261D3289B1B5400460798 /* OWSRequestFactoryTest.swift */,
-				F94261D1289B1B5400460798 /* OWSURLSessionTest.swift */,
+				F94261D1289B1B5400460798 /* OWSURLBuilderUtilTest.swift */,
 			);
 			name = Network;
 			path = SignalServiceKit/tests/Network;
@@ -7803,7 +7808,10 @@
 				F9C5CAF6289453B200548EEE /* OWSSignalService.h */,
 				F9C5CAC1289453B200548EEE /* OWSSignalService.m */,
 				F9C5CAB3289453B200548EEE /* OWSSignalService.swift */,
-				F9C5CAF3289453B200548EEE /* OWSURLSession.swift */,
+				669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */,
+				669E8FE728B4153B00043D28 /* OWSURLSession.swift */,
+				669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */,
+				F9C5CAF3289453B200548EEE /* OWSURLSessionProtocol.swift */,
 				F9C5CABF289453B200548EEE /* ProxiedContentDownloader.swift */,
 				F9C5CABD289453B200548EEE /* ReachabilityManager.swift */,
 				F9C5CABE289453B200548EEE /* SignalServiceClient.swift */,
@@ -10720,7 +10728,9 @@
 				F9C5CDAB289453B400548EEE /* OWSUpload.m in Sources */,
 				F9C5CDA9289453B400548EEE /* OWSUpload.swift in Sources */,
 				F9C5CDBF289453B400548EEE /* OWSUploadOperation.m in Sources */,
-				F9C5CDC6289453B400548EEE /* OWSURLSession.swift in Sources */,
+				669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */,
+				669E8FE828B4153C00043D28 /* OWSURLSession.swift in Sources */,
+				F9C5CDC6289453B400548EEE /* OWSURLSessionProtocol.swift in Sources */,
 				F9C5CE41289453B400548EEE /* OWSUserProfile+SDS.swift in Sources */,
 				F9C5CE45289453B400548EEE /* OWSUserProfile.m in Sources */,
 				F9C5CDD0289453B400548EEE /* OWSUserProfile.swift in Sources */,
@@ -11000,7 +11010,7 @@
 				F942627A289B1B5600460798 /* OWSRecipientIdentityTest.swift in Sources */,
 				F9426244289B1B5500460798 /* OWSRequestFactoryTest.swift in Sources */,
 				F942629F289B1B5600460798 /* OWSUDManagerTest.swift in Sources */,
-				F9426242289B1B5500460798 /* OWSURLSessionTest.swift in Sources */,
+				F9426242289B1B5500460798 /* OWSURLBuilderUtilTest.swift in Sources */,
 				F9426280289B1B5600460798 /* PhoneNumberTest.m in Sources */,
 				F9426274289B1B5500460798 /* PhoneNumberTest.swift in Sources */,
 				F9426272289B1B5500460798 /* PhoneNumberUtilTest.m in Sources */,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -82,27 +82,31 @@ fileprivate extension OWSSignalService {
         }
     }
 
-    private func buildUrlSession(for signalServiceType: SignalServiceType) -> OWSURLSession {
+    private func buildUrlSession(for signalServiceType: SignalServiceType) -> OWSURLSessionProtocol {
         let signalServiceInfo = self.signalServiceInfo(for: signalServiceType)
         let isCensorshipCircumventionActive = self.isCensorshipCircumventionActive
-        let urlSession: OWSURLSession
+        let urlSession: OWSURLSessionProtocol
         if isCensorshipCircumventionActive {
             let censorshipConfiguration = buildCensorshipConfiguration()
             let frontingURLWithoutPathPrefix = censorshipConfiguration.domainFrontBaseURL
             let frontingPathPrefix = signalServiceInfo.censorshipCircumventionPathPrefix
             let frontingURLWithPathPrefix = frontingURLWithoutPathPrefix.appendingPathComponent(frontingPathPrefix)
             let unfrontedBaseUrl = signalServiceInfo.baseUrl
-            let frontingInfo = OWSURLSession.FrontingInfo(frontingURLWithoutPathPrefix: frontingURLWithoutPathPrefix,
-                                                          frontingURLWithPathPrefix: frontingURLWithPathPrefix,
-                                                          unfrontedBaseUrl: unfrontedBaseUrl)
+            let frontingInfo = OWSUrlFrontingInfo(
+                frontingURLWithoutPathPrefix: frontingURLWithoutPathPrefix,
+                frontingURLWithPathPrefix: frontingURLWithPathPrefix,
+                unfrontedBaseUrl: unfrontedBaseUrl
+            )
             let baseUrl = frontingURLWithPathPrefix
             let securityPolicy = censorshipConfiguration.domainFrontSecurityPolicy
             let extraHeaders = ["Host": TSConstants.censorshipReflectorHost]
-            urlSession = OWSURLSession(baseUrl: baseUrl,
-                                       frontingInfo: frontingInfo,
-                                       securityPolicy: securityPolicy,
-                                       configuration: OWSURLSession.defaultConfigurationWithoutCaching,
-                                       extraHeaders: extraHeaders)
+            urlSession = OWSURLSession(
+                baseUrl: baseUrl,
+                frontingInfo: frontingInfo,
+                securityPolicy: securityPolicy,
+                configuration: OWSURLSession.defaultConfigurationWithoutCaching,
+                extraHeaders: extraHeaders
+            )
         } else {
             let baseUrl = signalServiceInfo.baseUrl
             let securityPolicy: OWSHTTPSecurityPolicy
@@ -112,10 +116,12 @@ fileprivate extension OWSSignalService {
             default:
                 securityPolicy = OWSURLSession.signalServiceSecurityPolicy
             }
-            urlSession = OWSURLSession(baseUrl: baseUrl,
-                                       securityPolicy: securityPolicy,
-                                       configuration: OWSURLSession.defaultConfigurationWithoutCaching,
-                                       extraHeaders: [:])
+            urlSession = OWSURLSession(
+                baseUrl: baseUrl,
+                securityPolicy: securityPolicy,
+                configuration: OWSURLSession.defaultConfigurationWithoutCaching,
+                extraHeaders: [:]
+            )
         }
         urlSession.shouldHandleRemoteDeprecation = signalServiceInfo.shouldHandleRemoteDeprecation
         return urlSession
@@ -124,43 +130,41 @@ fileprivate extension OWSSignalService {
 
 // MARK: -
 
-@objc
 public extension OWSSignalService {
 
-    func urlSessionForMainSignalService() -> OWSURLSession {
+    func urlSessionForMainSignalService() -> OWSURLSessionProtocol {
         buildUrlSession(for: .mainSignalService)
     }
 
-    func urlSessionForStorageService() -> OWSURLSession {
+    func urlSessionForStorageService() -> OWSURLSessionProtocol {
         buildUrlSession(for: .storageService)
     }
 
-    @objc(urlSessionForCdnNumber:)
-    func urlSessionForCdn(cdnNumber: UInt32) -> OWSURLSession {
+    func urlSessionForCdn(cdnNumber: UInt32) -> OWSURLSessionProtocol {
         buildUrlSession(for: SignalServiceType.type(forCdnNumber: cdnNumber))
     }
 
     func urlSessionForCds(host: String,
-                          censorshipCircumventionPrefix: String) -> OWSURLSession {
+                          censorshipCircumventionPrefix: String) -> OWSURLSessionProtocol {
         buildUrlSession(for: .cds(host: host,
                                   censorshipCircumventionPrefix: censorshipCircumventionPrefix))
     }
 
     func urlSessionForRemoteAttestation(host: String,
-                                        censorshipCircumventionPrefix: String) -> OWSURLSession {
+                                        censorshipCircumventionPrefix: String) -> OWSURLSessionProtocol {
         buildUrlSession(for: .remoteAttestation(host: host,
                                                 censorshipCircumventionPrefix: censorshipCircumventionPrefix))
     }
 
-    func urlSessionForKBS() -> OWSURLSession {
+    func urlSessionForKBS() -> OWSURLSessionProtocol {
         buildUrlSession(for: .kbs)
     }
 
-    func urlSessionForUpdates() -> OWSURLSession {
+    func urlSessionForUpdates() -> OWSURLSessionProtocol {
         buildUrlSession(for: .updates)
     }
 
-    func urlSessionForUpdates2() -> OWSURLSession {
+    func urlSessionForUpdates2() -> OWSURLSessionProtocol {
         buildUrlSession(for: .updates2)
     }
 }

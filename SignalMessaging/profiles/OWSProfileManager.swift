@@ -374,7 +374,7 @@ extension OWSProfileManager {
 
 extension OWSProfileManager {
 
-    private class var avatarUrlSession: OWSURLSession {
+    private class var avatarUrlSession: OWSURLSessionProtocol {
         return OWSSignalService.shared().urlSessionForCdn(cdnNumber: 0)
     }
     @objc

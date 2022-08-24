@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -8,7 +8,7 @@ extern NSNotificationName const NSNotificationNameIsCensorshipCircumventionActiv
 
 @class AFHTTPSessionManager;
 @class OWSCensorshipConfiguration;
-@class OWSURLSession;
+@class OWSURLSessionProtocol;
 @class SDSKeyValueStore;
 @class TSAccountManager;
 

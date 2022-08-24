@@ -9,7 +9,7 @@ import LibSignalClient
 @objc
 public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
-    private var urlSession: OWSURLSession {
+    private var urlSession: OWSURLSessionProtocol {
         return OWSSignalService.shared().urlSessionForStorageService()
     }
 

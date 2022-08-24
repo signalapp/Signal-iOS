@@ -425,7 +425,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
 
     // MARK: - Private, Networking
 
-    private func buildOWSURLSession() -> OWSURLSession {
+    private func buildOWSURLSession() -> OWSURLSessionProtocol {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.urlCache = nil
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
@@ -436,11 +436,13 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         let userAgentString = "WhatsApp/2"
         let extraHeaders: [String: String] = [OWSHttpHeaders.userAgentHeaderKey: userAgentString]
 
-        let urlSession = OWSURLSession(baseUrl: nil,
-                                       securityPolicy: OWSURLSession.defaultSecurityPolicy,
-                                       configuration: sessionConfig,
-                                       extraHeaders: extraHeaders,
-                                       maxResponseSize: Self.maxFetchedContentSize)
+        let urlSession = OWSURLSession(
+            baseUrl: nil,
+            securityPolicy: OWSURLSession.defaultSecurityPolicy,
+            configuration: sessionConfig,
+            extraHeaders: extraHeaders,
+            maxResponseSize: Self.maxFetchedContentSize
+        )
         urlSession.allowRedirects = true
         urlSession.customRedirectHandler = { request in
             guard request.url?.isPermittedLinkPreviewUrl() == true else {

@@ -37,11 +37,11 @@ public class OWSUpload: NSObject {
 
 fileprivate extension OWSUpload {
 
-    static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSession {
+    static func cdnUrlSession(forCdnNumber cdnNumber: UInt32) -> OWSURLSessionProtocol {
         signalService.urlSessionForCdn(cdnNumber: cdnNumber)
     }
 
-    static func cdn0UrlSession() -> OWSURLSession {
+    static func cdn0UrlSession() -> OWSURLSessionProtocol {
         signalService.urlSessionForCdn(cdnNumber: 0)
     }
 }

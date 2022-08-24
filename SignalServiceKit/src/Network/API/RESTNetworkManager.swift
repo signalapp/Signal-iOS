@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,7 @@ public extension RESTNetworkManager {
 @objc
 public class RESTSessionManager: NSObject {
 
-    private let urlSession: OWSURLSession
+    private let urlSession: OWSURLSessionProtocol
     @objc
     public let createdDate = Date()
 
@@ -75,7 +75,7 @@ public class RESTSessionManager: NSObject {
 
 // MARK: -
 
-extension OWSURLSession {
+extension OWSURLSessionProtocol {
     public func promiseForTSRequest(_ rawRequest: TSRequest) -> Promise<HTTPResponse> {
 
         guard let rawRequestUrl = rawRequest.url else {

@@ -36,13 +36,15 @@ public class DebugLogUploader: NSObject {
         }
     }
 
-    private func buildOWSURLSession() -> OWSURLSession {
+    private func buildOWSURLSession() -> OWSURLSessionProtocol {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.urlCache = nil
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
-        let urlSession = OWSURLSession(baseUrl: nil,
-                                       securityPolicy: OWSURLSession.defaultSecurityPolicy,
-                                       configuration: sessionConfig)
+        let urlSession = OWSURLSession(
+            baseUrl: nil,
+            securityPolicy: OWSURLSession.defaultSecurityPolicy,
+            configuration: sessionConfig
+        )
         return urlSession
     }
 

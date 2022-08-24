@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,16 +11,18 @@ public class GiphyAPI: NSObject {
 
     private static let kGiphyBaseURL = URL(string: "https://api.giphy.com/")!
 
-    private static func buildURLSession() -> OWSURLSession {
+    private static func buildURLSession() -> OWSURLSessionProtocol {
         let configuration = ContentProxy.sessionConfiguration()
 
         // Don't use any caching to protect privacy of these requests.
         configuration.urlCache = nil
         configuration.requestCachePolicy = .reloadIgnoringCacheData
 
-        return OWSURLSession(baseUrl: kGiphyBaseURL,
-                             securityPolicy: OWSURLSession.defaultSecurityPolicy,
-                             configuration: configuration)
+        return OWSURLSession(
+            baseUrl: kGiphyBaseURL,
+            securityPolicy: OWSURLSession.defaultSecurityPolicy,
+            configuration: configuration
+        )
     }
 
     // MARK: Search
