@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     MockSSKEnvironment *instance = [[self alloc] init];
     [self setShared:instance];
-    [instance configure];
+    [instance configureGrdb];
 
     [instance warmCaches];
 }
@@ -168,40 +168,12 @@ NS_ASSUME_NONNULL_BEGIN
     [super setContactsManagerRef:contactsManager];
 }
 
-- (void)configure
-{
-    __block dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    [self configureGrdb].done(^(id value) {
-        OWSAssertIsOnMainThread();
-
-        dispatch_semaphore_signal(semaphore);
-    });
-
-    // Registering extensions is a complicated process than can move
-    // on and off the main thread.  While we wait for it to complete,
-    // we need to process the run loop so that the work on the main
-    // thread can be completed.
-    while (YES) {
-        // Wait up to 10 ms.
-        BOOL success
-        = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_MSEC))) == 0;
-        if (success) {
-            break;
-        }
-
-        // Process a single "source" (e.g. item) on the default run loop.
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0.0, false);
-    }
-}
-
-- (AnyPromise *)configureGrdb
+- (void)configureGrdb
 {
     OWSAssertIsOnMainThread();
 
     GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
     (void)[grdbSchemaMigrator runSchemaMigrations];
-
-    return [AnyPromise promiseWithValue:@(1)];
 }
 
 @end
