@@ -268,16 +268,21 @@ extension ConversationViewController {
         AssertIsOnMainThread()
         owsAssertDebug(hasViewWillAppearEverBegun)
 
+        let quotedReply: OWSQuotedReplyModel?
+        if let draftReply = draftReply {
+            quotedReply = buildQuotedReply(draftReply)
+        } else {
+            quotedReply = nil
+        }
+
         let inputToolbar = ConversationInputToolbar(conversationStyle: conversationStyle,
                                                     mediaCache: mediaCache,
                                                     messageDraft: messageDraft,
+                                                    quotedReply: quotedReply,
                                                     inputToolbarDelegate: self,
                                                     inputTextViewDelegate: self,
                                                     mentionDelegate: self)
         inputToolbar.accessibilityIdentifier = "inputToolbar"
-        if let draftReply = draftReply, let quotedReply = buildQuotedReply(draftReply) {
-            inputToolbar.quotedReply = quotedReply
-        }
         if let voiceMemoDraft = voiceMemoDraft {
             inputToolbar.showVoiceMemoDraft(voiceMemoDraft)
         }

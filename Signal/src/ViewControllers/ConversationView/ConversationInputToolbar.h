@@ -84,6 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
                                mediaCache:(CVMediaCache *)mediaCache
                              messageDraft:(nullable MessageBody *)messageDraft
+                              quotedReply:(nullable OWSQuotedReplyModel *)quotedReply
                      inputToolbarDelegate:(id<ConversationInputToolbarDelegate>)inputToolbarDelegate
                     inputTextViewDelegate:(id<ConversationInputTextViewDelegate>)inputTextViewDelegate
                           mentionDelegate:(id<MentionTextViewDelegate>)mentionDelegate NS_DESIGNATED_INITIALIZER;
