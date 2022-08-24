@@ -110,7 +110,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         result.setCircularGlow(with: glowConfiguration)
         result.layer.masksToBounds = false
         result.tintColor = .white
-        result.addTarget(self, action: #selector(createNewDM), for: .touchUpInside)
+        result.addTarget(self, action: #selector(createNewConversation), for: .touchUpInside)
         
         return result
     }()
@@ -731,17 +731,16 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         self.navigationController?.setViewControllers([ self, searchController ], animated: true)
     }
     
-//    @objc func joinOpenGroup() {
-//        let joinOpenGroupVC: JoinOpenGroupVC = JoinOpenGroupVC()
-//        let navigationController: OWSNavigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
-//
-//        if UIDevice.current.isIPad {
-//            navigationController.modalPresentationStyle = .fullScreen
-//        }
-//
-//        present(navigationController, animated: true, completion: nil)
-//    }
-//
+    @objc func createNewConversation() {
+        let newConversationVC = NewConversationVC()
+        let navigationController = OWSNavigationController(rootViewController: newConversationVC)
+        if UIDevice.current.isIPad {
+            navigationController.modalPresentationStyle = .fullScreen
+        }
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
+        present(navigationController, animated: true, completion: nil)
+    }
+    
     @objc func createNewDM() {
         let newDMVC = NewDMVC()
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
@@ -762,13 +761,4 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
-    
-//    @objc func createClosedGroup() {
-//        let newClosedGroupVC = NewClosedGroupVC()
-//        let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
-//        if UIDevice.current.isIPad {
-//            navigationController.modalPresentationStyle = .fullScreen
-//        }
-//        present(navigationController, animated: true, completion: nil)
-//    }
 }

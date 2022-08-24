@@ -24,6 +24,7 @@ class BaseVC : UIViewController {
 
     override func viewDidLoad() {
         setNeedsStatusBarAppearanceUpdate()
+        view.backgroundColor = isLightMode ? UIColor(hex: 0xF9F9F9) : UIColor(hex: 0x1B1B1B)
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
     }
@@ -51,7 +52,7 @@ class BaseVC : UIViewController {
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = Colors.navigationBarBackground
+            appearance.backgroundColor = hasGradient ? Colors.navigationBarBackground : view.backgroundColor
             appearance.shadowColor = .clear
             navigationBar.standardAppearance = appearance;
             navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
@@ -59,7 +60,7 @@ class BaseVC : UIViewController {
             navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
             navigationBar.shadowImage = UIImage()
             navigationBar.isTranslucent = false
-            navigationBar.barTintColor = Colors.navigationBarBackground
+            navigationBar.barTintColor = hasGradient ? Colors.navigationBarBackground : view.backgroundColor
         }
         
         navigationItem.backButtonTitle = ""
@@ -118,6 +119,8 @@ class BaseVC : UIViewController {
     @objc internal func handleAppModeChangedNotification(_ notification: Notification) {
         if hasGradient {
             setUpGradientBackground() // Re-do the gradient
+        } else {
+            view.backgroundColor = isLightMode ? UIColor(hex: 0xF9F9F9) : UIColor(hex: 0x1B1B1B)
         }
         ensureWindowBackground()
     }
