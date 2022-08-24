@@ -135,6 +135,11 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     @objc
     private func checkRecipientAndRequestApplePay() {
+        // We want to resign this SOMETIME before this VC dismisses and switches to the chat.
+        // In addition to offering slightly better UX, resigning first responder status prevents it
+        // from eating events after the VC is dismissed.
+        messageTextView.resignFirstResponder()
+
         guard !isRecipientBlockedWithSneakyTransaction() else {
             Logger.warn("[Gifting] Not requesting Apple Pay because recipient is blocked")
             Self.showRecipientIsBlockedError()
