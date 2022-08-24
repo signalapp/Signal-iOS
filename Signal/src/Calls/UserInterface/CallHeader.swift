@@ -132,7 +132,7 @@ class CallHeader: UIView {
 
         // Status label
 
-        callStatusLabel.font = UIFont.ows_dynamicTypeFootnote
+        callStatusLabel.font = UIFont.ows_dynamicTypeFootnote.ows_monospaced
         callStatusLabel.textAlignment = .center
         callStatusLabel.textColor = UIColor.white
         callStatusLabel.numberOfLines = 0
