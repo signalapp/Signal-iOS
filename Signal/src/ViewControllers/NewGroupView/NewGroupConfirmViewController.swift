@@ -8,7 +8,7 @@ import SafariServices
 @objc
 public class NewGroupConfirmViewController: OWSTableViewController2 {
 
-    private var newGroupState = NewGroupState()
+    private let newGroupState: NewGroupState
 
     private var groupSeed: NewGroupSeed {
         return newGroupState.groupSeed
