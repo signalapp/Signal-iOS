@@ -797,7 +797,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         let bodyTextLabel = componentView.bodyTextLabel
         if let item = bodyTextLabel.itemForGesture(sender: sender) {
-            bodyTextLabel.animate(selectedItem: item)
             componentDelegate.cvc_didTapBodyTextItem(.init(item: item))
             return true
         }
@@ -829,7 +828,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         guard let item = bodyTextLabel.itemForGesture(sender: sender) else {
             return nil
         }
-        bodyTextLabel.animate(selectedItem: item)
         return CVLongPressHandler(delegate: componentDelegate,
                                   renderItem: renderItem,
                                   gestureLocation: .bodyText(item: item))

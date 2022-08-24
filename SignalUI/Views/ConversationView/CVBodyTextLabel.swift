@@ -213,16 +213,10 @@ public class CVBodyTextLabel: NSObject {
         }
     }
 
-    // MARK: - Animation
-
-    public func animate(selectedItem: Item) {
-        label.animate(selectedItem: selectedItem)
-    }
-
     // MARK: - Gestures
 
-    public func itemForGesture(sender: UIGestureRecognizer) -> Item? {
-        label.itemForGesture(sender: sender)
+    public func itemForGesture(sender: UIGestureRecognizer, animated: Bool = true) -> Item? {
+        label.itemForGesture(sender: sender, animated: animated)
     }
 
     // MARK: -
@@ -398,7 +392,7 @@ public class CVBodyTextLabel: NSObject {
 
         // MARK: - Gestures
 
-        public func itemForGesture(sender: UIGestureRecognizer) -> Item? {
+        public func itemForGesture(sender: UIGestureRecognizer, animated: Bool) -> Item? {
             AssertIsOnMainThread()
 
             let location = sender.location(in: self)
@@ -406,7 +400,9 @@ public class CVBodyTextLabel: NSObject {
                 return nil
             }
 
-            animate(selectedItem: selectedItem)
+            if animated {
+                animate(selectedItem: selectedItem)
+            }
 
             return selectedItem
         }
