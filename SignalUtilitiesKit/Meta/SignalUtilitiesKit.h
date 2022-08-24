@@ -21,7 +21,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSTextField.h>
 #import <SignalUtilitiesKit/OWSTextView.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
-#import <SignalUtilitiesKit/ScreenLockViewController.h>
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/TSConstants.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>

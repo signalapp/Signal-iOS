@@ -24,14 +24,17 @@ final class ShareVC: UINavigationController, ShareViewDelegate, AppModeManagerDe
     override func loadView() {
         super.loadView()
 
-        // This should be the first thing we do.
-        let appContext = ShareAppExtensionContext(rootViewController: self)
-        SetCurrentAppContext(appContext)
-
-        AppModeManager.configure(delegate: self)
-        // Need to manually trigger these since we don't have a "mainWindow" here
-        ThemeManager.applyNavigationStyling()
-        ThemeManager.applyWindowStyling()
+        // This should be the first thing we do (Note: If you leave the share context and return to it
+        // the context will already exist, trying to override it results in the share context crashing
+        // so ensure it doesn't exist first)
+        if !HasAppContext() {
+            let appContext = ShareAppExtensionContext(rootViewController: self)
+            SetCurrentAppContext(appContext)
+        }
+        
+        // Need to manually trigger these since we don't have a "mainWindow" here and the current theme
+        // might have been changed since the share extension was last opened
+        ThemeManager.applySavedTheme()
 
         Logger.info("")
 
@@ -144,7 +147,7 @@ final class ShareVC: UINavigationController, ShareViewDelegate, AppModeManagerDe
 
         Logger.info("")
 
-        if OWSScreenLock.shared.isScreenLockEnabled() {
+        if Storage.shared[.isScreenLockEnabled] {
             self.dismiss(animated: false) { [weak self] in
                 AssertIsOnMainThread()
                 self?.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
@@ -173,7 +176,7 @@ final class ShareVC: UINavigationController, ShareViewDelegate, AppModeManagerDe
     
     // MARK: Updating
     private func showLockScreenOrMainContent() {
-        if OWSScreenLock.shared.isScreenLockEnabled() {
+        if Storage.shared[.isScreenLockEnabled] {
             showLockScreen()
         }
         else {

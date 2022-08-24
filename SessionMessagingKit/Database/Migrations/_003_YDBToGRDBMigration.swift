@@ -1438,7 +1438,7 @@ enum _003_YDBToGRDBMigration: Migration {
             .defaulting(to: Preferences.Sound.defaultNotificationSound)
         db[.playNotificationSoundInForeground] = (legacyPreferences[SMKLegacy.preferencesKeyNotificationSoundInForeground] as? Bool == true)
         db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: legacyPreferences[SMKLegacy.preferencesKeyNotificationPreviewType] as? Int ?? -1)
-            .defaulting(to: .nameAndPreview)
+            .defaulting(to: .defaultPreviewType)
         
         if let lastPushToken: String = legacyPreferences[SMKLegacy.preferencesKeyLastRecordedPushToken] as? String {
             db[.lastRecordedPushToken] = lastPushToken
@@ -1454,8 +1454,13 @@ enum _003_YDBToGRDBMigration: Migration {
         db[.areReadReceiptsEnabled] = (legacyPreferences[SMKLegacy.readReceiptManagerAreReadReceiptsEnabled] as? Bool == true)
         db[.typingIndicatorsEnabled] = (legacyPreferences[SMKLegacy.typingIndicatorsEnabledKey] as? Bool == true)
         db[.isScreenLockEnabled] = (legacyPreferences[SMKLegacy.screenLockIsScreenLockEnabledKey] as? Bool == true)
-        db[.screenLockTimeoutSeconds] = (legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] as? Double)
-            .defaulting(to: (15 * 60))
+        // Note: 'screenLockTimeoutSeconds' has been removed, but we want to avoid changing the behaviour
+        // of old migrations when possible
+        db.unsafeSet(
+            key: "screenLockTimeoutSeconds",
+            value: (legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] as? Double)
+                .defaulting(to: (15 * 60))
+        )
         db[.appSwitcherPreviewEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyScreenSecurityDisabled] as? Bool == false)
         db[.areLinkPreviewsEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyAreLinkPreviewsEnabled] as? Bool == true)
         db[.areCallsEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyAreCallsEnabled] as? Bool == true)

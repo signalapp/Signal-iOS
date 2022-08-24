@@ -537,7 +537,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                 let hide = UITableViewRowAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { _, _ in
                     Storage.shared.write { db in db[.hasHiddenMessageRequests] = true }
                 }
-                hide.themeBackgroundColor = .danger
+                hide.themeBackgroundColor = .conversationButton_swipeDestructive
                 
                 return [hide]
                 
@@ -586,7 +586,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                     
                     self?.present(alert, animated: true, completion: nil)
                 }
-                delete.themeBackgroundColor = .danger
+                delete.themeBackgroundColor = .conversationButton_swipeDestructive
 
                 let pin: UITableViewRowAction = UITableViewRowAction(
                     style: .normal,
@@ -601,7 +601,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                             .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadViewModel.threadIsPinned))
                     }
                 }
-                pin.themeBackgroundColor = .conversationButton_pinBackground
+                pin.themeBackgroundColor = .conversationButton_swipeTertiary
                 
                 guard threadViewModel.threadVariant == .contact && !threadViewModel.threadIsNoteToSelf else {
                     return [ delete, pin ]
@@ -631,7 +631,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                             .retainUntilComplete()
                     }
                 }
-                block.themeBackgroundColor = .backgroundTertiary
+                block.themeBackgroundColor = .conversationButton_swipeSecondary
                 
                 return [ delete, block, pin ]
                 

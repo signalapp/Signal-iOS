@@ -32,6 +32,12 @@ public final class OutlineButton: UIButton {
 
     private func setUpStyle(style: Style, size: Size) {
         clipsToBounds = true
+        contentEdgeInsets = UIEdgeInsets(
+            top: 0,
+            left: Values.smallSpacing,
+            bottom: 0,
+            right: Values.smallSpacing
+        )
         titleLabel?.font = .boldSystemFont(ofSize: (size == .small ?
             Values.smallFontSize :
             Values.mediumFontSize

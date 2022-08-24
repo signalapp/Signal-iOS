@@ -106,11 +106,26 @@ class HelpViewModel: SettingsTableViewModel<HelpViewModel.Section, HelpViewModel
                             })
                         )
                     ]
+                ),
+                SectionModel(
+                    model: .support,
+                    elements: [
+                        SettingInfo(
+                            id: .support,
+                            title: "HELP_SUPPORT_TITLE".localized(),
+                            action: .trigger(action: {
+                                guard let url: URL = URL(string: "https://sessionapp.zendesk.com/hc/en-us") else {
+                                    return
+                                }
+                                
+                                UIApplication.shared.open(url)
+                            })
+                        )
+                    ]
                 )
             ]
         }
         .removeDuplicates()
-    
     
     // MARK: - Functions
 

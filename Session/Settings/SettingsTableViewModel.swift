@@ -88,7 +88,10 @@ public enum SettingsAction: Hashable, Equatable {
         key: String,
         onChange: (() -> Void)?
     )
-    case settingBool(key: Setting.BoolKey)
+    case settingBool(
+        key: Setting.BoolKey,
+        confirmationInfo: ConfirmationModal.Info?
+    )
     case settingEnum(
         key: String,
         title: String?,
@@ -152,6 +155,10 @@ public enum SettingsAction: Hashable, Equatable {
             createUpdateScreen: createUpdateScreen
         )
     }
+    
+    public static func settingBool(key: Setting.BoolKey) -> SettingsAction {
+        return .settingBool(key: key, confirmationInfo: nil)
+    }
         
     // MARK: - Conformance
     
@@ -160,7 +167,10 @@ public enum SettingsAction: Hashable, Equatable {
         
         switch self {
             case .userDefaultsBool(_, let key, _): key.hash(into: &hasher)
-            case .settingBool(let key): key.hash(into: &hasher)
+            case .settingBool(let key, let confirmationInfo):
+                key.hash(into: &hasher)
+                confirmationInfo.hash(into: &hasher)
+                
             case .settingEnum(let key, let title, _):
                 key.hash(into: &hasher)
                 title.hash(into: &hasher)
@@ -179,7 +189,11 @@ public enum SettingsAction: Hashable, Equatable {
             case (.userDefaultsBool(_, let lhsKey, _), .userDefaultsBool(_, let rhsKey, _)):
                 return (lhsKey == rhsKey)
             
-            case (.settingBool(let lhsKey), .settingBool(let rhsKey)): return (lhsKey == rhsKey)
+            case (.settingBool(let lhsKey, let lhsConfirmationInfo), .settingBool(let rhsKey, let rhsConfirmationInfo)):
+                return (
+                    lhsKey == rhsKey &&
+                    lhsConfirmationInfo == rhsConfirmationInfo
+                )
                 
             case (.settingEnum(let lhsKey, let lhsTitle, _), .settingEnum(let rhsKey, let rhsTitle, _)):
                 return (

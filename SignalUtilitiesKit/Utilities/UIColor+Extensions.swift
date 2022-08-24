@@ -24,22 +24,6 @@ public extension UIColor {
 
     // MARK: - Functions
 
-    func toImage(isDarkMode: Bool) -> UIImage {
-        let bounds: CGRect = CGRect(x: 0, y: 0, width: 1, height: 1)
-        let renderer: UIGraphicsImageRenderer = UIGraphicsImageRenderer(bounds: bounds)
-
-        return renderer.image { rendererContext in
-            rendererContext.cgContext
-                .setFillColor(
-                    self.resolvedColor(
-                        // Note: This is needed for '.cgColor' to support dark mode
-                        with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
-                    ).cgColor
-                )
-            rendererContext.cgContext.fill(bounds)
-        }
-    }
-
     func darken(by percentage: CGFloat) -> UIColor {
         guard percentage != 0 else { return self }
         guard let hsba: HSBA = self.hsba else { return self }

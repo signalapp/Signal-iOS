@@ -62,6 +62,10 @@ public extension Setting.BoolKey {
     
     /// A flag indicating whether the app is ready for app extensions to run
     static let isReadyForAppExtensions: Setting.BoolKey = "isReadyForAppExtensions"
+    
+    /// Controls whether the device should show screenshot notifications in one-to-one conversations (will always
+    /// send screenshot notifications, this just controls whether they get filtered out or not)
+    static let showScreenshotNotifications: Setting.BoolKey = "showScreenshotNotifications"
 }
 
 public extension Setting.StringKey {
@@ -74,11 +78,14 @@ public extension Setting.StringKey {
 
 public extension Setting.DoubleKey {
     /// The duration of the timeout for screen lock in seconds
+    @available(*, unavailable, message: "Screen Lock should always be instant now")
     static let screenLockTimeoutSeconds: Setting.DoubleKey = "screenLockTimeoutSeconds"
 }
 
 public enum Preferences {
     public enum NotificationPreviewType: Int, CaseIterable, EnumIntSetting, Differentiable {
+        public static var defaultPreviewType: NotificationPreviewType = .nameAndPreview
+        
         /// Notifications should include both the sender name and a preview of the message content
         case nameAndPreview
         
@@ -303,61 +310,7 @@ public enum Preferences {
 
 // MARK: - Objective C Support
 
-// FIXME: Remove the below the 'NotificationSettingsViewController' and 'OWSSoundSettingsViewController' have been refactored to Swift
-
-@objc(SMKPreferences)
-public class SMKPreferences: NSObject {
-    @objc(setScreenSecurity:)
-    static func objc_setScreenSecurity(_ enabled: Bool) {
-        Storage.shared.write { db in db[.appSwitcherPreviewEnabled] = enabled }
-    }
-    
-    @objc(isScreenSecurityEnabled)
-    static func objc_isScreenSecurityEnabled() -> Bool {
-        return Storage.shared[.appSwitcherPreviewEnabled]
-    }
-    
-    @objc(setAreReadReceiptsEnabled:)
-    static func objc_setAreReadReceiptsEnabled(_ enabled: Bool) {
-        Storage.shared.write { db in db[.areReadReceiptsEnabled] = enabled }
-    }
-    
-    @objc(areReadReceiptsEnabled)
-    static func objc_areReadReceiptsEnabled() -> Bool {
-        return Storage.shared[.areReadReceiptsEnabled]
-    }
-    
-    @objc(setTypingIndicatorsEnabled:)
-    static func objc_setTypingIndicatorsEnabled(_ enabled: Bool) {
-        Storage.shared.write { db in db[.typingIndicatorsEnabled] = enabled }
-    }
-    
-    @objc(areTypingIndicatorsEnabled)
-    static func objc_areTypingIndicatorsEnabled() -> Bool {
-        return Storage.shared[.typingIndicatorsEnabled]
-    }
-    
-    @objc(setLinkPreviewsEnabled:)
-    static func objc_setLinkPreviewsEnabled(_ enabled: Bool) {
-        Storage.shared.write { db in db[.areLinkPreviewsEnabled] = enabled }
-    }
-    
-    @objc(areLinkPreviewsEnabled)
-    static func objc_areLinkPreviewsEnabled() -> Bool {
-        return Storage.shared[.areLinkPreviewsEnabled]
-    }
-    
-    @objc(setCallsEnabled:)
-    static func objc_setCallsEnabled(_ enabled: Bool) {
-        Storage.shared.write { db in db[.areCallsEnabled] = enabled }
-    }
-    
-    @objc(areCallsEnabled)
-    static func objc_areCallsEnabled() -> Bool {
-        return Storage.shared[.areCallsEnabled]
-    }
-}
-
+// FIXME: Remove the below when OWSConversationSettingsViewController no longer nees SMKSound
 @objc(SMKSound)
 public class SMKSound: NSObject {
     @objc public static var notificationSounds: [Int] = Preferences.Sound.notificationSounds.map { $0.rawValue }

@@ -1,39 +1,47 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import Photos
 import PhotosUI
+import SessionUtilitiesKit
 
 public func requestCameraPermissionIfNeeded() -> Bool {
     switch AVCaptureDevice.authorizationStatus(for: .video) {
-    case .authorized: return true
-    case .denied, .restricted:
-        let modal = PermissionMissingModal(permission: "camera") { }
-        modal.modalPresentationStyle = .overFullScreen
-        modal.modalTransitionStyle = .crossDissolve
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
-        presentingVC.present(modal, animated: true, completion: nil)
-        return false
-    case .notDetermined:
-        AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
-        return false
-    default: return false
+        case .authorized: return true
+        case .denied, .restricted:
+            let modal = PermissionMissingModal(permission: "camera") { }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
+            presentingVC.present(modal, animated: true, completion: nil)
+            return false
+            
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
+            return false
+            
+        default: return false
     }
 }
 
-public func requestMicrophonePermissionIfNeeded(onNotGranted: @escaping () -> Void) {
+public func requestMicrophonePermissionIfNeeded(onNotGranted: (() -> Void)? = nil) {
     switch AVAudioSession.sharedInstance().recordPermission {
-    case .granted: break
-    case .denied:
-        onNotGranted()
-        let modal = PermissionMissingModal(permission: "microphone") {
-            onNotGranted()
-        }
-        modal.modalPresentationStyle = .overFullScreen
-        modal.modalTransitionStyle = .crossDissolve
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
-        presentingVC.present(modal, animated: true, completion: nil)
-    case .undetermined:
-        onNotGranted()
-        AVAudioSession.sharedInstance().requestRecordPermission { _ in }
-    default: break
+        case .granted: break
+        case .denied:
+            onNotGranted?()
+            let modal = PermissionMissingModal(permission: "microphone") {
+                onNotGranted?()
+            }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
+            presentingVC.present(modal, animated: true, completion: nil)
+            
+        case .undetermined:
+            onNotGranted?()
+            AVAudioSession.sharedInstance().requestRecordPermission { _ in }
+            
+        default: break
     }
 }
 
@@ -66,7 +74,8 @@ public func requestLibraryPermissionIfNeeded(onAuthorized: @escaping () -> Void)
                 }
             }
         }
-    } else {
+    }
+    else {
         authorizationStatus = PHPhotoLibrary.authorizationStatus()
         if authorizationStatus == .notDetermined {
             PHPhotoLibrary.requestAuthorization { status in
@@ -76,15 +85,16 @@ public func requestLibraryPermissionIfNeeded(onAuthorized: @escaping () -> Void)
             }
         }
     }
+    
     switch authorizationStatus {
-    case .authorized, .limited:
-        onAuthorized()
-    case .denied, .restricted:
-        let modal = PermissionMissingModal(permission: "library") { }
-        modal.modalPresentationStyle = .overFullScreen
-        modal.modalTransitionStyle = .crossDissolve
-        guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
-        presentingVC.present(modal, animated: true, completion: nil)
-    default: return
+        case .authorized, .limited: onAuthorized()
+        case .denied, .restricted:
+            let modal = PermissionMissingModal(permission: "library") { }
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            guard let presentingVC = CurrentAppContext().frontmostViewController() else { preconditionFailure() }
+            presentingVC.present(modal, animated: true, completion: nil)
+            
+        default: return
     }
 }

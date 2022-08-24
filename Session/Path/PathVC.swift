@@ -154,28 +154,37 @@ final class PathVC: BaseVC {
 
     // MARK: General
     private func getPathRow(title: String, subtitle: String?, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double) -> UIStackView {
-        let lineView = LineView(location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+        let lineView = LineView(
+            location: location,
+            dotAnimationStartDelay: dotAnimationStartDelay,
+            dotAnimationRepeatInterval: dotAnimationRepeatInterval
+        )
         lineView.set(.width, to: PathVC.expandedDotSize)
         lineView.set(.height, to: PathVC.rowHeight)
-        let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
+        
+        let titleLabel: UILabel = UILabel()
         titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = title
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byTruncatingTail
+        
         let titleStackView = UIStackView(arrangedSubviews: [ titleLabel ])
         titleStackView.axis = .vertical
+        
         if let subtitle = subtitle {
             let subtitleLabel = UILabel()
-            subtitleLabel.textColor = Colors.text
             subtitleLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
             subtitleLabel.text = subtitle
+            subtitleLabel.themeTextColor = .textPrimary
             subtitleLabel.lineBreakMode = .byTruncatingTail
             titleStackView.addArrangedSubview(subtitleLabel)
         }
+        
         let stackView = UIStackView(arrangedSubviews: [ lineView, titleStackView ])
         stackView.axis = .horizontal
         stackView.spacing = Values.largeSpacing
         stackView.alignment = .center
+        
         return stackView
     }
 
@@ -221,7 +230,9 @@ private final class LineView : UIView {
         self.location = location
         self.dotAnimationStartDelay = dotAnimationStartDelay
         self.dotAnimationRepeatInterval = dotAnimationRepeatInterval
+        
         super.init(frame: CGRect.zero)
+        
         setUpViewHierarchy()
     }
     

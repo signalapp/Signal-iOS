@@ -383,7 +383,7 @@ private final class NewConversationButton: UIImageView {
         contentMode = .center
         layer.cornerRadius = (NewConversationButtonSet.collapsedButtonSize / 2)
         
-        themeBackgroundColor = (isMainButton ? .menuButton_background : .backgroundTertiary)
+        themeBackgroundColor = .menuButton_background
         themeTintColor = .menuButton_icon
         
         if isMainButton {

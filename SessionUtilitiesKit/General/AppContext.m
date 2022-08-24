@@ -26,6 +26,11 @@ id<AppContext> CurrentAppContext(void)
     return currentAppContext;
 }
 
+BOOL HasAppContext(void)
+{
+    return (currentAppContext != nil);
+}
+
 void SetCurrentAppContext(id<AppContext> appContext)
 {
     // The main app context should only be set once.

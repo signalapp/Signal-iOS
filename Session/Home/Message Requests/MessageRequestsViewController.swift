@@ -353,7 +353,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 ) { [weak self] _, _ in
                     self?.delete(threadId)
                 }
-                delete.backgroundColor = Colors.destructive
+                delete.themeBackgroundColor = .conversationButton_swipeDestructive
 
                 return [ delete ]
                 

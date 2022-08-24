@@ -10,7 +10,6 @@ import SignalUtilitiesKit
 
 final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
     private static let loadingHeaderHeight: CGFloat = 20
-    private static let messageRequestButtonHeight: CGFloat = 34
     
     internal let viewModel: ConversationViewModel
     private var dataChangeObservable: DatabaseCancellable?
@@ -209,11 +208,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     lazy var messageRequestView: UIView = {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
+        result.themeBackgroundColor = .backgroundPrimary
         result.isHidden = (
             self.viewModel.threadData.threadIsMessageRequest == false ||
             self.viewModel.threadData.threadRequiresApproval == true
         )
-        result.setGradient(Gradients.defaultBackground)
 
         return result
     }()
@@ -222,8 +221,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.font = UIFont.systemFont(ofSize: 12)
-        result.text = NSLocalizedString("MESSAGE_REQUESTS_INFO", comment: "")
-        result.textColor = Colors.sessionMessageRequestsInfoText
+        result.text = "MESSAGE_REQUESTS_INFO".localized()
+        result.themeTextColor = .textSecondary
         result.textAlignment = .center
         result.numberOfLines = 2
 
@@ -231,50 +230,18 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }()
 
     private lazy var messageRequestAcceptButton: UIButton = {
-        let result: UIButton = UIButton()
+        let result: OutlineButton = OutlineButton(style: .regular, size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.clipsToBounds = true
-        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        result.setTitle(NSLocalizedString("TXT_DELETE_ACCEPT", comment: ""), for: .normal)
-        result.setTitleColor(Colors.sessionHeading, for: .normal)
-        result.setBackgroundImage(
-            Colors.sessionHeading
-                .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
-                .toImage(isDarkMode: isDarkMode),
-            for: .highlighted
-        )
-        result.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
-        result.layer.borderColor = Colors.sessionHeading
-            .resolvedColor(
-                // Note: This is needed for '.cgColor' to support dark mode
-                with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
-            ).cgColor
-        result.layer.borderWidth = 1
+        result.setTitle("TXT_DELETE_ACCEPT".localized(), for: .normal)
         result.addTarget(self, action: #selector(acceptMessageRequest), for: .touchUpInside)
 
         return result
     }()
 
     private lazy var messageRequestDeleteButton: UIButton = {
-        let result: UIButton = UIButton()
+        let result: OutlineButton = OutlineButton(style: .destructive, size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.clipsToBounds = true
-        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        result.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: .normal)
-        result.setTitleColor(Colors.destructive, for: .normal)
-        result.setBackgroundImage(
-            Colors.destructive
-                .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
-                .toImage(isDarkMode: isDarkMode),
-            for: .highlighted
-        )
-        result.layer.cornerRadius = (ConversationVC.messageRequestButtonHeight / 2)
-        result.layer.borderColor = Colors.destructive
-            .resolvedColor(
-                // Note: This is needed for '.cgColor' to support dark mode
-                with: UITraitCollection(userInterfaceStyle: isDarkMode ? .dark : .light)
-            ).cgColor
-        result.layer.borderWidth = 1
+        result.setTitle("TXT_DELETE_TITLE".localized(), for: .normal)
         result.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
 
         return result
@@ -353,14 +320,12 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         messageRequestAcceptButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
         messageRequestAcceptButton.pin(.left, to: .left, of: messageRequestView, withInset: 20)
         messageRequestAcceptButton.pin(.bottom, to: .bottom, of: messageRequestView)
-        messageRequestAcceptButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
         
         messageRequestDeleteButton.pin(.top, to: .bottom, of: messageRequestDescriptionLabel, withInset: 20)
         messageRequestDeleteButton.pin(.left, to: .right, of: messageRequestAcceptButton, withInset: UIDevice.current.isIPad ? Values.iPadButtonSpacing : 20)
         messageRequestDeleteButton.pin(.right, to: .right, of: messageRequestView, withInset: -20)
         messageRequestDeleteButton.pin(.bottom, to: .bottom, of: messageRequestView)
         messageRequestDeleteButton.set(.width, to: .width, of: messageRequestAcceptButton)
-        messageRequestDeleteButton.set(.height, to: ConversationVC.messageRequestButtonHeight)
 
         // Unread count view
         view.addSubview(unreadCountView)

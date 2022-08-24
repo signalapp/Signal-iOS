@@ -165,6 +165,15 @@ public extension Storage {
 }
 
 public extension Database {
+    @discardableResult func unsafeSet<T: Numeric>(key: String, value: T?) -> Setting? {
+        guard let value: T = value else {
+            _ = try? Setting.filter(id: key).deleteAll(self)
+            return nil
+        }
+        
+        return try? Setting(key: key, value: value)?.saved(self)
+    }
+    
     private subscript(key: String) -> Setting? {
         get { try? Setting.filter(id: key).fetchOne(self) }
         set {

@@ -35,6 +35,7 @@ class NotificationContentViewModel: SettingsTableViewModel<NotificationSettingsV
     private lazy var _observableSettingsData: ObservableData = ValueObservation
         .trackingConstantRegion { [weak self] db -> [SectionModel] in
             let currentSelection: Preferences.NotificationPreviewType? = db[.preferencesNotificationPreviewType]
+                .defaulting(to: .defaultPreviewType)
             
             return [
                 SectionModel(

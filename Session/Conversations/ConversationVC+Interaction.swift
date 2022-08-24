@@ -55,12 +55,29 @@ extension ConversationVC:
     @objc func startCall(_ sender: Any?) {
         guard SessionCall.isEnabled else { return }
         guard Storage.shared[.areCallsEnabled] else {
-            let callPermissionRequestModal = CallPermissionRequestModal()
-            self.navigationController?.present(callPermissionRequestModal, animated: true, completion: nil)
+            let confirmationModal: ConfirmationModal = ConfirmationModal(
+                info: ConfirmationModal.Info(
+                    title: "modal_call_permission_request_title".localized(),
+                    explanation: "modal_call_permission_request_explanation".localized(),
+                    confirmTitle: "vc_settings_title".localized()
+                )
+            ) { [weak self] _ in
+                self?.dismiss(animated: true) {
+                    let navController: OWSNavigationController = OWSNavigationController(
+                        rootViewController: SettingsTableViewController(
+                            viewModel: PrivacySettingsViewModel(),
+                            shouldShowCloseButton: true
+                        )
+                    )
+                    navController.modalPresentationStyle = .fullScreen
+                    self?.present(navController, animated: true, completion: nil)
+                }
+            }
+            self.navigationController?.present(confirmationModal, animated: true, completion: nil)
             return
         }
         
-        requestMicrophonePermissionIfNeeded { }
+        requestMicrophonePermissionIfNeeded {}
         
         let threadId: String = self.viewModel.threadData.threadId
         

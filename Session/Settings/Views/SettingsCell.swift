@@ -322,7 +322,7 @@ class SettingsCell: UITableViewCell {
                     toggleSwitch.setOn(newValue, animated: true)
                 }
             
-            case .settingBool(let key):
+            case .settingBool(let key, _):
                 actionContainerView.isHidden = false
                 toggleSwitch.isHidden = false
                 
@@ -373,19 +373,23 @@ class SettingsCell: UITableViewCell {
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
 
-        // Note: Only setting the highlighted state is done here, the unhighlight is done
-        // in 'setSelected'
-        guard highlighted else { return }
-        
-        rightActionButtonContainerView.themeBackgroundColor = .solidButton_highlight
+        rightActionButtonContainerView.themeBackgroundColor = (highlighted ?
+            .solidButton_highlight :
+            .solidButton_background
+        )
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
-        // Note: Only un-setting the unhighlighted state is done here, the highlighted state is done
-        // in 'setHighlighted'
-        guard !selected else { return }
+        // Note: When initially triggering a selection we will be coming from the highlighted
+        // state but will have already set highlighted to false at this stage, as a result we
+        // need to swap back into the "highlighted" state so we can properly unhighlight within
+        // the "deselect" animation
+        guard !selected else {
+            rightActionButtonContainerView.themeBackgroundColor = .solidButton_highlight
+            return
+        }
         guard animated else {
             rightActionButtonContainerView.themeBackgroundColor = .solidButton_background
             return

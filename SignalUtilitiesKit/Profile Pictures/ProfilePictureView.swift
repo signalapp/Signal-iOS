@@ -22,7 +22,7 @@ public final class ProfilePictureView: UIView {
     private lazy var imageView: YYAnimatedImageView = getImageView()
     private lazy var additionalImageView: YYAnimatedImageView = {
         let result: YYAnimatedImageView = getImageView()
-        result.themeBackgroundColor = .backgroundTertiary
+        result.themeBackgroundColor = .primary
         result.themeBorderColor = .backgroundPrimary
         result.layer.borderWidth = Values.separatorThickness
         

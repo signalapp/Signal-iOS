@@ -56,17 +56,23 @@ public protocol ThemeColors {
 
 public enum ThemeValue {
     // General
+    case white
+    case black
+    case clear
     case primary
     case defaultPrimary
     case danger
-    case white
-    case clear
     case backgroundPrimary
     case backgroundSecondary
-    case backgroundTertiary
     case textPrimary
     case textSecondary
     case borderSeparator
+    
+    // Path
+    case path_connected
+    case path_connecting
+    case path_error
+    case path_unknown
     
     // TextBox
     case textBox_background
@@ -116,6 +122,11 @@ public enum ThemeValue {
     case appearance_buttonBackground
     case appearance_buttonHighlight
     
+    // Alert
+    case alert_background
+    case alert_buttonBackground
+    case alert_buttonHighlight
+    
     // ConversationButton
     case conversationButton_background
     case conversationButton_highlight
@@ -124,5 +135,7 @@ public enum ThemeValue {
     case conversationButton_unreadStripBackground
     case conversationButton_unreadBubbleBackground
     case conversationButton_unreadBubbleText
-    case conversationButton_pinBackground
+    case conversationButton_swipeDestructive
+    case conversationButton_swipeSecondary
+    case conversationButton_swipeTertiary
 }

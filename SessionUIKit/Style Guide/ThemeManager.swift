@@ -22,6 +22,8 @@ public extension Setting.BoolKey {
 // MARK: - ThemeManager
 
 public enum ThemeManager {
+    private static var hasSetInitialSystemTrait: Bool = false
+    
     /// **Note:** Using `weakToStrongObjects` means that the value types will continue to be maintained until the map table resizes
     /// itself (ie. until a new UI element is registered to the table)
     ///
@@ -109,6 +111,11 @@ public enum ThemeManager {
             case (.dark, .oceanLight): ThemeManager.currentTheme = .oceanDark
             default: break
         }
+    }
+    
+    public static func applySavedTheme() {
+        ThemeManager.primaryColor = Storage.shared[.themePrimaryColor].defaulting(to: Theme.PrimaryColor.green)
+        ThemeManager.currentTheme = Storage.shared[.theme].defaulting(to: Theme.classicDark)
     }
     
     public static func applyNavigationStyling() {
@@ -224,6 +231,11 @@ public enum ThemeManager {
         
         applyNavigationStyling()
         applyWindowStyling()
+        
+        if !hasSetInitialSystemTrait {
+            traitCollectionDidChange(nil)
+            hasSetInitialSystemTrait = true
+        }
     }
     
     internal static func set<T: AnyObject>(

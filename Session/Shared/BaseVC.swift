@@ -3,8 +3,10 @@
 import UIKit
 import SessionUIKit
 
-class BaseVC: UIViewController {
-    override var preferredStatusBarStyle: UIStatusBarStyle { return ThemeManager.currentTheme.statusBarStyle }
+public class BaseVC: UIViewController {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return ThemeManager.currentTheme.statusBarStyle
+    }
 
     lazy var navBarTitleLabel: UILabel = {
         let result = UILabel()
@@ -26,7 +28,7 @@ class BaseVC: UIViewController {
         return result
     }()
 
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
         
         navigationItem.backButtonTitle = ""

@@ -3,72 +3,110 @@
 import UIKit
 import SessionUIKit
 
-@objc(LKModal)
-class Modal: BaseVC, UIGestureRecognizerDelegate {
+public class Modal: BaseVC, UIGestureRecognizerDelegate {
+    private static let cornerRadius: CGFloat = 11
     
-    // MARK: Components
-    lazy var contentView: UIView = {
-        let result = UIView()
-        result.backgroundColor = Colors.modalBackground
+    // MARK: - Components
+    
+    lazy var dimmingView: UIView = {
+        let result = UIVisualEffectView()
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            result?.effect = UIBlurEffect(
+                style: (theme.interfaceStyle == .light ?
+                    UIBlurEffect.Style.systemUltraThinMaterialLight :
+                    UIBlurEffect.Style.systemUltraThinMaterial
+                )
+            )
+        }
+        
+        return result
+    }()
+    
+    lazy var containerView: UIView = {
+        let result: UIView = UIView()
+        result.clipsToBounds = false
+        result.themeBackgroundColor = .alert_background
+        result.themeShadowColor = .black
         result.layer.cornerRadius = Modal.cornerRadius
-        result.layer.masksToBounds = false
-        result.layer.borderColor = isLightMode ? UIColor.white.cgColor : Colors.modalBorder.cgColor
-        result.layer.borderWidth = 1
-        result.layer.shadowColor = UIColor.black.cgColor
-        result.layer.shadowRadius = isLightMode ? 2 : 8
-        result.layer.shadowOpacity = isLightMode ? 0.1 : 0.64
+        result.layer.shadowRadius = 10
+        result.layer.shadowOpacity = 0.4
+        
+        return result
+    }()
+    
+    lazy var contentView: UIView = {
+        let result: UIView = UIView()
+        result.clipsToBounds = true
+        result.layer.cornerRadius = Modal.cornerRadius
+        
         return result
     }()
     
     lazy var cancelButton: UIButton = {
-        let result = UIButton()
-        result.set(.height, to: Values.mediumButtonHeight)
-        result.layer.cornerRadius = Modal.buttonCornerRadius
-        result.backgroundColor = Colors.buttonBackground
-        result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
-        result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.setTitle(NSLocalizedString("cancel", comment: ""), for: UIControl.State.normal)
+        let result: UIButton = Modal.createButton(title: "cancel".localized(), titleColor: .textPrimary)
+        result.addTarget(self, action: #selector(close), for: .touchUpInside)
+                
         return result
     }()
     
-    // MARK: Settings
-    private static let cornerRadius: CGFloat = 10
-    static let buttonCornerRadius = CGFloat(5)
+    // MARK: - Lifecycle
     
-    // MARK: Lifecycle
-    override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
-        let alpha = isLightMode ? CGFloat(0.1) : Values.highOpacity
-        view.backgroundColor = UIColor(hex: 0x000000).withAlphaComponent(alpha)
-        cancelButton.addTarget(self, action: #selector(close), for: UIControl.Event.touchUpInside)
         
+        // Need to remove the background color which is added by the BaseVC
+        view.themeBackgroundColor = .clear
+        
+        view.addSubview(dimmingView)
+        view.addSubview(containerView)
+        
+        containerView.addSubview(contentView)
+        
+        dimmingView.pin(to: view)
+        contentView.pin(to: containerView)
+        
+        if UIDevice.current.isIPad {
+            containerView.set(.width, to: Values.iPadModalWidth)
+            containerView.center(in: view)
+        }
+        else {
+            containerView.leadingAnchor
+                .constraint(equalTo: view.leadingAnchor, constant: Values.veryLargeSpacing)
+                .isActive = true
+            view.trailingAnchor
+                .constraint(equalTo: containerView.trailingAnchor, constant: Values.veryLargeSpacing)
+                .isActive = true
+            containerView.center(.vertical, in: view)
+        }
+        
+        // Gestures
         let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
         swipeGestureRecognizer.direction = .down
-        view.addGestureRecognizer(swipeGestureRecognizer)
+        dimmingView.addGestureRecognizer(swipeGestureRecognizer)
         
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(close))
         tapGestureRecognizer.delegate = self
-        view.addGestureRecognizer(tapGestureRecognizer)
+        dimmingView.addGestureRecognizer(tapGestureRecognizer)
         
-        setUpViewHierarchy()
-    }
-    
-    private func setUpViewHierarchy() {
-        view.addSubview(contentView)
-        if UIDevice.current.isIPad {
-            contentView.set(.width, to: Values.iPadModalWidth)
-            contentView.center(in: view)
-        } else {
-            contentView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Values.veryLargeSpacing).isActive = true
-            view.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Values.veryLargeSpacing).isActive = true
-            contentView.center(.vertical, in: view)
-        }
         populateContentView()
     }
     
     /// To be overridden by subclasses.
     func populateContentView() {
         preconditionFailure("populateContentView() is abstract and must be overridden.")
+    }
+    
+    static func createButton(title: String, titleColor: ThemeValue) -> UIButton {
+        let result: UIButton = UIButton()
+        result.titleLabel?.font = .systemFont(ofSize: Values.mediumFontSize, weight: UIFont.Weight(600))
+        result.setTitle(title, for: .normal)
+        result.setThemeTitleColor(titleColor, for: .normal)
+        result.setThemeBackgroundColor(.alert_buttonBackground, for: .normal)
+        result.setThemeBackgroundColor(.alert_buttonHighlight, for: .highlighted)
+        result.set(.height, to: Values.alertButtonHeight)
+                
+        return result
     }
     
     // MARK: - Interaction
@@ -79,7 +117,7 @@ class Modal: BaseVC, UIGestureRecognizerDelegate {
     
     // MARK: - UIGestureRecognizerDelegate
     
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         let location: CGPoint = touch.location(in: contentView)
         
         return !contentView.point(inside: location, with: nil)

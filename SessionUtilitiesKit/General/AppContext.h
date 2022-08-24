@@ -113,6 +113,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 @end
 
 id<AppContext> CurrentAppContext(void);
+BOOL HasAppContext(void);
 void SetCurrentAppContext(id<AppContext> appContext);
 
 void ExitShareExtension(void);

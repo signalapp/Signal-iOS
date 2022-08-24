@@ -66,12 +66,12 @@ public extension UIView {
     }
     
     @discardableResult
-    func center(_ direction: Direction, in view: UIView) -> NSLayoutConstraint {
+    func center(_ direction: Direction, in view: UIView, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint: NSLayoutConstraint = {
             switch direction {
-            case .horizontal: return centerXAnchor.constraint(equalTo: view.centerXAnchor)
-            case .vertical: return centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            case .horizontal: return centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: inset)
+            case .vertical: return centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: inset)
             }
         }()
         constraint.isActive = true

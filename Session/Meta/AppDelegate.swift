@@ -55,12 +55,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 // Note: Intentionally dispatching sync as we want to wait for these to complete before
                 // continuing
                 DispatchQueue.main.sync {
-                    OWSScreenLockUI.sharedManager().setup(withRootWindow: mainWindow)
+                    ScreenLockUI.shared.setupWithRootWindow(rootWindow: mainWindow)
                     OWSWindowManager.shared().setup(
                         withRootWindow: mainWindow,
-                        screenBlockingWindow: OWSScreenLockUI.sharedManager().screenBlockingWindow
+                        screenBlockingWindow: ScreenLockUI.shared.screenBlockingWindow
                     )
-                    OWSScreenLockUI.sharedManager().startObserving()
+                    ScreenLockUI.shared.startObserving()
                 }
             },
             migrationProgressChanged: { [weak self] progress, minEstimatedTotalTime in

@@ -65,7 +65,7 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NotificationSettings
                                     SyncPushTokensJob.run(uploadOnlyIfStale: false)
                                 }
                             ),
-                            extraActionTitle: { _, primaryColor in
+                            extraActionTitle: { theme, primaryColor in
                                 NSMutableAttributedString()
                                     .appending(
                                         NSAttributedString(
@@ -77,7 +77,10 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NotificationSettings
                                     )
                                     .appending(
                                         NSAttributedString(
-                                            string: "NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION_2".localized()
+                                            string: "NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION_2".localized(),
+                                            attributes: [
+                                                .foregroundColor: (theme.colors[.textPrimary] ?? .white)
+                                            ]
                                         )
                                     )
                             },
@@ -95,7 +98,7 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NotificationSettings
                                 db,
                                 type: Preferences.Sound.self,
                                 key: .defaultNotificationSound,
-                                titleGenerator: { $0?.displayName },
+                                titleGenerator: { $0.defaulting(to: .defaultNotificationSound).displayName },
                                 createUpdateScreen: {
                                     SettingsTableViewController(viewModel: NotificationSoundViewModel())
                                 }
@@ -119,7 +122,7 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NotificationSettings
                                 db,
                                 type: Preferences.NotificationPreviewType.self,
                                 key: .preferencesNotificationPreviewType,
-                                titleGenerator: { $0?.name },
+                                titleGenerator: { $0.defaulting(to: .defaultPreviewType).name },
                                 createUpdateScreen: {
                                     SettingsTableViewController(viewModel: NotificationContentViewModel())
                                 }

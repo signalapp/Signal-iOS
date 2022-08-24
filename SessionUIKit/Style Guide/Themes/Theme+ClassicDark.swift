@@ -5,74 +5,87 @@ import UIKit.UIColor
 internal enum Theme_ClassicDark: ThemeColors {
     static let theme: [ThemeValue: UIColor] = [
         // General
+        .white: .white,
+        .black: .black,
+        .clear: .clear,
         .primary: .primary,
         .defaultPrimary: Theme.PrimaryColor.green.color,
-        .danger: #colorLiteral(red: 1, green: 0.2274509804, blue: 0.2274509804, alpha: 1),
-        .white: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
-        .clear: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0),
-        .backgroundPrimary: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1),
-        .backgroundSecondary: #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1),
-        .backgroundTertiary: #colorLiteral(red: 0.1764705882, green: 0.1764705882, blue: 0.1764705882, alpha: 1),
-        .textPrimary: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
-        .textSecondary: #colorLiteral(red: 0.631372549, green: 0.6352941176, blue: 0.631372549, alpha: 1),
-        .borderSeparator: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
+        .danger: .dangerDark,
+        .backgroundPrimary: .classicDark0,
+        .backgroundSecondary: .classicDark1,
+        .textPrimary: .classicDark6,
+        .textSecondary: .classicDark5,
+        .borderSeparator: .classicDark3,
+        
+        // Path
+        .path_connected: .pathConnected,
+        .path_connecting: .pathConnecting,
+        .path_error: .pathError,
+        .path_unknown: .classicDark4,
     
         // TextBox
-        .textBox_background: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1),
-        .textBox_border: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
+        .textBox_background: .classicDark1,
+        .textBox_border: .classicDark3,
     
         // MessageBubble
         .messageBubble_outgoingBackground: .primary,
-        .messageBubble_incomingBackground: #colorLiteral(red: 0.1764705882, green: 0.1764705882, blue: 0.1764705882, alpha: 1),
-        .messageBubble_outgoingText: #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1),
-        .messageBubble_incomingText: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+        .messageBubble_incomingBackground: .classicDark2,
+        .messageBubble_outgoingText: .classicDark0,
+        .messageBubble_incomingText: .classicDark6,
 
         // MenuButton
         .menuButton_background: .primary,
-        .menuButton_icon: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+        .menuButton_icon: .classicDark6,
         .menuButton_outerShadow: .primary,
-        .menuButton_innerShadow: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+        .menuButton_innerShadow: .classicDark6,
         
         // RadioButton
         .radioButton_selectedBackground: .primary,
         .radioButton_unselectedBackground: .clear,
-        .radioButton_selectedBorder: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
-        .radioButton_unselectedBorder: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
+        .radioButton_selectedBorder: .classicDark6,
+        .radioButton_unselectedBorder: .classicDark6,
         
         // OutlineButton
         .outlineButton_text: .primary,
         .outlineButton_background: .clear,
-        .outlineButton_highlight: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 0.3),
+        .outlineButton_highlight: .classicDark6.withAlphaComponent(0.3),
         .outlineButton_border: .primary,
-        .outlineButton_filledText: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
-        .outlineButton_filledBackground: #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1),
-        .outlineButton_filledHighlight: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
-        .outlineButton_destructiveText: #colorLiteral(red: 1, green: 0.2274509804, blue: 0.2274509804, alpha: 1),
+        .outlineButton_filledText: .classicDark6,
+        .outlineButton_filledBackground: .classicDark1,
+        .outlineButton_filledHighlight: .classicDark3,
+        .outlineButton_destructiveText: .dangerDark,
         .outlineButton_destructiveBackground: .clear,
-        .outlineButton_destructiveHighlight: #colorLiteral(red: 1, green: 0.2274509804, blue: 0.2274509804, alpha: 0.3),
-        .outlineButton_destructiveBorder: #colorLiteral(red: 1, green: 0.2274509804, blue: 0.2274509804, alpha: 1),
+        .outlineButton_destructiveHighlight: .dangerDark.withAlphaComponent(0.3),
+        .outlineButton_destructiveBorder: .dangerDark,
         
         // SolidButton
-        .solidButton_background: #colorLiteral(red: 0.1764705882, green: 0.1764705882, blue: 0.1764705882, alpha: 1),
-        .solidButton_highlight: #colorLiteral(red: 0.3254901961, green: 0.3254901961, blue: 0.3254901961, alpha: 1),
+        .solidButton_background: .classicDark3,
+        .solidButton_highlight: .classicDark4,
         
         // Settings
-        .settings_tabBackground: #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1),
-        .settings_tabHighlight: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
+        .settings_tabBackground: .classicDark1,
+        .settings_tabHighlight: .classicDark3,
         
         // Appearance
-        .appearance_sectionBackground: #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1),
-        .appearance_buttonBackground: #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1),
-        .appearance_buttonHighlight: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
+        .appearance_sectionBackground: .classicDark1,
+        .appearance_buttonBackground: .classicDark1,
+        .appearance_buttonHighlight: .classicDark3,
+        
+        // Alert
+        .alert_background: .classicDark1,
+        .alert_buttonBackground: .classicDark1,
+        .alert_buttonHighlight: .classicDark3,
         
         // ConversationButton
-        .conversationButton_background: #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1),
-        .conversationButton_highlight: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
-        .conversationButton_unreadBackground: #colorLiteral(red: 0.1764705882, green: 0.1764705882, blue: 0.1764705882, alpha: 1),
-        .conversationButton_unreadHighlight: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
+        .conversationButton_background: .classicDark1,
+        .conversationButton_highlight: .classicDark3,
+        .conversationButton_unreadBackground: .classicDark2,
+        .conversationButton_unreadHighlight: .classicDark3,
         .conversationButton_unreadStripBackground: .primary,
-        .conversationButton_unreadBubbleBackground: #colorLiteral(red: 0.2549019608, green: 0.2549019608, blue: 0.2549019608, alpha: 1),
-        .conversationButton_unreadBubbleText: #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),
-        .conversationButton_pinBackground: Theme.PrimaryColor.yellow.color
+        .conversationButton_unreadBubbleBackground: .classicDark3,
+        .conversationButton_unreadBubbleText: .classicDark6,
+        .conversationButton_swipeDestructive: .dangerDark,
+        .conversationButton_swipeSecondary: .classicDark2,
+        .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color
     ]
 }

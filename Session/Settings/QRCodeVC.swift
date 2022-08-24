@@ -162,39 +162,71 @@ private final class ViewMyQRCodeVC : UIViewController {
     
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
+        
         // Set up title label
         let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? CGFloat(40) : Values.massiveFontSize)
         titleLabel.text = "Scan Me"
-        titleLabel.numberOfLines = 1
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.textAlignment = .center
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 1
         titleLabel.set(.height, to: isIPhone5OrSmaller ? CGFloat(40) : Values.massiveFontSize)
+        
         // Set up QR code image view
-        let qrCodeImageView = UIImageView()
-        let qrCode = QRCode.generate(for: getUserHexEncodedPublicKey(), hasBackground: true)
-        qrCodeImageView.image = qrCode
-        qrCodeImageView.contentMode = .scaleAspectFit
+        let qrCodeImageView = UIImageView(
+            image: QRCode.generate(for: getUserHexEncodedPublicKey(), hasBackground: false)
+                .withRenderingMode(.alwaysTemplate)
+        )
         qrCodeImageView.set(.height, to: isIPhone5OrSmaller ? 180 : 240)
         qrCodeImageView.set(.width, to: isIPhone5OrSmaller ? 180 : 240)
+        
+#if targetEnvironment(simulator)
+#else
+        // Note: For some reason setting this seems to stop the QRCode from rendering on the
+        // simulator so only doing it on device
+        qrCodeImageView.contentMode = .scaleAspectFit
+#endif
+        
+        let qrCodeImageViewBackgroundView = UIView()
+        qrCodeImageViewBackgroundView.layer.cornerRadius = 8
+        qrCodeImageViewBackgroundView.addSubview(qrCodeImageView)
+        qrCodeImageView.pin(
+            to: qrCodeImageViewBackgroundView,
+            withInset: 5    // The QRCode image has about 6pt of padding and we want 11 in total
+        )
+        
+        ThemeManager.onThemeChange(observer: qrCodeImageView) { theme, _ in
+            switch theme.interfaceStyle {
+                case .light:
+                    qrCodeImageView.tintColor = theme.colors[.textPrimary]
+                    qrCodeImageViewBackgroundView.backgroundColor = nil
+                    
+                default:
+                    qrCodeImageView.tintColor = theme.colors[.backgroundPrimary]
+                    qrCodeImageViewBackgroundView.backgroundColor = .white
+            }
+            
+        }
+        
         // Set up QR code image view container
         let qrCodeImageViewContainer = UIView()
         qrCodeImageViewContainer.accessibilityLabel = "Your QR code"
         qrCodeImageViewContainer.isAccessibilityElement = true
-        qrCodeImageViewContainer.addSubview(qrCodeImageView)
-        qrCodeImageView.center(.horizontal, in: qrCodeImageViewContainer)
-        qrCodeImageView.pin(.top, to: .top, of: qrCodeImageViewContainer)
-        qrCodeImageView.pin(.bottom, to: .bottom, of: qrCodeImageViewContainer)
+        qrCodeImageViewContainer.addSubview(qrCodeImageViewBackgroundView)
+        qrCodeImageViewBackgroundView.center(.horizontal, in: qrCodeImageViewContainer)
+        qrCodeImageViewBackgroundView.pin(.top, to: .top, of: qrCodeImageViewContainer)
+        qrCodeImageViewBackgroundView.pin(.bottom, to: .bottom, of: qrCodeImageViewContainer)
+        
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.mediumFontSize)
-        explanationLabel.text = NSLocalizedString("vc_view_my_qr_code_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_view_my_qr_code_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
         
         // Set up share button
         let shareButton = OutlineButton(style: .regular, size: .large)
@@ -222,16 +254,19 @@ private final class ViewMyQRCodeVC : UIViewController {
         stackView.pin(.top, to: .top, of: view)
         view.pin(.trailing, to: .trailing, of: stackView)
         bottomConstraint = view.pin(.bottom, to: .bottom, of: stackView)
+        
         // Set up width constraint
         view.set(.width, to: UIScreen.main.bounds.width)
     }
     
-    // MARK: General
+    // MARK: - General
+    
     func constrainHeight(to height: CGFloat) {
         view.set(.height, to: height)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func shareQRCode() {
         let qrCode = QRCode.generate(for: getUserHexEncodedPublicKey(), hasBackground: true)
         let shareVC = UIActivityViewController(activityItems: [ qrCode ], applicationActivities: nil)
@@ -250,26 +285,30 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
     
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
+        
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_scan_qr_code_camera_access_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
         // Set up call to action button
         let callToActionButton = UIButton()
-        callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
+        callToActionButton.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        callToActionButton.setTitle("vc_scan_qr_code_grant_camera_access_button_title".localized(), for: UIControl.State.normal)
+        callToActionButton.setThemeTitleColor(.primary, for: .normal)
         callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
+        
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])
         stackView.axis = .vertical
         stackView.spacing = Values.mediumSpacing
         stackView.alignment = .center
+        
         // Set up constraints
         view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)

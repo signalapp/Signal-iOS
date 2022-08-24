@@ -43,6 +43,7 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsVie
     private lazy var _observableSettingsData: ObservableData = ValueObservation
         .trackingConstantRegion { [weak self] db -> [SectionModel] in
             self?.currentSelection = (self?.currentSelection ?? db[.defaultNotificationSound])
+                .defaulting(to: .defaultNotificationSound)
             
             return [
                 SectionModel(
@@ -63,7 +64,10 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsVie
                                 }(),
                                 action: .listSelection(
                                     isSelected: { (self?.currentSelection == sound) },
-                                    storedSelection: (db[.defaultNotificationSound] == sound),
+                                    storedSelection: (
+                                        sound == db[.defaultNotificationSound]
+                                            .defaulting(to: .defaultNotificationSound)
+                                    ),
                                     shouldAutoSave: false,
                                     selectValue: {
                                         self?.currentSelection = sound

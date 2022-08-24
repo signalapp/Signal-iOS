@@ -11,6 +11,7 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
     typealias SectionModel = SettingsTableViewModel<Section, SettingItem>.SectionModel
     
     private let viewModel: SettingsTableViewModel<Section, SettingItem>
+    private let shouldShowCloseButton: Bool
     private var dataChangeObservable: DatabaseCancellable?
     private var hasLoadedInitialSettingsData: Bool = false
     
@@ -37,8 +38,9 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
     
     // MARK: - Initialization
     
-    init(viewModel: SettingsTableViewModel<Section, SettingItem>) {
+    init(viewModel: SettingsTableViewModel<Section, SettingItem>, shouldShowCloseButton: Bool = false) {
         self.viewModel = viewModel
+        self.shouldShowCloseButton = shouldShowCloseButton
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -163,7 +165,16 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
             case .listSelection(_, _, let shouldAutoSave, _) = data.first?.elements.first?.action,
             !shouldAutoSave
         else {
-            navigationItem.leftBarButtonItem = nil
+            navigationItem.leftBarButtonItem = {
+                guard shouldShowCloseButton else { return nil }
+                
+                return UIBarButtonItem(
+                    image: UIImage(named: "X")?.withRenderingMode(.alwaysTemplate),
+                    style: .plain,
+                    target: self,
+                    action: #selector(closePressed)
+                )
+            }()
             navigationItem.rightBarButtonItem = nil
             return
         }
@@ -243,9 +254,23 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
                 manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
                 onChange?()
                 
-            case .settingBool(let key):
-                Storage.shared.write { db in db[key] = !db[key] }
-                manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
+            case .settingBool(let key, let confirmationInfo):
+                guard
+                    let confirmationInfo: ConfirmationModal.Info = confirmationInfo,
+                    confirmationInfo.stateToShow.shouldShow(for: Storage.shared[key])
+                else {
+                    Storage.shared.write { db in db[key] = !db[key] }
+                    manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
+                    return
+                }
+                
+                // Show a confirmation modal before continuing
+                let confirmationModal: ConfirmationModal = ConfirmationModal(info: confirmationInfo) { [weak self] _ in
+                    Storage.shared.write { db in db[key] = !db[key] }
+                    self?.manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
+                    self?.dismiss(animated: true)
+                }
+                present(confirmationModal, animated: true, completion: nil)
             
             case .push(let createDestination), .dangerPush(let createDestination),
                     .settingEnum(_, _, let createDestination):
@@ -308,6 +333,10 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
     
     // MARK: - NavigationActions
     
+    @objc private func closePressed() {
+        navigationController?.dismiss(animated: true)
+    }
+    
     @objc private func cancelButtonPressed() {
         navigationController?.popViewController(animated: true)
     }
@@ -322,6 +351,11 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
 // MARK: - SettingHeaderView
 
 class SettingHeaderView: UITableViewHeaderFooterView {
+    private lazy var emptyHeightConstraint: NSLayoutConstraint = self.heightAnchor
+        .constraint(equalToConstant: (Values.verySmallSpacing * 2))
+    private lazy var filledHeightConstraint: NSLayoutConstraint = self.heightAnchor
+        .constraint(greaterThanOrEqualToConstant: Values.mediumSpacing)
+    
     // MARK: - UI
     
     private let stackView: UIStackView = {
@@ -331,12 +365,6 @@ class SettingHeaderView: UITableViewHeaderFooterView {
         result.distribution = .fill
         result.alignment = .fill
         result.isLayoutMarginsRelativeArrangement = true
-        result.layoutMargins = UIEdgeInsets(
-            top: Values.mediumSpacing,
-            left: Values.largeSpacing,
-            bottom: Values.smallSpacing,
-            right: Values.largeSpacing
-        )
         
         return result
     }()
@@ -373,8 +401,6 @@ class SettingHeaderView: UITableViewHeaderFooterView {
     }
     
     private func setupLayout() {
-        self.heightAnchor.constraint(greaterThanOrEqualToConstant: Values.mediumSpacing).isActive = true
-        
         stackView.pin(to: self)
         
         separator.pin(.left, to: .left, of: self)
@@ -387,5 +413,14 @@ class SettingHeaderView: UITableViewHeaderFooterView {
     fileprivate func update(with title: String) {
         titleLabel.text = title
         titleLabel.isHidden = title.isEmpty
+        stackView.layoutMargins = UIEdgeInsets(
+            top: (title.isEmpty ? Values.verySmallSpacing : Values.mediumSpacing),
+            left: Values.largeSpacing,
+            bottom: (title.isEmpty ? Values.verySmallSpacing : Values.mediumSpacing),
+            right: Values.largeSpacing
+        )
+        emptyHeightConstraint.isActive = title.isEmpty
+        filledHeightConstraint.isActive = !title.isEmpty
+        self.layoutIfNeeded()
     }
 }
