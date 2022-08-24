@@ -31,13 +31,15 @@ public class SDSKeyValueStore: NSObject {
     static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
     static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
     // TODO: For now, store all key-value in a single table.
-    public static let table = SDSTableMetadata(collection: SDSKeyValueStore.dataStoreCollection,
+    public static let table = SDSTableMetadata(
+        collection: SDSKeyValueStore.dataStoreCollection,
         tableName: SDSKeyValueStore.tableName,
         columns: [
-        collectionColumn,
-        keyColumn,
-        valueColumn
-        ])
+            collectionColumn,
+            keyColumn,
+            valueColumn
+        ]
+    )
 
     @objc
     public init(collection: String) {
