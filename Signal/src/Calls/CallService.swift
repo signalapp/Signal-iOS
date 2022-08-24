@@ -561,7 +561,8 @@ public final class CallService: LightweightCallManager {
         // safe to do so.
         if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
 
-        if call.ringMode == .allowed && call.userWantsToRing {
+        let callKnownToBeInProgress = call.groupCall.peekInfo?.joinedMembers.isEmpty == false
+        if !callKnownToBeInProgress && call.ringMode == .allowed && call.userWantsToRing {
             call.groupCall.ringAll()
         }
     }
