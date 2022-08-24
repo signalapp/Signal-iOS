@@ -7,7 +7,7 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.$(SIGNAL_BUNDLEID_PREFIX).signal.group</string>
-		<string>group.$(SIGNAL_BUNDLEID_PREFIX).signal.group.st</string>
+		<string>group.$(SIGNAL_BUNDLEID_PREFIX).signal.group.staging</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
