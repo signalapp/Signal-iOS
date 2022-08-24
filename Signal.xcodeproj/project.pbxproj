@@ -174,7 +174,7 @@
 		3402AAB0271D9E180084CBAE /* TextFieldWithPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */; };
 		3402AAB1271D9E180084CBAE /* OWSNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95544271B510400B05242 /* OWSNavigationBar.swift */; };
 		3402AAB2271D9E180084CBAE /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95536271B510400B05242 /* ContactTableViewCell.swift */; };
-		3402AAB3271D9E180084CBAE /* CVBodyTextLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95522271B510400B05242 /* CVBodyTextLabel.swift */; };
+		3402AAB3271D9E180084CBAE /* CVTextLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95522271B510400B05242 /* CVTextLabel.swift */; };
 		3402AAB4271D9E180084CBAE /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95519271B510400B05242 /* VideoPlayerView.swift */; };
 		3402AAB6271D9E180084CBAE /* ImageEditorCropViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95556271B510400B05242 /* ImageEditorCropViewController.swift */; };
 		3402AAB7271D9E180084CBAE /* OWSTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A9552E271B510400B05242 /* OWSTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -2528,7 +2528,7 @@
 		34A9551E271B510400B05242 /* ContactsViewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsViewHelper.swift; sourceTree = "<group>"; };
 		34A9551F271B510400B05242 /* DisappearingTimerConfigurationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisappearingTimerConfigurationView.swift; sourceTree = "<group>"; };
 		34A95520271B510400B05242 /* OWSSearchBar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSSearchBar.h; sourceTree = "<group>"; };
-		34A95522271B510400B05242 /* CVBodyTextLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVBodyTextLabel.swift; sourceTree = "<group>"; };
+		34A95522271B510400B05242 /* CVTextLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVTextLabel.swift; sourceTree = "<group>"; };
 		34A95523271B510400B05242 /* CVCellMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVCellMeasurement.swift; sourceTree = "<group>"; };
 		34A95524271B510400B05242 /* CVUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVUtils.swift; sourceTree = "<group>"; };
 		34A95525271B510400B05242 /* CVText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVText.swift; sourceTree = "<group>"; };
@@ -5210,9 +5210,9 @@
 		34A95521271B510400B05242 /* ConversationView */ = {
 			isa = PBXGroup;
 			children = (
-				34A95522271B510400B05242 /* CVBodyTextLabel.swift */,
 				34A95523271B510400B05242 /* CVCellMeasurement.swift */,
 				34A95525271B510400B05242 /* CVText.swift */,
+				34A95522271B510400B05242 /* CVTextLabel.swift */,
 				34A95524271B510400B05242 /* CVUtils.swift */,
 			);
 			path = ConversationView;
@@ -9541,9 +9541,9 @@
 				3402AA03271D9DB50084CBAE /* ConversationStyle.swift in Sources */,
 				34ACA7F72733183000E47AD4 /* CountryCodeViewController.swift in Sources */,
 				3402AA7B271D9E180084CBAE /* CustomKeyboard.swift in Sources */,
-				3402AAB3271D9E180084CBAE /* CVBodyTextLabel.swift in Sources */,
 				3402AA87271D9E180084CBAE /* CVCellMeasurement.swift in Sources */,
 				3402AA92271D9E180084CBAE /* CVText.swift in Sources */,
+				3402AAB3271D9E180084CBAE /* CVTextLabel.swift in Sources */,
 				3402AA7A271D9E180084CBAE /* CVUtils.swift in Sources */,
 				34D21DA227297FBF00D891F4 /* DebugLogger+Payments.swift in Sources */,
 				3402A9DC271D95C10084CBAE /* Dependencies+SignalUI.swift in Sources */,

@@ -25,7 +25,7 @@ import MessageUI
 //   * long press - show email address + new email message / facetime audio / facetime video / send message / add to contacts / copy email.
 extension ConversationViewController {
 
-    public func didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+    public func didTapBodyTextItem(_ item: CVTextLabel.ItemObject) {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isRegisteredAndReady else {
@@ -67,7 +67,7 @@ extension ConversationViewController {
         }
     }
 
-    public func didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+    public func didLongPressBodyTextItem(_ item: CVTextLabel.ItemObject) {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isRegisteredAndReady else {
@@ -111,7 +111,7 @@ extension ConversationViewController {
     // * URL
     //   * tap - open URL in safari
     //   * long press - preview + open link in safari / add to reading list / copy link / share
-    private func didLongPressLink(dataItem: CVBodyTextLabel.DataItem) {
+    private func didLongPressLink(dataItem: CVTextLabel.DataItem) {
         AssertIsOnMainThread()
 
         var title: String? = dataItem.snippet.strippedOrNil
@@ -171,7 +171,7 @@ extension ConversationViewController {
     // * phone number
     //   * tap - action sheet with call.
     //   * long press - show phone number + call PSTN / facetime audio / facetime video / send messages / add to contacts / copy
-    private func didLongPressPhoneNumber(dataItem: CVBodyTextLabel.DataItem) {
+    private func didLongPressPhoneNumber(dataItem: CVTextLabel.DataItem) {
         guard let snippet = dataItem.snippet.strippedOrNil,
               let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: snippet),
               let e164 = phoneNumber.toE164().strippedOrNil else {
@@ -265,7 +265,7 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    private func didLongPressEmail(dataItem: CVBodyTextLabel.DataItem) {
+    private func didLongPressEmail(dataItem: CVTextLabel.DataItem) {
         let actionSheet = ActionSheetController(title: dataItem.snippet.strippedOrNil)
 
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE",
@@ -295,13 +295,13 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    private func didTapLink(dataItem: CVBodyTextLabel.DataItem) {
+    private func didTapLink(dataItem: CVTextLabel.DataItem) {
         AssertIsOnMainThread()
 
         openLink(dataItem: dataItem)
     }
 
-    private func openLink(dataItem: CVBodyTextLabel.DataItem) {
+    private func openLink(dataItem: CVTextLabel.DataItem) {
         AssertIsOnMainThread()
 
         if StickerPackInfo.isStickerPackShare(dataItem.url) {
@@ -326,11 +326,11 @@ extension ConversationViewController {
         url.absoluteString.lowercased().hasPrefix("mailto:")
     }
 
-    private func didTapEmail(dataItem: CVBodyTextLabel.DataItem) {
+    private func didTapEmail(dataItem: CVTextLabel.DataItem) {
         composeEmail(dataItem: dataItem)
     }
 
-    private func composeEmail(dataItem: CVBodyTextLabel.DataItem) {
+    private func composeEmail(dataItem: CVTextLabel.DataItem) {
         AssertIsOnMainThread()
         owsAssertDebug(isMailtoUrl(dataItem.url))
 

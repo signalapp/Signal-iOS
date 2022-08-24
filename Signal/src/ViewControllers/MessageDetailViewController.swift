@@ -929,9 +929,9 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // MARK: - Body Text Items
 
-    func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}
+    func cvc_didTapBodyTextItem(_ item: CVTextLabel.ItemObject) {}
 
-    func cvc_didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}
+    func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.ItemObject) {}
 
     // MARK: - Long Press
 

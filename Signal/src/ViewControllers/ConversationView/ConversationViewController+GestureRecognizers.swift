@@ -325,7 +325,7 @@ public struct CVLongPressHandler {
         case sticker
         case quotedReply
         case systemMessage
-        case bodyText(item: CVBodyTextLabel.Item)
+        case bodyText(item: CVTextLabel.Item)
     }
     let gestureLocation: GestureLocation
 

@@ -25,13 +25,13 @@ extension ConversationViewController: CVComponentDelegate {
 
     // MARK: - Body Text Items
 
-    public func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+    public func cvc_didTapBodyTextItem(_ item: CVTextLabel.ItemObject) {
         AssertIsOnMainThread()
 
         didTapBodyTextItem(item)
     }
 
-    public func cvc_didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+    public func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.ItemObject) {
         didLongPressBodyTextItem(item)
     }
 

@@ -281,18 +281,18 @@ public class CVText {
         return textContainer.size(for: config.text, font: config.font)
     }
 
-    // MARK: - CVBodyTextLabel
+    // MARK: - CVTextLabel
 
-    private static let bodyTextLabelCache = LRUCache<CacheKey, CVBodyTextLabel.Measurement>(maxSize: cacheSize)
+    private static let bodyTextLabelCache = LRUCache<CacheKey, CVTextLabel.Measurement>(maxSize: cacheSize)
 
-    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CVBodyTextLabel.Measurement {
+    public static func measureBodyTextLabel(config: CVTextLabel.Config, maxWidth: CGFloat) -> CVTextLabel.Measurement {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = bodyTextLabelCache.get(key: cacheKey) {
             return result
         }
 
-        let measurement = CVBodyTextLabel.measureSize(config: config, maxWidth: maxWidth)
+        let measurement = CVTextLabel.measureSize(config: config, maxWidth: maxWidth)
         owsAssertDebug(measurement.size.width > 0)
         owsAssertDebug(measurement.size.height > 0)
         owsAssertDebug(measurement.size == measurement.size.ceil)

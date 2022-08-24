@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 
 @objc
-public class CVBodyTextLabel: NSObject {
+public class CVTextLabel: NSObject {
 
     public struct DataItem: Equatable {
         public enum DataType: UInt, Equatable, CustomStringConvertible {
@@ -82,7 +82,7 @@ public class CVBodyTextLabel: NSObject {
 
     // TODO: This class is temporary until CVC's conformance to CVComponentDelegate
     //       is pure Swift.
-    @objc(CVBodyTextLabelItemObject)
+    @objc(CVTextLabelItemObject)
     public class ItemObject: NSObject {
         public let item: Item
 
@@ -419,7 +419,7 @@ public class CVBodyTextLabel: NSObject {
 
 // MARK: -
 
-extension CVBodyTextLabel.Label: UIDragInteractionDelegate {
+extension CVTextLabel.Label: UIDragInteractionDelegate {
     public func dragInteraction(_ interaction: UIDragInteraction,
                                 itemsForBeginning session: UIDragSession) -> [UIDragItem] {
         guard nil != self.config else {
