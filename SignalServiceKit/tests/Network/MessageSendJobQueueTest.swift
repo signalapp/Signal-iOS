@@ -226,18 +226,21 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
     private func sentExpectation(message: TSOutgoingMessage, block: @escaping () -> Void = { }) -> XCTestExpectation {
         let expectation = self.expectation(description: "sent message")
 
-        fakeMessageSender.sendMessageWasCalledBlock = { [weak messageSender] sentMessage in
+        fakeMessageSender.sendMessageWasCalledBlock = { [weak fakeMessageSender] sentMessage in
+            guard let fakeMessageSender = fakeMessageSender else {
+                owsFailDebug("Lost track of the message sender!")
+                return
+            }
+
             guard sentMessage.uniqueId == message.uniqueId else {
                 XCTFail("unexpected sentMessage: \(sentMessage)")
                 return
             }
+
+            fakeMessageSender.sendMessageWasCalledBlock = nil
+
             expectation.fulfill()
             block()
-            guard let messageSender = messageSender as? OWSFakeMessageSender else {
-                owsFailDebug("Invalid messageSender.")
-                return
-            }
-            messageSender.sendMessageWasCalledBlock = nil
         }
 
         return expectation
