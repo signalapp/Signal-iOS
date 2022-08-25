@@ -1215,6 +1215,7 @@
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
 		F9B0DC6028948656004E07B7 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4E28948656004E07B7 /* textsecure.cer */; };
 		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
+		F9BC9C6528B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */; };
 		F9C5C89F289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
 		F9C5C8A7289451B900548EEE /* SignalServiceKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C899289451B900548EEE /* SignalServiceKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5C8AA289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
@@ -3583,6 +3584,7 @@
 		F9B0DC4D28948656004E07B7 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
 		F9B0DC4E28948656004E07B7 /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
 		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
+		F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessageTest.swift; sourceTree = "<group>"; };
 		F9C5C897289451B900548EEE /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9C5C899289451B900548EEE /* SignalServiceKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalServiceKit.h; sourceTree = "<group>"; };
 		F9C5C89E289451B900548EEE /* SignalServiceKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalServiceKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6919,6 +6921,7 @@
 				F942622F289B1B5500460798 /* MessagePipelineSupervisorTest.swift */,
 				F9426234289B1B5500460798 /* MessageProcessingIntegrationTest.swift */,
 				F942622B289B1B5500460798 /* MessageSendLogTests.swift */,
+				F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */,
 				F9426236289B1B5500460798 /* OWSDisappearingMessageFinderTest.m */,
 				F9426231289B1B5500460798 /* OWSDisappearingMessagesJobTest.m */,
 				F9426228289B1B5500460798 /* OWSLinkPreviewTest.swift */,
@@ -10992,6 +10995,7 @@
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
 				F942626B289B1B5500460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift in Sources */,
+				F9BC9C6528B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift in Sources */,
 				F9426264289B1B5500460798 /* OWSAnalyticsTests.swift in Sources */,
 				F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */,
 				F942629E289B1B5600460798 /* OWSDisappearingMessageFinderTest.m in Sources */,

@@ -61,6 +61,10 @@ public class SSKBaseTestSwift: XCTestCase {
         return databaseStorage.write(block: block)
     }
 
+    public func write<T>(_ block: (SDSAnyWriteTransaction) throws -> T) throws -> T {
+        try databaseStorage.write(block: block)
+    }
+
     @objc
     public func asyncWrite(_ block: @escaping (SDSAnyWriteTransaction) -> Void) {
         return databaseStorage.asyncWrite(block: block)

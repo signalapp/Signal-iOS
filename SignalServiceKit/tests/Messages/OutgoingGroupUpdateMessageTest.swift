@@ -36,6 +36,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTestSwift {
                     in: thread,
                     groupMetaMessage: groupMetaMessage,
                     expiresInSeconds: 60,
+                    additionalRecipients: [],
                     transaction: transaction
                 )
                 let actual = message.shouldBeSaved
@@ -50,6 +51,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTestSwift {
                 in: try createThread(transaction: transaction),
                 groupMetaMessage: .update,
                 expiresInSeconds: 60,
+                additionalRecipients: [],
                 transaction: transaction
             )
         }
