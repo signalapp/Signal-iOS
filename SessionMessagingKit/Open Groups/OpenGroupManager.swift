@@ -608,6 +608,7 @@ public final class OpenGroupManager: NSObject {
         guard !messageServerIdsToRemove.isEmpty else { return }
         
         _ = try? Interaction
+            .filter(Interaction.Columns.threadId == openGroup.threadId)
             .filter(messageServerIdsToRemove.contains(Interaction.Columns.openGroupServerMessageId))
             .deleteAll(db)
     }
