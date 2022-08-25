@@ -158,9 +158,6 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 }
 
                 switch error {
-                case GroupsV2Error.unexpectedRevision:
-                    // Race with another client; retry later.
-                    return self.didFail(groupId: groupId, retryDelay: retryDelay)
                 case GroupsV2Error.shouldDiscard:
                     // If a non-recoverable error occurs (e.g. we've
                     // delete the thread from the database), give up.

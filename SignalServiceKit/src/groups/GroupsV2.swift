@@ -26,7 +26,6 @@ public enum GroupsV2Error: Error {
     case groupCannotBeMigrated
     case groupDowngradeNotAllowed
     case missingGroupChangeProtos
-    case unexpectedRevision
     case groupBlocked
     case newMemberMissingAnnouncementOnlyCapability
     case localUserBlockedFromJoining
@@ -104,12 +103,6 @@ public protocol GroupsV2Swift: GroupsV2 {
     func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot>
 
     func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
-
-    // On success returns a group thread model that reflects the
-    // latest state in the service, which (due to races) might
-    // reflect changes after the change set.
-    func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
-                                      requiredRevision: UInt32?) -> Promise<TSGroupThread>
 
     func updateGroupV2(
         groupId: Data,
@@ -563,11 +556,6 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
 
     public func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
                                          changeActionsProtoData: Data?) throws -> SSKProtoGroupContextV2 {
-        owsFail("Not implemented.")
-    }
-
-    public func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
-                                             requiredRevision: UInt32?) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 

@@ -224,8 +224,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     //
     // We do those things here as well, to DRY them up and to ensure they're always
     // done immediately and in a consistent way.
-    public func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
-                                             requiredRevision: UInt32?) -> Promise<TSGroupThread> {
+    private func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> {
 
         let groupId = changes.groupId
         let groupSecretParamsData = changes.groupSecretParamsData
@@ -257,15 +256,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             }.then(on: .global()) { (groupThread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> in
                 guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
-                }
-                if let requiredRevision = requiredRevision,
-                   groupModel.revision != requiredRevision {
-                    if DebugFlags.internalLogging {
-                        Logger.info("requiredRevision: \(requiredRevision) != revision: \(groupModel.revision).")
-                    } else {
-                        Logger.info("requiredRevision: != revision.")
-                    }
-                    throw GroupsV2Error.unexpectedRevision
                 }
                 return changes.buildGroupChangeProto(currentGroupModel: groupModel,
                                                      currentDisappearingMessageToken: disappearingMessageToken)
@@ -843,10 +833,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             changesBlock(changes)
             return changes
         }.then(on: .global()) { (changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> in
-            return self.updateExistingGroupOnService(
-                changes: changes,
-                requiredRevision: nil
-            )
+            return self.updateExistingGroupOnService(changes: changes)
         }
     }
 

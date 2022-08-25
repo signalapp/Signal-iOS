@@ -1182,8 +1182,6 @@ extension GroupsV2Error: IsRetryableProvider {
             return false
         case .missingGroupChangeProtos:
             return false
-        case .unexpectedRevision:
-            return true
         case .groupBlocked:
             return false
         case .newMemberMissingAnnouncementOnlyCapability:
