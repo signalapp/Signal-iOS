@@ -810,9 +810,18 @@ public class GroupManager: NSObject {
 
     // MARK: - Accept Invites
 
-    public static func localAcceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<Void> in
-            return self.databaseStorage.write(.promise) { transaction in
+    public static func localAcceptInviteToGroupV2(
+        groupModel: TSGroupModelV2,
+        waitForMessageProcessing: Bool = false
+    ) -> Promise<TSGroupThread> {
+        firstly { () -> Promise<Void> in
+            if waitForMessageProcessing {
+                return GroupManager.messageProcessingPromise(for: groupModel, description: "Accept invite")
+            }
+
+            return Promise.value(())
+        }.then { () -> Promise<Void> in
+            self.databaseStorage.write(.promise) { transaction in
                 self.profileManager.addGroupId(toProfileWhitelist: groupModel.groupId,
                                                userProfileWriter: .localUser,
                                                transaction: transaction)
@@ -821,6 +830,7 @@ public class GroupManager: NSObject {
             guard let localUuid = tsAccountManager.localUuid else {
                 throw OWSAssertionError("Missing localUuid.")
             }
+
             return updateGroupV2(groupModel: groupModel,
                                  description: "Accept invite") { groupChangeSet in
                 groupChangeSet.promoteInvitedMember(localUuid)
@@ -830,14 +840,23 @@ public class GroupManager: NSObject {
 
     // MARK: - Leave Group / Decline Invite
 
-    public static func localLeaveGroupOrDeclineInvite(groupThread: TSGroupThread,
-                                                      replacementAdminUuid: UUID? = nil) -> Promise<TSGroupThread> {
-        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+    public static func localLeaveGroupOrDeclineInvite(
+        groupThread: TSGroupThread,
+        replacementAdminUuid: UUID? = nil,
+        waitForMessageProcessing: Bool = false
+    ) -> Promise<TSGroupThread> {
+        let groupModel = groupThread.groupModel
+
+        guard let groupModelV2 = groupModel as? TSGroupModelV2 else {
             assert(replacementAdminUuid == nil)
-            return localLeaveGroupV1(groupId: groupThread.groupModel.groupId)
+            return localLeaveGroupV1(groupId: groupModel.groupId)
         }
-        return localLeaveGroupV2OrDeclineInvite(groupModel: groupModel,
-                                                replacementAdminUuid: replacementAdminUuid)
+
+        return localLeaveGroupV2OrDeclineInvite(
+            groupModel: groupModelV2,
+            replacementAdminUuid: replacementAdminUuid,
+            waitForMessageProcessing: waitForMessageProcessing
+        )
     }
 
     private static func localLeaveGroupV1(groupId: Data) -> Promise<TSGroupThread> {
@@ -883,15 +902,29 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func localLeaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2,
-                                                         replacementAdminUuid: UUID? = nil) -> Promise<TSGroupThread> {
-        updateGroupV2(groupModel: groupModel,
-                      description: "Leave group or decline invite") { groupChangeSet in
-            groupChangeSet.setShouldLeaveGroupDeclineInvite()
+    private static func localLeaveGroupV2OrDeclineInvite(
+        groupModel: TSGroupModelV2,
+        replacementAdminUuid: UUID? = nil,
+        waitForMessageProcessing: Bool
+    ) -> Promise<TSGroupThread> {
+        firstly { () -> Promise<Void> in
+            if waitForMessageProcessing {
+                return GroupManager.messageProcessingPromise(
+                    for: groupModel,
+                    description: "Leave group or decline invite"
+                )
+            }
 
-            // Sometimes when we leave a group we take care to assign a new admin.
-            if let replacementAdminUuid = replacementAdminUuid {
-                groupChangeSet.changeRoleForMember(replacementAdminUuid, role: .administrator)
+            return Promise.value(())
+        }.then { () -> Promise<TSGroupThread> in
+            updateGroupV2(groupModel: groupModel,
+                          description: "Leave group or decline invite") { groupChangeSet in
+                groupChangeSet.setShouldLeaveGroupDeclineInvite()
+
+                // Sometimes when we leave a group we take care to assign a new admin.
+                if let replacementAdminUuid = replacementAdminUuid {
+                    groupChangeSet.changeRoleForMember(replacementAdminUuid, role: .administrator)
+                }
             }
         }
     }

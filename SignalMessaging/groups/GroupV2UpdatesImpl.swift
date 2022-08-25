@@ -478,12 +478,11 @@ private extension GroupV2UpdatesImpl {
                     }
 
                     switch error {
-                    case GroupsV2Error.groupNotInDatabase:
-                        // Unknown groups are handled by snapshot.
-                        return true
                     case GroupsV2Error.localUserNotInGroup:
-                        // We can recover from some auth edge cases
-                        // using a snapshot.
+                        // We can recover from some auth edge cases using a
+                        // snapshot. For example, if we are joining via an
+                        // invite link we will be unable to fetch change
+                        // actions.
                         return true
                     case GroupsV2Error.cantApplyChangesToPlaceholder:
                         // We can only update placeholder groups using a snapshot.
@@ -587,8 +586,7 @@ private extension GroupV2UpdatesImpl {
             return firstly {
                 return self.groupsV2Impl.fetchGroupChangeActions(
                     groupSecretParamsData: groupSecretParamsData,
-                    includeCurrentRevision: includeCurrentRevision,
-                    firstKnownRevision: upToRevision
+                    includeCurrentRevision: includeCurrentRevision
                 )
             }.map(on: .global()) { (groupChanges: GroupsV2Impl.GroupChangePage) -> GroupsV2Impl.GroupChangePage in
                 self.addGroupChangesToCache(groupChanges: groupChanges.changes,
@@ -639,7 +637,7 @@ private extension GroupV2UpdatesImpl {
             let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
 
             // See comment on getOrCreateThreadForGroupChanges(...).
-            guard var groupThread = self.getOrCreateThreadForGroupChanges(
+            guard var (groupThread, localUserWasAddedBy) = self.getOrCreateThreadForGroupChanges(
                 groupId: groupId,
                 groupV2Params: groupV2Params,
                 groupChanges: groupChanges,
@@ -667,7 +665,7 @@ private extension GroupV2UpdatesImpl {
                     }
                 }
 
-                try autoreleasepool {
+                let applyResult = try autoreleasepool {
                     try self.tryToApplySingleChangeFromService(
                         groupThread: &groupThread,
                         groupV2Params: groupV2Params,
@@ -678,65 +676,84 @@ private extension GroupV2UpdatesImpl {
                         transaction: transaction
                     )
                 }
-            }
 
-            // If the final group state includes a stale profile key for the
-            // local user, schedule an update to fix that.
-            if let profileKey = profileKeysByUuid[localUuid],
-               profileKey != self.profileManager.localProfileKey().keyData {
-                self.groupsV2.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
+                if
+                    let applyResult = applyResult,
+                    let changeAuthor = applyResult.changeAuthor,
+                    applyResult.wasLocalUserAddedByChange
+                {
+                    owsAssertDebug(
+                        localUserWasAddedBy == nil || (index == 0 && localUserWasAddedBy == changeAuthor),
+                        "Multiple change actions added the user to the group"
+                    )
+                    localUserWasAddedBy = changeAuthor
+                }
             }
 
             GroupManager.storeProfileKeysFromGroupProtos(profileKeysByUuid)
+
+            if
+                let localUserWasAddedBy = localUserWasAddedBy,
+                self.blockingManager.isAddressBlocked(localUserWasAddedBy, transaction: transaction)
+            {
+                // If we have been added to the group by a blocked user, we
+                // should automatically leave the group. To that end, enqueue
+                // a leave action after we've finished processing messages.
+                _ = GroupManager.localLeaveGroupOrDeclineInvite(
+                    groupThread: groupThread,
+                    waitForMessageProcessing: true
+                )
+            } else if
+                let profileKey = profileKeysByUuid[localUuid],
+                profileKey != self.profileManager.localProfileKey().keyData
+            {
+                // If the final group state includes a stale profile key for the
+                // local user, schedule an update to fix that. Note that we skip
+                // this step if we are planning to leave the group via the block
+                // above, as it's redundant.
+                self.groupsV2.updateLocalProfileKeyInGroup(
+                    groupId: groupId,
+                    transaction: transaction
+                )
+            }
 
             return groupThread
         }
     }
 
-    // When learning about v2 groups for the first time, we can always
-    // insert them into the database using a snapshot.  However we prefer
-    // to create them from group changes if possible, because group
-    // changes have more information.  Critically, we can usually determine
-    // who create the group or who added or invited us to the group.
+    // When learning about a v2 group for the first time, we need a snapshot of
+    // the group's current state to get us started. From then on we prefer to
+    // update the group using change actions, since those have more information.
+    // Specifically, change actions record who performed the action, e.g. who
+    // created the group or added us.
     //
-    // Therefore, before starting to apply group changes we use this
-    // method to insert the group into the database if necessary.
+    // We use this method to insert a thread if need be, so we can use change
+    // actions going forward to keep the group up-to-date.
     private func getOrCreateThreadForGroupChanges(
         groupId: Data,
         groupV2Params: GroupV2Params,
         groupChanges: [GroupV2Change],
         transaction: SDSAnyWriteTransaction
-    ) -> TSGroupThread? {
+    ) -> (TSGroupThread, addedToNewThreadBy: SignalServiceAddress?)? {
 
         if let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            return groupThread
+            return (groupThread, addedToNewThreadBy: nil)
         }
 
         do {
-            guard let firstGroupChange = groupChanges.first else {
-                return nil
-            }
-            guard let snapshot = firstGroupChange.snapshot else {
-                throw OWSAssertionError("Missing snapshot.")
-            }
-
-            var groupUpdateSourceAddress: SignalServiceAddress?
-            if let changeAuthorUuidData = firstGroupChange.changeActionsProto?.sourceUuid {
-                // Many change actions have author info, e.g. addedByUserID. But we can
-                // safely assume that all actions in the "change actions" have the same author.
-                //
-                // Some userIds/uuidCiphertexts can be validated by
-                // the service. This is one.
-                let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
-                groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
-            } else {
-                owsAssertDebug(firstGroupChange.changeActionsProto == nil
-                               || firstGroupChange.changeActionsProto?.sourceUuid != nil,
-                               "explicit changes should always have authors")
+            guard
+                let firstGroupChange = groupChanges.first,
+                let snapshot = firstGroupChange.snapshot
+            else {
+                throw OWSAssertionError("Missing first group change with snapshot")
             }
 
-            var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
-                                                                     transaction: transaction)
+            let groupUpdateSourceAddress = try firstGroupChange.author(groupV2Params: groupV2Params)
+
+            var builder = try TSGroupModelBuilder.builderForSnapshot(
+                groupV2Snapshot: snapshot,
+                transaction: transaction
+            )
             if snapshot.revision == 0, groupUpdateSourceAddress?.isLocalAddress == true {
                 builder.wasJustCreatedByLocalUser = true
             }
@@ -744,8 +761,10 @@ private extension GroupV2UpdatesImpl {
             let newGroupModel = try builder.build()
 
             let newDisappearingMessageToken = snapshot.disappearingMessageToken
-            let didAddLocalUserToV2Group = self.didAddLocalUserToV2Group(groupChange: firstGroupChange,
-                                                                         groupV2Params: groupV2Params)
+            let didAddLocalUserToV2Group = self.didAddLocalUserToV2Group(
+                inGroupChange: firstGroupChange,
+                groupV2Params: groupV2Params
+            )
 
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
                 newGroupModel: newGroupModel,
@@ -760,11 +779,19 @@ private extension GroupV2UpdatesImpl {
             // only used by tryToApplyGroupChangesFromServiceNow() which will take
             // care of that.
 
-            return result.groupThread
+            return (
+                result.groupThread,
+                addedToNewThreadBy: didAddLocalUserToV2Group ? groupUpdateSourceAddress : nil
+            )
         } catch {
             owsFailDebug("Error: \(error)")
             return nil
         }
+    }
+
+    private struct ApplySingleChangeFromServiceResult {
+        let changeAuthor: SignalServiceAddress?
+        let wasLocalUserAddedByChange: Bool
     }
 
     private func tryToApplySingleChangeFromService(
@@ -775,7 +802,7 @@ private extension GroupV2UpdatesImpl {
         isFirstChange: Bool,
         profileKeysByUuid: inout [UUID: Data],
         transaction: SDSAnyWriteTransaction
-    ) throws {
+    ) throws -> ApplySingleChangeFromServiceResult? {
 
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
@@ -783,25 +810,6 @@ private extension GroupV2UpdatesImpl {
         let changeRevision = groupChange.revision
 
         let isSingleRevisionUpdate = oldGroupModel.revision + 1 == changeRevision
-        var groupUpdateSourceAddress: SignalServiceAddress?
-        if isSingleRevisionUpdate, let changeAuthorUuidData = groupChange.changeActionsProto?.sourceUuid {
-            // Many change actions have author info, e.g. addedByUserID. But we can
-            // safely assume that all actions in the "change actions" have the same author.
-            //
-            // The "group update" info message should only reflect
-            // the "change author" if the change/diff reflects a
-            // single revision.  Eventually there will be gaps in
-            // the returned changes.
-            //
-            // Some userIds/uuidCiphertexts can be validated by
-            // the service. This is one.
-            let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
-            groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
-        } else {
-            owsAssertDebug(groupChange.changeActionsProto == nil
-                           || groupChange.changeActionsProto?.sourceUuid != nil,
-                           "explicit changes should always have authors")
-        }
 
         // We should only replace placeholder models using
         // latest snapshots _except_ in the case where the
@@ -828,14 +836,12 @@ private extension GroupV2UpdatesImpl {
         let newDisappearingMessageToken: DisappearingMessageToken?
         let newProfileKeys: [UUID: Data]
 
-        if let snapshot = groupChange.snapshot {
-            var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
-                                                                     transaction: transaction)
-            builder.apply(options: groupModelOptions)
-            newGroupModel = try builder.build()
-            newDisappearingMessageToken = snapshot.disappearingMessageToken
-            newProfileKeys = snapshot.profileKeys
-        } else if let changeActionsProto = groupChange.changeActionsProto {
+        // We should prefer to update models using the change action if we can,
+        // since it contains information about the change author.
+        if
+            isSingleRevisionUpdate,
+            let changeActionsProto = groupChange.changeActionsProto
+        {
             let changedGroupModel = try GroupsV2IncomingChanges.applyChangesToGroupModel(
                 groupThread: groupThread,
                 changeActionsProto: changeActionsProto,
@@ -844,9 +850,16 @@ private extension GroupV2UpdatesImpl {
             newGroupModel = changedGroupModel.newGroupModel
             newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
             newProfileKeys = changedGroupModel.profileKeys
+        } else if let snapshot = groupChange.snapshot {
+            var builder = try TSGroupModelBuilder.builderForSnapshot(groupV2Snapshot: snapshot,
+                                                                     transaction: transaction)
+            builder.apply(options: groupModelOptions)
+            newGroupModel = try builder.build()
+            newDisappearingMessageToken = snapshot.disappearingMessageToken
+            newProfileKeys = snapshot.profileKeys
         } else {
             owsFailDebug("neither a snapshot nor a change action (should have been validated earlier)")
-            return
+            return nil
         }
 
         // We should only replace placeholder models using
@@ -881,14 +894,33 @@ private extension GroupV2UpdatesImpl {
             }
         }
 
+        let groupUpdateSourceAddress = try groupChange.author(groupV2Params: groupV2Params)
+
+        // We determine the "author" of the update based on the change action,
+        // so if we are applying multiple revisions (i.e., are applying a
+        // snapshot) we cannot be sure of the author of each revision, and so
+        // should not attribute it.
+        var groupUpdateSourceAddressForAttribution: SignalServiceAddress?
+        if isSingleRevisionUpdate {
+            groupUpdateSourceAddressForAttribution = groupUpdateSourceAddress
+        }
+
         groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
-            groupUpdateSourceAddress: groupUpdateSourceAddress,
+            groupUpdateSourceAddress: groupUpdateSourceAddressForAttribution,
             transaction: transaction).groupThread
 
         // Merge known profile keys, always taking latest.
         profileKeysByUuid.merge(newProfileKeys) { (_, latest) in latest }
+
+        return ApplySingleChangeFromServiceResult(
+            changeAuthor: groupUpdateSourceAddress,
+            wasLocalUserAddedByChange: didAddLocalUserToV2Group(
+                inGroupChange: groupChange,
+                groupV2Params: groupV2Params
+            )
+        )
     }
 }
 
@@ -990,7 +1022,7 @@ private extension GroupV2UpdatesImpl {
     }
 
     private func didAddLocalUserToV2Group(
-        groupChange: GroupV2Change,
+        inGroupChange groupChange: GroupV2Change,
         groupV2Params: GroupV2Params
     ) -> Bool {
         guard let localUuid = tsAccountManager.localUuid else {
@@ -1148,8 +1180,6 @@ extension GroupsV2Error: IsRetryableProvider {
             return true
         case .shouldDiscard:
             return false
-        case .groupNotInDatabase:
-            return true
         case .timeout:
             return true
         case .localUserNotInGroup:
@@ -1189,5 +1219,21 @@ extension GroupsV2Error: IsRetryableProvider {
         case .localUserBlockedFromJoining:
             return false
         }
+    }
+}
+
+private extension GroupV2Change {
+    func author(groupV2Params: GroupV2Params) throws -> SignalServiceAddress? {
+        if let changeActionsProto = changeActionsProto {
+            guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
+                owsFailDebug("Explicit changes should always have authors")
+                return nil
+            }
+
+            let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+            return SignalServiceAddress(uuid: changeAuthorUuid)
+        }
+
+        return nil
     }
 }

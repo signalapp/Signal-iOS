@@ -9,7 +9,6 @@ public enum GroupsV2Error: Error {
     case redundantChange
     case shouldRetry
     case shouldDiscard
-    case groupNotInDatabase
     case timeout
     case localUserNotInGroup
     case conflictingChange

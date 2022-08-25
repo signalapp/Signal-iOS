@@ -563,27 +563,24 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     // MARK: - Fetch Group Change Actions
 
-    internal func fetchGroupChangeActions(groupSecretParamsData: Data,
-                                          includeCurrentRevision: Bool,
-                                          firstKnownRevision: UInt32?) -> Promise<GroupChangePage> {
-
-        guard let localUuid = tsAccountManager.localUuid else {
-            return Promise(error: OWSAssertionError("Missing localUuid."))
-        }
+    func fetchGroupChangeActions(
+        groupSecretParamsData: Data,
+        includeCurrentRevision: Bool
+    ) -> Promise<GroupChangePage> {
         return firstly(on: .global()) { () -> (Data, GroupV2Params) in
             let groupId = try self.groupId(forGroupSecretParamsData: groupSecretParamsData)
             let groupV2Params = try GroupV2Params(groupSecretParamsData: groupSecretParamsData)
             return (groupId, groupV2Params)
         }.then(on: .global()) { (groupId: Data, groupV2Params: GroupV2Params) -> Promise<GroupChangePage> in
-            return self.fetchGroupChangeActions(groupId: groupId,
-                                                groupV2Params: groupV2Params,
-                                                localUuid: localUuid,
-                                                includeCurrentRevision: includeCurrentRevision,
-                                                firstKnownRevision: firstKnownRevision)
+            return self.fetchGroupChangeActions(
+                groupId: groupId,
+                groupV2Params: groupV2Params,
+                includeCurrentRevision: includeCurrentRevision
+            )
         }
     }
 
-    internal struct GroupChangePage {
+    struct GroupChangePage {
         let changes: [GroupV2Change]
         let earlyEnd: UInt32?
 
@@ -613,49 +610,79 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         }
     }
 
-    private func fetchGroupChangeActions(groupId: Data,
-                                         groupV2Params: GroupV2Params,
-                                         localUuid: UUID,
-                                         includeCurrentRevision: Bool,
-                                         firstKnownRevision: UInt32?) -> Promise<GroupChangePage> {
-
-        let requestBuilder: RequestBuilder = { (authCredential) in
-            firstly(on: .global()) { () -> GroupsV2Request in
-                let (fromRevision, requireSnapshotForFirstChange) =
-                    try self.databaseStorage.read { (transaction) throws -> (UInt32, Bool) in
-                        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                            if let firstKnownRevision = firstKnownRevision {
-                                Logger.info("Group not in database, using first known revision.")
-                                return (firstKnownRevision, true)
-                            }
-                            // This probably isn't an error and will be handled upstream.
-                            throw GroupsV2Error.groupNotInDatabase
-                        }
-                        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                            throw OWSAssertionError("Invalid group model.")
-                        }
-                        if includeCurrentRevision {
-                            return (groupModel.revision, true)
-                        } else {
-                            return (groupModel.revision + 1, false)
-                        }
-                    }
-
-                return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
-                                                                              fromRevision: fromRevision,
-                                                                              requireSnapshotForFirstChange: requireSnapshotForFirstChange,
-                                                                              authCredential: authCredential)
+    private func fetchGroupChangeActions(
+        groupId: Data,
+        groupV2Params: GroupV2Params,
+        includeCurrentRevision: Bool
+    ) -> Promise<GroupChangePage> {
+        return firstly(on: .global()) { () -> Promise<(fromRevision: UInt32, requireSnapshotForFirstChange: Bool)> in
+            let groupThread = self.databaseStorage.read { transaction in
+                TSGroupThread.fetch(groupId: groupId, transaction: transaction)
             }
-        }
 
-        return firstly { () -> Promise<HTTPResponse> in
-            // We can't remove the local user from the group on 403.
-            // For example, user might just be joining the group
-            // using an invite OR have just been re-added after leaving.
-            self.performServiceRequest(requestBuilder: requestBuilder,
-                                       groupId: groupId,
-                                       behavior403: .ignore,
-                                       behavior404: .fail)
+            if
+                let groupThread = groupThread,
+                let groupModel = groupThread.groupModel as? TSGroupModelV2,
+                groupModel.groupMembership.isLocalUserFullOrInvitedMember
+            {
+                // We're being told about a group we are aware of and are
+                // already a member of. In this case, we can figure out which
+                // revision we want to start with from local data.
+
+                let fromRevision: UInt32
+                let requireSnapshotForFirstChange: Bool
+
+                if includeCurrentRevision {
+                    fromRevision = groupModel.revision
+                    requireSnapshotForFirstChange = true
+                } else {
+                    fromRevision = groupModel.revision + 1
+                    requireSnapshotForFirstChange = false
+                }
+
+                return Promise.value((
+                    fromRevision: fromRevision,
+                    requireSnapshotForFirstChange: requireSnapshotForFirstChange
+                ))
+            } else {
+                // We're being told about a thread we either have never heard
+                // of, or don't yet know we're a member of. In this case, we
+                // need to ask the service which revision we joined at, and
+                // request revisions from there. We should also get the
+                // snapshot, since there may be revisions we were not in the
+                // group to witness, and we want to make sure that state is
+                // reflected.
+
+                return self.getRevisionLocalUserWasAddedToGroup(
+                    groupId: groupId,
+                    groupV2Params: groupV2Params
+                ).map { fromRevision in
+                    (
+                        fromRevision: fromRevision,
+                        requireSnapshotForFirstChange: true
+                    )
+                }
+            }
+        }.then { (fromRevision: UInt32, requireSnapshotForFirstChange: Bool) -> Promise<HTTPResponse> in
+            let fetchGroupChangesRequestBuilder: RequestBuilder = { authCredential in
+                firstly(on: .global()) { () -> GroupsV2Request in
+                    return try StorageService.buildFetchGroupChangeActionsRequest(
+                        groupV2Params: groupV2Params,
+                        fromRevision: fromRevision,
+                        requireSnapshotForFirstChange: requireSnapshotForFirstChange,
+                        authCredential: authCredential
+                    )
+                }
+            }
+
+            // At this stage, we know we are requesting for a revision at which
+            // we are a member. Therefore, 403s should be treated as failure.
+            return self.performServiceRequest(
+                requestBuilder: fetchGroupChangesRequestBuilder,
+                groupId: groupId,
+                behavior403: .fail,
+                behavior404: .fail
+            )
         }.map(on: .global()) { (response: HTTPResponse) -> (GroupsProtoGroupChanges, UInt32?) in
             guard let groupChangesProtoData = response.responseBodyData else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -682,6 +709,45 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                                                          groupV2Params: groupV2Params)
                 return GroupChangePage(changes: changes, earlyEnd: earlyEnd)
             }
+        }
+    }
+
+    private func getRevisionLocalUserWasAddedToGroup(
+        groupId: Data,
+        groupV2Params: GroupV2Params
+    ) -> Promise<UInt32> {
+        firstly(on: .global()) { () -> Promise<HTTPResponse> in
+            let getJoinedAtRevisionRequestBuilder: RequestBuilder = { authCredential in
+                firstly(on: .global()) {
+                    try StorageService.buildGetJoinedAtRevisionRequest(
+                        groupV2Params: groupV2Params,
+                        authCredential: authCredential
+                    )
+                }
+            }
+
+            // We might get a 403 if we are not a member of the group, e.g. if
+            // we are joining via invite link. Passing .ignore means we won't
+            // retry, and will allow the "not a member" error to be thrown and
+            // propagated upwards.
+            return self.performServiceRequest(
+                requestBuilder: getJoinedAtRevisionRequestBuilder,
+                groupId: groupId,
+                behavior403: .ignore,
+                behavior404: .fail
+            )
+        }.then { (response: HTTPResponse) throws -> Promise<UInt32> in
+            guard let memberData = response.responseBodyData else {
+                throw OWSAssertionError("Response missing body data")
+            }
+
+            let memberProto = try GroupsProtoMember(serializedData: memberData)
+
+            guard memberProto.hasJoinedAtRevision else {
+                throw OWSAssertionError("Member proto missing joinedAtRevision")
+            }
+
+            return Promise.value(memberProto.joinedAtRevision)
         }
     }
 
@@ -923,10 +989,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                         // We should never receive 403 when creating groups.
                         owsFailDebug("Unexpected 403.")
                     case .ignore:
-                        // We can't remove the local user from the group on 403
-                        // when fetching change actions.
-                        // For example, user might just be joining the group
-                        // using an invite OR have just been re-added after leaving.
+                        // We may get a 403 when fetching change actions if
+                        // they are not yet a member - for example, if they are
+                        // joining via an invite link.
                         owsAssertDebug(groupId != nil, "Expecting a groupId for this path")
                     case .removeFromGroup:
                         guard let groupId = groupId else {

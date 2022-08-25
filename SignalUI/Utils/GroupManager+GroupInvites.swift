@@ -19,8 +19,11 @@ public extension GroupManager {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modalView in
             firstly(on: .global()) {
-                self.leaveGroupOrDeclineInvitePromise(groupThread: groupThread,
-                                                      replacementAdminUuid: replacementAdminUuid).asVoid()
+                self.localLeaveGroupOrDeclineInvite(
+                    groupThread: groupThread,
+                    replacementAdminUuid: replacementAdminUuid,
+                    waitForMessageProcessing: true
+                ).asVoid()
             }.done(on: .main) { _ in
                 modalView.dismiss {
                     success?()
@@ -41,7 +44,14 @@ public extension GroupManager {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { modalActivityIndicator in
                                                         firstly(on: .global()) { () -> Promise<TSGroupThread> in
-                                                            self.acceptGroupInvitePromise(groupThread: groupThread)
+                                                            guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+                                                                throw OWSAssertionError("Invalid group model")
+                                                            }
+
+                                                            return self.localAcceptInviteToGroupV2(
+                                                                groupModel: groupModelV2,
+                                                                waitForMessageProcessing: true
+                                                            )
                                                         }.done(on: .main) { _ in
                                                             modalActivityIndicator.dismiss {
                                                                 success()
@@ -55,33 +65,6 @@ public extension GroupManager {
                                                                 OWSActionSheets.showActionSheet(title: title)
                                                             }
                                                         }
-        }
-    }
-}
-
-// MARK: -
-
-extension GroupManager {
-    static func leaveGroupOrDeclineInvitePromise(groupThread: TSGroupThread,
-                                                 replacementAdminUuid: UUID? = nil) -> Promise<TSGroupThread> {
-        return firstly {
-            return GroupManager.messageProcessingPromise(for: groupThread,
-                                                         description: "Leave or decline invite")
-        }.then(on: .global()) {
-            GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread,
-                                                        replacementAdminUuid: replacementAdminUuid)
-        }
-    }
-
-    static func acceptGroupInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
-        return firstly { () -> Promise<Void> in
-            return GroupManager.messageProcessingPromise(for: groupThread,
-                                                         description: "Accept invite")
-        }.then(on: .global()) { _ -> Promise<TSGroupThread> in
-            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                throw OWSAssertionError("Invalid group model.")
-            }
-            return GroupManager.localAcceptInviteToGroupV2(groupModel: groupModel)
         }
     }
 }

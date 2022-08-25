@@ -54,27 +54,46 @@ public extension StorageService {
                                        authCredential: authCredential)
     }
 
-    static func buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: GroupV2Params,
-                                                        authCredential: AuthCredential) throws -> GroupsV2Request {
-
-        return try buildGroupV2Request(protoData: nil,
-                                       urlString: "/v1/groups/",
-                                       method: .get,
-                                       groupV2Params: groupV2Params,
-                                       authCredential: authCredential)
+    static func buildFetchCurrentGroupV2SnapshotRequest(
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredential
+    ) throws -> GroupsV2Request {
+        return try buildGroupV2Request(
+            protoData: nil,
+            urlString: "/v1/groups/",
+            method: .get,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
     }
 
-    static func buildFetchGroupChangeActionsRequest(groupV2Params: GroupV2Params,
-                                                    fromRevision: UInt32,
-                                                    requireSnapshotForFirstChange: Bool,
-                                                    authCredential: AuthCredential) throws -> GroupsV2Request {
-
+    static func buildFetchGroupChangeActionsRequest(
+        groupV2Params: GroupV2Params,
+        fromRevision: UInt32,
+        requireSnapshotForFirstChange: Bool,
+        authCredential: AuthCredential
+    ) throws -> GroupsV2Request {
         let urlPath = "/v1/groups/logs/\(fromRevision)?includeFirstState=\(requireSnapshotForFirstChange)&maxSupportedChangeEpoch=\(GroupManager.changeProtoEpoch)"
-        return try buildGroupV2Request(protoData: nil,
-                                       urlString: urlPath,
-                                       method: .get,
-                                       groupV2Params: groupV2Params,
-                                       authCredential: authCredential)
+        return try buildGroupV2Request(
+            protoData: nil,
+            urlString: urlPath,
+            method: .get,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
+    }
+
+    static func buildGetJoinedAtRevisionRequest(
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredential
+    ) throws -> GroupsV2Request {
+        return try buildGroupV2Request(
+            protoData: nil,
+            urlString: "/v1/groups/joined_at_version/",
+            method: .get,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
     }
 
     static func buildGroupAvatarUploadFormRequest(groupV2Params: GroupV2Params,
