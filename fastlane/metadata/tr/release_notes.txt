@@ -1,7 +1,7 @@
-• Introducing gift badges: Now you can gift a UFO badge to a friend to display on their profile by donating to Signal. Go to Settings >> Donate to Signal >> Gift a Badge to get started. We’re a nonprofit and depend on your support!
-• Change the speed of audio messages to either get to the point or catch the details.
-• For disappearing messages, message details will show a countdown to let you know when a message will self-destruct.
+• Hediye rozetlerle tanışın: Şimdi Signal'e bağışta bulunarak bir arkadaşına UFO rozeti hediye edebilirsin. Denemek için aşağıdaki butona tıkla veya Ayarlar'a git, Signal'e Bağış Yap ve Bir Rozet Hediye Et. Kar amacı gütmeyen bir kuruluş olan Signal'in, desteğine ihtiyacı var!
+• İstediğin yeri dinlemek veya ayrıntıları yakalamak için sesli mesajların hızını değiştirebilirsin.
+• Kaybolan mesajların ne zaman yok olacağını mesaj ayrıntılarındaki geri sayıma bakarak öğrenebilirsin. 
 • Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• View videos in 4K glory
-• Small improvements to calling button orientation and increased accessibility for the app settings button
-• Bug fixes for composing draft messages and leaving groups
+• Videoları 4K netliğinde izleyin
+• Arama butonu yönlendirmesinde küçük iyileştirmeler yapıldı ve uygulama ayarları butonu için artırılmış erişilebilirlik sağlandı
+• Taslak mesajlar oluşturmak ve gruplardan ayrılmak için hata düzeltmeleri yapıldı

@@ -1,7 +1,7 @@
-• Introducing gift badges: Now you can gift a UFO badge to a friend to display on their profile by donating to Signal. Go to Settings >> Donate to Signal >> Gift a Badge to get started. We’re a nonprofit and depend on your support!
-• Change the speed of audio messages to either get to the point or catch the details.
-• For disappearing messages, message details will show a countdown to let you know when a message will self-destruct.
+• Apresentamos os crachás de presente: Agora ao doar para o Signal pode dar um crachá de OVNI a um amigo seu para que ele o possa exibir no perfil. Vá às Definições >> Doar para o Signal >> Dê um crachá de presente para começar. Somos uma organização sem fins lucrativos e dependemos do seu apoio!
+• Altere a velocidade das mensagens de áudio para ir direto ao assunto ou apanhar mais detalhes.
+• Para mensagens temporárias, os detalhes da mensagem mostrarão uma contagem decrescente para lhe dizer quando é que a mensagem se vai autodestruir.
 • Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• View videos in 4K glory
-• Small improvements to calling button orientation and increased accessibility for the app settings button
-• Bug fixes for composing draft messages and leaving groups
+• Veja vídeos em glorioso 4K
+• Pequenas melhorias na orientação do botão de chamar e mais acessibilidade ao botão de definições da app.
+• Correções de bugs na escrita de rascunhos de mensagem e saída de grupos

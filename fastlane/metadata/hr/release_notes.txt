@@ -1,7 +1,7 @@
-• Introducing gift badges: Now you can gift a UFO badge to a friend to display on their profile by donating to Signal. Go to Settings >> Donate to Signal >> Gift a Badge to get started. We’re a nonprofit and depend on your support!
-• Change the speed of audio messages to either get to the point or catch the details.
-• For disappearing messages, message details will show a countdown to let you know when a message will self-destruct.
+• Predstavljamo značke na poklon: doniranjem Signalu, od sada prijateljima možete pokloniti NLO značku koju će moći prikazati na svom profilu. Idite na Postavke >> Donirajte Signalu >> Poklonite značku. Mi smo neprofitna organizacija i ovisimo o vašoj podršci!
+• Promijenite brzinu glasovnih poruka kako biste došli do bitnog ili pak čuli detalje.
+• Za nestajuće poruke, u detaljima poruke bit će prikazano odbrojavanje do njihovog samouništenja.
 • Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• View videos in 4K glory
-• Small improvements to calling button orientation and increased accessibility for the app settings button
-• Bug fixes for composing draft messages and leaving groups
+• Gledajte videozapise u punom 4K sjaju
+• Mala poboljšanja u orijentaciji gumba za pozivanje i povećana pristupačnost gumba za postavke
+• Ispravci grešaka kod sastavljanja skica poruka i napuštanja grupa

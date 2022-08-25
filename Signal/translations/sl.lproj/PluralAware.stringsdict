@@ -513,6 +513,22 @@
 			<string>V tem klicu sodelujeta %d osebi</string>
 		</dict>
 	</dict>
+	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<key>other</key>
+			<string>Ringing %2$@, %3$@, and %d others…</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -571,6 +587,38 @@
 			<string>%2$@, %3$@ in %d drugih je zapustilo ta klic</string>
 			<key>two</key>
 			<string>%2$@, %3$@ in %d drugih so zapustili ta klic</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@, and 1 other will be notified</string>
+			<key>other</key>
+			<string>%2$@, %3$@, and %d others will be notified</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Signal will ring %2$@, %3$@, and 1 other</string>
+			<key>other</key>
+			<string>Signal will ring %2$@, %3$@, and %d others</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -783,10 +831,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@ je zaprosil_a in nato prekinil_a %d prošeje za pridružitev skupini preko povezave.</string>
 			<key>one</key>
-			<string>%2$@ requested and canceled their request to join via the group link.</string>
+			<string>%2$@ je zaprosil_a in nato prekinil_a prošnjo za pridružitev skupini preko povezave.</string>
 			<key>other</key>
-			<string>%2$@ requested and canceled %d requests to join via the group link.</string>
+			<string>%2$@ je zaprosil_a in nato prekinil_a  %d prošenj za pridružitev skupini preko povezave.</string>
+			<key>two</key>
+			<string>%2$@ je zaprosil_a in nato prekinil_a %d prošnji za pridružitev skupini preko povezave.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -1299,10 +1351,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odgovori</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; odgovor</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odgovorov</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odgovora</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1375,10 +1431,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odgovori</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; odgovor</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odgovorov</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odgovora</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1386,10 +1446,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; ogledi</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; ogled</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; ogledov</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; ogleda</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1402,10 +1466,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; ogledi</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; ogled</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; ogledov</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; ogleda</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

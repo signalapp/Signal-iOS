@@ -465,6 +465,22 @@
 			<string>En esta llamada · %d personas</string>
 		</dict>
 	</dict>
+	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<key>other</key>
+			<string>Ringing %2$@, %3$@, and %d others…</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -517,6 +533,38 @@
 			<string>%2$@, %3$@ y alguien más han abandonado la llamada</string>
 			<key>other</key>
 			<string>%2$@, %3$@ y %d más han abandonado la llamada</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@, and 1 other will be notified</string>
+			<key>other</key>
+			<string>%2$@, %3$@, and %d others will be notified</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Signal will ring %2$@, %3$@, and 1 other</string>
+			<key>other</key>
+			<string>Signal will ring %2$@, %3$@, and %d others</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -709,10 +757,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%2$@ ha solicitado y cancelado %d solicitudes para unirse al grupo vía enlace.</string>
 			<key>one</key>
-			<string>%2$@ requested and canceled their request to join via the group link.</string>
+			<string>%2$@ ha solicitado y cancelado su solicitud para unirse al grupo vía enlace.</string>
 			<key>other</key>
-			<string>%2$@ requested and canceled %d requests to join via the group link.</string>
+			<string>%2$@ ha solicitado y cancelado %d solicitudes para unirse al grupo vía enlace.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -1175,10 +1225,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; respuestas</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; respuesta</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; respuestas</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1245,10 +1297,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; respuestas</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; respuesta</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; respuestas</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1256,10 +1310,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; vistas</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; vista</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; vistas</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1272,10 +1328,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; vistas</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; vista</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; vistas</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

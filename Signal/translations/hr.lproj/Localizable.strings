@@ -131,7 +131,7 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Pogreška";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "Ponovno otvoriti Signal";
+"APP_LAUNCH_FAILURE_CONTINUE" = "Ponovno otvorite Signal";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Učitavanje baze podataka nije uspjelo";
@@ -143,7 +143,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Nepoznata verzija baze podataka.";
 
 /* Error indicating that the app crashed during the previous launch. */
-"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal je imao problema prilikom pokušaja otvaranja. Molimo pošaljite zapisnik otklanjanja pogrešaka na support@signal.org kako biste pomogli u rješavanju ovog problema.";
+"APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE" = "Signal je imao problema prilikom pokušaja otvaranja. Kako biste pomogli u rješavanju ovog problema, molimo pošaljite zapisnik otklanjanja pogrešaka na support@signal.org. ";
 
 /* Error indicating that the app crashed during the previous launch. */
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Nije moguće otvoriti Signal";
@@ -359,13 +359,13 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "Pretplatite se";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "Donirajte jednokratno";
+"BADGE_DETAILS_GIVE_A_BOOST" = "Podržite Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "Vaša značka podrške je istekla i više nije dostupna za prikaz na vašem profilu.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Vaša Boost značka je istekla i ne prikazuje se više na vašem profilu. \n\nSvoju Boost značku možete ponovno aktivirati na 30 dana uz jednokratnu donaciju.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Vaša značka podrške je istekla i ne prikazuje se više na vašem profilu. \n\nSvoju značku podrške možete ponovno aktivirati na 30 dana uz jednokratnu donaciju.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Pretplatite se";
@@ -503,25 +503,25 @@
 "BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Vaša mjesečna donacija automatski je otkazana. %@ Značka%@ više nije vidljiva na vašem profilu.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša pretplata je automatski otkazana zbog toga što ste dugo bili neaktivni. Vaša %@ značka više nije vidljiva na vašem profilu. \n\nMožete nastaviti koristiti Signal, ali da biste podržali aplikaciju i ponovno aktivirali svoju značku, obnovite je sada.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Vaša pretplata je automatski otkazana zbog toga što ste dugo bili neaktivni. Vaša značka %@ više nije vidljiva na vašem profilu. \n\nMožete nastaviti koristiti Signal, ali da biste podržali aplikaciju i ponovno aktivirali svoju značku, trebate obnoviti pretplatu.";
 
 /* Title for boost on the thank you sheet. */
-"BADGE_THANKS_BOOST_TITLE" = "Hvala vam na uplati!";
+"BADGE_THANKS_BOOST_TITLE" = "Hvala vam na podršci!";
 
 /* Label prompting the user to display the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Prikaži bedž na svom profilu";
+"BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL" = "Prikaži na svom profilu";
 
 /* Label prompting the user to feature the new badge on their profile on the badge thank you sheet. */
-"BADGE_THANKS_MAKE_FEATURED" = "Napravi istaknutu značku";
+"BADGE_THANKS_MAKE_FEATURED" = "Istakni ovu značku";
 
 /* Title for subscription on the thank you sheet. */
 "BADGE_THANKS_SUBSCRIPTION_TITLE" = "Hvala vam na podršci!";
 
 /* Footer explaining that only one badge can be featured at a time on the thank you sheet. */
-"BADGE_THANKS_TOGGLE_FOOTER" = "Kada imate više od jedne značke, možete odabrati koju želite istaknuti kako bi ju drugi mogli vidjeti na vašem profilu.";
+"BADGE_THANKS_TOGGLE_FOOTER" = "Kada imate više od jedne značke, možete odabrati koju želite istaknuti kako bi je drugi mogli vidjeti na vašem profilu.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "Osvojili ste %@ značku. Prikažite ovu značku na svom profilu kako biste podigli svijest o doniranju Signalu.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "Osvojili ste značku %@. Prikažite ovu značku na svom profilu kako biste podigli svijest o važnosti doniranja Signalu.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "Zatvori natpis";
@@ -533,7 +533,7 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokiraj";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blokiraj i napusti \"%@\" grupu?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blokiraj i napusti grupu \"%@\"?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Blokiraj %@?";
@@ -596,10 +596,10 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokirani korisnici vas neće moći nazvati niti vam slati poruke.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "Novo: Zamaglite lica ili crtajte bilo gdje kako biste ih zamaglili";
+"BLUR_TOOLTIP" = "Novo: Zamaglite lica ili povucite bilo gdje za zamagljivanje.";
 
 /* The body text for the donate to signal view */
-"BOOST_VIEW_BODY" = "Donirajte jednokratno i osvojite Boost značku na 30 dana.";
+"BOOST_VIEW_BODY" = "Donirajte jednokratno i osvojite značku podrške na 30 dana.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
 "BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "Vaša značka će isteći %@.";
@@ -620,7 +620,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "Unesite iznos za donaciju";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "Donirajte jednokratnom uplatom";
+"BOOST_VIEW_TITLE" = "Podržite Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "Dodaj";
@@ -701,7 +701,7 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 Propušteni audio poziv u %@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Možete omogućiti pristup mikrofonu u postavkama iOS-a za upućivanje poziva i snimanje glasovnih poruka u Signalu.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Za upućivanje poziva i snimanje glasovnih poruka u Signalu, možete omogućiti pristup mikrofonu u postavkama iOS-a.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Potreban je pristup mikrofonu";
@@ -812,7 +812,7 @@
 "CAMERA_VO_CLOSE_BUTTON" = "Zatvori";
 
 /* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
-"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+"CAMERA_VO_COMPOSER_MODE" = "Način sastavljanja";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "Automatski";
@@ -854,13 +854,13 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Odaberi državu";
 
 /* Button label to allow user to change avatar */
-"CHANGE_AVATAR_BUTTON_LABEL" = "Uredite fotografiju";
+"CHANGE_AVATAR_BUTTON_LABEL" = "Uredi fotografiju";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
 "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "Vaš novi broj telefona ne smije biti isti kao stari broj telefona. Molim vas unesite novi broj kako bi ga promijenili.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
-"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Broj telefona koji ste unijeli ne podudara se s vašim računima.";
+"CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "Broj telefona koji ste unijeli ne podudara se s onim na vašem računu.";
 
 /* Error indicating that the user's new phone number is not valid. */
 "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW" = "Nevažeći novi broj telefona. Unesite valjani broj telefona kako biste ga promijenili.";
@@ -1061,7 +1061,7 @@
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Uredite ime";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Nevažeći kontakt.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Neispravan kontakt.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nije odabrano polje za kontakt.";
@@ -1241,10 +1241,10 @@
 "CONVERSATION_SETTINGS_AUDIO_CALL_BUTTON" = "zvuk";
 
 /* Footer string for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Osvojite značke za svoj profil podržavajući Signal. Dodirnite značku kako bi saznali više.";
+"CONVERSATION_SETTINGS_BADGES_FOOTER" = "Podržite Signal i osvojite značke za svoj profil. Dodirnite značku kako bi saznali više.";
 
 /* Header title for a contact's badges in conversation settings */
-"CONVERSATION_SETTINGS_BADGES_HEADER" = "Bedževi";
+"CONVERSATION_SETTINGS_BADGES_HEADER" = "Značke";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Više nećete primati poruke ni ažuriranja od ovog korisnika.";
@@ -1715,7 +1715,7 @@
 "DISMISS_CONTEXT_MENU" = "Odbaci kontekstni izbornik";
 
 /* Title for switch to enable sharing of badges publicly */
-"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Prikažite značku na svom profilu";
+"DISPLAY_BADGES_ON_PROFILE_SETTING" = "Prikažite značke na svom profilu";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Mjesto zaobilaska cenzure";
@@ -1724,7 +1724,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Doniraj";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal pokreću ljudi poput vas. Donirajte mjesečno i dobit ćete značku.";
+"DONATE_MEGAPHONE_BODY" = "Signal pokreću ljudi poput vas. Donirajte mjesečno i dobivate značku.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ne sada";
@@ -1799,7 +1799,7 @@
 "DONATION_RECEIPT_TITLE" = "Potvrda o donaciji";
 
 /* Section title for donation type on receipts */
-"DONATION_RECEIPT_TYPE" = "Upiši ";
+"DONATION_RECEIPT_TYPE" = "Vrsta ";
 
 /* Title of view where you can see all of your donation receipts, or button to take you there */
 "DONATION_RECEIPTS" = "Potvrde o donacijama";
@@ -1844,7 +1844,7 @@
 "DONATION_VIEW_RECEIPTS_SECTION_TITLE" = "Računi";
 
 /* Title for the 'Subscription FAQ' button on the donation screen */
-"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Najčešća pitanja";
+"DONATION_VIEW_SUBSCRIPTION_FAQ" = "Najčešća pitanja u vezi pretplate";
 
 /* Title on the 'Donate to Signal' screen */
 "DONATION_VIEW_TITLE" = "Donirajte Signalu";
@@ -1856,7 +1856,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Možete omogućiti pristup u postavkama iOS-a.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signalu je potreban pristup kontaktima za uređivanje informacija o kontaktima";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Za uređivanje informacija o kontaktima, Signalu je potreban pristup kontaktima";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Uredi grupu";
@@ -2072,7 +2072,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "Odaberite značku";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = "Vaše značke";
+"FEATURED_BADGE_SETTINGS_TITLE" = "Istaknuta značka";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Označi kao provjereno";
@@ -2120,7 +2120,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "Privitak";
 
 /* notification title indicating the user generically has a new message */
-"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nova Poruka!";
+"GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nova poruka!";
 
 /* Title for the 'Get Started' banner */
 "GET_STARTED_BANNER_TITLE" = "Započnite";
@@ -2236,6 +2236,12 @@
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Poziv je pun";
 
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Pridruži se pozivu";
 
@@ -2302,11 +2308,26 @@
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ je započeo/la grupni poziv";
 
+/* Text displayed when trying to turn on ringing when calling a large group. */
+"GROUP_CALL_TOO_LARGE_TO_RING" = "Grupa je prevelika za direktan poziv sudionika.";
+
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ i %2$@ su na ovom pozivu";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Vaš poziv je prekinut. Provjerite internetsku vezu i pokušajte ponovo.";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Vi ste na ovom grupnom pozivu";
@@ -2840,10 +2861,10 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Blokiraj zahtjev";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ se neće moći pridružiti ovoj grupi niti zatražiti pridruživanje putem poveznice grupe. Administratori i dalje mogu dodati korisnika u grupu.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
-"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Blokirati zahtjev?";
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Blokiraj zahtjev?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Odaberite novog administratora za ovu grupu prije nego što je napustite.";
@@ -3059,13 +3080,13 @@
 "HOME_VIEW_TOOLBAR_READ_ALL" = "Označi kao pročitano";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Crtajte bilo gdje kako biste zamutili sliku";
+"IMAGE_EDITOR_BLUR_HINT" = "Kako biste zamutili sliku, povucite bilo gdje";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Zamuti lica";
+"IMAGE_EDITOR_BLUR_SETTING" = "Zamagli lica";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Crtajte kako biste zamutili dodatna lica ili područja";
+"IMAGE_EDITOR_BLUR_TOAST" = "Povucite kako biste zamutili dodatna lica ili područja";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ne možete dijeliti više od %@ stavki.";
@@ -3638,7 +3659,7 @@
 "MISSED_CALL_FOCUS_MODE" = "Propušteni poziv dok ste koristili Focus";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Možete omogućiti pristup kameri u postavkama iOS-a za upućivanje video poziva u Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Za upućivanje video poziva u Signalu, možete omogućiti pristup kameri u postavkama iOS-a.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal treba pristup vašoj kameri.";
@@ -3653,7 +3674,7 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Možete omogućiti ovu dozvolu u postavkama iOS-a.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal zahtijeva pristup vašim fotografijama za ovu značajku.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Za ovu značajku, Signal treba pristup vašim fotografijama.";
 
 /* Generic indicator that no value is available for display */
 "MISSING_VALUE" = "Nijedno";
@@ -4430,7 +4451,7 @@
 "PIN_ACTION" = "Prikvači";
 
 /* Error body indicating that the attempt to change a PIN failed. */
-"PIN_CHANGE_ERROR_MESSAGE" = "Nije moguće stvoriti novi PIN. Vaš postojeći PIN je onemogućen. Provjerite vašu mrežnu vezu i pokušajte ponovno.";
+"PIN_CHANGE_ERROR_MESSAGE" = "Nije moguće stvoriti novi PIN. Vaš postojeći PIN je onemogućen. Provjerite internetsku vezu i pokušajte ponovno.";
 
 /* Error title indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_TITLE" = "Promjena PIN-a nije uspjela";
@@ -4481,7 +4502,7 @@
 "PIN_CREATION_NO_NETWORK_ERROR_MESSAGE" = "Provjerite vezu i pokušajte ponovno.";
 
 /* Error title indicating that the attempt to create a PIN failed due to network issues. */
-"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Nema mrežne veze";
+"PIN_CREATION_NO_NETWORK_ERROR_TITLE" = "Nema internetske veze";
 
 /* Label indicating the user must use at least 4 digits */
 "PIN_CREATION_NUMERIC_HINT" = "PIN mora imati najmanje 4 znamenke";
@@ -4505,7 +4526,7 @@
 "PIN_CREATION_REGLOCK_CONFIRMATION_TITLE" = "Onemogući Zaključavanje registracije?";
 
 /* Error body indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
-"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Izrada PIN-a je uspjela, ali zaključavanje registracije nije moguće. Provjerite mrežnu vezu i pokušajte ponovno.";
+"PIN_CREATION_REGLOCK_ERROR_MESSAGE" = "Izrada PIN-a je uspjela, ali zaključavanje registracije nije moguće. Provjerite vezu i pokušajte ponovno.";
 
 /* Error title indicating that the attempt to create a PIN succeeded but enabling reglock failed. */
 "PIN_CREATION_REGLOCK_ERROR_TITLE" = "Omogućavanje zaključavanja registracije nije uspjelo";
@@ -4529,7 +4550,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "Stvaranje PIN-a nije uspjelo";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "Nije moguće stvoriti PIN. Provjerite vašu mrežnu vezu i pokušajte ponovno.";
+"PIN_RECRETION_ERROR_MESSAGE" = "Nije moguće stvoriti PIN. Provjerite vezu i pokušajte ponovno.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Kako bismo vam pomogli da zapamtite vaš PIN, zamoliti ćemo vas da ga povremeno unesete. S vremenom ćemo vas rijeđe tražiti.";
@@ -4577,7 +4598,7 @@
 "PINS_MEGAPHONE_ACTION" = "Stvori PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "Završite stvaranje vašeg PIN-a.";
+"PINS_MEGAPHONE_BODY" = "Završite stvaranje vašeg Signal PIN-a.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Stvorite PIN";
@@ -4760,10 +4781,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Originalna poruka nije pronađena.";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagirala je na vašu priču";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "Reagira na vašu priču";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagirala je na priču od %@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "Reagira na priču od %@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · Priča";
@@ -5252,7 +5273,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "Uredi broj";
 
 /* Label for button in settings views to change phone number */
-"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Promijeni broj";
+"SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "Promijeni broj telefona";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
 "SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "Vaš broj telefona je promijenjen u %@";
@@ -5288,7 +5309,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "Koristite ovu opciju kako biste promijenili vaš trenutni broj telefona. Ovu promjenu ne možete poništiti. \n\nPrije nego što nastavite, provjerite može li vaš novi broj primati SMS poruke ili pozive.";
 
 /* Title text in the 'change phone number splash' view. */
-"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Promijeni broj";
+"SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE" = "Promijeni broj telefona";
 
 /* Title for the 'change phone number' views in settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE" = "Promijeni broj";
@@ -6047,13 +6068,13 @@
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "Provjera je dovršena.";
 
 /* Message for confirmation dialog confirming to ignore verification. */
-"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Ako odlučite preskočiti provjeru, možda ćete propustiti poruke drugih ljudi, a poruke možda neće moći poslati.";
+"SPAM_CAPTCHA_DISMISS_CONFIRMATION_MESSAGE" = "Ako odlučite preskočiti provjeru, možda ćete propustiti poruke drugih ljudi, a poruke možda neće biti poslane.";
 
 /* Title for confirmation dialog confirming to ignore verification. */
 "SPAM_CAPTCHA_DISMISS_CONFIRMATION_TITLE" = "Nastavi bez provjere?";
 
 /* Body for action sheet explaining captcha requirement. */
-"SPAM_CAPTCHA_SHEET_BODY" = "Da bismo spriječili neželjene poruke na Signalu, molimo dovršite provjeru.\n\nNakon provjere možete nastaviti s razmjenom poruka. Sve pauzirane poruke automatski će se poslati.";
+"SPAM_CAPTCHA_SHEET_BODY" = "Da bismo spriječili neželjene poruke na Signalu, molimo dovršite provjeru.\n\nNakon provjere možete nastaviti s razmjenom poruka. Sve pauzirane poruke automatski će biti poslane.";
 
 /* Title for action sheet explaining captcha requirement. */
 "SPAM_CAPTCHA_SHEET_TITLE" = "Provjeri za nastavak razmjene poruka";
@@ -6117,6 +6138,9 @@
 
 /* Context menu action to delete the selected story */
 "STORIES_DELETE_STORY_ACTION" = "Izbriši";
+
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Izbrisati ovu priču? Izbrisat će se i za sve korisnike kojima je poslana.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Priča je spremljena";
@@ -6185,7 +6209,7 @@
 "STORY_COMPOSER_TEXT" = "Tekst";
 
 /* Tooltip prompting the user to visit a story link. */
-"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Posjetite link";
+"STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Posjetite poveznicu";
 
 /* Text indicating a story that was replied to is no longer available. */
 "STORY_NO_LONGER_AVAILABLE" = "Više nije dostupno";
@@ -6203,7 +6227,7 @@
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Odgovori";
 
 /* Button for replying to a group story with no existing replies. */
-"STORY_REPLY_TO_GROUP_BUTTON" = "Odgovorite grupi";
+"STORY_REPLY_TO_GROUP_BUTTON" = "Odgovori grupi";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Svi kontakti";
@@ -6272,22 +6296,22 @@
 "SUPPORT_LOG_UPLOAD_IN_PROGRESS" = "Učitavanje";
 
 /* First block of description text in read more sheet */
-"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal je neprofitna organizacija bez oglasa i investitora koju podržavaju samo ljudi koji ga koriste i cijene. Donirajte na mjesečnoj bazi kako biste dobili svoj bedž profila u znak vaše potpore projektu.";
+"SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_ONE" = "Signal je neprofitna organizacija bez oglasa i ulagača koju podržavaju samo ljudi koji ga koriste i cijene. Donirajte na mjesečnoj bazi kako biste dobili svoju značku profila u znak podrške projektu.";
 
 /* Second block of description text in read more sheet */
 "SUSTAINER_READ_MORE_DESCRIPTION_BLOCK_TWO" = "Signal je predan razvoju tehnologije privatnosti otvorenog koda koja štiti slobodno izražavanje i omogućuje sigurnu globalnu komunikaciju.\n\nVaše donacije potiču ovaj cilj i koriste se za daljnji razvoj i rad aplikacije koju  koriste milijuni ljudi diljem svijeta. Bez reklama. Bez alata za praćenje. Bez šale.";
 
 /* Title for the signal sustainer read more view */
-"SUSTAINER_READ_MORE_TITLE" = "Podržite tehnologiju koja je napravljena za vas, ne za vaše podatke i pridružite se zajednici ljudi koji je održavaju.";
+"SUSTAINER_READ_MORE_TITLE" = "Podržite tehnologiju koja je napravljena za vas, a ne za vaše podatke i pridružite se zajednici ljudi koji je održavaju.";
 
 /* Why Contribute title for the signal sustainer read more view */
 "SUSTAINER_READ_MORE_WHY_CONTRIBUTE" = "Zašto donirati?";
 
 /* Action sheet title for Still Processing Badge sheet */
-"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Procesuiranje u tijeku";
+"SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "Obrada u tijeku";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Osvojite %@ značku";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "Osvojite značku %@ ";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "Otkažite pretplatu";
@@ -6296,7 +6320,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_CONFIRM" = "Potvrdi";
 
 /* Confirm Cancellation? Action sheet message */
-"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Više vam neće biti naplaćeno. Vaša će značka biti uklonjena s vašeg profila na kraju razdoblja naplate.";
+"SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Više vam ništa neće biti naplaćeno. Značka će biti uklonjena s vašeg profila na kraju razdoblja naplate.";
 
 /* Confirm Cancellation? Action sheet title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "Potvrditi otkazivanje?";
@@ -6305,13 +6329,13 @@
 "SUSTAINER_VIEW_CANT_ADD_BADGE" = "Nije moguće dodati značku. %@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
-"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Vašu značku nije bilo moguće dodati na vaš profil. Molimo kontaktirajte podršku.";
+"SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "Vašu značku nije bilo moguće dodati na profil. Kontaktirajte podršku.";
 
 /* Action sheet title for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_TITLE" = "Nije moguće dodati značku";
 
 /* Contact support link */
-"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Molimo Vas da kontaktirate podršku";
+"SUSTAINER_VIEW_CONTACT_SUPPORT" = "Kontaktirajte podršku.";
 
 /* Action sheet title for Error Processing Payment sheet */
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "Pogreška u obradi plaćanja";
@@ -6329,10 +6353,10 @@
 "SUSTAINER_VIEW_PRICING_RENEWAL" = " · Obnavlja %@";
 
 /* Loading indicator on the sustainer view */
-"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Procesuiranje plaćanja…";
+"SUSTAINER_VIEW_PROCESSING_PAYMENT" = "Obrada plaćanja…";
 
 /* Status text while processing a badge redemption */
-"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Procesuiranje transakcije…";
+"SUSTAINER_VIEW_PROCESSING_TRANSACTION" = "Obrada transakcije…";
 
 /* Read More tappable text in sustainer view body */
 "SUSTAINER_VIEW_READ_MORE" = "Pročitaj više.";
@@ -6341,7 +6365,7 @@
 "SUSTAINER_VIEW_RENEWAL" = "Obnavlja %@";
 
 /* Action sheet message for Still Processing Badge sheet */
-"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Vaša se uplata još uvijek obrađuje. To može potrajati nekoliko minuta ovisno o vašoj vezi.";
+"SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "Vaša se uplata još uvijek obrađuje. Ovisno o vašoj vezi, to može potrajati nekoliko minuta.";
 
 /* Toast indicating that the subscription has been cancelled */
 "SUSTAINER_VIEW_SUBSCRIPTION_CANCELLED" = "Vaša pretplata je otkazana";
@@ -6350,19 +6374,19 @@
 "SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW" = "Ne sada";
 
 /* Title for the signal sustainer view */
-"SUSTAINER_VIEW_TITLE" = "Signal podržavaju ljudi poput vas.";
+"SUSTAINER_VIEW_TITLE" = "Signal postoji zbog ljudi poput vas.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Danas će vam se naplatiti puni iznos %@ pretplate. Vaša pretplata će se obnavljati mjesečno.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "Danas će vam se naplatiti puni iznos (%@) pretplate. Vaša pretplata će se obnavljati mjesečno.";
 
 /* Update Subscription? Action sheet title */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Povećati pretplatu?";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "Ažurirajte pretplatu?";
 
 /* Update Subscription? Action sheet confirm button */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_UPDATE" = "Ažuriraj";
 
 /* The body text for the signal sustainer view */
-"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Donirajte mjesečno kako bi podržali Signal i njegovu tehnologiju koja je napravljena za Vas, a ne za Vaše podatke.";
+"SUSTAINER_VIEW_WHY_DONATE_BODY" = "Donirajte mjesečno i podržite Signal i njegovu tehnologiju koja je napravljena za vas, a ne za vaše podatke.";
 
 /* Label for 'off' state of a switch control. */
 "SWITCH_OFF" = "Isključeno";
@@ -6542,10 +6566,10 @@
 "UPDATE_CONTACT_ACTION" = "Ažuriraj kontakt";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Grupa se nije mogla ažurirati.";
+"UPDATE_GROUP_FAILED" = "Grupa nije mogla biti ažurirana.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupa se nije mogla ažurirati. Provjerite internetsku vezu i pokušajte ponovo.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupa nije bilo moguće ažurirati. Provjerite internetsku vezu i pokušajte ponovo.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Korisnička imena na Signalu su neobavezna. Ako odlučite stvoriti korisničko ime, drugi korisnici Signala će vas moći pronaći prema tom korisničkom imenu i kontaktirati vas bez poznavanja vašeg broja telefona.";

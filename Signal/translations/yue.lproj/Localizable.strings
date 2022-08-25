@@ -812,7 +812,7 @@
 "CAMERA_VO_CLOSE_BUTTON" = "關閉";
 
 /* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
-"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+"CAMERA_VO_COMPOSER_MODE" = "編輯器模式";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "自動";
@@ -2236,6 +2236,12 @@
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "通話已滿座";
 
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "加入通話";
 
@@ -2302,11 +2308,26 @@
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ 已發起成谷通話";
 
+/* Text displayed when trying to turn on ringing when calling a large group. */
+"GROUP_CALL_TOO_LARGE_TO_RING" = "個群組太大，冇得打俾參與者。";
+
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ 同 %2$@ 嚟到呢次通話";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "您嘅通話已斷線。請檢查您嘅連線，然後再試下啦。";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "您嚟到成谷通話";
@@ -2840,7 +2861,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "封鎖請求";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ 之後就唔可以用群組連結加入或者請求加入群組㗎喇，不過管理員仍然可以將佢加入群組。";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "係咪要封鎖請求？";
@@ -3503,7 +3524,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "係咪要刪除同退出呢個谷？";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
-"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "請小心審核請求。Signal 搵到有另一個同名嘅聯絡人。";
+"MESSAGE_REQUEST_NAME_COLLISON_BANNER_LABEL" = "Signal 搵到另一個同名嘅聯絡人，記住小心睇清楚先好接受請求呀。";
 
 /* A header string above a known contact's contact info */
 "MESSAGE_REQUEST_NAME_COLLISON_CONTACT_HEADER" = "您嘅聯絡人";
@@ -6117,6 +6138,9 @@
 
 /* Context menu action to delete the selected story */
 "STORIES_DELETE_STORY_ACTION" = "刪除";
+
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "係咪要刪除呢個限時動態呀？系統會喺所有收到呢個限時動態嘅人度刪除埋佢㗎喎。";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "限時動態已經儲存咗";

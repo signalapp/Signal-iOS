@@ -134,7 +134,7 @@
 "APP_LAUNCH_FAILURE_CONTINUE" = "به جای آن سیگنال را باز کنید";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "امکان بارگذاری پایگاه داده وجود نداشت";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "امکان بارگیری پایگاه داده وجود نداشت";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "لطفاً سیگنال را به آخرین نسخه ارتقا دهید.";
@@ -812,7 +812,7 @@
 "CAMERA_VO_CLOSE_BUTTON" = "بستن";
 
 /* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
-"CAMERA_VO_COMPOSER_MODE" = "Composer mode";
+"CAMERA_VO_COMPOSER_MODE" = "حالت نگارش";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_AUTO" = "خودکار";
@@ -1484,7 +1484,7 @@
 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "گزارش ها جمع آوری نشدند.";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "گزارش ها آپلود نشدند.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "گزارش ها بارگذاری نشدند.";
 
 /* Message of the debug log alert. */
 "DEBUG_LOG_ALERT_MESSAGE" = "تمایل دارید چه کاری با اتصال به گزارش اشکال زدایی انجام دهید؟";
@@ -1994,7 +1994,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "مخاطب مورد نظر، سیگنال ندارد.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "دانلود پیوست ناموفق بود.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "بارگیری پیوست ناموفق بود.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE" = "یک پیام از %@ نتوانست تحویل داده شود";
@@ -2111,10 +2111,10 @@
 "GALLERY_TILES_EMPTY_GALLERY" = "شما هیچ فایل رسانه‌ای در این گفتگو ندارید.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "در حال بارگذاری رسانه‌های جدیدتر...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "در حال بارگیری رسانه‌های جدیدتر...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "بارگذاری رسانه‌های قدیمی‌تر...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "بارگیری رسانه‌های قدیمی‌تر...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "پیوست";
@@ -2236,6 +2236,12 @@
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "تماس کامل است";
 
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "پیوستن به تماس";
 
@@ -2302,11 +2308,26 @@
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ یک تماس گروهی آغاز کرد";
 
+/* Text displayed when trying to turn on ringing when calling a large group. */
+"GROUP_CALL_TOO_LARGE_TO_RING" = "گروه برای زنگ خوردن همهٔ مشارکت‌کنندگان خیلی بزرگ است.";
+
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ و %2$@ در این تماس هستند";
 
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "ارتباط شما با تماس قطع شد. اتصال خود را بررسی کنید و دوباره امتحان کنید.";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "شما در تماس گروهی هستید";
@@ -2471,7 +2492,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON" = "پیوستن";
 
 /* Label indicating that the group info is being loaded in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "در حال بارگذاری...";
+"GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE" = "در حال بارگیری...";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_MESSAGE" = "آیا می‌خواهید به این گروه بپیوندید و شماره و عکس خود را با اعضای آن به اشتراک بگذارید؟";
@@ -2840,7 +2861,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "مسدود کردن درخواست";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ will not be able to join or request to join this group via the group link. An admin can still add them.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ نمی‌تواند از طریق پیوند گروه به این گروه بپیوندد یا درخواست عضویت در این گروه را بدهد. مدیر گروه همچنان می‌تواند او را اضافه کند.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "مسدود کردن درخواست؟";
@@ -3578,7 +3599,7 @@
 "MESSAGE_STATUS_DELIVERED" = "تحویل داده شده";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "در حال دانلود";
+"MESSAGE_STATUS_DOWNLOADING" = "در حال بارگیری";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "ارسال ناموفق بود.";
@@ -5996,7 +6017,7 @@
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "کد امنیتی شما با %@ به تازگی تغییر یافته است. بهتر است در برنامه اصلی قبل از ارسال دوباره آن را تایید کنید.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "در حال بارگزاری...";
+"SHARE_EXTENSION_LOADING" = "در حال بارگیری...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "برای ثبت نام برنامه سیگنال را اجراء کنید.";
@@ -6017,7 +6038,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT" = "در حال بارگذاری %1$@ از %2$@...";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "در حال آپلود...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "در حال بارگذاری...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "پیوست فراهم نشد";
@@ -6083,7 +6104,7 @@
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "استیکر های نصب شده";
 
 /* Label indicating that one or more known sticker packs is loading. */
-"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "در حال بارگزاری...";
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "در حال بارگیری...";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "هیچ استیکری نصب نیست";
@@ -6117,6 +6138,9 @@
 
 /* Context menu action to delete the selected story */
 "STORIES_DELETE_STORY_ACTION" = "حذف";
+
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "این استوری حذف شود؟ این استوری برای تمام افرادی که آن را دریافت کرده‌اند نیز حذف خواهد شد.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "استوری ذخیره شد";

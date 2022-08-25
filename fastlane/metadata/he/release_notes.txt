@@ -1,7 +1,7 @@
-• Introducing gift badges: Now you can gift a UFO badge to a friend to display on their profile by donating to Signal. Go to Settings >> Donate to Signal >> Gift a Badge to get started. We’re a nonprofit and depend on your support!
-• Change the speed of audio messages to either get to the point or catch the details.
-• For disappearing messages, message details will show a countdown to let you know when a message will self-destruct.
+• חדש: תג מתנה. עכשיו אפשר להעניק תג עב״ם לחבר או חברה שיוכלו להציג אותו בפרופיל שלהם באמצעות ביצוע תרומה ל-Signal. כדי לעשות את זה פשוט הולכים להגדרות >> תרום אל Signal >> הענקת תג מתנה. אנחנו ארגון ללא מטרות רווח ואנחנו סומכים על התמיכה שלך!
+• משנים את המהירות של הודעות קוליות כדי להגיע ישר לפואנטה או כדי לשמוע הכל לפרטי פרטים.
+• עבור הודעות נעלמות, פרטי ההודעה יציגו ספירה לאחור כדי לעדכן אותך מתי ההודעה תשמיד את עצמה.
 • Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• View videos in 4K glory
-• Small improvements to calling button orientation and increased accessibility for the app settings button
-• Bug fixes for composing draft messages and leaving groups
+• צפייה בסרטונים מופלאים ב-4K
+• שיפורים קטנים בתצוגה של כפתור ההתקשרות ונגישות טובה יותר לכפתור ההגדרות של האפליקציה עבור משתמשים עם מוגבלויות. 
+• תיקוני באגים עבור חיבור טיוטות להודעות ועזיבת קבוצות
