@@ -296,11 +296,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                  isDurableSend:NO];
 }
 
-- (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
-{
-    return [self syncContactsForSignalAccounts:signalAccounts skipIfRedundant:NO debounce:NO isDurableSend:NO];
-}
-
 - (void)sendSyncContactsMessageIfNecessary
 {
     OWSAssertDebug(self.tsAccountManager.isRegisteredPrimaryDevice);
