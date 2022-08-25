@@ -99,7 +99,7 @@ public enum OpenGroupAPI {
                                 ),
                                 queryParameters: [
                                     .updateTypes: UpdateTypes.reaction.rawValue,
-                                    .reactors: "20"
+                                    .reactors: "5"
                                 ]
                             ),
                             responseType: [Failable<Message>].self

@@ -369,8 +369,11 @@ public extension Message {
                let reactors = rawReaction.reactors
             {
                 let timestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
+                let maxLength: Int = !rawReaction.you || reactors.contains(userPublicKey) ? 5 : 4
                 let desiredReactorIds: [String] = reactors
                     .filter { $0 != blindedUserPublicKey }
+                    .prefix(maxLength)
+                    .map{ $0 }
 
                 results = results
                     .appending( // Add the first reaction (with the count)
