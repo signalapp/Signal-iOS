@@ -102,6 +102,7 @@ final class CallMessageCell: MessageCell {
         with cellViewModel: MessageViewModel,
         mediaCache: NSCache<NSString, AnyObject>,
         playbackInfo: ConversationViewModel.PlaybackInfo?,
+        showExpandedReactions: Bool,
         lastSearchText: String?
     ) {
         guard

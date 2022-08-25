@@ -7,11 +7,15 @@ import SessionMessagingKit
 public class NoopNotificationsManager: NotificationsProtocol {
     public init() {}
     
-    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
+    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread) {
         owsFailDebug("")
     }
     
     public func notifyUser(_ db: Database, forIncomingCall interaction: Interaction, in thread: SessionThread) {
+        owsFailDebug("")
+    }
+    
+    public func notifyUser(_ db: Database, forReaction reaction: Reaction, in thread: SessionThread) {
         owsFailDebug("")
     }
     

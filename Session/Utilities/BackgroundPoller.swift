@@ -34,7 +34,7 @@ public final class BackgroundPoller {
                         poller.stop()
                         
                         return poller.poll(
-                            isBackgroundPoll: true,
+                            calledFromBackgroundPoller: true,
                             isBackgroundPollerValid: { BackgroundPoller.isValid },
                             isPostCapabilitiesRetry: false
                         )
@@ -82,7 +82,7 @@ public final class BackgroundPoller {
                     groupPublicKey,
                     on: DispatchQueue.main,
                     maxRetryCount: 0,
-                    isBackgroundPoll: true,
+                    calledFromBackgroundPoller: true,
                     isBackgroundPollValid: { BackgroundPoller.isValid }
                 )
             }
@@ -134,7 +134,7 @@ public final class BackgroundPoller {
                                         threadId: threadId,
                                         details: MessageReceiveJob.Details(
                                             messages: threadMessages.map { $0.messageInfo },
-                                            isBackgroundPoll: true
+                                            calledFromBackgroundPoller: true
                                         )
                                     )
                                     

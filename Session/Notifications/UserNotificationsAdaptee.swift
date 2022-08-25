@@ -57,8 +57,9 @@ class UserNotificationPresenterAdaptee: NSObject, UNUserNotificationCenterDelega
 
     override init() {
         self.notificationCenter = UNUserNotificationCenter.current()
+        
         super.init()
-        notificationCenter.delegate = self
+        
         SwiftSingletons.register(self)
     }
 }
@@ -86,29 +87,37 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?) {
+    func notify(
+        category: AppNotificationCategory,
+        title: String?,
+        body: String,
+        userInfo: [AnyHashable: Any],
+        previewType: Preferences.NotificationPreviewType,
+        sound: Preferences.Sound?,
+        threadVariant: SessionThread.Variant,
+        threadName: String,
+        replacingIdentifier: String?
+    ) {
         AssertIsOnMainThread()
-        notify(category: category, title: title, body: body, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
-    }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?, replacingIdentifier: String?) {
-        AssertIsOnMainThread()
-
+        let threadIdentifier: String? = (userInfo[AppNotificationUserInfoKey.threadId] as? String)
         let content = UNMutableNotificationContent()
         content.categoryIdentifier = category.identifier
         content.userInfo = userInfo
-        let isReplacingNotification = replacingIdentifier != nil
-        var isBackgroudPoll = false
-        if let threadIdentifier = userInfo[AppNotificationUserInfoKey.threadId] as? String {
-            content.threadIdentifier = threadIdentifier
-            isBackgroudPoll = replacingIdentifier == threadIdentifier
-        }
+        content.threadIdentifier = (threadIdentifier ?? content.threadIdentifier)
+        
+        let shouldGroupNotification: Bool = (
+            threadVariant == .openGroup &&
+            replacingIdentifier == threadIdentifier
+        )
         let isAppActive = UIApplication.shared.applicationState == .active
         if let sound = sound, sound != .none {
             content.sound = sound.notificationSound(isQuiet: isAppActive)
         }
         
-        let notificationIdentifier = isReplacingNotification ? replacingIdentifier! : UUID().uuidString
+        let notificationIdentifier: String = (replacingIdentifier ?? UUID().uuidString)
+        let isReplacingNotification: Bool = (notifications[notificationIdentifier] != nil)
+        var trigger: UNNotificationTrigger?
 
         if shouldPresentNotification(category: category, userInfo: userInfo) {
             if let displayableTitle = title?.filterForDisplay {
@@ -117,30 +126,50 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             if let displayableBody = body.filterForDisplay {
                 content.body = displayableBody
             }
-        } else {
+            
+            if shouldGroupNotification {
+                trigger = UNTimeIntervalNotificationTrigger(
+                    timeInterval: Notifications.delayForGroupedNotifications,
+                    repeats: false
+                )
+                
+                let numberExistingNotifications: Int? = notifications[notificationIdentifier]?
+                    .content
+                    .userInfo[AppNotificationUserInfoKey.threadNotificationCounter]
+                    .asType(Int.self)
+                var numberOfNotifications: Int = (numberExistingNotifications ?? 1)
+                
+                if numberExistingNotifications != nil {
+                    numberOfNotifications += 1  // Add one for the current notification
+                    
+                    content.title = (previewType == .noNameNoPreview ?
+                        content.title :
+                        threadName
+                    )
+                    content.body = String(
+                        format: NotificationStrings.incomingCollapsedMessagesBody,
+                        "\(numberOfNotifications)"
+                    )
+                }
+                
+                content.userInfo[AppNotificationUserInfoKey.threadNotificationCounter] = numberOfNotifications
+            }
+        }
+        else {
             // Play sound and vibrate, but without a `body` no banner will show.
             Logger.debug("supressing notification body")
         }
-        
-        let trigger: UNNotificationTrigger?
-        if isBackgroudPoll {
-            trigger = UNTimeIntervalNotificationTrigger(timeInterval: kNotificationDelayForBackgroumdPoll, repeats: false)
-            let numberOfNotifications: Int
-            if let lastRequest = notifications[notificationIdentifier], let counter = lastRequest.content.userInfo[AppNotificationUserInfoKey.threadNotificationCounter] as? Int  {
-                numberOfNotifications = counter + 1
-                content.body = String(format: NotificationStrings.incomingCollapsedMessagesBody, "\(numberOfNotifications)")
-            } else {
-                numberOfNotifications = 1
-            }
-            content.userInfo[AppNotificationUserInfoKey.threadNotificationCounter] = numberOfNotifications
-        } else {
-            trigger = nil
-        }
 
-        let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
+        let request = UNNotificationRequest(
+            identifier: notificationIdentifier,
+            content: content,
+            trigger: trigger
+        )
 
         Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
+        
         if isReplacingNotification { cancelNotifications(identifiers: [notificationIdentifier]) }
+        
         notificationCenter.add(request)
         notifications[notificationIdentifier] = request
     }
@@ -196,7 +225,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         guard let conversationViewController = UIApplication.shared.frontmostViewController as? ConversationVC else {
             return true
         }
-
+        
         /// Show notifications for any **other** threads
         return (conversationViewController.viewModel.threadData.threadId != notificationThreadId)
     }

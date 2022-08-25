@@ -202,23 +202,24 @@ public extension SessionThread {
         """
     }
     
-    static func unreadMessageRequestsThreadIdQuery(userPublicKey: String, includeNonVisible: Bool = false) -> SQLRequest<String> {
+    static func unreadMessageRequestsCountQuery(userPublicKey: String, includeNonVisible: Bool = false) -> SQLRequest<Int> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         
         return """
-            SELECT \(thread[.id])
-            FROM \(SessionThread.self)
-            JOIN \(Interaction.self) ON (
-                \(interaction[.threadId]) = \(thread[.id]) AND
-                \(interaction[.wasRead]) = false
+            SELECT COUNT(DISTINCT id) FROM (
+                SELECT \(thread[.id]) AS id
+                FROM \(SessionThread.self)
+                JOIN \(Interaction.self) ON (
+                    \(interaction[.threadId]) = \(thread[.id]) AND
+                    \(interaction[.wasRead]) = false
+                )
+                LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
+                WHERE (
+                    \(SessionThread.isMessageRequest(userPublicKey: userPublicKey, includeNonVisible: includeNonVisible))
+                )
             )
-            LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
-            WHERE (
-                \(SessionThread.isMessageRequest(userPublicKey: userPublicKey, includeNonVisible: includeNonVisible))
-            )
-            GROUP BY \(thread[.id])
         """
     }
     
@@ -276,8 +277,8 @@ public extension SessionThread {
             // all the other message request threads have been read
             if !hasHiddenMessageRequests {
                 let numUnreadMessageRequestThreads: Int = (try? SessionThread
-                    .unreadMessageRequestsThreadIdQuery(userPublicKey: userPublicKey, includeNonVisible: true)
-                    .fetchCount(db))
+                    .unreadMessageRequestsCountQuery(userPublicKey: userPublicKey, includeNonVisible: true)
+                    .fetchOne(db))
                     .defaulting(to: 1)
                 
                 guard numUnreadMessageRequestThreads == 1 else { return false }

@@ -67,12 +67,12 @@ extension OpenGroupAPI {
         
         @discardableResult
         public func poll(using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()) -> Promise<Void> {
-            return poll(isBackgroundPoll: false, isPostCapabilitiesRetry: false, using: dependencies)
+            return poll(calledFromBackgroundPoller: false, isPostCapabilitiesRetry: false, using: dependencies)
         }
 
         @discardableResult
         public func poll(
-            isBackgroundPoll: Bool,
+            calledFromBackgroundPoller: Bool,
             isBackgroundPollerValid: @escaping (() -> Bool) = { true },
             isPostCapabilitiesRetry: Bool,
             using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()
@@ -107,7 +107,7 @@ extension OpenGroupAPI {
                             .map(on: OpenGroupAPI.workQueue) { (failureCount, $0) }
                     }
                     .done(on: OpenGroupAPI.workQueue) { [weak self] failureCount, response in
-                        guard !isBackgroundPoll || isBackgroundPollerValid() else {
+                        guard !calledFromBackgroundPoller || isBackgroundPollerValid() else {
                             // If this was a background poll and the background poll is no longer valid
                             // then just stop
                             self?.isPolling = false
@@ -119,7 +119,6 @@ extension OpenGroupAPI {
                         self?.handlePollResponse(
                             response,
                             failureCount: failureCount,
-                            isBackgroundPoll: isBackgroundPoll,
                             using: dependencies
                         )
                         
@@ -133,7 +132,7 @@ extension OpenGroupAPI {
                         seal.fulfill(())
                     }
                     .catch(on: OpenGroupAPI.workQueue) { [weak self] error in
-                        guard !isBackgroundPoll || isBackgroundPollerValid() else {
+                        guard !calledFromBackgroundPoller || isBackgroundPollerValid() else {
                             // If this was a background poll and the background poll is no longer valid
                             // then just stop
                             self?.isPolling = false
@@ -145,7 +144,8 @@ extension OpenGroupAPI {
                         // method will always resolve)
                         self?.updateCapabilitiesAndRetryIfNeeded(
                             server: server,
-                            isBackgroundPoll: isBackgroundPoll,
+                            calledFromBackgroundPoller: calledFromBackgroundPoller,
+                            isBackgroundPollerValid: isBackgroundPollerValid,
                             isPostCapabilitiesRetry: isPostCapabilitiesRetry,
                             error: error
                         )
@@ -186,7 +186,8 @@ extension OpenGroupAPI {
         
         private func updateCapabilitiesAndRetryIfNeeded(
             server: String,
-            isBackgroundPoll: Bool,
+            calledFromBackgroundPoller: Bool,
+            isBackgroundPollerValid: @escaping (() -> Bool) = { true },
             isPostCapabilitiesRetry: Bool,
             error: Error,
             using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()
@@ -233,7 +234,8 @@ extension OpenGroupAPI {
                     // Regardless of the outcome we can just resolve this
                     // immediately as it'll handle it's own response
                     return strongSelf.poll(
-                        isBackgroundPoll: isBackgroundPoll,
+                        calledFromBackgroundPoller: calledFromBackgroundPoller,
+                        isBackgroundPollerValid: isBackgroundPollerValid,
                         isPostCapabilitiesRetry: true,
                         using: dependencies
                     )
@@ -251,7 +253,6 @@ extension OpenGroupAPI {
         private func handlePollResponse(
             _ response: PollResponse,
             failureCount: Int64,
-            isBackgroundPoll: Bool,
             using dependencies: OpenGroupManager.OGMDependencies = OpenGroupManager.OGMDependencies()
         ) {
             let server: String = self.server
@@ -440,7 +441,6 @@ extension OpenGroupAPI {
                                 messages: responseBody.compactMap { $0.value },
                                 for: roomToken,
                                 on: server,
-                                isBackgroundPoll: isBackgroundPoll,
                                 dependencies: dependencies
                             )
                             
@@ -464,7 +464,6 @@ extension OpenGroupAPI {
                                 messages: messages,
                                 fromOutbox: fromOutbox,
                                 on: server,
-                                isBackgroundPoll: isBackgroundPoll,
                                 dependencies: dependencies
                             )
                             
