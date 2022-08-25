@@ -701,7 +701,7 @@ public enum OpenGroupAPI {
         in roomToken: String,
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
-    ) -> Promise<OnionRequestResponseInfoType> {
+    ) -> Promise<(OnionRequestResponseInfoType, ReactionAddResponse)> {
         /// URL(String:) won't convert raw emojis, so need to do a little encoding here.
         /// The raw emoji will come back when calling url.path
         guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
@@ -719,10 +719,6 @@ public enum OpenGroupAPI {
                 using: dependencies
             )
             .decoded(as: ReactionAddResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
-            .map { responseInfo, addResponse in
-                print("\(addResponse)")
-                return responseInfo
-            }
     }
     
     public static func reactionDelete(
@@ -732,7 +728,7 @@ public enum OpenGroupAPI {
         in roomToken: String,
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
-    ) -> Promise<OnionRequestResponseInfoType> {
+    ) -> Promise<(OnionRequestResponseInfoType, ReactionRemoveResponse)> {
         /// URL(String:) won't convert raw emojis, so need to do a little encoding here.
         /// The raw emoji will come back when calling url.path
         guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
@@ -750,10 +746,6 @@ public enum OpenGroupAPI {
                 using: dependencies
             )
             .decoded(as: ReactionRemoveResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
-            .map { responseInfo, removeResponse in
-                print("\(removeResponse)")
-                return responseInfo
-            }
     }
     
     public static func reactionDeleteAll(
@@ -763,7 +755,7 @@ public enum OpenGroupAPI {
         in roomToken: String,
         on server: String,
         using dependencies: SMKDependencies = SMKDependencies()
-    ) -> Promise<OnionRequestResponseInfoType> {
+    ) -> Promise<(OnionRequestResponseInfoType, ReactionRemoveAllResponse)> {
         /// URL(String:) won't convert raw emojis, so need to do a little encoding here.
         /// The raw emoji will come back when calling url.path
         guard let encodedEmoji: String = emoji.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
@@ -781,10 +773,6 @@ public enum OpenGroupAPI {
                 using: dependencies
             )
             .decoded(as: ReactionRemoveAllResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
-            .map { responseInfo, removeAllResponse in
-                print("\(removeAllResponse)")
-                return responseInfo
-            }
     }
     
     // MARK: - Pinning

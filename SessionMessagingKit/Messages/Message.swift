@@ -353,6 +353,7 @@ public extension Message {
         _ db: Database,
         openGroupId: String,
         message: OpenGroupAPI.Message,
+        associatedPendingChanges: [OpenGroupAPI.PendingChange],
         dependencies: SMKDependencies = SMKDependencies()
     ) -> [Reaction] {
         var results: [Reaction] = []
@@ -364,14 +365,33 @@ public extension Message {
                 threadVariant: .openGroup
             )
         for (encodedEmoji, rawReaction) in reactions {
-            if let emoji = encodedEmoji.removingPercentEncoding,
+            if let decodedEmoji = encodedEmoji.removingPercentEncoding,
                rawReaction.count > 0,
                let reactors = rawReaction.reactors
             {
+                // Decide whether we need to add an extra reaction from current user
+                let pendingChanges = associatedPendingChanges
+                    .filter {
+                        if case .reaction(_, let emoji, _) = $0.metadata {
+                            return emoji == decodedEmoji
+                        }
+                        return false
+                    }
+                var shouldAddSelfReaction: Bool = rawReaction.you || reactors.contains(userPublicKey)
+                pendingChanges.forEach {
+                    if case .reaction(_, _, let action) = $0.metadata {
+                        switch action {
+                            case .react: shouldAddSelfReaction = true
+                            case .remove: shouldAddSelfReaction = false
+                        }
+                    }
+                }
+                
+                let count: Int64 = shouldAddSelfReaction ? rawReaction.count - 1 : rawReaction.count
                 let timestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
-                let maxLength: Int = !rawReaction.you || reactors.contains(userPublicKey) ? 5 : 4
+                let maxLength: Int = shouldAddSelfReaction ? 4 : 5
                 let desiredReactorIds: [String] = reactors
-                    .filter { $0 != blindedUserPublicKey }
+                    .filter { $0 != blindedUserPublicKey && $0 != userPublicKey } // Remove current user for now, will add back if needed
                     .prefix(maxLength)
                     .map{ $0 }
 
@@ -384,8 +404,8 @@ public extension Message {
                                     serverHash: nil,
                                     timestampMs: timestampMs,
                                     authorId: reactor,
-                                    emoji: emoji,
-                                    count: rawReaction.count,
+                                    emoji: decodedEmoji,
+                                    count: count,
                                     sortId: rawReaction.index
                                 )
                             }
@@ -401,22 +421,22 @@ public extension Message {
                                         serverHash: nil,
                                         timestampMs: timestampMs,
                                         authorId: reactor,
-                                        emoji: emoji,
+                                        emoji: decodedEmoji,
                                         count: 0,   // Only want this on the first reaction
                                         sortId: rawReaction.index
                                     )
                                 }
                     )
                     .appending( // Add the current user reaction (if applicable and not already included)
-                        !rawReaction.you || reactors.contains(userPublicKey) ?
+                        !shouldAddSelfReaction ?
                             nil :
                             Reaction(
                                 interactionId: message.id,
                                 serverHash: nil,
                                 timestampMs: timestampMs,
                                 authorId: userPublicKey,
-                                emoji: emoji,
-                                count: (desiredReactorIds.isEmpty ? rawReaction.count : 0),
+                                emoji: decodedEmoji,
+                                count: 1,
                                 sortId: rawReaction.index
                             )
                     )
