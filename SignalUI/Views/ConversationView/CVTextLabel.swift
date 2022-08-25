@@ -99,7 +99,7 @@ public class CVTextLabel: NSObject {
         public let attributedString: NSAttributedString
         public let font: UIFont
         public let textColor: UIColor
-        public let selectionColor: UIColor
+        public let selectionStyling: [NSAttributedString.Key: Any]
         public let textAlignment: NSTextAlignment
         public let lineBreakMode: NSLineBreakMode
         public let numberOfLines: Int
@@ -109,7 +109,7 @@ public class CVTextLabel: NSObject {
         public init(attributedString: NSAttributedString,
                     font: UIFont,
                     textColor: UIColor,
-                    selectionColor: UIColor,
+                    selectionStyling: [NSAttributedString.Key: Any],
                     textAlignment: NSTextAlignment,
                     lineBreakMode: NSLineBreakMode,
                     numberOfLines: Int = 0,
@@ -118,7 +118,7 @@ public class CVTextLabel: NSObject {
             self.attributedString = attributedString
             self.font = font
             self.textColor = textColor
-            self.selectionColor = selectionColor
+            self.selectionStyling = selectionStyling
             self.textAlignment = textAlignment
             self.lineBreakMode = lineBreakMode
             self.numberOfLines = numberOfLines
@@ -346,11 +346,7 @@ public class CVTextLabel: NSObject {
                 return
             }
 
-            var attributes = textStorage.attributes(at: 0, effectiveRange: nil)
-            attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
-            attributes[.underlineColor] = config.selectionColor
-            attributes[.foregroundColor] = config.selectionColor
-            textStorage.addAttributes(attributes, range: selectedItem.range)
+            textStorage.addAttributes(config.selectionStyling, range: selectedItem.range)
 
             setNeedsDisplay()
         }

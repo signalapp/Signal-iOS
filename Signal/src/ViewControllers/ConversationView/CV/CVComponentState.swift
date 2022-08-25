@@ -183,6 +183,7 @@ public class CVComponentState: Equatable, Dependencies {
 
         let title: NSAttributedString
         let titleColor: UIColor
+        let titleSelectionBackgroundColor: UIColor
         let action: CVMessageAction?
 
         /// Represents users whose names appear in the title. Only applies to
@@ -192,6 +193,7 @@ public class CVComponentState: Equatable, Dependencies {
         init(
             title: NSAttributedString,
             titleColor: UIColor,
+            titleSelectionBackgroundColor: UIColor,
             action: CVMessageAction?
         ) {
             let mutableTitle = NSMutableAttributedString(attributedString: title)
@@ -202,6 +204,7 @@ public class CVComponentState: Equatable, Dependencies {
             self.title = NSAttributedString(attributedString: mutableTitle)
 
             self.titleColor = titleColor
+            self.titleSelectionBackgroundColor = titleSelectionBackgroundColor
             self.action = action
 
             self.namesInTitle = {

@@ -320,11 +320,15 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
     }
 
     private var textLabelConfig: CVTextLabel.Config {
-        CVTextLabel.Config(
+        let selectionStyling: [NSAttributedString.Key: Any] = [
+            .backgroundColor: systemMessage.titleSelectionBackgroundColor
+        ]
+
+        return CVTextLabel.Config(
             attributedString: systemMessage.title,
             font: Self.textLabelFont,
             textColor: systemMessage.titleColor,
-            selectionColor: systemMessage.titleColor, // TODO: do we want a different color for selection?
+            selectionStyling: selectionStyling,
             textAlignment: .center,
             lineBreakMode: .byWordWrapping,
             items: systemMessage.namesInTitle.map { .referencedUser(referencedUserItem: $0) }
@@ -563,19 +567,33 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
 extension CVComponentSystemMessage {
 
+    static func buildComponentState(
+        title: NSAttributedString,
+        action: Action?,
+        titleColor: UIColor? = nil,
+        titleSelectionBackgroundColor: UIColor? = nil
+    ) -> CVComponentState.SystemMessage {
+        return CVComponentState.SystemMessage(
+            title: title,
+            titleColor: titleColor ?? defaultTextColor,
+            titleSelectionBackgroundColor: titleSelectionBackgroundColor ?? defaultSelectionBackgroundColor,
+            action: action
+        )
+    }
+
     static func buildComponentState(interaction: TSInteraction,
                                     threadViewModel: ThreadViewModel,
                                     currentCallThreadId: String?,
                                     transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
 
         let title = Self.title(forInteraction: interaction, transaction: transaction)
-        let titleColor = Self.textColor(forInteraction: interaction)
+        let maybeOverrideTitleColor = Self.overrideTextColor(forInteraction: interaction)
         let action = Self.action(forInteraction: interaction,
                                  threadViewModel: threadViewModel,
                                  currentCallThreadId: currentCallThreadId,
                                  transaction: transaction)
 
-        return CVComponentState.SystemMessage(title: title, titleColor: titleColor, action: action)
+        return buildComponentState(title: title, action: action, titleColor: maybeOverrideTitleColor)
     }
 
     private static func title(forInteraction interaction: TSInteraction,
@@ -669,7 +687,12 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static func textColor(forInteraction interaction: TSInteraction) -> UIColor {
+    private static var defaultTextColor: UIColor { Theme.secondaryTextAndIconColor }
+    private static var defaultSelectionBackgroundColor: UIColor {
+        Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray05
+    }
+
+    private static func overrideTextColor(forInteraction interaction: TSInteraction) -> UIColor? {
         if let call = interaction as? TSCall {
             switch call.callType {
             case .incomingMissed,
@@ -682,10 +705,10 @@ extension CVComponentSystemMessage {
                 // our red everywhere for better accessibility
                 return UIColor(rgbHex: 0xE51D0E)
             default:
-                return Theme.secondaryTextAndIconColor
+                return nil
             }
         } else {
-            return Theme.secondaryTextAndIconColor
+            return nil
         }
     }
 
@@ -853,7 +876,6 @@ extension CVComponentSystemMessage {
                                                threadViewModel: ThreadViewModel,
                                                transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
 
-        let titleColor = Theme.secondaryTextAndIconColor
         if threadViewModel.isGroupThread {
             let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
                                           comment: "Indicator warning about an unknown group thread.")
@@ -868,18 +890,14 @@ extension CVComponentSystemMessage {
             let action = Action(title: CommonStrings.learnMore,
                                 accessibilityIdentifier: "unknown_thread_warning",
                                 action: .cvc_didTapUnknownThreadWarningGroup)
-            return CVComponentState.SystemMessage(title: labelText,
-                                                  titleColor: titleColor,
-                                                  action: action)
+            return buildComponentState(title: labelText, action: action)
         } else {
             let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
                                           comment: "Indicator warning about an unknown contact thread.")
             let action = Action(title: CommonStrings.learnMore,
                                 accessibilityIdentifier: "unknown_thread_warning",
                                 action: .cvc_didTapUnknownThreadWarningContact)
-            return CVComponentState.SystemMessage(title: title.attributedString(),
-                                                  titleColor: titleColor,
-                                                  action: action)
+            return buildComponentState(title: title.attributedString(), action: action)
         }
     }
 
@@ -906,11 +924,7 @@ extension CVComponentSystemMessage {
         )
         labelText.append(String(format: titleFormat, configuration.durationString))
 
-        return CVComponentState.SystemMessage(
-            title: labelText,
-            titleColor: Theme.secondaryTextAndIconColor,
-            action: nil
-        )
+        return buildComponentState(title: labelText, action: nil)
     }
 
     // MARK: - Actions
