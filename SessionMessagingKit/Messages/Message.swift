@@ -387,7 +387,8 @@ public extension Message {
                     }
                 }
                 
-                let count: Int64 = shouldAddSelfReaction ? rawReaction.count - 1 : rawReaction.count
+                let count: Int64 = rawReaction.you ? rawReaction.count - 1 : rawReaction.count
+                
                 let timestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
                 let maxLength: Int = shouldAddSelfReaction ? 4 : 5
                 let desiredReactorIds: [String] = reactors
