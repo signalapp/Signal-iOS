@@ -134,10 +134,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         let innerVStack = componentView.innerVStack
         let outerVStack = componentView.outerVStack
         let selectionView = componentView.selectionView
-        let titleLabel = componentView.titleLabel
-
-        titleLabelConfig.applyForRendering(label: titleLabel)
-        titleLabel.accessibilityLabel = titleLabelConfig.stringValue
+        let textLabel = componentView.textLabel
 
         if isReusing {
 
@@ -157,8 +154,11 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 wallpaperBlurView.updateIfNecessary()
             }
         } else {
+            textLabel.configureForRendering(config: textLabelConfig)
+            textLabel.view.accessibilityLabel = textLabelConfig.attributedString.string
+
             var innerVStackViews: [UIView] = [
-                titleLabel
+                textLabel.view
             ]
             let outerVStackViews = [
                 innerVStack
@@ -319,13 +319,16 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         outerHStack.applyTransformBlocks()
     }
 
-    private var titleLabelConfig: CVLabelConfig {
-        CVLabelConfig(attributedText: systemMessage.title,
-                      font: Self.titleLabelFont,
-                      textColor: systemMessage.titleColor,
-                      numberOfLines: 0,
-                      lineBreakMode: .byWordWrapping,
-                      textAlignment: .center)
+    private var textLabelConfig: CVTextLabel.Config {
+        CVTextLabel.Config(
+            attributedString: systemMessage.title,
+            font: Self.textLabelFont,
+            textColor: systemMessage.titleColor,
+            selectionColor: systemMessage.titleColor, // TODO: do we want a different color for selection?
+            textAlignment: .center,
+            lineBreakMode: .byWordWrapping,
+            items: systemMessage.namesInTitle.map { .referencedUser(referencedUserItem: $0) }
+        )
     }
 
     private func buttonLabelConfig(action: Action) -> CVLabelConfig {
@@ -345,7 +348,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         UIEdgeInsets(hMargin: 12, vMargin: 6)
     }
 
-    private static var titleLabelFont: UIFont {
+    private static var textLabelFont: UIFont {
         UIFont.ows_dynamicTypeFootnote
     }
 
@@ -373,11 +376,13 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         maxContentWidth = max(0, maxContentWidth)
 
-        let titleSize = CVText.measureLabel(config: titleLabelConfig,
-                                            maxWidth: maxContentWidth)
+        let textSize = CVTextLabel.measureSize(
+            config: textLabelConfig,
+            maxWidth: maxContentWidth
+        )
 
         var innerVStackSubviewInfos = [ManualStackSubviewInfo]()
-        innerVStackSubviewInfos.append(titleSize.asManualSubviewInfo)
+        innerVStackSubviewInfos.append(textSize.size.asManualSubviewInfo)
         if let action = action, !itemViewState.shouldCollapseSystemMessageAction {
             let buttonLabelConfig = self.buttonLabelConfig(action: action)
             let actionButtonSize = (CVText.measureLabel(config: buttonLabelConfig,
@@ -445,12 +450,18 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             return true
         }
 
-        if let action = systemMessage.action {
-            let rootView = componentView.rootView
-            if rootView.containsGestureLocation(sender) {
-                action.action.perform(delegate: componentDelegate)
-                return true
-            }
+        if
+            let action = systemMessage.action,
+            let actionButton = componentView.button,
+            actionButton.containsGestureLocation(sender)
+        {
+            action.action.perform(delegate: componentDelegate)
+            return true
+        }
+
+        if let item = componentView.textLabel.itemForGesture(sender: sender) {
+            componentDelegate.cvc_didTapSystemMessageItem(item)
+            return true
         }
 
         return false
@@ -474,7 +485,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         fileprivate let outerHStack = ManualStackView(name: "systemMessage.outerHStack")
         fileprivate let innerVStack = ManualStackView(name: "systemMessage.innerVStack")
         fileprivate let outerVStack = ManualStackView(name: "systemMessage.outerVStack")
-        fileprivate let titleLabel = CVLabel()
         fileprivate let selectionView = MessageSelectionView()
 
         fileprivate var wallpaperBlurView: CVWallpaperBlurView?
@@ -489,7 +499,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         fileprivate var backgroundView: UIView?
 
-        fileprivate var button: OWSButton?
+        public let textLabel = CVTextLabel()
+        public fileprivate(set) var button: OWSButton?
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -510,8 +521,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         override required init() {
             super.init()
-
-            titleLabel.textAlignment = .center
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
@@ -527,6 +536,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 outerHStack.reset()
                 innerVStack.reset()
                 outerVStack.reset()
+                textLabel.reset()
 
                 wallpaperBlurView?.removeFromSuperview()
                 wallpaperBlurView?.resetContentAndConfiguration()
@@ -542,8 +552,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 wasShowingSelectionUI = false
                 hasActionButton = false
             }
-
-            titleLabel.text = nil
 
             button?.removeFromSuperview()
             button = nil
@@ -573,7 +581,7 @@ extension CVComponentSystemMessage {
     private static func title(forInteraction interaction: TSInteraction,
                               transaction: SDSAnyReadTransaction) -> NSAttributedString {
 
-        let font = Self.titleLabelFont
+        let font = Self.textLabelFont
         let labelText = NSMutableAttributedString()
 
         if let infoMessage = interaction as? TSInfoMessage,
@@ -587,7 +595,7 @@ extension CVComponentSystemMessage {
                                                font: font,
                                                heightReference: ImageAttachmentHeightReference.lineHeight)
                 labelText.append("  ", attributes: [:])
-                labelText.append(update.text, attributes: [:])
+                labelText.append(update.text)
 
                 let isLast = index == groupUpdates.count - 1
                 if !isLast {
@@ -852,7 +860,7 @@ extension CVComponentSystemMessage {
 
             let labelText = NSMutableAttributedString()
             labelText.appendTemplatedImage(named: Theme.iconName(.info16),
-                                           font: Self.titleLabelFont,
+                                           font: Self.textLabelFont,
                                            heightReference: ImageAttachmentHeightReference.lineHeight)
             labelText.append("  ", attributes: [:])
             labelText.append(title, attributes: [:])
@@ -887,7 +895,7 @@ extension CVComponentSystemMessage {
         let labelText = NSMutableAttributedString()
         labelText.appendImage(
             Theme.iconImage(.timer16).withRenderingMode(.alwaysTemplate),
-            font: Self.titleLabelFont,
+            font: Self.textLabelFont,
             heightReference: ImageAttachmentHeightReference.lineHeight
         )
         labelText.append("  ", attributes: [:])

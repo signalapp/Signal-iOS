@@ -933,6 +933,10 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.Item) {}
 
+    // MARK: - System Message Items
+
+    func cvc_didTapSystemMessageItem(_ item: CVTextLabel.Item) {}
+
     // MARK: - Long Press
 
     // TODO:

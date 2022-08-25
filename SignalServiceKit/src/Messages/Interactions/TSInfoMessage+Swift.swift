@@ -7,11 +7,11 @@ import Foundation
 @objc
 public extension TSInfoMessage {
 
-    func groupUpdateDescription(transaction: SDSAnyReadTransaction) -> String {
+    func groupUpdateDescription(transaction: SDSAnyReadTransaction) -> NSAttributedString {
         // for legacy group updates we persisted a pre-rendered string, rather than the details
         // to generate that string
         if let customMessage = self.customMessage {
-            return customMessage
+            return NSAttributedString(string: customMessage)
         }
 
         guard let newGroupModel = self.newGroupModel else {
@@ -70,7 +70,7 @@ extension TSInfoMessage {
         oldGroupModel: TSGroupModel?,
         newGroupModel: TSGroupModel,
         transaction: SDSAnyReadTransaction
-    ) -> String {
+    ) -> NSAttributedString {
         guard let groupUpdate = makeGroupUpdate(
             oldGroupModel: oldGroupModel,
             newGroupModel: newGroupModel,

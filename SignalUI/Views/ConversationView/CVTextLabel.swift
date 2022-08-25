@@ -64,9 +64,22 @@ public class CVTextLabel: NSObject {
 
     // MARK: -
 
+    public struct ReferencedUserItem: Equatable {
+        public let address: SignalServiceAddress
+        public let range: NSRange
+
+        public init(address: SignalServiceAddress, range: NSRange) {
+            self.address = address
+            self.range = range
+        }
+    }
+
+    // MARK: -
+
     public enum Item: Equatable {
         case dataItem(dataItem: DataItem)
         case mention(mentionItem: MentionItem)
+        case referencedUser(referencedUserItem: ReferencedUserItem)
 
         public var range: NSRange {
             switch self {
@@ -74,6 +87,8 @@ public class CVTextLabel: NSObject {
                 return dataItem.range
             case .mention(let mentionItem):
                 return mentionItem.range
+            case .referencedUser(let referencedUserItem):
+                return referencedUserItem.range
             }
         }
     }
@@ -98,7 +113,7 @@ public class CVTextLabel: NSObject {
                     textAlignment: NSTextAlignment,
                     lineBreakMode: NSLineBreakMode,
                     numberOfLines: Int = 0,
-                    cacheKey: String,
+                    cacheKey: String? = nil,
                     items: [Item]) {
             self.attributedString = attributedString
             self.font = font
@@ -107,7 +122,13 @@ public class CVTextLabel: NSObject {
             self.textAlignment = textAlignment
             self.lineBreakMode = lineBreakMode
             self.numberOfLines = numberOfLines
-            self.cacheKey = cacheKey
+
+            if let cacheKey = cacheKey {
+                self.cacheKey = cacheKey
+            } else {
+                self.cacheKey = "\(attributedString.string),\(font.fontName),\(font.pointSize),\(numberOfLines),\(lineBreakMode.rawValue),\(textAlignment.rawValue)"
+            }
+
             self.items = items
         }
     }
@@ -216,9 +237,6 @@ public class CVTextLabel: NSObject {
             }
         }
 
-        private var activeItems = [Item]()
-        private var activeMentions = [Mention]()
-
         private lazy var textStorage = NSTextStorage()
         private lazy var layoutManager = NSLayoutManager()
         private lazy var textContainer = NSTextContainer()
@@ -247,8 +265,6 @@ public class CVTextLabel: NSObject {
 
         fileprivate func reset() {
             AssertIsOnMainThread()
-
-            activeItems = []
 
             animationTimer?.invalidate()
             animationTimer = nil
@@ -303,6 +319,9 @@ public class CVTextLabel: NSObject {
             // assign a font here with "add" which will not override any
             // ranges that already have a different font assigned.
             attributedString.addAttributeToEntireString(.font, value: config.font)
+
+            // Color needs to be set on the string.
+            attributedString.addAttributeToEntireString(.foregroundColor, value: config.textColor)
 
             var range = NSRange(location: 0, length: 0)
             var attributes = attributedString.attributes(at: 0, effectiveRange: &range)
@@ -420,6 +439,9 @@ extension CVTextLabel.Label: UIDragInteractionDelegate {
         switch selectedItem {
         case .mention:
             // We don't let users drag mentions yet.
+            return []
+        case .referencedUser:
+            // Dragging is not applicable to referenced users
             return []
         case .dataItem(let dataItem):
             animate(selectedItem: selectedItem)

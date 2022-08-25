@@ -666,8 +666,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 continue
             }
             switch item {
-            case .mention:
-                // Do nothing; mentions are already styled.
+            case .mention, .referencedUser:
+                // Do nothing; mentions and referenced users are already styled.
                 continue
             case .dataItem(let dataItem):
                 guard let link = dataItem.url.absoluteString.nilIfEmpty else {
