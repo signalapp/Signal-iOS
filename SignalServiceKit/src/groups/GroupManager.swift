@@ -1085,11 +1085,21 @@ public class GroupManager: NSObject {
         }
     }
 
+    // MARK: - Announcements
+
     public static func setIsAnnouncementsOnly(groupModel: TSGroupModelV2,
                                               isAnnouncementsOnly: Bool) -> Promise<TSGroupThread> {
         updateGroupV2(groupModel: groupModel,
                       description: "Update isAnnouncementsOnly") { groupChangeSet in
             groupChangeSet.setIsAnnouncementsOnly(isAnnouncementsOnly)
+        }
+    }
+
+    // MARK: - Local profile key
+
+    public static func updateLocalProfileKey(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+        updateGroupV2(groupModel: groupModel, description: "Update local profile key") { changes in
+            changes.setShouldUpdateLocalProfileKey()
         }
     }
 
@@ -2249,7 +2259,7 @@ extension GroupManager {
         }
     }
 
-    public static func updateGroupV2(
+    fileprivate static func updateGroupV2(
         groupModel: TSGroupModelV2,
         description: String,
         changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void

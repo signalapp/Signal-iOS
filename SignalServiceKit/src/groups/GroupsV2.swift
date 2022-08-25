@@ -208,6 +208,8 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
     func setIsAnnouncementsOnly(_ isAnnouncementsOnly: Bool)
 
+    func setShouldUpdateLocalProfileKey()
+
     func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
 }

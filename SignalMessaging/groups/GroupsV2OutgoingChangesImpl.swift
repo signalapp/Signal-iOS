@@ -195,11 +195,6 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         self.newDisappearingMessageToken = newDisappearingMessageToken
     }
 
-    public func setShouldUpdateLocalProfileKey() {
-        owsAssertDebug(!shouldUpdateLocalProfileKey)
-        shouldUpdateLocalProfileKey = true
-    }
-
     public func revokeInvalidInvites() {
         owsAssertDebug(!shouldRevokeInvalidInvites)
         shouldRevokeInvalidInvites = true
@@ -231,6 +226,11 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         owsAssertDebug(self.isAnnouncementsOnly == nil)
 
         self.isAnnouncementsOnly = isAnnouncementsOnly
+    }
+
+    public func setShouldUpdateLocalProfileKey() {
+        owsAssertDebug(!shouldUpdateLocalProfileKey)
+        shouldUpdateLocalProfileKey = true
     }
 
     // MARK: - Change Protos
