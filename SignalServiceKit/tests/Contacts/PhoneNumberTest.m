@@ -40,8 +40,14 @@
 
 - (void)testTryParsePhoneNumberFromUserSpecifiedText_includingCountryCode
 {
-    PhoneNumber *actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"4915110000000" callingCode:@"49"];
-    XCTAssertEqualObjects(@"+4915110000000", [actual toE164]);
+    PhoneNumber *actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"18085550101" callingCode:@"1"];
+    XCTAssertEqualObjects(@"+18085550101", [actual toE164]);
+
+    actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"61255504321" callingCode:@"61"];
+    XCTAssertEqualObjects(@"+61255504321", [actual toE164]);
+
+    actual = [PhoneNumber tryParsePhoneNumberFromUserSpecifiedText:@"493083050" callingCode:@"49"];
+    XCTAssertEqualObjects(@"+493083050", [actual toE164]);
 }
 
 - (void)testTryParsePhoneNumberFromUserSpecifiedTextWithoutPlus {
