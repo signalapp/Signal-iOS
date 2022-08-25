@@ -353,7 +353,9 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onRemoteDeviceStatesChanged groupCall: GroupCall) {
-        userWantsToRing = false
+        if !groupCall.remoteDeviceStates.isEmpty {
+            userWantsToRing = false
+        }
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
