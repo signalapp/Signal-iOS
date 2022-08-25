@@ -718,7 +718,11 @@ public enum OpenGroupAPI {
                 ),
                 using: dependencies
             )
-            .map { responseInfo, _ in responseInfo }
+            .decoded(as: ReactionAddResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
+            .map { responseInfo, addResponse in
+                print("\(addResponse)")
+                return responseInfo
+            }
     }
     
     public static func reactionDelete(
@@ -745,7 +749,11 @@ public enum OpenGroupAPI {
                 ),
                 using: dependencies
             )
-            .map { responseInfo, _ in responseInfo }
+            .decoded(as: ReactionRemoveResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
+            .map { responseInfo, removeResponse in
+                print("\(removeResponse)")
+                return responseInfo
+            }
     }
     
     public static func reactionDeleteAll(
@@ -772,7 +780,11 @@ public enum OpenGroupAPI {
                 ),
                 using: dependencies
             )
-            .map { responseInfo, _ in responseInfo }
+            .decoded(as: ReactionRemoveAllResponse.self, on: OpenGroupAPI.workQueue, using: dependencies)
+            .map { responseInfo, removeAllResponse in
+                print("\(removeAllResponse)")
+                return responseInfo
+            }
     }
     
     // MARK: - Pinning
