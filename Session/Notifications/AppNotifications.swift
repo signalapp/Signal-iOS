@@ -384,9 +384,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             closedGroupName: nil,       // Not supported
             openGroupName: nil          // Not supported
         )
+        
+        let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
 
         DispatchQueue.main.async {
-            let sound = self.requestSound(thread: thread)
+            let sound = self.requestSound(thread: thread, fallbackSound: fallbackSound)
             
             self.adaptee.notify(
                 category: category,
