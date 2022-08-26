@@ -249,11 +249,13 @@ public enum MessageReceiver {
     
     public static func handleOpenGroupReactions(
         _ db: Database,
+        threadId: String,
         openGroupMessageServerId: Int64,
         openGroupReactions: [Reaction]
     ) throws {
         guard let interactionId: Int64 = try? Interaction
             .select(.id)
+            .filter(Interaction.Columns.threadId == threadId)
             .filter(Interaction.Columns.openGroupServerMessageId == openGroupMessageServerId)
             .asRequest(of: Int64.self)
             .fetchOne(db)
