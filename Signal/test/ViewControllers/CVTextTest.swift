@@ -133,15 +133,17 @@ class CVTextTest: SignalBaseTest {
     }
 
     static func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVTextLabel.Config {
+        let selectionColor = UIColor.orange
+        let items: [CVTextLabel.Item] = []
         return CVTextLabel.Config(attributedString: textViewConfig.text.attributedString,
                                   font: textViewConfig.font,
                                   textColor: textViewConfig.textColor,
-                                  selectionStyling: [.foregroundColor: UIColor.orange],
+                                  selectionColor: selectionColor,
                                   textAlignment: textViewConfig.textAlignment ?? .natural,
                                   lineBreakMode: .byWordWrapping,
                                   numberOfLines: 0,
                                   cacheKey: textViewConfig.cacheKey,
-                                  items: [])
+                                  items: items)
     }
 
     func testLabelMeasurement() {

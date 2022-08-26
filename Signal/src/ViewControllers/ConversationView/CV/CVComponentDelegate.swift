@@ -23,10 +23,6 @@ public protocol CVComponentDelegate: AnyObject {
 
     func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.Item)
 
-    // MARK: - System Message Items
-
-    func cvc_didTapSystemMessageItem(_ item: CVTextLabel.Item)
-
     // MARK: - Long Press
 
     func cvc_didLongPressTextViewItem(_ cell: CVCell,

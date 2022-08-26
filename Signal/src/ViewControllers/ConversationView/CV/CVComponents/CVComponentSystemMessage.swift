@@ -134,7 +134,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         let innerVStack = componentView.innerVStack
         let outerVStack = componentView.outerVStack
         let selectionView = componentView.selectionView
-        let textLabel = componentView.textLabel
+        let titleLabel = componentView.titleLabel
+
+        titleLabelConfig.applyForRendering(label: titleLabel)
+        titleLabel.accessibilityLabel = titleLabelConfig.stringValue
 
         if isReusing {
 
@@ -154,11 +157,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 wallpaperBlurView.updateIfNecessary()
             }
         } else {
-            textLabel.configureForRendering(config: textLabelConfig)
-            textLabel.view.accessibilityLabel = textLabelConfig.attributedString.string
-
             var innerVStackViews: [UIView] = [
-                textLabel.view
+                titleLabel
             ]
             let outerVStackViews = [
                 innerVStack
@@ -319,20 +319,13 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         outerHStack.applyTransformBlocks()
     }
 
-    private var textLabelConfig: CVTextLabel.Config {
-        let selectionStyling: [NSAttributedString.Key: Any] = [
-            .backgroundColor: systemMessage.titleSelectionBackgroundColor
-        ]
-
-        return CVTextLabel.Config(
-            attributedString: systemMessage.title,
-            font: Self.textLabelFont,
-            textColor: systemMessage.titleColor,
-            selectionStyling: selectionStyling,
-            textAlignment: .center,
-            lineBreakMode: .byWordWrapping,
-            items: systemMessage.namesInTitle.map { .referencedUser(referencedUserItem: $0) }
-        )
+    private var titleLabelConfig: CVLabelConfig {
+        CVLabelConfig(attributedText: systemMessage.title,
+                      font: Self.titleLabelFont,
+                      textColor: systemMessage.titleColor,
+                      numberOfLines: 0,
+                      lineBreakMode: .byWordWrapping,
+                      textAlignment: .center)
     }
 
     private func buttonLabelConfig(action: Action) -> CVLabelConfig {
@@ -352,7 +345,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         UIEdgeInsets(hMargin: 12, vMargin: 6)
     }
 
-    private static var textLabelFont: UIFont {
+    private static var titleLabelFont: UIFont {
         UIFont.ows_dynamicTypeFootnote
     }
 
@@ -380,13 +373,11 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         maxContentWidth = max(0, maxContentWidth)
 
-        let textSize = CVTextLabel.measureSize(
-            config: textLabelConfig,
-            maxWidth: maxContentWidth
-        )
+        let titleSize = CVText.measureLabel(config: titleLabelConfig,
+                                            maxWidth: maxContentWidth)
 
         var innerVStackSubviewInfos = [ManualStackSubviewInfo]()
-        innerVStackSubviewInfos.append(textSize.size.asManualSubviewInfo)
+        innerVStackSubviewInfos.append(titleSize.asManualSubviewInfo)
         if let action = action, !itemViewState.shouldCollapseSystemMessageAction {
             let buttonLabelConfig = self.buttonLabelConfig(action: action)
             let actionButtonSize = (CVText.measureLabel(config: buttonLabelConfig,
@@ -454,18 +445,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             return true
         }
 
-        if
-            let action = systemMessage.action,
-            let actionButton = componentView.button,
-            actionButton.containsGestureLocation(sender)
-        {
-            action.action.perform(delegate: componentDelegate)
-            return true
-        }
-
-        if let item = componentView.textLabel.itemForGesture(sender: sender) {
-            componentDelegate.cvc_didTapSystemMessageItem(item)
-            return true
+        if let action = systemMessage.action {
+            let rootView = componentView.rootView
+            if rootView.containsGestureLocation(sender) {
+                action.action.perform(delegate: componentDelegate)
+                return true
+            }
         }
 
         return false
@@ -489,6 +474,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         fileprivate let outerHStack = ManualStackView(name: "systemMessage.outerHStack")
         fileprivate let innerVStack = ManualStackView(name: "systemMessage.innerVStack")
         fileprivate let outerVStack = ManualStackView(name: "systemMessage.outerVStack")
+        fileprivate let titleLabel = CVLabel()
         fileprivate let selectionView = MessageSelectionView()
 
         fileprivate var wallpaperBlurView: CVWallpaperBlurView?
@@ -503,8 +489,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         fileprivate var backgroundView: UIView?
 
-        public let textLabel = CVTextLabel()
-        public fileprivate(set) var button: OWSButton?
+        fileprivate var button: OWSButton?
 
         fileprivate var hasWallpaper = false
         fileprivate var isDarkThemeEnabled = false
@@ -525,6 +510,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         override required init() {
             super.init()
+
+            titleLabel.textAlignment = .center
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {}
@@ -540,7 +527,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 outerHStack.reset()
                 innerVStack.reset()
                 outerVStack.reset()
-                textLabel.reset()
 
                 wallpaperBlurView?.removeFromSuperview()
                 wallpaperBlurView?.resetContentAndConfiguration()
@@ -557,6 +543,8 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 hasActionButton = false
             }
 
+            titleLabel.text = nil
+
             button?.removeFromSuperview()
             button = nil
         }
@@ -567,39 +555,25 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
 extension CVComponentSystemMessage {
 
-    static func buildComponentState(
-        title: NSAttributedString,
-        action: Action?,
-        titleColor: UIColor? = nil,
-        titleSelectionBackgroundColor: UIColor? = nil
-    ) -> CVComponentState.SystemMessage {
-        return CVComponentState.SystemMessage(
-            title: title,
-            titleColor: titleColor ?? defaultTextColor,
-            titleSelectionBackgroundColor: titleSelectionBackgroundColor ?? defaultSelectionBackgroundColor,
-            action: action
-        )
-    }
-
     static func buildComponentState(interaction: TSInteraction,
                                     threadViewModel: ThreadViewModel,
                                     currentCallThreadId: String?,
                                     transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
 
         let title = Self.title(forInteraction: interaction, transaction: transaction)
-        let maybeOverrideTitleColor = Self.overrideTextColor(forInteraction: interaction)
+        let titleColor = Self.textColor(forInteraction: interaction)
         let action = Self.action(forInteraction: interaction,
                                  threadViewModel: threadViewModel,
                                  currentCallThreadId: currentCallThreadId,
                                  transaction: transaction)
 
-        return buildComponentState(title: title, action: action, titleColor: maybeOverrideTitleColor)
+        return CVComponentState.SystemMessage(title: title, titleColor: titleColor, action: action)
     }
 
     private static func title(forInteraction interaction: TSInteraction,
                               transaction: SDSAnyReadTransaction) -> NSAttributedString {
 
-        let font = Self.textLabelFont
+        let font = Self.titleLabelFont
         let labelText = NSMutableAttributedString()
 
         if let infoMessage = interaction as? TSInfoMessage,
@@ -613,7 +587,7 @@ extension CVComponentSystemMessage {
                                                font: font,
                                                heightReference: ImageAttachmentHeightReference.lineHeight)
                 labelText.append("  ", attributes: [:])
-                labelText.append(update.text)
+                labelText.append(update.text, attributes: [:])
 
                 let isLast = index == groupUpdates.count - 1
                 if !isLast {
@@ -687,12 +661,7 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static var defaultTextColor: UIColor { Theme.secondaryTextAndIconColor }
-    private static var defaultSelectionBackgroundColor: UIColor {
-        Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray05
-    }
-
-    private static func overrideTextColor(forInteraction interaction: TSInteraction) -> UIColor? {
+    private static func textColor(forInteraction interaction: TSInteraction) -> UIColor {
         if let call = interaction as? TSCall {
             switch call.callType {
             case .incomingMissed,
@@ -705,10 +674,10 @@ extension CVComponentSystemMessage {
                 // our red everywhere for better accessibility
                 return UIColor(rgbHex: 0xE51D0E)
             default:
-                return nil
+                return Theme.secondaryTextAndIconColor
             }
         } else {
-            return nil
+            return Theme.secondaryTextAndIconColor
         }
     }
 
@@ -876,13 +845,14 @@ extension CVComponentSystemMessage {
                                                threadViewModel: ThreadViewModel,
                                                transaction: SDSAnyReadTransaction) -> CVComponentState.SystemMessage {
 
+        let titleColor = Theme.secondaryTextAndIconColor
         if threadViewModel.isGroupThread {
             let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_GROUP",
                                           comment: "Indicator warning about an unknown group thread.")
 
             let labelText = NSMutableAttributedString()
             labelText.appendTemplatedImage(named: Theme.iconName(.info16),
-                                           font: Self.textLabelFont,
+                                           font: Self.titleLabelFont,
                                            heightReference: ImageAttachmentHeightReference.lineHeight)
             labelText.append("  ", attributes: [:])
             labelText.append(title, attributes: [:])
@@ -890,14 +860,18 @@ extension CVComponentSystemMessage {
             let action = Action(title: CommonStrings.learnMore,
                                 accessibilityIdentifier: "unknown_thread_warning",
                                 action: .cvc_didTapUnknownThreadWarningGroup)
-            return buildComponentState(title: labelText, action: action)
+            return CVComponentState.SystemMessage(title: labelText,
+                                                  titleColor: titleColor,
+                                                  action: action)
         } else {
             let title = NSLocalizedString("SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT",
                                           comment: "Indicator warning about an unknown contact thread.")
             let action = Action(title: CommonStrings.learnMore,
                                 accessibilityIdentifier: "unknown_thread_warning",
                                 action: .cvc_didTapUnknownThreadWarningContact)
-            return buildComponentState(title: title.attributedString(), action: action)
+            return CVComponentState.SystemMessage(title: title.attributedString(),
+                                                  titleColor: titleColor,
+                                                  action: action)
         }
     }
 
@@ -913,7 +887,7 @@ extension CVComponentSystemMessage {
         let labelText = NSMutableAttributedString()
         labelText.appendImage(
             Theme.iconImage(.timer16).withRenderingMode(.alwaysTemplate),
-            font: Self.textLabelFont,
+            font: Self.titleLabelFont,
             heightReference: ImageAttachmentHeightReference.lineHeight
         )
         labelText.append("  ", attributes: [:])
@@ -924,7 +898,11 @@ extension CVComponentSystemMessage {
         )
         labelText.append(String(format: titleFormat, configuration.durationString))
 
-        return buildComponentState(title: labelText, action: nil)
+        return CVComponentState.SystemMessage(
+            title: labelText,
+            titleColor: Theme.secondaryTextAndIconColor,
+            action: nil
+        )
     }
 
     // MARK: - Actions

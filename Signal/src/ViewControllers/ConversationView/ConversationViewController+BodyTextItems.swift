@@ -4,7 +4,6 @@
 
 import Foundation
 import MessageUI
-import SignalCoreKit
 
 // This extension reproduces some of the UITextView link interaction behavior.
 // This is how UITextView behaves:
@@ -65,9 +64,6 @@ extension ConversationViewController {
             }
         case .mention(let mentionItem):
             didTapOrLongPressMention(mentionItem.mention)
-        case .referencedUser(let referencedUserItem):
-            owsFailDebug("Should never have a referenced user item in body text, but tapped \(referencedUserItem)")
-            break
         }
     }
 
@@ -109,9 +105,6 @@ extension ConversationViewController {
             }
         case .mention(let mentionItem):
             didTapOrLongPressMention(mentionItem.mention)
-        case .referencedUser(let referencedUserItem):
-            owsFailDebug("Should never have a referenced user item in body text, but long pressed \(referencedUserItem)")
-            break
         }
     }
 
