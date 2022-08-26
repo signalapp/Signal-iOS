@@ -7,6 +7,7 @@ public final class OutlineButton: UIButton {
         case regular
         case borderless
         case destructive
+        case destructiveBorderless
         case filled
     }
     
@@ -46,7 +47,7 @@ public final class OutlineButton: UIButton {
             {
                 switch style {
                     case .regular, .borderless: return .outlineButton_text
-                    case .destructive: return .outlineButton_destructiveText
+                    case .destructive, .destructiveBorderless: return .outlineButton_destructiveText
                     case .filled: return .outlineButton_filledText
                 }
             }(),
@@ -57,7 +58,7 @@ public final class OutlineButton: UIButton {
             {
                 switch style {
                     case .regular, .borderless: return .outlineButton_background
-                    case .destructive: return .outlineButton_destructiveBackground
+                    case .destructive, .destructiveBorderless: return .outlineButton_destructiveBackground
                     case .filled: return .outlineButton_filledBackground
                 }
             }(),
@@ -67,19 +68,24 @@ public final class OutlineButton: UIButton {
             {
                 switch style {
                     case .regular, .borderless: return .outlineButton_highlight
-                    case .destructive: return .outlineButton_destructiveHighlight
+                    case .destructive, .destructiveBorderless: return .outlineButton_destructiveHighlight
                     case .filled: return .outlineButton_filledHighlight
                 }
             }(),
             for: .highlighted
         )
         
-        layer.borderWidth = 1
+        layer.borderWidth = {
+            switch style {
+                case .borderless, .destructiveBorderless: return 0
+                default: return 1
+            }
+        }()
         themeBorderColor = {
             switch style {
                 case .regular: return .outlineButton_border
                 case .destructive: return .outlineButton_destructiveBorder
-                case .filled, .borderless: return nil
+                case .filled, .borderless, .destructiveBorderless: return nil
             }
         }()
         
@@ -91,6 +97,11 @@ public final class OutlineButton: UIButton {
             }
         }()
         set(.height, to: height)
-        layer.cornerRadius = height / 2
+        layer.cornerRadius = {
+            switch style {
+                case .borderless, .destructiveBorderless: return 5
+                default: return (height / 2)
+            }
+        }()
     }
 }

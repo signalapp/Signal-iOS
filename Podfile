@@ -66,6 +66,9 @@ abstract_target 'GlobalDependencies' do
           
           pod 'Quick'
           pod 'Nimble'
+          
+          # Need to include this for the tests because otherwise it won't actually build
+          pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage'
         end
       end
       

@@ -90,8 +90,7 @@ extension ConversationVC:
         
         let callVC = CallVC(for: call)
         callVC.conversationVC = self
-        self.inputAccessoryView?.isHidden = true
-        self.inputAccessoryView?.alpha = 0
+        hideInputAccessoryView()
         
         present(callVC, animated: true, completion: nil)
     }
@@ -102,7 +101,7 @@ extension ConversationVC:
         self.showBlockedModalIfNeeded()
     }
 
-    func showBlockedModalIfNeeded() -> Bool {
+    @discardableResult func showBlockedModalIfNeeded() -> Bool {
         guard self.viewModel.threadData.threadIsBlocked == true else { return false }
         
         let blockedModal = BlockedModal(publicKey: viewModel.threadData.threadId)
@@ -381,9 +380,15 @@ extension ConversationVC:
                     body: text,
                     timestampMs: sentTimestampMs,
                     hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text),
+                    expiresInSeconds: try? DisappearingMessagesConfiguration
+                        .select(.durationSeconds)
+                        .filter(id: threadId)
+                        .filter(DisappearingMessagesConfiguration.Columns.isEnabled == true)
+                        .asRequest(of: TimeInterval.self)
+                        .fetchOne(db),
                     linkPreviewUrl: linkPreviewDraft?.urlString
                 ).inserted(db)
-
+                
                 // If there is a LinkPreview and it doesn't match an existing one then add it now
                 if
                     let linkPreviewDraft: LinkPreviewDraft = linkPreviewDraft,
@@ -471,7 +476,13 @@ extension ConversationVC:
                     variant: .standardOutgoing,
                     body: text,
                     timestampMs: sentTimestampMs,
-                    hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text)
+                    hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: text),
+                    expiresInSeconds: try? DisappearingMessagesConfiguration
+                        .select(.durationSeconds)
+                        .filter(id: threadId)
+                        .filter(DisappearingMessagesConfiguration.Columns.isEnabled == true)
+                        .asRequest(of: TimeInterval.self)
+                        .fetchOne(db)
                 ).inserted(db)
 
                 try MessageSender.send(
@@ -642,7 +653,12 @@ extension ConversationVC:
         
         return result
     }
-
+    
+    func hideInputAccessoryView() {
+        self.inputAccessoryView?.isHidden = true
+        self.inputAccessoryView?.alpha = 0
+    }
+    
     func showInputAccessoryView() {
         UIView.animate(withDuration: 0.25, animations: {
             self.inputAccessoryView?.isHidden = false
@@ -667,11 +683,13 @@ extension ConversationVC:
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
+                recentEmojis: (self.viewModel.threadData.recentReactionEmoji ?? []).compactMap { EmojiWithSkinTones(rawValue: $0) },
                 currentUserIsOpenGroupModerator: OpenGroupManager.isUserModeratorOrAdmin(
                     self.viewModel.threadData.currentUserPublicKey,
                     for: self.viewModel.threadData.openGroupRoomToken,
                     on: self.viewModel.threadData.openGroupServer
                 ),
+                currentThreadIsMessageRequest: (self.viewModel.threadData.threadIsMessageRequest == true),
                 delegate: self
             )
         else { return }
@@ -697,6 +715,7 @@ extension ConversationVC:
         
         self.contextMenuWindow?.backgroundColor = .clear
         self.contextMenuWindow?.rootViewController = self.contextMenuVC
+        self.contextMenuWindow?.overrideUserInterfaceStyle = (isDarkMode ? .dark : .light)
         self.contextMenuWindow?.makeKeyAndVisible()
     }
 
@@ -948,8 +967,303 @@ extension ConversationVC:
         guard let threadId: String = targetThreadId else { return }
         
         let conversationVC: ConversationVC = ConversationVC(threadId: threadId, threadVariant: .contact)
-            
         self.navigationController?.pushViewController(conversationVC, animated: true)
+    }
+    
+    func showReactionList(_ cellViewModel: MessageViewModel, selectedReaction: EmojiWithSkinTones?) {
+        guard
+            cellViewModel.reactionInfo?.isEmpty == false &&
+            (
+                self.viewModel.threadData.threadVariant == .closedGroup ||
+                self.viewModel.threadData.threadVariant == .openGroup
+            ),
+            let allMessages: [MessageViewModel] = self.viewModel.interactionData
+                .first(where: { $0.model == .messages })?
+                .elements
+        else { return }
+        
+        let reactionListSheet: ReactionListSheet = ReactionListSheet(for: cellViewModel.id) { [weak self] in
+            self?.currentReactionListSheet = nil
+        }
+        reactionListSheet.delegate = self
+        reactionListSheet.handleInteractionUpdates(
+            allMessages,
+            selectedReaction: selectedReaction,
+            initialLoad: true,
+            shouldShowClearAllButton: OpenGroupManager.isUserModeratorOrAdmin(
+                self.viewModel.threadData.currentUserPublicKey,
+                for: self.viewModel.threadData.openGroupRoomToken,
+                on: self.viewModel.threadData.openGroupServer
+            )
+        )
+        reactionListSheet.modalPresentationStyle = .overFullScreen
+        present(reactionListSheet, animated: true, completion: nil)
+        
+        // Store so we can updated the content based on the current VC
+        self.currentReactionListSheet = reactionListSheet
+    }
+    
+    func needsLayout(for cellViewModel: MessageViewModel, expandingReactions: Bool) {
+        guard
+            let messageSectionIndex: Int = self.viewModel.interactionData
+                .firstIndex(where: { $0.model == .messages }),
+            let targetMessageIndex = self.viewModel.interactionData[messageSectionIndex]
+                .elements
+                .firstIndex(where: { $0.id == cellViewModel.id })
+        else { return }
+        
+        if expandingReactions {
+            self.viewModel.expandReactions(for: cellViewModel.id)
+        }
+        else {
+            self.viewModel.collapseReactions(for: cellViewModel.id)
+        }
+        
+        UIView.setAnimationsEnabled(false)
+        tableView.reloadRows(
+            at: [IndexPath(row: targetMessageIndex, section: messageSectionIndex)],
+            with: .none
+        )
+        UIView.setAnimationsEnabled(true)
+    }
+    
+    func react(_ cellViewModel: MessageViewModel, with emoji: EmojiWithSkinTones) {
+        react(cellViewModel, with: emoji.rawValue, remove: false)
+    }
+    
+    func removeReact(_ cellViewModel: MessageViewModel, for emoji: EmojiWithSkinTones) {
+        react(cellViewModel, with: emoji.rawValue, remove: true)
+    }
+    
+    func removeAllReactions(_ cellViewModel: MessageViewModel, for emoji: String) {
+        guard cellViewModel.threadVariant == .openGroup else { return }
+        
+        Storage.shared
+            .read { db -> Promise<Void> in
+                guard
+                    let openGroup: OpenGroup = try? OpenGroup
+                        .fetchOne(db, id: cellViewModel.threadId),
+                    let openGroupServerMessageId: Int64 = try? Interaction
+                        .select(.openGroupServerMessageId)
+                        .filter(id: cellViewModel.id)
+                        .asRequest(of: Int64.self)
+                        .fetchOne(db)
+                else {
+                    return Promise(error: StorageError.objectNotFound)
+                }
+                
+                return OpenGroupAPI
+                    .reactionDeleteAll(
+                        db,
+                        emoji: emoji,
+                        id: openGroupServerMessageId,
+                        in: openGroup.roomToken,
+                        on: openGroup.server
+                    )
+                    .map { _ in () }
+            }
+            .done { _ in
+                Storage.shared.writeAsync { db in
+                    _ = try Reaction
+                        .filter(Reaction.Columns.interactionId == cellViewModel.id)
+                        .filter(Reaction.Columns.emoji == emoji)
+                        .deleteAll(db)
+                }
+            }
+            .retainUntilComplete()
+    }
+    
+    func react(_ cellViewModel: MessageViewModel, with emoji: String, remove: Bool) {
+        guard cellViewModel.variant == .standardIncoming || cellViewModel.variant == .standardOutgoing else {
+            return
+        }
+        
+        let threadIsMessageRequest: Bool = (self.viewModel.threadData.threadIsMessageRequest == true)
+        guard !threadIsMessageRequest else { return }
+        
+        // Perform local rate limiting (don't allow more than 20 reactions within 60 seconds)
+        let sentTimestamp: Int64 = Int64(floor(Date().timeIntervalSince1970 * 1000))
+        let recentReactionTimestamps: [Int64] = General.cache.wrappedValue.recentReactionTimestamps
+        
+        guard
+            recentReactionTimestamps.count < 20 ||
+            (sentTimestamp - (recentReactionTimestamps.first ?? sentTimestamp)) > (60 * 1000)
+        else { return }
+        
+        General.cache.mutate {
+            $0.recentReactionTimestamps = Array($0.recentReactionTimestamps
+                .suffix(19))
+                .appending(sentTimestamp)
+        }
+        
+        // Perform the sending logic
+        Storage.shared.writeAsync(
+            updates: { [weak self] db in
+                guard let thread: SessionThread = try SessionThread.fetchOne(db, id: cellViewModel.threadId) else {
+                    return
+                }
+                
+                // Update the thread to be visible
+                _ = try SessionThread
+                    .filter(id: thread.id)
+                    .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
+                
+                // Update the database
+                if remove {
+                    _ = try Reaction
+                        .filter(Reaction.Columns.interactionId == cellViewModel.id)
+                        .filter(Reaction.Columns.authorId == cellViewModel.currentUserPublicKey)
+                        .filter(Reaction.Columns.emoji == emoji)
+                        .deleteAll(db)
+                }
+                else {
+                    let sortId = Reaction.getSortId(
+                        db,
+                        interactionId: cellViewModel.id,
+                        emoji: emoji
+                    )
+                    try Reaction(
+                        interactionId: cellViewModel.id,
+                        serverHash: nil,
+                        timestampMs: sentTimestamp,
+                        authorId: cellViewModel.currentUserPublicKey,
+                        emoji: emoji,
+                        count: 1,
+                        sortId: sortId
+                    ).insert(db)
+                    
+                    // Add it to the recent list
+                    Emoji.addRecent(db, emoji: emoji)
+                }
+                
+                if let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: cellViewModel.threadId),
+                   OpenGroupManager.isOpenGroupSupport(.reactions, on: openGroup.server)
+                {
+                    // Send reaction to open groups
+                    guard
+                        let openGroupServerMessageId: Int64 = try? Interaction
+                            .select(.openGroupServerMessageId)
+                            .filter(id: cellViewModel.id)
+                            .asRequest(of: Int64.self)
+                            .fetchOne(db)
+                    else {
+                        // If the message hasn't been sent yet then just delete locally
+                        guard cellViewModel.state == .sending || cellViewModel.state == .failed else { return }
+                        
+                        // Retrieve any message send jobs for this interaction
+                        let jobs: [Job] = Storage.shared
+                            .read { db in
+                                try? Job
+                                    .filter(Job.Columns.variant == Job.Variant.messageSend)
+                                    .filter(Job.Columns.interactionId == cellViewModel.id)
+                                    .fetchAll(db)
+                            }
+                            .defaulting(to: [])
+                        
+                        // If the job is currently running then wait until it's done before triggering
+                        // the deletion
+                        let targetJob: Job? = jobs.first(where: { JobRunner.isCurrentlyRunning($0) })
+                        
+                        guard targetJob == nil else {
+                            JobRunner.afterCurrentlyRunningJob(targetJob) { [weak self] result in
+                                switch result {
+                                    // If it succeeded then we'll need to delete from the server so re-run
+                                    // this function (if we still don't have the server id for some reason
+                                    // then this would result in a local-only deletion which should be fine
+                                    case .succeeded: self?.delete(cellViewModel)
+                                        
+                                    // Otherwise we just need to cancel the pending job (in case it retries)
+                                    // and delete the interaction
+                                    default:
+                                        JobRunner.removePendingJob(targetJob)
+                                        
+                                        Storage.shared.writeAsync { db in
+                                            _ = try Interaction
+                                                .filter(id: cellViewModel.id)
+                                                .deleteAll(db)
+                                        }
+                                }
+                            }
+                            return
+                        }
+                        
+                        // If it's not currently running then remove any pending jobs (just to be safe) and
+                        // delete the interaction locally
+                        jobs.forEach { JobRunner.removePendingJob($0) }
+                        
+                        Storage.shared.writeAsync { db in
+                            _ = try Interaction
+                                .filter(id: cellViewModel.id)
+                                .deleteAll(db)
+                        }
+                        return
+                    }
+                    
+                    if remove {
+                        OpenGroupAPI
+                            .reactionDelete(
+                                db,
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server
+                            )
+                            .retainUntilComplete()
+                    } else {
+                        OpenGroupAPI
+                            .reactionAdd(
+                                db,
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server
+                            )
+                            .retainUntilComplete()
+                    }
+                    
+                } else {
+                    // Send the actual message
+                    try MessageSender.send(
+                        db,
+                        message: VisibleMessage(
+                            sentTimestamp: UInt64(sentTimestamp),
+                            text: nil,
+                            reaction: VisibleMessage.VMReaction(
+                                timestamp: UInt64(cellViewModel.timestampMs),
+                                publicKey: {
+                                    guard cellViewModel.variant == .standardIncoming else {
+                                        return cellViewModel.currentUserPublicKey
+                                    }
+                                    
+                                    return cellViewModel.authorId
+                                }(),
+                                emoji: emoji,
+                                kind: (remove ? .remove : .react)
+                            )
+                        ),
+                        interactionId: cellViewModel.id,
+                        in: thread
+                    )
+                }
+            }
+        )
+    }
+    
+    func showFullEmojiKeyboard(_ cellViewModel: MessageViewModel) {
+        hideInputAccessoryView()
+        
+        let emojiPicker = EmojiPickerSheet(
+            completionHandler: { [weak self] emoji in
+                guard let emoji: EmojiWithSkinTones = emoji else { return }
+                
+                self?.react(cellViewModel, with: emoji)
+            },
+            dismissHandler: { [weak self] in
+                self?.showInputAccessoryView()
+            }
+        )
+        emojiPicker.modalPresentationStyle = .overFullScreen
+        present(emojiPicker, animated: true, completion: nil)
     }
     
     func contextMenuDismissed() {

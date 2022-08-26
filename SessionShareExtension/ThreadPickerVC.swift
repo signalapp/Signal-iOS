@@ -196,6 +196,12 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
                         body: body,
                         timestampMs: Int64(floor(Date().timeIntervalSince1970 * 1000)),
                         hasMention: Interaction.isUserMentioned(db, threadId: threadId, body: body),
+                        expiresInSeconds: try? DisappearingMessagesConfiguration
+                            .select(.durationSeconds)
+                            .filter(id: threadId)
+                            .filter(DisappearingMessagesConfiguration.Columns.isEnabled == true)
+                            .asRequest(of: TimeInterval.self)
+                            .fetchOne(db),
                         linkPreviewUrl: (isSharingUrl ? attachments.first?.linkPreviewDraft?.urlString : nil)
                     ).inserted(db)
 

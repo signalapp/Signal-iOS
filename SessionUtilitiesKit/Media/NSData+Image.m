@@ -328,7 +328,7 @@ typedef struct {
         // Intel byte order TIFF
         return ImageFormat_Tiff;
     } else if (byte0 == 0x52 && byte1 == 0x49) {
-        // First two letters of RIFF tag.
+        // First two letters of WebP tag.
         return ImageFormat_Webp;
     }
 

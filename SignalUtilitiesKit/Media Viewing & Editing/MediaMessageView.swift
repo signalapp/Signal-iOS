@@ -211,8 +211,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let button: UIButton = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.clipsToBounds = true
-        button.setBackgroundImage(UIColor.white.toImage(isDarkMode: isDarkMode), for: .normal)
-        button.setBackgroundImage(UIColor.white.darken(by: 0.2).toImage(isDarkMode: isDarkMode), for: .highlighted)
+        button.setBackgroundImage(UIColor.white.toImage(), for: .normal)
+        button.setBackgroundImage(UIColor.white.darken(by: 0.2).toImage(), for: .highlighted)
         button.addTarget(self, action: #selector(audioPlayPauseButtonPressed), for: .touchUpInside)
         button.isHidden = true
         

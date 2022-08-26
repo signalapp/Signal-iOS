@@ -25,6 +25,7 @@ public class ThemePreviewView: UIView {
             ),
             mediaCache: NSCache(),
             playbackInfo: nil,
+            showExpandedReactions: false,
             lastSearchText: nil
         )
         
@@ -43,6 +44,7 @@ public class ThemePreviewView: UIView {
             ),
             mediaCache: NSCache(),
             playbackInfo: nil,
+            showExpandedReactions: false,
             lastSearchText: nil
         )
         

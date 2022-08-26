@@ -647,7 +647,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try groupModel.groupMemberIds.forEach { memberId in
-                        try GroupMember(
+                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
                             groupId: threadId,
                             profileId: memberId,
                             role: .standard
@@ -659,7 +659,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try groupModel.groupAdminIds.forEach { adminId in
-                        try GroupMember(
+                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
                             groupId: threadId,
                             profileId: adminId,
                             role: .admin
@@ -671,7 +671,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     }
                     
                     try (closedGroupZombieMemberIds[legacyThread.uniqueId] ?? []).forEach { zombieId in
-                        try GroupMember(
+                        try _006_FixHiddenModAdminSupport.PreMigrationGroupMember(
                             groupId: threadId,
                             profileId: zombieId,
                             role: .zombie
@@ -1250,7 +1250,7 @@ enum _003_YDBToGRDBMigration: Migration {
                     threadId: processedMessage.threadId,
                     details: MessageReceiveJob.Details(
                         messages: [processedMessage.messageInfo],
-                        isBackgroundPoll: legacyJob.isBackgroundPoll
+                        calledFromBackgroundPoller: legacyJob.isBackgroundPoll
                     )
                 )?.inserted(db)
             }

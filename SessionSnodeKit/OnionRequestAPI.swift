@@ -588,7 +588,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
             case .v4:
                 // Note: We need to remove the leading forward slash unless we are explicitly hitting a legacy
                 // endpoint (in which case we need it to ensure the request signing works correctly
-                let endpoint: String = url.path
+            let endpoint: String = url.path
                     .appending(url.query.map { value in "?\(value)" })
                 
                 let requestInfo: RequestInfo = RequestInfo(

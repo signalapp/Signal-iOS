@@ -128,6 +128,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     private let authorNameInternal: String?
     public let currentUserPublicKey: String
     public let currentUserBlindedPublicKey: String?
+    public let recentReactionEmoji: [String]?
     
     // UI specific logic
     
@@ -281,12 +282,65 @@ public extension SessionThreadViewModel {
         self.authorNameInternal = nil
         self.currentUserPublicKey = getUserHexEncodedPublicKey()
         self.currentUserBlindedPublicKey = nil
+        self.recentReactionEmoji = nil
     }
 }
 
 // MARK: - Mutation
 
 public extension SessionThreadViewModel {
+    func with(
+        recentReactionEmoji: [String]? = nil
+    ) -> SessionThreadViewModel {
+        return SessionThreadViewModel(
+            rowId: self.rowId,
+            threadId: self.threadId,
+            threadVariant: self.threadVariant,
+            threadCreationDateTimestamp: self.threadCreationDateTimestamp,
+            threadMemberNames: self.threadMemberNames,
+            threadIsNoteToSelf: self.threadIsNoteToSelf,
+            threadIsMessageRequest: self.threadIsMessageRequest,
+            threadRequiresApproval: self.threadRequiresApproval,
+            threadShouldBeVisible: self.threadShouldBeVisible,
+            threadIsPinned: self.threadIsPinned,
+            threadIsBlocked: self.threadIsBlocked,
+            threadMutedUntilTimestamp: self.threadMutedUntilTimestamp,
+            threadOnlyNotifyForMentions: self.threadOnlyNotifyForMentions,
+            threadMessageDraft: self.threadMessageDraft,
+            threadContactIsTyping: self.threadContactIsTyping,
+            threadUnreadCount: self.threadUnreadCount,
+            threadUnreadMentionCount: self.threadUnreadMentionCount,
+            contactProfile: self.contactProfile,
+            closedGroupProfileFront: self.closedGroupProfileFront,
+            closedGroupProfileBack: self.closedGroupProfileBack,
+            closedGroupProfileBackFallback: self.closedGroupProfileBackFallback,
+            closedGroupName: self.closedGroupName,
+            closedGroupUserCount: self.closedGroupUserCount,
+            currentUserIsClosedGroupMember: self.currentUserIsClosedGroupMember,
+            currentUserIsClosedGroupAdmin: self.currentUserIsClosedGroupAdmin,
+            openGroupName: self.openGroupName,
+            openGroupServer: self.openGroupServer,
+            openGroupRoomToken: self.openGroupRoomToken,
+            openGroupProfilePictureData: self.openGroupProfilePictureData,
+            openGroupUserCount: self.openGroupUserCount,
+            interactionId: self.interactionId,
+            interactionVariant: self.interactionVariant,
+            interactionTimestampMs: self.interactionTimestampMs,
+            interactionBody: self.interactionBody,
+            interactionState: self.interactionState,
+            interactionHasAtLeastOneReadReceipt: self.interactionHasAtLeastOneReadReceipt,
+            interactionIsOpenGroupInvitation: self.interactionIsOpenGroupInvitation,
+            interactionAttachmentDescriptionInfo: self.interactionAttachmentDescriptionInfo,
+            interactionAttachmentCount: self.interactionAttachmentCount,
+            authorId: self.authorId,
+            threadContactNameInternal: self.threadContactNameInternal,
+            authorNameInternal: self.authorNameInternal,
+            currentUserPublicKey: self.currentUserPublicKey,
+            currentUserBlindedPublicKey: self.currentUserBlindedPublicKey,
+            recentReactionEmoji: (recentReactionEmoji ?? self.recentReactionEmoji)
+        )
+    }
+    
     func populatingCurrentUserBlindedKey(
         currentUserBlindedPublicKeyForThisThread: String? = nil
     ) -> SessionThreadViewModel {
@@ -340,7 +394,8 @@ public extension SessionThreadViewModel {
                     threadId: self.threadId,
                     threadVariant: self.threadVariant
                 )
-            )
+            ),
+            recentReactionEmoji: self.recentReactionEmoji
         )
     }
 }
@@ -350,9 +405,10 @@ public extension SessionThreadViewModel {
 // MARK: --SessionThreadViewModel
 
 public extension SessionThreadViewModel {
+    /// **Note:** This query **will not** include deleted incoming messages in it's unread count (they should never be marked as unread
+    /// but including this warning just in case there is a discrepancy)
     static func baseQuery(
         userPublicKey: String,
-        filterSQL: SQL,
         groupSQL: SQL,
         orderSQL: SQL
     ) -> (([Int64]) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>>) {
@@ -370,6 +426,7 @@ public extension SessionThreadViewModel {
             let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
             let profile: TypedTableAlias<Profile> = TypedTableAlias()
             
+            let interactionTimestampMsColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
             let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
             let readReceiptTableLiteral: SQL = SQL(stringLiteral: "readReceipt")
             let readReceiptReadTimestampMsColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.readTimestampMs.name)
@@ -417,7 +474,7 @@ public extension SessionThreadViewModel {
                 
                     \(Interaction.self).\(ViewModel.interactionIdKey),
                     \(Interaction.self).\(ViewModel.interactionVariantKey),
-                    \(Interaction.self).\(ViewModel.interactionTimestampMsKey),
+                    \(Interaction.self).\(interactionTimestampMsColumnLiteral) AS \(ViewModel.interactionTimestampMsKey),
                     \(Interaction.self).\(ViewModel.interactionBodyKey),
                     
                     -- Default to 'sending' assuming non-processed interaction when null
@@ -446,7 +503,7 @@ public extension SessionThreadViewModel {
                         \(interaction[.id]) AS \(ViewModel.interactionIdKey),
                         \(interaction[.threadId]),
                         \(interaction[.variant]) AS \(ViewModel.interactionVariantKey),
-                        MAX(\(interaction[.timestampMs])) AS \(ViewModel.interactionTimestampMsKey),
+                        MAX(\(interaction[.timestampMs])) AS \(interactionTimestampMsColumnLiteral),
                         \(interaction[.body]) AS \(ViewModel.interactionBodyKey),
                         \(interaction[.authorId]),
                         \(interaction[.linkPreviewUrl]),
@@ -471,7 +528,7 @@ public extension SessionThreadViewModel {
                 LEFT JOIN \(LinkPreview.self) ON (
                     \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
                     \(SQL("\(linkPreview[.variant]) = \(LinkPreview.Variant.openGroupInvitation)")) AND
-                    \(Interaction.linkPreviewFilterLiteral(timestampColumn: ViewModel.interactionTimestampMsKey))
+                    \(Interaction.linkPreviewFilterLiteral(timestampColumn: interactionTimestampMsColumnLiteral))
                 )
                 LEFT JOIN \(InteractionAttachment.self) AS \(firstInteractionAttachmentLiteral) ON (
                     \(firstInteractionAttachmentLiteral).\(interactionAttachmentAlbumIndexColumnLiteral) = 0 AND
@@ -555,12 +612,14 @@ public extension SessionThreadViewModel {
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
+        let interactionTimestampMsColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
+        
         return """
             LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
             LEFT JOIN (
                 SELECT
                     \(interaction[.threadId]),
-                    MAX(\(interaction[.timestampMs])) AS \(ViewModel.interactionTimestampMsKey)
+                    MAX(\(interaction[.timestampMs])) AS \(interactionTimestampMsColumnLiteral)
                 FROM \(Interaction.self)
                 WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
                 GROUP BY \(interaction[.threadId])
@@ -571,6 +630,7 @@ public extension SessionThreadViewModel {
     static func homeFilterSQL(userPublicKey: String) -> SQL {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
         return """
             \(thread[.shouldBeVisible]) = true AND (
@@ -581,7 +641,7 @@ public extension SessionThreadViewModel {
             ) AND (
                 -- Only show the 'Note to Self' thread if it has an interaction
                 \(SQL("\(thread[.id]) != \(userPublicKey)")) OR
-                \(Interaction.self).\(ViewModel.interactionTimestampMsKey) IS NOT NULL
+                \(interaction[.timestampMs]) IS NOT NULL
             )
         """
     }
@@ -608,20 +668,24 @@ public extension SessionThreadViewModel {
     
     static let homeOrderSQL: SQL = {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
-        return SQL("\(thread[.isPinned]) DESC, IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
+        return SQL("\(thread[.isPinned]) DESC, IFNULL(\(interaction[.timestampMs]), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
     }()
     
     static let messageRequetsOrderSQL: SQL = {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         
-        return SQL("IFNULL(\(Interaction.self).\(ViewModel.interactionTimestampMsKey), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
+        return SQL("IFNULL(\(interaction[.timestampMs]), (\(thread[.creationDateTimestamp]) * 1000)) DESC")
     }()
 }
 
 // MARK: - ConversationVC
 
 public extension SessionThreadViewModel {
+    /// **Note:** This query **will** include deleted incoming messages in it's unread count (they should never be marked as unread
+    /// but including this warning just in case there is a discrepancy)
     static func conversationQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
@@ -692,7 +756,7 @@ public extension SessionThreadViewModel {
                     SUM(\(interaction[.wasRead]) = false) AS \(ViewModel.threadUnreadCountKey)
                 
                 FROM \(Interaction.self)
-                GROUP BY \(interaction[.threadId])
+                WHERE \(SQL("\(interaction[.threadId]) = \(threadId)"))
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
@@ -706,17 +770,15 @@ public extension SessionThreadViewModel {
             LEFT JOIN (
                 SELECT
                     \(groupMember[.groupId]),
-                    COUNT(*) AS \(ViewModel.closedGroupUserCountKey)
+                    COUNT(\(groupMember.alias[Column.rowID])) AS \(ViewModel.closedGroupUserCountKey)
                 FROM \(GroupMember.self)
                 WHERE (
                     \(SQL("\(groupMember[.groupId]) = \(threadId)")) AND
                     \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)"))
                 )
-                GROUP BY \(groupMember[.groupId])
             ) AS \(closedGroupUserCountTableLiteral) ON \(SQL("\(closedGroupUserCountTableLiteral).\(groupMemberGroupIdColumnLiteral) = \(threadId)"))
             
             WHERE \(SQL("\(thread[.id]) = \(threadId)"))
-            GROUP BY \(thread[.id])
         """
         
         return request.adapted { db in

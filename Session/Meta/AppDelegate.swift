@@ -132,10 +132,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // NOTE: Fix an edge case where user taps on the callkit notification
         // but answers the call on another device
         stopPollers(shouldStopUserPoller: !self.hasIncomingCallWaiting())
-        JobRunner.stopAndClearPendingJobs()
         
-        // Suspend database
-        NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+        // Stop all jobs except for message sending and when completed suspend the database
+        JobRunner.stopAndClearPendingJobs(exceptForVariant: .messageSend) {
+            NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+        }
     }
     
     func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
@@ -433,6 +434,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         
                         return try Interaction
                             .filter(Interaction.Columns.wasRead == false)
+                            .filter(
+                                // Exclude outgoing and deleted messages from the count
+                                Interaction.Columns.variant != Interaction.Variant.standardOutgoing &&
+                                Interaction.Columns.variant != Interaction.Variant.standardIncomingDeleted
+                            )
                             .filter(
                                 // Only count mentions if 'onlyNotifyForMentions' is set
                                 thread[.onlyNotifyForMentions] == false ||

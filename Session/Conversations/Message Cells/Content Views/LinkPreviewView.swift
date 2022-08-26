@@ -48,7 +48,7 @@ final class LinkPreviewView: UIView {
         return result
     }()
 
-    private lazy var bodyTextViewContainer: UIView = UIView()
+    private lazy var bodyTappableLabelContainer: UIView = UIView()
 
     private lazy var hStackViewContainer: UIView = UIView()
 
@@ -67,8 +67,8 @@ final class LinkPreviewView: UIView {
         
         return result
     }()
-
-    var bodyTextView: UITextView?
+    
+    var bodyTappableLabel: TappableLabel?
 
     // MARK: - Initialization
     
@@ -110,7 +110,7 @@ final class LinkPreviewView: UIView {
         hStackView.pin(to: hStackViewContainer)
         
         // Vertical stack view
-        let vStackView = UIStackView(arrangedSubviews: [ hStackViewContainer, bodyTextViewContainer ])
+        let vStackView = UIStackView(arrangedSubviews: [ hStackViewContainer, bodyTappableLabelContainer ])
         vStackView.axis = .vertical
         addSubview(vStackView)
         vStackView.pin(to: self)
@@ -129,7 +129,7 @@ final class LinkPreviewView: UIView {
     public func update(
         with state: LinkPreviewState,
         isOutgoing: Bool,
-        delegate: (UITextViewDelegate & BodyTextViewDelegate)? = nil,
+        delegate: TappableLabelDelegate? = nil,
         cellViewModel: MessageViewModel? = nil,
         bodyLabelTextColor: ThemeValue? = nil,
         lastSearchText: String? = nil
@@ -178,10 +178,10 @@ final class LinkPreviewView: UIView {
         }
         
         // Body text view
-        bodyTextViewContainer.subviews.forEach { $0.removeFromSuperview() }
+        bodyTappableLabelContainer.subviews.forEach { $0.removeFromSuperview() }
         
         if let cellViewModel: MessageViewModel = cellViewModel {
-            let bodyTextView = VisibleMessageCell.getBodyTextView(
+            let bodyTappableLabel = VisibleMessageCell.getBodyTappableLabel(
                 for: cellViewModel,
                 with: maxWidth,
                 textColor: (bodyLabelTextColor ?? .textPrimary),
@@ -189,9 +189,9 @@ final class LinkPreviewView: UIView {
                 delegate: delegate
             )
             
-            self.bodyTextView = bodyTextView
-            bodyTextViewContainer.addSubview(bodyTextView)
-            bodyTextView.pin(to: bodyTextViewContainer, withInset: 12)
+            self.bodyTappableLabel = bodyTappableLabel
+            bodyTappableLabelContainer.addSubview(bodyTappableLabel)
+            bodyTappableLabel.pin(to: bodyTappableLabelContainer, withInset: 12)
         }
         
         if state is LinkPreview.DraftState {
