@@ -288,17 +288,20 @@ final public class IndividualCallService: NSObject {
                                                                                     transaction: transaction) {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 
-            let callerName = self.contactsManager.displayName(for: thread.contactAddress,
-                                                                 transaction: transaction)
-
             switch untrustedIdentity.verificationState {
             case .verified:
                 owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
-                self.notificationPresenter.presentMissedCall(newCall.individualCall, callerName: callerName)
+                let sentAtTimestamp = Date(millisecondsSince1970: newCall.individualCall.sentAtTimestamp)
+                self.notificationPresenter.presentMissedCall(newCall,
+                                                             caller: thread.contactAddress,
+                                                             sentAt: sentAtTimestamp)
             case .default:
-                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: newCall.individualCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: newCall,
+                                                                                 caller: thread.contactAddress)
             case .noLongerVerified:
-                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall.individualCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(
+                    call: newCall,
+                    caller: thread.contactAddress)
             }
 
             let callRecord = TSCall(
@@ -1227,7 +1230,7 @@ final public class IndividualCallService: NSObject {
         case .answering:
             BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = isAnticipatory ? .localRinging_Anticipatory : .localRinging_ReadyToAnswer
-            self.callUIAdapter.reportIncomingCall(call, thread: call.individualCall.thread)
+            self.callUIAdapter.reportIncomingCall(call)
         case .localRinging_Anticipatory:
             // RingRTC became ready during our anticipatory ring. User hasn't tried to answer yet.
             owsAssertDebug(isAnticipatory == false)

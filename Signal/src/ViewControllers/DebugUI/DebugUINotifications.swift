@@ -90,7 +90,7 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 
-    func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (IndividualCall) -> Void) -> Guarantee<Void> {
+    func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
         let call = SignalCall.incomingIndividualCall(
             thread: thread,
             sentAtTimestamp: Date.ows_millisecondTimestamp(),
@@ -98,7 +98,7 @@ class DebugUINotifications: DebugUIPage {
         )
 
         return delayedNotificationDispatch {
-            callBlock(call.individualCall)
+            callBlock(call)
         }
     }
 
@@ -130,32 +130,33 @@ class DebugUINotifications: DebugUIPage {
     @discardableResult
     func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
-            self.notificationPresenter.presentIncomingCall(call, callerName: callerName)
+            self.notificationPresenter.presentIncomingCall(call, caller: thread.contactAddress)
         }
     }
 
     @discardableResult
     func notifyForMissedCall(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
-            self.notificationPresenter.presentMissedCall(call, callerName: callerName)
+            let sentAtTimestamp = Date(millisecondsSince1970: call.individualCall.sentAtTimestamp)
+            self.notificationPresenter.presentMissedCall(call,
+                                                         caller: thread.contactAddress,
+                                                         sentAt: sentAtTimestamp)
         }
     }
 
     @discardableResult
     func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
-            self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: callerName)
+            self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: call, caller: thread.contactAddress)
         }
     }
 
     @discardableResult
     func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
-            let callerName = self.contactsManager.displayName(for: thread.contactAddress)
-            self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(
+                    call: call,
+                    caller: thread.contactAddress)
         }
     }
 

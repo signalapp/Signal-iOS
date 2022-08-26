@@ -235,10 +235,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return adaptee.registerNotificationSettings()
     }
 
-    public func presentIncomingCall(_ call: IndividualCallNotificationInfo, callerName: String) {
-
-        let remoteAddress = call.remoteAddress
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+    public func presentIncomingCall(_ call: CallNotificationInfo,
+                                    caller: SignalServiceAddress) {
+        let thread = call.thread
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -247,7 +246,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
             threadIdentifier = thread.uniqueId
         }
 
@@ -265,7 +264,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         var interaction: INInteraction?
         if #available(iOS 15, *),
             previewType != .noNameNoPreview,
-            let intent = thread.generateStartCallIntent(callerAddress: remoteAddress) {
+            let intent = thread.generateStartCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -312,10 +311,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCall(_ call: IndividualCallNotificationInfo, callerName: String) {
-
-        let remoteAddress = call.remoteAddress
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+    public func presentMissedCall(_ call: CallNotificationInfo,
+                                  caller: SignalServiceAddress,
+                                  sentAt timestamp: Date) {
+        let thread = call.thread
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -324,11 +323,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
             threadIdentifier = thread.uniqueId
         }
 
-        let timestamp = Date(millisecondsSince1970: call.sentAtTimestamp)
         let timestampClassification = TimestampClassification(timestamp)
         let timestampArgument: String
         switch timestampClassification {
@@ -382,7 +380,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
         let notificationBody = String(format: notificationBodyFormat, timestampArgument)
 
-        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: remoteAddress)
+        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: caller)
 
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
@@ -391,7 +389,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         var interaction: INInteraction?
         if #available(iOS 15, *),
             previewType != .noNameNoPreview,
-            let intent = thread.generateStartCallIntent(callerAddress: remoteAddress) {
+            let intent = thread.generateStartCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -411,11 +409,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: IndividualCallNotificationInfo,
-                                                                   callerName: String) {
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: CallNotificationInfo,
+                                                                   caller: SignalServiceAddress) {
 
-        let remoteAddress = call.remoteAddress
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+        let thread = call.thread
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -424,7 +421,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
@@ -446,11 +443,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNewIdentity(call: IndividualCallNotificationInfo,
-                                                      callerName: String) {
+    public func presentMissedCallBecauseOfNewIdentity(call: CallNotificationInfo,
+                                                      caller: SignalServiceAddress) {
 
-        let remoteAddress = call.remoteAddress
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+        let thread = call.thread
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -459,11 +455,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: remoteAddress)
+        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: caller)
 
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
@@ -1099,9 +1095,8 @@ extension TruncatedList: Collection {
     }
 }
 
-public protocol IndividualCallNotificationInfo {
-    var remoteAddress: SignalServiceAddress { get }
+public protocol CallNotificationInfo {
+    var thread: TSThread { get }
     var localId: UUID { get }
     var offerMediaType: TSRecentCallOfferType { get }
-    var sentAtTimestamp: UInt64 { get }
 }

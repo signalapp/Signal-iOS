@@ -55,7 +55,7 @@ public protocol IndividualCallDelegate: AnyObject {
  * This class' state should only be accessed on the main queue.
  */
 @objc
-public class IndividualCall: NSObject, IndividualCallNotificationInfo {
+public class IndividualCall: NSObject {
 
     // Mark -
 
@@ -125,10 +125,6 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
     }
 
     public let direction: CallDirection
-
-    // Distinguishes between calls locally, e.g. in CallKit
-    @objc
-    public let localId: UUID = UUID()
 
     public let thread: TSContactThread
 
@@ -233,7 +229,7 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
     }
 
     override public var description: String {
-        return "IndividualCall: {\(remoteAddress), localId: \(localId), signalingId: \(callId as Optional)))}"
+        return "IndividualCall: {\(remoteAddress), signalingId: \(callId as Optional)))}"
     }
 
     private func updateCallRecordType() {
@@ -252,15 +248,5 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
             callRecord.callType == .incomingIncomplete {
             callRecord.updateCallType(.incoming)
         }
-    }
-
-    // MARK: Equatable
-
-    public override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? Self else {
-            return false
-        }
-
-        return localId == other.localId
     }
 }

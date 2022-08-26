@@ -14,8 +14,8 @@ protocol CallUIAdaptee: AnyObject {
     var hasManualRinger: Bool { get }
 
     func startOutgoingCall(call: SignalCall)
-    func reportIncomingCall(_ call: SignalCall, callerName: String, completion: @escaping (Error?) -> Void)
-    func reportMissedCall(_ call: SignalCall, callerName: String)
+    func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void)
+    func reportMissedCall(_ call: SignalCall)
     func answerCall(localId: UUID)
     func answerCall(_ call: SignalCall)
     func recipientAcceptedCall(_ call: SignalCall)
@@ -49,10 +49,13 @@ extension CallUIAdaptee {
         }
     }
 
-    internal func reportMissedCall(_ call: SignalCall, callerName: String) {
+    internal func reportMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        notificationPresenter.presentMissedCall(call.individualCall, callerName: callerName)
+        let sentAtTimestamp = Date(millisecondsSince1970: call.individualCall.sentAtTimestamp)
+        notificationPresenter.presentMissedCall(call,
+                                                caller: call.individualCall.remoteAddress,
+                                                sentAt: sentAtTimestamp)
     }
 
     internal func startAndShowOutgoingCall(thread: TSContactThread, hasLocalVideo: Bool) {
@@ -144,7 +147,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
 
     // MARK: 
 
-    internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
+    internal func reportIncomingCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
         Logger.info("remoteAddress: \(call.individualCall.remoteAddress)")
@@ -152,11 +155,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
         // make sure we don't terminate audio session during call
         _ = audioSession.startAudioActivity(call.audioActivity)
 
-        let callerName = self.contactsManager.displayName(for: call.individualCall.remoteAddress)
-
-        Logger.verbose("callerName: \(callerName)")
-
-        adaptee(for: call).reportIncomingCall(call, callerName: callerName) { error in
+        adaptee(for: call).reportIncomingCall(call) { error in
             AssertIsOnMainThread()
 
             guard var error = error else { return }
@@ -189,8 +188,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
     internal func reportMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callerName = self.contactsManager.displayName(for: call.individualCall.remoteAddress)
-        adaptee(for: call).reportMissedCall(call, callerName: callerName)
+        adaptee(for: call).reportMissedCall(call)
     }
 
     internal func startOutgoingCall(call: SignalCall) {

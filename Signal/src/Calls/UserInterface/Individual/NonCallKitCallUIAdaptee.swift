@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -32,20 +32,20 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.callService.individualCallService.handleOutgoingCall(call)
     }
 
-    func reportIncomingCall(_ call: SignalCall, callerName: String, completion: @escaping (Error?) -> Void) {
+    func reportIncomingCall(_ call: SignalCall, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
 
         Logger.debug("")
 
         self.showCall(call)
 
-        startNotifiyingForIncomingCall(call, callerName: callerName)
+        startNotifiyingForIncomingCall(call, caller: call.individualCall.remoteAddress)
 
         completion(nil)
     }
 
     private var incomingCallNotificationTimer: Timer?
-    private func startNotifiyingForIncomingCall(_ call: SignalCall, callerName: String) {
+    private func startNotifiyingForIncomingCall(_ call: SignalCall, caller: SignalServiceAddress) {
         incomingCallNotificationTimer?.invalidate()
         incomingCallNotificationTimer = nil
 
@@ -61,7 +61,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             if UIApplication.shared.applicationState == .active {
                 Logger.debug("skipping notification since app is already active.")
             } else {
-                self?.notificationPresenter.presentIncomingCall(call.individualCall, callerName: callerName)
+                self?.notificationPresenter.presentIncomingCall(call, caller: caller)
             }
         }
     }

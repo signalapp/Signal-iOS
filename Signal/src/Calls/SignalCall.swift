@@ -5,6 +5,7 @@
 import Foundation
 import SignalRingRTC
 import SignalServiceKit
+import SignalMessaging
 
 // All Observer methods will be invoked from the main thread.
 public protocol CallObserver: AnyObject {
@@ -107,7 +108,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
     }
 
     // Distinguishes between calls locally, e.g. in CallKit
-    public let localId: UUID
+    public let localId: UUID = UUID()
 
     @objc
     public let thread: TSThread
@@ -177,7 +178,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
             audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
             behavior: .call
         )
-        localId = UUID()
         thread = groupThread
         if !RemoteConfig.groupRings {
             ringRestrictions = .notApplicable
@@ -217,7 +217,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = individualCall.thread
-        localId = individualCall.localId
         ringRestrictions = .notApplicable
         super.init()
         individualCall.delegate = self
@@ -425,6 +424,15 @@ extension SignalCall: IndividualCallDelegate {
 
     public func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool) {
         observers.elements.forEach { $0.individualCallRemoteSharingScreenDidChange(self, isRemoteSharingScreen: isRemoteSharingScreen) }
+    }
+}
+
+extension SignalCall: CallNotificationInfo {
+    public var offerMediaType: TSRecentCallOfferType {
+        switch mode {
+        case .individual(let call): return call.offerMediaType
+        case .group: return .video
+        }
     }
 }
 
