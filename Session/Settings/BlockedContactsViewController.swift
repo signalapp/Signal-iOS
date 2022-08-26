@@ -7,12 +7,12 @@ import SessionUIKit
 import SessionMessagingKit
 import SignalUtilitiesKit
 
-class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
+class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
     private static let loadingHeaderHeight: CGFloat = 20
     
-    private let viewModel: MessageRequestsViewModel = MessageRequestsViewModel()
+    private let viewModel: BlockedContactsViewModel = BlockedContactsViewModel()
     private var dataChangeObservable: DatabaseCancellable?
-    private var hasLoadedInitialThreadData: Bool = false
+    private var hasLoadedInitialContactData: Bool = false
     private var isLoadingMore: Bool = false
     private var isAutoLoadingNextPage: Bool = false
     private var viewHasAppeared: Bool = false
@@ -40,7 +40,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         result.translatesAutoresizingMaskIntoConstraints = false
         result.backgroundColor = .clear
         result.separatorStyle = .none
-        result.register(view: FullConversationCell.self)
+        result.register(view: BlockedContactCell.self)
         result.dataSource = self
         result.delegate = self
 
@@ -60,7 +60,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         result.translatesAutoresizingMaskIntoConstraints = false
         result.isUserInteractionEnabled = false
         result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
-        result.text = NSLocalizedString("MESSAGE_REQUESTS_EMPTY_TEXT", comment: "")
+        result.text = NSLocalizedString("CONVERSATION_SETTINGS_BLOCKED_CONTACTS_EMPTY_STATE", comment: "")
         result.textColor = Colors.text
         result.textAlignment = .center
         result.numberOfLines = 0
@@ -68,12 +68,12 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
         return result
     }()
-
-    private lazy var clearAllButton: OutlineButton = {
+    
+    private lazy var unblockButton: OutlineButton = {
         let result: OutlineButton = OutlineButton(style: .destructive, size: .large)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.setTitle("MESSAGE_REQUESTS_CLEAR_ALL".localized(), for: .normal)
-        result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
+        result.setTitle("CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK".localized(), for: .normal)
+        result.addTarget(self, action: #selector(unblockTapped), for: .touchUpInside)
 
         return result
     }()
@@ -85,7 +85,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
         ViewControllerUtilities.setUpDefaultSessionStyle(
             for: self,
-               title: "MESSAGE_REQUESTS_TITLE".localized(),
+               title: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE".localized(),
                hasCustomBackButton: false
         )
 
@@ -93,7 +93,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         // the dataSource has the correct data)
         view.addSubview(tableView)
         view.addSubview(emptyStateLabel)
-        view.addSubview(clearAllButton)
+        view.addSubview(unblockButton)
         setupLayout()
 
         // Notifications
@@ -153,21 +153,21 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             emptyStateLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.mediumSpacing),
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-            clearAllButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            clearAllButton.bottomAnchor.constraint(
+            unblockButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            unblockButton.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
                 constant: -Values.largeSpacing
             ),
-            clearAllButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth),
-            clearAllButton.heightAnchor.constraint(equalToConstant: NewConversationButtonSet.collapsedButtonSize)
+            unblockButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth),
+            unblockButton.heightAnchor.constraint(equalToConstant: NewConversationButtonSet.collapsedButtonSize)
         ])
     }
     
     // MARK: - Updating
     
     private func startObservingChanges(didReturnFromBackground: Bool = false) {
-        self.viewModel.onThreadChange = { [weak self] updatedThreadData in
-            self?.handleThreadUpdates(updatedThreadData)
+        self.viewModel.onContactChange = { [weak self] updatedContactData in
+            self?.handleContactUpdates(updatedContactData)
         }
         
         // Note: When returning from the background we could have received notifications but the
@@ -178,17 +178,18 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         }
     }
     
-    private func handleThreadUpdates(_ updatedData: [MessageRequestsViewModel.SectionModel], initialLoad: Bool = false) {
+    private func handleContactUpdates(_ updatedData: [BlockedContactsViewModel.SectionModel], initialLoad: Bool = false) {
         // Ensure the first load runs without animations (if we don't do this the cells will animate
         // in from a frame of CGRect.zero)
-        guard hasLoadedInitialThreadData else {
-            hasLoadedInitialThreadData = true
-            UIView.performWithoutAnimation { handleThreadUpdates(updatedData, initialLoad: true) }
+        guard hasLoadedInitialContactData else {
+            hasLoadedInitialContactData = true
+            UIView.performWithoutAnimation { handleContactUpdates(updatedData, initialLoad: true) }
             return
         }
         
         // Show the empty state if there is no data
-        clearAllButton.isHidden = updatedData.isEmpty
+        unblockButton.isEnabled = !viewModel.selectedContactIds.isEmpty
+        unblockButton.isHidden = updatedData.isEmpty
         emptyStateLabel.isHidden = !updatedData.isEmpty
         
         CATransaction.begin()
@@ -200,7 +201,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         // Reload the table content (animate changes after the first load)
         tableView.reload(
-            using: StagedChangeset(source: viewModel.threadData, target: updatedData),
+            using: StagedChangeset(source: viewModel.contactData, target: updatedData),
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
@@ -209,7 +210,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             reloadRowsAnimation: .none,
             interrupt: { $0.changeCount > 100 }    // Prevent too many changes from causing performance issues
         ) { [weak self] updatedData in
-            self?.viewModel.updateThreadData(updatedData)
+            self?.viewModel.updateContactData(updatedData)
         }
         
         CATransaction.commit()
@@ -224,9 +225,11 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             self?.isAutoLoadingNextPage = false
             
             // Note: We sort the headers as we want to prioritise loading newer pages over older ones
-            let sections: [(MessageRequestsViewModel.Section, CGRect)] = (self?.viewModel.threadData
+            let sections: [(BlockedContactsViewModel.Section, CGRect)] = (self?.viewModel.contactData
                 .enumerated()
-                .map { index, section in (section.model, (self?.tableView.rectForHeader(inSection: index) ?? .zero)) })
+                .map { index, section in
+                    (section.model, (self?.tableView.rectForHeader(inSection: index) ?? .zero))
+                })
                 .defaulting(to: [])
             let shouldLoadMore: Bool = sections
                 .contains { section, headerRect in
@@ -248,31 +251,35 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     // MARK: - UITableViewDataSource
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.threadData.count
+        return viewModel.contactData.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        let section: BlockedContactsViewModel.SectionModel = viewModel.contactData[section]
         
         return section.elements.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[indexPath.section]
+        let section: BlockedContactsViewModel.SectionModel = viewModel.contactData[indexPath.section]
         
         switch section.model {
-            case .threads:
-                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
-                let cell: FullConversationCell = tableView.dequeue(type: FullConversationCell.self, for: indexPath)
-                cell.update(with: threadViewModel)
-                return cell
+            case .contacts:
+                let cellViewModel: BlockedContactsViewModel.DataModel = section.elements[indexPath.row]
+                let cell: BlockedContactCell = tableView.dequeue(type: BlockedContactCell.self, for: indexPath)
+                cell.update(
+                    with: cellViewModel,
+                    isSelected: viewModel.selectedContactIds.contains(cellViewModel.id)
+                )
                 
+                return cell
+
             default: preconditionFailure("Other sections should have no content")
         }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        let section: BlockedContactsViewModel.SectionModel = viewModel.contactData[section]
         
         switch section.model {
             case .loadMore:
@@ -293,19 +300,27 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
     // MARK: - UITableViewDelegate
     
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let section: MessageRequestsViewModel.SectionModel = viewModel.threadData[section]
+        let section: BlockedContactsViewModel.SectionModel = viewModel.contactData[section]
         
         switch section.model {
-            case .loadMore: return MessageRequestsViewController.loadingHeaderHeight
+            case .loadMore: return BlockedContactsViewController.loadingHeaderHeight
             default: return 0
         }
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        guard self.hasLoadedInitialThreadData && self.viewHasAppeared && !self.isLoadingMore else { return }
+        guard self.hasLoadedInitialContactData && self.viewHasAppeared && !self.isLoadingMore else { return }
         
-        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[section]
+        let section: BlockedContactsViewModel.SectionModel = self.viewModel.contactData[section]
         
         switch section.model {
             case .loadMore:
@@ -322,119 +337,46 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
+        let section: BlockedContactsViewModel.SectionModel = self.viewModel.contactData[indexPath.section]
         
         switch section.model {
-            case .threads:
-                let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
-                let conversationVC: ConversationVC = ConversationVC(
-                    threadId: threadViewModel.threadId,
-                    threadVariant: threadViewModel.threadVariant
-                )
-                self.navigationController?.pushViewController(conversationVC, animated: true)
+            case .contacts:
+                let cellViewModel: BlockedContactsViewModel.DataModel = section.elements[indexPath.row]
+                
+                self.viewModel.toggleSelection(contactId: cellViewModel.id)
+                self.tableView.reloadRows(at: [indexPath], with: .none)
+                self.unblockButton.isEnabled = !self.viewModel.selectedContactIds.isEmpty
                 
             default: break
         }
     }
 
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
-        
-        switch section.model {
-            case .threads:
-                let threadId: String = section.elements[indexPath.row].threadId
-                let delete = UIContextualAction(
-                    style: .destructive,
-                    title: "TXT_DELETE_TITLE".localized()
-                ) { [weak self] _, _, completionHandler in
-                    self?.delete(threadId)
-                    completionHandler(true)
-                }
-                delete.themeBackgroundColor = .conversationButton_swipeDestructive
-
-                return UISwipeActionsConfiguration(actions: [ delete ])
-                
-            default: return nil
-        }
-    }
-
     // MARK: - Interaction
     
-    @objc private func clearAllTapped() {
-        guard viewModel.threadData.first(where: { $0.model == .threads })?.elements.isEmpty == false else {
-            return
-        }
+    @objc private func unblockTapped() {
+        guard !viewModel.selectedContactIds.isEmpty else { return }
         
-        let threadIds: [String] = (viewModel.threadData
-            .first { $0.model == .threads }?
-            .elements
-            .map { $0.threadId })
-            .defaulting(to: [])
-        let alertVC: UIAlertController = UIAlertController(
-            title: "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE".localized(),
-            message: nil,
-            preferredStyle: .actionSheet
-        )
-        alertVC.addAction(UIAlertAction(
-            title: "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON".localized(),
-            style: .destructive
-        ) { _ in
-            // Clear the requests
+        let contactIds: Set<String> = viewModel.selectedContactIds
+        let confirmationModal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE".localized(),
+                confirmTitle: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_ACTON".localized(),
+                confirmStyle: .danger,
+                cancelStyle: .textPrimary
+            )
+        ) { [weak self] _ in
+            // Unblock the contacts
             Storage.shared.write { db in
-                _ = try SessionThread
-                    .filter(ids: threadIds)
-                    .deleteAll(db)
-                
-                try threadIds.forEach { threadId in
-                    _ = try Contact
-                        .fetchOrCreate(db, id: threadId)
-                        .with(
-                            isApproved: false,
-                            isBlocked: true
-                        )
-                        .saved(db)
-                }
-                
-                // Force a config sync
-                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
-            }
-        })
-        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
-        self.present(alertVC, animated: true, completion: nil)
-    }
-
-    private func delete(_ threadId: String) {
-        let alertVC: UIAlertController = UIAlertController(
-            title: "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON".localized(),
-            message: nil,
-            preferredStyle: .actionSheet
-        )
-        alertVC.addAction(UIAlertAction(
-            title: "TXT_DELETE_TITLE".localized(),
-            style: .destructive
-        ) { _ in
-            Storage.shared.write { db in
-                _ = try SessionThread
-                    .filter(id: threadId)
-                    .deleteAll(db)
                 _ = try Contact
-                    .fetchOrCreate(db, id: threadId)
-                    .with(
-                        isApproved: false,
-                        isBlocked: true
-                    )
-                    .saved(db)
+                    .filter(ids: contactIds)
+                    .updateAll(db, Contact.Columns.isBlocked.set(to: false))
                 
                 // Force a config sync
                 try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
-        })
-        
-        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
-        self.present(alertVC, animated: true, completion: nil)
+            
+            self?.dismiss(animated: true, completion: nil)
+        }
+        self.present(confirmationModal, animated: true, completion: nil)
     }
 }

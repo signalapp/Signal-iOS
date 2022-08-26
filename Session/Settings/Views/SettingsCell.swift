@@ -7,6 +7,7 @@ import SessionUIKit
 class SettingsCell: UITableViewCell {
     /// This value is here to allow the theming update callback to be released when preparing for reuse
     private var instanceView: UIView = UIView()
+    private var subtitleExtraView: UIView?
     private var onExtraAction: (() -> Void)?
     
     // MARK: - UI
@@ -140,7 +141,7 @@ class SettingsCell: UITableViewCell {
         return result
     }()
     
-    private lazy var rightActionButtonContainerView: UIView = {
+    public lazy var rightActionButtonContainerView: UIView = {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.themeBackgroundColor = .solidButton_background
@@ -182,8 +183,6 @@ class SettingsCell: UITableViewCell {
     }
 
     private func setupViewHierarchy() {
-        themeBackgroundColor = .settings_tabBackground
-        
         // Highlight color
         let selectedBackgroundView = UIView()
         selectedBackgroundView.themeBackgroundColor = .settings_tabHighlight
@@ -259,6 +258,8 @@ class SettingsCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
+        self.themeBackgroundColor = nil
+        self.selectedBackgroundView = nil
         self.instanceView = UIView()
         self.onExtraAction = nil
         
@@ -279,11 +280,15 @@ class SettingsCell: UITableViewCell {
         tickImageView.alpha = 1
         rightActionButtonContainerView.isHidden = true
         botSeparator.isHidden = true
+        
+        subtitleExtraView?.removeFromSuperview()
+        subtitleExtraView = nil
     }
     
     public func update(
         title: String,
         subtitle: String?,
+        subtitleExtraViewGenerator: (() -> UIView)?,
         action: SettingsAction,
         extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString)?,
         onExtraAction: (() -> Void)?,
@@ -291,6 +296,7 @@ class SettingsCell: UITableViewCell {
         isLastInSection: Bool
     ) {
         self.instanceView = UIView()
+        self.subtitleExtraView = subtitleExtraViewGenerator?()
         self.onExtraAction = onExtraAction
         
         // Left content
@@ -299,15 +305,66 @@ class SettingsCell: UITableViewCell {
         subtitleLabel.isHidden = (subtitle == nil)
         extraActionButton.isHidden = (extraActionTitle == nil)
         
-        // Separator Visibility
-        switch action {
-            case .dangerPush:
-                topSeparator.isHidden = true
-                botSeparator.isHidden = true
-                
-            default:
-                topSeparator.isHidden = isFirstInSection
-                botSeparator.isHidden = !isLastInSection
+        // Position the 'subtitleExtraView' at the end of the last line of text
+        if
+            let subtitleExtraView: UIView = self.subtitleExtraView,
+            let subtitle: String = subtitle,
+            let font: UIFont = subtitleLabel.font
+        {
+            self.layoutIfNeeded()
+            
+            let layoutManager: NSLayoutManager = NSLayoutManager()
+            let textStorage = NSTextStorage(
+                attributedString: NSAttributedString(
+                    string: subtitle,
+                    attributes: [ .font: font ]
+                )
+            )
+            textStorage.addLayoutManager(layoutManager)
+            
+            let textContainer: NSTextContainer = NSTextContainer(
+                size: CGSize(
+                    width: subtitleLabel.bounds.size.width,
+                    height: 999
+                )
+            )
+            textContainer.lineFragmentPadding = 0
+            layoutManager.addTextContainer(textContainer)
+            
+            var glyphRange: NSRange = NSRange()
+            layoutManager.characterRange(
+                forGlyphRange: NSRange(location: subtitle.glyphCount - 1, length: 1),
+                actualGlyphRange: &glyphRange
+            )
+            let lastGlyphRect: CGRect = layoutManager.boundingRect(forGlyphRange: glyphRange, in: textContainer)
+            contentView.addSubview(subtitleExtraView)
+            
+            subtitleExtraView.pin(
+                .top,
+                to: .top,
+                of: subtitleLabel,
+                withInset: (lastGlyphRect.minY + ((lastGlyphRect.height / 2) - (subtitleExtraView.bounds.height / 2)))
+            )
+            subtitleExtraView.pin(
+                .left,
+                to: .left,
+                of: subtitleLabel,
+                withInset: lastGlyphRect.minX + 5
+            )
+        }
+        
+        // Separator/background Visibility
+        if action.shouldHaveBackground {
+            self.themeBackgroundColor = .settings_tabBackground
+            
+            topSeparator.isHidden = isFirstInSection
+            botSeparator.isHidden = !isLastInSection
+        }
+        else {
+            self.themeBackgroundColor = nil
+            
+            topSeparator.isHidden = true
+            botSeparator.isHidden = true
         }
         
         // Action Behaviours
@@ -351,7 +408,7 @@ class SettingsCell: UITableViewCell {
                 titleLabel.themeTextColor = .danger
                 actionContainerView.isHidden = false
             
-            case .rightButtonModal(let title, _):
+            case .rightButtonAction(let title, _):
                 actionContainerView.isHidden = false
                 rightActionButtonContainerView.isHidden = false
                 rightActionButtonLabel.text = title

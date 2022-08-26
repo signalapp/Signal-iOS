@@ -520,8 +520,6 @@
 "vc_notification_settings_title" = "通知";
 "vc_privacy_settings_title" = "プライバシー";
 "preferences_notifications_strategy_category_title" = "通知戦略";
-"modal_seed_title" = "あなたのリカバリーフレーズ";
-"modal_seed_explanation" = "これはあなたのリカバリーフレーズです。これにより、Session ID を新しい端末に復元または移行できます。";
 "vc_qr_code_title" = "QR コード";
 "vc_qr_code_view_my_qr_code_tab_title" = "私の QR コードを表示する";
 "vc_qr_code_view_scan_qr_code_tab_title" = "QR コードをスキャンする";
@@ -701,7 +699,7 @@
 "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "Lock Session";
 "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = "Require Touch ID, Face ID or your passcode to unlock Session.";
 "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE" = "Screenshot Notifications";
-"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "Receive a notification when a contact takes a screenshot of a direct message.";
+"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "Receive a notification when a contact takes a screenshot of a one-to-one chat.";
 "PRIVACY_SECTION_READ_RECEIPTS" = "Read Receipts";
 "PRIVACY_READ_RECEIPTS_TITLE" = "Read Receipts";
 "PRIVACY_READ_RECEIPTS_DESCRIPTION" = "See and share read receipts in one-to-one chats.";
@@ -730,6 +728,18 @@
 "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT" = "Name and Content";
 "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_ONLY" = "Name Only";
 "NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT" = "No Name or Content";
+"CONVERSATION_SETTINGS_TITLE" = "Conversations";
+"CONVERSATION_SETTINGS_SECTION_MESSAGE_TRIMMING" = "Message Trimming";
+"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_TITLE" = "Trim Communities";
+"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_DESCRIPTION" = "Delete messages older than 6 months from Communities that have over 2,000 messages.";
+"CONVERSATION_SETTINGS_SECTION_AUDIO_MESSAGES" = "Audio Messages";
+"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_TITLE" = "Autoplay Audio Messages";
+"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_DESCRIPTION" = "Autoplay consecutive audio messages.";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE" = "Blocked Contacts";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_EMPTY_STATE" = "You have no blocked contacts.";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK" = "Unblock";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE" = "Are you sure you want to unblock these contacts?";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_ACTON" = "Unblock";
 "APPEARANCE_TITLE" = "Appearance";
 "APPEARANCE_THEMES_TITLE" = "Themes";
 "APPEARANCE_PRIMARY_COLOR_TITLE" = "Primary colour";
@@ -754,3 +764,5 @@
 "dialog_clear_all_data_deletion_failed_1" = "このサービスノードからデータが削除されませんでした。ID: %@";
 "dialog_clear_all_data_deletion_failed_2" = "%@ つのサービスノードからデータが削除されませんでした。ID %@";
 "modal_clear_all_data_confirm" = "Clear";
+"modal_seed_title" = "あなたのリカバリーフレーズ";
+"modal_seed_explanation" = "You can use your recovery phrase to restore your account or link a device.";

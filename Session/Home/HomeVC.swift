@@ -527,24 +527,26 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         return true
     }
     
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let section: HomeViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
+        let unswipeAnimationDelay: DispatchTimeInterval = .milliseconds(500)
         
         switch section.model {
             case .messageRequests:
-                let hide = UITableViewRowAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { _, _ in
+                let hide: UIContextualAction = UIContextualAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { _, _, completionHandler  in
                     Storage.shared.write { db in db[.hasHiddenMessageRequests] = true }
+                    completionHandler(true)
                 }
                 hide.themeBackgroundColor = .conversationButton_swipeDestructive
                 
-                return [hide]
+                return UISwipeActionsConfiguration(actions: [hide])
                 
             case .threads:
                 let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
-                let delete: UITableViewRowAction = UITableViewRowAction(
+                let delete: UIContextualAction = UIContextualAction(
                     style: .destructive,
                     title: "TXT_DELETE_TITLE".localized()
-                ) { [weak self] _, _ in
+                ) { [weak self] _, _, completionHandler in
                     let message = (threadViewModel.currentUserIsClosedGroupAdmin == true ?
                         "admin_group_leave_warning".localized() :
                         "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE".localized()
@@ -576,64 +578,83 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                                 .filter(id: threadViewModel.threadId)
                                 .deleteAll(db)
                         }
+                        completionHandler(true)
                     })
                     alert.addAction(UIAlertAction(
                         title: "TXT_CANCEL_TITLE".localized(),
                         style: .default
-                    ))
+                    ) { _ in
+                        completionHandler(false)
+                    })
                     
                     self?.present(alert, animated: true, completion: nil)
                 }
                 delete.themeBackgroundColor = .conversationButton_swipeDestructive
 
-                let pin: UITableViewRowAction = UITableViewRowAction(
+                let pin: UIContextualAction = UIContextualAction(
                     style: .normal,
                     title: (threadViewModel.threadIsPinned ?
                         "UNPIN_BUTTON_TEXT".localized() :
                         "PIN_BUTTON_TEXT".localized()
                     )
-                ) { _, _ in
-                    Storage.shared.writeAsync { db in
-                        try SessionThread
-                            .filter(id: threadViewModel.threadId)
-                            .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadViewModel.threadIsPinned))
+                ) { _, _, completionHandler in
+                    (tableView.cellForRow(at: indexPath) as? FullConversationCell)?.optimisticUpdate(
+                        isPinned: !threadViewModel.threadIsPinned
+                    )
+                    completionHandler(true)
+                    
+                    // Delay the change to give the cell "unswipe" animation some time to complete
+                    DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + unswipeAnimationDelay) {
+                        Storage.shared.writeAsync { db in
+                            try SessionThread
+                                .filter(id: threadViewModel.threadId)
+                                .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadViewModel.threadIsPinned))
+                        }
                     }
                 }
                 pin.themeBackgroundColor = .conversationButton_swipeTertiary
                 
                 guard threadViewModel.threadVariant == .contact && !threadViewModel.threadIsNoteToSelf else {
-                    return [ delete, pin ]
+                    return UISwipeActionsConfiguration(actions: [ delete, pin ])
                 }
 
-                let block: UITableViewRowAction = UITableViewRowAction(
+                let block: UIContextualAction = UIContextualAction(
                     style: .normal,
                     title: (threadViewModel.threadIsBlocked == true ?
                         "BLOCK_LIST_UNBLOCK_BUTTON".localized() :
                         "BLOCK_LIST_BLOCK_BUTTON".localized()
                     )
-                ) { _, _ in
-                    Storage.shared.writeAsync { db in
-                        try Contact
-                            .filter(id: threadViewModel.threadId)
-                            .updateAll(
-                                db,
-                                Contact.Columns.isBlocked.set(
-                                    to: (threadViewModel.threadIsBlocked == false ?
-                                        true:
-                                        false
+                ) { _, _, completionHandler in
+                    (tableView.cellForRow(at: indexPath) as? FullConversationCell)?.optimisticUpdate(
+                        isBlocked: (threadViewModel.threadIsBlocked == false)
+                    )
+                    completionHandler(true)
+                    
+                    // Delay the change to give the cell "unswipe" animation some time to complete
+                    DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + unswipeAnimationDelay) {
+                        Storage.shared.writeAsync { db in
+                            try Contact
+                                .filter(id: threadViewModel.threadId)
+                                .updateAll(
+                                    db,
+                                    Contact.Columns.isBlocked.set(
+                                        to: (threadViewModel.threadIsBlocked == false ?
+                                            true:
+                                            false
+                                        )
                                     )
                                 )
-                            )
-                        
-                        try MessageSender.syncConfiguration(db, forceSyncNow: true)
-                            .retainUntilComplete()
+                            
+                            try MessageSender.syncConfiguration(db, forceSyncNow: true)
+                                .retainUntilComplete()
+                        }
                     }
                 }
                 block.themeBackgroundColor = .conversationButton_swipeSecondary
                 
-                return [ delete, block, pin ]
+                return UISwipeActionsConfiguration(actions: [ delete, block, pin ])
                 
-            default: return []
+            default: return nil
         }
     }
     

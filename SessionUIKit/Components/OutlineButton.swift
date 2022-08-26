@@ -17,6 +17,14 @@ public final class OutlineButton: UIButton {
         case large
     }
     
+    public override var isEnabled: Bool {
+        didSet {
+            self.alpha = (isEnabled ? 1 : 0.5)
+        }
+    }
+    
+    // MARK: - Initialization
+    
     public init(style: Style, size: Size) {
         super.init(frame: .zero)
         

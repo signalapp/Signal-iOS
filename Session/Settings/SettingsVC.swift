@@ -254,7 +254,7 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             UIView.separator(),
             getSettingButton(title: "vc_settings_notifications_button_title".localized(), action: #selector(showNotificationSettings)),
             UIView.separator(),
-            getSettingButton(title: "CONVERSATIONS_TITLE".localized(), action: #selector(showConversationSettings)),
+            getSettingButton(title: "CONVERSATION_SETTINGS_TITLE".localized(), action: #selector(showConversationSettings)),
             UIView.separator(),
             getSettingButton(title: "MESSAGE_REQUESTS_TITLE".localized(), action: #selector(showMessageRequests)),
             UIView.separator(),
@@ -539,8 +539,10 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     }
     
     @objc private func showPrivacySettings() {
-        let privacySettingsVC = PrivacySettingsTableViewController()
-        self.navigationController?.pushViewController(privacySettingsVC, animated: true)
+        let settingsViewController: SettingsTableViewController = SettingsTableViewController(
+            viewModel: PrivacySettingsViewModel()
+        )
+        self.navigationController?.pushViewController(settingsViewController, animated: true)
     }
     
     @objc private func showNotificationSettings() {
@@ -556,8 +558,10 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     }
     
     @objc private func showConversationSettings() {
-        let conversationSettingsVC = ConversationSettingsViewController()
-        self.navigationController?.pushViewController(conversationSettingsVC, animated: true)
+        let settingsViewController: SettingsTableViewController = SettingsTableViewController(
+            viewModel: ConversationSettingsViewModel()
+        )
+        self.navigationController?.pushViewController(settingsViewController, animated: true)
     }
     
     @objc private func showAppearanceSettings() {
@@ -596,27 +600,5 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             shareVC.popoverPresentationController?.sourceRect = self.view.bounds
         }
         navigationController!.present(shareVC, animated: true, completion: nil)
-    }
-    
-    @objc private func openFAQ() {
-        let url = URL(string: "https://getsession.org/faq")!
-        UIApplication.shared.open(url)
-    }
-    
-    @objc private func openSurvey() {
-        let url = URL(string: "https://getsession.org/survey")!
-        UIApplication.shared.open(url)
-    }
-    
-    @objc private func shareLogs() {
-        let shareLogsModal = ShareLogsModal()
-        shareLogsModal.modalPresentationStyle = .overFullScreen
-        shareLogsModal.modalTransitionStyle = .crossDissolve
-        present(shareLogsModal, animated: true, completion: nil)
-    }
-    
-    @objc private func helpTranslate() {
-        let url = URL(string: "https://crowdin.com/project/session-ios")!
-        UIApplication.shared.open(url)
     }
 }

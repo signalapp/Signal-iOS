@@ -198,6 +198,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     }()
                 )
             ],
+            joinSQL: MessageViewModel.optimisedJoinSQL,
             filterSQL: MessageViewModel.filterSQL(threadId: threadId),
             groupSQL: MessageViewModel.groupSQL,
             orderSQL: MessageViewModel.orderSQL,
@@ -714,7 +715,8 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
             let currentIndex: Int = messageSection.elements
                 .firstIndex(where: { $0.id == interactionId }),
             currentIndex < (messageSection.elements.count - 1),
-            messageSection.elements[currentIndex + 1].cellType == .audio
+            messageSection.elements[currentIndex + 1].cellType == .audio,
+            Storage.shared[.shouldAutoPlayConsecutiveAudioMessages] == true
         else { return }
         
         let nextItem: MessageViewModel = messageSection.elements[currentIndex + 1]

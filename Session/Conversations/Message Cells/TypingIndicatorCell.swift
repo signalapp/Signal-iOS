@@ -13,14 +13,14 @@ final class TypingIndicatorCell: MessageCell {
     private lazy var bubbleView: UIView = {
         let result: UIView = UIView()
         result.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
-        result.backgroundColor = Colors.receivedMessageBackground
+        result.themeBackgroundColor = .messageBubble_incomingBackground
         
         return result
     }()
 
     private let bubbleViewMaskLayer: CAShapeLayer = CAShapeLayer()
 
-    private lazy var typingIndicatorView: TypingIndicatorView = TypingIndicatorView()
+    public lazy var typingIndicatorView: TypingIndicatorView = TypingIndicatorView()
 
     // MARK: - Lifecycle
     

@@ -414,6 +414,26 @@ public final class FullConversationCell: UITableViewCell {
         )
     }
     
+    public func optimisticUpdate(
+        isBlocked: Bool? = nil,
+        isPinned: Bool? = nil
+    ) {
+        if let isBlocked: Bool = isBlocked {
+            if isBlocked {
+                accentLineView.themeBackgroundColor = .danger
+                accentLineView.alpha = 1
+            }
+            else {
+                accentLineView.themeBackgroundColor = .conversationButton_unreadStripBackground
+                accentLineView.alpha = (!unreadCountView.isHidden ? 1 : 0.0001) // Setting the alpha to exactly 0 causes an issue on iOS 12
+            }
+        }
+        
+        if let isPinned: Bool = isPinned {
+            isPinnedIcon.isHidden = !isPinned
+        }
+    }
+    
     // MARK: - Snippet generation
 
     private func getSnippet(

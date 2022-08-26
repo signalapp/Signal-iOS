@@ -46,15 +46,9 @@ class HelpViewModel: SettingsTableViewModel<HelpViewModel.Section, HelpViewModel
                             id: .report,
                             title: "HELP_REPORT_BUG_TITLE".localized(),
                             subtitle: "HELP_REPORT_BUG_DESCRIPTION".localized(),
-                            action: .rightButtonModal(
+                            action: .rightButtonAction(
                                 title: "HELP_REPORT_BUG_ACTION_TITLE".localized(),
-                                createModal: {
-                                    let shareLogsModal: ShareLogsModal = ShareLogsModal()
-                                    shareLogsModal.modalPresentationStyle = .overFullScreen
-                                    shareLogsModal.modalTransitionStyle = .crossDissolve
-                                    
-                                    return shareLogsModal
-                                }
+                                action: { HelpViewModel.shareLogs(targetView: $0) }
                             )
                         )
                     ]
@@ -134,4 +128,47 @@ class HelpViewModel: SettingsTableViewModel<HelpViewModel.Section, HelpViewModel
     }
     
     public override func saveChanges() {}
+    
+    public static func shareLogs(
+        viewControllerToDismiss: UIViewController? = nil,
+        targetView: UIView? = nil,
+        onShareComplete: (() -> ())? = nil
+    ) {
+        let version: String = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String)
+            .defaulting(to: "")
+        OWSLogger.info("[Version] iOS \(UIDevice.current.systemVersion) \(version)")
+        DDLog.flushLog()
+        
+        let logFilePaths: [String] = AppEnvironment.shared.fileLogger.logFileManager.sortedLogFilePaths
+        
+        guard
+            let latestLogFilePath: String = logFilePaths.first,
+            let viewController: UIViewController = CurrentAppContext().frontmostViewController()
+        else { return }
+        
+        let showShareSheet: () -> () = {
+            let shareVC = UIActivityViewController(
+                activityItems: [ URL(fileURLWithPath: latestLogFilePath) ],
+                applicationActivities: nil
+            )
+            shareVC.completionWithItemsHandler = { _, _, _, _ in onShareComplete?() }
+            
+            if UIDevice.current.isIPad {
+                shareVC.excludedActivityTypes = []
+                shareVC.popoverPresentationController?.permittedArrowDirections = (targetView != nil ? [.up] : [])
+                shareVC.popoverPresentationController?.sourceView = (targetView ?? viewController.view)
+                shareVC.popoverPresentationController?.sourceRect = (targetView ?? viewController.view).bounds
+            }
+            viewController.present(shareVC, animated: true, completion: nil)
+        }
+        
+        guard let viewControllerToDismiss: UIViewController = viewControllerToDismiss else {
+            showShareSheet()
+            return
+        }
+
+        viewControllerToDismiss.dismiss(animated: true) {
+            showShareSheet()
+        }
+    }
 }

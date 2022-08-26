@@ -50,31 +50,11 @@ class ThemeSelectionView: UIView {
         return result
     }()
     
-    private let titleLabel: UILabel = {
-        let result: UILabel = UILabel()
+    private let selectionView: RadioButton = {
+        let result: RadioButton = RadioButton(size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.isUserInteractionEnabled = false
-        result.font = UIFont.systemFont(ofSize: Values.mediumFontSize, weight: .bold)
-        result.themeTextColor = .textPrimary
-        
-        return result
-    }()
-    
-    private let selectionBorderView: UIView = {
-        let result: UIView = UIView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.isUserInteractionEnabled = false
-        result.layer.borderWidth = 1
-        result.layer.cornerRadius = (ThemeSelectionView.selectionBorderSize / 2)
-        
-        return result
-    }()
-    
-    private let selectionView: UIView = {
-        let result: UIView = UIView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.isUserInteractionEnabled = false
-        result.layer.cornerRadius = (ThemeSelectionView.selectionSize / 2)
+        result.font = .systemFont(ofSize: Values.mediumFontSize, weight: .bold)
         
         return result
     }()
@@ -104,13 +84,11 @@ class ThemeSelectionView: UIView {
         previewView.layer.borderColor = theme.colors[.borderSeparator]?.cgColor
         previewIncomingMessageView.backgroundColor = theme.colors[.messageBubble_incomingBackground]
         previewOutgoingMessageView.backgroundColor = theme.colors[.defaultPrimary]
-        titleLabel.text = theme.title
+        selectionView.text = theme.title
         
         // Add the UI
         addSubview(backgroundButton)
         addSubview(previewView)
-        addSubview(titleLabel)
-        addSubview(selectionBorderView)
         addSubview(selectionView)
         
         previewView.addSubview(previewIncomingMessageView)
@@ -142,30 +120,15 @@ class ThemeSelectionView: UIView {
         previewOutgoingMessageView.set(.width, to: 40)
         previewOutgoingMessageView.set(.height, to: 12)
         
-        titleLabel.center(.vertical, in: self)
-        titleLabel.pin(.left, to: .right, of: previewView, withInset: Values.mediumSpacing)
-        
-        selectionBorderView.center(.vertical, in: self)
-        selectionBorderView.pin(.right, to: .right, of: self, withInset: -Values.veryLargeSpacing)
-        selectionBorderView.set(.width, to: ThemeSelectionView.selectionBorderSize)
-        selectionBorderView.set(.height, to: ThemeSelectionView.selectionBorderSize)
-        
-        selectionView.center(in: selectionBorderView)
-        selectionView.set(.width, to: ThemeSelectionView.selectionSize)
-        selectionView.set(.height, to: ThemeSelectionView.selectionSize)
+        selectionView.center(.vertical, in: self)
+        selectionView.pin(.left, to: .right, of: previewView, withInset: Values.mediumSpacing)
+        selectionView.pin(.right, to: .right, of: self, withInset: -Values.veryLargeSpacing)
     }
     
     // MARK: - Content
     
     func update(isSelected: Bool) {
-        selectionBorderView.themeBorderColor = (isSelected ?
-            .radioButton_selectedBorder :
-            .radioButton_unselectedBorder
-        )
-        selectionView.themeBackgroundColor = (isSelected ?
-            .radioButton_selectedBackground :
-            .radioButton_unselectedBackground
-        )
+        selectionView.update(isSelected: isSelected)
     }
     
     @objc func itemSelected() {

@@ -425,6 +425,11 @@ public extension SessionThreadViewModel {
             let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
             let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
             let profile: TypedTableAlias<Profile> = TypedTableAlias()
+            let setting: TypedTableAlias<Setting> = TypedTableAlias()
+            let targetSetting: String = Setting.BoolKey.showScreenshotNotifications.rawValue
+            
+            var targetValue: Bool = true
+            let boolSettingLiteral: Data = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
             
             let interactionTimestampMsColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
             let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
@@ -512,7 +517,12 @@ public extension SessionThreadViewModel {
                         SUM(\(interaction[.wasRead]) = false AND \(interaction[.hasMention]) = true) AS \(ViewModel.threadUnreadMentionCountKey)
                     
                     FROM \(Interaction.self)
-                    WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
+                    LEFT JOIN \(Setting.self) ON \(setting[.key]) = \(targetSetting)
+                    WHERE
+                        \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)")) AND (
+                            \(SQL("\(interaction[.variant]) != \(Interaction.Variant.infoScreenshotNotification)")) OR
+                            \(SQL("IFNULL(\(setting[.value]), false) == \(boolSettingLiteral)"))
+                        )
                     GROUP BY \(interaction[.threadId])
                 ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
                 
@@ -611,6 +621,11 @@ public extension SessionThreadViewModel {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let setting: TypedTableAlias<Setting> = TypedTableAlias()
+        let targetSetting: String = Setting.BoolKey.showScreenshotNotifications.rawValue
+        
+        var targetValue: Bool = true
+        let boolSettingLiteral: Data = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
         
         let interactionTimestampMsColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
         
@@ -621,7 +636,12 @@ public extension SessionThreadViewModel {
                     \(interaction[.threadId]),
                     MAX(\(interaction[.timestampMs])) AS \(interactionTimestampMsColumnLiteral)
                 FROM \(Interaction.self)
-                WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
+                LEFT JOIN \(Setting.self) ON \(setting[.key]) = \(targetSetting)
+                WHERE
+                    \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)")) AND (
+                        \(SQL("\(interaction[.variant]) != \(Interaction.Variant.infoScreenshotNotification)")) OR
+                        \(SQL("IFNULL(\(setting[.value]), false) == \(boolSettingLiteral)"))
+                    )
                 GROUP BY \(interaction[.threadId])
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
         """

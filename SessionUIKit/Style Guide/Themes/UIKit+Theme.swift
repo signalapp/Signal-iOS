@@ -123,7 +123,7 @@ public extension UIProgressView {
     }
 }
 
-public extension UITableViewRowAction {
+public extension UIContextualAction {
     var themeBackgroundColor: ThemeValue? {
         set { ThemeManager.set(self, keyPath: \.backgroundColor, to: newValue) }
         get { return nil }

@@ -89,6 +89,32 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
                             id: .typingIndicators,
                             title: "PRIVACY_TYPING_INDICATORS_TITLE".localized(),
                             subtitle: "PRIVACY_TYPING_INDICATORS_DESCRIPTION".localized(),
+                            subtitleExtraViewGenerator: {
+                                let targetHeight: CGFloat = 20
+                                let targetWidth: CGFloat = ceil(20 * (targetHeight / 12))
+                                let result: UIView = UIView(
+                                    frame: CGRect(x: 0, y: 0, width: targetWidth, height: targetHeight)
+                                )
+                                result.set(.width, to: targetWidth)
+                                result.set(.height, to: targetHeight)
+                                
+                                // Use a transform scale to reduce the size of the typing indicator to the
+                                // desired size (this way the animation remains intact)
+                                let cell: TypingIndicatorCell = TypingIndicatorCell()
+                                cell.transform = CGAffineTransform.scale(targetHeight / cell.bounds.height)
+                                cell.typingIndicatorView.startAnimation()
+                                result.addSubview(cell)
+                                
+                                // Note: Because we are messing with the transform these values don't work
+                                // logically so we inset the positioning to make it look visually centered
+                                // within the layout inspector
+                                cell.center(.vertical, in: result, withInset: -(targetHeight * 0.15))
+                                cell.center(.horizontal, in: result, withInset: -(targetWidth * 0.35))
+                                cell.set(.width, to: .width, of: result)
+                                cell.set(.height, to: .height, of: result)
+                                
+                                return result
+                            },
                             action: .settingBool(key: .typingIndicatorsEnabled)
                         )
                     ]

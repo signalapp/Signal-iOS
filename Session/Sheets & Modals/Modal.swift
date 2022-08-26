@@ -112,7 +112,15 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
     // MARK: - Interaction
     
     @objc func close() {
-        dismiss(animated: true, completion: nil)
+        // Recursively dismiss all modals (ie. find the first modal presented by a non-modal
+        // and get that to dismiss it's presented view controller)
+        var targetViewController: UIViewController? = self
+        
+        while targetViewController?.presentingViewController is Modal {
+            targetViewController = targetViewController?.presentingViewController
+        }
+        
+        targetViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     // MARK: - UIGestureRecognizerDelegate

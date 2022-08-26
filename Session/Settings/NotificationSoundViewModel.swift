@@ -8,8 +8,16 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 
 class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsViewModel.Section, Preferences.Sound> {
+    // FIXME: Remove `threadId` once we ditch the per-thread notification sound
+    private let threadId: String?
     private var audioPlayer: OWSAudioPlayer?
     private var currentSelection: Preferences.Sound?
+    
+    // MARK: - Initialization
+    
+    init(threadId: String? = nil) {
+        self.threadId = threadId
+    }
     
     deinit {
         self.audioPlayer?.stop()
@@ -104,5 +112,16 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsVie
         Storage.shared.write { db in
             db[.defaultNotificationSound] = currentSelection
         }
+    }
+}
+
+// MARK: - Objective-C Support
+
+// FIXME: Remove this once we ditch the per-thread notification sound
+@objc class OWSNotificationSoundSettings: NSObject {
+    @objc static func create(with threadId: String?) -> UIViewController {
+        return SettingsTableViewController(
+            viewModel: NotificationSoundViewModel(threadId: threadId)
+        )
     }
 }

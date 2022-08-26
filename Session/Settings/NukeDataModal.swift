@@ -7,7 +7,6 @@ import SessionMessagingKit
 import SignalUtilitiesKit
 
 final class NukeDataModal: Modal {
-    
     // MARK: - Components
     
     private lazy var titleLabel: UILabel = {

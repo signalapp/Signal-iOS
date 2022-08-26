@@ -3,7 +3,6 @@
 //
 
 #import "OWSConversationSettingsViewController.h"
-#import "OWSSoundSettingsViewController.h"
 #import "Session-Swift.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
@@ -417,9 +416,9 @@ CGFloat kIconViewLength = 24;
         }
         customRowHeight:UITableViewAutomaticDimension
         actionBlock:^{
-            OWSSoundSettingsViewController *vc = [OWSSoundSettingsViewController new];
-            vc.threadId = weakSelf.threadId;
-            [weakSelf.navigationController pushViewController:vc animated:YES];
+            // FIXME: Remove `threadId` once we ditch the per-thread notification sound
+            UIViewController *viewController = [OWSNotificationSoundSettings createWith:weakSelf.threadId];
+            [weakSelf.navigationController pushViewController:viewController animated:YES];
         }]];
 
         if (self.isClosedGroup || self.isOpenGroup) {

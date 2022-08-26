@@ -290,7 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             preferredStyle: .alert
         )
         alert.addAction(UIAlertAction(title: "modal_share_logs_title".localized(), style: .default) { _ in
-            ShareLogsModal.shareLogs(from: alert) { [weak self] in
+            HelpViewModel.shareLogs(viewControllerToDismiss: alert) { [weak self] in
                 self?.showFailedMigrationAlert(error: error)
             }
         })

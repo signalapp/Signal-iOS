@@ -215,6 +215,7 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
         cell.update(
             title: settingInfo.title,
             subtitle: settingInfo.subtitle,
+            subtitleExtraViewGenerator: settingInfo.subtitleExtraViewGenerator,
             action: settingInfo.action,
             extraActionTitle: settingInfo.extraActionTitle,
             onExtraAction: settingInfo.onExtraAction,
@@ -228,12 +229,23 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section: SectionModel = viewModel.settingsData[section]
         let view: SettingHeaderView = tableView.dequeueHeaderFooterView(type: SettingHeaderView.self)
-        view.update(with: section.model.title)
+        view.update(
+            with: section.model.title,
+            hasSeparator: (section.elements.first?.action.shouldHaveBackground != false)
+        )
         
         return view
     }
     
     // MARK: - UITableViewDelegate
+    
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -245,9 +257,12 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
             case .trigger(let action):
                 action()
                 
-            case .rightButtonModal(_, let createModal):
-                let viewController: UIViewController = createModal()
-                present(viewController, animated: true, completion: nil)
+            case .rightButtonAction(_, let action):
+                guard let cell: SettingsCell = tableView.cellForRow(at: indexPath) as? SettingsCell else {
+                    return
+                }
+                
+                action(cell.rightActionButtonContainerView)
                 
             case .userDefaultsBool(let defaults, let key, let onChange):
                 defaults.set(!defaults.bool(forKey: key), forKey: key)
@@ -319,6 +334,7 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
             existingCell.update(
                 title: settingInfo.title,
                 subtitle: settingInfo.subtitle,
+                subtitleExtraViewGenerator: settingInfo.subtitleExtraViewGenerator,
                 action: settingInfo.action,
                 extraActionTitle: settingInfo.extraActionTitle,
                 onExtraAction: settingInfo.onExtraAction,
@@ -410,7 +426,7 @@ class SettingHeaderView: UITableViewHeaderFooterView {
     
     // MARK: - Content
     
-    fileprivate func update(with title: String) {
+    fileprivate func update(with title: String, hasSeparator: Bool) {
         titleLabel.text = title
         titleLabel.isHidden = title.isEmpty
         stackView.layoutMargins = UIEdgeInsets(
@@ -421,6 +437,8 @@ class SettingHeaderView: UITableViewHeaderFooterView {
         )
         emptyHeightConstraint.isActive = title.isEmpty
         filledHeightConstraint.isActive = !title.isEmpty
+        separator.isHidden = !hasSeparator
+        
         self.layoutIfNeeded()
     }
 }

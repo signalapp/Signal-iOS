@@ -38,6 +38,7 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
     let title: String
     let subtitle: String?
     let action: SettingsAction
+    let subtitleExtraViewGenerator: (() -> UIView)?
     let extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString)?
     let onExtraAction: (() -> Void)?
     
@@ -47,6 +48,7 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
         id: ID,
         title: String,
         subtitle: String? = nil,
+        subtitleExtraViewGenerator: (() -> UIView)? = nil,
         action: SettingsAction,
         extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString)? = nil,
         onExtraAction: (() -> Void)? = nil
@@ -54,6 +56,7 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
         self.id = id
         self.title = title
         self.subtitle = subtitle
+        self.subtitleExtraViewGenerator = subtitleExtraViewGenerator
         self.action = action
         self.extraActionTitle = extraActionTitle
         self.onExtraAction = onExtraAction
@@ -107,9 +110,9 @@ public enum SettingsAction: Hashable, Equatable {
         shouldAutoSave: Bool,
         selectValue: () -> Void
     )
-    case rightButtonModal(
+    case rightButtonAction(
         title: String,
-        createModal: () -> UIViewController
+        action: (UIView) -> ()
     )
     
     private var actionName: String {
@@ -122,7 +125,14 @@ public enum SettingsAction: Hashable, Equatable {
             case .push: return "push"
             case .dangerPush: return "dangerPush"
             case .listSelection: return "listSelection"
-            case .rightButtonModal: return "rightButtonModal"
+            case .rightButtonAction: return "rightButtonAction"
+        }
+    }
+    
+    var shouldHaveBackground: Bool {
+        switch self {
+            case .dangerPush: return false
+            default: return true
         }
     }
     

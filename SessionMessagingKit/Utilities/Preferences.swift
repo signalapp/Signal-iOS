@@ -66,6 +66,10 @@ public extension Setting.BoolKey {
     /// Controls whether the device should show screenshot notifications in one-to-one conversations (will always
     /// send screenshot notifications, this just controls whether they get filtered out or not)
     static let showScreenshotNotifications: Setting.BoolKey = "showScreenshotNotifications"
+    
+    /// Controls whether concurrent audio messages should automatically be played after the one the user starts
+    /// playing finishes
+    static let shouldAutoPlayConsecutiveAudioMessages: Setting.BoolKey = "shouldAutoPlayConsecutiveAudioMessages"
 }
 
 public extension Setting.StringKey {

@@ -365,6 +365,12 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(sendScreenshotNotification),
+            name: UIApplication.userDidTakeScreenshotNotification,
+            object: nil
+        )
     }
     
     override func viewWillAppear(_ animated: Bool) {
