@@ -282,7 +282,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                     contact:contact
                                    multipleAccountLabelText:nil];
 
-    return [self syncContactsForSignalAccounts:@[ signalAccount ] skipIfRedundant:NO debounce:NO isDurableSend:YES];
+    return [self syncContactsForSignalAccounts:@[ signalAccount ]
+                               skipIfRedundant:NO
+                                      debounce:NO
+                                 isDurableSend:YES
+                                    isFullSync:NO];
 }
 
 #pragma mark - Contacts Sync
@@ -293,7 +297,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return [self syncContactsForSignalAccounts:allSignalAccounts
                                skipIfRedundant:NO
                                       debounce:NO
-                                 isDurableSend:NO];
+                                 isDurableSend:NO
+                                    isFullSync:YES];
 }
 
 - (void)sendSyncContactsMessageIfNecessary
@@ -304,7 +309,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [self syncContactsForSignalAccounts:allSignalAccounts
                         skipIfRedundant:YES
                                debounce:YES
-                          isDurableSend:NO];
+                          isDurableSend:NO
+                             isFullSync:YES];
 }
 
 - (dispatch_queue_t)serialQueue
@@ -325,6 +331,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                               skipIfRedundant:(BOOL)skipIfRedundant
                                      debounce:(BOOL)debounce
                                 isDurableSend:(BOOL)isDurableSend
+                                   isFullSync:(BOOL)isFullSync
 {
     if (SSKDebugFlags.dontSendContactOrGroupSyncMessages.value) {
         OWSLogInfo(@"Skipping contact sync message.");
@@ -373,6 +380,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     readWithBlock:^(SDSAnyReadTransaction *transaction) {
                         syncContactsMessage = [[OWSSyncContactsMessage alloc] initWithThread:thread
                                                                               signalAccounts:signalAccounts
+                                                                                  isFullSync:isFullSync
                                                                                  transaction:transaction];
                         syncFileUrl = [syncContactsMessage buildPlainTextAttachmentFileWithTransaction:transaction];
                         lastMessageHash = [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey
