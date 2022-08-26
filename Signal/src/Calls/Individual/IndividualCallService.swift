@@ -279,7 +279,7 @@ final public class IndividualCallService: NSObject {
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            callService.terminate(call: newCall, transaction: transaction)
+            callService.terminate(call: newCall)
 
             return
         }
@@ -315,7 +315,7 @@ final public class IndividualCallService: NSObject {
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            callService.terminate(call: newCall, transaction: transaction)
+            callService.terminate(call: newCall)
 
             return
         }
@@ -333,7 +333,7 @@ final public class IndividualCallService: NSObject {
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            callService.terminate(call: newCall, transaction: transaction)
+            callService.terminate(call: newCall)
 
             return
         }
@@ -366,7 +366,7 @@ final public class IndividualCallService: NSObject {
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            callService.terminate(call: newCall, transaction: transaction)
+            callService.terminate(call: newCall)
 
             return
         }

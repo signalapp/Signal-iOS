@@ -422,15 +422,6 @@ public final class CallService: LightweightCallManager {
      * Clean up any existing call state and get ready to receive a new call.
      */
     func terminate(call: SignalCall) {
-        databaseStorage.read { transaction in
-            self.terminate(call: call, transaction: transaction)
-        }
-    }
-
-    /**
-     * Clean up any existing call state and get ready to receive a new call.
-     */
-    func terminate(call: SignalCall, transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
         Logger.info("call: \(call as Optional)")
 
