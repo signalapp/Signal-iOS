@@ -6394,6 +6394,9 @@
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "On";
 
+/* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
+"SYSTEM_ADDRESS_NAME" = "Signal";
+
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verify";
 

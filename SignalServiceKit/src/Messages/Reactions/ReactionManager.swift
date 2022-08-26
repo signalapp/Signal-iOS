@@ -192,6 +192,11 @@ public class ReactionManager: NSObject {
                 builder.timestamp = timestamp
                 builder.storyReactionEmoji = reaction.emoji
                 builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
+
+                if storyMessage.authorAddress.isSystemStoryAddress {
+                    owsFailDebug("Should not be possible to show a reaction message for system story")
+                }
+
                 builder.storyAuthorAddress = storyMessage.authorAddress
 
                 // Group story replies do not follow the thread DM timer, instead they

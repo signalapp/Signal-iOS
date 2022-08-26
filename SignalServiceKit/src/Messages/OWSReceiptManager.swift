@@ -172,13 +172,40 @@ public extension OWSReceiptManager {
         )
     }
 
-    func enqueueLinkedDeviceViewedReceipt(forStoryMessage message: StoryMessage,
-                                          transaction: SDSAnyWriteTransaction) {
+    func enqueueLinkedDeviceViewedReceipt(
+        forStoryMessage message: StoryMessage,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard !message.authorAddress.isSystemStoryAddress else {
+            Logger.info("Not sending linked device viewed receipt for system story")
+            return
+        }
 
         self.enqueueLinkedDeviceViewedReceipt(
             messageAuthorAddress: message.authorAddress,
             messageUniqueId: message.uniqueId,
             messageIdTimestamp: message.timestamp,
+            transaction: transaction
+        )
+    }
+
+    func enqueueSenderViewedReceipt(
+        forStoryMessage message: StoryMessage,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard !message.authorAddress.isSystemStoryAddress else {
+            Logger.info("Not sending sender viewed receipt for system story")
+            return
+        }
+        guard !message.authorAddress.isLocalAddress else {
+            Logger.info("We don't support incoming messages from self.")
+            return
+        }
+
+        self.outgoingReceiptManager.enqueueViewedReceipt(
+            for: message.authorAddress,
+            timestamp: message.timestamp,
+            messageUniqueId: message.uniqueId,
             transaction: transaction
         )
     }

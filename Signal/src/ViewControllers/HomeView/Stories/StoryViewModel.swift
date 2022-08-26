@@ -31,34 +31,15 @@ struct StoryViewModel: Dependencies {
         self.context = latestMessage.context
         self.hasReplies = InteractionFinder.hasReplies(for: sortedFilteredMessages, transaction: transaction)
 
-        if let groupId = latestMessage.groupId {
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                throw OWSAssertionError("Missing group thread for group story")
-            }
-
-            let authorShortName: String
-            if latestMessage.authorAddress.isLocalAddress {
-                authorShortName = CommonStrings.you
-            } else {
-                authorShortName = Self.contactsManager.shortDisplayName(
-                    for: latestMessage.authorAddress,
-                    transaction: transaction
-                )
-            }
-
-            let nameFormat = NSLocalizedString(
-                "GROUP_STORY_NAME_FORMAT",
-                comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}")
-            latestMessageName = String(format: nameFormat, authorShortName, groupThread.groupNameOrDefault)
-            latestMessageAvatarDataSource = .thread(groupThread)
-        } else {
-            latestMessageName = Self.contactsManager.displayName(
-                for: latestMessage.authorAddress,
-                transaction: transaction
-            )
-            latestMessageAvatarDataSource = .address(latestMessage.authorAddress)
-        }
-
+        latestMessageName = StoryAuthorUtil.authorDisplayName(
+            for: latestMessage,
+            contactsManager: Self.contactsManager,
+            transaction: transaction
+        )
+        latestMessageAvatarDataSource = try StoryAuthorUtil.authorAvatarDataSource(
+            for: latestMessage,
+            transaction: transaction
+        )
         latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
         latestMessageTimestamp = latestMessage.timestamp
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp

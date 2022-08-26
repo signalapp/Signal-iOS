@@ -653,3 +653,10 @@ public class SignalServiceAddressCache: NSObject {
         return SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
     }
 }
+
+public extension UUID {
+
+    func asSignalServiceAddress() -> SignalServiceAddress {
+        return SignalServiceAddress(uuid: self)
+    }
+}

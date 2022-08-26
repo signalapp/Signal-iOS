@@ -72,6 +72,11 @@ extension StoryReplySheet {
             return owsFailDebug("Unexpectedly missing thread")
         }
 
+        owsAssertDebug(
+            !storyMessage.authorAddress.isSystemStoryAddress,
+            "Should be impossible to reply to system stories"
+        )
+
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.storyReactionEmoji = reaction
         builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
@@ -114,6 +119,10 @@ extension StoryReplySheet {
         guard let thread = thread else {
             return owsFailDebug("Unexpectedly missing thread")
         }
+        owsAssertDebug(
+            !storyMessage.authorAddress.isSystemStoryAddress,
+            "Should be impossible to reply to system stories"
+        )
 
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.messageBody = messageBody.text

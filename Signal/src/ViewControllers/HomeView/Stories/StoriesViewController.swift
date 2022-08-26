@@ -575,31 +575,44 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
                 owsFailDebug("Unexpectedly missing attachment for story.")
             }
 
-            actions.append(.init(
-                title: NSLocalizedString(
-                    "STORIES_GO_TO_CHAT_ACTION",
-                    comment: "Context menu action to open the chat associated with the selected story"),
-                image: Theme.iconImage(.open24),
-                handler: { _ in
-                    switch model.context {
-                    case .groupId(let groupId):
-                        guard let thread = Self.databaseStorage.read(block: { TSGroupThread.fetch(groupId: groupId, transaction: $0) }) else {
-                            return owsFailDebug("Unexpectedly missing thread for group story")
-                        }
-                        Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
-                    case .authorUuid(let authorUuid):
-                        guard let thread = Self.databaseStorage.read(
-                            block: { TSContactThread.getWithContactAddress(SignalServiceAddress(uuid: authorUuid), transaction: $0) }
-                        ) else {
-                            return owsFailDebug("Unexpectedly missing thread for 1:1 story")
-                        }
-                        Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
-                    case .privateStory:
-                        owsFailDebug("Unexpectedly had private story on stories list")
-                    case .none:
-                        owsFailDebug("Unexpectedly missing context for story")
+            let goToChatAction: ContextMenuActionHandler?
+            switch model.context {
+            case .groupId(let groupId):
+                goToChatAction = { _ in
+                    guard let thread = Self.databaseStorage.read(block: { TSGroupThread.fetch(groupId: groupId, transaction: $0) }) else {
+                        return owsFailDebug("Unexpectedly missing thread for group story")
                     }
-                }))
+                    Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
+                }
+            case .authorUuid(let authorUuid):
+                guard !authorUuid.asSignalServiceAddress().isSystemStoryAddress else {
+                    goToChatAction = nil
+                    break
+                }
+                goToChatAction = { _ in
+                    guard let thread = Self.databaseStorage.read(
+                        block: { TSContactThread.getWithContactAddress(SignalServiceAddress(uuid: authorUuid), transaction: $0) }
+                    ) else {
+                        return owsFailDebug("Unexpectedly missing thread for 1:1 story")
+                    }
+                    Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
+                }
+            case .privateStory:
+                owsFailDebug("Unexpectedly had private story on stories list")
+                goToChatAction = nil
+            case .none:
+                owsFailDebug("Unexpectedly missing context for story")
+                goToChatAction = nil
+            }
+            if let goToChatAction = goToChatAction {
+                actions.append(.init(
+                    title: NSLocalizedString(
+                        "STORIES_GO_TO_CHAT_ACTION",
+                        comment: "Context menu action to open the chat associated with the selected story"),
+                    image: Theme.iconImage(.open24),
+                    handler: goToChatAction
+                ))
+            }
 
             return .init(actions)
         }

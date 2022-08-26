@@ -191,17 +191,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             [self enqueueLinkedDeviceViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 
-            if (storyMessage.authorAddress.isLocalAddress) {
-                OWSFailDebug(@"We don't support incoming messages from self.");
-                return;
-            }
-
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
-                [self.outgoingReceiptManager enqueueViewedReceiptForAddress:storyMessage.authorAddress
-                                                                  timestamp:storyMessage.timestamp
-                                                            messageUniqueId:storyMessage.uniqueId
-                                                                transaction:transaction];
+                [self enqueueSenderViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             }
             break;
         }

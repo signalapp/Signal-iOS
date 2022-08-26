@@ -28,9 +28,12 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     public let uniqueId: String
     @objc
     public let timestamp: UInt64
+
     public let authorUuid: UUID
+
     @objc
-    public var authorAddress: SignalServiceAddress { SignalServiceAddress(uuid: authorUuid) }
+    public var authorAddress: SignalServiceAddress { authorUuid.asSignalServiceAddress() }
+
     public let groupId: Data?
 
     public enum Direction: Int, Codable { case incoming = 0, outgoing = 1 }
@@ -217,6 +220,40 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         return record
     }
 
+    // The "Signal account" used for e.g. the onboarding story has a fixed UUID
+    // we can use to prevent trying to actually reply, send a message, etc.
+    public static let systemStoryAuthorUUID = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
+
+    @discardableResult
+    public static func createFromSystemAuthor(
+        attachment: TSAttachment,
+        transaction: SDSAnyWriteTransaction
+    ) throws -> StoryMessage {
+        Logger.info("Processing StoryMessage for system author")
+
+        let manifest = StoryManifest.incoming(
+            receivedState: StoryReceivedState(allowsReplies: false, viewedTimestamp: nil)
+        )
+
+        attachment.anyInsert(transaction: transaction)
+        let attachment: StoryMessageAttachment = .file(attachmentId: attachment.uniqueId)
+
+        let record = StoryMessage(
+            // NOTE: As of now these only get created for the onboarding story, and that happens
+            // when you first launch stories, so the timestamp means they'd initially say "now"
+            // which is good. If something else is done in the future, we may need a more
+            // sophisticated variable timestamp.
+            timestamp: Date().ows_millisecondsSince1970,
+            authorUuid: Self.systemStoryAuthorUUID,
+            groupId: nil,
+            manifest: manifest,
+            attachment: attachment
+        )
+        record.anyInsert(transaction: transaction)
+
+        return record
+    }
+
     // MARK: -
 
     @objc
@@ -228,11 +265,22 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             record.manifest = .incoming(receivedState: .init(allowsReplies: receivedState.allowsReplies, viewedTimestamp: timestamp))
         }
 
-        // Record on the context when the local user last viewed the story for this context
-        if let thread = context.thread(transaction: transaction) {
-            thread.updateWithLastViewedStoryTimestamp(NSNumber(value: timestamp), transaction: transaction)
-        } else {
-            owsFailDebug("Missing thread for story context \(context)")
+        // Don't perform thread operations, make downloads, or send receipts for system stories.
+        guard !authorAddress.isSystemStoryAddress else {
+            return
+        }
+
+        switch context {
+        case .groupId, .authorUuid, .privateStory:
+            // Record on the context when the local user last viewed the story for this context
+            if let thread = context.thread(transaction: transaction) {
+                thread.updateWithLastViewedStoryTimestamp(NSNumber(value: timestamp), transaction: transaction)
+            } else {
+                owsFailDebug("Missing thread for story context \(context)")
+            }
+            return
+        case .none:
+            owsFailDebug("Viewing invalid story context")
         }
 
         // If we viewed this story (perhaps from a linked device), we should always make sure it's downloaded if it's not already.
@@ -587,5 +635,12 @@ public struct TextAttachment: Codable {
         if let preview = proto.preview {
             self.preview = try OWSLinkPreview.buildValidatedLinkPreview(proto: preview, transaction: transaction)
         }
+    }
+}
+
+extension SignalServiceAddress {
+
+    public var isSystemStoryAddress: Bool {
+        return self.uuid == StoryMessage.systemStoryAuthorUUID
     }
 }

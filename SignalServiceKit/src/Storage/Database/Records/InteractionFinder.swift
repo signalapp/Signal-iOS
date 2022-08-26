@@ -918,7 +918,11 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return interactions
     }
 
-    static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    static func enumerateGroupReplies(
+        for storyMessage: StoryMessage,
+        transaction: ReadTransaction,
+        block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
@@ -949,6 +953,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     static func countReplies(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> UInt {
+        guard !storyMessage.authorAddress.isSystemStoryAddress else {
+            // No replies on system stories.
+            return 0
+        }
         do {
             guard let threadUniqueId = storyMessage.context.threadUniqueId(transaction: transaction.asAnyRead) else {
                 owsFailDebug("Unexpected context for StoryMessage")
@@ -976,8 +984,16 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     static func hasReplies(for stories: [StoryMessage], transaction: GRDBReadTransaction) -> Bool {
+        // Return early so we don't end up with an empty query string when they're all system stories.
+        guard stories.contains(where: \.authorAddress.isSystemStoryAddress.negated) else {
+            return false
+        }
         var storyFilters = ""
         for story in stories {
+            guard !story.authorAddress.isSystemStoryAddress else {
+                // No replies on system stories.
+                continue
+            }
             guard let threadUniqueId = story.context.threadUniqueId(transaction: transaction.asAnyRead) else {
                 owsFailDebug("Unexpected context for StoryMessage")
                 continue
@@ -1009,6 +1025,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> [String] {
+        guard !storyMessage.authorAddress.isSystemStoryAddress else {
+            // No replies on system stories.
+            return []
+        }
         do {
             let sql: String = """
                 SELECT \(interactionColumn: .uniqueId)

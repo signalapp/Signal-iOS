@@ -584,6 +584,10 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
                 self.present(groupReplyVC, animated: true)
             }
         case .authorUuid:
+            owsAssertDebug(
+                !currentItem.message.authorAddress.isSystemStoryAddress,
+                "Should be impossible to reply to system stories"
+            )
             let directReplyVC = StoryDirectReplySheet(storyMessage: currentItem.message)
             directReplyVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
             directReplyVC.dismissHandler = { [weak self] in self?.play() }

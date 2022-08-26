@@ -252,8 +252,9 @@ class StoryItemMediaView: UIView {
             shape: .circular,
             useAutolayout: true
         )
+
         authorAvatarView.update(transaction) { config in
-            config.dataSource = .address(item.message.authorAddress)
+            config.dataSource = try? StoryAuthorUtil.authorAvatarDataSource(for: item.message, transaction: transaction)
         }
 
         switch item.message.context {
@@ -294,42 +295,12 @@ class StoryItemMediaView: UIView {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
-        label.text = {
-            switch item.message.context {
-            case .groupId(let groupId):
-                let groupName: String = {
-                    guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                        owsFailDebug("Missing group thread for group story")
-                        return TSGroupThread.defaultGroupName
-                    }
-                    return groupThread.groupNameOrDefault
-                }()
-
-                let authorShortName: String
-                if item.message.authorAddress.isLocalAddress {
-                    authorShortName = CommonStrings.you
-                } else {
-                    authorShortName = Self.contactsManager.shortDisplayName(
-                        for: item.message.authorAddress,
-                        transaction: transaction
-                    )
-                }
-
-                let nameFormat = NSLocalizedString(
-                    "GROUP_STORY_NAME_FORMAT",
-                    comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}")
-                return String(format: nameFormat, authorShortName, groupName)
-            default:
-                if item.message.authorAddress.isLocalAddress {
-                    return CommonStrings.you
-                } else {
-                    return Self.contactsManager.displayName(
-                        for: item.message.authorAddress,
-                        transaction: transaction
-                    )
-                }
-            }
-        }()
+        label.text = StoryAuthorUtil.authorDisplayName(
+            for: item.message,
+            contactsManager: contactsManager,
+            useFullNameForLocalAddress: false,
+            transaction: transaction
+        )
         return label
     }
 
