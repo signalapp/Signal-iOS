@@ -113,7 +113,7 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
     var wasRemovedFromSystem = false
 
     @objc
-    public let remoteAddress: SignalServiceAddress
+    public var remoteAddress: SignalServiceAddress { thread.contactAddress }
 
     public var isEnded: Bool {
         switch state {
@@ -128,7 +128,7 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
 
     // Distinguishes between calls locally, e.g. in CallKit
     @objc
-    public let localId: UUID
+    public let localId: UUID = UUID()
 
     public let thread: TSContactThread
 
@@ -208,11 +208,9 @@ public class IndividualCall: NSObject, IndividualCallNotificationInfo {
 
     // MARK: Initializers and Factory Methods
 
-    init(direction: CallDirection, localId: UUID, state: CallState, thread: TSContactThread, sentAtTimestamp: UInt64, callAdapterType: CallAdapterType) {
+    init(direction: CallDirection, state: CallState, thread: TSContactThread, sentAtTimestamp: UInt64, callAdapterType: CallAdapterType) {
         self.direction = direction
-        self.localId = localId
         self.state = state
-        self.remoteAddress = thread.contactAddress
         self.thread = thread
         self.sentAtTimestamp = sentAtTimestamp
         self.callAdapterType = callAdapterType

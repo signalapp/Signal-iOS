@@ -61,7 +61,7 @@ final public class IndividualCallService: NSObject {
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
-        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(call.individualCall.localId)")
+        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(call.localId)")
 
         guard callService.currentCall == nil else {
             owsFailDebug("call already exists: \(String(describing: callService.currentCall))")
@@ -264,7 +264,7 @@ final public class IndividualCallService: NSObject {
             callType: callType
         )
 
-        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.individualCall.localId)")
+        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
         guard tsAccountManager.isOnboarded(with: transaction) else {
             Logger.warn("user is not onboarded, skipping call.")
@@ -1222,10 +1222,10 @@ final public class IndividualCallService: NSObject {
 
         switch call.individualCall.state {
         case .dialing:
-            BenchEventComplete(eventId: "call-\(call.individualCall.localId)")
+            BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = .remoteRinging
         case .answering:
-            BenchEventComplete(eventId: "call-\(call.individualCall.localId)")
+            BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = isAnticipatory ? .localRinging_Anticipatory : .localRinging_ReadyToAnswer
             self.callUIAdapter.reportIncomingCall(call, thread: call.individualCall.thread)
         case .localRinging_Anticipatory:

@@ -570,7 +570,7 @@ public final class CallService: LightweightCallManager {
         AssertIsOnMainThread()
         guard !hasCallInProgress else { return nil }
 
-        let call = SignalCall.outgoingIndividualCall(localId: UUID(), thread: thread)
+        let call = SignalCall.outgoingIndividualCall(thread: thread)
         call.individualCall.offerMediaType = hasVideo ? .video : .audio
 
         addCall(call)
@@ -594,7 +594,6 @@ public final class CallService: LightweightCallManager {
         }
 
         let newCall = SignalCall.incomingIndividualCall(
-            localId: UUID(),
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,
             offerMediaType: offerMediaType

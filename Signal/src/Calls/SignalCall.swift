@@ -106,6 +106,9 @@ public class SignalCall: NSObject, CallManagerCallReference {
         didSet { AssertIsOnMainThread() }
     }
 
+    // Distinguishes between calls locally, e.g. in CallKit
+    public let localId: UUID
+
     @objc
     public let thread: TSThread
 
@@ -174,6 +177,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             audioDescription: "[SignalCall] with group \(groupThread.groupModel.groupId)",
             behavior: .call
         )
+        localId = UUID()
         thread = groupThread
         if !RemoteConfig.groupRings {
             ringRestrictions = .notApplicable
@@ -213,6 +217,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = individualCall.thread
+        localId = individualCall.localId
         ringRestrictions = .notApplicable
         super.init()
         individualCall.delegate = self
@@ -240,10 +245,9 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
-    public class func outgoingIndividualCall(localId: UUID, thread: TSContactThread) -> SignalCall {
+    public class func outgoingIndividualCall(thread: TSContactThread) -> SignalCall {
         let individualCall = IndividualCall(
             direction: .outgoing,
-            localId: localId,
             state: .dialing,
             thread: thread,
             sentAtTimestamp: Date.ows_millisecondTimestamp(),
@@ -253,7 +257,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
     }
 
     public class func incomingIndividualCall(
-        localId: UUID,
         thread: TSContactThread,
         sentAtTimestamp: UInt64,
         offerMediaType: TSRecentCallOfferType
@@ -273,7 +276,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
         let individualCall = IndividualCall(
             direction: .incoming,
-            localId: localId,
             state: .answering,
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -48,12 +48,12 @@ final class CallKitCallManager: NSObject {
             }
             handle = CXHandle(type: type, value: value)
         } else {
-            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.individualCall.localId.uuidString
+            let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
             CallKitIdStore.setAddress(call.individualCall.remoteAddress, forCallKitId: callKitId)
         }
 
-        let startCallAction = CXStartCallAction(call: call.individualCall.localId, handle: handle)
+        let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
         startCallAction.isVideo = call.individualCall.hasLocalVideo
 
@@ -64,7 +64,7 @@ final class CallKitCallManager: NSObject {
     }
 
     func localHangup(call: SignalCall) {
-        let endCallAction = CXEndCallAction(call: call.individualCall.localId)
+        let endCallAction = CXEndCallAction(call: call.localId)
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)
 
@@ -72,7 +72,7 @@ final class CallKitCallManager: NSObject {
     }
 
     func setHeld(call: SignalCall, onHold: Bool) {
-        let setHeldCallAction = CXSetHeldCallAction(call: call.individualCall.localId, onHold: onHold)
+        let setHeldCallAction = CXSetHeldCallAction(call: call.localId, onHold: onHold)
         let transaction = CXTransaction()
         transaction.addAction(setHeldCallAction)
 
@@ -80,7 +80,7 @@ final class CallKitCallManager: NSObject {
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {
-        let muteCallAction = CXSetMutedCallAction(call: call.individualCall.localId, muted: isMuted)
+        let muteCallAction = CXSetMutedCallAction(call: call.localId, muted: isMuted)
         let transaction = CXTransaction()
         transaction.addAction(muteCallAction)
 
@@ -88,7 +88,7 @@ final class CallKitCallManager: NSObject {
     }
 
     func answer(call: SignalCall) {
-        let answerCallAction = CXAnswerCallAction(call: call.individualCall.localId)
+        let answerCallAction = CXAnswerCallAction(call: call.localId)
         let transaction = CXTransaction()
         transaction.addAction(answerCallAction)
 
@@ -110,7 +110,7 @@ final class CallKitCallManager: NSObject {
     private(set) var calls = [SignalCall]()
 
     func callWithLocalId(_ localId: UUID) -> SignalCall? {
-        guard let index = calls.firstIndex(where: { $0.individualCall.localId == localId }) else {
+        guard let index = calls.firstIndex(where: { $0.localId == localId }) else {
             return nil
         }
         return calls[index]

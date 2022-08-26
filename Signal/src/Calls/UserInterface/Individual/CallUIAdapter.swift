@@ -208,7 +208,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
             return
         }
 
-        guard call.individualCall.localId == localId else {
+        guard call.localId == localId else {
             owsFailDebug("localId does not match current call")
             return
         }
@@ -267,7 +267,7 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
             return
         }
 
-        guard call.individualCall.localId == localId else {
+        guard call.localId == localId else {
             owsFailDebug("localId does not match current call")
             return
         }
