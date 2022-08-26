@@ -143,6 +143,7 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
                                     title: "PRIVACY_CALLS_WARNING_TITLE".localized(),
                                     explanation: "PRIVACY_CALLS_WARNING_DESCRIPTION".localized(),
                                     stateToShow: .whenDisabled,
+                                    confirmTitle: "continue_2".localized(),
                                     confirmStyle: .textPrimary
                                 ) { requestMicrophonePermissionIfNeeded() }
                             )

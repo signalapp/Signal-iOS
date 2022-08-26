@@ -59,6 +59,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
     internal lazy var tableView: UITableView = {
         let result: UITableView = UITableView(frame: .zero, style: .grouped)
+        result.themeBackgroundColor = .clear
         result.rowHeight = UITableView.automaticDimension
         result.estimatedRowHeight = 60
         result.separatorStyle = .none

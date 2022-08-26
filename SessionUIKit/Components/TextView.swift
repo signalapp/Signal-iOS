@@ -12,18 +12,27 @@ public final class TextView : UITextView, UITextViewDelegate {
     private lazy var placeholderLabel: UILabel = {
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        result.themeTextColor = .textSecondary
+        
         return result
     }()
 
-    public init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
+    public init(
+        placeholder: String,
+        usesDefaultHeight: Bool = true,
+        customHeight: CGFloat? = nil,
+        customHorizontalInset: CGFloat? = nil,
+        customVerticalInset: CGFloat? = nil
+    ) {
         self.usesDefaultHeight = usesDefaultHeight
         self.height = customHeight ?? TextField.height
         self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
         self.verticalInset = customVerticalInset ?? (isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing)
         self.placeholder = placeholder
+        
         super.init(frame: CGRect.zero, textContainer: nil)
         self.delegate = self
+        
         setUpStyle()
     }
 
@@ -38,18 +47,21 @@ public final class TextView : UITextView, UITextViewDelegate {
     private func setUpStyle() {
         showsHorizontalScrollIndicator = false
         showsVerticalScrollIndicator = false
-        placeholderLabel.text = placeholder
-        backgroundColor = .clear
-        textColor = Colors.text
+        
         font = .systemFont(ofSize: Values.smallFontSize)
-        tintColor = Colors.accent
-        keyboardAppearance = isLightMode ? .light : .dark
+        themeBackgroundColor = .clear
+        themeTextColor = .textPrimary
+        themeTintColor = .primary
+        themeBorderColor = .borderSeparator
+        layer.borderWidth = 1
+        layer.cornerRadius = TextField.cornerRadius
+        
+        placeholderLabel.text = placeholder
+        
         if usesDefaultHeight {
             set(.height, to: height)
         }
-        layer.borderColor = isLightMode ? Colors.text.cgColor : Colors.border.withAlphaComponent(Values.lowOpacity).cgColor
-        layer.borderWidth = 1
-        layer.cornerRadius = TextField.cornerRadius
+        
         let horizontalInset = usesDefaultHeight ? self.horizontalInset : Values.mediumSpacing
         textContainerInset = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
         addSubview(placeholderLabel)
@@ -57,6 +69,13 @@ public final class TextView : UITextView, UITextViewDelegate {
         placeholderLabel.pin(.top, to: .top, of: self)
         pin(.trailing, to: .trailing, of: placeholderLabel, withInset: horizontalInset)
         pin(.bottom, to: .bottom, of: placeholderLabel)
+        
+        ThemeManager.onThemeChange(observer: self) { [weak self] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: self?.keyboardAppearance = .light
+                default: self?.keyboardAppearance = .dark
+            }
+        }
     }
 
     public func textViewDidChange(_ textView: UITextView) {

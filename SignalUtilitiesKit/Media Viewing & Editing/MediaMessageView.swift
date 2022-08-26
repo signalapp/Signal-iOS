@@ -136,12 +136,23 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         return stackView
     }()
     
-    private lazy var loadingView: NVActivityIndicatorView = {
-        let view: NVActivityIndicatorView = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.isHidden = true
+    private let loadingView: NVActivityIndicatorView = {
+        let result: NVActivityIndicatorView = NVActivityIndicatorView(
+            frame: CGRect.zero,
+            type: .circleStrokeSpin,
+            color: .black,
+            padding: nil
+        )
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.isHidden = true
         
-        return view
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            
+            result?.color = textPrimary
+        }
+        
+        return result
     }()
     
     private lazy var imageView: UIImageView = {

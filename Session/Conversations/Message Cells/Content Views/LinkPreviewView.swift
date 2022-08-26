@@ -33,11 +33,21 @@ final class LinkPreviewView: UIView {
         return result
     }()
 
-    private lazy var loader: NVActivityIndicatorView = {
-        // FIXME: This will have issues with theme transitions
-        let color: UIColor = (isLightMode ? .black : .white)
+    private let loader: NVActivityIndicatorView = {
+        let result: NVActivityIndicatorView = NVActivityIndicatorView(
+            frame: CGRect.zero,
+            type: .circleStrokeSpin,
+            color: .black,
+            padding: nil
+        )
         
-        return NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: color, padding: nil)
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            
+            result?.color = textPrimary
+        }
+        
+        return result
     }()
 
     private lazy var titleLabel: UILabel = {

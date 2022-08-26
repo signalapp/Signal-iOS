@@ -19,10 +19,21 @@ final class PathVC: BaseVC {
         return result
     }()
 
-    private lazy var spinner: NVActivityIndicatorView = {
-        let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
+    private let spinner: NVActivityIndicatorView = {
+        let result: NVActivityIndicatorView = NVActivityIndicatorView(
+            frame: CGRect.zero,
+            type: .circleStrokeSpin,
+            color: .black,
+            padding: nil
+        )
         result.set(.width, to: 64)
         result.set(.height, to: 64)
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            
+            result?.color = textPrimary
+        }
         
         return result
     }()

@@ -10,9 +10,8 @@ public final class Separator: UIView {
     private lazy var titleLabel: UILabel = {
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
-        result.themeTextColor = .textPrimary
+        result.themeTextColor = .textSecondary
         result.textAlignment = .center
-        result.alpha = Values.mediumOpacity
         
         return result
     }()
@@ -20,7 +19,7 @@ public final class Separator: UIView {
     private lazy var lineLayer: CAShapeLayer = {
         let result = CAShapeLayer()
         result.lineWidth = Values.separatorThickness
-        result.themeStrokeColor = .borderSeparator
+        result.themeStrokeColor = .textSecondary
         result.themeFillColor = .clear
         
         return result

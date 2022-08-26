@@ -7,12 +7,13 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var tabBar: TabBar = {
         let tabs = [
             TabBar.Tab(title: "vc_create_private_chat_enter_session_id_tab_title".localized()) { [weak self] in
@@ -24,23 +25,26 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
                 self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
             }
         ]
+        
         return TabBar(tabs: tabs)
     }()
     
     private lazy var enterPublicKeyVC: EnterPublicKeyVC = {
         let result = EnterPublicKeyVC()
         result.NewDMVC = self
+        
         return result
     }()
     
     private lazy var scanQRCodePlaceholderVC: ScanQRCodePlaceholderVC = {
         let result = ScanQRCodePlaceholderVC()
         result.NewDMVC = self
+        
         return result
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("vc_create_private_chat_scan_qr_code_explanation", comment: "")
+        let message = "vc_create_private_chat_scan_qr_code_explanation".localized()
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
@@ -59,28 +63,33 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         super.init(nibName: nibName, bundle: bundle)
     }
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setNavBarTitle("vc_create_private_chat_title".localized())
         let navigationBar = navigationController!.navigationBar
+        
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
+        closeButton.themeTintColor = .textPrimary
         navigationItem.leftBarButtonItem = closeButton
+        
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ enterPublicKeyVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
         pageVC.setViewControllers([ enterPublicKeyVC ], direction: .forward, animated: false, completion: nil)
+        
         // Set up tab bar
+        let tabBarInset: CGFloat = (UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height())
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        let tabBarInset: CGFloat = (UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height())
         tabBar.pin(.top, to: .top, of: view, withInset: tabBarInset)
         view.pin(.trailing, to: .trailing, of: tabBar)
+        
         // Set up page VC constraints
         let pageVCView = pageVC.view!
         view.addSubview(pageVCView)
@@ -88,15 +97,18 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         pageVCView.pin(.top, to: .bottom, of: tabBar)
         view.pin(.trailing, to: .trailing, of: pageVCView)
         view.pin(.bottom, to: .bottom, of: pageVCView)
+        
         let screen = UIScreen.main.bounds
-        pageVCView.set(.width, to: screen.width)
         let height: CGFloat = (navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight)
+        pageVCView.set(.width, to: screen.width)
         pageVCView.set(.height, to: height)
+        
         enterPublicKeyVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
     }
     
-    // MARK: General
+    // MARK: - General
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let index = pages.firstIndex(of: viewController), index != 0 else { return nil }
         return pages[index - 1]
@@ -112,7 +124,8 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         pageVC.setViewControllers([ scanQRCodeWrapperVC ], direction: .forward, animated: false, completion: nil)
     }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         guard let targetVC = pendingViewControllers.first, let index = pages.firstIndex(of: targetVC) else { return }
         targetVCIndex = index
@@ -123,7 +136,8 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         tabBar.selectTab(at: index)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func close() {
         dismiss(animated: true, completion: nil)
     }
@@ -142,36 +156,40 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         }
         
         // This could be an ONS name
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
-            SnodeAPI.getSessionID(for: onsNameOrPublicKey).done { sessionID in
-                modalActivityIndicator.dismiss {
-                    self?.startNewDM(with: sessionID)
-                }
-            }.catch { error in
-                modalActivityIndicator.dismiss {
-                    var messageOrNil: String?
-                    if let error = error as? SnodeAPIError {
-                        switch error {
-                            case .decryptionFailed, .hashingFailed, .validationFailed:
-                                messageOrNil = error.errorDescription
-                            default: break
+        ModalActivityIndicatorViewController
+            .present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
+            SnodeAPI
+                    .getSessionID(for: onsNameOrPublicKey)
+                    .done { sessionID in
+                        modalActivityIndicator.dismiss {
+                            self?.startNewDM(with: sessionID)
                         }
                     }
-                    let message: String = {
-                        if let messageOrNil: String = messageOrNil {
-                            return messageOrNil
+                    .catch { error in
+                        modalActivityIndicator.dismiss {
+                            var messageOrNil: String?
+                            if let error = error as? SnodeAPIError {
+                                switch error {
+                                    case .decryptionFailed, .hashingFailed, .validationFailed:
+                                        messageOrNil = error.errorDescription
+                                    default: break
+                                }
+                            }
+                            let message: String = {
+                                if let messageOrNil: String = messageOrNil {
+                                    return messageOrNil
+                                }
+                                
+                                return (maybeSessionId?.prefix == .blinded ?
+                                    "You can only send messages to Blinded IDs from within an Open Group" :
+                                    "Please check the Session ID or ONS name and try again"
+                                )
+                            }()
+                            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+                            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
+                            self?.presentAlert(alert)
                         }
-                        
-                        return (maybeSessionId?.prefix == .blinded ?
-                            "You can only send messages to Blinded IDs from within an Open Group" :
-                            "Please check the Session ID or ONS name and try again"
-                        )
-                    }()
-                    let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-                    self?.presentAlert(alert)
-                }
-            }
+                    }
         }
     }
 
@@ -188,51 +206,57 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
     }
 }
 
-private final class EnterPublicKeyVC : UIViewController {
+// MARK: - EnterPublicKeyVC
+
+private final class EnterPublicKeyVC: UIViewController {
     weak var NewDMVC: NewDMVC!
     private var isKeyboardShowing = false
+    private var simulatorWillResignFirstResponder = false
     private var bottomConstraint: NSLayoutConstraint!
     private let bottomMargin: CGFloat = UIDevice.current.isIPad ? Values.largeSpacing : 0
     
-    // MARK: Components
+    // MARK: - Components
     private lazy var publicKeyTextView: TextView = {
-        let result = TextView(placeholder: NSLocalizedString("vc_enter_public_key_text_field_hint", comment: ""))
+        let result = TextView(placeholder: "vc_enter_public_key_text_field_hint".localized())
         result.autocapitalizationType = .none
+        
         return result
     }()
     
     private lazy var copyButton: OutlineButton = {
         let result = OutlineButton(style: .regular, size: .small)
-        result.setTitle("copy".lowercased(), for: UIControl.State.normal)
-        result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
+        result.setTitle("copy".localized(), for: .normal)
+        result.addTarget(self, action: #selector(copyPublicKey), for: .touchUpInside)
         
         return result
     }()
     
     private lazy var shareButton: OutlineButton = {
         let result = OutlineButton(style: .regular, size: .small)
-        result.setTitle("share".lowercased(), for: UIControl.State.normal)
-        result.addTarget(self, action: #selector(sharePublicKey), for: UIControl.Event.touchUpInside)
+        result.setTitle("share".localized(), for: .normal)
+        result.addTarget(self, action: #selector(sharePublicKey), for: .touchUpInside)
         
         return result
     }()
     
     private lazy var nextButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .small)
-        result.setTitle("next".lowercased(), for: UIControl.State.normal)
-        result.addTarget(self, action: #selector(startNewDMIfPossible), for: UIControl.Event.touchUpInside)
+        let result = OutlineButton(style: .regular, size: .large)
+        result.setTitle("next".localized(), for: .normal)
+        result.addTarget(self, action: #selector(startNewDMIfPossible), for: .touchUpInside)
+        result.alpha = 0
         
         return result
     }()
     
     private lazy var userPublicKeyLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
-        result.numberOfLines = 0
+        result.text = getUserHexEncodedPublicKey()
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
         result.lineBreakMode = .byCharWrapping
-        result.text = getUserHexEncodedPublicKey()
+        result.numberOfLines = 0
+        
         return result
     }()
     
@@ -240,42 +264,53 @@ private final class EnterPublicKeyVC : UIViewController {
     private lazy var spacer2 = UIView.spacer(withHeight: Values.largeSpacing)
     private lazy var spacer3 = UIView.spacer(withHeight: Values.largeSpacing)
     
-    private lazy var separator = Separator(title: NSLocalizedString("your_session_id", comment: ""))
+    private lazy var separator = Separator(title: "your_session_id".localized())
     
     private lazy var buttonContainer: UIStackView = {
         let result = UIStackView()
         result.axis = .horizontal
         result.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
         result.distribution = .fillEqually
+        
         if (UIDevice.current.isIPad) {
             result.layoutMargins = UIEdgeInsets(top: 0, left: Values.iPadButtonContainerMargin, bottom: 0, right: Values.iPadButtonContainerMargin)
             result.isLayoutMarginsRelativeArrangement = true
         }
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         // User session id container
-        let userPublicKeyContainer = UIView(wrapping: userPublicKeyLabel, withInsets: .zero, shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth)
+        let userPublicKeyContainer = UIView(
+            wrapping: userPublicKeyLabel,
+            withInsets: .zero,
+            shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth
+        )
         
         // Explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_enter_public_key_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_enter_public_key_explanation".localized()
+        explanationLabel.themeTextColor = .textSecondary
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
         
         // Button container
         buttonContainer.addArrangedSubview(copyButton)
         buttonContainer.addArrangedSubview(shareButton)
 
-        let nextButtonContainer = UIView(wrapping: nextButton, withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
+        let nextButtonContainer = UIView(
+            wrapping: nextButton,
+            withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80),
+            shouldAdaptForIPadWithWidth: Values.iPadButtonWidth
+        )
         
         // Main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyContainer, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
@@ -306,7 +341,8 @@ private final class EnterPublicKeyVC : UIViewController {
         NotificationCenter.default.removeObserver(self)
     }
     
-    // MARK: General
+    // MARK: - General
+    
     func setSessionID(to sessionID: String){
         publicKeyTextView.insertText(sessionID)
     }
@@ -316,62 +352,92 @@ private final class EnterPublicKeyVC : UIViewController {
     }
     
     @objc private func dismissKeyboard() {
+        simulatorWillResignFirstResponder = true
         publicKeyTextView.resignFirstResponder()
+        simulatorWillResignFirstResponder = false
     }
     
     @objc private func enableCopyButton() {
         copyButton.isUserInteractionEnabled = true
+        
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
+            self.copyButton.setTitle("copy".localized(), for: .normal)
         }, completion: nil)
     }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
+        #if targetEnvironment(simulator)
+        // Note: See 'handleKeyboardWillHideNotification' for the explanation
+        guard !simulatorWillResignFirstResponder else { return }
+        #else
         guard !isKeyboardShowing else { return }
+        #endif
+        
         isKeyboardShowing = true
+        
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        
         bottomConstraint.constant = newHeight + bottomMargin
+        
         UIView.animate(withDuration: 0.25) {
             [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
                 $0.alpha = 0
                 $0.isHidden = true
             }
+            self.nextButton.alpha = 1
             self.view.layoutIfNeeded()
         }
     }
     
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
+        #if targetEnvironment(simulator)
+        // Note: On the simulator the keyboard won't appear by default (unless you enable
+        // it) this results in the "keyboard will hide" notification incorrectly getting
+        // triggered immediately - the 'simulatorWillResignFirstResponder' value is a workaround
+        // to make this behave more like a real device when testing
+        guard isKeyboardShowing && simulatorWillResignFirstResponder else { return }
+        #else
         guard isKeyboardShowing else { return }
+        #endif
+        
         isKeyboardShowing = false
         bottomConstraint.constant = bottomMargin
+        
         UIView.animate(withDuration: 0.25) {
             [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
                 $0.alpha = 1
                 $0.isHidden = false
             }
+            self.nextButton.alpha = (self.publicKeyTextView.text.isEmpty ? 0 : 1)
             self.view.layoutIfNeeded()
         }
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func copyPublicKey() {
         UIPasteboard.general.string = getUserHexEncodedPublicKey()
+        
         copyButton.isUserInteractionEnabled = false
+        
         UIView.transition(with: copyButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            self.copyButton.setTitle(NSLocalizedString("copied", comment: ""), for: UIControl.State.normal)
+            self.copyButton.setTitle("copied".localized(), for: .normal)
         }, completion: nil)
         Timer.scheduledTimer(timeInterval: 4, target: self, selector: #selector(enableCopyButton), userInfo: nil, repeats: false)
     }
     
     @objc private func sharePublicKey() {
         let shareVC = UIActivityViewController(activityItems: [ getUserHexEncodedPublicKey() ], applicationActivities: nil)
+        
         if UIDevice.current.isIPad {
             shareVC.excludedActivityTypes = []
             shareVC.popoverPresentationController?.permittedArrowDirections = []
             shareVC.popoverPresentationController?.sourceView = self.view
             shareVC.popoverPresentationController?.sourceRect = self.view.bounds
         }
+        
         NewDMVC.navigationController!.present(shareVC, animated: true, completion: nil)
     }
     
@@ -381,36 +447,43 @@ private final class EnterPublicKeyVC : UIViewController {
     }
 }
 
-private final class ScanQRCodePlaceholderVC : UIViewController {
+// MARK: - ScanQRCodePlaceholderVC
+
+private final class ScanQRCodePlaceholderVC: UIViewController {
     weak var NewDMVC: NewDMVC!
     
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
+        
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_scan_qr_code_camera_access_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
         // Set up call to action button
         let callToActionButton = UIButton()
-        callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
+        callToActionButton.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        callToActionButton.setTitle("vc_scan_qr_code_grant_camera_access_button_title".localized(), for: UIControl.State.normal)
+        callToActionButton.setThemeTitleColor(.primary, for: .normal)
         callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
+        
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])
         stackView.axis = .vertical
         stackView.spacing = Values.mediumSpacing
         stackView.alignment = .center
+        
         // Set up constraints
         view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
         view.pin(.trailing, to: .trailing, of: stackView, withInset: Values.massiveSpacing)
+        
         let verticalCenteringConstraint = stackView.center(.vertical, in: view)
         verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
     }

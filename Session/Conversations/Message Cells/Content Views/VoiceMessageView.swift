@@ -30,15 +30,21 @@ public final class VoiceMessageView: UIView {
         return result
     }()
 
-    private lazy var loader: NVActivityIndicatorView = {
+    private let loader: NVActivityIndicatorView = {
         let result: NVActivityIndicatorView = NVActivityIndicatorView(
             frame: .zero,
             type: .circleStrokeSpin,
-            color: Colors.text,
+            color: .black,
             padding: nil
         )
         result.set(.width, to: VoiceMessageView.toggleContainerSize + 2)
         result.set(.height, to: VoiceMessageView.toggleContainerSize + 2)
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            
+            result?.color = textPrimary
+        }
         
         return result
     }()

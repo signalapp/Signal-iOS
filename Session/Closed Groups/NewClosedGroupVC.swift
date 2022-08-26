@@ -5,6 +5,7 @@ import GRDB
 import PromiseKit
 import SessionUIKit
 import SessionMessagingKit
+import SignalUtilitiesKit
 
 private protocol TableViewTouchDelegate {
     func tableViewWasTouched(_ tableView: TableView)
@@ -25,17 +26,18 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     
     // MARK: - Components
     
-    private lazy var nameTextField = TextField(placeholder: "vc_create_closed_group_text_field_hint".localized())
+    private lazy var nameTextField = TextField(
+        placeholder: "vc_create_closed_group_text_field_hint".localized()
+    )
 
     private lazy var tableView: TableView = {
         let result: TableView = TableView()
+        result.separatorStyle = .none
+        result.themeBackgroundColor = .clear
+        result.register(view: UserCell.self)
+        result.touchDelegate = self
         result.dataSource = self
         result.delegate = self
-        result.touchDelegate = self
-        result.separatorStyle = .none
-        result.backgroundColor = .clear
-        result.isScrollEnabled = false
-        result.register(view: UserCell.self)
         
         return result
     }()
@@ -50,11 +52,11 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
+        closeButton.themeTintColor = .textPrimary
         navigationItem.leftBarButtonItem = closeButton
         
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(createClosedGroup))
-        doneButton.tintColor = Colors.text
+        doneButton.themeTintColor = .textPrimary
         navigationItem.rightBarButtonItem = doneButton
         
         // Set up content
@@ -66,7 +68,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             let explanationLabel: UILabel = UILabel()
             explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
             explanationLabel.text = "vc_create_closed_group_empty_state_message".localized()
-            explanationLabel.textColor = Colors.text
+            explanationLabel.themeTextColor = .textPrimary
             explanationLabel.textAlignment = .center
             explanationLabel.lineBreakMode = .byWordWrapping
             explanationLabel.numberOfLines = 0
@@ -88,33 +90,23 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             return
         }
         
-        let mainStackView: UIStackView = UIStackView()
-        mainStackView.axis = .vertical
-        nameTextField.delegate = self
-        
         let nameTextFieldContainer: UIView = UIView()
+        view.addSubview(nameTextFieldContainer)
+        nameTextFieldContainer.pin(.top, to: .top, of: view)
+        nameTextFieldContainer.pin(.leading, to: .leading, of: view)
+        nameTextFieldContainer.pin(.trailing, to: .trailing, of: view)
+        
         nameTextFieldContainer.addSubview(nameTextField)
-        nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.largeSpacing)
         nameTextField.pin(.top, to: .top, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
-        nameTextFieldContainer.pin(.trailing, to: .trailing, of: nameTextField, withInset: Values.largeSpacing)
-        nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
-        mainStackView.addArrangedSubview(nameTextFieldContainer)
+        nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.largeSpacing)
+        nameTextField.pin(.trailing, to: .trailing, of: nameTextFieldContainer, withInset: -Values.largeSpacing)
+        nameTextField.pin(.bottom, to: .bottom, of: nameTextFieldContainer, withInset: -Values.largeSpacing)
         
-        let separator: UIView = UIView()
-        separator.backgroundColor = Colors.separator
-        separator.set(.height, to: Values.separatorThickness)
-        mainStackView.addArrangedSubview(separator)
-        tableView.set(.height, to: CGFloat(contactProfiles.count * 65)) // A cell is exactly 65 points high
-        tableView.set(.width, to: UIScreen.main.bounds.width)
-        mainStackView.addArrangedSubview(tableView)
-        
-        let scrollView: UIScrollView = UIScrollView(wrapping: mainStackView, withInsets: UIEdgeInsets.zero)
-        scrollView.showsVerticalScrollIndicator = false
-        scrollView.delegate = self
-        view.addSubview(scrollView)
-        
-        scrollView.set(.width, to: UIScreen.main.bounds.width)
-        scrollView.pin(to: view)
+        view.addSubview(tableView)
+        tableView.pin(.top, to: .bottom, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
+        tableView.pin(.leading, to: .leading, of: view)
+        tableView.pin(.trailing, to: .trailing, of: view)
+        tableView.pin(.bottom, to: .bottom, of: view)
     }
     
     // MARK: - Table View Data Source
@@ -135,27 +127,16 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         return cell
     }
     
-    // MARK: - Interaction
+    // MARK: - UITableViewDelegate
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        crossfadeLabel.text = textField.text!.isEmpty ? NSLocalizedString("vc_create_closed_group_title", comment: "") : textField.text!
+    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
 
-    fileprivate func tableViewWasTouched(_ tableView: TableView) {
-        if nameTextField.isFirstResponder {
-            nameTextField.resignFirstResponder()
-        }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
     }
-
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let nameTextFieldCenterY = nameTextField.convert(nameTextField.bounds.center, to: scrollView).y
-        let tableViewOriginY = tableView.convert(tableView.bounds.origin, to: scrollView).y
-        let titleLabelAlpha = 1 - (scrollView.contentOffset.y - nameTextFieldCenterY) / (tableViewOriginY - nameTextFieldCenterY)
-        let crossfadeLabelAlpha = 1 - titleLabelAlpha
-        navBarTitleLabel.alpha = titleLabelAlpha
-        crossfadeLabel.alpha = crossfadeLabelAlpha
-    }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if !selectedContacts.contains(contactProfiles[indexPath.row].id) {
             selectedContacts.insert(contactProfiles[indexPath.row].id)
@@ -168,6 +149,30 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         tableView.reloadRows(at: [indexPath], with: .none)
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let nameTextFieldCenterY = nameTextField.convert(nameTextField.bounds.center, to: scrollView).y
+        let tableViewOriginY = tableView.convert(tableView.bounds.origin, to: scrollView).y
+        let titleLabelAlpha = 1 - (scrollView.contentOffset.y - nameTextFieldCenterY) / (tableViewOriginY - nameTextFieldCenterY)
+        let crossfadeLabelAlpha = 1 - titleLabelAlpha
+        navBarTitleLabel.alpha = titleLabelAlpha
+        crossfadeLabel.alpha = crossfadeLabelAlpha
+    }
+    
+    // MARK: - Interaction
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        crossfadeLabel.text = (textField.text?.isEmpty == true ?
+            "vc_create_closed_group_title".localized() :
+            textField.text
+        )
+    }
+
+    fileprivate func tableViewWasTouched(_ tableView: TableView) {
+        if nameTextField.isFirstResponder {
+            nameTextField.resignFirstResponder()
+        }
+    }
+    
     @objc private func close() {
         dismiss(animated: true, completion: nil)
     }
@@ -175,20 +180,20 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     @objc private func createClosedGroup() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
             presentAlert(alert)
         }
         guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
-            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
+            return showError(title: "vc_create_closed_group_group_name_missing_error".localized())
         }
         guard name.count < 64 else {
-            return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
+            return showError(title: "vc_create_closed_group_group_name_too_long_error".localized())
         }
         guard selectedContacts.count >= 1 else {
             return showError(title: "Please pick at least 1 group member")
         }
         guard selectedContacts.count < 100 else { // Minus one because we're going to include self later
-            return showError(title: NSLocalizedString("vc_create_closed_group_too_many_group_members_error", comment: ""))
+            return showError(title: "vc_create_closed_group_too_many_group_members_error".localized())
         }
         let selectedContacts = self.selectedContacts
         let message: String? = (selectedContacts.count > 20) ? "Please wait while the group is created..." : nil
@@ -211,7 +216,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
                     let title = "Couldn't Create Group"
                     let message = "Please check your internet connection and try again."
                     let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+                    alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
                     self?.presentAlert(alert)
                 }
                 .retainUntilComplete()

@@ -22,7 +22,7 @@ public class ConfirmationModal: Modal {
         let title: String
         let explanation: String?
         let stateToShow: State
-        let confirmTitle: String
+        let confirmTitle: String?
         let confirmStyle: ThemeValue
         let cancelTitle: String
         let cancelStyle: ThemeValue
@@ -32,7 +32,7 @@ public class ConfirmationModal: Modal {
             title: String,
             explanation: String? = nil,
             stateToShow: State = .always,
-            confirmTitle: String = "continue_2".localized(),
+            confirmTitle: String? = nil,
             confirmStyle: ThemeValue = .textPrimary,
             cancelTitle: String = "TXT_CANCEL_TITLE".localized(),
             cancelStyle: ThemeValue = .danger,
@@ -140,9 +140,9 @@ public class ConfirmationModal: Modal {
     
     // MARK: - Lifecycle
     
-    init(info: Info, onConfirm: @escaping (UIViewController) -> ()) {
+    init(info: Info, onConfirm: ((UIViewController) -> ())? = nil) {
         self.onConfirm = { viewController in
-            onConfirm(viewController)
+            onConfirm?(viewController)
             info.onConfirm?()
         }
         
@@ -157,6 +157,7 @@ public class ConfirmationModal: Modal {
         explanationLabel.isHidden = (info.explanation == nil)
         confirmButton.setTitle(info.confirmTitle, for: .normal)
         confirmButton.setThemeTitleColor(info.confirmStyle, for: .normal)
+        confirmButton.isHidden = (info.confirmTitle == nil)
         cancelButton.setTitle(info.cancelTitle, for: .normal)
         cancelButton.setThemeTitleColor(info.cancelStyle, for: .normal)
     }

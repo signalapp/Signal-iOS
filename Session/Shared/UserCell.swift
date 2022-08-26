@@ -20,9 +20,27 @@ final class UserCell: UITableViewCell {
 
     private lazy var displayNameLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byTruncatingTail
+        
+        return result
+    }()
+    
+    private let spacer: UIView = {
+        let result: UIView = UIView.hStretchingSpacer()
+        result.widthAnchor
+            .constraint(greaterThanOrEqualToConstant: Values.mediumSpacing)
+            .isActive = true
+        
+        return result
+    }()
+    
+    private let selectionView: RadioButton = {
+        let result: RadioButton = RadioButton(size: .medium)
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.isUserInteractionEnabled = false
+        result.font = .systemFont(ofSize: Values.mediumFontSize, weight: .bold)
         
         return result
     }()
@@ -38,7 +56,7 @@ final class UserCell: UITableViewCell {
 
     private lazy var separator: UIView = {
         let result: UIView = UIView()
-        result.backgroundColor = Colors.separator
+        result.themeBackgroundColor = .borderSeparator
         result.set(.height, to: Values.separatorThickness)
         
         return result
@@ -58,11 +76,11 @@ final class UserCell: UITableViewCell {
 
     private func setUpViewHierarchy() {
         // Background color
-        backgroundColor = Colors.cellBackground
+        themeBackgroundColor = .conversationButton_background
         
         // Highlight color
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = .clear // Disabled for now
+        selectedBackgroundView.themeBackgroundColor = .clear // Disabled for now
         self.selectedBackgroundView = selectedBackgroundView
         
         // Profile picture image view
@@ -72,15 +90,14 @@ final class UserCell: UITableViewCell {
         profilePictureView.size = profilePictureViewSize
         
         // Main stack view
-        let spacer = UIView.hStretchingSpacer()
-        spacer.widthAnchor.constraint(greaterThanOrEqualToConstant: Values.mediumSpacing).isActive = true
         let stackView = UIStackView(
             arrangedSubviews: [
                 profilePictureView,
                 UIView.hSpacer(Values.mediumSpacing),
                 displayNameLabel,
                 spacer,
-                accessoryImageView
+                accessoryImageView,
+                selectionView
             ]
         )
         stackView.axis = .horizontal
@@ -134,26 +151,42 @@ final class UserCell: UITableViewCell {
         )
         
         switch accessory {
-            case .none: accessoryImageView.isHidden = true
+            case .none:
+                selectionView.isHidden = true
+                accessoryImageView.isHidden = true
+                displayNameLabel.isHidden = false
+                spacer.isHidden = false
             
             case .lock:
+                selectionView.isHidden = true
                 accessoryImageView.isHidden = false
                 accessoryImageView.image = #imageLiteral(resourceName: "ic_lock_outline").withRenderingMode(.alwaysTemplate)
-                accessoryImageView.tintColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+                accessoryImageView.themeTintColor = .textPrimary
+                accessoryImageView.alpha = Values.mediumOpacity
+                displayNameLabel.isHidden = false
+                spacer.isHidden = false
                 
             case .tick(let isSelected):
-                let icon: UIImage = (isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle"))
-                accessoryImageView.isHidden = false
-                accessoryImageView.image = icon.withRenderingMode(.alwaysTemplate)
-                accessoryImageView.tintColor = Colors.text
+                selectionView.isHidden = false
+                selectionView.text = displayNameLabel.text
+                selectionView.update(isSelected: isSelected)
+                accessoryImageView.isHidden = true
+                displayNameLabel.isHidden = true
+                spacer.isHidden = true
+                
             case .x:
+                selectionView.isHidden = true
                 accessoryImageView.isHidden = false
                 accessoryImageView.image = #imageLiteral(resourceName: "X").withRenderingMode(.alwaysTemplate)
                 accessoryImageView.contentMode = .center
-                accessoryImageView.tintColor = Colors.text
+                accessoryImageView.themeTintColor = .textPrimary
+                accessoryImageView.alpha = 1
+                displayNameLabel.isHidden = false
+                spacer.isHidden = false
         }
         
         let alpha: CGFloat = (isZombie ? 0.5 : 1)
-        [ profilePictureView, displayNameLabel, accessoryImageView ].forEach { $0.alpha = alpha }
+        [ profilePictureView, displayNameLabel, accessoryImageView, selectionView ]
+            .forEach { $0.alpha = alpha }
     }
 }

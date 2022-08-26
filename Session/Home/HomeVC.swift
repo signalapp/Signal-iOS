@@ -73,7 +73,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     private lazy var tableView: UITableView = {
         let result = UITableView()
         result.separatorStyle = .none
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.contentInset = UIEdgeInsets(
             top: 0,
             left: 0,

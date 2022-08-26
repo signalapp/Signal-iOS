@@ -60,7 +60,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         // Navigation bar buttons
         let navBarHeight: CGFloat = (navigationController?.navigationBar.frame.size.height ?? 0)
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
+        closeButton.themeTintColor = .textPrimary
         navigationItem.leftBarButtonItem = closeButton
         
         // Page VC
@@ -190,12 +190,19 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
     // MARK: - Convenience
 
     private func showError(title: String, message: String = "") {
-        let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-        
-        presentAlert(alert)
+        let confirmationModal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: title,
+                explanation: message,
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .textPrimary
+            )
+        )
+        self.navigationController?.present(confirmationModal, animated: true, completion: nil)
     }
 }
+
+// MARK: - EnterURLVC
 
 private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, OpenGroupSuggestionGridDelegate {
     weak var joinOpenGroupVC: JoinOpenGroupVC?
@@ -220,7 +227,7 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         result.setContentHuggingPriority(.required, for: .vertical)
         result.font = .boldSystemFont(ofSize: Values.largeFontSize)
         result.text = "vc_join_open_group_suggestions_title".localized()
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byWordWrapping
         result.numberOfLines = 0
         
@@ -239,7 +246,7 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
     
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         // Next button
         let nextButton = OutlineButton(style: .regular, size: .large)
@@ -374,23 +381,23 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
 
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         // Explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_scan_qr_code_camera_access_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
         
         // Call to action button
         let callToActionButton = UIButton()
-        callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
-        callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
+        callToActionButton.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        callToActionButton.setTitle("vc_scan_qr_code_grant_camera_access_button_title".localized(), for: .normal)
+        callToActionButton.setThemeTitleColor(.primary, for: .normal)
+        callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: .touchUpInside)
         
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])
