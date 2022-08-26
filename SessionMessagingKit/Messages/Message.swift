@@ -370,22 +370,32 @@ public extension Message {
                let reactors = rawReaction.reactors
             {
                 // Decide whether we need to add an extra reaction from current user
-                let pendingChanges = associatedPendingChanges
-                    .filter {
-                        if case .reaction(_, let emoji, _) = $0.metadata {
-                            return emoji == decodedEmoji
+                let pendingChangeSelfReaction: Bool? = {
+                    // Find the newest 'PendingChange' entry with a matching emoji, if one exists, and
+                    // set the "self reaction" value based on it's action
+                    let maybePendingChange: OpenGroupAPI.PendingChange? = associatedPendingChanges
+                        .sorted(by: { lhs, rhs -> Bool in (lhs.seqNo ?? Int64.max) > (rhs.seqNo ?? Int64.max) })
+                        .first { pendingChange in
+                            if case .reaction(_, let emoji, _) = pendingChange.metadata {
+                                return emoji == decodedEmoji
+                            }
+                            
+                            return false
                         }
-                        return false
-                    }
-                var shouldAddSelfReaction: Bool = rawReaction.you || reactors.contains(userPublicKey)
-                pendingChanges.forEach {
-                    if case .reaction(_, _, let action) = $0.metadata {
-                        switch action {
-                            case .react: shouldAddSelfReaction = true
-                            case .remove: shouldAddSelfReaction = false
-                        }
-                    }
-                }
+                    
+                    // If there is no pending change for this reaction then return nil
+                    guard
+                        let pendingChange: OpenGroupAPI.PendingChange = maybePendingChange,
+                        case .reaction(_, _, let action) = pendingChange.metadata
+                    else { return nil }
+
+                    // Otherwise add/remove accordingly
+                    return (action == .react)
+                }()
+                let shouldAddSelfReaction: Bool = (
+                    pendingChangeSelfReaction ??
+                    (rawReaction.you || reactors.contains(userPublicKey))
+                )
                 
                 let count: Int64 = rawReaction.you ? rawReaction.count - 1 : rawReaction.count
                 
