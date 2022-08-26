@@ -269,6 +269,8 @@ CREATE
             ,"messageText" TEXT
             ,"paymentIntentClientSecret" TEXT
             ,"paymentMethodId" TEXT
+            ,"replacementAdminUuid" TEXT
+            ,"waitForMessageProcessing" BOOLEAN
         )
 ;
 

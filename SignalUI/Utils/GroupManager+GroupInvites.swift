@@ -19,11 +19,14 @@ public extension GroupManager {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modalView in
             firstly(on: .global()) {
-                self.localLeaveGroupOrDeclineInvite(
-                    groupThread: groupThread,
-                    replacementAdminUuid: replacementAdminUuid,
-                    waitForMessageProcessing: true
-                ).asVoid()
+                databaseStorage.write { transaction in
+                    self.localLeaveGroupOrDeclineInvite(
+                        groupThread: groupThread,
+                        replacementAdminUuid: replacementAdminUuid,
+                        waitForMessageProcessing: true,
+                        transaction: transaction
+                    ).asVoid()
+                }
             }.done(on: .main) { _ in
                 modalView.dismiss {
                     success?()

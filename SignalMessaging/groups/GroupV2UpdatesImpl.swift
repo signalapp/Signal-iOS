@@ -701,7 +701,8 @@ private extension GroupV2UpdatesImpl {
                 // a leave action after we've finished processing messages.
                 _ = GroupManager.localLeaveGroupOrDeclineInvite(
                     groupThread: groupThread,
-                    waitForMessageProcessing: true
+                    waitForMessageProcessing: true,
+                    transaction: transaction
                 )
             } else if
                 let profileKey = profileKeysByUuid[localUuid],

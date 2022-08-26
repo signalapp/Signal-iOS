@@ -172,6 +172,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addLastViewedStoryTimestampToTSThread
         case convertStoryIncomingManifestStorageFormat
         case recreateStoryIncomingViewedTimestampIndex
+        case addColumnsForLocalUserLeaveGroupDurableJob
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1925,6 +1926,17 @@ public class GRDBSchemaMigrator: NSObject {
                     ;
                 """)
             } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addColumnsForLocalUserLeaveGroupDurableJob) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { table in
+                    table.add(column: "replacementAdminUuid", .text)
+                    table.add(column: "waitForMessageProcessing", .boolean)
+                }
+            } catch let error {
                 owsFail("Error: \(error)")
             }
         }
