@@ -1137,6 +1137,14 @@ extension ConversationVC:
                     else { return }
                     
                     if remove {
+                        let pendingChange = OpenGroupManager
+                            .addPendingReaction(
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server,
+                                type: .remove
+                            )
                         OpenGroupAPI
                             .reactionDelete(
                                 db,
@@ -1145,8 +1153,23 @@ extension ConversationVC:
                                 in: openGroup.roomToken,
                                 on: openGroup.server
                             )
+                            .map { _, response in
+                                OpenGroupManager
+                                    .updatePendingChange(
+                                        pendingChange,
+                                        seqNo: response.seqNo
+                                    )
+                            }
                             .retainUntilComplete()
                     } else {
+                        let pendingChange = OpenGroupManager
+                            .addPendingReaction(
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server,
+                                type: .react
+                            )
                         OpenGroupAPI
                             .reactionAdd(
                                 db,
@@ -1155,6 +1178,13 @@ extension ConversationVC:
                                 in: openGroup.roomToken,
                                 on: openGroup.server
                             )
+                            .map { _, response in
+                                OpenGroupManager
+                                    .updatePendingChange(
+                                        pendingChange,
+                                        seqNo: response.seqNo
+                                    )
+                            }
                             .retainUntilComplete()
                     }
                     

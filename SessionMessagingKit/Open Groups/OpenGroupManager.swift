@@ -20,6 +20,8 @@ public protocol OGMCacheType {
     var timeSinceLastPoll: [String: TimeInterval] { get set }
     
     func getTimeSinceLastOpen(using dependencies: Dependencies) -> TimeInterval
+    
+    var pendingChanges: [OpenGroupAPI.PendingChange] { get set }
 }
 
 // MARK: - OpenGroupManager
@@ -53,6 +55,8 @@ public final class OpenGroupManager: NSObject {
             _timeSinceLastOpen = dependencies.date.timeIntervalSince(lastOpen)
             return dependencies.date.timeIntervalSince(lastOpen)
         }
+        
+        public var pendingChanges: [OpenGroupAPI.PendingChange] = []
     }
     
     // MARK: - Variables
@@ -529,11 +533,17 @@ public final class OpenGroupManager: NSObject {
             .filter { $0.deleted == true }
             .map { $0.id }
         
-        // Update the 'openGroupSequenceNumber' value (Note: SOGS V4 uses the 'seqNo' instead of the 'serverId')
         if let seqNo: Int64 = seqNo {
+            // Update the 'openGroupSequenceNumber' value (Note: SOGS V4 uses the 'seqNo' instead of the 'serverId')
             _ = try? OpenGroup
                 .filter(id: openGroup.id)
                 .updateAll(db, OpenGroup.Columns.sequenceNumber.set(to: seqNo))
+            
+            // Update pendingChange cache
+            dependencies.mutableCache.mutate {
+                $0.pendingChanges = $0.pendingChanges
+                    .filter { $0.seqNo == nil || $0.seqNo! > seqNo }
+            }
         }
         
         // Process the messages
@@ -589,11 +599,23 @@ public final class OpenGroupManager: NSObject {
                         db,
                         openGroupId: openGroup.id,
                         message: message,
+                        associatedPendingChanges: dependencies.cache.pendingChanges
+                            .filter {
+                                guard $0.server == server && $0.room == roomToken && $0.changeType == .reaction else {
+                                    return false
+                                }
+                                
+                                if case .reaction(let messageId, _, _) = $0.metadata {
+                                    return messageId == message.id
+                                }
+                                return false
+                            },
                         dependencies: dependencies
                     )
                     
                     try MessageReceiver.handleOpenGroupReactions(
                         db,
+                        threadId: openGroup.threadId,
                         openGroupMessageServerId: message.id,
                         openGroupReactions: reactions
                     )
@@ -736,6 +758,44 @@ public final class OpenGroupManager: NSObject {
     }
     
     // MARK: - Convenience
+    
+    public static func addPendingReaction(
+        emoji: String,
+        id: Int64,
+        in roomToken: String,
+        on server: String,
+        type: VisibleMessage.VMReaction.Kind,
+        using dependencies: OGMDependencies = OGMDependencies()
+    ) -> OpenGroupAPI.PendingChange {
+        let pendingChange = OpenGroupAPI.PendingChange(
+            server: server,
+            room: roomToken,
+            changeType: .reaction,
+            metadata: .reaction(
+                messageId: id,
+                emoji: emoji,
+                action: type
+            )
+        )
+        
+        dependencies.mutableCache.mutate {
+            $0.pendingChanges.append(pendingChange)
+        }
+        
+        return pendingChange
+    }
+    
+    public static func updatePendingChange(
+        _ pendingChange: OpenGroupAPI.PendingChange,
+        seqNo: Int64,
+        using dependencies: OGMDependencies = OGMDependencies()
+    ) {
+        dependencies.mutableCache.mutate {
+            if let index = $0.pendingChanges.firstIndex(of: pendingChange) {
+                $0.pendingChanges[index].seqNo = seqNo
+            }
+        }
+    }
     
     /// This method specifies if the given capability is supported on a specified Open Group
     public static func isOpenGroupSupport(
