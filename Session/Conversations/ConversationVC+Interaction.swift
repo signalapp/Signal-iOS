@@ -1134,7 +1134,58 @@ extension ConversationVC:
                             .filter(id: cellViewModel.id)
                             .asRequest(of: Int64.self)
                             .fetchOne(db)
-                    else { return }
+                    else {
+                        // If the message hasn't been sent yet then just delete locally
+                        guard cellViewModel.state == .sending || cellViewModel.state == .failed else { return }
+                        
+                        // Retrieve any message send jobs for this interaction
+                        let jobs: [Job] = Storage.shared
+                            .read { db in
+                                try? Job
+                                    .filter(Job.Columns.variant == Job.Variant.messageSend)
+                                    .filter(Job.Columns.interactionId == cellViewModel.id)
+                                    .fetchAll(db)
+                            }
+                            .defaulting(to: [])
+                        
+                        // If the job is currently running then wait until it's done before triggering
+                        // the deletion
+                        let targetJob: Job? = jobs.first(where: { JobRunner.isCurrentlyRunning($0) })
+                        
+                        guard targetJob == nil else {
+                            JobRunner.afterCurrentlyRunningJob(targetJob) { [weak self] result in
+                                switch result {
+                                    // If it succeeded then we'll need to delete from the server so re-run
+                                    // this function (if we still don't have the server id for some reason
+                                    // then this would result in a local-only deletion which should be fine
+                                    case .succeeded: self?.delete(cellViewModel)
+                                        
+                                    // Otherwise we just need to cancel the pending job (in case it retries)
+                                    // and delete the interaction
+                                    default:
+                                        JobRunner.removePendingJob(targetJob)
+                                        
+                                        Storage.shared.writeAsync { db in
+                                            _ = try Interaction
+                                                .filter(id: cellViewModel.id)
+                                                .deleteAll(db)
+                                        }
+                                }
+                            }
+                            return
+                        }
+                        
+                        // If it's not currently running then remove any pending jobs (just to be safe) and
+                        // delete the interaction locally
+                        jobs.forEach { JobRunner.removePendingJob($0) }
+                        
+                        Storage.shared.writeAsync { db in
+                            _ = try Interaction
+                                .filter(id: cellViewModel.id)
+                                .deleteAll(db)
+                        }
+                        return
+                    }
                     
                     if remove {
                         let pendingChange = OpenGroupManager

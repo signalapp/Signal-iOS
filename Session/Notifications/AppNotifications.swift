@@ -259,15 +259,21 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadId: thread.id,
             threadVariant: thread.variant
         )
+        let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
 
         DispatchQueue.main.async {
+            let sound: Preferences.Sound? = self.requestSound(
+                thread: thread,
+                fallbackSound: fallbackSound
+            )
+            
             notificationBody = MentionUtilities.highlightMentions(
                 in: (notificationBody ?? ""),
                 threadVariant: thread.variant,
                 currentUserPublicKey: userPublicKey,
                 currentUserBlindedPublicKey: userBlindedKey
             )
-            let sound: Preferences.Sound? = self.requestSound(thread: thread)
             
             self.adaptee.notify(
                 category: category,
@@ -322,9 +328,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 threadName
             )
         }
+        let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
         
         DispatchQueue.main.async {
-            let sound = self.requestSound(thread: thread)
+            let sound = self.requestSound(
+                thread: thread,
+                fallbackSound: fallbackSound
+            )
             
             self.adaptee.notify(
                 category: category,
@@ -420,9 +431,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.id
         ]
+        let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
 
         DispatchQueue.main.async {
-            let sound: Preferences.Sound? = self.requestSound(thread: thread)
+            let sound: Preferences.Sound? = self.requestSound(
+                thread: thread,
+                fallbackSound: fallbackSound
+            )
             
             self.adaptee.notify(
                 category: .errorMessage,
@@ -458,12 +474,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
 
-    private func requestSound(thread: SessionThread) -> Preferences.Sound? {
+    private func requestSound(thread: SessionThread, fallbackSound: Preferences.Sound) -> Preferences.Sound? {
         guard checkIfShouldPlaySound() else {
             return nil
         }
-
-        return thread.notificationSound
+        
+        return (thread.notificationSound ?? fallbackSound)
     }
 
     private func checkIfShouldPlaySound() -> Bool {
