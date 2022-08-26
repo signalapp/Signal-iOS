@@ -637,6 +637,7 @@ public extension MessageViewModel {
             let attachmentIdColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.id.name)
             let groupMemberModeratorTableLiteral: SQL = SQL(stringLiteral: "groupMemberModerator")
             let groupMemberAdminTableLiteral: SQL = SQL(stringLiteral: "groupMemberAdmin")
+            let groupMemberGroupIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.groupId.name)
             let groupMemberProfileIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.profileId.name)
             let groupMemberRoleColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.role.name)
             
@@ -715,11 +716,13 @@ public extension MessageViewModel {
                 )
                 LEFT JOIN \(GroupMember.self) AS \(groupMemberModeratorTableLiteral) ON (
                     \(SQL("\(thread[.variant]) = \(SessionThread.Variant.openGroup)")) AND
+                    \(groupMemberModeratorTableLiteral).\(groupMemberGroupIdColumnLiteral) = \(interaction[.threadId]) AND
                     \(groupMemberModeratorTableLiteral).\(groupMemberProfileIdColumnLiteral) = \(interaction[.authorId]) AND
                     \(SQL("\(groupMemberModeratorTableLiteral).\(groupMemberRoleColumnLiteral) = \(GroupMember.Role.moderator)"))
                 )
                 LEFT JOIN \(GroupMember.self) AS \(groupMemberAdminTableLiteral) ON (
                     \(SQL("\(thread[.variant]) = \(SessionThread.Variant.openGroup)")) AND
+                    \(groupMemberAdminTableLiteral).\(groupMemberGroupIdColumnLiteral) = \(interaction[.threadId]) AND
                     \(groupMemberAdminTableLiteral).\(groupMemberProfileIdColumnLiteral) = \(interaction[.authorId]) AND
                     \(SQL("\(groupMemberAdminTableLiteral).\(groupMemberRoleColumnLiteral) = \(GroupMember.Role.admin)"))
                 )
