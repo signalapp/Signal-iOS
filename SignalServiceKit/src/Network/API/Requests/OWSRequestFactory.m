@@ -525,14 +525,14 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 + (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
                                       messages:(NSArray *)messages
-                                     timeStamp:(uint64_t)timeStamp
+                                     timestamp:(uint64_t)timestamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                       isOnline:(BOOL)isOnline
                                       isUrgent:(BOOL)isUrgent
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(recipientAddress.isValid);
-    OWSAssertDebug(timeStamp > 0);
+    OWSAssertDebug(timestamp > 0);
 
     NSString *path = [self.textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
 
@@ -541,7 +541,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     // See
     // <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
     NSDictionary *parameters =
-        @{ @"messages" : messages, @"timestamp" : @(timeStamp), @"online" : @(isOnline), @"urgent" : @(isUrgent) };
+        @{ @"messages" : messages, @"timestamp" : @(timestamp), @"online" : @(isOnline), @"urgent" : @(isUrgent) };
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
     if (udAccessKey != nil) {

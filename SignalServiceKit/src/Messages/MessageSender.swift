@@ -813,7 +813,7 @@ public extension MessageSender {
                                         requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
                                             OWSRequestFactory.submitMessageRequest(with: address,
                                                                                    messages: deviceMessages,
-                                                                                   timeStamp: message.timestamp,
+                                                                                   timestamp: message.timestamp,
                                                                                    udAccessKey: udAccessKey,
                                                                                    isOnline: message.isOnline,
                                                                                    isUrgent: message.isUrgent)

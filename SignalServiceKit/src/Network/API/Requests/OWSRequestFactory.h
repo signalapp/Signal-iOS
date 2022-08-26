@@ -83,7 +83,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
                                       messages:(NSArray *)messages
-                                     timeStamp:(uint64_t)timeStamp
+                                     timestamp:(uint64_t)timestamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                       isOnline:(BOOL)isOnline
                                       isUrgent:(BOOL)isUrgent;
