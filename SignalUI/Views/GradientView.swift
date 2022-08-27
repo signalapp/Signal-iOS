@@ -8,37 +8,49 @@ public class GradientView: UIView {
 
     public var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
 
-    public var colors: [(color: UIColor, location: CGFloat)] {
+    public var colors: [UIColor] {
         didSet {
-            updateGradientLayer()
+            updateGradientColors()
+        }
+    }
+
+    public var locations: [CGFloat]? {
+        didSet {
+            updateGradientLocations()
         }
     }
 
     public convenience init(from fromColor: UIColor, to toColor: UIColor) {
-        self.init(colors: [
-            (color: fromColor, location: 0),
-            (color: toColor, location: 1)
-        ])
+        self.init(colors: [ fromColor, toColor ])
     }
 
-    public required init(colors: [(color: UIColor, location: CGFloat)]) {
+    public required init(colors: [UIColor], locations: [CGFloat]? = nil) {
         self.colors = colors
+        self.locations = locations
         super.init(frame: .zero)
-        updateGradientLayer()
+        updateGradientColors()
+        updateGradientLocations()
     }
 
     public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func updateGradientLayer() {
-        gradientLayer.colors = colors.map { $0.color.cgColor }
-        gradientLayer.locations = colors.map { NSNumber(value: $0.location) }
+    private func updateGradientColors() {
+        gradientLayer.colors = colors.map { $0.cgColor }
+    }
+
+    private func updateGradientLocations() {
+        if let locations = locations {
+            gradientLayer.locations = locations.map { NSNumber(value: $0) }
+        } else {
+            gradientLayer.locations = nil
+        }
     }
 
     /// Sets the `startPoint` and `endPoint` of the layer to reflect an angle in degrees
     /// where 0° starts at 12 o'clock and proceeds in a clockwise direction.
-    func setAngle(_ angle: UInt32) {
+    public func setAngle(_ angle: UInt32) {
         // While design provides gradients with 0° at 12 o'clock, core animation's
         // coordinate system works with 0° at 3 o'clock moving in a counter clockwise
         // direction. We need to convert the provided angle accordingly before

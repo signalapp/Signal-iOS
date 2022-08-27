@@ -136,15 +136,9 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         opaqueBackdrop.backgroundColor = backdropColor
 
         if Theme.isDarkThemeEnabled {
-            gradientBackdrop.colors = [
-                (color: .clear, location: 0),
-                (color: backdropColor, location: 1)
-            ]
+            gradientBackdrop.colors = [ .clear, backdropColor ]
         } else {
-            gradientBackdrop.colors = [
-                (color: .ows_whiteAlpha00, location: 0),
-                (color: backdropColor, location: 1)
-            ]
+            gradientBackdrop.colors = [ .ows_whiteAlpha00, backdropColor ]
         }
     }
 
