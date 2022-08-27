@@ -568,6 +568,11 @@ public struct TextAttachment: Codable {
         case color(UIColor)
         case gradient(Gradient)
         public struct Gradient {
+            public init(startColor: UIColor, endColor: UIColor, angle: UInt32) {
+                self.startColor = startColor
+                self.endColor = endColor
+                self.angle = angle
+            }
             public let startColor: UIColor
             public let endColor: UIColor
             public let angle: UInt32
