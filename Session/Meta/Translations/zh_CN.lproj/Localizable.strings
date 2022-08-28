@@ -702,4 +702,5 @@
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
 /* The name for the emoji category 'Travel & Places' */
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
-"EMOJI_REACTS_NOTIFICATION" = "%@ reacts to a message with %@";
+"EMOJI_REACTS_NOTIFICATION" = "%@ reacts to a message with %@.";
+"EMOJI_REACTS_MORE_REACTORS" = "And %@ other have reacted to this message."
