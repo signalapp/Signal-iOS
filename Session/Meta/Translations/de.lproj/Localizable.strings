@@ -703,5 +703,5 @@
 /* The name for the emoji category 'Travel & Places' */
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
 "EMOJI_REACTS_NOTIFICATION" = "%@ reacts to a message with %@.";
-"EMOJI_REACTS_MORE_REACTORS_ONE" = "And 1 other has reacted to this message.";
-"EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted to this message.";
+"EMOJI_REACTS_MORE_REACTORS_ONE" = "And 1 other has reacted %@ to this message.";
+"EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted %@ to this message.";
