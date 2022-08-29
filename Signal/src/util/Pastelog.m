@@ -115,17 +115,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
 
                                                  completion();
                                              }]];
-#ifdef DEBUG
-        [alert addAction:[[ActionSheetAction alloc]
-                                       initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
-                                                         @"Label for the 'send to self' option of the debug log alert.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_to_self")
-                                               style:ActionSheetActionStyleDefault
-                                             handler:^(ActionSheetAction *action) {
-                                                 [Pastelog.shared sendToSelf:url];
-                                                 completion();
-                                             }]];
-#endif
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SHARE",
                                                          @"Label for the 'Share' option of the debug log alert.")
@@ -308,34 +297,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                                                       handler:^(ActionSheetAction *action) { deleteArchive(); }]];
     UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
     [presentingViewController presentActionSheet:alert];
-}
-
-- (void)sendToSelf:(NSURL *)url
-{
-    if (![self.tsAccountManager isRegistered]) {
-        return;
-    }
-    SignalServiceAddress *recipientAddress = TSAccountManager.localAddress;
-
-    DispatchMainThreadSafe(^{
-        __block TSThread *thread = nil;
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactAddress:recipientAddress transaction:transaction];
-        });
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:url.absoluteString
-                                                                          ranges:MessageBodyRanges.empty]
-                              mediaAttachments:@[]
-                                        thread:thread
-                              quotedReplyModel:nil
-                              linkPreviewDraft:nil
-                  persistenceCompletionHandler:nil
-                                   transaction:transaction];
-        }];
-    });
-
-    // Also copy to pasteboard.
-    [[UIPasteboard generalPasteboard] setString:url.absoluteString];
 }
 
 @end
