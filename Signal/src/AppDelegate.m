@@ -965,52 +965,54 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     // On iOS 13, all calls triggered from contacts use this intent
     } else if ([userActivity.activityType isEqualToString:@"INStartCallIntent"]) {
-        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(13, 0)) {
+        if (@available(iOS 13, *)) {
+            OWSLogInfo(@"got start call intent");
+
+            INInteraction *interaction = [userActivity interaction];
+            INIntent *intent = interaction.intent;
+
+            if (![intent isKindOfClass:[INStartCallIntent class]]) {
+                OWSLogError(@"unexpected class for start call: %@", intent);
+                return NO;
+            }
+
+            INStartCallIntent *startCallIntent = (INStartCallIntent *)intent;
+            NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
+            if (!handle) {
+                OWSLogWarn(@"unable to find handle in startCallIntent: %@", intent);
+                return NO;
+            }
+
+            BOOL isVideo = startCallIntent.callCapability == INCallCapabilityVideoCall;
+
+            AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+                if (![self.tsAccountManager isRegisteredAndReady]) {
+                    OWSLogInfo(@"Ignoring user activity; app not ready.");
+                    return;
+                }
+
+                SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
+                if (!address.isValid) {
+                    OWSLogWarn(@"ignoring attempt to initiate call to unknown user.");
+                    return;
+                }
+
+                if (AppEnvironment.shared.callService.currentCall != nil) {
+                    OWSLogWarn(@"ignoring INStartCallIntent due to ongoing WebRTC call.");
+                    return;
+                }
+
+                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
+                OutboundIndividualCallInitiator *outboundIndividualCallInitiator
+                    = AppEnvironment.shared.outboundIndividualCallInitiator;
+                OWSAssertDebug(outboundIndividualCallInitiator);
+                [outboundIndividualCallInitiator initiateCallWithThread:thread isVideo:isVideo];
+            });
+            return YES;
+        } else {
             OWSLogError(@"unexpectedly received INStartCallIntent pre iOS13");
             return NO;
         }
-
-        OWSLogInfo(@"got start call intent");
-
-        INInteraction *interaction = [userActivity interaction];
-        INIntent *intent = interaction.intent;
-
-        if (![intent isKindOfClass:NSClassFromString(@"INStartCallIntent")]) {
-            OWSLogError(@"unexpected class for start call: %@", intent);
-            return NO;
-        }
-
-        NSArray<INPerson *> *contacts = [intent performSelector:@selector(contacts)];
-        NSString *_Nullable handle = contacts.firstObject.personHandle.value;
-        if (!handle) {
-            OWSLogWarn(@"unable to find handle in startCallIntent: %@", intent);
-            return NO;
-        }
-
-        AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-            if (![self.tsAccountManager isRegisteredAndReady]) {
-                OWSLogInfo(@"Ignoring user activity; app not ready.");
-                return;
-            }
-
-            SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
-            if (!address.isValid) {
-                OWSLogWarn(@"ignoring attempt to initiate call to unknown user.");
-                return;
-            }
-
-            if (AppEnvironment.shared.callService.currentCall != nil) {
-                OWSLogWarn(@"ignoring INStartCallIntent due to ongoing WebRTC call.");
-                return;
-            }
-
-            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
-            OutboundIndividualCallInitiator *outboundIndividualCallInitiator
-                = AppEnvironment.shared.outboundIndividualCallInitiator;
-            OWSAssertDebug(outboundIndividualCallInitiator);
-            [outboundIndividualCallInitiator initiateCallWithThread:thread isVideo:NO];
-        });
-        return YES;
     } else if ([userActivity.activityType isEqualToString:NSUserActivityTypeBrowsingWeb]) {
         if (userActivity.webpageURL == nil) {
             OWSFailDebug(@"Missing webpageURL.");
@@ -1020,28 +1022,6 @@ static void uncaughtExceptionHandler(NSException *exception)
     } else {
         OWSLogWarn(@"userActivity: %@, but not yet supported.", userActivity.activityType);
     }
-
-    // TODO Something like...
-    // *phoneNumber = [[[[[[userActivity interaction] intent] contacts] firstObject] personHandle] value]
-    // thread = blah
-    // [callUIAdapter startCall:thread]
-    //
-    // Here's the Speakerbox Example for intent / NSUserActivity handling:
-    //
-    //    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-    //        guard let handle = userActivity.startCallHandle else {
-    //            print("Could not determine start call handle from user activity: \(userActivity)")
-    //            return false
-    //        }
-    //
-    //        guard let video = userActivity.video else {
-    //            print("Could not determine video from user activity: \(userActivity)")
-    //            return false
-    //        }
-    //
-    //        callManager.startCall(handle: handle, video: video)
-    //        return true
-    //    }
 
     return NO;
 }
