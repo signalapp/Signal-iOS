@@ -150,18 +150,17 @@ class CallControls: UIView {
         let hasExternalAudioInputs = callService.audioService.hasExternalInputs
         let isLocalVideoMuted = call.groupCall.isOutgoingVideoMuted
         let joinState = call.groupCall.localDeviceState.joinState
-        let devicesAlreadyInCall = call.groupCall.peekInfo?.deviceCount ?? 0
 
         flipCameraButton.isHidden = isLocalVideoMuted
         videoButton.isSelected = !isLocalVideoMuted
         muteButton.isSelected = call.groupCall.isOutgoingAudioMuted
 
-        ringButton.isHidden = joinState == .joined || devicesAlreadyInCall > 0 || call.ringMode == .notApplicable
+        ringButton.isHidden = joinState == .joined || call.ringRestrictions.intersects([.notApplicable, .callInProgress])
         // Leave the button visible but locked if joining, like the "join call" button.
         ringButton.isUserInteractionEnabled = joinState == .notJoined
-        ringButton.isSelected = call.ringMode == .allowed && call.userWantsToRing
+        ringButton.isSelected = call.ringRestrictions.isEmpty && call.userWantsToRing
         // Leave the button enabled so we can present an explanatory toast, but show it disabled.
-        ringButton.shouldDrawAsDisabled = call.ringMode != .allowed
+        ringButton.shouldDrawAsDisabled = !call.ringRestrictions.isEmpty
 
         hangUpButton.isHidden = joinState != .joined
 
@@ -235,7 +234,8 @@ class CallControls: UIView {
             let startCallText = NSLocalizedString("GROUP_CALL_START_BUTTON", comment: "Button to start a group call")
             let joinCallText = NSLocalizedString("GROUP_CALL_JOIN_BUTTON", comment: "Button to join an ongoing group call")
 
-            joinButton.setTitle(devicesAlreadyInCall == 0 ? startCallText : joinCallText, for: .normal)
+            joinButton.setTitle(call.ringRestrictions.contains(.callInProgress) ? joinCallText : startCallText,
+                                for: .normal)
         }
     }
 

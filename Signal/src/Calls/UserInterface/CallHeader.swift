@@ -232,9 +232,12 @@ class CallHeader: UIView {
                         tableName: "PluralAware",
                         comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
 
+            } else if call.groupCall.peekInfo == nil && call.ringRestrictions.contains(.callInProgress) {
+                // If we think there might already be a call, don't show anything until we have proper peek info.
+                callStatusText = ""
             } else {
                 let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
-                if call.ringMode == .allowed && call.userWantsToRing {
+                if call.ringRestrictions.isEmpty && call.userWantsToRing {
                     callStatusText = describeMembers(
                         count: memberCount,
                         names: firstTwoNames,
@@ -272,27 +275,29 @@ class CallHeader: UIView {
                     "GROUP_CALL_RECONNECTING",
                     comment: "Text indicating that the user has lost their connection to the call and we are reconnecting.")
 
-            } else if call.groupCall.remoteDeviceStates.isEmpty && call.ringMode == .allowed && call.userWantsToRing {
-                let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
-                callStatusText = describeMembers(
-                    count: memberCount,
-                    names: firstTwoNames,
-                    zeroMemberString: "",
-                    oneMemberFormat: NSLocalizedString(
-                        "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT",
-                        comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"),
-                    twoMemberFormat: NSLocalizedString(
-                        "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT",
-                        comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
-                    manyMemberFormat: NSLocalizedString(
-                        "GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d",
-                        tableName: "PluralAware",
-                        comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
-
             } else if call.groupCall.remoteDeviceStates.isEmpty {
-                callStatusText = NSLocalizedString(
-                    "GROUP_CALL_NO_ONE_HERE",
-                    comment: "Text explaining that you are the only person currently in the group call")
+                if call.ringRestrictions.isEmpty && call.userWantsToRing {
+                    let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
+                    callStatusText = describeMembers(
+                        count: memberCount,
+                        names: firstTwoNames,
+                        zeroMemberString: "",
+                        oneMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name}"),
+                        twoMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }}"),
+                        manyMemberFormat: NSLocalizedString(
+                            "GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d",
+                            tableName: "PluralAware",
+                            comment: "Text shown before the user starts a group call if the user has enabled ringing and there are three or more other people in the group. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"))
+
+                } else {
+                    callStatusText = NSLocalizedString(
+                        "GROUP_CALL_NO_ONE_HERE",
+                        comment: "Text explaining that you are the only person currently in the group call")
+                }
 
             } else {
                 let callDuration = call.connectionDuration()

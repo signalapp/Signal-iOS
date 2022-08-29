@@ -17,6 +17,7 @@
 		14E4A340278EE999008408FD /* BlurredToolbarContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14E4A33F278EE999008408FD /* BlurredToolbarContainer.swift */; };
 		1700E33928B568200073D949 /* MediaGallerySections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1700E33828B568200073D949 /* MediaGallerySections.swift */; };
 		1700E33B28B5684C0073D949 /* MediaGallerySectionsTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1700E33A28B5684C0073D949 /* MediaGallerySectionsTest.swift */; };
+		1700E34128BD41150073D949 /* SetAlgebra+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */; };
 		1704690A25D4C326000793D8 /* SignalAttachmentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */; };
 		1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */; };
 		173878BE256341BB00AD39C7 /* SessionMigrationPerfTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */; };
@@ -2139,6 +2140,7 @@
 		14FD26DD3B40616C54CDBF1A /* Pods-SignalShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		1700E33828B568200073D949 /* MediaGallerySections.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaGallerySections.swift; sourceTree = "<group>"; };
 		1700E33A28B5684C0073D949 /* MediaGallerySectionsTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaGallerySectionsTest.swift; sourceTree = "<group>"; };
+		1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SetAlgebra+SSK.swift"; sourceTree = "<group>"; };
 		1704690925D4C2E6000793D8 /* SignalAttachmentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalAttachmentTest.swift; sourceTree = "<group>"; };
 		1704690B25D4C92B000793D8 /* test-jpg-rotated.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg-rotated.jpg"; sourceTree = "<group>"; };
 		173878BD256341BB00AD39C7 /* SessionMigrationPerfTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SessionMigrationPerfTest.swift; sourceTree = "<group>"; };
@@ -8042,6 +8044,7 @@
 				F9C5CB26289453B200548EEE /* ReverseDispatchQueue.swift */,
 				F9C5CB1C289453B200548EEE /* SDS+SSK.swift */,
 				F9C5CB7B289453B200548EEE /* Sequence+OWS.swift */,
+				1700E34028BD41140073D949 /* SetAlgebra+SSK.swift */,
 				F9C5CB71289453B200548EEE /* SSKAsserts.h */,
 				F9C5CB47289453B200548EEE /* SSKPreferences.swift */,
 				F9C5CB12289453B200548EEE /* StorageService.swift */,
@@ -10827,6 +10830,7 @@
 				F9C5CE4C289453B400548EEE /* Sequence+OWS.swift in Sources */,
 				F9C5CC96289453B300548EEE /* SessionRecord.pb.swift in Sources */,
 				F9C5CD35289453B300548EEE /* SessionRecordMigration.swift in Sources */,
+				1700E34128BD41150073D949 /* SetAlgebra+SSK.swift in Sources */,
 				F9C5CCBE289453B300548EEE /* SGXContactDiscoveryOperation.swift in Sources */,
 				F9C5CCC6289453B300548EEE /* SignalAccount+SDS.swift in Sources */,
 				F9C5CCD9289453B300548EEE /* SignalAccount.m in Sources */,

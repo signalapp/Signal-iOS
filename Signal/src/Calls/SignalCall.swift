@@ -109,18 +109,24 @@ public class SignalCall: NSObject, CallManagerCallReference {
     @objc
     public let thread: TSThread
 
-    public enum RingMode {
+    internal struct RingRestrictions: OptionSet {
+        var rawValue: UInt8
+
         /// The user does not get to choose whether this kind of call rings.
-        case notApplicable
+        static let notApplicable = Self(rawValue: 1 << 0)
+        /// The user cannot ring because there is already a call in progress.
+        static let callInProgress = Self(rawValue: 1 << 1)
         /// This group is too large to allow ringing.
-        case groupTooLarge
-        /// The user can choose whether to ring or not.
-        case allowed
+        static let groupTooLarge = Self(rawValue: 1 << 2)
     }
 
-    public var ringMode: RingMode {
+    internal var ringRestrictions: RingRestrictions {
         didSet {
             AssertIsOnMainThread()
+            if ringRestrictions != oldValue && groupCall.localDeviceState.joinState == .notJoined {
+                // Use a fake local state change to refresh the call controls.
+                self.groupCall(onLocalDeviceStateChanged: groupCall)
+            }
         }
     }
 
@@ -170,13 +176,25 @@ public class SignalCall: NSObject, CallManagerCallReference {
         )
         thread = groupThread
         if !RemoteConfig.groupRings {
-            ringMode = .notApplicable
-        } else if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
-            ringMode = .groupTooLarge
+            ringRestrictions = .notApplicable
         } else {
-            ringMode = .allowed
+            ringRestrictions = []
+            if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
+                ringRestrictions.insert(.groupTooLarge)
+            }
         }
+
+        // Track the callInProgress restriction regardless; we use that for purposes other than rings.
+        let hasActiveCallMessage = Self.databaseStorage.read { transaction -> Bool in
+            !GRDBInteractionFinder.unendedCallsForGroupThread(groupThread, transaction: transaction).isEmpty
+        }
+        if hasActiveCallMessage {
+            // This info may be out of date, but the first peek will update it.
+            ringRestrictions.insert(.callInProgress)
+        }
+
         super.init()
+
         groupCall.delegate = self
         // Watch group membership changes.
         // The object is the group thread ID, which is a string.
@@ -195,7 +213,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = individualCall.thread
-        ringMode = .notApplicable
+        ringRestrictions = .notApplicable
         super.init()
         individualCall.delegate = self
     }
@@ -269,7 +287,8 @@ public class SignalCall: NSObject, CallManagerCallReference {
     private func groupMembershipDidChange(_ notification: Notification) {
         // NotificationCenter dispatches by object identity rather than equality,
         // so we filter based on the thread ID here.
-        guard ringMode != .notApplicable, self.thread.uniqueId == notification.object as? String else {
+        guard !ringRestrictions.contains(.notApplicable),
+              self.thread.uniqueId == notification.object as? String else {
             return
         }
         databaseStorage.read { transaction in
@@ -280,16 +299,8 @@ public class SignalCall: NSObject, CallManagerCallReference {
             return
         }
 
-        let oldRingMode = ringMode
-        if groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
-            ringMode = .groupTooLarge
-        } else {
-            ringMode = .allowed
-        }
-        if ringMode != oldRingMode && groupCall.localDeviceState.joinState == .notJoined {
-            // Use a fake local state change to refresh the call controls.
-            self.groupCall(onLocalDeviceStateChanged: groupCall)
-        }
+        let isGroupTooLarge = groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize
+        ringRestrictions.update(.groupTooLarge, present: isGroupTooLarge)
     }
 
     // MARK: -
@@ -364,6 +375,11 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onPeekChanged groupCall: GroupCall) {
+        if let peekInfo = groupCall.peekInfo {
+            // Note that we track this regardless of whether ringing is available.
+            // There are other places that use this.
+            ringRestrictions.update(.callInProgress, present: peekInfo.deviceCount > 0)
+        }
         observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
 

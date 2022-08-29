@@ -649,8 +649,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         let approveText: String
         let denyText: String
         if localDeviceHasNotJoined {
-            let deviceCount = call.groupCall.peekInfo?.deviceCount ?? 0
-            approveText = deviceCount > 0 ? joinCallString : startCallString
+            approveText = call.ringRestrictions.contains(.callInProgress) ? joinCallString : startCallString
             denyText = cancelString
         } else {
             approveText = continueCallString
@@ -779,13 +778,7 @@ extension GroupCallViewController: CallControlsDelegate {
     }
 
     func didPressRing(sender: UIButton) {
-        switch call.ringMode {
-        case .notApplicable:
-            owsFailDebug("should not show the ring button at all")
-        case .groupTooLarge:
-            let toast = ToastController(text: NSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
-            toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
-        case .allowed:
+        if call.ringRestrictions.isEmpty {
             let oldShouldRing = sender.isSelected
             let newShouldRing = !oldShouldRing
             sender.isSelected = newShouldRing
@@ -793,6 +786,15 @@ extension GroupCallViewController: CallControlsDelegate {
 
             // Refresh the call header.
             callHeader.groupCallLocalDeviceStateChanged(call)
+        } else {
+            if call.ringRestrictions.intersects([.notApplicable, .callInProgress]) {
+                owsFailDebug("should not show the ring button at all")
+            } else if call.ringRestrictions.contains(.groupTooLarge) {
+                let toast = ToastController(text: NSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
+                toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
+            } else {
+                owsAssertDebug(call.ringRestrictions.isEmpty, "unknown ring restriction")
+            }
         }
     }
 
