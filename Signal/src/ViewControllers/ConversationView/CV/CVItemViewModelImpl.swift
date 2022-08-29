@@ -155,7 +155,7 @@ public class CVItemViewModelImpl: CVComponentStateWrapper {
 
 extension CVItemViewModelImpl {
 
-    var canCopyOrShareText: Bool {
+    var canCopyOrShareOrSpeakText: Bool {
         guard !isViewOnce else {
             return false
         }
