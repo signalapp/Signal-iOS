@@ -135,3 +135,67 @@ public class DebugLogUploader: NSObject {
         }
     }
 }
+
+extension Pastelog {
+    /// The result of the `collectLogs` method. Here because Objective-C can't represent `Result`s.
+    /// If we migrate its callers to Swift, we should be able to remove this class.
+    @objc
+    public class CollectedLogsResult: NSObject {
+        @objc
+        public let errorString: String?
+
+        @objc
+        public let logsDirPath: String?
+
+        @objc
+        public var succeeded: Bool { errorString == nil }
+
+        init(errorString: String) {
+            self.errorString = errorString
+            self.logsDirPath = nil
+            super.init()
+        }
+
+        init(logsDirPath: String) {
+            self.errorString = nil
+            self.logsDirPath = logsDirPath
+            super.init()
+        }
+    }
+
+    @objc
+    func collectLogs() -> CollectedLogsResult {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd hh.mm.ss"
+        let dateString = dateFormatter.string(from: Date())
+        let logsName = "\(dateString) \(UUID().uuidString)"
+
+        let zipDirUrl = URL(fileURLWithPath: OWSTemporaryDirectory()).appendingPathComponent(logsName)
+        let zipDirPath = zipDirUrl.path
+        OWSFileSystem.ensureDirectoryExists(zipDirPath)
+
+        let logFilePaths = DebugLogger.shared().allLogFilePaths()
+        if logFilePaths.isEmpty {
+            let errorString = NSLocalizedString(
+                "DEBUG_LOG_ALERT_NO_LOGS",
+                comment: "Error indicating that no debug logs could be found."
+            )
+            return CollectedLogsResult(errorString: errorString)
+        }
+
+        for logFilePath in logFilePaths {
+            let lastLogFilePathComponent = URL(fileURLWithPath: logFilePath).lastPathComponent
+            let copyFilePath = zipDirUrl.appendingPathComponent(lastLogFilePathComponent).path
+            do {
+                try FileManager.default.copyItem(atPath: logFilePath, toPath: copyFilePath)
+            } catch {
+                Logger.error("could not copy log file at \(logFilePath): \(error)")
+                // Write the error to the file that would have been copied.
+                try? error.localizedDescription.write(toFile: copyFilePath, atomically: true, encoding: .utf8)
+            }
+            OWSFileSystem.protectFileOrFolder(atPath: copyFilePath)
+        }
+
+        return CollectedLogsResult(logsDirPath: zipDirPath)
+    }
+}

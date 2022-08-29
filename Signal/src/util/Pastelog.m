@@ -201,49 +201,17 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
 {
     OWSAssertIsOnMainThread();
 
-    NSString *errorString;
-    NSString *logsDirPath = [self collectLogsWithErrorString:&errorString];
-    if (!logsDirPath) {
+    CollectedLogsResult *collectedLogsResult = [self collectLogs];
+    if (!collectedLogsResult.succeeded) {
+        NSString *errorString = collectedLogsResult.errorString;
         [Pastelog showFailureAlertWithMessage:errorString ?: @"(unknown error)" logArchiveOrDirectoryPath:nil];
         return;
     }
+    NSString *logsDirPath = collectedLogsResult.logsDirPath;
 
     [AttachmentSharing showShareUIForURL:[NSURL fileURLWithPath:logsDirPath]
                                   sender:nil
                               completion:^{ (void)[OWSFileSystem deleteFile:logsDirPath]; }];
-}
-
-- (nullable NSString *)collectLogsWithErrorString:(NSString *_Nullable *_Nonnull)errorString
-{
-    NSDateFormatter *dateFormatter = [NSDateFormatter new];
-    [dateFormatter setLocale:[NSLocale currentLocale]];
-    [dateFormatter setDateFormat:@"yyyy.MM.dd hh.mm.ss"];
-    NSString *dateString = [dateFormatter stringFromDate:[NSDate new]];
-    NSString *logsName = [[dateString stringByAppendingString:@" "] stringByAppendingString:NSUUID.UUID.UUIDString];
-
-    NSString *zipDirPath = [OWSTemporaryDirectory() stringByAppendingPathComponent:logsName];
-    [OWSFileSystem ensureDirectoryExists:zipDirPath];
-
-    NSArray<NSString *> *logFilePaths = DebugLogger.shared.allLogFilePaths;
-    if (logFilePaths.count < 1) {
-        *errorString
-            = NSLocalizedString(@"DEBUG_LOG_ALERT_NO_LOGS", @"Error indicating that no debug logs could be found.");
-        return nil;
-    }
-
-    for (NSString *logFilePath in logFilePaths) {
-        NSString *copyFilePath = [zipDirPath stringByAppendingPathComponent:logFilePath.lastPathComponent];
-        NSError *error;
-        if (![[NSFileManager defaultManager] copyItemAtPath:logFilePath toPath:copyFilePath error:&error]) {
-            OWSLogError(@"could not copy log file at %@: %@", logFilePath, error);
-            // Write the error to the file that would have been copied.
-            [[error description] writeToFile:copyFilePath atomically:YES encoding:NSUTF8StringEncoding error:NULL];
-            // We still want to get *some* of the logs.
-            continue;
-        }
-        [OWSFileSystem protectFileOrFolderAtPath:copyFilePath];
-    }
-    return zipDirPath;
 }
 
 - (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam
@@ -258,12 +226,13 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
     };
 
     // Phase 1. Make a local copy of all of the log files.
-    NSString *errorString;
-    NSString *zipDirPath = [self collectLogsWithErrorString:&errorString];
-    if (!zipDirPath) {
+    CollectedLogsResult *collectedLogsResult = [self collectLogs];
+    if (!collectedLogsResult.succeeded) {
+        NSString *errorString = collectedLogsResult.errorString;
         failure(errorString, nil);
         return;
     }
+    NSString *zipDirPath = collectedLogsResult.logsDirPath;
 
     // Phase 2. Zip up the log files.
     NSString *zipFilePath = [zipDirPath stringByAppendingPathExtension:@"zip"];
