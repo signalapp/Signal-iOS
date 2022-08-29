@@ -764,7 +764,7 @@ public final class OpenGroupManager: NSObject {
         id: Int64,
         in roomToken: String,
         on server: String,
-        type: VisibleMessage.VMReaction.Kind,
+        type: OpenGroupAPI.PendingChange.ReactAction,
         using dependencies: OGMDependencies = OGMDependencies()
     ) -> OpenGroupAPI.PendingChange {
         let pendingChange = OpenGroupAPI.PendingChange(

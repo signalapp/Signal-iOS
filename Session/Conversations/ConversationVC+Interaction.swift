@@ -1040,6 +1040,15 @@ extension ConversationVC:
                     return Promise(error: StorageError.objectNotFound)
                 }
                 
+                let pendingChange = OpenGroupManager
+                    .addPendingReaction(
+                        emoji: emoji,
+                        id: openGroupServerMessageId,
+                        in: openGroup.roomToken,
+                        on: openGroup.server,
+                        type: .removeAll
+                    )
+                
                 return OpenGroupAPI
                     .reactionDeleteAll(
                         db,
@@ -1048,7 +1057,13 @@ extension ConversationVC:
                         in: openGroup.roomToken,
                         on: openGroup.server
                     )
-                    .map { _ in () }
+                    .map { _, response in
+                        OpenGroupManager
+                            .updatePendingChange(
+                                pendingChange,
+                                seqNo: response.seqNo
+                            )
+                    }
             }
             .done { _ in
                 Storage.shared.writeAsync { db in
@@ -1168,7 +1183,7 @@ extension ConversationVC:
                                 id: openGroupServerMessageId,
                                 in: openGroup.roomToken,
                                 on: openGroup.server,
-                                type: .react
+                                type: .add
                             )
                         OpenGroupAPI
                             .reactionAdd(

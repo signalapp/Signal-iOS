@@ -4,12 +4,18 @@ import Foundation
 
 extension OpenGroupAPI {
     public struct PendingChange: Equatable {
-        enum ChangeType {
+        public enum ChangeType {
             case reaction
         }
         
+        public enum ReactAction: Equatable {
+            case add
+            case remove
+            case removeAll
+        }
+        
         enum Metadata {
-            case reaction(messageId: Int64, emoji: String, action: VisibleMessage.VMReaction.Kind)
+            case reaction(messageId: Int64, emoji: String, action: ReactAction)
         }
         
         let server: String
