@@ -95,6 +95,7 @@ final class ReactionListSheet: BaseVC {
         result.dataSource = self
         result.delegate = self
         result.register(view: UserCell.self)
+        result.register(view: FooterCell.self)
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
@@ -140,7 +141,7 @@ final class ReactionListSheet: BaseVC {
     private func setUpViewHierarchy() {
         view.addSubview(contentView)
         contentView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.bottom ], to: view)
-        contentView.set(.height, to: 440)
+        contentView.set(.height, to: 490)
         populateContentView()
     }
     
@@ -384,10 +385,21 @@ extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegat
 
 extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.selectedReactionUserList.count
+        let moreReactorCount = self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count
+        return moreReactorCount > 0 ? self.selectedReactionUserList.count + 1 : self.selectedReactionUserList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard indexPath.row < self.selectedReactionUserList.count else {
+            let footerCell: FooterCell = tableView.dequeue(type: FooterCell.self, for: indexPath)
+            footerCell.update(
+                moreReactorCount: self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count,
+                emoji: self.reactionSummaries[lastSelectedReactionIndex].emoji.rawValue
+            )
+            
+            return footerCell
+        }
+        
         let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
         let cellViewModel: MessageViewModel.ReactionInfo = self.selectedReactionUserList[indexPath.row]
         cell.update(
@@ -498,6 +510,44 @@ extension ReactionListSheet {
                 "\(count)" :
                 String(format: "%.1fk", Float(count) / 1000)
             )
+        }
+    }
+    
+    fileprivate final class FooterCell: UITableViewCell {
+        
+        private lazy var label: UILabel = {
+            let result = UILabel()
+            result.textAlignment = .center
+            result.font = .systemFont(ofSize: Values.smallFontSize)
+            result.textColor = Colors.grey.withAlphaComponent(0.8)
+            return result
+        }()
+        
+        // MARK: - Initialization
+        
+        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+            super.init(style: style, reuseIdentifier: reuseIdentifier)
+            setUpViewHierarchy()
+        }
+
+        required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            setUpViewHierarchy()
+        }
+
+        private func setUpViewHierarchy() {
+            // Background color
+            backgroundColor = Colors.cellBackground
+            
+            contentView.addSubview(label)
+            label.pin(to: contentView)
+            label.set(.height, to: 45)
+        }
+        
+        func update(moreReactorCount: Int, emoji: String) {
+            label.text = (moreReactorCount == 1) ?
+                String(format: "EMOJI_REACTS_MORE_REACTORS_ONE".localized(), "\(emoji)") :
+                String(format: "EMOJI_REACTS_MORE_REACTORS_MUTIPLE".localized(), "\(moreReactorCount)" ,"\(emoji)")
         }
     }
 }
