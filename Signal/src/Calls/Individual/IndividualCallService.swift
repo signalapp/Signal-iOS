@@ -19,13 +19,6 @@ final public class IndividualCallService: NSObject {
         return callService.callManager
     }
 
-    // MARK: - Properties
-
-    // Exposed by environment.m
-
-    @objc
-    public var callUIAdapter: CallUIAdapter!
-
     // MARK: Class
 
     static let fallbackIceServer = RTCIceServer(urlStrings: ["stun:stun1.l.google.com:19302"])
@@ -35,21 +28,6 @@ final public class IndividualCallService: NSObject {
         super.init()
 
         SwiftSingletons.register(self)
-    }
-
-    /**
-     * Choose whether to use CallKit or a Notification backed interface for calling.
-     */
-    @objc
-    public func createCallUIAdapter() {
-        AssertIsOnMainThread()
-
-        if let call = callService.currentCall {
-            Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
-            callService.terminate(call: call)
-        }
-
-        self.callUIAdapter = CallUIAdapter()
     }
 
     // MARK: - Call Control Actions
@@ -527,7 +505,7 @@ final public class IndividualCallService: NSObject {
             if !isOutgoing {
                 // If we are using the NSE, we need to kick off a ring ASAP in case this incoming call
                 // has resulted in the NSE waking up the main app.
-                owsAssertDebug(callUIAdapter.adaptee(for: call) === callUIAdapter.callKitAdaptee)
+                owsAssertDebug(callService.callUIAdapter.adaptee(for: call) === callService.callUIAdapter.callKitAdaptee)
                 Logger.info("Performing early ring")
                 handleRinging(call: call, isAnticipatory: true)
             } else {
@@ -591,7 +569,7 @@ final public class IndividualCallService: NSObject {
             // Set the audio session configuration before audio is enabled in WebRTC
             // via recipientAcceptedCall().
             handleConnected(call: call)
-            callUIAdapter.recipientAcceptedCall(call)
+            callService.callUIAdapter.recipientAcceptedCall(call)
 
         case .endedLocalHangup:
             Logger.debug("")
@@ -617,7 +595,7 @@ final public class IndividualCallService: NSObject {
             call.individualCall.state = .remoteHangup
 
             // Notify UI
-            callUIAdapter.remoteDidHangupCall(call)
+            callService.callUIAdapter.remoteDidHangupCall(call)
 
             callService.terminate(call: call)
 
@@ -639,7 +617,7 @@ final public class IndividualCallService: NSObject {
             call.individualCall.state = .remoteHangupNeedPermission
 
             // Notify UI
-            callUIAdapter.remoteDidHangupCall(call)
+            callService.callUIAdapter.remoteDidHangupCall(call)
 
             callService.terminate(call: call)
 
@@ -722,7 +700,7 @@ final public class IndividualCallService: NSObject {
             call.individualCall.state = .remoteBusy
 
             // Notify UI
-            callUIAdapter.remoteBusy(call)
+            callService.callUIAdapter.remoteBusy(call)
 
             callService.terminate(call: call)
 
@@ -739,13 +717,13 @@ final public class IndividualCallService: NSObject {
                     break
                 case .incomingIncomplete, .incoming:
                     callRecord.updateCallType(.incomingMissed)
-                    callUIAdapter.reportMissedCall(call)
+                    callService.callUIAdapter.reportMissedCall(call)
                 case .outgoingIncomplete:
                     callRecord.updateCallType(.outgoingMissed)
-                    callUIAdapter.remoteBusy(call)
+                    callService.callUIAdapter.remoteBusy(call)
                 case .outgoing:
                     callRecord.updateCallType(.outgoingMissed)
-                    callUIAdapter.reportMissedCall(call)
+                    callService.callUIAdapter.reportMissedCall(call)
                 @unknown default:
                     owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
                 }
@@ -759,7 +737,7 @@ final public class IndividualCallService: NSObject {
                 )
                 databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
                 call.individualCall.callRecord = callRecord
-                callUIAdapter.reportMissedCall(call)
+                callService.callUIAdapter.reportMissedCall(call)
             }
             call.individualCall.state = .localHangup
             callService.terminate(call: call)
@@ -1105,10 +1083,10 @@ final public class IndividualCallService: NSObject {
                 callRecord.updateCallType(callType, transaction: transaction)
                 callRecord.anyUpsert(transaction: transaction)
             }
-            callUIAdapter.reportMissedCall(call)
+            callService.callUIAdapter.reportMissedCall(call)
         case .incomingIncomplete, .incoming:
             callRecord.updateCallType(callType)
-            callUIAdapter.reportMissedCall(call)
+            callService.callUIAdapter.reportMissedCall(call)
         case .outgoingIncomplete:
             callRecord.updateCallType(callType)
         case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
@@ -1144,7 +1122,7 @@ final public class IndividualCallService: NSObject {
         call.individualCall.state = .answeredElsewhere
 
         // Notify UI
-        callUIAdapter.didAnswerElsewhere(call: call)
+        callService.callUIAdapter.didAnswerElsewhere(call: call)
 
         callService.terminate(call: call)
     }
@@ -1169,7 +1147,7 @@ final public class IndividualCallService: NSObject {
         call.individualCall.state = .declinedElsewhere
 
         // Notify UI
-        callUIAdapter.didDeclineElsewhere(call: call)
+        callService.callUIAdapter.didDeclineElsewhere(call: call)
 
         callService.terminate(call: call)
     }
@@ -1194,7 +1172,7 @@ final public class IndividualCallService: NSObject {
         call.individualCall.state = .busyElsewhere
 
         // Notify UI
-        callUIAdapter.wasBusyElsewhere(call: call)
+        callService.callUIAdapter.wasBusyElsewhere(call: call)
 
         callService.terminate(call: call)
     }
@@ -1230,7 +1208,7 @@ final public class IndividualCallService: NSObject {
         case .answering:
             BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = isAnticipatory ? .localRinging_Anticipatory : .localRinging_ReadyToAnswer
-            self.callUIAdapter.reportIncomingCall(call)
+            callService.callUIAdapter.reportIncomingCall(call)
         case .localRinging_Anticipatory:
             // RingRTC became ready during our anticipatory ring. User hasn't tried to answer yet.
             owsAssertDebug(isAnticipatory == false)
@@ -1407,7 +1385,7 @@ final public class IndividualCallService: NSObject {
         failedCall.individualCall.state = .localFailure
 
         if shouldResetUI {
-            self.callUIAdapter.failCall(failedCall, error: callError)
+            callService.callUIAdapter.failCall(failedCall, error: callError)
         }
 
         if callError.shouldSilentlyDropCall(),

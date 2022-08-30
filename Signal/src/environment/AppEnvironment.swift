@@ -78,7 +78,7 @@ public class AppEnvironment: NSObject {
 
     @objc
     public func setup() {
-        callService.individualCallService.createCallUIAdapter()
+        callService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManagerRef = notificationPresenterRef

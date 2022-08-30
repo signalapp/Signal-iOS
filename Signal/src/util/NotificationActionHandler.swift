@@ -88,7 +88,7 @@ public class NotificationActionHandler: NSObject {
             throw OWSAssertionError("unable to build localCallId. localCallIdString: \(localCallIdString)")
         }
 
-        individualCallUIAdapter.answerCall(localId: localCallId)
+        callService.callUIAdapter.answerCall(localId: localCallId)
         return Promise.value(())
     }
 
@@ -101,7 +101,7 @@ public class NotificationActionHandler: NSObject {
         }
         let thread = TSContactThread.getOrCreateThread(contactAddress: address)
 
-        individualCallUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
+        callService.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
         return Promise.value(())
     }
 
@@ -114,7 +114,7 @@ public class NotificationActionHandler: NSObject {
             throw OWSAssertionError("unable to build localCallId. localCallIdString: \(localCallIdString)")
         }
 
-        individualCallUIAdapter.localHangupCall(localId: localCallId)
+        callService.callUIAdapter.localHangupCall(localId: localCallId)
         return Promise.value(())
     }
 

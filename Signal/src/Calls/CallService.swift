@@ -31,6 +31,8 @@ public final class CallService: LightweightCallManager {
         }
     }
 
+    public var callUIAdapter: CallUIAdapter!
+
     @objc
     public let individualCallService = IndividualCallService()
     let groupCallMessageHandler = GroupCallUpdateMessageHandler()
@@ -182,6 +184,21 @@ public final class CallService: LightweightCallManager {
                 self.callManager.setSelfUuid(localUuid)
             }
         }
+    }
+
+    /**
+     * Choose whether to use CallKit or a Notification backed interface for calling.
+     */
+    @objc
+    public func createCallUIAdapter() {
+        AssertIsOnMainThread()
+
+        if let call = callService.currentCall {
+            Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
+            callService.terminate(call: call)
+        }
+
+        self.callUIAdapter = CallUIAdapter()
     }
 
     // MARK: - Observers

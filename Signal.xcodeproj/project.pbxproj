@@ -6170,10 +6170,7 @@
 		88588D27252E5A1F00405414 /* Individual */ = {
 			isa = PBXGroup;
 			children = (
-				88D23D1923CEC0C700B0E74B /* CallKit */,
-				88D23D1C23CEC0C700B0E74B /* CallUIAdapter.swift */,
 				34B3F83B1E8DF1700035BE1A /* IndividualCallViewController.swift */,
-				88D23D1823CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift */,
 			);
 			path = Individual;
 			sourceTree = "<group>";
@@ -6497,12 +6494,15 @@
 		88D23D1723CEC0C700B0E74B /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
+				88D23D1923CEC0C700B0E74B /* CallKit */,
 				88588D19252D3DE900405414 /* Group */,
 				88588D27252E5A1F00405414 /* Individual */,
 				88238EA324E9DDE900F28079 /* CallButton.swift */,
 				88588D1A252D3DFF00405414 /* CallControls.swift */,
 				88ABB8B42534070400229EAA /* CallHeader.swift */,
+				88D23D1C23CEC0C700B0E74B /* CallUIAdapter.swift */,
 				88238EA124E9DDB700F28079 /* LocalVideoView.swift */,
+				88D23D1823CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift */,
 				450D19111F85236600970622 /* RemoteVideoView.h */,
 				450D19121F85236600970622 /* RemoteVideoView.m */,
 			);

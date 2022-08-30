@@ -291,6 +291,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         preferences.setIsSystemCallLogEnabled(sender.isOn)
 
         // rebuild callUIAdapter since CallKit configuration changed.
-        Self.callService.individualCallService.createCallUIAdapter()
+        Self.callService.createCallUIAdapter()
     }
 }

@@ -18,14 +18,6 @@ public extension NSObject {
         AppEnvironment.shared.accountManagerRef
     }
 
-    final var individualCallUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
-    }
-
-    static var individualCallUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
-    }
-
     final var callService: CallService {
         AppEnvironment.shared.callServiceRef
     }
@@ -124,14 +116,6 @@ public extension Dependencies {
 
     static var accountManager: AccountManager {
         AppEnvironment.shared.accountManagerRef
-    }
-
-    var individualCallUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
-    }
-
-    static var individualCallUIAdapter: CallUIAdapter {
-        AppEnvironment.shared.callServiceRef.individualCallService.callUIAdapter
     }
 
     var callService: CallService {

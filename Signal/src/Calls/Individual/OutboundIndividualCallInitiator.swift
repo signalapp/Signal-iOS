@@ -32,7 +32,7 @@ public class OutboundIndividualCallInitiator: NSObject {
             return false
         }
 
-        guard let callUIAdapter = Self.callService.individualCallService.callUIAdapter else {
+        guard let callUIAdapter = Self.callService.callUIAdapter else {
             owsFailDebug("missing callUIAdapter")
             return false
         }
