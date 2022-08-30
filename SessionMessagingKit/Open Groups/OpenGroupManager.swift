@@ -797,6 +797,17 @@ public final class OpenGroupManager: NSObject {
         }
     }
     
+    public static func removePendingChange(
+        _ pendingChange: OpenGroupAPI.PendingChange,
+        using dependencies: OGMDependencies = OGMDependencies()
+    ) {
+        dependencies.mutableCache.mutate {
+            if let index = $0.pendingChanges.firstIndex(of: pendingChange) {
+                $0.pendingChanges.remove(at: index)
+            }
+        }
+    }
+    
     /// This method specifies if the given capability is supported on a specified Open Group
     public static func isOpenGroupSupport(
         _ capability: Capability.Variant,
