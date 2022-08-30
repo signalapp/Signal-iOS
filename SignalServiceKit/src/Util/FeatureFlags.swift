@@ -88,11 +88,6 @@ public class FeatureFlags: BaseFlags {
     @objc
     public static let stories = build.includes(.qa)
 
-    /// iOS onboarding assets are not in s3; creating this to unblock landing code
-    /// and can remove after assets are added and flow is fully tested.
-    @objc
-    public static let systemOnboardingStory = build.includes(.dev)
-
     @objc
     public static let canUseNativeWebsocket = true
 

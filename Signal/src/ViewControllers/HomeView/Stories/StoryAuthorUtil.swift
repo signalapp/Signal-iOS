@@ -59,9 +59,11 @@ public enum StoryAuthorUtil {
         transaction: SDSAnyReadTransaction
     ) throws -> ConversationAvatarDataSource {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
-            // TODO: Update this to the final asset before removing onboarding story feature flag.
             return .asset(
-                avatar: UIImage(named: "signal-logo-128")?.withRenderingMode(.alwaysTemplate).asTintedImage(color: .ows_signalBlue),
+                avatar: UIImage(named: "signal-logo-128")?
+                    .withRenderingMode(.alwaysTemplate)
+                    .asTintedImage(color: .white)?
+                    .withBackgroundColor(.ows_accentBlue, insets: UIEdgeInsets(margin: 24)),
                 badge: nil
             )
         }
