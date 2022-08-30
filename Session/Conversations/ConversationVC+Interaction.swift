@@ -1139,7 +1139,11 @@ extension ConversationVC:
                 
                 // Update the database
                 if remove {
-                    try pendingReaction?.delete(db)
+                    try Reaction
+                        .filter(Reaction.Columns.interactionId == cellViewModel.id)
+                        .filter(Reaction.Columns.authorId == cellViewModel.currentUserPublicKey)
+                        .filter(Reaction.Columns.emoji == emoji)
+                        .deleteAll(db)
                 }
                 else {
                     try pendingReaction?.insert(db)
@@ -1186,12 +1190,12 @@ extension ConversationVC:
                             }
                             .catch { [weak self] _ in
                                 OpenGroupManager.removePendingChange(pendingChange)
-                                
+
                                 self?.handleReactionSentFailure(
                                     pendingReaction,
                                     remove: remove
                                 )
-                                
+
                             }
                             .retainUntilComplete()
                     } else {
@@ -1258,13 +1262,18 @@ extension ConversationVC:
     }
     
     func handleReactionSentFailure(_ pendingReaction: Reaction?, remove: Bool) {
+        guard let pendingReaction = pendingReaction else { return }
         Storage.shared.writeAsync { db in
             // Reverse the database
             if remove {
-                try pendingReaction?.insert(db)
+                try pendingReaction.insert(db)
             }
             else {
-                try pendingReaction?.delete(db)
+                try Reaction
+                    .filter(Reaction.Columns.interactionId == pendingReaction.interactionId)
+                    .filter(Reaction.Columns.authorId == pendingReaction.authorId)
+                    .filter(Reaction.Columns.emoji == pendingReaction.emoji)
+                    .deleteAll(db)
             }
         }
     }
