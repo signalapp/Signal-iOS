@@ -1101,7 +1101,7 @@ extension ConversationVC:
         
         // Perform the sending logic
         Storage.shared.writeAsync(
-            updates: { [weak self] db in
+            updates: { db in
                 guard let thread: SessionThread = try SessionThread.fetchOne(db, id: cellViewModel.threadId) else {
                     return
                 }
@@ -1110,34 +1110,6 @@ extension ConversationVC:
                 _ = try SessionThread
                     .filter(id: thread.id)
                     .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
-                
-                // Update the database
-                if remove {
-                    _ = try Reaction
-                        .filter(Reaction.Columns.interactionId == cellViewModel.id)
-                        .filter(Reaction.Columns.authorId == cellViewModel.currentUserPublicKey)
-                        .filter(Reaction.Columns.emoji == emoji)
-                        .deleteAll(db)
-                }
-                else {
-                    let sortId = Reaction.getSortId(
-                        db,
-                        interactionId: cellViewModel.id,
-                        emoji: emoji
-                    )
-                    try Reaction(
-                        interactionId: cellViewModel.id,
-                        serverHash: nil,
-                        timestampMs: sentTimestamp,
-                        authorId: cellViewModel.currentUserPublicKey,
-                        emoji: emoji,
-                        count: 1,
-                        sortId: sortId
-                    ).insert(db)
-                    
-                    // Add it to the recent list
-                    Emoji.addRecent(db, emoji: emoji)
-                }
                 
                 if let openGroup: OpenGroup = try? OpenGroup.fetchOne(db, id: cellViewModel.threadId),
                    OpenGroupManager.isOpenGroupSupport(.reactions, on: openGroup.server)
@@ -1168,12 +1140,18 @@ extension ConversationVC:
                                 in: openGroup.roomToken,
                                 on: openGroup.server
                             )
-                            .map { _, response in
+                            .map { [weak self] _, response in
                                 OpenGroupManager
                                     .updatePendingChange(
                                         pendingChange,
                                         seqNo: response.seqNo
                                     )
+                                self?.handleReactionSent(
+                                    cellViewModel,
+                                    with: emoji,
+                                    at: sentTimestamp,
+                                    remove: remove
+                                )
                             }
                             .retainUntilComplete()
                     } else {
@@ -1193,19 +1171,25 @@ extension ConversationVC:
                                 in: openGroup.roomToken,
                                 on: openGroup.server
                             )
-                            .map { _, response in
+                            .map { [weak self] _, response in
                                 OpenGroupManager
                                     .updatePendingChange(
                                         pendingChange,
                                         seqNo: response.seqNo
                                     )
+                                self?.handleReactionSent(
+                                    cellViewModel,
+                                    with: emoji,
+                                    at: sentTimestamp,
+                                    remove: remove
+                                )
                             }
                             .retainUntilComplete()
                     }
                     
                 } else {
                     // Send the actual message
-                    try MessageSender.send(
+                    try MessageSender.sendNonDurably(
                         db,
                         message: VisibleMessage(
                             sentTimestamp: UInt64(sentTimestamp),
@@ -1224,11 +1208,51 @@ extension ConversationVC:
                             )
                         ),
                         interactionId: cellViewModel.id,
-                        in: thread
-                    )
+                        in: thread)
+                    .map { [weak self] in
+                        self?.handleReactionSent(
+                            cellViewModel,
+                            with: emoji,
+                            at: sentTimestamp,
+                            remove: remove
+                        )
+                    }
+                    .retainUntilComplete()
                 }
             }
         )
+    }
+    
+    private func handleReactionSent(_ cellViewModel: MessageViewModel, with emoji: String, at sentTimestamp: Int64, remove: Bool) {
+        Storage.shared.writeAsync { db in
+            // Update the database
+            if remove {
+                _ = try Reaction
+                    .filter(Reaction.Columns.interactionId == cellViewModel.id)
+                    .filter(Reaction.Columns.authorId == cellViewModel.currentUserPublicKey)
+                    .filter(Reaction.Columns.emoji == emoji)
+                    .deleteAll(db)
+            }
+            else {
+                let sortId = Reaction.getSortId(
+                    db,
+                    interactionId: cellViewModel.id,
+                    emoji: emoji
+                )
+                try Reaction(
+                    interactionId: cellViewModel.id,
+                    serverHash: nil,
+                    timestampMs: sentTimestamp,
+                    authorId: cellViewModel.currentUserPublicKey,
+                    emoji: emoji,
+                    count: 1,
+                    sortId: sortId
+                ).insert(db)
+                
+                // Add it to the recent list
+                Emoji.addRecent(db, emoji: emoji)
+            }
+        }
     }
     
     func showFullEmojiKeyboard(_ cellViewModel: MessageViewModel) {
