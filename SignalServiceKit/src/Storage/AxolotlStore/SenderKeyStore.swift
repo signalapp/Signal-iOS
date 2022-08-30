@@ -20,6 +20,15 @@ public class SenderKeyStore: NSObject {
     public override init() {
         super.init()
         SwiftSingletons.register(self)
+
+        // We need to clear the key cache on cross-process database writes,
+        // because other processes might have received a new SKDM or generated a new chain...
+        NotificationCenter.default.addObserver(keyCache,
+                                               selector: #selector(keyCache.clear),
+                                               name: SDSDatabaseStorage.didReceiveCrossProcessNotificationAlwaysSync,
+                                               object: nil)
+        // ...but we don't need to clear the sending distribution ID cache, since values in that table don't change once
+        // set (unless the user clears all their sender key state, which only happens when re-registering).
     }
 
     /// Returns the distributionId the current device uses to tag senderKey messages sent to the thread.
