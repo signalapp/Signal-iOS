@@ -85,7 +85,6 @@ const NSUInteger kMinimumSearchLength = 1;
 
     _allowsAddByPhoneNumber = YES;
     _shouldHideLocalRecipient = YES;
-    _includeBlockedContacts = YES;
     _allowsSelectingUnregisteredPhoneNumbers = YES;
     _shouldShowGroups = YES;
     _shouldShowInvites = NO;
@@ -549,8 +548,8 @@ const NSUInteger kMinimumSearchLength = 1;
 {
     NSArray<SignalAccount *> *signalAccountsToShow = self.allSignalAccounts;
 
-    // As an optimization, we can skip the database lookup in some cases.
-    if (!self.includeBlockedContacts && self.allSignalAccounts.count > 0) {
+    // As an optimization, we can skip the database lookup if you have no connections.
+    if (self.allSignalAccounts.count > 0) {
         __block NSSet<SignalServiceAddress *> *addressesToSkip;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             addressesToSkip = [self.blockingManager blockedAddressesWithTransaction:transaction];
@@ -693,9 +692,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
     OWSAssertIsOnMainThread();
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSSet<SignalServiceAddress *> *addressesToSkip = self.includeBlockedContacts
-            ? [NSSet set]
-            : [self.blockingManager blockedAddressesWithTransaction:transaction];
+        NSSet<SignalServiceAddress *> *addressesToSkip = [self.blockingManager blockedAddressesWithTransaction:transaction];
 
         for (SignalAccount *signalAccount in filteredSignalAccounts) {
             hasSearchResults = YES;

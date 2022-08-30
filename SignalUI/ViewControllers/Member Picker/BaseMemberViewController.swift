@@ -421,27 +421,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
         transaction: SDSAnyReadTransaction
-    ) -> String? {
-        guard let address = recipient.address else {
-            owsFailDebug("Missing address.")
-            return nil
-        }
-        guard address.isValid else {
-            owsFailDebug("Invalid address.")
-            return nil
-        }
-
-        let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
-
-        if isCurrentMember {
-            return nil
-        } else if isBlocked {
-            return MessageStrings.conversationIsBlocked
-        } else {
-            return nil
-        }
-    }
+    ) -> String? { nil }
 
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
@@ -462,7 +442,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
         let isPreExistingMember = memberViewDelegate.memberViewIsPreExistingMember(recipient,
                                                                                    transaction: transaction)
 
@@ -471,9 +450,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.washColor)
         } else if isCurrentMember {
             imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.accentBlueColor)
-        } else if isBlocked {
-            // Use accessoryMessageForRecipient: to show blocked indicator.
-            return nil
         } else {
             imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
         }

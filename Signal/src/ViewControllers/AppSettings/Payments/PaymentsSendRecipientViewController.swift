@@ -144,17 +144,7 @@ extension PaymentsSendRecipientViewController: RecipientPickerDelegate {
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
         transaction: SDSAnyReadTransaction
-    ) -> String? {
-        // TODO: Nice-to-have: filter out recipients that do not support payments.
-        switch recipient.identifier {
-        case .address(let address):
-            guard blockingManager.isAddressBlocked(address, transaction: transaction) else { return nil }
-            return MessageStrings.conversationIsBlocked
-        case .group(let thread):
-            guard blockingManager.isThreadBlocked(thread, transaction: transaction) else { return nil }
-            return MessageStrings.conversationIsBlocked
-        }
-    }
+    ) -> String? { nil }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          attributedSubtitleForRecipient recipient: PickedRecipient,
