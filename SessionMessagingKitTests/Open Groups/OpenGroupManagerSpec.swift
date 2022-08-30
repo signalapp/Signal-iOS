@@ -204,7 +204,8 @@ class OpenGroupManagerSpec: QuickSpec {
                         "AAAAAAAAAAAAAAAAAAAAA",
                         "AA"
                     ].joined(),
-                    base64EncodedSignature: nil
+                    base64EncodedSignature: nil,
+                    reactions: nil
                 )
                 testDirectMessage = OpenGroupAPI.DirectMessage(
                     id: 128,
@@ -229,6 +230,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     try testOpenGroup.insert(db)
                     try Capability(openGroupServer: testOpenGroup.server, variant: .sogs, isMissing: false).insert(db)
                 }
+                mockOGMCache.when { $0.pendingChanges }.thenReturn([])
                 mockGeneralCache.when { $0.encodedPublicKey }.thenReturn("05\(TestConstants.publicKey)")
                 mockGenericHash.when { $0.hash(message: anyArray(), outputLength: any()) }.thenReturn([])
                 mockSodium
@@ -2115,7 +2117,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                     whisperMods: false,
                                     whisperTo: nil,
                                     base64EncodedData: nil,
-                                    base64EncodedSignature: nil
+                                    base64EncodedSignature: nil,
+                                    reactions: nil
                                 )
                             ],
                             for: "testRoom",
@@ -2175,7 +2178,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                     whisperMods: false,
                                     whisperTo: nil,
                                     base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
-                                    base64EncodedSignature: nil
+                                    base64EncodedSignature: nil,
+                                    reactions: nil
                                 )
                             ],
                             for: "testRoom",
@@ -2207,7 +2211,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                     whisperMods: false,
                                     whisperTo: nil,
                                     base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
-                                    base64EncodedSignature: nil
+                                    base64EncodedSignature: nil,
+                                    reactions: nil
                                 )
                             ],
                             for: "testRoom",
@@ -2249,7 +2254,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                     whisperMods: false,
                                     whisperTo: nil,
                                     base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
-                                    base64EncodedSignature: nil
+                                    base64EncodedSignature: nil,
+                                    reactions: nil
                                 ),
                                 testMessage,
                             ],
@@ -2287,7 +2293,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                         whisperMods: false,
                                         whisperTo: nil,
                                         base64EncodedData: nil,
-                                        base64EncodedSignature: nil
+                                        base64EncodedSignature: nil,
+                                        reactions: nil
                                     )
                                 ],
                                 for: "testRoom",
@@ -2315,7 +2322,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                         whisperMods: false,
                                         whisperTo: nil,
                                         base64EncodedData: nil,
-                                        base64EncodedSignature: nil
+                                        base64EncodedSignature: nil,
+                                        reactions: nil
                                     )
                                 ],
                                 for: "testRoom",
