@@ -10,4 +10,9 @@ class MockGeneralCache: Mock<GeneralCacheType>, GeneralCacheType {
         get { return accept() as? String }
         set { accept(args: [newValue]) }
     }
+    
+    var recentReactionTimestamps: [Int64] {
+        get { return accept() as! [Int64] }
+        set { accept(args: [newValue]) }
+    }
 }
