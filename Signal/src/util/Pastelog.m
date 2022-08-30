@@ -267,38 +267,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
         }];
 }
 
-+ (void)showFailureAlertWithMessage:(NSString *)message
-          logArchiveOrDirectoryPath:(nullable NSString *)logArchiveOrDirectoryPath
-{
-    void (^deleteArchive)(void) = ^{
-        if (logArchiveOrDirectoryPath) {
-            (void)[OWSFileSystem deleteFile:logArchiveOrDirectoryPath];
-        }
-    };
-
-    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:nil message:message];
-    if (logArchiveOrDirectoryPath) {
-        [alert addAction:[[ActionSheetAction alloc]
-                                       initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
-                                                         @"Label for the 'Export Logs' fallback option for the alert "
-                                                         @"when debug log uploading fails.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"export_log_archive")
-                                               style:ActionSheetActionStyleDefault
-                                             handler:^(ActionSheetAction *action) {
-                                                 [AttachmentSharing
-                                                     showShareUIForURL:[NSURL fileURLWithPath:logArchiveOrDirectoryPath]
-                                                                sender:nil
-                                                            completion:deleteArchive];
-                                             }]];
-    }
-    [alert addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.okButton
-                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                                                        style:ActionSheetActionStyleDefault
-                                                      handler:^(ActionSheetAction *action) { deleteArchive(); }]];
-    UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentActionSheet:alert];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

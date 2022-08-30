@@ -198,4 +198,37 @@ extension Pastelog {
 
         return CollectedLogsResult(logsDirPath: zipDirPath)
     }
+
+    @objc(showFailureAlertWithMessage:logArchiveOrDirectoryPath:)
+    static func showFailureAlert(with message: String, logArchiveOrDirectoryPath: String?) {
+        func deleteArchive() {
+            guard let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath else { return }
+            OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+        }
+
+        let alert = ActionSheetController(title: nil, message: message)
+
+        if let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath {
+            alert.addAction(.init(
+                title: NSLocalizedString(
+                    "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
+                    comment: "Label for the 'Export Logs' fallback option for the alert when debug log uploading fails."
+                ),
+                accessibilityIdentifier: "export_log_archive"
+            ) { _ in
+                AttachmentSharing.showShareUI(
+                    for: URL(fileURLWithPath: logArchiveOrDirectoryPath),
+                    sender: nil,
+                    completion: deleteArchive
+                )
+            })
+        }
+
+        alert.addAction(.init(title: CommonStrings.okButton, accessibilityIdentifier: "ok") { _ in
+            deleteArchive()
+        })
+
+        let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
+        presentingViewController?.presentActionSheet(alert)
+    }
 }
