@@ -120,6 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
         ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
         SubscriptionManager *subscriptionManager = [SubscriptionManager new];
+        SystemStoryManager *systemStoryManager = [SystemStoryManager new];
 
         [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
                                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
@@ -185,7 +186,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   phoneNumberUtil:phoneNumberUtil
                                                                  webSocketFactory:webSocketFactory
                                                                 changePhoneNumber:changePhoneNumber
-                                                              subscriptionManager:subscriptionManager]];
+                                                              subscriptionManager:subscriptionManager
+                                                               systemStoryManager:systemStoryManager]];
 
         appSpecificSingletonBlock();
 

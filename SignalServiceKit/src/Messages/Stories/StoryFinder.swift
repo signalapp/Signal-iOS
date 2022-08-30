@@ -89,6 +89,22 @@ public class StoryFinder: NSObject {
         }
     }
 
+    public static func listStoriesWithUniqueIds(_ uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [StoryMessage] {
+        let sql = """
+            SELECT *
+            FROM \(StoryMessage.databaseTableName)
+            WHERE \(StoryMessage.columnName(.uniqueId)) IN (\(uniqueIds.lazy.map({ "'\($0)'" }).joined(separator: ",")))
+            ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
+        """
+
+        do {
+            return try StoryMessage.fetchAll(transaction.unwrapGrdbRead.database, sql: sql)
+        } catch {
+            owsFailDebug("Failed to fetch incoming stories \(error)")
+            return []
+        }
+    }
+
     public static func latestStoryForThread(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> StoryMessage? {
         latestStoryForContext(thread.storyContext, transaction: transaction)
     }

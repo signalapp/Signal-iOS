@@ -227,6 +227,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     @discardableResult
     public static func createFromSystemAuthor(
         attachment: TSAttachment,
+        timestamp: UInt64,
         transaction: SDSAnyWriteTransaction
     ) throws -> StoryMessage {
         Logger.info("Processing StoryMessage for system author")
@@ -240,10 +241,10 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
         let record = StoryMessage(
             // NOTE: As of now these only get created for the onboarding story, and that happens
-            // when you first launch stories, so the timestamp means they'd initially say "now"
-            // which is good. If something else is done in the future, we may need a more
-            // sophisticated variable timestamp.
-            timestamp: Date().ows_millisecondsSince1970,
+            // when you first launch the app. That's probably okay, but if we need something more
+            // sophisticated for future stories this is where we'd change it, maybe make this
+            // a null timestamp and interpret that different when we read it back out.
+            timestamp: timestamp,
             authorUuid: Self.systemStoryAuthorUUID,
             groupId: nil,
             manifest: manifest,

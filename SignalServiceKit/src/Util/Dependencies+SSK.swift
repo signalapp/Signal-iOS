@@ -499,6 +499,16 @@ public extension NSObject {
     static var subscriptionManager: SubscriptionManagerProtocol {
         SSKEnvironment.shared.subscriptionManagerRef
     }
+
+    @nonobjc
+    var systemStoryManager: SystemStoryManagerProtocol {
+        SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
+    }
+
+    @nonobjc
+    static var systemStoryManager: SystemStoryManagerProtocol {
+        SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
+    }
 }
 
 // MARK: - Obj-C Dependencies
@@ -987,6 +997,14 @@ public extension Dependencies {
 
     static var subscriptionManager: SubscriptionManagerProtocol {
         SSKEnvironment.shared.subscriptionManagerRef
+    }
+
+    var systemStoryManager: SystemStoryManagerProtocol {
+        SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
+    }
+
+    static var systemStoryManager: SystemStoryManagerProtocol {
+        SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
     }
 }
 

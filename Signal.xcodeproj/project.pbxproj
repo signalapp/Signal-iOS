@@ -771,6 +771,8 @@
 		5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
+		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
+		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
 		669E8FE828B4153C00043D28 /* OWSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSURLSession.swift */; };
@@ -779,6 +781,10 @@
 		669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEE28B417D500043D28 /* OWSSignalService.swift */; };
 		669E8FF028B4185300043D28 /* OWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */; };
 		669E8FF128B41A8500043D28 /* StoryAuthorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668AB0CB28AD610600B31984 /* StoryAuthorUtil.swift */; };
+		669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */; };
+		669E900528B42CCF00043D28 /* SystemStoryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900428B42CCF00043D28 /* SystemStoryManagerTest.swift */; };
+		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
+		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
@@ -1222,7 +1228,6 @@
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
 		F9B0DC6028948656004E07B7 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4E28948656004E07B7 /* textsecure.cer */; };
 		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
-		F9BC9C6528B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */; };
 		F9C5C89F289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
 		F9C5C8A7289451B900548EEE /* SignalServiceKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C899289451B900548EEE /* SignalServiceKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5C8AA289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
@@ -3019,6 +3024,8 @@
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
+		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
+		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		668AB0CB28AD610600B31984 /* StoryAuthorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAuthorUtil.swift; sourceTree = "<group>"; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
@@ -3028,6 +3035,10 @@
 		669E8FE728B4153B00043D28 /* OWSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSession.swift; sourceTree = "<group>"; };
 		669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalServiceMock.swift; sourceTree = "<group>"; };
 		669E8FEE28B417D500043D28 /* OWSSignalService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalService.swift; sourceTree = "<group>"; };
+		669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemStoryManager.swift; sourceTree = "<group>"; };
+		669E900428B42CCF00043D28 /* SystemStoryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerTest.swift; sourceTree = "<group>"; };
+		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
+		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5877,6 +5888,14 @@
 			path = Discovery;
 			sourceTree = "<group>";
 		};
+		669E900128B42C5F00043D28 /* Stories */ = {
+			isa = PBXGroup;
+			children = (
+				669E900428B42CCF00043D28 /* SystemStoryManagerTest.swift */,
+			);
+			path = Stories;
+			sourceTree = "<group>";
+		};
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -6863,6 +6882,7 @@
 			isa = PBXGroup;
 			children = (
 				F94261F4289B1B5400460798 /* AppVersionTests.swift */,
+				661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */,
 				F94261F8289B1B5400460798 /* Date+SSKTest.swift */,
 				F94261F6289B1B5400460798 /* DeviceNamesTest.swift */,
 				F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */,
@@ -6931,6 +6951,7 @@
 				F942621F289B1B5500460798 /* Interactions */,
 				F988DC11289DC8DE003B4B82 /* Reactions */,
 				F9426222289B1B5500460798 /* Stickers */,
+				669E900128B42C5F00043D28 /* Stories */,
 				F9426233289B1B5500460798 /* DeliveryReceiptContextTests.swift */,
 				F942622A289B1B5500460798 /* MessageDecryptionTest.swift */,
 				F942622F289B1B5500460798 /* MessagePipelineSupervisorTest.swift */,
@@ -7384,6 +7405,9 @@
 				F9C5C96B289453B100548EEE /* StoryFinder.swift */,
 				F9C5C969289453B100548EEE /* StoryManager.swift */,
 				F9C5C96A289453B100548EEE /* StoryMessage.swift */,
+				669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */,
+				669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */,
+				669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -7957,6 +7981,7 @@
 				668FE09A28B923A4008B9071 /* Bool+SSK.swift */,
 				F9C5CB56289453B200548EEE /* ByteParser.h */,
 				F9C5CB0F289453B200548EEE /* ByteParser.m */,
+				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
 				F9C5CB3C289453B200548EEE /* ChangePhoneNumber.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
 				F9C5CB22289453B200548EEE /* Currency.swift */,
@@ -10478,6 +10503,7 @@
 				F9C5CD8D289453B300548EEE /* CaptchaChallenge.swift in Sources */,
 				F9C5CC0C289453B300548EEE /* CDNDownloadOperation.swift in Sources */,
 				F9C5CCC1289453B300548EEE /* CDSHWebsocket.swift in Sources */,
+				661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */,
 				F9C5CE0E289453B400548EEE /* ChangePhoneNumber.swift in Sources */,
 				F9C5CCF2289453B300548EEE /* ChunkedInputStream.swift in Sources */,
 				F9C5CDFC289453B400548EEE /* Collection+OWS.swift in Sources */,
@@ -10901,6 +10927,9 @@
 				F9C5CCE8289453B300548EEE /* SubscriptionManagerProtocol.swift in Sources */,
 				F9C5CE2F289453B400548EEE /* SwiftSingletons.swift in Sources */,
 				F9C5CE04289453B400548EEE /* SyncManagerProtocol.swift in Sources */,
+				669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */,
+				669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */,
+				669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */,
 				F9C5CE65289453B400548EEE /* TestAppContext.m in Sources */,
 				F9C5CE66289453B400548EEE /* TestKeychainStorage.swift in Sources */,
 				F9C5CDCE289453B400548EEE /* TestModel+SDS.swift in Sources */,
@@ -11006,6 +11035,7 @@
 				F9426261289B1B5500460798 /* AppVersionTests.swift in Sources */,
 				F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */,
 				F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */,
+				661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */,
 				5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */,
 				F9426282289B1B5600460798 /* ContactDiscoveryTaskTest.swift in Sources */,
 				F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */,
@@ -11031,7 +11061,6 @@
 				F942624C289B1B5500460798 /* ModelReadCacheTest.swift in Sources */,
 				F9426256289B1B5500460798 /* NSData+ImageTest.swift in Sources */,
 				F942626B289B1B5500460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift in Sources */,
-				F9BC9C6528B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift in Sources */,
 				F9426264289B1B5500460798 /* OWSAnalyticsTests.swift in Sources */,
 				F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */,
 				F942629E289B1B5600460798 /* OWSDisappearingMessageFinderTest.m in Sources */,
@@ -11076,6 +11105,7 @@
 				F9426270289B1B5500460798 /* SSKSwiftTests.swift in Sources */,
 				F942628D289B1B5600460798 /* StickerManagerTest.swift in Sources */,
 				F942628E289B1B5600460798 /* StickerPackInfoTest.swift in Sources */,
+				669E900528B42CCF00043D28 /* SystemStoryManagerTest.swift in Sources */,
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
 				F9426281289B1B5600460798 /* TSContactThreadTest.m in Sources */,

@@ -96,6 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<WebSocketFactory> webSocketFactory = [WebSocketFactoryMock new];
     ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
     id<SubscriptionManagerProtocol> subscriptionManager = [MockSubscriptionManager new];
+    SystemStoryManagerMock *systemStoryManager = [SystemStoryManagerMock new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -151,7 +152,8 @@ NS_ASSUME_NONNULL_BEGIN
                           phoneNumberUtil:phoneNumberUtil
                          webSocketFactory:webSocketFactory
                         changePhoneNumber:changePhoneNumber
-                      subscriptionManager:subscriptionManager];
+                      subscriptionManager:subscriptionManager
+                       systemStoryManager:systemStoryManager];
 
     if (!self) {
         return nil;

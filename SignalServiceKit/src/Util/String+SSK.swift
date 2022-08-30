@@ -64,6 +64,10 @@ public extension String {
 
         self.init(cString: value)
     }
+
+    func appendingPathComponent(_ other: String) -> String {
+        return (self as NSString).appendingPathComponent(other)
+    }
 }
 
 // MARK: -

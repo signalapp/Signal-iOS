@@ -62,6 +62,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<WebSocketFactory> webSocketFactoryRef;
 @property (nonatomic) ChangePhoneNumber *changePhoneNumberRef;
 @property (nonatomic) id<SubscriptionManagerProtocol> subscriptionManagerRef;
+@property (nonatomic) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 
 @end
 
@@ -130,6 +131,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                        webSocketFactory:(id<WebSocketFactory>)webSocketFactory
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
+                     systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
 {
     self = [super init];
     if (!self) {
@@ -191,6 +193,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _webSocketFactoryRef = webSocketFactory;
     _changePhoneNumberRef = changePhoneNumber;
     _subscriptionManagerRef = subscriptionManager;
+    _systemStoryManagerRef = systemStoryManager;
 
     return self;
 }
