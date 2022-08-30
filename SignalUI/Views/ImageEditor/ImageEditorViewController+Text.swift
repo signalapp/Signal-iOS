@@ -52,8 +52,8 @@ extension ImageEditorViewController {
         textContainerBackground.autoPinEdge(toSuperviewEdge: .bottom, withInset: -300)
 
         textViewContainer.addSubview(textView)
-        textView.autoCenterInSuperview()
-        textView.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
+        textView.autoVCenterInSuperview()
+        textView.autoPinWidthToSuperviewMargins()
         textView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
         textView.widthAnchor.constraint(greaterThanOrEqualToConstant: 40).isActive = true
 

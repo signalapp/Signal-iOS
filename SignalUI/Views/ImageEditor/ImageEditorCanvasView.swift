@@ -799,12 +799,7 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         // * Model transform (so that text doesn't become blurry as you zoom the content).
         layer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
 
-        // TODO: Min with measured width.
-        let maxWidth = imageFrame.size.width * item.unitWidth
-
-        let maxSize = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
-        // TODO: Is there a more accurate way to measure text in a CATextLayer?
-        //       CoreText?
+        let maxSize = CGSize(width: imageFrame.size.width * item.unitWidth, height: CGFloat.greatestFiniteMagnitude)
         let textBounds = attributedString.boundingRect(with: maxSize,
                                                        options: [ .usesLineFragmentOrigin, .usesFontLeading ],
                                                        context: nil)
