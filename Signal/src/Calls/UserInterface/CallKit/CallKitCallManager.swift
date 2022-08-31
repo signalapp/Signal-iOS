@@ -55,7 +55,7 @@ final class CallKitCallManager: NSObject {
 
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
 
-        startCallAction.isVideo = call.individualCall.hasLocalVideo
+        startCallAction.isVideo = call.individualCall.offerMediaType == .video
 
         let transaction = CXTransaction()
         transaction.addAction(startCallAction)
