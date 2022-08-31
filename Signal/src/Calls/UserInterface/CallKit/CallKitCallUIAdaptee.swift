@@ -201,7 +201,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         }
     }
 
-    private var ignoreFirstUnuteAfterRemoteAnswer = false
+    private var ignoreFirstUnmuteAfterRemoteAnswer = false
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
@@ -218,7 +218,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             // to unmute the call. We can work around this
             // by ignoring the next "unmute" request from
             // CallKit after the call is answered.
-            self.ignoreFirstUnuteAfterRemoteAnswer = call.individualCall.isMuted
+            self.ignoreFirstUnmuteAfterRemoteAnswer = call.individualCall.isMuted
 
             // Enable audio for remotely accepted calls after the session is configured.
             self.audioSession.isRTCAudioEnabled = true
@@ -429,8 +429,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        defer { ignoreFirstUnuteAfterRemoteAnswer = false }
-        guard !ignoreFirstUnuteAfterRemoteAnswer || action.isMuted else { return }
+        defer { ignoreFirstUnmuteAfterRemoteAnswer = false }
+        guard !ignoreFirstUnmuteAfterRemoteAnswer || action.isMuted else { return }
 
         self.callService.updateIsLocalAudioMuted(isLocalAudioMuted: action.isMuted)
         action.fulfill()
