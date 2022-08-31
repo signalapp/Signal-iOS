@@ -62,6 +62,7 @@ public enum ThemeValue {
     case primary
     case defaultPrimary
     case danger
+    case disabled
     case backgroundPrimary
     case backgroundSecondary
     case textPrimary
@@ -83,6 +84,7 @@ public enum ThemeValue {
     case messageBubble_incomingBackground
     case messageBubble_outgoingText
     case messageBubble_incomingText
+    case messageBubble_overlay
     
     // MenuButton
     case menuButton_background

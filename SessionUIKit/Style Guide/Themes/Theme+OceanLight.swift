@@ -11,6 +11,7 @@ internal enum Theme_OceanLight: ThemeColors {
         .primary: .primary,
         .defaultPrimary: Theme.PrimaryColor.blue.color,
         .danger: .dangerLight,
+        .disabled: .disabledLight,
         .backgroundPrimary: .oceanLight6,
         .backgroundSecondary: .oceanLight5,
         .textPrimary: .oceanLight0,
@@ -32,6 +33,7 @@ internal enum Theme_OceanLight: ThemeColors {
         .messageBubble_incomingBackground: .oceanLight3,
         .messageBubble_outgoingText: .oceanLight0,
         .messageBubble_incomingText: .oceanLight0,
+        .messageBubble_overlay: .black_06,
 
         // MenuButton
         .menuButton_background: .primary,

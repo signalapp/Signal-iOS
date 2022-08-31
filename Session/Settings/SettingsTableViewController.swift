@@ -280,11 +280,14 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
                 }
                 
                 // Show a confirmation modal before continuing
-                let confirmationModal: ConfirmationModal = ConfirmationModal(info: confirmationInfo) { [weak self] _ in
-                    Storage.shared.write { db in db[key] = !db[key] }
-                    self?.manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
-                    self?.dismiss(animated: true)
-                }
+                let confirmationModal: ConfirmationModal = ConfirmationModal(
+                    info: confirmationInfo
+                        .with(onConfirm: { [weak self] _ in
+                            Storage.shared.write { db in db[key] = !db[key] }
+                            self?.manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
+                            self?.dismiss(animated: true)
+                        })
+                )
                 present(confirmationModal, animated: true, completion: nil)
             
             case .push(let createDestination), .dangerPush(let createDestination),

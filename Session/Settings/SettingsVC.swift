@@ -424,25 +424,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
             )
         }
     }
-
-    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
-        super.handleAppModeChangedNotification(notification)
-        
-        updateNavigationBarButtons()
-        settingButtonsStackView.arrangedSubviews.forEach { settingButton in
-            settingButtonsStackView.removeArrangedSubview(settingButton)
-            settingButton.removeFromSuperview()
-        }
-        getSettingButtons().forEach { settingButtonOrSeparator in
-            settingButtonsStackView.addArrangedSubview(settingButtonOrSeparator) // Re-do the setting buttons
-        }
-        updateLogo()
-    }
-    
-    private func updateLogo() {
-        let logoName = isLightMode ? "OxenLightMode" : "OxenDarkMode"
-        logoImageView.image = UIImage(named: logoName)!
-    }
     
     // MARK: - Interaction
     

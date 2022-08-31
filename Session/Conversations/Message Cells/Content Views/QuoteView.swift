@@ -140,12 +140,15 @@ final class QuoteView: UIView {
             
             imageView.themeTintColor = {
                 switch mode {
-                    case .regular: return (direction == .outgoing ? .white : .messageBubble_outgoingText)
+                    case .regular: return (direction == .outgoing ?
+                        .messageBubble_outgoingText :
+                        .messageBubble_incomingText
+                    )
                     case .draft: return .messageBubble_outgoingText
                 }
             }()
             imageView.contentMode = .center
-            imageView.themeBackgroundColor = lineColor
+            imageView.themeBackgroundColor = .messageBubble_overlay
             imageView.layer.cornerRadius = VisibleMessageCell.smallCornerRadius
             imageView.layer.masksToBounds = true
             imageView.set(.width, to: thumbnailSize)

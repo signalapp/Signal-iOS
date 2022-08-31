@@ -71,11 +71,11 @@ final class OpenGroupInvitationView: UIView {
                 .resizedImage(to: CGSize(width: iconSize, height: iconSize))?
                 .withRenderingMode(.alwaysTemplate)
         )
-        iconImageView.themeTintColor = .textPrimary
+        iconImageView.themeTintColor = (isOutgoing ? .messageBubble_outgoingText : .textPrimary)
         iconImageView.contentMode = .center
         iconImageView.layer.cornerRadius = iconImageViewSize / 2
         iconImageView.layer.masksToBounds = true
-        iconImageView.themeBackgroundColor = .primary
+        iconImageView.themeBackgroundColor = (isOutgoing ? .messageBubble_overlay : .primary)
         iconImageView.set(.width, to: iconImageViewSize)
         iconImageView.set(.height, to: iconImageViewSize)
         

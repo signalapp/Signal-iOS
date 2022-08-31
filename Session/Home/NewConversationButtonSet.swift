@@ -11,11 +11,11 @@ final class NewConversationButtonSet : UIView {
     // MARK: - Settings
     
     private let spacing = Values.veryLargeSpacing
-    private let iconSize = CGFloat(24)
-    private let maxDragDistance = CGFloat(56)
-    private let dragMargin = CGFloat(16)
-    static let collapsedButtonSize = CGFloat(60)
-    static let expandedButtonSize = CGFloat(72)
+    private let iconSize: CGFloat = 24
+    private let maxDragDistance: CGFloat = 56
+    private let dragMargin: CGFloat = 16
+    static let collapsedButtonSize: CGFloat = 60
+    static let expandedButtonSize: CGFloat = 72
     
     // MARK: - Components
     
@@ -410,10 +410,6 @@ private final class NewConversationButton: UIImageView {
             widthConstraint = set(.width, to: NewConversationButtonSet.collapsedButtonSize)
             heightConstraint = set(.height, to: NewConversationButtonSet.collapsedButtonSize)
         }
-    }
-
-    @objc private func handleAppModeChangedNotification(_ notification: Notification) {
-        setUpViewHierarchy(isUpdate: true)
     }
 }
 

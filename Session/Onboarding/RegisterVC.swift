@@ -50,6 +50,7 @@ final class RegisterVC : BaseVC {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUpNavBarSessionIcon()
         
         // Set up title label

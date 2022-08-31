@@ -125,11 +125,12 @@ final class NukeDataModal: Modal {
                 explanation: "modal_clear_all_data_explanation_2".localized(),
                 confirmTitle: "modal_clear_all_data_confirm".localized(),
                 confirmStyle: .danger,
-                cancelStyle: .textPrimary
-            )
-        ) { [weak self] confirmationModal in
-            self?.clearEntireAccount(presentedViewController: confirmationModal)
-        }
+                cancelStyle: .textPrimary,
+                dismissOnConfirm: false
+            ) { [weak self] confirmationModal in
+                self?.clearEntireAccount(presentedViewController: confirmationModal)
+            }
+        )
         present(confirmationModal, animated: true, completion: nil)
     }
     

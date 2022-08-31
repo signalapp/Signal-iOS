@@ -59,20 +59,22 @@ extension ConversationVC:
                 info: ConfirmationModal.Info(
                     title: "modal_call_permission_request_title".localized(),
                     explanation: "modal_call_permission_request_explanation".localized(),
-                    confirmTitle: "vc_settings_title".localized()
-                )
-            ) { [weak self] _ in
-                self?.dismiss(animated: true) {
-                    let navController: OWSNavigationController = OWSNavigationController(
-                        rootViewController: SettingsTableViewController(
-                            viewModel: PrivacySettingsViewModel(),
-                            shouldShowCloseButton: true
+                    confirmTitle: "vc_settings_title".localized(),
+                    dismissOnConfirm: false // Custom dismissal logic
+                ) { [weak self] _ in
+                    self?.dismiss(animated: true) {
+                        let navController: OWSNavigationController = OWSNavigationController(
+                            rootViewController: SettingsTableViewController(
+                                viewModel: PrivacySettingsViewModel(),
+                                shouldShowCloseButton: true
+                            )
                         )
-                    )
-                    navController.modalPresentationStyle = .fullScreen
-                    self?.present(navController, animated: true, completion: nil)
+                        navController.modalPresentationStyle = .fullScreen
+                        self?.present(navController, animated: true, completion: nil)
+                    }
                 }
-            }
+            )
+            
             self.navigationController?.present(confirmationModal, animated: true, completion: nil)
             return
         }
@@ -528,12 +530,21 @@ extension ConversationVC:
     }
 
     func showLinkPreviewSuggestionModal() {
-        let linkPreviewModel = LinkPreviewModal() { [weak self] in
-            self?.snInputView.autoGenerateLinkPreview()
-        }
-        linkPreviewModel.modalPresentationStyle = .overFullScreen
-        linkPreviewModel.modalTransitionStyle = .crossDissolve
-        present(linkPreviewModel, animated: true, completion: nil)
+        let linkPreviewModal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: "modal_link_previews_title".localized(),
+                explanation: "modal_link_previews_explanation".localized(),
+                confirmTitle: "modal_link_previews_button_title".localized()
+            ) { [weak self] _ in
+                Storage.shared.writeAsync { db in
+                    db[.areLinkPreviewsEnabled] = true
+                }
+                
+                self?.snInputView.autoGenerateLinkPreview()
+            }
+        )
+        
+        present(linkPreviewModal, animated: true, completion: nil)
     }
     
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView) {
@@ -694,6 +705,9 @@ extension ConversationVC:
             )
         else { return }
         
+        /// Lock the contentOffset of the tableView so the transition doesn't look buggy
+        self.tableView.lockContentOffset = true
+        
         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
         self.contextMenuWindow = ContextMenuWindow()
         self.contextMenuVC = ContextMenuVC(
@@ -707,10 +721,21 @@ extension ConversationVC:
             self?.contextMenuWindow = nil
             self?.scrollButton.alpha = 0
             
-            UIView.animate(withDuration: 0.25) {
-                self?.scrollButton.alpha = (self?.getScrollButtonOpacity() ?? 0)
-                self?.unreadCountView.alpha = (self?.scrollButton.alpha ?? 0)
-            }
+            UIView.animate(
+                withDuration: 0.25,
+                animations: {
+                    self?.scrollButton.alpha = (self?.getScrollButtonOpacity() ?? 0)
+                    self?.unreadCountView.alpha = (self?.scrollButton.alpha ?? 0)
+                },
+                completion: { _ in
+                    guard let contentOffset: CGPoint = self?.tableView.contentOffset else { return }
+                    
+                    // Unlock the contentOffset so everything will be in the right
+                    // place when we return
+                    self?.tableView.lockContentOffset = false
+                    self?.tableView.setContentOffset(contentOffset, animated: false)
+                }
+            )
         }
         
         self.contextMenuWindow?.backgroundColor = .clear
@@ -1098,7 +1123,7 @@ extension ConversationVC:
         
         // Perform the sending logic
         Storage.shared.writeAsync(
-            updates: { [weak self] db in
+            updates: { db in
                 guard let thread: SessionThread = try SessionThread.fetchOne(db, id: cellViewModel.threadId) else {
                     return
                 }

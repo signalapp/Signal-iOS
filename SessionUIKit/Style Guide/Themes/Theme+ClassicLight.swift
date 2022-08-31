@@ -11,6 +11,7 @@ internal enum Theme_ClassicLight: ThemeColors {
         .primary: .primary,
         .defaultPrimary: Theme.PrimaryColor.green.color,
         .danger: .dangerLight,
+        .disabled: .disabledLight,
         .backgroundPrimary: .classicLight6,
         .backgroundSecondary: .classicLight5,
         .textPrimary: .classicLight0,
@@ -32,6 +33,7 @@ internal enum Theme_ClassicLight: ThemeColors {
         .messageBubble_incomingBackground: .classicLight4,
         .messageBubble_outgoingText: .classicLight0,
         .messageBubble_incomingText: .classicLight0,
+        .messageBubble_overlay: .black_06,
 
         // MenuButton
         .menuButton_background: .primary,

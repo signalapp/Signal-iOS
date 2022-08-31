@@ -47,6 +47,7 @@ final class RestoreVC: BaseVC {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setUpNavBarSessionIcon()
         
         // Set up title label

@@ -17,18 +17,60 @@ public final class OutlineButton: UIButton {
         case large
     }
     
+    private let style: Style
+    
     public override var isEnabled: Bool {
         didSet {
-            self.alpha = (isEnabled ? 1 : 0.5)
+            guard isEnabled else {
+                setThemeTitleColor(
+                    {
+                        switch style {
+                            case .regular, .borderless, .destructive,
+                                .destructiveBorderless:
+                                return .disabled
+                            
+                            case .filled: return .white
+                        }
+                    }(),
+                    for: .normal
+                )
+                setThemeBackgroundColor(
+                    {
+                        switch style {
+                            case .regular, .borderless, .destructive,
+                                .destructiveBorderless:
+                                return .clear
+                            
+                            case .filled: return .disabled
+                        }
+                    }(),
+                    for: .normal
+                )
+                setThemeBackgroundColor(nil, for: .highlighted)
+                
+                themeBorderColor = {
+                    switch style {
+                        case .regular, .destructive: return .disabled
+                        case .filled, .borderless, .destructiveBorderless: return nil
+                    }
+                }()
+                return
+            }
+            
+            // If we enable the button they just re-apply the existing style
+            setup(style: style)
         }
     }
     
     // MARK: - Initialization
     
     public init(style: Style, size: Size) {
+        self.style = style
+        
         super.init(frame: .zero)
         
-        setUpStyle(style: style, size: size)
+        setup(size: size)
+        setup(style: style)
     }
     
     override init(frame: CGRect) {
@@ -38,8 +80,8 @@ public final class OutlineButton: UIButton {
     required init?(coder: NSCoder) {
         preconditionFailure("Use init(style:) instead.")
     }
-
-    private func setUpStyle(style: Style, size: Size) {
+    
+    private func setup(size: Size) {
         clipsToBounds = true
         contentEdgeInsets = UIEdgeInsets(
             top: 0,
@@ -51,6 +93,24 @@ public final class OutlineButton: UIButton {
             Values.smallFontSize :
             Values.mediumFontSize
         ))
+        
+        let height: CGFloat = {
+            switch size {
+                case .small: return Values.smallButtonHeight
+                case .medium: return Values.mediumButtonHeight
+                case .large: return Values.largeButtonHeight
+            }
+        }()
+        set(.height, to: height)
+        layer.cornerRadius = {
+            switch style {
+                case .borderless, .destructiveBorderless: return 5
+                default: return (height / 2)
+            }
+        }()
+    }
+
+    private func setup(style: Style) {
         setThemeTitleColor(
             {
                 switch style {
@@ -94,21 +154,6 @@ public final class OutlineButton: UIButton {
                 case .regular: return .outlineButton_border
                 case .destructive: return .outlineButton_destructiveBorder
                 case .filled, .borderless, .destructiveBorderless: return nil
-            }
-        }()
-        
-        let height: CGFloat = {
-            switch size {
-                case .small: return Values.smallButtonHeight
-                case .medium: return Values.mediumButtonHeight
-                case .large: return Values.largeButtonHeight
-            }
-        }()
-        set(.height, to: height)
-        layer.cornerRadius = {
-            switch style {
-                case .borderless, .destructiveBorderless: return 5
-                default: return (height / 2)
             }
         }()
     }

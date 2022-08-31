@@ -59,9 +59,9 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.isUserInteractionEnabled = false
-        result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
-        result.text = NSLocalizedString("MESSAGE_REQUESTS_EMPTY_TEXT", comment: "")
-        result.textColor = Colors.text
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = "MESSAGE_REQUESTS_EMPTY_TEXT".localized()
+        result.themeTextColor = .textSecondary
         result.textAlignment = .center
         result.numberOfLines = 0
         result.isHidden = true

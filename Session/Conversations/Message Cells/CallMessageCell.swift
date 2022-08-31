@@ -19,8 +19,10 @@ final class CallMessageCell: MessageCell {
     
     private lazy var iconImageView: UIImageView = UIImageView()
     private lazy var infoImageView: UIImageView = {
-        let result: UIImageView = UIImageView(image: UIImage(named: "ic_info")?.withRenderingMode(.alwaysTemplate))
-        result.tintColor = Colors.text
+        let result: UIImageView = UIImageView(
+            image: UIImage(named: "ic_info")?.withRenderingMode(.alwaysTemplate)
+        )
+        result.themeTintColor = .textPrimary
         
         return result
     }()
@@ -28,7 +30,7 @@ final class CallMessageCell: MessageCell {
     private lazy var timestampLabel: UILabel = {
         let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
         
         return result
@@ -36,20 +38,20 @@ final class CallMessageCell: MessageCell {
     
     private lazy var label: UILabel = {
         let result: UILabel = UILabel()
-        result.numberOfLines = 0
-        result.lineBreakMode = .byWordWrapping
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
         
         return result
     }()
     
     private lazy var container: UIView = {
         let result: UIView = UIView()
+        result.themeBackgroundColor = .backgroundSecondary
         result.set(.height, to: 50)
         result.layer.cornerRadius = 18
-        result.backgroundColor = Colors.callMessageBackground
         result.addSubview(label)
         
         label.autoCenterInSuperview()
@@ -124,10 +126,10 @@ final class CallMessageCell: MessageCell {
                 default: return nil
             }
         }()
-        iconImageView.tintColor = {
+        iconImageView.themeTintColor = {
             switch messageInfo.state {
-                case .outgoing, .incoming: return Colors.text
-                case .missed, .permissionDenied: return Colors.destructive
+                case .outgoing, .incoming: return .textPrimary
+                case .missed, .permissionDenied: return .danger
                 default: return nil
             }
         }()

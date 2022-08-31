@@ -17,11 +17,11 @@ final class InfoMessageCell: MessageCell {
 
     private lazy var label: UILabel = {
         let result: UILabel = UILabel()
-        result.numberOfLines = 0
-        result.lineBreakMode = .byWordWrapping
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
         
         return result
     }()
@@ -79,7 +79,7 @@ final class InfoMessageCell: MessageCell {
         
         if let icon = icon {
             iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
-            iconImageView.tintColor = Colors.text
+            iconImageView.themeTintColor = .textPrimary
         }
         
         iconImageViewWidthConstraint.constant = (icon != nil) ? InfoMessageCell.iconSize : 0

@@ -158,15 +158,11 @@ final class LinkPreviewView: UIView {
         imageViewContainerHeightConstraint.constant = imageViewContainerSize
         imageViewContainer.layer.cornerRadius = (state is LinkPreview.SentState ? 0 : 8)
         
-        if state is LinkPreview.LoadingState {
-            imageViewContainer.backgroundColor = .clear
-        }
-        else {
-            imageViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
-        }
-        
         imageView.image = image
-        imageView.themeTintColor = .textPrimary
+        imageView.themeTintColor = (isOutgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         imageView.contentMode = (stateHasImage ? .scaleAspectFill : .center)
         
         // Loader
@@ -175,16 +171,24 @@ final class LinkPreviewView: UIView {
         
         // Title
         titleLabel.text = state.title
-        titleLabel.themeTextColor = .textPrimary
+        titleLabel.themeTextColor = (isOutgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         
         // Horizontal stack view
         switch state {
+            case is LinkPreview.LoadingState:
+                imageViewContainer.themeBackgroundColor = .clear
+                hStackViewContainer.themeBackgroundColor = nil
+                
             case is LinkPreview.SentState:
-                // FIXME: This will have issues with theme transitions
-                hStackViewContainer.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
+                imageViewContainer.themeBackgroundColor = .messageBubble_overlay
+                hStackViewContainer.themeBackgroundColor = .messageBubble_overlay
                 
             default:
-                hStackViewContainer.backgroundColor = nil
+                imageViewContainer.themeBackgroundColor = .messageBubble_overlay
+                hStackViewContainer.themeBackgroundColor = nil
         }
         
         // Body text view

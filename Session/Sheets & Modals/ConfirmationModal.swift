@@ -26,7 +26,10 @@ public class ConfirmationModal: Modal {
         let confirmStyle: ThemeValue
         let cancelTitle: String
         let cancelStyle: ThemeValue
-        let onConfirm: (() -> ())?
+        let dismissOnConfirm: Bool
+        let onConfirm: ((UIViewController) -> ())?
+        
+        // MARK: - Initialization
         
         init(
             title: String,
@@ -36,7 +39,8 @@ public class ConfirmationModal: Modal {
             confirmStyle: ThemeValue = .textPrimary,
             cancelTitle: String = "TXT_CANCEL_TITLE".localized(),
             cancelStyle: ThemeValue = .danger,
-            onConfirm: (() -> ())? = nil
+            dismissOnConfirm: Bool = true,
+            onConfirm: ((UIViewController) -> ())? = nil
         ) {
             self.title = title
             self.explanation = explanation
@@ -45,8 +49,27 @@ public class ConfirmationModal: Modal {
             self.confirmStyle = confirmStyle
             self.cancelTitle = cancelTitle
             self.cancelStyle = cancelStyle
+            self.dismissOnConfirm = dismissOnConfirm
             self.onConfirm = onConfirm
         }
+        
+        // MARK: - Mutation
+        
+        public func with(onConfirm: ((UIViewController) -> ())? = nil) -> Info {
+            return Info(
+                title: self.title,
+                explanation: self.explanation,
+                stateToShow: self.stateToShow,
+                confirmTitle: self.confirmTitle,
+                confirmStyle: self.confirmStyle,
+                cancelTitle: self.cancelTitle,
+                cancelStyle: self.cancelStyle,
+                dismissOnConfirm: self.dismissOnConfirm,
+                onConfirm: (onConfirm ?? self.onConfirm)
+            )
+        }
+        
+        // MARK: - Confirmance
         
         public static func == (lhs: ConfirmationModal.Info, rhs: ConfirmationModal.Info) -> Bool {
             return (
@@ -56,7 +79,8 @@ public class ConfirmationModal: Modal {
                 lhs.confirmTitle == rhs.confirmTitle &&
                 lhs.confirmStyle == rhs.confirmStyle &&
                 lhs.cancelTitle == rhs.cancelTitle &&
-                lhs.cancelStyle == rhs.cancelStyle
+                lhs.cancelStyle == rhs.cancelStyle &&
+                lhs.dismissOnConfirm == rhs.dismissOnConfirm
             )
         }
         
@@ -68,10 +92,11 @@ public class ConfirmationModal: Modal {
             confirmStyle.hash(into: &hasher)
             cancelTitle.hash(into: &hasher)
             cancelStyle.hash(into: &hasher)
+            dismissOnConfirm.hash(into: &hasher)
         }
     }
     
-    private let onConfirm: (UIViewController) -> ()
+    private let internalOnConfirm: (UIViewController) -> ()
     
     // MARK: - Components
     
@@ -140,10 +165,13 @@ public class ConfirmationModal: Modal {
     
     // MARK: - Lifecycle
     
-    init(info: Info, onConfirm: ((UIViewController) -> ())? = nil) {
-        self.onConfirm = { viewController in
-            onConfirm?(viewController)
-            info.onConfirm?()
+    init(info: Info) {
+        self.internalOnConfirm = { viewController in
+            info.onConfirm?(viewController)
+            
+            guard info.dismissOnConfirm else { return }
+            
+            viewController.dismiss(animated: true)
         }
         
         super.init(nibName: nil, bundle: nil)
@@ -175,6 +203,6 @@ public class ConfirmationModal: Modal {
     // MARK: - Interaction
     
     @objc private func confirmationPressed() {
-        onConfirm(self)
+        internalOnConfirm(self)
     }
 }

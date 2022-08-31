@@ -59,9 +59,9 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.isUserInteractionEnabled = false
-        result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
-        result.text = NSLocalizedString("CONVERSATION_SETTINGS_BLOCKED_CONTACTS_EMPTY_STATE", comment: "")
-        result.textColor = Colors.text
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_EMPTY_STATE".localized()
+        result.themeTextColor = .textSecondary
         result.textAlignment = .center
         result.numberOfLines = 0
         result.isHidden = true
@@ -188,9 +188,13 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         }
         
         // Show the empty state if there is no data
+        let hasContactsData: Bool = (updatedData
+            .first(where: { $0.model == .contacts })?
+            .elements
+            .isEmpty == false)
         unblockButton.isEnabled = !viewModel.selectedContactIds.isEmpty
-        unblockButton.isHidden = updatedData.isEmpty
-        emptyStateLabel.isHidden = !updatedData.isEmpty
+        unblockButton.isHidden = !hasContactsData
+        emptyStateLabel.isHidden = hasContactsData
         
         CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in
@@ -357,26 +361,79 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         guard !viewModel.selectedContactIds.isEmpty else { return }
         
         let contactIds: Set<String> = viewModel.selectedContactIds
+        let contactNames: [String] = contactIds
+            .map { contactId in
+                guard
+                    let section: BlockedContactsViewModel.SectionModel = self.viewModel.contactData
+                        .first(where: { section in section.model == .contacts }),
+                    let viewModel: BlockedContactsViewModel.DataModel = section.elements
+                        .first(where: { model in model.id == contactId })
+                else { return contactId }
+                
+                return viewModel.profile.displayName()
+            }
+        let confirmationTitle: String = {
+            guard contactNames.count > 1 else {
+                // Show a single users name
+                return String(
+                    format: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_SINGLE".localized(),
+                    (
+                        contactNames.first ??
+                        "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_FALLBACK".localized()
+                    )
+                )
+            }
+            guard contactNames.count > 3 else {
+                // Show up to three users names
+                let initialNames: [String] = Array(contactNames.prefix(upTo: (contactNames.count - 1)))
+                let lastName: String = contactNames[contactNames.count - 1]
+                
+                return [
+                    String(
+                        format: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_1".localized(),
+                        initialNames.joined(separator: ", ")
+                    ),
+                    String(
+                        format: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_2_SINGLE".localized(),
+                        lastName
+                    ),
+                ].joined(separator: " ")
+            }
+            
+            // If we have exactly 4 users, show the first two names followed by 'and X others', for
+            // more than 4 users, show the first 3 names followed by 'and X others'
+            let numNamesToShow: Int = (contactNames.count == 4 ? 2 : 3)
+            let initialNames: [String] = Array(contactNames.prefix(upTo: numNamesToShow))
+            
+            return [
+                String(
+                    format: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_1".localized(),
+                    initialNames.joined(separator: ", ")
+                ),
+                String(
+                    format: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_3".localized(),
+                    (contactNames.count - numNamesToShow)
+                ),
+            ].joined(separator: " ")
+        }()
         let confirmationModal: ConfirmationModal = ConfirmationModal(
             info: ConfirmationModal.Info(
-                title: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE".localized(),
+                title: confirmationTitle,
                 confirmTitle: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_ACTON".localized(),
                 confirmStyle: .danger,
                 cancelStyle: .textPrimary
-            )
-        ) { [weak self] _ in
-            // Unblock the contacts
-            Storage.shared.write { db in
-                _ = try Contact
-                    .filter(ids: contactIds)
-                    .updateAll(db, Contact.Columns.isBlocked.set(to: false))
-                
-                // Force a config sync
-                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+            ) { [weak self] _ in
+                // Unblock the contacts
+                Storage.shared.write { db in
+                    _ = try Contact
+                        .filter(ids: contactIds)
+                        .updateAll(db, Contact.Columns.isBlocked.set(to: false))
+                    
+                    // Force a config sync
+                    try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
+                }
             }
-            
-            self?.dismiss(animated: true, completion: nil)
-        }
+        )
         self.present(confirmationModal, animated: true, completion: nil)
     }
 }
