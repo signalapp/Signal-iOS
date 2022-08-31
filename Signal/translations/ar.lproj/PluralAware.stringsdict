@@ -615,10 +615,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%d آخرين…</string>
+			<key>many</key>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%d آخرين…</string>
 			<key>one</key>
-			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ وشخصٌ آخر…</string>
 			<key>other</key>
-			<string>Ringing %2$@, %3$@, and %d others…</string>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%dآخرين…</string>
+			<key>two</key>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%d آخرين…</string>
+			<key>zero</key>
+			<string>جارٍ الاتصال بـ %2$@ و%3$@ و%d آخرين…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -703,10 +711,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>سيتم إشعار %2$@ و%3$@ و%d آخرين</string>
+			<key>many</key>
+			<string>سيتم إشعار %2$@ و%3$@ و%d آخرين</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other will be notified</string>
+			<string>سيتم إشعار %2$@ و%3$@ وشخصٌ آخر</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others will be notified</string>
+			<string>سيتم إشعار %2$@ و%3$@ و%d  آخرين</string>
+			<key>two</key>
+			<string>سيتم إشعار %2$@ و%3$@ و%d آخرين</string>
+			<key>zero</key>
+			<string>سيتم إشعار %2$@ و%3$@ و%d آخرين</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -719,10 +735,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>سَيتصل Signal بـ %2$@ و%3$@ و%d آخرين</string>
+			<key>many</key>
+			<string>سَيتصل Signal بـ %2$@ و%3$@ و%d آخرين</string>
 			<key>one</key>
-			<string>Signal will ring %2$@, %3$@, and 1 other</string>
+			<string>سَيتصل Signal بـ %2$@و%3$@وشخصٌ آخر</string>
 			<key>other</key>
-			<string>Signal will ring %2$@, %3$@, and %d others</string>
+			<string>سَيتصل Signal بـ %2$@ و%3$@ و%d آخرين</string>
+			<key>two</key>
+			<string>سَيتصل Signal بـ %2$@ و%3$@ و%d آخرين</string>
+			<key>zero</key>
+			<string>سَيتصل Signal بـ %2$@ و%3$@ و%d آخرين</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>

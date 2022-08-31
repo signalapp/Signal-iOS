@@ -1,7 +1,3 @@
-• Sig hej til gavebadges: Du kan nu give et UFO-badge til dine venners profiler ved at donere til Signal. Gå til Indstillinger >> Donér til Signal >> Giv et badge i gave for at komme i gang. Vi er en nonprofitorganisation, og vi er afhængige af din støtte!
-• Justér hastigheden på stemmebeskeder, så du kan komme til sagen eller lytte til hver eneste detalje.
-• Med forsvindende meddelelser vil du nu kunne se en nedtælling, så du ved, hvornår beskeden slettes.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Se videoer i fantastisk 4K
-• Små forbedringer af placeringen af opkaldsknappen samt øget tilgængelighed for knappen Appindstillinger.
-• Fejlrettelser af kladdebeskeder og i funktionen, der giver dig mulighed for at forlade grupper.
+• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.  
+• If a blocked contact adds you to a group, you’ll automatically leave that group. 
+• Users with Speak Selection enabled can long press a text and select “Speak” to hear the text message read aloud. Thank you to our open source community for this accessibility feature!

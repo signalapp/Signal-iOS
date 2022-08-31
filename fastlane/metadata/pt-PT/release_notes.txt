@@ -1,7 +1,3 @@
-• Apresentamos os crachás de presente: Agora ao doar para o Signal pode dar um crachá de OVNI a um amigo seu para que ele o possa exibir no perfil. Vá às Definições >> Doar para o Signal >> Dê um crachá de presente para começar. Somos uma organização sem fins lucrativos e dependemos do seu apoio!
-• Altere a velocidade das mensagens de áudio para ir direto ao assunto ou apanhar mais detalhes.
-• Para mensagens temporárias, os detalhes da mensagem mostrarão uma contagem decrescente para lhe dizer quando é que a mensagem se vai autodestruir.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Veja vídeos em glorioso 4K
-• Pequenas melhorias na orientação do botão de chamar e mais acessibilidade ao botão de definições da app.
-• Correções de bugs na escrita de rascunhos de mensagem e saída de grupos
+• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.  
+• If a blocked contact adds you to a group, you’ll automatically leave that group. 
+• Users with Speak Selection enabled can long press a text and select “Speak” to hear the text message read aloud. Thank you to our open source community for this accessibility feature!

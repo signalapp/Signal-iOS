@@ -1165,6 +1165,12 @@
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "ចែករំលែក";
 
+/* Context menu button title */
+"CONTEXT_MENU_SPEAK_MESSAGE" = "Speak";
+
+/* Context menu button title */
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "ការជជែកនេះនឹងត្រូវលុបចេញពីឧបករណ៍នេះ។";
 
@@ -1500,9 +1506,6 @@
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "ទាញកំណត់ត្រាចេញ";
-
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "ផ្ញើទៅខ្លួនឯង";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "ចែករំលែក";
@@ -3411,6 +3414,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "ចែករំលែកមេឌា";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "Speak Message";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Stop Speaking Message";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "ការអញ្ជើញក្រុម";
@@ -6393,6 +6402,9 @@
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "បើក";
+
+/* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
+"SYSTEM_ADDRESS_NAME" = " Signal";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ផ្ទៀងផ្ទាត់";

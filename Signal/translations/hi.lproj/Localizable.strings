@@ -1165,6 +1165,12 @@
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "साझा करें";
 
+/* Context menu button title */
+"CONTEXT_MENU_SPEAK_MESSAGE" = "Speak";
+
+/* Context menu button title */
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "इस चैट को इस डिवाइस से मिटा दिया जाएगा।";
 
@@ -1500,9 +1506,6 @@
 
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "लॉग एक्सपोर्ट करें";
-
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "अपनें आप को भेजें";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "साझा करें";
@@ -2237,10 +2240,10 @@
 "GROUP_CALL_IS_FULL" = "कॉल पूर्ण है";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%@ को रिंग किया जा रहा है…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ और %2$@ को रिंग किया जा रहा है…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "कॉल से जुड़ें";
@@ -2318,16 +2321,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "आपको कॉल से डिसकनेक्ट कर दिया गया था। अपना कनेक्नशन चेक करें और फिर से प्रयास करें।";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ को सूचित किया जाएगा";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@और  %2$@ को सूचित किया जाएगा";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal द्वारा %@ को रिंग किया जाएगा";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal द्वारा %1$@ और %2$@ को रिंग किया जाएगा";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "आप ग्रुप कॉल मे हैं";
@@ -3411,6 +3414,12 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "मीडिया शेयर करें";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "Speak Message";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Stop Speaking Message";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "ग्रुप आमंत्रण";
@@ -6140,7 +6149,7 @@
 "STORIES_DELETE_STORY_ACTION" = "डिलीट करें";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "यह स्टोरी डिलीट करनी है? यह उन सभी के लिए डिलीट हो जाएगी जिन्हें यह मिली है।";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "यह स्टोरी डिलीट करनी है? यह उन सभी के लिए भी डिलीट हो जाएगी जिन्हें यह मिली है।";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "स्टोरी सेव की गई";
@@ -6393,6 +6402,9 @@
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "पर";
+
+/* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
+"SYSTEM_ADDRESS_NAME" = "Signal";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "सत्यापित करें";

@@ -1,7 +1,3 @@
-•  Memperkenalkan lencana hadiah: Kini anda boleh menghadiahkan lencana UFO kepada kawan untuk dipaparkan pada profil mereka dengan menderma kepada Signal. Pergi ke Tetapan  >> Derma kepada Signal >> Hadiahkan Lencana untuk bermula. Kami adalah organisasi tidak berasaskan keuntungan dan bergantung pada sokongan anda!
-• Tukar kepantasan mesej audio sama ada untuk memahami atau mengetahui butirannya.
-• Untuk mesej menghilang, butiran mesej akan menunjukkan kiraan yang memberitahu anda apabila mesej akan musnah sendiri.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Tonton video dalam 4K glory
-• Peningkatan kecil kepada butang orientasi menghubungi dan meningkatkan kebolehcapaian kepada butang tetapan aplikasi
-• Pembaikan pepijat untuk mengarang draf mesej dan meninggalkan kumpulan
+• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.  
+• If a blocked contact adds you to a group, you’ll automatically leave that group. 
+• Users with Speak Selection enabled can long press a text and select “Speak” to hear the text message read aloud. Thank you to our open source community for this accessibility feature!

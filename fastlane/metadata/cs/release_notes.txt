@@ -1,7 +1,3 @@
-• Představujeme dárkové odznaky: Nyní můžete darovat odznak UFO svému příteli, aby si ho zobrazil na svém profilu, když přispějete na Signal. Stačí přejít do Nastavení >> Přispět na Signal >> Darovat odznak. Jsme neziskoví a závislí na vaší podpoře!
-• Upravte si rychlost audio zpráv podle toho, zda se chcete rychle dostat k jádru věci, nebo pochytit podrobnosti.
-• U mizejících zpráv se v podrobnostech zprávy zobrazí odpočítávání, abyste věděli, kdy se zpráva sama zničí.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Sledujte videa v rozlišení 4K
-• Drobná vylepšení orientace tlačítka pro volání a lepší přístupnost tlačítka pro nastavení aplikace
-• Opravy chyb při vytváření konceptů zpráv a opouštění skupin
+• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.  
+• If a blocked contact adds you to a group, you’ll automatically leave that group. 
+• Users with Speak Selection enabled can long press a text and select “Speak” to hear the text message read aloud. Thank you to our open source community for this accessibility feature!

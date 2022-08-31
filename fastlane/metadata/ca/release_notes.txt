@@ -1,7 +1,3 @@
-• Presentem les insígnies de regal: fent una donació a Signal, ara pots regalar una insígnia a les teves amistats perquè la mostrin al seu perfil. Per fer-ho, ves a Ajustos >> Fer donació a Signal >> Regalar una Insígnia. Som una organització sense ànim de lucre i depenem del teu suport! 
-• Canvia la velocitat de les notes de veu, ja sigui per saltar-te la palla o per entendre'n millor tots els detalls.
-• Als missatges a desaparèixer, els detalls del missatge mostraran un compte enrere que t'indicarà quan s'autodestruirà el missatge.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Dona't el luxe de veure els vídeos en 4K
-• Petites millores pel que fa a l'orientació del botó de trucada i una major accessibilitat al botó d'Ajustos de l'app
-• S'han corregit alguns errors a l'hora de treballar en esborranys de missatges i sortir de grups
+• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.  
+• If a blocked contact adds you to a group, you’ll automatically leave that group. 
+• Users with Speak Selection enabled can long press a text and select “Speak” to hear the text message read aloud. Thank you to our open source community for this accessibility feature!

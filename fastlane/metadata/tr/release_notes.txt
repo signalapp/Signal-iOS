@@ -1,7 +1,3 @@
-• Hediye rozetlerle tanışın: Şimdi Signal'e bağışta bulunarak bir arkadaşına UFO rozeti hediye edebilirsin. Denemek için aşağıdaki butona tıkla veya Ayarlar'a git, Signal'e Bağış Yap ve Bir Rozet Hediye Et. Kar amacı gütmeyen bir kuruluş olan Signal'in, desteğine ihtiyacı var!
-• İstediğin yeri dinlemek veya ayrıntıları yakalamak için sesli mesajların hızını değiştirebilirsin.
-• Kaybolan mesajların ne zaman yok olacağını mesaj ayrıntılarındaki geri sayıma bakarak öğrenebilirsin. 
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Videoları 4K netliğinde izleyin
-• Arama butonu yönlendirmesinde küçük iyileştirmeler yapıldı ve uygulama ayarları butonu için artırılmış erişilebilirlik sağlandı
-• Taslak mesajlar oluşturmak ve gruplardan ayrılmak için hata düzeltmeleri yapıldı
+• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.  
+• If a blocked contact adds you to a group, you’ll automatically leave that group. 
+• Users with Speak Selection enabled can long press a text and select “Speak” to hear the text message read aloud. Thank you to our open source community for this accessibility feature!

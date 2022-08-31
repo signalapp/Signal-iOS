@@ -475,10 +475,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Llamando a %2$@, %3$@, y a %d personas más... </string>
 			<key>one</key>
-			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<string>Llamando a %2$@, %3$@, y a 1 persona más... </string>
 			<key>other</key>
-			<string>Ringing %2$@, %3$@, and %d others…</string>
+			<string>Llamando a %2$@, %3$@, y a %d personas más... </string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -545,10 +547,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Se notificará a %2$@, %3$@ y a %d personas más</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other will be notified</string>
+			<string>Se notificará a %2$@, %3$@ y a 1 persona más</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others will be notified</string>
+			<string>Se notificará a %2$@, %3$@ y a %d personas más</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -561,10 +565,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>Signal llamará a %2$@, %3$@, y a %d personas más</string>
 			<key>one</key>
-			<string>Signal will ring %2$@, %3$@, and 1 other</string>
+			<string>Signal llamará a %2$@, %3$@, y a 1 persona más</string>
 			<key>other</key>
-			<string>Signal will ring %2$@, %3$@, and %d others</string>
+			<string>Signal llamará a %2$@, %3$@, y a %d personas más</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>

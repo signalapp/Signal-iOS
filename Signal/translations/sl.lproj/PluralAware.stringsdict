@@ -523,10 +523,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Zvoni uporabnikoma_cama %2$@, %3$@ in še %d drugim…</string>
 			<key>one</key>
-			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<string>Zvoni uporabnikoma_cama %2$@, %3$@ in še 1 drugemu_i…</string>
 			<key>other</key>
-			<string>Ringing %2$@, %3$@, and %d others…</string>
+			<string>Zvoni uporabnikoma_cama %2$@, %3$@ in še %d drugim…</string>
+			<key>two</key>
+			<string>Zvoni uporabnikoma_cama %2$@, %3$@ in še %ddrugima…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -599,10 +603,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%2$@, %3$@ in %d drugi bodo obveščeni</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other will be notified</string>
+			<string>%2$@, %3$@ in 1 drugi_a bo obveščen_a</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others will be notified</string>
+			<string>%2$@, %3$@ in %d drugih bo obveščenih</string>
+			<key>two</key>
+			<string>%2$@, %3$@ in %d druga bosta obveščena</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -615,10 +623,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Signal bo zvonil uporabnikoma_cama %2$@, %3$@ in še %d drugim</string>
 			<key>one</key>
-			<string>Signal will ring %2$@, %3$@, and 1 other</string>
+			<string>Signal bo zvonil uporabnikoma_cama %2$@, %3$@ in še 1 drugemu_i</string>
 			<key>other</key>
-			<string>Signal will ring %2$@, %3$@, and %d others</string>
+			<string>Signal bo zvonil uporabnikoma_cama %2$@, %3$@ in še %d drugim</string>
+			<key>two</key>
+			<string>Signal bo zvonil uporabnikoma_cama %2$@, %3$@ in še %d drugima</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
