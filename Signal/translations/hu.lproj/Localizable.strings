@@ -2237,10 +2237,10 @@
 "GROUP_CALL_IS_FULL" = "A hívás betelt";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%@ hívása...";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ és %2$@ hívása…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Hívásba lépés";
@@ -2318,16 +2318,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Lecsatlakoztál a hívásból. Ellenőrizd a hálózati kapcsolatot és próbáld újra!";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ felhasználó értesítést kap";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ és %2$@ értesítést kap";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "A Signal felhívja %@ felhasználót";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "A Signal felhívja %1$@ és %2$@ felhasználókat";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Csoporthívásban vagy";
@@ -6140,7 +6140,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Törlés";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Kitörlöd ezt a történetet? Az összes címzettnél törlésre kerül.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Törlöd ezt a Történetet? Ha igen, a Történet az összes címzettnél törlésre kerül.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Történet elmentve";

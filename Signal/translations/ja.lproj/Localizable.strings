@@ -2237,10 +2237,10 @@
 "GROUP_CALL_IS_FULL" = "満席です";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%@ を呼び出しています…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ と %2$@ を呼び出しています…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "通話に参加する";
@@ -2318,16 +2318,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "通話が切断されました。ネットワーク接続を確認して再度試してください。";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ に通知されます";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ と %2$@ に通知されます";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signalは %@ を呼び出します";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signalは %1$@ と %2$@ を呼び出します";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "グループ通話中です";
@@ -6140,7 +6140,7 @@
 "STORIES_DELETE_STORY_ACTION" = "削除";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "このストーリーを削除しますか？これを受けとった人も削除されます。";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "このストーリーを削除しますか？これを受けとった人にも削除されます。";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "ストーリーが保存されました";

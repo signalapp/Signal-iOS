@@ -2237,10 +2237,10 @@
 "GROUP_CALL_IS_FULL" = "A chamada está lotada";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ligando para %@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ligando para %1$@ e %2$@…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Participar da chamada";
@@ -2318,16 +2318,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Você foi desconectado(a) da chamada. Verifique sua conexão à internet e tente novamente.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ receberá uma notificação";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ e %2$@ receberão notificações";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "O Signal ligará para %@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "O Signal ligará para %1$@ e %2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Você está na chamada em grupo";
@@ -6140,7 +6140,7 @@
 "STORIES_DELETE_STORY_ACTION" = "Excluir";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Excluir esse story? Ele também será excluído para todos que o receberam.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Quer excluir esse story? Ele também será excluído para todos que o receberam.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "Story salvo";

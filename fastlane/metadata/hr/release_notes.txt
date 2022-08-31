@@ -1,7 +1,4 @@
-• Predstavljamo značke na poklon: doniranjem Signalu, od sada prijateljima možete pokloniti NLO značku koju će moći prikazati na svom profilu. Idite na Postavke >> Donirajte Signalu >> Poklonite značku. Mi smo neprofitna organizacija i ovisimo o vašoj podršci!
 • Promijenite brzinu glasovnih poruka kako biste došli do bitnog ili pak čuli detalje.
-• Za nestajuće poruke, u detaljima poruke bit će prikazano odbrojavanje do njihovog samouništenja.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Gledajte videozapise u punom 4K sjaju
-• Mala poboljšanja u orijentaciji gumba za pozivanje i povećana pristupačnost gumba za postavke
-• Ispravci grešaka kod sastavljanja skica poruka i napuštanja grupa
+• Uživajte u poboljšanom izgledu našeg zaslona grupnih poziva
+• Birajte između 5 fontova kada dodate tekst slikama u aplikaciji. Serif ili sans serif, tu smo da vam omogućimo da se izrazite onako kako vi želite.
+• Dodatna mala podešavanja, ispravci bugova i poboljšanje performansa aplikacije. Hvala vam što koristite Signal!

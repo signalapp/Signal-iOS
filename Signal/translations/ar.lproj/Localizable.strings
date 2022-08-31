@@ -2237,10 +2237,10 @@
 "GROUP_CALL_IS_FULL" = "المُكالمة ممتلئة";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "جارٍ الاتصال بـ %@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "جارٍ الاتصال بـ %1$@ و%2$@…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "الانضمام للمُكالمة";
@@ -2318,16 +2318,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "لقد قُطع اتصالك بهذه المُكالمة. يُرجى التحقق من اتصالك بالشبكة ثم المُحاولة مرة أخرى.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "سَيتم إشعار %@";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "سَيتم إشعار %1$@ و%2$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "سَيتصل Signal بـ %@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "سَيتصل Signal بـ %1$@ و%2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "إنك في مُكالمة جماعية";
@@ -6140,7 +6140,7 @@
 "STORIES_DELETE_STORY_ACTION" = "حذف";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "‫حذف هذه القصة ؟ سوف تُحذَف أيضا من عن جميع من استلموها.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "حذف هذه القصة؟ ستُحذَف أيضًا من عند جميع من اِستلمها.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "تم حفظ القصة";

@@ -1,7 +1,4 @@
-• Introducerar gåvomärken: Genom att donera till Signal kan du nu ge bort ett ufomärke till en vän som kan visa den på sin profilsida. Gå till Inställningar > Donera till Signal > Ge bort ett märke för att komma igång. Vi är en ideell organisation och vi behöver ditt stöd.
-• Ändra hastigheten på ljudmeddelanden för att snabbt komma till det viktiga eller fånga varje detalj.
-• Meddelandedetaljer visar en nedräkning för försvinnande meddelanden, så du vet när ett meddelande självförstörs.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-•  Visa videor i fantastisk 4K
-• Mindre förbättringar till samtalsknappens orientering och ökad tillgänglighet till knappen för appinställningar
-• Buggfixar för att skapa utkast på meddelanden och att lämna grupper
+• Ändra hastigheten på röstmeddelanden för att snabbt komma till det viktiga eller fånga varje detalj.
+• Upplev det förbättrade skärmutseendet för gruppsamtal
+• Välj mellan fem typsnitt när du lägger till text till bilder i appen. Serif eller sans serif, vi hjälper dig uttrycka dig själv.
+• Ytterligare små justeringer, buggfixar och prestandaförbättringar. Tack för att du använder Signal!

@@ -1,7 +1,4 @@
-• Sono arrivati i Badge regalo: adesso, quando fai una donazione a Signal, puoi regalare un Badge Signal a forma di UFO a un'altra persona da mostrare sul proprio profilo. Per iniziare, vai su Impostazioni >> Dona a Signal >> Regala un Badge. Grazie per il tuo sostegno alla nostra organizzazione non-profit!
 • Quando ascolti i messaggi vocali puoi cambiare la velocità di riproduzione per sentirli più rapidamente o più lentamente.
-• Per ogni messaggio temporaneo potrai visualizzare un conto alla rovescia nelle informazioni del messaggio, così saprai sempre quando quel determinato messaggio verrà eliminato.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Adesso puoi guardare i video in 4K
-• Piccoli miglioramenti apportati all'orientamento dei pulsanti di chiamata e una maggiore accessibilità dell'icona delle Impostazioni dell'app
-• Correzioni di bug per la composizione di bozze di messaggi e l'uscita dai gruppi
+• Abbiamo migliorato l'aspetto della schermata delle chiamate di gruppo
+• Scegli tra 5 font diversi quando aggiungi del testo nelle immagini dentro l'app di Signal: c'è uno stile adatto ad ogni personalità.
+• Altre piccole modifiche e correzioni di bug per far funzionare l'app senza problemi. Grazie per usare Signal!

@@ -1,7 +1,4 @@
-• Te presentamos las insignias de regalo: ahora puedes regalar una insignia de OVNI a un amigo para que la muestre en su perfil donando a Signal. Para empezar, dirígete a Ajustes >> Donar a Signal >> Regala una insignia. ¡Somos una organización sin fines de lucro y dependemos de tu apoyo!
-• Cambia la velocidad de los mensajes de audio para escuchar lo que más te interese o anotar los detalles importantes.
-• Para los mensajes a desaparecer, los detalles de cada mensaje te mostrarán una cuenta regresiva que indicará cuándo se destruirá el mensaje.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Mira videos en una calidad gloriosa 4K
-• Pequeñas mejoras a la orientación del botón de llamada y mayor accesibilidad al botón de ajustes de la app
-• Solución a errores para escribir borradores de mensajes y salir de grupos
+• Cambia la velocidad de los mensajes de voz, ya sea para ir directament a lo más importante o para captar mejor los detalles.
+• Disfruta de la apariencia mejorada de nuestra pantalla de llamada en grupo
+• Selecciona entre 5 tipos de letra cuando agregues texto a imágenes dentro de la app. Ya sea si quieres letra de palo seco o con remates, estamos aquí para ayudarte a expresarte.
+• Pequeños cambios adicionales, errores corregidos y un funcionamiento mejorado. ¡Gracias por utilizar Signal!

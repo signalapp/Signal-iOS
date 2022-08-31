@@ -1,7 +1,4 @@
-• Îți prezentăm insignele cadou: Acum poți să oferi o insignă UFO unui prieten care o poate afișa la profil dacă donezi pentru Signal. Mergi la Setări >> Donează către Signal >> Oferă o Insignă ca să începi. Suntem un ONG și depindem de susținerea ta!
 • Schimbă viteza mesajelor audio ca să ajungi mai repede la subiect sau ca să prinzi toate detaliile.
-• Pentru mesajele care dispar, detaliile mesajelor vor arăta o numărătoare inversă ca să știi când se va auto-distruge mesajul.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Vizionează videoclipuri în gloria 4K
-• Îmbunătățiri mici la orientarea butonului de apel și accesibilitate mai bună pentru butonul de setări ale aplicației
-• Remedieri ale bug-urilor la scrierea mesajelor și la părăsirea grupurilor
+• Ai un aspect îmbunătățit al ecranului pentru apeluri de grup
+• Alege între 5 fonturi când adaugi text la imagini în aplicație. Serif sau sans serif, suntem aici ca să te ajutăm să te exprimi.
+• Reparări de bug-uri, mici ajustări și îmbunătățiri ale performanței. Îți mulțumim că folosești Signal!

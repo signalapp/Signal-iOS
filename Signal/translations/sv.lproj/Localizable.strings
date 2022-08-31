@@ -2237,10 +2237,10 @@
 "GROUP_CALL_IS_FULL" = "Samtalet är fullt";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringer %@ ...";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringer %1$@ och %2$@ ...";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Gå med i samtalet";
@@ -2318,16 +2318,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du kopplades bort från samtalet. Kontrollera din anslutning och försök igen.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ kommer att meddelas";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ och %2$@ kommer att meddelas";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal kommer att ringa %@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal kommer att ringa %1$@ och %2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Du är i gruppsamtalet";

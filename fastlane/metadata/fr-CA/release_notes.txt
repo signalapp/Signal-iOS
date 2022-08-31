@@ -1,7 +1,4 @@
-• Macaron cadeau : vous pouvez désormais offrir un macaron OVNI à un ami pour qu'il l'affiche sur son profil en effectuant un don à Signal. Allez dans Paramètres >> Faire un don à Signal >> Offrir un badge pour commencer. Notre organisation à but non lucratif a besoin de vous !
-• Modifiez la vitesse de lecture des messages audio pour gagner du temps ou saisir l'essentiel du contenu.
-• Pour les messages éphémères, un compte à rebours vous indiquant l'auto-destruction du message s'affichera.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Regardez vos vidéos en 4K
-• De petites améliorations ont été apportées à l'orientation du bouton d'appel et à l'accessibilité du bouton des paramètres
-• Des correctifs ont été apportés pour la création de messages brouillons et pour quitter les groupes
+• Modifiez la vitesse des messages vocaux pour aller à l'essentiel ou pour entendre chaque détail.
+• Savourez le nouveau look de notre écran réservé à l'appel de groupe
+• Choisissez parmi 5 polices pour le texte que vous ajoutez aux images de l'application. Avec ou sans sérif, nous vous aidons à vous exprimer. 
+• Petites améliorations, corrections de bugs et améliorations des performances. Merci d’utiliser Signal !

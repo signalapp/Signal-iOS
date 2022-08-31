@@ -1,7 +1,4 @@
-• Memperkenalkan lencana hadiah: Kini Anda bisa memberikan lencana UFO kepada teman untuk ditampilkan di profil mereka dengan berdonasi ke Signal. Buka Pengaturan >> Donasi ke Signal >> Beri Hadiah Lencana untuk memulai. Kami organisasi nirlaba dan keberlangsungan kami bergantung pada dukungan Anda!
-• Ubah kecepatan pesan audio agar bisa langsung ke inti atau mendapatkan detail pesan.
-• Untuk pesan terhapus otomatis, detail pesan akan menampilkan hitungan mundur guna memberi tahu kapan pesan akan terhapus.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Lihat video dengan kualitas 4K
-• Perbaikan kecil pada orientasi tombol panggilan dan peningkatan aksesibilitas untuk tombol pengaturan aplikasi
-• Perbaikan bug untuk menulis draf pesan dan meninggalkan grup
+• Mengubah kecepatan pesan suara agar bisa langsung menangkap intinya atau mendapat detail pesan.
+• Nikmati tampilan yang disempurnakan pada layar panggilan grup
+• Pilih di antara 5 font saat Anda menambahkan teks ke gambar dalam aplikasi. Serif atau Sans Serif, kami hadir untuk membantu Anda ekspresikan diri.
+• Tambahan penyesuaian kecil, perbaikan bug, dan peningkatan performa. Terima kasih telah menggunakan Signal!

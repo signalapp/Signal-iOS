@@ -1,7 +1,4 @@
-• Przedstawiamy odznaki-prezenty: wpłacając darowiznę na rzecz Signal, możesz podarować znajomemu odznakę UFO do wyświetlenia na profilu. Przejdź do Ustawień >> Wpłać darowiznę na rzecz Signal >> Podaruj odznakę. Jako organizacja non-profit polegamy na Twoim wsparciu.
 • Zmieniaj prędkość wiadomości głosowych, by przejść do sedna lub wychwycić szczegóły.
-• W szczegółach znikającej wiadomości znajdziesz ikonę odliczania czasu wskazującą, po jakim czasie wiadomość zniknie.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Wyświetlaj wideo w jakości 4K
-• Niewielkie usprawnienia w orientacji przycisku dzwonienia i większa dostępność przycisku ustawień aplikacji
-• Poprawki błędów przy tworzeniu wersji roboczych wiadomości i opuszczaniu grup
+• Ulepszony wygląd ekranu rozmowy grupowej
+• Gdy dodajesz tekst do zdjęć w aplikacji, masz do wyboru aż pięć różnych czcionek. Wszystko po to, aby pomóc Ci wyrazić siebie. To jak, szeryfowa czy bezszeryfowa?
+• Dodatkowe ulepszenia, poprawki błędów i zwiększona funkcjonalność. Dzięki za korzystanie z Signal!

@@ -1,7 +1,4 @@
-• Vi introduserer gavemerker: Nå kan du gi et UFO-merke til en venn ved å donere et engangsbeløp til Signal. Gå til Innstillinger for å komme i gang >> Doner til Signal >> Gi et merke i gave. Vi er en ideell organisasjon, og setter stor pris på din støtte!
-• Endre hastigheten på talemeldinger slik at du kan komme rett til poenget eller få med deg alle detaljene.
-• Når du mottar en tidsbegrenset melding kan du se hvor lenge det er til meldingen forsvinner i meldingsdetaljene.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Se videoer i full 4K
-• Vi har gjort små justeringer av anropsknappen og gjort det enklere å finne knappen for app-innstillingene
-• Feilrettinger ved meldingsutkast og å forlate grupper
+• Endre hastigheten på talemeldinger slik at du kan komme til poenget eller få med deg alle detaljene.
+• Vi har forbedret utformingen av skjermen for gruppesamtaler
+• Velg mellom 5 fonter når du legger inn tekst på bilder og videoer i appen. Vi hjelper deg med å uttrykke deg på din måte, uansett om du liker Serif eller Sans serif.
+• Ytterligere små justeringer, feilrettinger og ytelsesforbedringer. Takk for at du bruker Signal!

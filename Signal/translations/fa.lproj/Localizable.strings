@@ -2237,10 +2237,10 @@
 "GROUP_CALL_IS_FULL" = "تماس کامل است";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "در حال تماس با %@...";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "در حال تماس با %1$@ و %2$@...";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "پیوستن به تماس";
@@ -2318,16 +2318,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "ارتباط شما با تماس قطع شد. اتصال خود را بررسی کنید و دوباره امتحان کنید.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "به %@ اطلاع داده خواهد شد";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "به %1$@ و %2$@ اطلاع داده خواهد شد";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "سیگنال با %@ تماس خواهد گرفت";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "سیگنال با %1$@ و %2$@ تماس خواهد گرفت";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "شما در تماس گروهی هستید";
@@ -3878,7 +3878,7 @@
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "حالا نه";
 
 /* Action text for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "روشن کن";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "روشن کردن";
 
 /* Body for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "هیچوقت پیامی از مخاطب‌ها و گروه‌هایتان از دست ندهید.";
@@ -5153,7 +5153,7 @@
 "SEND_MEDIA_RETURN_TO_CAMERA" = "بازگشت به دوربین";
 
 /* In-app camera: confirmation button in the prompt to turn off multi-mode. */
-"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "خاموش کن";
+"SEND_MEDIA_TURN_OFF_MM_BUTTON" = "خاموش کردن";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
 "SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "هر عکس و فیلمی که گرفته باشید از دست خواهید داد.";
@@ -6191,7 +6191,7 @@
 "STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "استوری‌های خصوصی";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "حریم خصوصی استوری";
+"STORIES_SETTINGS_TITLE" = "حریم شخصی استوری";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "اشتراک‌گذاری";

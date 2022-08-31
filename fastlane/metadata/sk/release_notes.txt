@@ -1,7 +1,4 @@
-• Predstavujeme darčekové odznaky: Teraz môžete prispením na Signal priateľovi darovať odznak UFO. Váš priateľ si ho môže následne zobraziť vo svojom profile. Ako na to? Prejdite na Nastavenia >> Prispieť na Signal >> Darovať odznak. Sme nezisková organizácia a spoliehame sa na vašu podporu!
-• Zmeňte rýchlosť zvukových správ, aby ste si vypočuli to podstatné, alebo zistili čo vám ušlo.
-• V prípade miznúcich správ sa v detailoch správy zobrazí odpočítavanie, vďaka ktorému budete vedieť, kedy sa správa sama vymaže.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Prezerajte si videá v kvalite 4K
-• Malé vylepšenia orientácie tlačidla volania a lepšia dostupnosť pre tlačidlo nastavení aplikácie
-• Opravy chýb pri vytváraní konceptov správ a opúšťaní skupín
+• Zmeňte rýchlosť hlasových správ, aby ste si vypočuli len to podstatné, alebo zistili čo vám ušlo.
+• Vychutnajte si vylepšený vzhľad obrazovky skupinového hovoru
+• Pri pridávaní textu do obrázkov v aplikácii si môžete vybrať z piatich typov písma. Či už to bude pätkové alebo bezpätkové, s ich pomocou sa vyjadríte ešte lepšie.
+• Ďalšie malé úpravy, opravy chýb a vylepšenia výkonu. Ďakujeme, že používate Signal!

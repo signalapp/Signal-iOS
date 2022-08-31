@@ -1,7 +1,4 @@
-• Hediye rozetlerle tanışın: Şimdi Signal'e bağışta bulunarak bir arkadaşına UFO rozeti hediye edebilirsin. Denemek için aşağıdaki butona tıkla veya Ayarlar'a git, Signal'e Bağış Yap ve Bir Rozet Hediye Et. Kar amacı gütmeyen bir kuruluş olan Signal'in, desteğine ihtiyacı var!
-• İstediğin yeri dinlemek veya ayrıntıları yakalamak için sesli mesajların hızını değiştirebilirsin.
-• Kaybolan mesajların ne zaman yok olacağını mesaj ayrıntılarındaki geri sayıma bakarak öğrenebilirsin. 
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Videoları 4K netliğinde izleyin
-• Arama butonu yönlendirmesinde küçük iyileştirmeler yapıldı ve uygulama ayarları butonu için artırılmış erişilebilirlik sağlandı
-• Taslak mesajlar oluşturmak ve gruplardan ayrılmak için hata düzeltmeleri yapıldı
+• İstediğin yeri dinlemek veya detayları öğrenmek için sesli mesajların hızını değiştir.
+• Görünümünü geliştirdiğimiz grup arama ekranınızın keyfini çıkarın
+• Uygulama içi resimlere metin eklerken 5 yazı tipi arasından birini seçebilirsin. Kendini en iyi şekilde ifade etmen için serif veya sans serif yazı tipleriyle, her zaman yanındayız.
+• İlave ayarlar, hata düzeltmeleri ve performans geliştirmeleri yapıldı. Signal'i kullandığın için teşekkürler!

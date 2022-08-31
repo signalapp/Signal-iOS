@@ -1,7 +1,4 @@
-• Apresentamos os crachás de presente: Agora ao doar para o Signal pode dar um crachá de OVNI a um amigo seu para que ele o possa exibir no perfil. Vá às Definições >> Doar para o Signal >> Dê um crachá de presente para começar. Somos uma organização sem fins lucrativos e dependemos do seu apoio!
 • Altere a velocidade das mensagens de áudio para ir direto ao assunto ou apanhar mais detalhes.
-• Para mensagens temporárias, os detalhes da mensagem mostrarão uma contagem decrescente para lhe dizer quando é que a mensagem se vai autodestruir.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Veja vídeos em glorioso 4K
-• Pequenas melhorias na orientação do botão de chamar e mais acessibilidade ao botão de definições da app.
-• Correções de bugs na escrita de rascunhos de mensagem e saída de grupos
+• Aprecie a aparência melhorada do ecrã de chamada de grupo
+• Escolha entre 5 tipos de letra ao adicionar texto às imagens na app. Seja serif ou não, expresse-se como quiser.
+• Pequenas alterações adicionais, correções de bugs e melhorias de desempenho. Obrigado por usar o Signal!

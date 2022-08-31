@@ -1,7 +1,4 @@
-• Presentem les insígnies de regal: fent una donació a Signal, ara pots regalar una insígnia a les teves amistats perquè la mostrin al seu perfil. Per fer-ho, ves a Ajustos >> Fer donació a Signal >> Regalar una Insígnia. Som una organització sense ànim de lucre i depenem del teu suport! 
-• Canvia la velocitat de les notes de veu, ja sigui per saltar-te la palla o per entendre'n millor tots els detalls.
-• Als missatges a desaparèixer, els detalls del missatge mostraran un compte enrere que t'indicarà quan s'autodestruirà el missatge.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Dona't el luxe de veure els vídeos en 4K
-• Petites millores pel que fa a l'orientació del botó de trucada i una major accessibilitat al botó d'Ajustos de l'app
-• S'han corregit alguns errors a l'hora de treballar en esborranys de missatges i sortir de grups
+• Canvia la velocitat dels missatges de veu, ja sigui per anar directament al més important o per a captar-ne tots els detalls.
+• Gaudeix de l'aparença millorada de la nostra pantalla de trucada en grup
+• Tria entre 5 fonts quan afegeixis text a les imatges dins de l'app. Siguis de serif o de pal sec, tenim el que necessites per a expressar-te.
+• Petits canvis addicionals, errors corregits i un funcionament millorat. Gràcies per utilitzar Signal!

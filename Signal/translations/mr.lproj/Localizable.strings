@@ -2237,10 +2237,10 @@
 "GROUP_CALL_IS_FULL" = "कॉल पूर्ण आहे";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ringing %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%@रिंग करत आहे…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ringing %1$@ and %2$@…";
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ आणि %2$@रिंग करत आहे…";
 
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "कॉलमध्ये सामील व्हा";
@@ -2318,16 +2318,16 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "आपण कॉलवरून डिसकनेक्ट झाला होता. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ ला अधिसूचित केले जाईल";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ and %2$@ will be notified";
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ आणि %2$@ ना अधिसूचित केले जाईल";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal will ring %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal %@ ला रिंग करेल";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal will ring %1$@ and %2$@";
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal %1$@ आणि %2$@ ला रिंग करेल";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "आपण गट कॉलमध्ये आहात";
@@ -6140,7 +6140,7 @@
 "STORIES_DELETE_STORY_ACTION" = "हटवा";
 
 /* Title asking the user if they are sure they want to delete their story */
-"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "ही स्टोरी हटवायची? ते ज्यांना प्राप्त होऊ शकते त्या प्रत्येकासाठी देखील हटवले जाईल.";
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "ही स्टोरी हटवायची? ती ज्यांना प्राप्त झाली आहे अशा सर्वांसाठीही ती हटवली जाईल.";
 
 /* toast alert shown after user taps the 'save' button */
 "STORIES_DID_SAVE" = "स्टोरी जतन केली";

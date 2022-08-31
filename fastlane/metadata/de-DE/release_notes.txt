@@ -1,7 +1,4 @@
-• Mit unseren Geschenkabzeichen kannst du Freunden ein UFO-Abzeichen schenken, das auf ihrem Profil angezeigt wird, indem du an Signal spendest. Gehe dafür zu Einstellungen >> An Signal spenden >> Abzeichen verschenken. Wir sind als gemeinnützige Organisation auf deine Unterstützung angewiesen!
-• Ändere die Geschwindigkeit von Audionachrichten, um auf den Punkt zu kommen oder um die Details mitzubekommen.
-• Bei verschwindenden Nachrichten wird in den Nachrichtendetails ein Countdown angezeigt, der dich darüber informiert, wann die Nachricht sich selbst zerstört.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Videos in höchster 4K-Auflösung ansehen
-• Kleine Verbesserungen bei der Ausrichtung der Ruftaste und erhöhte Zugriffsmöglichkeit auf den Button für die App-Einstellungen
-• Fehlerkorrekturen beim Verfassen von Nachrichtenentwürfen und beim Verlassen von Gruppen
+• Ändere die Geschwindigkeit von Sprachnachrichten, damit du gleich zum wichtigsten Punkt kommst bzw. Details schnell erfasst.
+• Komme in den Genuss einer verbesserten Benutzeroberfläche unseres Gruppenrufbildschirms.
+• Wähle zwischen 5 Schriftarten, wenn du Bilder in der App mit Text versiehst. Ob mit oder ohne Serife, wir helfen dir, dich auszudrücken.
+• Zusätzlich wurden kleine Optimierungen, Fehlerbehebungen und Leistungsverbesserungen vorgenommen. Wir sagen Danke, dass du Signal nutzt!

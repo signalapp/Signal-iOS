@@ -1193,7 +1193,7 @@
 "CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Níl cead ach ag riarthóirí teachtaireachtaí a sheoladh chuig an ngrúpa seo.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grúpaí";

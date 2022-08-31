@@ -1,7 +1,4 @@
-• 隆重推出禮物徽章：現在捐款給 Signal 後，即可將 UFO 徽章贈送給好友，讓對方在自己的個人檔案上炫耀一番。如要贊助我們，請依序前往「設定」>>「贊助 Signal」>>「贈送徽章」。Signal 是非營利的通訊軟體，因此有賴於各位的鼎力相助！
 • 變更語音訊息的播放速度，方便聽取重點或聆聽細節。
-• 使用自動銷毀訊息時，訊息詳情會顯示倒數計時，方便你掌握該則訊息何時會自動銷毀。
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• 以 4K 高畫質瀏覽影片
-• 稍微修改了通話按鈕位置，並讓 App 設定按鈕更好用
-• 已修復編輯草稿訊息和退出群組時的問題
+• 我們已改善群組通話畫面，立即體驗嶄新的介面
+• 在 App 中想將文字新增至圖片時，系統將提供 5 種字體供你選取。無論 Serif 或 sans serif，都能盡展你的文字魅力。
+• 其他細微的調整、問題修復和效能改善。感謝各位使用 Signal！

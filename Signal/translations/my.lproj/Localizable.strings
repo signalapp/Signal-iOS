@@ -1193,7 +1193,7 @@
 "CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Only admins can send messages to this group.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "အက်ဒ်မင်များသာလျှင် ဤအဖွဲ့သို့ မက်ဆေ့ချ်များ ပို့နိုင်ပါသည်။";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "အဖွဲ့များ";

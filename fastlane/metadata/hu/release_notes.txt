@@ -1,7 +1,4 @@
-• Bemutatjuk az ajándékjelvényeket: A Signalnak való adományozással UFO-jelvényt adhatsz ismerőseidnek, amelyet kirakhatnak a profiljukra. A kezdéshez lépj a Beállítások >> Adományozás a Signalnak >> Jelvény adományozása lehetőségre. Nonprofit szervezet vagyunk, és a te támogatásodtól is függünk!
-• Változtass a hangüzenetek sebességén, és térj a lényegre vagy halld ki az apró részleteket is.
-• Eltűnő üzenetek esetén az üzenet részleteinél megjelenik egy visszaszámláló, amely jelzi, hogy mikor semmisül meg az üzenet.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• 4K-s minőségben is megtekintheted a videókat
-• Apróbb fejlesztések a hívó gomb tájolásában és az alkalmazásbeállítások gomb jobb hozzáférhetősége
-• Hibajavítások piszkozatüzenetek írásához és csoportokból való kilépéshez
+• Módosítsd a hangüzenetek sebességét, és térj a lényegre, vagy halld ki az apró részleteket is.
+• Élvezd a csoportos hívás képernyő továbbfejlesztett megjelenését
+• Válassz 5 betűtípus közül, amikor szöveget adsz hozzá a képekhez az alkalmazáson belül. Serif vagy Sans Serif, mi itt vagyunk, hogy segítsünk az önkifejezésben!
+• További apró módosítások, hibajavítások és teljesítménynövelések. Köszönjük, hogy a Signalt használod!

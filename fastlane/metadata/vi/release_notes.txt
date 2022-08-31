@@ -1,7 +1,4 @@
-• Giới thiệu tính năng Tặng huy hiệu: Giờ đây bạn có thể tặng huy hiệu UFO cho bạn bè để họ hiển thị trên hồ sơ, bằng cách gửi khoản ủng hộ cho Signal. Vào mục Cài đặt >> Ủng hộ cho Signal >> Tặng Huy hiệu để bắt đầu. Signal là một tổ chức phi lợi nhuận và rất mong sự ủng hộ của bạn!
 • Thay đổi tốc độ của tin nhắn âm thanh để nắm nội dung dễ dàng hơn.
-• Đối với tin nhắn tự xóa, phần chi tiết của tin nhắn sẽ hiện một đồng hồ đếm ngược để bạn biết khi nào tin nhắn sẽ tự hủy.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Xem video chất lượng 4K tuyệt đẹp
-• Các cải thiện nhỏ đối với xu hướng của nút gọi và tăng khả năng tiếp cận đối với nút cài đặt của ứng dụng
-• Sửa các lỗi của thao tác soạn thảo tin nhắn nháp và rời nhóm
+• Tận hưởng giao diện đã được nâng cấp của cuộc gọi nhóm
+• Chọn trong số 5 font chữ khi bạn thêm nội dung vào ảnh trên ứng dụng. Font chữ Serif hoặc Sans serif có sẵn của chúng tôi sẽ giúp bạn thể hiện ý tưởng của mình.
+• Các tinh chỉnh, sửa lỗi, và cải thiện hiệu năng khác. Cảm ơn bạn đã sử dụng Signal!

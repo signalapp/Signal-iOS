@@ -1,7 +1,4 @@
-• Esittelyssä lahjamerkit: Nyt voit Signalille lahjoittamalla antaa ystävällesi lahjaksi UFO-merkin, jonka ystäväsi voi näyttää profiilissaan. Aloita siirtymällä kohtaan Asetukset >> Lahjoita Signalille >> Lahjoita merkki. Olemme voittoa tavoittelematon taho ja tarvitsemme tukeasi!
 • Muuta ääniviestien nopeutta, jos haluat mennä suoraan asiaan tai kuunnella tarkemmin.
-• Katoavien viestien tiedoissa näkyy aikalaskuri, joka osoittaa, milloin viesti tuhoutuu itsestään.
-• Choose between NUMBER fonts when you add text to images in-app. Serif or sans serif, we’re here to help you express yourself.
-• Katso videot upeassa 4K-muodossa
-• Pieniä parannuksia soittopainikkeen suuntaan ja sovelluksen Asetukset-painikkeen käytettävyyteen
-• Virheenkorjauksia viestiluonnosten kirjoittamiseen ja ryhmistä poistumiseen
+• Nauti ryhmäpuhelujen näytön parannetusta ulkoasusta
+• Voit valita 5 kirjaintyypistä, kun lisäät tekstiä kuviin sovelluksessa. Päätteellinen tai päätteetön – erilaisten kirjaintyyppien avulla voit ilmaista itseäsi.
+• Pieniä lisäsäätöjä, virheenkorjauksia ja suorituskykyparannuksia. Kiitos, että käytät Signalia!
