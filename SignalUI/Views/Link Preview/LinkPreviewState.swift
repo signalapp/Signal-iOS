@@ -246,20 +246,17 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
     private let linkPreview: OWSLinkPreview
     private let imageAttachment: TSAttachment?
 
-    private let _conversationStyle: ConversationStyle
-    public var conversationStyle: ConversationStyle? {
-        _conversationStyle
-    }
+    public let conversationStyle: ConversationStyle?
 
     @objc
     public required init(
         linkPreview: OWSLinkPreview,
         imageAttachment: TSAttachment?,
-        conversationStyle: ConversationStyle
+        conversationStyle: ConversationStyle?
     ) {
         self.linkPreview = linkPreview
         self.imageAttachment = imageAttachment
-        _conversationStyle = conversationStyle
+        self.conversationStyle = conversationStyle
     }
 
     public func isLoaded() -> Bool {

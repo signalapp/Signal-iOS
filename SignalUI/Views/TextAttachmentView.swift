@@ -62,7 +62,14 @@ public class TextAttachmentView: UIView {
             }
         }
 
-        if let linkPreviewView = buildLinkPreviewView(attachment.preview) {
+        if let linkPreview = attachment.preview {
+            var attachment: TSAttachment?
+            if let imageAttachmentId = linkPreview.imageAttachmentId {
+                attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: $0) })
+            }
+            let linkPreviewView = LinkPreviewView(linkPreview: LinkPreviewSent(linkPreview: linkPreview,
+                                                                               imageAttachment: attachment,
+                                                                               conversationStyle: nil))
             let previewWrapper = UIView()
             previewWrapper.addSubview(linkPreviewView)
             linkPreviewView.autoPinWidthToSuperview(withMargin: 36)
@@ -156,97 +163,91 @@ public class TextAttachmentView: UIView {
         gradientView.autoPinEdgesToSuperviewEdges()
     }
 
-    private static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .none
-        return formatter
-    }()
+    public class LinkPreviewView: UIStackView {
 
-    private func buildLinkPreviewView(_ preview: OWSLinkPreview?) -> UIView? {
-        guard let preview = preview else { return nil }
+        public init(linkPreview: LinkPreviewState) {
+            super.init(frame: .zero)
 
-        let previewHStack = UIStackView()
-        previewHStack.axis = .horizontal
-        previewHStack.alignment = .center
-        previewHStack.spacing = 8
-        previewHStack.isLayoutMarginsRelativeArrangement = true
-        previewHStack.layoutMargins = UIEdgeInsets(hMargin: 12, vMargin: 12)
-        previewHStack.addBackgroundView(withBackgroundColor: .ows_blackAlpha40, cornerRadius: 12)
+            axis = .horizontal
+            alignment = .center
+            spacing = 8
+            isLayoutMarginsRelativeArrangement = true
+            layoutMargins = UIEdgeInsets(hMargin: 12, vMargin: 12)
+            addBackgroundView(withBackgroundColor: .ows_blackAlpha40, cornerRadius: 12)
 
-        if let imageAttachmentId = preview.imageAttachmentId {
-            if let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: $0) }) {
-                if let stream = attachment as? TSAttachmentStream {
-                    let thumbnailImageView = UIImageView()
-                    thumbnailImageView.layer.cornerRadius = 8
-                    thumbnailImageView.clipsToBounds = true
-                    thumbnailImageView.contentMode = .scaleAspectFill
-                    thumbnailImageView.autoSetDimensions(to: CGSize(square: 76))
-                    previewHStack.addArrangedSubview(thumbnailImageView)
+            if linkPreview.imageState() == .loaded {
+                let thumbnailImageView = UIImageView()
+                thumbnailImageView.layer.cornerRadius = 8
+                thumbnailImageView.clipsToBounds = true
+                thumbnailImageView.contentMode = .scaleAspectFill
+                thumbnailImageView.autoSetDimensions(to: CGSize(square: 76))
+                addArrangedSubview(thumbnailImageView)
 
-                    stream.thumbnailImageSmall { thumbnail in
-                        thumbnailImageView.image = thumbnail
-                    } failure: {
-                        owsFailDebug("Failed to generate thumbnail preview")
-                    }
-                } else {
-                    Logger.warn("Not rendering thumbnail for undownloaded attachment")
+                linkPreview.imageAsync(thumbnailQuality: .small) { image in
+                    thumbnailImageView.image = image
                 }
-            } else {
-                owsFailDebug("Missing attachment with id \(imageAttachmentId)")
             }
+
+            let previewVStack = UIStackView()
+            previewVStack.axis = .vertical
+            previewVStack.alignment = .leading
+            addArrangedSubview(previewVStack)
+
+            if let title = linkPreview.title() {
+                let titleLabel = UILabel()
+                titleLabel.text = title
+                titleLabel.font = .boldSystemFont(ofSize: 16)
+                titleLabel.textColor = Theme.darkThemePrimaryColor
+                titleLabel.numberOfLines = 2
+                titleLabel.setCompressionResistanceVerticalHigh()
+                titleLabel.setContentHuggingVerticalHigh()
+                previewVStack.addArrangedSubview(titleLabel)
+            }
+
+            if let description = linkPreview.previewDescription() {
+                let descriptionLabel = UILabel()
+                descriptionLabel.text = description
+                descriptionLabel.font = .systemFont(ofSize: 12)
+                descriptionLabel.textColor = Theme.darkThemePrimaryColor
+                descriptionLabel.numberOfLines = 3
+                descriptionLabel.setCompressionResistanceVerticalHigh()
+                descriptionLabel.setContentHuggingVerticalHigh()
+                previewVStack.addArrangedSubview(descriptionLabel)
+            }
+
+            let footerLabel = UILabel()
+            footerLabel.font = .systemFont(ofSize: 12)
+            footerLabel.numberOfLines = 2
+            footerLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+            footerLabel.setCompressionResistanceVerticalHigh()
+            footerLabel.setContentHuggingVerticalHigh()
+            previewVStack.addArrangedSubview(footerLabel)
+
+            var footerText: String
+            if let displayDomain = OWSLinkPreviewManager.displayDomain(forUrl: linkPreview.urlString()) {
+                footerText = displayDomain.lowercased()
+            } else {
+                footerText = NSLocalizedString(
+                    "LINK_PREVIEW_UNKNOWN_DOMAIN",
+                    comment: "Label for link previews with an unknown host."
+                ).uppercased()
+            }
+            if let date = linkPreview.date() {
+                footerText.append(" ⋅ \(Self.dateFormatter.string(from: date))")
+            }
+            footerLabel.text = footerText
         }
 
-        let previewVStack = UIStackView()
-        previewVStack.axis = .vertical
-        previewVStack.alignment = .leading
-        previewHStack.addArrangedSubview(previewVStack)
-
-        if let title = preview.title {
-            let titleLabel = UILabel()
-            titleLabel.text = title
-            titleLabel.font = .boldSystemFont(ofSize: 16)
-            titleLabel.textColor = Theme.darkThemePrimaryColor
-            titleLabel.numberOfLines = 2
-            titleLabel.setCompressionResistanceVerticalHigh()
-            titleLabel.setContentHuggingVerticalHigh()
-            previewVStack.addArrangedSubview(titleLabel)
+        required init(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
         }
 
-        if let description = preview.previewDescription {
-            let descriptionLabel = UILabel()
-            descriptionLabel.text = description
-            descriptionLabel.font = .systemFont(ofSize: 12)
-            descriptionLabel.textColor = Theme.darkThemePrimaryColor
-            descriptionLabel.numberOfLines = 3
-            descriptionLabel.setCompressionResistanceVerticalHigh()
-            descriptionLabel.setContentHuggingVerticalHigh()
-            previewVStack.addArrangedSubview(descriptionLabel)
-        }
-
-        let footerLabel = UILabel()
-        footerLabel.font = .systemFont(ofSize: 12)
-        footerLabel.numberOfLines = 2
-        footerLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
-        footerLabel.setCompressionResistanceVerticalHigh()
-        footerLabel.setContentHuggingVerticalHigh()
-        previewVStack.addArrangedSubview(footerLabel)
-
-        var footerText: String
-        if let displayDomain = OWSLinkPreviewManager.displayDomain(forUrl: preview.urlString) {
-            footerText = displayDomain.lowercased()
-        } else {
-            footerText = NSLocalizedString(
-                "LINK_PREVIEW_UNKNOWN_DOMAIN",
-                comment: "Label for link previews with an unknown host."
-            ).uppercased()
-        }
-        if let date = preview.date {
-            footerText.append(" ⋅ \(Self.dateFormatter.string(from: date))")
-        }
-        footerLabel.text = footerText
-
-        return previewHStack
+        private static let dateFormatter: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .none
+            return formatter
+        }()
     }
 }
 
