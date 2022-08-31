@@ -65,7 +65,7 @@ class GroupCallRemoteVideoManager: Dependencies {
                 )
             }
 
-            groupCall.updateVideoRequests(resolutions: videoRequests)
+            groupCall.updateVideoRequests(resolutions: videoRequests, activeSpeakerHeight: 0)
         })
     }
 }
