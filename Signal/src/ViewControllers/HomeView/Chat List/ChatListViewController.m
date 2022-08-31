@@ -880,11 +880,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (BOOL)isThreadPinned:(ThreadViewModel *)threadViewModel
-{
-    return [PinnedThreadManager isThreadPinned:threadViewModel.threadRecord];
-}
-
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated
 {
     [BenchManager startEventWithTitle:@"Presenting Conversation"
