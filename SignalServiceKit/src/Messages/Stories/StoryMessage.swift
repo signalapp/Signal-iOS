@@ -279,7 +279,6 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             } else {
                 owsFailDebug("Missing thread for story context \(context)")
             }
-            return
         case .none:
             owsFailDebug("Viewing invalid story context")
         }
