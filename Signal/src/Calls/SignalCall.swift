@@ -56,6 +56,13 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     public let audioActivity: AudioActivity
 
+    private var systemState: SystemState = .notReported
+    private enum SystemState {
+        case notReported
+        case reported
+        case removed
+    }
+
     @objc
     var isGroupCall: Bool {
         switch mode {
@@ -228,6 +235,10 @@ public class SignalCall: NSObject, CallManagerCallReference {
         individualCall.delegate = self
     }
 
+    deinit {
+        owsAssertDebug(systemState != .reported, "call \(localId) was reported to system but never removed")
+    }
+
     public class func groupCall(thread: TSGroupThread) -> SignalCall? {
         owsAssertDebug(thread.groupModel.groupsVersion == .V2)
 
@@ -354,6 +365,16 @@ public class SignalCall: NSObject, CallManagerCallReference {
             return 0
         }
         return -connectedDate.timeIntervalSinceNow
+    }
+
+    func markReportedToSystem() {
+        owsAssertDebug(systemState == .notReported, "call \(localId) had unexpected system state: \(systemState)")
+        systemState = .reported
+    }
+
+    func markRemovedFromSystem() {
+        owsAssertDebug(systemState == .reported, "call \(localId) had unexpected system state: \(systemState)")
+        systemState = .removed
     }
 }
 

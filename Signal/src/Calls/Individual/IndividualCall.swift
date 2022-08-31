@@ -108,10 +108,6 @@ public class IndividualCall: NSObject {
 
     // MARK: -
 
-    // tracking cleanup
-    var wasReportedToSystem = false
-    var wasRemovedFromSystem = false
-
     @objc
     public var remoteAddress: SignalServiceAddress { thread.contactAddress }
 
@@ -214,18 +210,7 @@ public class IndividualCall: NSObject {
 
     deinit {
         Logger.debug("")
-        if !isEnded {
-            owsFailDebug("isEnded was unexpectedly false")
-        }
-        if wasReportedToSystem {
-            if !wasRemovedFromSystem {
-                owsFailDebug("wasRemovedFromSystem was unexpectedly false")
-            }
-        } else {
-            if wasRemovedFromSystem {
-                owsFailDebug("wasRemovedFromSystem was unexpectedly true")
-            }
-        }
+        owsAssertDebug(isEnded, "isEnded was unexpectedly false")
     }
 
     override public var description: String {

@@ -118,15 +118,13 @@ final class CallKitCallManager: NSObject {
 
     func addCall(_ call: SignalCall) {
         Logger.verbose("call: \(call)")
-        owsAssertDebug(call.isIndividualCall)
-        call.individualCall.wasReportedToSystem = true
+        call.markReportedToSystem()
         calls.append(call)
     }
 
     func removeCall(_ call: SignalCall) {
         Logger.verbose("call: \(call)")
-        owsAssertDebug(call.isIndividualCall)
-        call.individualCall.wasRemovedFromSystem = true
+        call.markRemovedFromSystem()
         guard calls.removeFirst(where: { $0 === call }) != nil else {
             Logger.warn("no call matching: \(call) to remove")
             return
@@ -135,7 +133,7 @@ final class CallKitCallManager: NSObject {
 
     func removeAllCalls() {
         Logger.verbose("")
-        calls.forEach { $0.individualCall.wasRemovedFromSystem = true }
+        calls.forEach { $0.markRemovedFromSystem() }
         calls.removeAll()
     }
 }
