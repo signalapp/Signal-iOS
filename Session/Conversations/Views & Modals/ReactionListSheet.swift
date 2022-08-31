@@ -398,6 +398,7 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
                 moreReactorCount: self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count,
                 emoji: self.reactionSummaries[lastSelectedReactionIndex].emoji.rawValue
             )
+            footerCell.selectionStyle = .none
             
             return footerCell
         }
@@ -420,6 +421,8 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard indexPath.row < self.selectedReactionUserList.count else { return }
         
         let cellViewModel: MessageViewModel.ReactionInfo = self.selectedReactionUserList[indexPath.row]
         
