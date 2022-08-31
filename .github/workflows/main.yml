@@ -113,4 +113,4 @@ jobs:
 
           # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
           git diff --name-only | sed -E 's|(.*)|::error file=\1::Incorrectly formatted (Scripts/precommit.py)|'
-          git diff --quiet || exit 1
+          git diff --exit-code || exit 1
