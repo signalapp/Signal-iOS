@@ -328,6 +328,7 @@ final class ReactionListSheet: BaseVC {
             reloadRowsAnimation: .none,
             interrupt: {
                 $0.elementInserted.count == 1 && self.selectedReactionUserList.count == 4 ||
+                $0.elementDeleted.count == 1 && self.selectedReactionUserList.count == 6 ||
                 $0.changeCount > 100
             }
         ) { [weak self] updatedData in
