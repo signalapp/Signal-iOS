@@ -326,7 +326,10 @@ final class ReactionListSheet: BaseVC {
             deleteRowsAnimation: .none,
             insertRowsAnimation: .none,
             reloadRowsAnimation: .none,
-            interrupt: {  $0.changeCount > 100 }
+            interrupt: {
+                $0.elementInserted.count == 1 && self.selectedReactionUserList.count == 4 ||
+                $0.changeCount > 100
+            }
         ) { [weak self] updatedData in
             self?.selectedReactionUserList = updatedData
         }
@@ -387,18 +390,19 @@ extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegat
 
 extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let moreReactorCount = self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count
-        return moreReactorCount > 0 ? self.selectedReactionUserList.count + 1 : self.selectedReactionUserList.count
+        return self.selectedReactionUserList.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard indexPath.row < self.selectedReactionUserList.count else {
+            let moreReactorCount = self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count
             let footerCell: FooterCell = tableView.dequeue(type: FooterCell.self, for: indexPath)
             footerCell.update(
-                moreReactorCount: self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count,
+                moreReactorCount: moreReactorCount,
                 emoji: self.reactionSummaries[lastSelectedReactionIndex].emoji.rawValue
             )
             footerCell.selectionStyle = .none
+            footerCell.isHidden = (moreReactorCount <= 0)
             
             return footerCell
         }
