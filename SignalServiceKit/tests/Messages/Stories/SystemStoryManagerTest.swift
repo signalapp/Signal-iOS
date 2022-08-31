@@ -7,7 +7,7 @@ import XCTest
 
 class SystemStoryManagerTest: SSKBaseTestSwift {
 
-    let timeout: TimeInterval = 1
+    let timeout: TimeInterval = 5
 
     var mockSignalService: OWSSignalServiceMock {
         return signalService as! OWSSignalServiceMock
