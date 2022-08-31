@@ -13,7 +13,7 @@ extension OpenGroupAPI {
         public let added: Bool
         
         /// The seqNo after the reaction is added.
-        public let seqNo: Int64
+        public let seqNo: Int64?
     }
     
     public struct ReactionRemoveResponse: Codable, Equatable {
@@ -26,7 +26,7 @@ extension OpenGroupAPI {
         public let removed: Bool
         
         /// The seqNo after the reaction is removed.
-        public let seqNo: Int64
+        public let seqNo: Int64?
     }
     
     public struct ReactionRemoveAllResponse: Codable, Equatable {
@@ -39,6 +39,6 @@ extension OpenGroupAPI {
         public let removed: Int64
         
         /// The seqNo after the reactions is all removed.
-        public let seqNo: Int64
+        public let seqNo: Int64?
     }
 }

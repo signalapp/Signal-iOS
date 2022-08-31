@@ -787,7 +787,7 @@ public final class OpenGroupManager: NSObject {
     
     public static func updatePendingChange(
         _ pendingChange: OpenGroupAPI.PendingChange,
-        seqNo: Int64,
+        seqNo: Int64?,
         using dependencies: OGMDependencies = OGMDependencies()
     ) {
         dependencies.mutableCache.mutate {
