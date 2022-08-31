@@ -29,7 +29,7 @@ public class StoryManager: NSObject {
         transaction: SDSAnyWriteTransaction
     ) throws {
         // Drop all story messages until the feature is enabled.
-        guard FeatureFlags.stories else { return }
+        guard RemoteConfig.stories else { return }
 
         guard StoryFinder.story(
             timestamp: timestamp,
@@ -72,7 +72,7 @@ public class StoryManager: NSObject {
         transaction: SDSAnyWriteTransaction
     ) throws {
         // Drop all story messages until the feature is enabled.
-        guard FeatureFlags.stories else { return }
+        guard RemoteConfig.stories else { return }
 
         let existingStory = StoryFinder.story(
             timestamp: proto.timestamp,

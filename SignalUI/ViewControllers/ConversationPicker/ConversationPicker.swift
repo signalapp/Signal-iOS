@@ -414,7 +414,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         // Stories Section
         do {
             let section = OWSTableSection()
-            if FeatureFlags.stories && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
+            if RemoteConfig.stories && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
                 let storiesHeaderView = UIStackView()
                 storiesHeaderView.addBackgroundView(withBackgroundColor: tableBackgroundColor)
                 storiesHeaderView.axis = .horizontal

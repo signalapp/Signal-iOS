@@ -35,7 +35,7 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
         true
     }
 
-    override var canSendToStories: Bool { FeatureFlags.stories }
+    override var canSendToStories: Bool { RemoteConfig.stories }
 
     @objc
     private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
@@ -364,7 +364,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewControllerCanShowTextEditor(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool {
-        return canSendToStories
+        return canSendToStories && FeatureFlags.textStorySending
     }
 }
 

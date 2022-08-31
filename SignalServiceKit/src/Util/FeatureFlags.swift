@@ -86,7 +86,7 @@ public class FeatureFlags: BaseFlags {
     public static let deprecateREST = false
 
     @objc
-    public static let stories = build.includes(.qa)
+    public static let textStorySending = build.includes(.qa)
 
     @objc
     public static let canUseNativeWebsocket = true
@@ -341,6 +341,9 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let forceGroupCalling = build.includes(.beta)
+
+    @objc
+    public static let forceStories = build.includes(.qa)
 
     @objc
     public static let disableMessageProcessing = TestableFlag(false,

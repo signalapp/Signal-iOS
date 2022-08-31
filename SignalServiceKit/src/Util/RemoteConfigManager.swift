@@ -210,6 +210,11 @@ public class RemoteConfig: BaseFlags {
     }
 
     @objc
+    public static var stories: Bool {
+        DebugFlags.forceStories || isEnabled(.stories)
+    }
+
+    @objc
     public static var keepMutedChatsArchivedOption: Bool {
         DebugFlags.internalSettings || isEnabled(.keepMutedChatsArchivedOption)
     }
@@ -443,6 +448,7 @@ private struct Flags {
         case canSendGiftBadgesInPrerelease
         case canSendGiftBadgesInProduction
         case groupRings
+        case stories
     }
 
     // Values defined in this array remain set once they are

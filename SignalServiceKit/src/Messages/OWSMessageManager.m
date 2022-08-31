@@ -616,7 +616,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (!SSKFeatureFlags.stories && dataMessage.storyContext != nil) {
+    if (!RemoteConfig.stories && dataMessage.storyContext != nil) {
         OWSLogInfo(@"Ignoring message (author: %@, timestamp: %llu) related to story (author: %@, timestamp: %llu)",
             envelope.sourceAddress,
             dataMessage.timestamp,

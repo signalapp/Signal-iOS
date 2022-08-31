@@ -501,7 +501,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     capabilities[@"gv1-migration"] = @(YES);
     capabilities[@"senderKey"] = @(YES);
 
-    if (SSKFeatureFlags.stories) {
+    if (RemoteConfig.stories) {
         capabilities[@"stories"] = @(YES);
     }
 

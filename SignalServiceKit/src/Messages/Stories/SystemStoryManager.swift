@@ -64,7 +64,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     // MARK: - API
 
     public func enqueueOnboardingStoryDownload() -> Promise<Void> {
-        guard FeatureFlags.stories else {
+        guard RemoteConfig.stories else {
             owsFailDebug("Onboarding story feature flag disabled")
             return .init(error: OWSAssertionError("Onboarding story unavailable"))
         }
@@ -75,7 +75,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     }
 
     public func cleanUpOnboardingStoryIfNeeded() -> Promise<Void> {
-        guard FeatureFlags.stories else {
+        guard RemoteConfig.stories else {
             owsFailDebug("Onboarding story feature flag disabled")
             return .init(error: OWSAssertionError("Onboarding story unavailable"))
         }

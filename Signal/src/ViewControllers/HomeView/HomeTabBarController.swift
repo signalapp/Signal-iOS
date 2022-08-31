@@ -44,7 +44,7 @@ class HomeTabBarController: UITabBarController {
 
         // Don't render the tab bar if stories isn't enabled.
         // TODO: Eventually there will be a setting for hiding stories.
-        guard FeatureFlags.stories else {
+        guard RemoteConfig.stories else {
             viewControllers = [chatListNavController]
             tabBar.isHidden = true
             return
@@ -74,7 +74,7 @@ class HomeTabBarController: UITabBarController {
     }
 
     func updateStoriesBadge() {
-        guard FeatureFlags.stories else { return }
+        guard RemoteConfig.stories else { return }
         let unviewedStoriesCount = databaseStorage.read { transaction in
             StoryFinder.unviewedSenderCount(transaction: transaction)
         }
@@ -82,7 +82,7 @@ class HomeTabBarController: UITabBarController {
     }
 
     func updateChatListBadge() {
-        guard FeatureFlags.stories else { return }
+        guard RemoteConfig.stories else { return }
         let unreadMessageCount = databaseStorage.read { transaction in
             InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
         }
