@@ -127,18 +127,17 @@ public class UserNotificationConfig {
 
 class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
-    private let notificationCenter: UNUserNotificationCenter
+    private static var notificationCenter: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
     override init() {
-        self.notificationCenter = UNUserNotificationCenter.current()
         super.init()
         SwiftSingletons.register(self)
     }
 
     func registerNotificationSettings() -> Promise<Void> {
         return Promise { future in
-            notificationCenter.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
-                self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
+            Self.notificationCenter.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
+                Self.notificationCenter.setNotificationCategories(UserNotificationConfig.allNotificationCategories)
 
                 if granted {
                     Logger.debug("succeeded.")
@@ -254,7 +253,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
         Logger.info("presenting notification with identifier: \(notificationIdentifier)")
-        notificationCenter.add(request) { (error: Error?) in
+        Self.notificationCenter.add(request) { (error: Error?) in
             if let error = error {
                 owsFailDebug("Error: \(error)")
             }
@@ -276,7 +275,7 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             Logger.info("Presenting notification with identifier: \(notificationIdentifier)")
         }
         let (promise, future) = Promise<Void>.pending()
-        notificationCenter.add(request) { (error: Error?) in
+        Self.notificationCenter.add(request) { (error: Error?) in
             if let error = error {
                 owsFailDebug("Error: \(error)")
             }
@@ -333,12 +332,12 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
         return firstly {
             Guarantee { resolve in
-                self.notificationCenter.getDeliveredNotifications { resolve($0) }
+                Self.notificationCenter.getDeliveredNotifications { resolve($0) }
             }
         }.then(on: Self.cancelQueue) { delivered in
             firstly {
                 Guarantee { resolve in
-                    self.notificationCenter.getPendingNotificationRequests { resolve($0) }
+                    Self.notificationCenter.getPendingNotificationRequests { resolve($0) }
                 }
             }.map(on: Self.cancelQueue) { pending in
                 pending + delivered.map { $0.request }
@@ -391,14 +390,14 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             return
         }
 
-        notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
-        notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
+        Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
+        Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
     }
 
     // This method is thread-safe.
     private func cancelNotificationSync(identifier: String) {
-        notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
-        notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
+        Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
+        Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
     }
 
     // This method is thread-safe.
@@ -423,8 +422,8 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     // This method is thread-safe.
     func clearAllNotifications() {
         pendingCancellations.removeAllValues()
-        notificationCenter.removeAllPendingNotificationRequests()
-        notificationCenter.removeAllDeliveredNotifications()
+        Self.notificationCenter.removeAllPendingNotificationRequests()
+        Self.notificationCenter.removeAllDeliveredNotifications()
     }
 
     private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
