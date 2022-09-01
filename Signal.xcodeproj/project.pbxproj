@@ -123,7 +123,6 @@
 		3402AA75271D9E180084CBAE /* ConversationAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95543271B510400B05242 /* ConversationAvatarView.swift */; };
 		3402AA76271D9E180084CBAE /* ImageEditorStrokeItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95559271B510400B05242 /* ImageEditorStrokeItem.swift */; };
 		3402AA77271D9E180084CBAE /* LinkPreviewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95516271B510400B05242 /* LinkPreviewState.swift */; };
-		3402AA78271D9E180084CBAE /* ThreadViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A95518271B510400B05242 /* ThreadViewHelper.m */; };
 		3402AA79271D9E180084CBAE /* PermissiveGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95557271B510400B05242 /* PermissiveGestureRecognizer.swift */; };
 		3402AA7A271D9E180084CBAE /* CVUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95524271B510400B05242 /* CVUtils.swift */; };
 		3402AA7B271D9E180084CBAE /* CustomKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9553A271B510400B05242 /* CustomKeyboard.swift */; };
@@ -164,7 +163,6 @@
 		3402AAA1271D9E180084CBAE /* OWSBubbleView.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95534271B510400B05242 /* OWSBubbleView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AAA2271D9E180084CBAE /* OWSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34A9550D271B510400B05242 /* OWSTextView.m */; };
 		3402AAA3271D9E180084CBAE /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95526271B510400B05242 /* DirectionalPanGestureRecognizer.swift */; };
-		3402AAA5271D9E180084CBAE /* ThreadViewHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 34A95547271B510400B05242 /* ThreadViewHelper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3402AAA6271D9E180084CBAE /* MentionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552C271B510400B05242 /* MentionPicker.swift */; };
 		3402AAA7271D9E180084CBAE /* AvatarImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95545271B510400B05242 /* AvatarImageView.swift */; };
 		3402AAA8271D9E180084CBAE /* MentionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A9552D271B510400B05242 /* MentionTextView.swift */; };
@@ -2541,7 +2539,6 @@
 		34A95515271B510400B05242 /* LinkPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewView.swift; sourceTree = "<group>"; };
 		34A95516271B510400B05242 /* LinkPreviewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkPreviewState.swift; sourceTree = "<group>"; };
 		34A95517271B510400B05242 /* GroupLinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupLinkPreview.swift; sourceTree = "<group>"; };
-		34A95518271B510400B05242 /* ThreadViewHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThreadViewHelper.m; sourceTree = "<group>"; };
 		34A95519271B510400B05242 /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		34A9551B271B510400B05242 /* VideoEditorModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorModel.swift; sourceTree = "<group>"; };
 		34A9551C271B510400B05242 /* VideoEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoEditorView.swift; sourceTree = "<group>"; };
@@ -2580,7 +2577,6 @@
 		34A95544271B510400B05242 /* OWSNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSNavigationBar.swift; sourceTree = "<group>"; };
 		34A95545271B510400B05242 /* AvatarImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarImageView.swift; sourceTree = "<group>"; };
 		34A95546271B510400B05242 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
-		34A95547271B510400B05242 /* ThreadViewHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThreadViewHelper.h; sourceTree = "<group>"; };
 		34A95548271B510400B05242 /* GalleryRailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GalleryRailView.swift; sourceTree = "<group>"; };
 		34A9554C271B510400B05242 /* ViewOnceTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewOnceTooltip.swift; sourceTree = "<group>"; };
 		34A9554D271B510400B05242 /* TooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TooltipView.swift; sourceTree = "<group>"; };
@@ -5215,8 +5211,6 @@
 				34A95528271B510400B05242 /* TextFieldWithPlaceholder.swift */,
 				34A9553E271B510400B05242 /* TextViewWithPlaceholder.swift */,
 				34A95537271B510400B05242 /* ThemeHeaderView.swift */,
-				34A95547271B510400B05242 /* ThreadViewHelper.h */,
-				34A95518271B510400B05242 /* ThreadViewHelper.m */,
 				34A95564271B510400B05242 /* Toast.swift */,
 				34A95519271B510400B05242 /* VideoPlayerView.swift */,
 			);
@@ -8220,7 +8214,6 @@
 				34A954CF271B4D0700B05242 /* SignalUI-Prefix.pch in Headers */,
 				34A954BA271A471300B05242 /* SignalUI.h in Headers */,
 				34A954DB271B4F3E00B05242 /* Theme.h in Headers */,
-				3402AAA5271D9E180084CBAE /* ThreadViewHelper.h in Headers */,
 				34A954FF271B4FB000B05242 /* UIFont+OWS.h in Headers */,
 				3402A9F4271D9A060084CBAE /* UIUtil.h in Headers */,
 				3402A9E9271D97090084CBAE /* UIView+SignalUI.h in Headers */,
@@ -9746,7 +9739,6 @@
 				34A954E1271B4F3E00B05242 /* Theme.m in Sources */,
 				3402AA8F271D9E180084CBAE /* ThemeHeaderView.swift in Sources */,
 				3402AA62271D9DEC0084CBAE /* ThreadUtil+SignalUI.swift in Sources */,
-				3402AA78271D9E180084CBAE /* ThreadViewHelper.m in Sources */,
 				3402AA65271D9DEC0084CBAE /* ThreadViewModel.swift in Sources */,
 				3402AA96271D9E180084CBAE /* Toast.swift in Sources */,
 				3402AA9B271D9E180084CBAE /* TooltipView.swift in Sources */,

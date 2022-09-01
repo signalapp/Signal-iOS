@@ -25,6 +25,14 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
 
     let grdbAdapter: GRDBThreadFinder = GRDBThreadFinder()
 
+    /// Enumerates group threads in "last interaction" order.
+    public func enumerateGroupThreads(transaction: SDSAnyReadTransaction, block: @escaping (TSGroupThread) -> Void) throws {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdb):
+            try grdbAdapter.enumerateGroupThreads(transaction: grdb, block: block)
+        }
+    }
+
     public func visibleThreadCount(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> UInt {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
@@ -112,6 +120,22 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
     public typealias ReadTransaction = GRDBReadTransaction
 
     static let cn = ThreadRecord.columnName
+
+    /// Enumerates group threads in "last interaction" order.
+    public func enumerateGroupThreads(transaction: GRDBReadTransaction, block: @escaping (TSGroupThread) -> Void) throws {
+        let sql = """
+            SELECT *
+            FROM \(ThreadRecord.databaseTableName)
+            WHERE \(threadColumn: .groupModel) IS NOT NULL
+            ORDER BY \(threadColumn: .lastInteractionRowId) DESC
+        """
+
+        try ThreadRecord.fetchCursor(transaction.database, sql: sql).forEach { threadRecord in
+            let thread = try TSThread.fromRecord(threadRecord)
+            guard let groupThread = thread as? TSGroupThread else { return }
+            block(groupThread)
+        }
+    }
 
     public func visibleThreadCount(isArchived: Bool, transaction: GRDBReadTransaction) throws -> UInt {
         let sql = """

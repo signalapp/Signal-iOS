@@ -31,7 +31,6 @@ FOUNDATION_EXPORT const unsigned char SignalUIVersionString[];
 #import <SignalUI/RecipientPickerViewController.h>
 #import <SignalUI/ScreenLockViewController.h>
 #import <SignalUI/Theme.h>
-#import <SignalUI/ThreadViewHelper.h>
 #import <SignalUI/UIFont+OWS.h>
 #import <SignalUI/UIUtil.h>
 #import <SignalUI/UIView+SignalUI.h>
