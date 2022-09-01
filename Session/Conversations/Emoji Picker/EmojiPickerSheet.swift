@@ -24,7 +24,6 @@ class EmojiPickerSheet: BaseVC {
         result.tintColor = Colors.text
         result.backgroundColor = .clear
         result.delegate = self
-        result.showsCancelButton = true
         return result
     }()
 
@@ -124,6 +123,16 @@ extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
 extension EmojiPickerSheet: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         collectionView.searchText = searchText
+    }
+    
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.showsCancelButton = true
+        return true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        searchBar.resignFirstResponder()
     }
 }
 
