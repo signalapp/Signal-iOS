@@ -1093,31 +1093,6 @@ static void uncaughtExceptionHandler(NSException *exception)
                          }];
 }
 
-- (void)processRemoteNotification:(NSDictionary *)userInfo completion:(nullable void (^)(void))completion
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        return;
-    }
-    if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
-        OWSLogInfo(@"Ignoring remote notification; app not ready.");
-        return;
-    }
-
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
-        BOOL isSilentPush = [self handleSilentPushContent:userInfo];
-        if (!isSilentPush) {
-            [self.messageFetcherJob runObjc];
-        }
-        if (completion != nil) {
-            completion();
-        }
-    });
-}
-
 - (void)application:(UIApplication *)application
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
@@ -1201,22 +1176,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 #pragma mark - UNUserNotificationsDelegate
 
-- (BOOL)handleSilentPushContent:(NSDictionary *)userInfo
-{
-    NSString *_Nullable spamChallengeToken = userInfo[@"rateLimitChallenge"];
-    NSString *_Nullable preAuthChallengeToken = userInfo[@"challenge"];
-
-    if (spamChallengeToken) {
-        SpamChallengeResolver *spamResolver = self.spamChallengeResolver;
-        [spamResolver handleIncomingPushChallengeToken:spamChallengeToken];
-        return YES;
-    } else if (preAuthChallengeToken) {
-        [self.pushRegistrationManager didReceiveVanillaPreAuthChallengeToken:preAuthChallengeToken];
-        return YES;
-    }
-    return NO;
-}
-
 // The method will be called on the delegate only if the application is in the foreground. If the method is not
 // implemented or the handler is not called in a timely manner then the notification will not be presented. The
 // application can choose to have the notification presented as a sound, badge, alert and/or in the notification list.
@@ -1230,9 +1189,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     NSDictionary *userInfo = notification.request.content.userInfo;
     AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
         UNNotificationPresentationOptions options = 0;
-        BOOL isSilent = [self handleSilentPushContent:userInfo];
-
-        if (!isSilent) {
+        if ([self handleSilentPushContent:userInfo] == HandleSilentPushContentResultNotHandled) {
             // We need to respect the in-app notification sound preference. This method, which is called
             // for modern UNUserNotification users, could be a place to do that, but since we'd still
             // need to handle this behavior for legacy UINotification users anyway, we "allow" all

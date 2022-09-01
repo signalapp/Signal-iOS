@@ -223,4 +223,51 @@ extension AppDelegate {
 
         SignalApp.shared().ensureRootViewController(launchStartedAt)
     }
+
+    // MARK: - Remote notifications
+
+    @objc
+    enum HandleSilentPushContentResult: UInt {
+        case handled
+        case notHandled
+    }
+
+    @objc
+    func processRemoteNotification(_ remoteNotification: NSDictionary, completion: @escaping () -> Void = {}) {
+        AssertIsOnMainThread()
+
+        guard !didAppLaunchFail else {
+            owsFailDebug("app launch failed")
+            return
+        }
+
+        guard AppReadiness.isAppReady, tsAccountManager.isRegisteredAndReady else {
+            Logger.info("Ignoring remote notification; app is not ready.")
+            return
+        }
+
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
+            if self.handleSilentPushContent(remoteNotification) == .notHandled {
+                self.messageFetcherJob.run()
+            }
+
+            completion()
+        }
+    }
+
+    @objc
+    func handleSilentPushContent(_ remoteNotification: NSDictionary) -> HandleSilentPushContentResult {
+        if let spamChallengeToken = remoteNotification["rateLimitChallenge"] as? String {
+            spamChallengeResolver.handleIncomingPushChallengeToken(spamChallengeToken)
+            return .handled
+        }
+
+        if let preAuthChallengeToken = remoteNotification["challenge"] as? String {
+            pushRegistrationManager.didReceiveVanillaPreAuthChallengeToken(preAuthChallengeToken)
+            return .handled
+        }
+
+        return .notHandled
+    }
 }
