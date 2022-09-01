@@ -73,13 +73,19 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
     // MARK: - Report calls
     
     public static func reportFakeCall(info: String) {
-        SessionCallManager.sharedProvider(useSystemCallLog: false)
-            .reportNewIncomingCall(
-                with: UUID(),
-                update: CXCallUpdate()
-            ) { _ in
-                SNLog("[Calls] Reported fake incoming call to CallKit due to: \(info)")
-            }
+        let callId = UUID()
+        let provider = SessionCallManager.sharedProvider(useSystemCallLog: false)
+        provider.reportNewIncomingCall(
+            with: callId,
+            update: CXCallUpdate()
+        ) { _ in
+            SNLog("[Calls] Reported fake incoming call to CallKit due to: \(info)")
+        }
+        provider.reportCall(
+            with: callId,
+            endedAt: nil,
+            reason: .failed
+        )
     }
     
     public func reportOutgoingCall(_ call: SessionCall) {
@@ -100,28 +106,22 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
     public func reportIncomingCall(_ call: SessionCall, callerName: String, completion: @escaping (Error?) -> Void) {
         AssertIsOnMainThread()
         
-        if let provider = provider {
-            // Construct a CXCallUpdate describing the incoming call, including the caller.
-            let update = CXCallUpdate()
-            update.localizedCallerName = callerName
-            update.remoteHandle = CXHandle(type: .generic, value: call.callId.uuidString)
-            update.hasVideo = false
+        let provider = provider ?? Self.sharedProvider(useSystemCallLog: false)
+        // Construct a CXCallUpdate describing the incoming call, including the caller.
+        let update = CXCallUpdate()
+        update.localizedCallerName = callerName
+        update.remoteHandle = CXHandle(type: .generic, value: call.callId.uuidString)
+        update.hasVideo = false
 
-            disableUnsupportedFeatures(callUpdate: update)
+        disableUnsupportedFeatures(callUpdate: update)
 
-            // Report the incoming call to the system
-            provider.reportNewIncomingCall(with: call.callId, update: update) { error in
-                guard error == nil else {
-                    self.reportCurrentCallEnded(reason: .failed)
-                    completion(error)
-                    return
-                }
-                UserDefaults.sharedLokiProject?.set(true, forKey: "isCallOngoing")
-                completion(nil)
+        // Report the incoming call to the system
+        provider.reportNewIncomingCall(with: call.callId, update: update) { error in
+            guard error == nil else {
+                self.reportCurrentCallEnded(reason: .failed)
+                completion(error)
+                return
             }
-        }
-        else {
-            SessionCallManager.reportFakeCall(info: "No CXProvider instance")
             UserDefaults.sharedLokiProject?.set(true, forKey: "isCallOngoing")
             completion(nil)
         }
@@ -135,7 +135,11 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
             return
         }
         
-        guard let call = currentCall else { return }
+        guard let call = currentCall else {
+            WebRTCSession.current = nil
+            UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
+            return
+        }
         
         if let reason = reason {
             self.provider?.reportCall(with: call.callId, endedAt: nil, reason: reason)
