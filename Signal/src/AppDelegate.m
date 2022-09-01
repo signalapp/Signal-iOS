@@ -1353,28 +1353,4 @@ static void uncaughtExceptionHandler(NSException *exception)
         ^{ [NotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler]; });
 }
 
-- (void)setupNSEInteroperation
-{
-    OWSLogInfo(@"");
-    // We immediately post a notification letting the NSE know the main app has launched.
-    // If it's running it should take this as a sign to terminate so we don't unintentionally
-    // try and fetch messages from two processes at once.
-    [DarwinNotificationCenter postNotificationName:DarwinNotificationName.mainAppLaunched];
-
-    // We listen to this notification for the lifetime of the application, so we don't
-    // record the returned observer token.
-    [DarwinNotificationCenter
-        addObserverForName:DarwinNotificationName.nseDidReceiveNotification
-                     queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)
-                usingBlock:^(int token) {
-                    OWSLogDebug(@"Handling NSE received notification");
-
-                    // Immediately let the NSE know we will handle this notification so that it
-                    // does not attempt to process messages while we are active.
-                    [DarwinNotificationCenter postNotificationName:DarwinNotificationName.mainAppHandledNotification];
-
-                    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{ [self.messageFetcherJob runObjc]; });
-                }];
-}
-
 @end
