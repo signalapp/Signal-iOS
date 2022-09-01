@@ -326,10 +326,18 @@ final class ReactionListSheet: BaseVC {
             deleteRowsAnimation: .none,
             insertRowsAnimation: .none,
             reloadRowsAnimation: .none,
-            interrupt: {
-                $0.elementInserted.count == 1 && self.selectedReactionUserList.count == 4 ||
-                $0.elementDeleted.count == 1 && self.selectedReactionUserList.count == 6 ||
-                $0.changeCount > 100
+            interrupt: { [weak self] changeset in
+                /// This is the case where there were 6 reactors in total and locally we only have 5 including current user,
+                /// and current user remove the reaction. There would be 4 reactors locally and we need to show more
+                /// reactors cell at this moment. After update from sogs, we'll get the all 5 reactors and update the table
+                /// with 5 reactors and not showing the more reactors cell. 
+                changeset.elementInserted.count == 1 && self?.selectedReactionUserList.count == 4 ||
+                /// This is the case where there were 5 reactors without current user, and current user reacted. Before we got
+                /// the update from sogs, we'll have 6 reactors locally and not showing the more reactors cell. After the update,
+                /// we'll need to update the table and show 5 reactors with the more reactors cell.
+                changeset.elementDeleted.count == 1 && self?.selectedReactionUserList.count == 6 ||
+                /// To many changes to make
+                changeset.changeCount > 100
             }
         ) { [weak self] updatedData in
             self?.selectedReactionUserList = updatedData
@@ -391,7 +399,8 @@ extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegat
 
 extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.selectedReactionUserList.count + 1
+        let moreReactorCount = self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count
+        return moreReactorCount > 0 ? self.selectedReactionUserList.count + 1 : self.selectedReactionUserList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -403,7 +412,6 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
                 emoji: self.reactionSummaries[lastSelectedReactionIndex].emoji.rawValue
             )
             footerCell.selectionStyle = .none
-            footerCell.isHidden = (moreReactorCount <= 0)
             
             return footerCell
         }
