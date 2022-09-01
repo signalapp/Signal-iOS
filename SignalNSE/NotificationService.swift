@@ -84,25 +84,24 @@ class NotificationService: UNNotificationServiceExtension {
         }
 
         let content = UNMutableNotificationContent()
-
-        let updatedBadgeCount: NSNumber?
-        if environment.hasAppContent, let nseContext = CurrentAppContext() as? NSEContext {
-            if !timeHasExpired {
-                // If we have time, we might as well get the current up-to-date badge count
-                let freshCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
-                updatedBadgeCount = NSNumber(value: freshCount)
-            } else if let cachedBadgeCount = nseContext.desiredBadgeNumber.get() {
-                // If we don't have time to get a fresh count, let's use the cached count stored in our context
-                updatedBadgeCount = NSNumber(value: cachedBadgeCount)
+        content.badge = {
+            if environment.hasAppContent, let nseContext = CurrentAppContext() as? NSEContext {
+                if !timeHasExpired {
+                    // If we have time, we might as well get the current up-to-date badge count
+                    let freshCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
+                    return NSNumber(value: freshCount)
+                } else if let cachedBadgeCount = nseContext.desiredBadgeNumber.get() {
+                    // If we don't have time to get a fresh count, let's use the cached count stored in our context
+                    return NSNumber(value: cachedBadgeCount)
+                } else {
+                    // The context never set a badge count, let's leave things as-is:
+                    return nil
+                }
             } else {
-                // The context never set a badge count, let's leave things as-is:
-                updatedBadgeCount = nil
+                // We never set up an NSEContext. Let's leave things as-is:
+                return nil
             }
-        } else {
-            // We never set up an NSEContext. Let's leave things as-is:
-            updatedBadgeCount = nil
-        }
-        content.badge = updatedBadgeCount
+        }()
 
         if DebugFlags.internalLogging {
             logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
