@@ -563,16 +563,19 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
                     }))
             }
 
-            switch model.latestMessageAttachment {
-            case .file(let attachment):
-                guard attachment is TSAttachmentStream else { break }
-                appendForwardAction()
-                appendShareAction()
-            case .text:
-                appendForwardAction()
-                appendShareAction()
-            case .missing:
-                owsFailDebug("Unexpectedly missing attachment for story.")
+            // Don't add sharing and forwarding actions for system stories.
+            if model.messages.first?.authorAddress.isSystemStoryAddress != true {
+                switch model.latestMessageAttachment {
+                case .file(let attachment):
+                    guard attachment is TSAttachmentStream else { break }
+                    appendForwardAction()
+                    appendShareAction()
+                case .text:
+                    appendForwardAction()
+                    appendShareAction()
+                case .missing:
+                    owsFailDebug("Unexpectedly missing attachment for story.")
+                }
             }
 
             let goToChatAction: ContextMenuActionHandler?
