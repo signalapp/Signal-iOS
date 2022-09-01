@@ -24,6 +24,7 @@ class EmojiPickerSheet: BaseVC {
         result.tintColor = Colors.text
         result.backgroundColor = .clear
         result.delegate = self
+        result.showsCancelButton = true
         return result
     }()
 
