@@ -351,14 +351,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         action.fulfill()
         provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
 
-        // Update the name used in the CallKit UI for outgoing calls when the user prefers not to show names
-        // in their notifications
-        if !showNamesOnCallScreen {
-            let update = CXCallUpdate()
+        let update = CXCallUpdate()
+        if showNamesOnCallScreen {
+            update.localizedCallerName = contactsManager.displayNameWithSneakyTransaction(thread: call.thread)
+        } else {
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
                                                            comment: "The generic name used for calls if CallKit privacy is enabled")
-            provider.reportCall(with: call.localId, updated: update)
         }
+        provider.reportCall(with: call.localId, updated: update)
     }
 
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
