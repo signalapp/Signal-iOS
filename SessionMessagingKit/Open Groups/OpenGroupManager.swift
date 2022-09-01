@@ -764,7 +764,7 @@ public final class OpenGroupManager: NSObject {
         id: Int64,
         in roomToken: String,
         on server: String,
-        type: VisibleMessage.VMReaction.Kind,
+        type: OpenGroupAPI.PendingChange.ReactAction,
         using dependencies: OGMDependencies = OGMDependencies()
     ) -> OpenGroupAPI.PendingChange {
         let pendingChange = OpenGroupAPI.PendingChange(
@@ -787,12 +787,23 @@ public final class OpenGroupManager: NSObject {
     
     public static func updatePendingChange(
         _ pendingChange: OpenGroupAPI.PendingChange,
-        seqNo: Int64,
+        seqNo: Int64?,
         using dependencies: OGMDependencies = OGMDependencies()
     ) {
         dependencies.mutableCache.mutate {
             if let index = $0.pendingChanges.firstIndex(of: pendingChange) {
                 $0.pendingChanges[index].seqNo = seqNo
+            }
+        }
+    }
+    
+    public static func removePendingChange(
+        _ pendingChange: OpenGroupAPI.PendingChange,
+        using dependencies: OGMDependencies = OGMDependencies()
+    ) {
+        dependencies.mutableCache.mutate {
+            if let index = $0.pendingChanges.firstIndex(of: pendingChange) {
+                $0.pendingChanges.remove(at: index)
             }
         }
     }

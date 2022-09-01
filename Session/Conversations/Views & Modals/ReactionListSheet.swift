@@ -95,6 +95,7 @@ final class ReactionListSheet: BaseVC {
         result.dataSource = self
         result.delegate = self
         result.register(view: UserCell.self)
+        result.register(view: FooterCell.self)
         result.separatorStyle = .none
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
@@ -131,6 +132,15 @@ final class ReactionListSheet: BaseVC {
         setUpViewHierarchy()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        reactionContainer.scrollToItem(
+            at: IndexPath(item: lastSelectedReactionIndex, section: 0),
+            at: .centeredHorizontally,
+            animated: false
+        )
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -140,7 +150,9 @@ final class ReactionListSheet: BaseVC {
     private func setUpViewHierarchy() {
         view.addSubview(contentView)
         contentView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.bottom ], to: view)
-        contentView.set(.height, to: 440)
+        // Emoji collectionView height + seleted emoji detail height + 5 × user cell height + footer cell height + bottom safe area inset
+        let contentViewHeight: CGFloat = 100 + 5 * 65 + 45 + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+        contentView.set(.height, to: contentViewHeight)
         populateContentView()
     }
     
@@ -323,7 +335,19 @@ final class ReactionListSheet: BaseVC {
             deleteRowsAnimation: .none,
             insertRowsAnimation: .none,
             reloadRowsAnimation: .none,
-            interrupt: {  $0.changeCount > 100 }
+            interrupt: { [weak self] changeset in
+                /// This is the case where there were 6 reactors in total and locally we only have 5 including current user,
+                /// and current user remove the reaction. There would be 4 reactors locally and we need to show more
+                /// reactors cell at this moment. After update from sogs, we'll get the all 5 reactors and update the table
+                /// with 5 reactors and not showing the more reactors cell. 
+                changeset.elementInserted.count == 1 && self?.selectedReactionUserList.count == 4 ||
+                /// This is the case where there were 5 reactors without current user, and current user reacted. Before we got
+                /// the update from sogs, we'll have 6 reactors locally and not showing the more reactors cell. After the update,
+                /// we'll need to update the table and show 5 reactors with the more reactors cell.
+                changeset.elementDeleted.count == 1 && self?.selectedReactionUserList.count == 6 ||
+                /// To many changes to make
+                changeset.changeCount > 100
+            }
         ) { [weak self] updatedData in
             self?.selectedReactionUserList = updatedData
         }
@@ -384,10 +408,23 @@ extension ReactionListSheet: UICollectionViewDataSource, UICollectionViewDelegat
 
 extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.selectedReactionUserList.count
+        let moreReactorCount = self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count
+        return moreReactorCount > 0 ? self.selectedReactionUserList.count + 1 : self.selectedReactionUserList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard indexPath.row < self.selectedReactionUserList.count else {
+            let moreReactorCount = self.reactionSummaries[lastSelectedReactionIndex].number - self.selectedReactionUserList.count
+            let footerCell: FooterCell = tableView.dequeue(type: FooterCell.self, for: indexPath)
+            footerCell.update(
+                moreReactorCount: moreReactorCount,
+                emoji: self.reactionSummaries[lastSelectedReactionIndex].emoji.rawValue
+            )
+            footerCell.selectionStyle = .none
+            
+            return footerCell
+        }
+        
         let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
         let cellViewModel: MessageViewModel.ReactionInfo = self.selectedReactionUserList[indexPath.row]
         cell.update(
@@ -406,6 +443,8 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        guard indexPath.row < self.selectedReactionUserList.count else { return }
         
         let cellViewModel: MessageViewModel.ReactionInfo = self.selectedReactionUserList[indexPath.row]
         
@@ -498,6 +537,44 @@ extension ReactionListSheet {
                 "\(count)" :
                 String(format: "%.1fk", Float(count) / 1000)
             )
+        }
+    }
+    
+    fileprivate final class FooterCell: UITableViewCell {
+        
+        private lazy var label: UILabel = {
+            let result = UILabel()
+            result.textAlignment = .center
+            result.font = .systemFont(ofSize: Values.smallFontSize)
+            result.textColor = Colors.grey.withAlphaComponent(0.8)
+            return result
+        }()
+        
+        // MARK: - Initialization
+        
+        override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+            super.init(style: style, reuseIdentifier: reuseIdentifier)
+            setUpViewHierarchy()
+        }
+
+        required init?(coder: NSCoder) {
+            super.init(coder: coder)
+            setUpViewHierarchy()
+        }
+
+        private func setUpViewHierarchy() {
+            // Background color
+            backgroundColor = Colors.cellBackground
+            
+            contentView.addSubview(label)
+            label.pin(to: contentView)
+            label.set(.height, to: 45)
+        }
+        
+        func update(moreReactorCount: Int, emoji: String) {
+            label.text = (moreReactorCount == 1) ?
+                String(format: "EMOJI_REACTS_MORE_REACTORS_ONE".localized(), "\(emoji)") :
+                String(format: "EMOJI_REACTS_MORE_REACTORS_MUTIPLE".localized(), "\(moreReactorCount)" ,"\(emoji)")
         }
     }
 }
