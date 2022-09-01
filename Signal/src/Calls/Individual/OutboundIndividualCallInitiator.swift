@@ -24,7 +24,7 @@ public class OutboundIndividualCallInitiator: NSObject {
      */
     @discardableResult
     @objc
-    public func initiateCall(thread: TSContactThread, isVideo: Bool) -> Bool {
+    public func initiateCall(thread: TSThread, isVideo: Bool) -> Bool {
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("aborting due to user not being onboarded.")
             OWSActionSheets.showActionSheet(title: NSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
@@ -38,6 +38,10 @@ public class OutboundIndividualCallInitiator: NSObject {
         }
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFailDebug("could not identify frontmostViewController")
+            return false
+        }
+        guard let thread = thread as? TSContactThread else {
+            owsFailDebug("cannot initiate call to group thread")
             return false
         }
 

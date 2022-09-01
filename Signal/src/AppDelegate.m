@@ -887,8 +887,8 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
-            if (!address.isValid) {
+            TSThread *_Nullable thread = [self threadForIntentHandle:handle];
+            if (!thread) {
                 OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
                 return;
             }
@@ -903,8 +903,7 @@ static void uncaughtExceptionHandler(NSException *exception)
             //   to that user - unless there already is another call in progress.
             SignalCall *_Nullable currentCall = AppEnvironment.shared.callService.currentCall;
             if (currentCall != nil) {
-                if (currentCall.isIndividualCall &&
-                    [address isEqualToAddress:currentCall.individualCall.remoteAddress]) {
+                if (currentCall.isIndividualCall && [thread.uniqueId isEqual:currentCall.thread.uniqueId]) {
                     OWSLogWarn(@"trying to upgrade ongoing call to video.");
                     [AppEnvironment.shared.callService.individualCallService handleCallKitStartVideo];
                     return;
@@ -914,7 +913,6 @@ static void uncaughtExceptionHandler(NSException *exception)
                 }
             }
 
-            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
             OutboundIndividualCallInitiator *outboundIndividualCallInitiator
                 = AppEnvironment.shared.outboundIndividualCallInitiator;
             OWSAssertDebug(outboundIndividualCallInitiator);
@@ -944,8 +942,8 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
-            if (!address.isValid) {
+            TSThread *_Nullable thread = [self threadForIntentHandle:handle];
+            if (!thread) {
                 OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
                 return;
             }
@@ -955,7 +953,6 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
             OutboundIndividualCallInitiator *outboundIndividualCallInitiator
                 = AppEnvironment.shared.outboundIndividualCallInitiator;
             OWSAssertDebug(outboundIndividualCallInitiator);
@@ -991,8 +988,8 @@ static void uncaughtExceptionHandler(NSException *exception)
                     return;
                 }
 
-                SignalServiceAddress *_Nullable address = [self addressForIntentHandle:handle];
-                if (!address.isValid) {
+                TSThread *_Nullable thread = [self threadForIntentHandle:handle];
+                if (!thread) {
                     OWSLogWarn(@"ignoring attempt to initiate call to unknown user.");
                     return;
                 }
@@ -1002,7 +999,6 @@ static void uncaughtExceptionHandler(NSException *exception)
                     return;
                 }
 
-                TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
                 OutboundIndividualCallInitiator *outboundIndividualCallInitiator
                     = AppEnvironment.shared.outboundIndividualCallInitiator;
                 OWSAssertDebug(outboundIndividualCallInitiator);
@@ -1026,23 +1022,19 @@ static void uncaughtExceptionHandler(NSException *exception)
     return NO;
 }
 
-- (nullable SignalServiceAddress *)addressForIntentHandle:(NSString *)handle
+- (nullable TSThread *)threadForIntentHandle:(NSString *)handle
 {
     OWSAssertDebug(handle.length > 0);
 
     if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-        SignalServiceAddress *_Nullable address = [CallKitIdStore addressForCallKitId:handle];
-        if (!address.isValid) {
-            OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
-            return nil;
-        }
-        return address;
+        return [CallKitIdStore threadForCallKitId:handle];
     }
 
     for (PhoneNumber *phoneNumber in
         [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:handle
                                               clientPhoneNumber:[TSAccountManager localNumber]]) {
-        return [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
+        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
+        return [TSContactThread getOrCreateThreadWithContactAddress:address];
     }
     return nil;
 }

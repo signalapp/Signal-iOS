@@ -154,7 +154,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             update.remoteHandle = CXHandle(type: .generic, value: callKitId)
-            CallKitIdStore.setAddress(call.individualCall.remoteAddress, forCallKitId: callKitId)
+            CallKitIdStore.setThread(call.thread, forCallKitId: callKitId)
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME", comment: "The generic name used for calls if CallKit privacy is enabled")
         }
 

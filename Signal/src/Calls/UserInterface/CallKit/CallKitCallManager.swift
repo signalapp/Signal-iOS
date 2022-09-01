@@ -50,7 +50,7 @@ final class CallKitCallManager: NSObject {
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
-            CallKitIdStore.setAddress(call.individualCall.remoteAddress, forCallKitId: callKitId)
+            CallKitIdStore.setThread(call.thread, forCallKitId: callKitId)
         }
 
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
