@@ -303,6 +303,8 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
         }
     }
 
+    #if BROKEN_TESTS
+
     func testCleanUpViewedStory_notTimedOut() throws {
         mockSignalService.mockUrlSessionBuilder = { _ in
             let mockSession = MockDownloadSession()
@@ -406,6 +408,8 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
             XCTAssertEqual(stories.count, Self.imageNames.count)
         }
     }
+
+    #endif
 
     // MARK: - Helpers
 
