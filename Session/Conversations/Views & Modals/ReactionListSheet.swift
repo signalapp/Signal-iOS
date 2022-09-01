@@ -132,6 +132,15 @@ final class ReactionListSheet: BaseVC {
         setUpViewHierarchy()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        reactionContainer.scrollToItem(
+            at: IndexPath(item: lastSelectedReactionIndex, section: 0),
+            at: .centeredHorizontally,
+            animated: false
+        )
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
