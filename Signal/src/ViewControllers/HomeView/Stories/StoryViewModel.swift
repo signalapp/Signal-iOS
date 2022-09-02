@@ -19,6 +19,10 @@ struct StoryViewModel: Dependencies {
 
     let latestMessageAvatarDataSource: ConversationAvatarDataSource
 
+    var isSystemStory: Bool {
+        return messages.first?.authorAddress.isSystemStoryAddress ?? false
+    }
+
     init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) throws {
         let sortedFilteredMessages = messages.lazy.sorted { $0.timestamp < $1.timestamp }
         self.messages = sortedFilteredMessages

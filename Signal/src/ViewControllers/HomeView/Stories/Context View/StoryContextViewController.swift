@@ -350,7 +350,6 @@ class StoryContextViewController: OWSViewController {
 
     private var pauseTime: CFTimeInterval?
     private var lastTransitionTime: CFTimeInterval?
-    private static let transitionDuration: CFTimeInterval = 5
     private func updateProgressState() {
         lastTransitionTime = CACurrentMediaTime()
     }

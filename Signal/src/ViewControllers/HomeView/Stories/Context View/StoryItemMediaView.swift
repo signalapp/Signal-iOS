@@ -92,6 +92,7 @@ class StoryItemMediaView: UIView {
     }
 
     func updateTimestampText() {
+        timestampLabel.isHidden = item.message.authorAddress.isSystemStoryAddress
         timestampLabel.text = DateUtil.formatTimestampRelatively(item.message.timestamp)
     }
 
@@ -169,8 +170,15 @@ class StoryItemMediaView: UIView {
                     glyphCount = nil
                 }
             } else {
-                // At base static images should play for 5 seconds
-                duration = 5
+                // System stories play slightly longer.
+                if item.message.authorAddress.isSystemStoryAddress {
+                    // Based off glyph calculation below for the text
+                    // embedded in the images in english.
+                    duration = 10
+                } else {
+                    // At base static images should play for 5 seconds
+                    duration = 5
+                }
             }
         case .text(let attachment):
             glyphCount = attachment.text?.glyphCount
@@ -224,12 +232,24 @@ class StoryItemMediaView: UIView {
             buildNameLabel(transaction: $0)
         ) }
 
+        let nameTrailingView: UIView
+        let nameTrailingSpacing: CGFloat
+        if item.message.authorAddress.isSystemStoryAddress {
+            let icon = UIImageView(image: UIImage(named: "official-checkmark-20"))
+            icon.contentMode = .center
+            nameTrailingView = icon
+            nameTrailingSpacing = 3
+        } else {
+            nameTrailingView = timestampLabel
+            nameTrailingSpacing = 8
+        }
+
         authorRow.addArrangedSubviews([
             avatarView,
             .spacer(withWidth: 12),
             nameLabel,
-            .spacer(withWidth: 8),
-            timestampLabel,
+            .spacer(withWidth: nameTrailingSpacing),
+            nameTrailingView,
             .hStretchingSpacer()
         ])
         authorRow.axis = .horizontal

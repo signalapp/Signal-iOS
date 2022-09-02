@@ -11,6 +11,7 @@ class StoryCell: UITableViewCell {
     static let reuseIdentifier = "StoryCell"
 
     let nameLabel = UILabel()
+    let nameIconView = UIImageView()
     let timestampLabel = UILabel()
     let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
     let attachmentThumbnail = UIView()
@@ -26,7 +27,12 @@ class StoryCell: UITableViewCell {
         replyImageView.autoSetDimensions(to: CGSize(square: 20))
         replyImageView.contentMode = .scaleAspectFit
 
-        let vStack = UIStackView(arrangedSubviews: [nameLabel, timestampLabel, replyImageView])
+        let nameStack = UIStackView(arrangedSubviews: [nameLabel, nameIconView])
+        nameStack.axis = .horizontal
+        nameStack.alignment = .center
+        nameStack.spacing = 3
+
+        let vStack = UIStackView(arrangedSubviews: [nameStack, timestampLabel, replyImageView])
         vStack.axis = .vertical
         vStack.alignment = .leading
 
@@ -68,6 +74,10 @@ class StoryCell: UITableViewCell {
         nameLabel.textColor = Theme.primaryTextColor
         nameLabel.text = model.latestMessageName
 
+        nameIconView.contentMode = .center
+        nameIconView.image = UIImage(named: "official-checkmark-20")
+        nameIconView.isHiddenInStackView = !model.isSystemStory
+
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = model.latestMessageAvatarDataSource
             config.storyState = model.hasUnviewedMessages ? .unviewed : .viewed
@@ -83,6 +93,7 @@ class StoryCell: UITableViewCell {
     }
 
     func configureTimestamp(with model: StoryViewModel) {
+        timestampLabel.isHidden = model.isSystemStory
         timestampLabel.font = .ows_dynamicTypeSubheadline
         timestampLabel.textColor = Theme.secondaryTextAndIconColor
         timestampLabel.text = DateUtil.formatTimestampRelatively(model.latestMessageTimestamp)

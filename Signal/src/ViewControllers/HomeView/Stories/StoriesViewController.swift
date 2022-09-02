@@ -347,11 +347,18 @@ class StoriesViewController: OWSViewController {
     }
 
     // Sort story models for display.
-    // * We show unviewed stories first, sorted by their sent timestamp, with the most recently sent at the top
-    // * We then show viewed stories, sorted by when they were viewed, with the most recently viewed at the top
+    // * We show system stories first, then other stories. Within each bucket:
+    //   * We show unviewed stories first, sorted by their sent timestamp, with the most recently sent at the top
+    //   * We then show viewed stories, sorted by when they were viewed, with the most recently viewed at the top
     private func sortStoryModels(lhs: StoryViewModel, rhs: StoryViewModel) -> Bool {
-        if let lhsViewedTimestamp = lhs.latestMessageViewedTimestamp,
-            let rhsViewedTimestamp = rhs.latestMessageViewedTimestamp {
+        if lhs.isSystemStory {
+            return true
+        } else if rhs.isSystemStory {
+            return false
+        } else if
+            let lhsViewedTimestamp = lhs.latestMessageViewedTimestamp,
+            let rhsViewedTimestamp = rhs.latestMessageViewedTimestamp
+        {
             return lhsViewedTimestamp > rhsViewedTimestamp
         } else if lhs.latestMessageViewedTimestamp != nil {
             return false
