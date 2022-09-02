@@ -4477,7 +4477,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                      isArchived:NO
                                                  isMarkedUnread:NO
                                             mutedUntilTimestamp:0
-                                              audioPlaybackRate:1];
+                                              audioPlaybackRate:1
+                                                      hideStory:NO];
 }
 
 + (TSOutgoingMessage *)createFakeOutgoingMessage:(TSThread *)thread

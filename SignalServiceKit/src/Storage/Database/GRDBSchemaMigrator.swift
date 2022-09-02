@@ -173,6 +173,7 @@ public class GRDBSchemaMigrator: NSObject {
         case convertStoryIncomingManifestStorageFormat
         case recreateStoryIncomingViewedTimestampIndex
         case addColumnsForLocalUserLeaveGroupDurableJob
+        case addStoriesHiddenStateToThreadAssociatedData
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -1941,6 +1942,16 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(.addStoriesHiddenStateToThreadAssociatedData) { db in
+            do {
+                try db.alter(table: "thread_associated_data") { table in
+                    table.add(column: "hideStory", .boolean).notNull().defaults(to: false)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2183,7 +2194,8 @@ public class GRDBSchemaMigrator: NSObject {
                         isMarkedUnread: thread.isMarkedUnreadObsolete,
                         mutedUntilTimestamp: thread.mutedUntilTimestampObsolete,
                         // this didn't exist pre-migration, just write the default
-                        audioPlaybackRate: 1
+                        audioPlaybackRate: 1,
+                        hideStory: false
                     ).insert(transaction.database)
                 } catch {
                     owsFail("Error \(error)")

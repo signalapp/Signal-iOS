@@ -30,6 +30,10 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     public private(set) var audioPlaybackRate: Float
 
     @objc
+    @DecodableDefault.False
+    public private(set) var hideStory: Bool
+
+    @objc
     public var isMuted: Bool { mutedUntilTimestamp > Date.ows_millisecondTimestamp() }
 
     @objc
@@ -132,13 +136,15 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         isArchived: Bool,
         isMarkedUnread: Bool,
         mutedUntilTimestamp: UInt64,
-        audioPlaybackRate: Float
+        audioPlaybackRate: Float,
+        hideStory: Bool
     ) {
         self.threadUniqueId = threadUniqueId
         self.isArchived = isArchived
         self.isMarkedUnread = isMarkedUnread
         self.mutedUntilTimestamp = mutedUntilTimestamp
         self.audioPlaybackRate = audioPlaybackRate
+        self.hideStory = hideStory
         super.init()
     }
 
@@ -147,10 +153,17 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         isMarkedUnread: Bool? = nil,
         mutedUntilTimestamp: UInt64? = nil,
         audioPlaybackRate: Float? = nil,
+        hideStory: Bool? = nil,
         updateStorageService: Bool,
         transaction: SDSAnyWriteTransaction
     ) {
-        guard isArchived != nil || isMarkedUnread != nil || mutedUntilTimestamp != nil || audioPlaybackRate != nil else {
+        guard
+            isArchived != nil
+            || isMarkedUnread != nil
+            || mutedUntilTimestamp != nil
+            || audioPlaybackRate != nil
+            || hideStory != nil
+        else {
             return owsFailDebug("You must set one value")
         }
 
@@ -177,6 +190,9 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
             if let audioPlaybackRate = audioPlaybackRate {
                 associatedData.audioPlaybackRate = audioPlaybackRate
             }
+            if let hideStory = hideStory {
+                associatedData.hideStory = hideStory
+            }
         }
     }
 
@@ -202,6 +218,12 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @available(swift, obsoleted: 1.0)
     public func updateWith(audioPlaybackRate: Float, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.audioPlaybackRate = audioPlaybackRate }
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func updateWith(hideStory: Bool, updateStorageService: Bool, transaction: SDSAnyWriteTransaction) {
+        updateWith(updateStorageService: updateStorageService, transaction: transaction) { $0.hideStory = hideStory }
     }
 
     @objc(clearIsArchived:clearIsMarkedUnread:updateStorageService:transaction:)

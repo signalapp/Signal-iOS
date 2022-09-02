@@ -1108,6 +1108,7 @@ CREATE
             ,"isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0
             ,"mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
             ,"audioPlaybackRate" DOUBLE NOT NULL DEFAULT 1
+            ,"hideStory" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 
