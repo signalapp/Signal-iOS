@@ -72,6 +72,7 @@ class NotificationService: UNNotificationServiceExtension {
 
     // This method is thread-safe.
     func completeSilently(timeHasExpired: Bool = false, logger: NSELogger) {
+        defer { logger.flush() }
 
         let nseCount = Self.nseDidComplete()
 
@@ -79,7 +80,6 @@ class NotificationService: UNNotificationServiceExtension {
             if DebugFlags.internalLogging {
                 logger.warn("No contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
             }
-            logger.flush()
             return
         }
 
@@ -106,9 +106,26 @@ class NotificationService: UNNotificationServiceExtension {
         if DebugFlags.internalLogging {
             logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
         }
-        logger.flush()
 
-        contentHandler(content)
+        if timeHasExpired {
+            contentHandler(content)
+        } else {
+            // If we have some time left, query current notification state
+            logger.info("Querying existing notifications")
+
+            let notificationCenter = UNUserNotificationCenter.current()
+            notificationCenter.getPendingNotificationRequests { requests in
+                defer { logger.flush() }
+                logger.info("Found \(requests.count) pending notification requests with identifiers: \(requests.map { $0.identifier }.joined(separator: ", "))")
+
+                notificationCenter.getDeliveredNotifications { notifications in
+                    defer { logger.flush() }
+                    logger.info("Found \(notifications.count) delivered notifications with identifiers: \(notifications.map { $0.request.identifier }.joined(separator: ", "))")
+
+                    contentHandler(content)
+                }
+            }
+        }
     }
 
     override func didReceive(
