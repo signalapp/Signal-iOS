@@ -113,12 +113,12 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
         set { connectingDate = newValue ? Date() : nil }
     }
 
-    var hasConnected: Bool {
+    public var hasConnected: Bool {
         get { return connectedDate != nil }
         set { connectedDate = newValue ? Date() : nil }
     }
 
-    var hasEnded: Bool {
+    public var hasEnded: Bool {
         get { return endDate != nil }
         set { endDate = newValue ? Date() : nil }
     }

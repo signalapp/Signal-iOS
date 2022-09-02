@@ -132,11 +132,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // NOTE: Fix an edge case where user taps on the callkit notification
         // but answers the call on another device
-        stopPollers(shouldStopUserPoller: !self.hasIncomingCallWaiting())
+        stopPollers(shouldStopUserPoller: !self.hasCallOngoing())
         
         // Stop all jobs except for message sending and when completed suspend the database
         JobRunner.stopAndClearPendingJobs(exceptForVariant: .messageSend) {
-            NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            if !self.hasCallOngoing() {
+                NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            }
         }
     }
     
@@ -632,6 +634,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard let call = AppEnvironment.shared.callManager.currentCall else { return false }
         
         return !call.hasStartedConnecting
+    }
+    
+    func hasCallOngoing() -> Bool {
+        guard let call = AppEnvironment.shared.callManager.currentCall else { return false }
+        
+        return !call.hasEnded
     }
     
     func handleAppActivatedWithOngoingCallIfNeeded() {
