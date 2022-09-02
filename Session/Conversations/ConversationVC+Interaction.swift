@@ -79,7 +79,7 @@ extension ConversationVC:
             return
         }
         
-        requestMicrophonePermissionIfNeeded {}
+        Permissions.requestMicrophonePermissionIfNeeded()
         
         let threadId: String = self.viewModel.threadData.threadId
         
@@ -104,12 +104,34 @@ extension ConversationVC:
     }
 
     @discardableResult func showBlockedModalIfNeeded() -> Bool {
-        guard self.viewModel.threadData.threadIsBlocked == true else { return false }
+        guard
+            self.viewModel.threadData.threadVariant == .contact &&
+            self.viewModel.threadData.threadIsBlocked == true
+        else { return false }
         
-        let blockedModal = BlockedModal(publicKey: viewModel.threadData.threadId)
-        blockedModal.modalPresentationStyle = .overFullScreen
-        blockedModal.modalTransitionStyle = .crossDissolve
-        present(blockedModal, animated: true, completion: nil)
+        let message = String(
+            format: "modal_blocked_explanation".localized(),
+            self.viewModel.threadData.displayName
+        )
+        let confirmationModal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: String(
+                    format: "modal_blocked_title".localized(),
+                    self.viewModel.threadData.displayName
+                ),
+                attributedExplanation: NSAttributedString(string: message)
+                    .adding(
+                        attributes: [ .font: UIFont.boldSystemFont(ofSize: Values.smallFontSize) ],
+                        range: (message as NSString).range(of: self.viewModel.threadData.displayName)
+                    ),
+                confirmTitle: "modal_blocked_button_title".localized(),
+                dismissOnConfirm: false // Custom dismissal logic
+            ) { [weak self] _ in
+                self?.viewModel.unblockContact()
+                self?.dismiss(animated: true, completion: nil)
+            }
+        )
+        present(confirmationModal, animated: true, completion: nil)
         
         return true
     }
@@ -185,7 +207,7 @@ extension ConversationVC:
     func handleLibraryButtonTapped() {
         let threadId: String = self.viewModel.threadData.threadId
         
-        requestLibraryPermissionIfNeeded { [weak self] in
+        Permissions.requestLibraryPermissionIfNeeded { [weak self] in
             DispatchQueue.main.async {
                 let sendMediaNavController = SendMediaNavigationController.showingMediaLibraryFirst(
                     threadId: threadId
@@ -198,9 +220,9 @@ extension ConversationVC:
     }
     
     func handleCameraButtonTapped() {
-        guard requestCameraPermissionIfNeeded() else { return }
+        guard Permissions.requestCameraPermissionIfNeeded(presentingViewController: self) else { return }
         
-        requestMicrophonePermissionIfNeeded { }
+        Permissions.requestMicrophonePermissionIfNeeded()
         
         if AVAudioSession.sharedInstance().recordPermission != .granted {
             SNLog("Proceeding without microphone access. Any recorded video will be silent.")
@@ -760,11 +782,30 @@ extension ConversationVC:
         
         // If it's an incoming media message and the thread isn't trusted then show the placeholder view
         if cellViewModel.cellType != .textOnlyMessage && cellViewModel.variant == .standardIncoming && !cellViewModel.threadIsTrusted {
-            let modal = DownloadAttachmentModal(profile: cellViewModel.profile)
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
+            let message: String = String(
+                format: "modal_download_attachment_explanation".localized(),
+                cellViewModel.authorName
+            )
+            let confirmationModal: ConfirmationModal = ConfirmationModal(
+                info: ConfirmationModal.Info(
+                    title: String(
+                        format: "modal_download_attachment_title".localized(),
+                        cellViewModel.authorName
+                    ),
+                    attributedExplanation: NSAttributedString(string: message)
+                        .adding(
+                            attributes: [ .font: UIFont.boldSystemFont(ofSize: Values.smallFontSize) ],
+                            range: (message as NSString).range(of: cellViewModel.authorName)
+                        ),
+                    confirmTitle: "modal_download_button_title".localized(),
+                    dismissOnConfirm: false // Custom dismissal logic
+                ) { [weak self] _ in
+                    self?.viewModel.trustContact()
+                    self?.dismiss(animated: true, completion: nil)
+                }
+            )
             
-            present(modal, animated: true, completion: nil)
+            present(confirmationModal, animated: true, completion: nil)
             return
         }
         
@@ -924,20 +965,20 @@ extension ConversationVC:
         guard let url: URL = URL(string: urlString) else { return }
         
         // URLs can be unsafe, so always ask the user whether they want to open one
-        let alertVC = UIAlertController.init(
+        let alertVC = UIAlertController(
             title: "modal_open_url_title".localized(),
             message: String(format: "modal_open_url_explanation".localized(), url.absoluteString),
             preferredStyle: .actionSheet
         )
-        alertVC.addAction(UIAlertAction.init(title: "modal_open_url_button_title".localized(), style: .default) { [weak self] _ in
+        alertVC.addAction(UIAlertAction(title: "modal_open_url_button_title".localized(), style: .default) { [weak self] _ in
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
             self?.showInputAccessoryView()
         })
-        alertVC.addAction(UIAlertAction.init(title: "modal_copy_url_button_title".localized(), style: .default) { [weak self] _ in
+        alertVC.addAction(UIAlertAction(title: "modal_copy_url_button_title".localized(), style: .default) { [weak self] _ in
             UIPasteboard.general.string = url.absoluteString
             self?.showInputAccessoryView()
         })
-        alertVC.addAction(UIAlertAction.init(title: "cancel".localized(), style: .cancel) { [weak self] _ in
+        alertVC.addAction(UIAlertAction(title: "cancel".localized(), style: .cancel) { [weak self] _ in
             self?.showInputAccessoryView()
         })
         
@@ -1732,7 +1773,7 @@ extension ConversationVC:
 
     func startVoiceMessageRecording() {
         // Request permission if needed
-        requestMicrophonePermissionIfNeeded() { [weak self] in
+        Permissions.requestMicrophonePermissionIfNeeded() { [weak self] in
             self?.cancelVoiceMessageRecording()
         }
         
@@ -1852,100 +1893,6 @@ extension ConversationVC:
     func stopVoiceMessageRecording() {
         audioRecorder?.stop()
         Environment.shared?.audioSession.endAudioActivity(recordVoiceMessageActivity)
-    }
-    
-    // MARK: - Permissions
-    
-    func requestCameraPermissionIfNeeded() -> Bool {
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .authorized: return true
-            case .denied, .restricted:
-                let modal = PermissionMissingModal(permission: "camera") { }
-                modal.modalPresentationStyle = .overFullScreen
-                modal.modalTransitionStyle = .crossDissolve
-                present(modal, animated: true, completion: nil)
-                return false
-                
-            case .notDetermined:
-                AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
-                return false
-                
-            default: return false
-        }
-    }
-
-    func requestMicrophonePermissionIfNeeded(onNotGranted: @escaping () -> Void) {
-        switch AVAudioSession.sharedInstance().recordPermission {
-            case .granted: break
-            case .denied:
-                onNotGranted()
-                let modal = PermissionMissingModal(permission: "microphone") {
-                    onNotGranted()
-                }
-                modal.modalPresentationStyle = .overFullScreen
-                modal.modalTransitionStyle = .crossDissolve
-                present(modal, animated: true, completion: nil)
-                
-            case .undetermined:
-                onNotGranted()
-                AVAudioSession.sharedInstance().requestRecordPermission { _ in }
-                
-            default: break
-        }
-    }
-
-    func requestLibraryPermissionIfNeeded(onAuthorized: @escaping () -> Void) {
-        let authorizationStatus: PHAuthorizationStatus
-        if #available(iOS 14, *) {
-            authorizationStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-            if authorizationStatus == .notDetermined {
-                // When the user chooses to select photos (which is the .limit status),
-                // the PHPhotoUI will present the picker view on the top of the front view.
-                // Since we have the ScreenLockUI showing when we request premissions,
-                // the picker view will be presented on the top of the ScreenLockUI.
-                // However, the ScreenLockUI will dismiss with the permission request alert view, so
-                // the picker view then will dismiss, too. The selection process cannot be finished
-                // this way. So we add a flag (isRequestingPermission) to prevent the ScreenLockUI
-                // from showing when we request the photo library permission.
-                Environment.shared?.isRequestingPermission = true
-                let appMode = AppModeManager.shared.currentAppMode
-                // FIXME: Rather than setting the app mode to light and then to dark again once we're done,
-                // it'd be better to just customize the appearance of the image picker. There doesn't currently
-                // appear to be a good way to do so though...
-                AppModeManager.shared.setCurrentAppMode(to: .light)
-                PHPhotoLibrary.requestAuthorization(for: .readWrite) { status in
-                    DispatchQueue.main.async {
-                        AppModeManager.shared.setCurrentAppMode(to: appMode)
-                    }
-                    Environment.shared?.isRequestingPermission = false
-                    if [ PHAuthorizationStatus.authorized, PHAuthorizationStatus.limited ].contains(status) {
-                        onAuthorized()
-                    }
-                }
-            }
-        } else {
-            authorizationStatus = PHPhotoLibrary.authorizationStatus()
-            if authorizationStatus == .notDetermined {
-                PHPhotoLibrary.requestAuthorization { status in
-                    if status == .authorized {
-                        onAuthorized()
-                    }
-                }
-            }
-        }
-        
-        switch authorizationStatus {
-            case .authorized, .limited:
-                onAuthorized()
-                
-            case .denied, .restricted:
-                let modal = PermissionMissingModal(permission: "library") { }
-                modal.modalPresentationStyle = .overFullScreen
-                modal.modalTransitionStyle = .crossDissolve
-                present(modal, animated: true, completion: nil)
-                
-            default: return
-        }
     }
     
     // MARK: - Data Extraction Notifications

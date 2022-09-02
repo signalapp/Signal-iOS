@@ -547,47 +547,31 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
                     style: .destructive,
                     title: "TXT_DELETE_TITLE".localized()
                 ) { [weak self] _, _, completionHandler in
-                    let message = (threadViewModel.currentUserIsClosedGroupAdmin == true ?
-                        "admin_group_leave_warning".localized() :
-                        "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE".localized()
+                    let confirmationModal: ConfirmationModal = ConfirmationModal(
+                        info: ConfirmationModal.Info(
+                            title: "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE".localized(),
+                            explanation: (threadViewModel.currentUserIsClosedGroupAdmin == true ?
+                                "admin_group_leave_warning".localized() :
+                                "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE".localized()
+                            ),
+                            confirmTitle: "TXT_DELETE_TITLE".localized(),
+                            confirmStyle: .danger,
+                            cancelStyle: .textPrimary,
+                            dismissOnConfirm: true,
+                            onConfirm: { [weak self] _ in
+                                self?.viewModel.delete(
+                                    threadId: threadViewModel.threadId,
+                                    threadVariant: threadViewModel.threadVariant
+                                )
+                                self?.dismiss(animated: true, completion: nil)
+                                
+                                completionHandler(true)
+                            },
+                            afterClosed: { completionHandler(false) }
+                        )
                     )
                     
-                    let alert = UIAlertController(
-                        title: "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE".localized(),
-                        message: message,
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(
-                        title: "TXT_DELETE_TITLE".localized(),
-                        style: .destructive
-                    ) { _ in
-                        Storage.shared.writeAsync { db in
-                            switch threadViewModel.threadVariant {
-                                case .closedGroup:
-                                    try MessageSender
-                                        .leave(db, groupPublicKey: threadViewModel.threadId)
-                                        .retainUntilComplete()
-                                    
-                                case .openGroup:
-                                    OpenGroupManager.shared.delete(db, openGroupId: threadViewModel.threadId)
-                                    
-                                default: break
-                            }
-                            
-                            _ = try SessionThread
-                                .filter(id: threadViewModel.threadId)
-                                .deleteAll(db)
-                        }
-                        completionHandler(true)
-                    })
-                    alert.addAction(UIAlertAction(
-                        title: "TXT_CANCEL_TITLE".localized(),
-                        style: .default
-                    ) { _ in
-                        completionHandler(false)
-                    })
-                    
-                    self?.present(alert, animated: true, completion: nil)
+                    self?.present(confirmationModal, animated: true, completion: nil)
                 }
                 delete.themeBackgroundColor = .conversationButton_swipeDestructive
 

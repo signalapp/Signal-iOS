@@ -186,7 +186,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     lazy var blockedBanner: InfoBanner = {
         let result: InfoBanner = InfoBanner(
             message: self.viewModel.blockedBannerMessage,
-            backgroundColor: Colors.destructive
+            backgroundColor: .danger
         )
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(unblock))
         result.addGestureRecognizer(tapGestureRecognizer)

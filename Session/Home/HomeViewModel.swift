@@ -310,4 +310,26 @@ public class HomeViewModel {
     public func updateThreadData(_ updatedData: [SectionModel]) {
         self.threadData = updatedData
     }
+    
+    // MARK: - Functions
+    
+    public func delete(threadId: String, threadVariant: SessionThread.Variant) {
+        Storage.shared.writeAsync { db in
+            switch threadVariant {
+                case .closedGroup:
+                    try MessageSender
+                        .leave(db, groupPublicKey: threadId)
+                        .retainUntilComplete()
+                    
+                case .openGroup:
+                    OpenGroupManager.shared.delete(db, openGroupId: threadId)
+                    
+                default: break
+            }
+            
+            _ = try SessionThread
+                .filter(id: threadId)
+                .deleteAll(db)
+        }
+    }
 }

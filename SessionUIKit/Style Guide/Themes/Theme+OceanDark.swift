@@ -88,6 +88,10 @@ internal enum Theme_OceanDark: ThemeColors {
         .conversationButton_unreadBubbleText: .oceanDark0,
         .conversationButton_swipeDestructive: .dangerDark,
         .conversationButton_swipeSecondary: .oceanDark2,
-        .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color
+        .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color,
+        
+        // Call
+        .callAccept_background: Theme.PrimaryColor.green.color,
+        .callDecline_background: .dangerDark
     ]
 }

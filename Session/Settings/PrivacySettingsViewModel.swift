@@ -145,7 +145,7 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
                                     stateToShow: .whenDisabled,
                                     confirmTitle: "continue_2".localized(),
                                     confirmStyle: .textPrimary
-                                ) { _ in requestMicrophonePermissionIfNeeded() }
+                                ) { _ in Permissions.requestMicrophonePermissionIfNeeded() }
                             )
                         )
                     ]

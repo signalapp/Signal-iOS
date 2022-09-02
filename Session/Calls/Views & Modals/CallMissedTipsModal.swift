@@ -71,18 +71,14 @@ final class CallMissedTipsModal: Modal {
     init(caller: String) {
         self.caller = caller
         
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         
         self.modalPresentationStyle = .overFullScreen
         self.modalTransitionStyle = .crossDissolve
     }
 
     required init?(coder: NSCoder) {
-        preconditionFailure("Use init(onCallEnabled:) instead.")
-    }
-
-    override init(nibName: String?, bundle: Bundle?) {
-        preconditionFailure("Use init(onCallEnabled:) instead.")
+        preconditionFailure("Use init(caller:) instead.")
     }
 
     override func populateContentView() {

@@ -771,3 +771,8 @@
 "modal_clear_all_data_confirm" = "Clear";
 "modal_seed_title" = "Tu frase de recuperación";
 "modal_seed_explanation" = "You can use your recovery phrase to restore your account or link a device.";
+"modal_permission_explanation" = "Session needs %@ access to continue. You can enable access in the iOS settings.";
+"modal_permission_settings_title" = "Settings";
+"modal_permission_camera" = "camera";
+"modal_permission_microphone" = "microphone";
+"modal_permission_library" = "library";

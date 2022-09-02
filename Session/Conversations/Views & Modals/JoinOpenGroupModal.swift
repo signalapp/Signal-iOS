@@ -15,10 +15,10 @@ final class JoinOpenGroupModal: Modal {
         self.name = (name ?? "Open Group")
         self.url = url
         
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
     
-    override init(nibName: String?, bundle: Bundle?) {
+    override init(afterClosed: (() -> ())? = nil) {
         preconditionFailure("Use init(name:url:) instead.")
     }
     

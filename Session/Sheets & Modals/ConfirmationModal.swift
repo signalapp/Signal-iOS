@@ -21,6 +21,7 @@ public class ConfirmationModal: Modal {
         
         let title: String
         let explanation: String?
+        let attributedExplanation: NSAttributedString?
         let stateToShow: State
         let confirmTitle: String?
         let confirmStyle: ThemeValue
@@ -28,22 +29,26 @@ public class ConfirmationModal: Modal {
         let cancelStyle: ThemeValue
         let dismissOnConfirm: Bool
         let onConfirm: ((UIViewController) -> ())?
+        let afterClosed: (() -> ())?
         
         // MARK: - Initialization
         
         init(
             title: String,
             explanation: String? = nil,
+            attributedExplanation: NSAttributedString? = nil,
             stateToShow: State = .always,
             confirmTitle: String? = nil,
             confirmStyle: ThemeValue = .textPrimary,
             cancelTitle: String = "TXT_CANCEL_TITLE".localized(),
             cancelStyle: ThemeValue = .danger,
             dismissOnConfirm: Bool = true,
-            onConfirm: ((UIViewController) -> ())? = nil
+            onConfirm: ((UIViewController) -> ())? = nil,
+            afterClosed: (() -> ())? = nil
         ) {
             self.title = title
             self.explanation = explanation
+            self.attributedExplanation = attributedExplanation
             self.stateToShow = stateToShow
             self.confirmTitle = confirmTitle
             self.confirmStyle = confirmStyle
@@ -51,11 +56,15 @@ public class ConfirmationModal: Modal {
             self.cancelStyle = cancelStyle
             self.dismissOnConfirm = dismissOnConfirm
             self.onConfirm = onConfirm
+            self.afterClosed = afterClosed
         }
         
         // MARK: - Mutation
         
-        public func with(onConfirm: ((UIViewController) -> ())? = nil) -> Info {
+        public func with(
+            onConfirm: ((UIViewController) -> ())? = nil,
+            afterClosed: (() -> ())? = nil
+        ) -> Info {
             return Info(
                 title: self.title,
                 explanation: self.explanation,
@@ -65,7 +74,8 @@ public class ConfirmationModal: Modal {
                 cancelTitle: self.cancelTitle,
                 cancelStyle: self.cancelStyle,
                 dismissOnConfirm: self.dismissOnConfirm,
-                onConfirm: (onConfirm ?? self.onConfirm)
+                onConfirm: (onConfirm ?? self.onConfirm),
+                afterClosed: (afterClosed ?? self.afterClosed)
             )
         }
         
@@ -75,6 +85,7 @@ public class ConfirmationModal: Modal {
             return (
                 lhs.title == rhs.title &&
                 lhs.explanation == rhs.explanation &&
+                lhs.attributedExplanation == rhs.attributedExplanation &&
                 lhs.stateToShow == rhs.stateToShow &&
                 lhs.confirmTitle == rhs.confirmTitle &&
                 lhs.confirmStyle == rhs.confirmStyle &&
@@ -87,6 +98,7 @@ public class ConfirmationModal: Modal {
         public func hash(into hasher: inout Hasher) {
             title.hash(into: &hasher)
             explanation.hash(into: &hasher)
+            attributedExplanation.hash(into: &hasher)
             stateToShow.hash(into: &hasher)
             confirmTitle.hash(into: &hasher)
             confirmStyle.hash(into: &hasher)
@@ -174,15 +186,28 @@ public class ConfirmationModal: Modal {
             viewController.dismiss(animated: true)
         }
         
-        super.init(nibName: nil, bundle: nil)
+        super.init(afterClosed: info.afterClosed)
         
         self.modalPresentationStyle = .overFullScreen
         self.modalTransitionStyle = .crossDissolve
         
         // Set the content based on the provided info
         titleLabel.text = info.title
-        explanationLabel.text = info.explanation
-        explanationLabel.isHidden = (info.explanation == nil)
+        
+        // Note: We should only set the appropriate explanation/attributedExplanation value (as
+        // setting both when one is null can result in the other being removed)
+        if let explanation: String = info.explanation {
+            explanationLabel.text = explanation
+        }
+        
+        if let attributedExplanation: NSAttributedString = info.attributedExplanation {
+            explanationLabel.attributedText = attributedExplanation
+        }
+    
+        explanationLabel.isHidden = (
+            info.explanation == nil &&
+            info.attributedExplanation == nil
+        )
         confirmButton.setTitle(info.confirmTitle, for: .normal)
         confirmButton.setThemeTitleColor(info.confirmStyle, for: .normal)
         confirmButton.isHidden = (info.confirmTitle == nil)

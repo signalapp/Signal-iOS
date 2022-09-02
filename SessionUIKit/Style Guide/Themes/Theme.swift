@@ -140,4 +140,8 @@ public enum ThemeValue {
     case conversationButton_swipeDestructive
     case conversationButton_swipeSecondary
     case conversationButton_swipeTertiary
+    
+    // Call
+    case callAccept_background
+    case callDecline_background
 }

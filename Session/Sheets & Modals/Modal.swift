@@ -6,6 +6,8 @@ import SessionUIKit
 public class Modal: BaseVC, UIGestureRecognizerDelegate {
     private static let cornerRadius: CGFloat = 11
     
+    private let afterClosed: (() -> ())?
+    
     // MARK: - Components
     
     lazy var dimmingView: UIView = {
@@ -51,6 +53,16 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
     }()
     
     // MARK: - Lifecycle
+    
+    public init(afterClosed: (() -> ())? = nil) {
+        self.afterClosed = afterClosed
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("Use init(afterClosed:) instead")
+    }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -120,7 +132,9 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
             targetViewController = targetViewController?.presentingViewController
         }
         
-        targetViewController?.presentingViewController?.dismiss(animated: true, completion: nil)
+        targetViewController?.presentingViewController?.dismiss(animated: true) { [weak self] in
+            self?.afterClosed?()
+        }
     }
     
     // MARK: - UIGestureRecognizerDelegate

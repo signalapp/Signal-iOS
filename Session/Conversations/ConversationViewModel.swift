@@ -509,6 +509,53 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         }
     }
     
+    public func trustContact() {
+        guard self.threadData.threadVariant == .contact else { return }
+        
+        let threadId: String = self.threadId
+        
+        Storage.shared.writeAsync { db in
+            try Contact
+                .filter(id: threadId)
+                .updateAll(db, Contact.Columns.isTrusted.set(to: true))
+            
+            // Start downloading any pending attachments for this contact (UI will automatically be
+            // updated due to the database observation)
+            try Attachment
+                .stateInfo(authorId: threadId, state: .pendingDownload)
+                .fetchAll(db)
+                .forEach { attachmentDownloadInfo in
+                    JobRunner.add(
+                        db,
+                        job: Job(
+                            variant: .attachmentDownload,
+                            threadId: threadId,
+                            interactionId: attachmentDownloadInfo.interactionId,
+                            details: AttachmentDownloadJob.Details(
+                                attachmentId: attachmentDownloadInfo.attachmentId
+                            )
+                        )
+                    )
+                }
+        }
+    }
+    
+    public func unblockContact() {
+        guard self.threadData.threadVariant == .contact else { return }
+        
+        let threadId: String = self.threadId
+        
+        Storage.shared.writeAsync { db in
+            try Contact
+                .filter(id: threadId)
+                .updateAll(db, Contact.Columns.isBlocked.set(to: false))
+        
+            try MessageSender
+                .syncConfiguration(db, forceSyncNow: true)
+                .retainUntilComplete()
+        }
+    }
+    
     // MARK: - Audio Playback
     
     public struct PlaybackInfo {

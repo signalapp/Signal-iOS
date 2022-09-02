@@ -17,8 +17,8 @@ final class ConversationTitleView: UIView {
     
     private lazy var titleLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byTruncatingTail
         
         return result
@@ -26,8 +26,8 @@ final class ConversationTitleView: UIView {
 
     private lazy var subtitleLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.textColor = Colors.text
         result.font = .systemFont(ofSize: 13)
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byTruncatingTail
         
         return result
@@ -95,23 +95,37 @@ final class ConversationTitleView: UIView {
             return
         }
         
-        // Generate the subtitle
-        let subtitle: NSAttributedString? = {
+        let shouldHaveSubtitle: Bool = (
+            Date().timeIntervalSince1970 <= (mutedUntilTimestamp ?? 0) ||
+            onlyNotifyForMentions ||
+            userCount != nil
+        )
+        
+        self.titleLabel.text = name
+        self.titleLabel.font = .boldSystemFont(
+            ofSize: (shouldHaveSubtitle ?
+                Values.mediumFontSize :
+                Values.veryLargeFontSize
+            )
+        )
+        
+        ThemeManager.onThemeChange(observer: self.subtitleLabel) { [weak subtitleLabel] theme, _ in
+            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            //subtitleLabel?.attributedText = subtitle
             guard Date().timeIntervalSince1970 > (mutedUntilTimestamp ?? 0) else {
-                return NSAttributedString(
+                subtitleLabel?.attributedText = NSAttributedString(
                     string: "\u{e067}  ",
                     attributes: [
                         .font: UIFont.ows_elegantIconsFont(10),
-                        .foregroundColor: Colors.text
+                        .foregroundColor: textPrimary
                     ]
                 )
                 .appending(string: "Muted")
+                return
             }
             guard !onlyNotifyForMentions else {
-                // FIXME: This is going to have issues when swapping between light/dark mode
                 let imageAttachment = NSTextAttachment()
-                let color: UIColor = (isDarkMode ? .white : .black)
-                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: color)
+                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: textPrimary)
                 imageAttachment.bounds = CGRect(
                     x: 0,
                     y: -2,
@@ -119,23 +133,17 @@ final class ConversationTitleView: UIView {
                     height: Values.smallFontSize
                 )
                 
-                return NSAttributedString(attachment: imageAttachment)
+                subtitleLabel?.attributedText = NSAttributedString(attachment: imageAttachment)
                     .appending(string: "  ")
                     .appending(string: "view_conversation_title_notify_for_mentions_only".localized())
+                return
             }
-            guard let userCount: Int = userCount else { return nil }
+            guard let userCount: Int = userCount else { return }
             
-            return NSAttributedString(string: "\(userCount) member\(userCount == 1 ? "" : "s")")
-        }()
-        
-        self.titleLabel.text = name
-        self.titleLabel.font = .boldSystemFont(
-            ofSize: (subtitle != nil ?
-                Values.mediumFontSize :
-                Values.veryLargeFontSize
+            subtitleLabel?.attributedText = NSAttributedString(
+                string: "\(userCount) member\(userCount == 1 ? "" : "s")"
             )
-        )
-        self.subtitleLabel.attributedText = subtitle
+        }
         
         // Contact threads also have the call button to compensate for
         let shouldShowCallButton: Bool = (

@@ -88,6 +88,10 @@ internal enum Theme_ClassicLight: ThemeColors {
         .conversationButton_unreadBubbleText: .classicLight0,
         .conversationButton_swipeDestructive: .dangerLight,
         .conversationButton_swipeSecondary: .classicLight1,
-        .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color
+        .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color,
+        
+        // Call
+        .callAccept_background: Theme.PrimaryColor.green.color,
+        .callDecline_background: .dangerLight
     ]
 }
