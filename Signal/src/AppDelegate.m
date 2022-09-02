@@ -681,20 +681,6 @@ static void uncaughtExceptionHandler(NSException *exception)
     OWSLogInfo(@"applicationDidBecomeActive completed.");
 }
 
-- (void)enableBackgroundRefreshIfNecessary
-{
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        if (OWS2FAManager.shared.isRegistrationLockEnabled && [self.tsAccountManager isRegisteredAndReady]) {
-            // Ping server once a day to keep-alive reglock clients.
-            const NSTimeInterval kBackgroundRefreshInterval = 24 * 60 * 60;
-            [[UIApplication sharedApplication] setMinimumBackgroundFetchInterval:kBackgroundRefreshInterval];
-        } else {
-            [[UIApplication sharedApplication]
-                setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
-        }
-    });
-}
-
 - (void)handleActivation
 {
     OWSAssertIsOnMainThread();

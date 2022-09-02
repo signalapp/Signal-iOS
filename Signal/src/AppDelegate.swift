@@ -224,6 +224,22 @@ extension AppDelegate {
         SignalApp.shared().ensureRootViewController(launchStartedAt)
     }
 
+    @objc
+    func enableBackgroundRefreshIfNecessary() {
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            let interval: TimeInterval
+            if
+                OWS2FAManager.shared.isRegistrationLockEnabled,
+                self.tsAccountManager.isRegisteredAndReady {
+                // Ping server once a day to keep-alive reglock clients.
+                interval = 24 * 60 * 60
+            } else {
+                interval = UIApplication.backgroundFetchIntervalNever
+            }
+            UIApplication.shared.setMinimumBackgroundFetchInterval(interval)
+        }
+    }
+
     // MARK: - Remote notifications
 
     @objc
