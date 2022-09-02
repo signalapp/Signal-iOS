@@ -856,10 +856,7 @@ static void uncaughtExceptionHandler(NSException *exception)
                 }
             }
 
-            OutboundIndividualCallInitiator *outboundIndividualCallInitiator
-                = AppEnvironment.shared.outboundIndividualCallInitiator;
-            OWSAssertDebug(outboundIndividualCallInitiator);
-            [outboundIndividualCallInitiator initiateCallWithThread:thread isVideo:YES];
+            [AppEnvironment.shared.callService initiateCallWithThread:thread isVideo:YES];
         });
         return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
@@ -896,10 +893,7 @@ static void uncaughtExceptionHandler(NSException *exception)
                 return;
             }
 
-            OutboundIndividualCallInitiator *outboundIndividualCallInitiator
-                = AppEnvironment.shared.outboundIndividualCallInitiator;
-            OWSAssertDebug(outboundIndividualCallInitiator);
-            [outboundIndividualCallInitiator initiateCallWithThread:thread isVideo:NO];
+            [AppEnvironment.shared.callService initiateCallWithThread:thread isVideo:NO];
         });
         return YES;
 
@@ -942,10 +936,7 @@ static void uncaughtExceptionHandler(NSException *exception)
                     return;
                 }
 
-                OutboundIndividualCallInitiator *outboundIndividualCallInitiator
-                    = AppEnvironment.shared.outboundIndividualCallInitiator;
-                OWSAssertDebug(outboundIndividualCallInitiator);
-                [outboundIndividualCallInitiator initiateCallWithThread:thread isVideo:isVideo];
+                [AppEnvironment.shared.callService initiateCallWithThread:thread isVideo:isVideo];
             });
             return YES;
         } else {

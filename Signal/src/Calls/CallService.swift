@@ -538,7 +538,7 @@ public final class CallService: LightweightCallManager {
 
     // MARK: -
 
-    func buildAndConnectGroupCallIfPossible(thread: TSGroupThread) -> SignalCall? {
+    func buildAndConnectGroupCallIfPossible(thread: TSGroupThread, videoMuted: Bool) -> SignalCall? {
         AssertIsOnMainThread()
         guard !hasCallInProgress else { return nil }
 
@@ -551,7 +551,7 @@ public final class CallService: LightweightCallManager {
         currentCall = call
 
         call.groupCall.isOutgoingAudioMuted = false
-        call.groupCall.isOutgoingVideoMuted = false
+        call.groupCall.isOutgoingVideoMuted = videoMuted
 
         guard call.groupCall.connect() else {
             terminate(call: call)
@@ -584,6 +584,65 @@ public final class CallService: LightweightCallManager {
         // this method would be called when you're already joined, but it is
         // safe to do so.
         if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
+    }
+
+    @discardableResult
+    @objc
+    public func initiateCall(thread: TSThread, isVideo: Bool) -> Bool {
+        guard tsAccountManager.isOnboarded() else {
+            Logger.warn("aborting due to user not being onboarded.")
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
+                                                                     comment: "alert body shown when trying to use features in the app before completing registration-related setup."))
+            return false
+        }
+
+        guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
+            owsFailDebug("could not identify frontmostViewController")
+            return false
+        }
+
+        if let groupThread = thread as? TSGroupThread {
+            return GroupCallViewController.presentLobby(thread: groupThread, videoMuted: !isVideo)
+        }
+
+        guard let thread = thread as? TSContactThread else {
+            owsFailDebug("cannot initiate call to group thread")
+            return false
+        }
+
+        let showedAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
+            address: thread.contactAddress,
+            confirmationText: CallStrings.confirmAndCallButtonTitle
+        ) { didConfirmIdentity in
+            guard didConfirmIdentity else { return }
+            _ = self.initiateCall(thread: thread, isVideo: isVideo)
+        }
+        guard !showedAlert else {
+            return false
+        }
+
+        frontmostViewController.ows_askForMicrophonePermissions { granted in
+            guard granted == true else {
+                Logger.warn("aborting due to missing microphone permissions.")
+                frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
+                return
+            }
+
+            if isVideo {
+                frontmostViewController.ows_askForCameraPermissions { granted in
+                    guard granted else {
+                        Logger.warn("aborting due to missing camera permissions.")
+                        return
+                    }
+
+                    self.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: true)
+                }
+            } else {
+                self.callUIAdapter.startAndShowOutgoingCall(thread: thread, hasLocalVideo: false)
+            }
+        }
+
+        return true
     }
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> SignalCall? {

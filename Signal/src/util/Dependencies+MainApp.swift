@@ -34,14 +34,6 @@ public extension NSObject {
         AppEnvironment.shared.notificationPresenterRef
     }
 
-    final var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiatorRef
-    }
-
-    static var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiatorRef
-    }
-
     final var pushRegistrationManager: PushRegistrationManager {
         AppEnvironment.shared.pushRegistrationManagerRef
     }
@@ -132,14 +124,6 @@ public extension Dependencies {
 
     static var notificationPresenter: NotificationPresenter {
         AppEnvironment.shared.notificationPresenterRef
-    }
-
-    var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiatorRef
-    }
-
-    static var outboundIndividualCallInitiator: OutboundIndividualCallInitiator {
-        AppEnvironment.shared.outboundIndividualCallInitiatorRef
     }
 
     var pushRegistrationManager: PushRegistrationManager {
