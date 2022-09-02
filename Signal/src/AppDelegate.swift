@@ -154,6 +154,14 @@ extension AppDelegate {
     }
 
     @objc
+    func versionMigrationsDidComplete() {
+        AssertIsOnMainThread()
+        Logger.info("versionMigrationsDidComplete")
+        areVersionMigrationsComplete = true
+        checkIfAppIsReady()
+    }
+
+    @objc
     func checkIfAppIsReady() {
         AssertIsOnMainThread()
 

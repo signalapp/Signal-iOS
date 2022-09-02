@@ -16,7 +16,7 @@ extern NSString *const kAppLaunchesAttemptedKey;
 
 @property (nonatomic, readonly) NSTimeInterval launchStartedAt;
 
-@property (nonatomic, readonly) BOOL areVersionMigrationsComplete;
+@property (nonatomic, readwrite) BOOL areVersionMigrationsComplete;
 
 @property (nonatomic, readonly) BOOL didAppLaunchFail;
 

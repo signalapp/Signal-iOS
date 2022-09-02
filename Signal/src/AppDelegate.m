@@ -90,8 +90,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 @property (nonatomic, readwrite) NSTimeInterval launchStartedAt;
 
-@property (nonatomic, readwrite) BOOL areVersionMigrationsComplete;
-
 @property (nonatomic, readwrite) BOOL didAppLaunchFail;
 @property (nonatomic) BOOL shouldKillAppWhenBackgrounded;
 
@@ -1098,17 +1096,6 @@ static void uncaughtExceptionHandler(NSException *exception)
             });
         });
     });
-}
-
-- (void)versionMigrationsDidComplete
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"versionMigrationsDidComplete");
-
-    self.areVersionMigrationsComplete = YES;
-
-    [self checkIfAppIsReady];
 }
 
 - (void)storageIsReady
