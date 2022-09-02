@@ -302,7 +302,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     NSDictionary *remoteNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotification) {
         OWSLogInfo(@"Application was launched by tapping a push notification.");
-        [self processRemoteNotification:remoteNotification completion:nil];
+        [self processRemoteNotification:remoteNotification];
     }
 
     [OWSScreenLockUI.shared setupWithRootWindow:self.window];

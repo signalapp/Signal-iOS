@@ -233,7 +233,12 @@ extension AppDelegate {
     }
 
     @objc
-    func processRemoteNotification(_ remoteNotification: NSDictionary, completion: @escaping () -> Void = {}) {
+    func processRemoteNotification(_ remoteNotification: NSDictionary) {
+        processRemoteNotification(remoteNotification) {}
+    }
+
+    @objc
+    func processRemoteNotification(_ remoteNotification: NSDictionary, completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
         guard !didAppLaunchFail else {
