@@ -135,9 +135,17 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
             return
         }
         
-        guard let call = currentCall else {
+        func handleCallEnded() {
             WebRTCSession.current = nil
             UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
+            if CurrentAppContext().isInBackground() {
+                // Suspend the database
+                NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            }
+        }
+        
+        guard let call = currentCall else {
+            handleCallEnded()
             return
         }
         
@@ -157,8 +165,7 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
         
         call.webRTCSession.dropConnection()
         self.currentCall = nil
-        WebRTCSession.current = nil
-        UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
+        handleCallEnded()
     }
     
     // MARK: - Util
