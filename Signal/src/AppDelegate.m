@@ -53,8 +53,6 @@ static NSString *const kURLHostAddStickersPrefix = @"addstickers";
 NSString *const kURLHostTransferPrefix = @"transfer";
 NSString *const kURLHostLinkDevicePrefix = @"linkdevice";
 
-static NSTimeInterval launchStartedAt;
-
 static void uncaughtExceptionHandler(NSException *exception)
 {
     if (SSKDebugFlags.internalLogging) {
@@ -90,8 +88,11 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
-@property (nonatomic) BOOL areVersionMigrationsComplete;
-@property (nonatomic) BOOL didAppLaunchFail;
+@property (nonatomic, readwrite) NSTimeInterval launchStartedAt;
+
+@property (nonatomic, readwrite) BOOL areVersionMigrationsComplete;
+
+@property (nonatomic, readwrite) BOOL didAppLaunchFail;
 @property (nonatomic) BOOL shouldKillAppWhenBackgrounded;
 
 @end
@@ -160,7 +161,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     // This should be the first thing we do.
     SetCurrentAppContext([MainAppContext new]);
 
-    launchStartedAt = CACurrentMediaTime();
+    self.launchStartedAt = CACurrentMediaTime();
     [BenchManager startEventWithTitle:@"Presenting HomeView" eventId:@"AppStart" logInProduction:TRUE];
 
     BOOL isLoggingEnabled;
@@ -1155,94 +1156,6 @@ static void uncaughtExceptionHandler(NSException *exception)
     OWSLogInfo(@"storageIsReady");
 
     [self checkIfAppIsReady];
-}
-
-- (void)checkIfAppIsReady
-{
-    OWSAssertIsOnMainThread();
-
-    // If launch failed, the app will never be ready.
-    if (self.didAppLaunchFail) {
-        return;
-    }
-
-    // App isn't ready until storage is ready AND all version migrations are complete.
-    if (!self.areVersionMigrationsComplete) {
-        return;
-    }
-    if (![self.storageCoordinator isStorageReady]) {
-        return;
-    }
-    if ([AppReadiness isAppReady]) {
-        // Only mark the app as ready once.
-        return;
-    }
-    BOOL launchJobsAreComplete = [self.launchJobs ensureLaunchJobsWithCompletion:^{
-        // If launch jobs need to run, return and
-        // call checkIfAppIsReady again when they're complete.
-        [self checkIfAppIsReady];
-    }];
-    if (!launchJobsAreComplete) {
-        // Wait for launch jobs to complete.
-        return;
-    }
-
-    OWSLogInfo(@"checkIfAppIsReady");
-
-    // Note that this does much more than set a flag;
-    // it will also run all deferred blocks.
-    [AppReadiness setAppIsReadyUIStillPending];
-
-    if (CurrentAppContext().isRunningTests) {
-        OWSLogVerbose(@"Skipping post-launch logic in tests.");
-        [AppReadiness setUIIsReady];
-        return;
-    }
-
-    // If user is missing profile name, redirect to onboarding flow.
-    if (!SSKEnvironment.shared.profileManager.hasProfileName) {
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            [self.tsAccountManager setIsOnboarded:NO transaction:transaction];
-        });
-    }
-
-    if ([self.tsAccountManager isRegistered]) {
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            NSUInteger deviceCount = [OWSDevice anyCountWithTransaction:transaction];
-            NSString *linkedDeviceMessage;
-            if (deviceCount > 1) {
-                linkedDeviceMessage = [NSString stringWithFormat:@"%lu devices including the primary", deviceCount];
-            } else {
-                linkedDeviceMessage = @"no linked devices";
-            }
-            OWSLogInfo(@"localAddress: %@, deviceId: %u (%@)",
-                [self.tsAccountManager localAddressWithTransaction:transaction],
-                [self.tsAccountManager storedDeviceIdWithTransaction:transaction],
-                linkedDeviceMessage);
-        }];
-
-        // This should happen at any launch, background or foreground.
-        [OWSSyncPushTokensJob run];
-    }
-
-    [DebugLogger.shared postLaunchLogCleanup];
-    [AppVersion.shared mainAppLaunchDidComplete];
-
-    if (!Environment.shared.preferences.hasGeneratedThumbnails) {
-        [self.databaseStorage
-            asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-                [TSAttachment anyEnumerateWithTransaction:transaction
-                                                  batched:YES
-                                                    block:^(TSAttachment *attachment, BOOL *stop) {
-                                                        // no-op. It's sufficient to initWithCoder: each object.
-                                                    }];
-            }
-            completion:^{
-                [Environment.shared.preferences setHasGeneratedThumbnails:YES];
-            }];
-    }
-
-    [SignalApp.shared ensureRootViewController:launchStartedAt];
 }
 
 - (void)registrationStateDidChange

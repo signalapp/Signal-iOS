@@ -152,4 +152,75 @@ extension AppDelegate {
             }
         }
     }
+
+    @objc
+    func checkIfAppIsReady() {
+        AssertIsOnMainThread()
+
+        // If launch failed, the app will never be ready.
+        guard !didAppLaunchFail else { return }
+
+        // App isn't ready until storage is ready AND all version migrations are complete.
+        guard areVersionMigrationsComplete else { return }
+        guard storageCoordinator.isStorageReady else { return }
+
+        // Only mark the app as ready once.
+        guard !AppReadiness.isAppReady else { return }
+
+        // If launch jobs need to run, return and call checkIfAppIsReady again when they're complete.
+        let launchJobsAreComplete = launchJobs.ensureLaunchJobs {
+            self.checkIfAppIsReady()
+        }
+        guard launchJobsAreComplete else { return }
+
+        Logger.info("checkIfAppIsReady")
+
+        // Note that this does much more than set a flag;
+        // it will also run all deferred blocks.
+        AppReadiness.setAppIsReadyUIStillPending()
+
+        guard !CurrentAppContext().isRunningTests else {
+            Logger.verbose("Skipping post-launch logic in tests.")
+            AppReadiness.setUIIsReady()
+            return
+        }
+
+        // If user is missing profile name, redirect to onboarding flow.
+        if !SSKEnvironment.shared.profileManager.hasProfileName {
+            databaseStorage.write { transaction in
+                self.tsAccountManager.setIsOnboarded(false, transaction: transaction)
+            }
+        }
+
+        if tsAccountManager.isRegistered {
+            databaseStorage.read { transaction in
+                let localAddress = self.tsAccountManager.localAddress(with: transaction)
+                let deviceId = self.tsAccountManager.storedDeviceId(with: transaction)
+                let deviceCount = OWSDevice.anyCount(transaction: transaction)
+                let linkedDeviceMessage = deviceCount > 1 ? "\(deviceCount) devices including the primary" : "no linked devices"
+                Logger.info("localAddress: \(String(describing: localAddress)), deviceId: \(deviceId) (\(linkedDeviceMessage))")
+            }
+
+            // This should happen at any launch, background or foreground.
+            SyncPushTokensJob.run()
+        }
+
+        DebugLogger.shared().postLaunchLogCleanup()
+        AppVersion.shared().mainAppLaunchDidComplete()
+
+        if !Environment.shared.preferences.hasGeneratedThumbnails() {
+            databaseStorage.asyncRead(
+                block: { transaction in
+                    TSAttachment.anyEnumerate(transaction: transaction, batched: true) { (_, _) in
+                        // no-op. It's sufficient to initWithCoder: each object.
+                    }
+                },
+                completion: {
+                    Environment.shared.preferences.setHasGeneratedThumbnails(true)
+                }
+            )
+        }
+
+        SignalApp.shared().ensureRootViewController(launchStartedAt)
+    }
 }

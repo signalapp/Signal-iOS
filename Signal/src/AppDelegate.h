@@ -14,4 +14,10 @@ extern NSString *const kAppLaunchesAttemptedKey;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
+@property (nonatomic, readonly) NSTimeInterval launchStartedAt;
+
+@property (nonatomic, readonly) BOOL areVersionMigrationsComplete;
+
+@property (nonatomic, readonly) BOOL didAppLaunchFail;
+
 @end
