@@ -248,7 +248,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *input = [NSString stringWithFormat:@"My UUID is %@", uuidString];
         NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
 
-        NSString *expectation = @"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx";
+        NSString *expectation = @"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx";
         XCTAssertTrue([rawResult containsString:expectation], "Failed to redact UUID string: %@", uuidString);
         XCTAssertFalse([rawResult containsString:uuidString], "Failed to redact UUID string: %@", uuidString);
     }
@@ -262,7 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *rawResult = [self.formatter formatLogMessage:[self messageWithString:input]];
     NSString *result = [self stripDateFromMessage:rawResult];
 
-    NSString *expectation = @"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx48 ]";
+    NSString *expectation = @"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx748 ]";
     XCTAssertEqualObjects(result, expectation, "Failed to redact UUID string: %@", uuidString);
     XCTAssertFalse([result containsString:uuidString], "Failed to redact UUID string: %@", uuidString);
 }
@@ -278,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"phoneNumber: +12345678900, uuid: BAF1768C-2A25-4D8F-83B7-A89C59C98748>" :
             @"attempting to send message: TSOutgoingMessage, timestamp: %llu, recipient: <SignalServiceAddress "
             @"phoneNumber: [ REDACTED_PHONE_NUMBER:xxx900 ], uuid: [ "
-            @"REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx48 ]>",
+            @"REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx748 ]>",
     };
 
     for (NSString *inputFormat in expectedOutputs) {

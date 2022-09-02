@@ -71,6 +71,6 @@ class NSELogger {
     }
 
     private func makeLogString(_ logString: @autoclosure () -> String) -> String {
-        "\(logString()) {\(correlationId)}"
+        "\(logString()) {{\(correlationId)}}"
     }
 }

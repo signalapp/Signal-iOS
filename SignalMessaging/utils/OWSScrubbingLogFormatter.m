@@ -31,11 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&onceToken, ^{
         // Example: AF112388-9F3D-4EBA-A321-CCE01BA2C85D
         NSError *error;
-        regex = [NSRegularExpression
-            regularExpressionWithPattern:
-                @"[\\da-f]{8}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{10}([\\da-f]{2})"
-                                 options:NSRegularExpressionCaseInsensitive
-                                   error:&error];
+        regex =
+            [NSRegularExpression regularExpressionWithPattern:
+                                     @"[\\da-f]{8}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{9}([\\da-f]{3})"
+                                                      options:NSRegularExpressionCaseInsensitive
+                                                        error:&error];
         if (error || !regex) {
             OWSFail(@"could not compile regular expression: %@", error);
         }
@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
     logString = [uuidRegex stringByReplacingMatchesInString:logString
                                                     options:0
                                                       range:NSMakeRange(0, [logString length])
-                                               withTemplate:@"[ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx$1 ]"];
+                                               withTemplate:@"[ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxx$1 ]"];
 
     // We capture only the first two characters of the hex string for logging.
     // example log line: "Called someFunction with nsData: <01234567 89abcdef>"
