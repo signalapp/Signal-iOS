@@ -1369,6 +1369,13 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var hideStory: Bool {
+        return proto.hideStory
+    }
+    public var hasHideStory: Bool {
+        return true
+    }
+
     public var hasValidService: Bool {
         return serviceAddress != nil
     }
@@ -1500,6 +1507,9 @@ extension StorageServiceProtoContactRecord {
         if hasMutedUntilTimestamp {
             builder.setMutedUntilTimestamp(mutedUntilTimestamp)
         }
+        if hasHideStory {
+            builder.setHideStory(hideStory)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1613,6 +1623,10 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setMutedUntilTimestamp(_ valueParam: UInt64) {
         proto.mutedUntilTimestamp = valueParam
+    }
+
+    public mutating func setHideStory(_ valueParam: Bool) {
+        proto.hideStory = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
@@ -1879,6 +1893,13 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
         return true
     }
 
+    public var hideStory: Bool {
+        return proto.hideStory
+    }
+    public var hasHideStory: Bool {
+        return true
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1951,6 +1972,9 @@ extension StorageServiceProtoGroupV2Record {
         if hasMutedUntilTimestamp {
             builder.setMutedUntilTimestamp(mutedUntilTimestamp)
         }
+        if hasHideStory {
+            builder.setHideStory(hideStory)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1997,6 +2021,10 @@ public struct StorageServiceProtoGroupV2RecordBuilder {
 
     public mutating func setMutedUntilTimestamp(_ valueParam: UInt64) {
         proto.mutedUntilTimestamp = valueParam
+    }
+
+    public mutating func setHideStory(_ valueParam: Bool) {
+        proto.hideStory = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

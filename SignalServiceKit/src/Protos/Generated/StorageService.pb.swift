@@ -314,6 +314,8 @@ struct StorageServiceProtos_ContactRecord {
 
   var mutedUntilTimestamp: UInt64 = 0
 
+  var hideStory: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum IdentityState: SwiftProtobuf.Enum {
@@ -403,6 +405,9 @@ struct StorageServiceProtos_GroupV2Record {
   var markedUnread: Bool = false
 
   var mutedUntilTimestamp: UInt64 = 0
+
+  ///bool dontNotifyForMentionsIfMuted = 7;
+  var hideStory: Bool = false
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1160,6 +1165,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     11: .same(proto: "archived"),
     12: .same(proto: "markedUnread"),
     13: .same(proto: "mutedUntilTimestamp"),
+    14: .same(proto: "hideStory"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1181,6 +1187,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       case 11: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
       case 12: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 13: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
+      case 14: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
       default: break
       }
     }
@@ -1226,6 +1233,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     if self.mutedUntilTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.mutedUntilTimestamp, fieldNumber: 13)
     }
+    if self.hideStory != false {
+      try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 14)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1243,6 +1253,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.archived != rhs.archived {return false}
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
+    if lhs.hideStory != rhs.hideStory {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1327,6 +1338,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     4: .same(proto: "archived"),
     5: .same(proto: "markedUnread"),
     6: .same(proto: "mutedUntilTimestamp"),
+    8: .same(proto: "hideStory"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1341,6 +1353,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
       case 4: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
       case 5: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 6: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
+      case 8: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
       default: break
       }
     }
@@ -1365,6 +1378,9 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if self.mutedUntilTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.mutedUntilTimestamp, fieldNumber: 6)
     }
+    if self.hideStory != false {
+      try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 8)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1375,6 +1391,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.archived != rhs.archived {return false}
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
+    if lhs.hideStory != rhs.hideStory {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -74,6 +74,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
             builder.setArchived(threadAssociatedData.isArchived)
             builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
             builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
+            builder.setHideStory(threadAssociatedData.hideStory)
         }
 
         // Unknown
@@ -213,6 +214,10 @@ extension StorageServiceProtoContactRecord: Dependencies {
 
         if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+        }
+
+        if hideStory != localThreadAssociatedData.hideStory {
+            localThreadAssociatedData.updateWith(hideStory: hideStory, updateStorageService: false, transaction: transaction)
         }
 
         return mergeState
@@ -381,6 +386,7 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         builder.setArchived(threadAssociatedData.isArchived)
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
         builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
+        builder.setHideStory(threadAssociatedData.hideStory)
 
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
@@ -493,6 +499,10 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
 
         if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+        }
+
+        if hideStory != localThreadAssociatedData.hideStory {
+            localThreadAssociatedData.updateWith(hideStory: hideStory, updateStorageService: false, transaction: transaction)
         }
 
         return mergeState

@@ -91,6 +91,7 @@ message ContactRecord {
   bool          archived            = 11;
   bool          markedUnread        = 12;
   uint64        mutedUntilTimestamp = 13;
+  bool          hideStory           = 14;
 }
 
 message GroupV1Record {
@@ -105,12 +106,14 @@ message GroupV1Record {
 
 message GroupV2Record {
   // @required
-  bytes  masterKey           = 1;
-  bool   blocked             = 2;
-  bool   whitelisted         = 3;
-  bool   archived            = 4;
-  bool   markedUnread        = 5;
-  uint64 mutedUntilTimestamp = 6;
+  bytes  masterKey                  = 1;
+  bool   blocked                    = 2;
+  bool   whitelisted                = 3;
+  bool   archived                   = 4;
+  bool   markedUnread               = 5;
+  uint64 mutedUntilTimestamp        = 6;
+//bool dontNotifyForMentionsIfMuted = 7;
+  bool   hideStory                  = 8;
 }
 
 message AccountRecord {
