@@ -252,11 +252,14 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: contentToUse, trigger: trigger)
 
-        Logger.info("presenting notification with identifier: \(notificationIdentifier)")
+        Logger.info("Presenting notification with identifier \(notificationIdentifier)")
         Self.notificationCenter.add(request) { (error: Error?) in
             if let error = error {
-                owsFailDebug("Error: \(error)")
+                owsFailDebug("Error presenting notification with identifier \(notificationIdentifier): \(error)")
+            } else {
+                Logger.info("Presented notification with identifier \(notificationIdentifier)")
             }
+
             completion?()
         }
     }
@@ -271,16 +274,20 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         let notificationIdentifier = "org.signal.genericIncomingMessageNotification"
         content.body = NotificationStrings.genericIncomingMessageNotification
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: nil)
-        if DebugFlags.internalLogging {
-            Logger.info("Presenting notification with identifier: \(notificationIdentifier)")
-        }
+
+        Logger.info("Presenting generic incoming message notification with identifier \(notificationIdentifier)")
+
         let (promise, future) = Promise<Void>.pending()
         Self.notificationCenter.add(request) { (error: Error?) in
             if let error = error {
-                owsFailDebug("Error: \(error)")
+                owsFailDebug("Error presenting generic incoming message notification with identifier \(notificationIdentifier): \(error)")
+            } else {
+                Logger.info("Presented notification with identifier \(notificationIdentifier)")
             }
+
             future.resolve(())
         }
+
         return promise
     }
 
@@ -396,13 +403,10 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     // This method is thread-safe.
     private func cancelNotificationSync(identifier: String) {
+        Logger.warn("Canceling notification for identifier: \(identifier)")
+
         Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
         Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
-    }
-
-    // This method is thread-safe.
-    private func cancelNotification(_ notification: UNNotificationRequest) {
-        cancelNotificationSync(identifier: notification.identifier)
     }
 
     // This method is thread-safe.
@@ -421,6 +425,8 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     // This method is thread-safe.
     func clearAllNotifications() {
+        Logger.warn("Clearing all notifications")
+
         pendingCancellations.removeAllValues()
         Self.notificationCenter.removeAllPendingNotificationRequests()
         Self.notificationCenter.removeAllDeliveredNotifications()
