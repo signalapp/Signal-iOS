@@ -320,14 +320,23 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             closedGroupName: nil,       // Not supported
             openGroupName: nil          // Not supported
         )
-        var notificationBody: String?
+        let notificationBody: String? = {
+            switch messageInfo.state {
+                case .permissionDenied:
+                    return String(
+                        format: "modal_call_missed_tips_explanation".localized(),
+                        threadName
+                    )
+                case .missed:
+                    return String(
+                        format: "call_missed".localized(),
+                        threadName
+                    )
+                default:
+                    return nil
+            }
+        }()
         
-        if messageInfo.state == .permissionDenied {
-            notificationBody = String(
-                format: "modal_call_missed_tips_explanation".localized(),
-                threadName
-            )
-        }
         let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
             .defaulting(to: Preferences.Sound.defaultNotificationSound)
         
