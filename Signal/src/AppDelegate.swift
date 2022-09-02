@@ -250,7 +250,6 @@ extension AppDelegate {
 
     // MARK: - Remote notifications
 
-    @objc
     enum HandleSilentPushContentResult: UInt {
         case handled
         case notHandled
@@ -277,7 +276,9 @@ extension AppDelegate {
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
             // TODO: NSE Lifecycle, is this invoked when the NSE wakes the main app?
-            if self.handleSilentPushContent(remoteNotification) == .notHandled {
+            if
+                let remoteNotification = remoteNotification as? [AnyHashable: Any],
+                self.handleSilentPushContent(remoteNotification) == .notHandled {
                 self.messageFetcherJob.run()
             }
 
@@ -285,8 +286,7 @@ extension AppDelegate {
         }
     }
 
-    @objc
-    func handleSilentPushContent(_ remoteNotification: NSDictionary) -> HandleSilentPushContentResult {
+    func handleSilentPushContent(_ remoteNotification: [AnyHashable: Any]) -> HandleSilentPushContentResult {
         if let spamChallengeToken = remoteNotification["rateLimitChallenge"] as? String {
             spamChallengeResolver.handleIncomingPushChallengeToken(spamChallengeToken)
             return .handled
@@ -298,5 +298,53 @@ extension AppDelegate {
         }
 
         return .notHandled
+    }
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    // The method will be called on the delegate only if the application is in the foreground. If the method is not
+    // implemented or the handler is not called in a timely manner then the notification will not be presented. The
+    // application can choose to have the notification presented as a sound, badge, alert and/or in the notification list.
+    // This decision should be based on whether the information in the notification is otherwise visible to the user.
+    public func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        Logger.info("")
+
+        // Capture just userInfo; we don't want to retain notification.
+        let remoteNotification = notification.request.content.userInfo
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            let options: UNNotificationPresentationOptions
+            switch self.handleSilentPushContent(remoteNotification) {
+            case .handled:
+                options = []
+            case .notHandled:
+                // We need to respect the in-app notification sound preference. This method, which is called
+                // for modern UNUserNotification users, could be a place to do that, but since we'd still
+                // need to handle this behavior for legacy UINotification users anyway, we "allow" all
+                // notification options here, and rely on the shared logic in NotificationPresenter to
+                // honor notification sound preferences for both modern and legacy users.
+                options = [.alert, .badge, .sound]
+            }
+            completionHandler(options)
+        }
+    }
+
+    // The method will be called on the delegate when the user responded to the notification by opening the application,
+    // dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application
+    // returns from application:didFinishLaunchingWithOptions:.
+    public func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        Logger.info("")
+        AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+            NotificationActionHandler.handleNotificationResponse(response, completionHandler: completionHandler)
+        }
     }
 }

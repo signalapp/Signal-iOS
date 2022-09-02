@@ -1147,45 +1147,4 @@ static void uncaughtExceptionHandler(NSException *exception)
     }
 }
 
-#pragma mark - UNUserNotificationsDelegate
-
-// The method will be called on the delegate only if the application is in the foreground. If the method is not
-// implemented or the handler is not called in a timely manner then the notification will not be presented. The
-// application can choose to have the notification presented as a sound, badge, alert and/or in the notification list.
-// This decision should be based on whether the information in the notification is otherwise visible to the user.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-       willPresentNotification:(UNNotification *)notification
-         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
-{
-    OWSLogInfo(@"");
-    // Capture just userInfo; we don't want to retain notification.
-    NSDictionary *userInfo = notification.request.content.userInfo;
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-        UNNotificationPresentationOptions options = 0;
-        if ([self handleSilentPushContent:userInfo] == HandleSilentPushContentResultNotHandled) {
-            // We need to respect the in-app notification sound preference. This method, which is called
-            // for modern UNUserNotification users, could be a place to do that, but since we'd still
-            // need to handle this behavior for legacy UINotification users anyway, we "allow" all
-            // notification options here, and rely on the shared logic in NotificationPresenter to
-            // honor notification sound preferences for both modern and legacy users.
-            options |= UNNotificationPresentationOptionAlert;
-            options |= UNNotificationPresentationOptionBadge;
-            options |= UNNotificationPresentationOptionSound;
-        }
-        completionHandler(options);
-    });
-}
-
-// The method will be called on the delegate when the user responded to the notification by opening the application,
-// dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application
-// returns from application:didFinishLaunchingWithOptions:.
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center
-    didReceiveNotificationResponse:(UNNotificationResponse *)response
-             withCompletionHandler:(void (^)(void))completionHandler
-{
-    OWSLogInfo(@"");
-    AppReadinessRunNowOrWhenAppDidBecomeReadySync(
-        ^{ [NotificationActionHandler handleNotificationResponse:response completionHandler:completionHandler]; });
-}
-
 @end
