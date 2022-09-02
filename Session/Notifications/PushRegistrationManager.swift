@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 import PushKit
 import SignalUtilitiesKit
-import SignalUtilitiesKit
+import GRDB
 
 public enum PushRegistrationError: Error {
     case assertionError(description: String)
@@ -250,6 +250,9 @@ public enum PushRegistrationError: Error {
             SessionCallManager.reportFakeCall(info: "Missing payload data")
             return
         }
+        
+        // Resume database
+        NotificationCenter.default.post(name: Database.resumeNotification, object: self)
         
         let maybeCall: SessionCall? = Storage.shared.write { db in
             let messageInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(
