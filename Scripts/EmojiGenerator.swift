@@ -23,6 +23,7 @@ enum RemoteModel {
         let sortOrder: UInt
         let category: EmojiCategory
         let skinVariations: [String: SkinVariation]?
+        let shortNames: [String]?
     }
 
     struct SkinVariation: Codable {
@@ -64,6 +65,7 @@ struct EmojiModel {
         let category: RemoteModel.EmojiCategory
         let rawName: String
         let enumName: String
+        var shortNames: Set<String>
         let variants: [Emoji]
         var baseEmoji: Character { variants[0].base }
 
@@ -91,7 +93,10 @@ struct EmojiModel {
             category = remoteItem.category
             rawName = remoteItem.name
             enumName = Self.parseEnumNameFromRemoteItem(remoteItem)
-
+            shortNames = Set((remoteItem.shortNames ?? []))
+            shortNames.insert(rawName.lowercased())
+            shortNames.insert(enumName.lowercased())
+            
             let baseEmojiChar = try Self.codePointsToCharacter(Self.parseCodePointString(remoteItem.unified))
             let baseEmoji = Emoji(emojiChar: baseEmojiChar, base: baseEmojiChar, skintoneSequence: .none)
 
@@ -509,7 +514,7 @@ extension EmojiGenerator {
                 fileHandle.indent {
                     fileHandle.writeLine("switch self {")
                     emojiModel.definitions.forEach {
-                        fileHandle.writeLine("case .\($0.enumName): return \"\($0.rawName)\"")
+                        fileHandle.writeLine("case .\($0.enumName): return \"\($0.shortNames.joined(separator:", "))\"")
                     }
                     fileHandle.writeLine("}")
                 }

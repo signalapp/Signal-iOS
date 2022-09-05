@@ -19,9 +19,9 @@ public protocol OGMCacheType {
     var hasPerformedInitialPoll: [String: Bool] { get set }
     var timeSinceLastPoll: [String: TimeInterval] { get set }
     
-    func getTimeSinceLastOpen(using dependencies: Dependencies) -> TimeInterval
-    
     var pendingChanges: [OpenGroupAPI.PendingChange] { get set }
+    
+    func getTimeSinceLastOpen(using dependencies: Dependencies) -> TimeInterval
 }
 
 // MARK: - OpenGroupManager
@@ -764,7 +764,7 @@ public final class OpenGroupManager: NSObject {
         id: Int64,
         in roomToken: String,
         on server: String,
-        type: VisibleMessage.VMReaction.Kind,
+        type: OpenGroupAPI.PendingChange.ReactAction,
         using dependencies: OGMDependencies = OGMDependencies()
     ) -> OpenGroupAPI.PendingChange {
         let pendingChange = OpenGroupAPI.PendingChange(
@@ -787,12 +787,23 @@ public final class OpenGroupManager: NSObject {
     
     public static func updatePendingChange(
         _ pendingChange: OpenGroupAPI.PendingChange,
-        seqNo: Int64,
+        seqNo: Int64?,
         using dependencies: OGMDependencies = OGMDependencies()
     ) {
         dependencies.mutableCache.mutate {
             if let index = $0.pendingChanges.firstIndex(of: pendingChange) {
                 $0.pendingChanges[index].seqNo = seqNo
+            }
+        }
+    }
+    
+    public static func removePendingChange(
+        _ pendingChange: OpenGroupAPI.PendingChange,
+        using dependencies: OGMDependencies = OGMDependencies()
+    ) {
+        dependencies.mutableCache.mutate {
+            if let index = $0.pendingChanges.firstIndex(of: pendingChange) {
+                $0.pendingChanges.remove(at: index)
             }
         }
     }
@@ -1099,10 +1110,10 @@ public final class OpenGroupManager: NSObject {
 
 extension OpenGroupManager {
     public class OGMDependencies: SMKDependencies {
-        internal var _mutableCache: Atomic<OGMCacheType>?
+        internal var _mutableCache: Atomic<Atomic<OGMCacheType>?>
         public var mutableCache: Atomic<OGMCacheType> {
             get { Dependencies.getValueSettingIfNull(&_mutableCache) { OpenGroupManager.shared.mutableCache } }
-            set { _mutableCache = newValue }
+            set { _mutableCache.mutate { $0 = newValue } }
         }
         
         public var cache: OGMCacheType { return mutableCache.wrappedValue }
@@ -1123,7 +1134,7 @@ extension OpenGroupManager {
             standardUserDefaults: UserDefaultsType? = nil,
             date: Date? = nil
         ) {
-            _mutableCache = cache
+            _mutableCache = Atomic(cache)
             
             super.init(
                 onionApi: onionApi,

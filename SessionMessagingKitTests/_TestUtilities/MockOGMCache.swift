@@ -37,6 +37,11 @@ class MockOGMCache: Mock<OGMCacheType>, OGMCacheType {
         set { accept(args: [newValue]) }
     }
     
+    var pendingChanges: [OpenGroupAPI.PendingChange] {
+        get { return accept() as! [OpenGroupAPI.PendingChange] }
+        set { accept(args: [newValue]) }
+    }
+    
     func getTimeSinceLastOpen(using dependencies: Dependencies) -> TimeInterval {
         return accept(args: [dependencies]) as! TimeInterval
     }

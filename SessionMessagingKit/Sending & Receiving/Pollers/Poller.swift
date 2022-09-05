@@ -89,7 +89,7 @@ public final class Poller {
 
     private func pollNextSnode(seal: Resolver<Void>) {
         let userPublicKey = getUserHexEncodedPublicKey()
-        let swarm = SnodeAPI.swarmCache[userPublicKey] ?? []
+        let swarm = SnodeAPI.swarmCache.wrappedValue[userPublicKey] ?? []
         let unusedSnodes = swarm.subtracting(usedSnodes)
         
         guard !unusedSnodes.isEmpty else {
