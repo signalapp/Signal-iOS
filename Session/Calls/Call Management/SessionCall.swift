@@ -278,7 +278,8 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
         let duration: TimeInterval = self.duration
         let hasStartedConnecting: Bool = self.hasStartedConnecting
         
-        Storage.shared.writeAsync { db in
+        // Don't know whether there will be an impact if we don't write async
+        Storage.shared.write { db in
             guard let interaction: Interaction = try? Interaction.fetchOne(db, id: callInteractionId) else {
                 return
             }
