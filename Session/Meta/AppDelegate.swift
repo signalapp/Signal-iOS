@@ -78,6 +78,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         SNAppearance.switchToSessionAppearance()
         
+        if Environment.shared?.callManager.wrappedValue?.currentCall == nil {
+            UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
+        }
+        
         // No point continuing if we are running tests
         guard !CurrentAppContext().isRunningTests else { return true }
 
@@ -140,16 +144,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NotificationCenter.default.post(name: Database.suspendNotification, object: self)
             }
         }
-    }
-    
-    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
-        Logger.info("applicationDidReceiveMemoryWarning")
-    }
-    
-    func applicationWillTerminate(_ application: UIApplication) {
-        DDLog.flushLog()
-        
-        stopPollers()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
