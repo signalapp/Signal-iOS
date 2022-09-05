@@ -28,7 +28,7 @@ public final class PushNotificationAPI : NSObject {
     }
 
     // MARK: - Settings
-    public static let server = "https://dev.apns.getsession.org"
+    public static let server = "https://live.apns.getsession.org"
     public static let serverPublicKey = "642a6585919742e5a2d4dc51244964fbcd8bcab2b75612407de58b810740d049"
     
     private static let maxRetryCount: UInt = 4
