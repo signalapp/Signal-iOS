@@ -71,6 +71,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
     var connectingDate: Date? {
         didSet {
             stateDidChange?()
+            resetTimeoutTimerIfNeeded()
             hasStartedConnectingDidChange?()
         }
     }
@@ -419,6 +420,11 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
                 self.timeOutTimer = nil
             }
         }
+    }
+    
+    public func resetTimeoutTimerIfNeeded() {
+        if self.timeOutTimer == nil { return }
+        setupTimeoutTimer()
     }
     
     public func invalidateTimeoutTimer() {
