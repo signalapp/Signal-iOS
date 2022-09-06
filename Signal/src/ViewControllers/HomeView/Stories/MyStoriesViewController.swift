@@ -129,7 +129,7 @@ extension MyStoriesViewController: UITableViewDelegate {
         guard let thread = thread(for: indexPath.section), let item = item(for: indexPath) else { return }
 
         if item.message.sendingState == .failed {
-            return attemptResend(for: item)
+            return askToResend(for: item)
         }
 
         let vc = StoryPageViewController(
@@ -142,7 +142,7 @@ extension MyStoriesViewController: UITableViewDelegate {
         present(vc, animated: true)
     }
 
-    private func attemptResend(for item: OutgoingStoryItem) {
+    private func askToResend(for item: OutgoingStoryItem) {
         let actionSheet = ActionSheetController(message: NSLocalizedString(
             "STORY_RESEND_MESSAGE_ACTION_SHEET",
             comment: "Title for the dialog asking user if they wish to resend a failed story message."
@@ -153,12 +153,27 @@ extension MyStoriesViewController: UITableViewDelegate {
                 item.message.remotelyDelete(for: item.thread, transaction: transaction)
             }
         }))
-        actionSheet.addAction(.init(title: CommonStrings.sendMessage, handler: { _ in
-            Self.databaseStorage.write { transaction in
-                item.message.resendMessageToFailedRecipients(transaction: transaction)
-            }
+        actionSheet.addAction(.init(title: CommonStrings.sendMessage, handler: { [weak self] _ in
+            self?.resend(item: item)
         }))
         presentActionSheet(actionSheet, animated: true)
+    }
+
+    private func resend(item: OutgoingStoryItem) {
+        guard case .outgoing(let recipientStates) = item.message.manifest else { return }
+        let stoppedBySafetyNumberChange = SafetyNumberConfirmationSheet.presentIfNecessary(
+            addresses: recipientStates.keys.map { .init(uuid: $0) },
+            confirmationText: SafetyNumberStrings.confirmSendButton
+        ) { [weak self] confirmedSafetyNumberChange in
+            guard confirmedSafetyNumberChange else { return }
+            self?.resend(item: item)
+        }
+
+        guard !stoppedBySafetyNumberChange else { return }
+
+        Self.databaseStorage.write { transaction in
+            item.message.resendMessageToFailedRecipients(transaction: transaction)
+        }
     }
 }
 
