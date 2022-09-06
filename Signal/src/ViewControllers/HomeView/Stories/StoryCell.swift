@@ -90,6 +90,8 @@ class StoryCell: UITableViewCell {
         let storyThumbnailView = StoryThumbnailView(attachment: model.latestMessageAttachment)
         attachmentThumbnail.addSubview(storyThumbnailView)
         storyThumbnailView.autoPinEdgesToSuperviewEdges()
+
+        contentView.alpha = model.isHidden ? 0.27 : 1
     }
 
     func configureTimestamp(with model: StoryViewModel) {

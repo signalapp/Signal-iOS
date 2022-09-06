@@ -21,13 +21,19 @@ struct StoryViewModel: Dependencies {
     let latestMessageTimestamp: UInt64
     let latestMessageViewedTimestamp: UInt64?
 
+    let threadUniqueId: String?
+
     let latestMessageAvatarDataSource: ConversationAvatarDataSource
 
     var isSystemStory: Bool {
         return messages.first?.authorAddress.isSystemStoryAddress ?? false
     }
 
-    init(messages: [StoryMessage], transaction: SDSAnyReadTransaction) throws {
+    init(
+        messages: [StoryMessage],
+        isHidden: Bool? = nil,
+        transaction: SDSAnyReadTransaction
+    ) throws {
         let sortedFilteredMessages = messages.lazy.sorted { $0.timestamp < $1.timestamp }
         self.messages = sortedFilteredMessages
         self.hasUnviewedMessages = sortedFilteredMessages.contains { $0.localUserViewedTimestamp == nil }
@@ -49,16 +55,24 @@ struct StoryViewModel: Dependencies {
         latestMessageTimestamp = latestMessage.timestamp
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp
 
+        let threadUniqueId = context.threadUniqueId(transaction: transaction)
+        self.threadUniqueId = threadUniqueId
+
         if latestMessage.authorAddress.isSystemStoryAddress {
             self.isHidden = Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction)
         } else {
-            self.isHidden = context.thread(transaction: transaction).map {
-                return ThreadAssociatedData.fetchOrDefault(for: $0, transaction: transaction).hideStory
-            } ?? false
+            self.isHidden = isHidden ?? context.isHidden(threadUniqueId: threadUniqueId, transaction: transaction)
         }
     }
 
-    func copy(updatedMessages: [StoryMessage], deletedMessageRowIds: [Int64], transaction: SDSAnyReadTransaction) throws -> Self? {
+    /// Returns nil if there are no messages left after deletions are applied.
+    /// Throws if databae lookups fail.
+    func copy(
+        updatedMessages: [StoryMessage],
+        deletedMessageRowIds: [Int64],
+        isHidden: Bool,
+        transaction: SDSAnyReadTransaction
+    ) throws -> Self? {
         var newMessages = updatedMessages
         var messages: [StoryMessage] = self.messages.lazy
             .filter { oldMessage in
@@ -74,7 +88,7 @@ struct StoryViewModel: Dependencies {
             }
         messages.append(contentsOf: newMessages)
         guard !messages.isEmpty else { return nil }
-        return try .init(messages: messages, transaction: transaction)
+        return try .init(messages: messages, isHidden: isHidden, transaction: transaction)
     }
 }
 

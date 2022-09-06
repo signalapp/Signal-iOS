@@ -250,4 +250,20 @@ public extension StoryContext {
             return nil
         }
     }
+
+    func isHidden(
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
+        return isHidden(threadUniqueId: self.threadUniqueId(transaction: transaction), transaction: transaction)
+    }
+
+    func isHidden(
+        threadUniqueId: String?,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
+        guard let threadUniqueId = threadUniqueId else {
+            return false
+        }
+        return ThreadAssociatedData.fetchOrDefault(for: threadUniqueId, transaction: transaction).hideStory
+    }
 }

@@ -6157,6 +6157,9 @@
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
 
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 

@@ -7,12 +7,8 @@ import SignalServiceKit
 import UIKit
 import SignalUI
 
-private let loadingQueue = DispatchQueue(label: "StoriesViewController.loadingQueue", qos: .userInitiated)
-
-class StoriesViewController: OWSViewController {
+class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     let tableView = UITableView()
-    private let syncingModels = SyncingStoryViewModelArray()
-    private var myStoryModel = AtomicOptional<MyStoryViewModel>(nil)
 
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
@@ -29,10 +25,14 @@ class StoriesViewController: OWSViewController {
 
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
+    private lazy var dataSource = StoryListDataSource(delegate: self)
+
     override init() {
         super.init()
-        reloadStories()
-        databaseStorage.appendDatabaseChangeDelegate(self)
+        // Want to start loading right away to prevent cases where things aren't loaded
+        // when you tab over into the stories list.
+        dataSource.reloadStories()
+        dataSource.beginObservingDatabase()
 
         NotificationCenter.default.addObserver(self, selector: #selector(profileDidChange), name: .localProfileDidChange, object: nil)
     }
@@ -43,6 +43,10 @@ class StoriesViewController: OWSViewController {
         tableView.dataSource = self
     }
 
+    var tableViewIfLoaded: UITableView? {
+        return viewIfLoaded as? UITableView
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -50,6 +54,7 @@ class StoriesViewController: OWSViewController {
 
         tableView.register(MyStoryCell.self, forCellReuseIdentifier: MyStoryCell.reuseIdentifier)
         tableView.register(StoryCell.self, forCellReuseIdentifier: StoryCell.reuseIdentifier)
+        tableView.register(HiddenStoryHeaderView.self, forHeaderFooterViewReuseIdentifier: HiddenStoryHeaderView.reuseIdentifier)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 116
@@ -70,16 +75,13 @@ class StoriesViewController: OWSViewController {
                 switch Section(rawValue: indexPath.section) {
                 case .myStory:
                     guard let cell = self.tableView.cellForRow(at: indexPath) as? MyStoryCell else { continue }
-                    guard let model = self.myStoryModel.get() else { continue }
+                    guard let model = self.dataSource.myStory else { continue }
                     cell.configureTimestamp(with: model)
-                case .visibleStories:
+                case .visibleStories, .hiddenStories:
                     guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
                     guard let model = self.model(for: indexPath) else { continue }
                     cell.configureTimestamp(with: model)
-                case .hiddenStories:
-                    // TODO:
-                    break
-                default:
+                case .none:
                     owsFailDebug("Unexpected story type")
                 }
             }
@@ -127,19 +129,21 @@ class StoriesViewController: OWSViewController {
             switch Section(rawValue: indexPath.section) {
             case .myStory:
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? MyStoryCell else { continue }
-                guard let model = self.myStoryModel.get() else { continue }
+                guard let model = dataSource.myStory else { continue }
                 cell.configure(with: model) { [weak self] in self?.showCameraView() }
-            case .visibleStories:
+            case .visibleStories, .hiddenStories:
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
                 guard let model = self.model(for: indexPath) else { continue }
                 cell.configure(with: model)
-            case .hiddenStories:
-                // TODO:
-                break
-            default:
+            case .none:
                 owsFailDebug("Unexpected story type")
             }
         }
+
+        // No easy way to get visible headers, but just update the header view since theres only one.
+        (
+            tableView.headerView(forSection: Section.hiddenStories.rawValue) as? HiddenStoryHeaderView
+        )?.configure(isCollapsed: dataSource.isHiddenStoriesSectionCollapsed)
 
         if splitViewController?.isCollapsed == true {
             view.backgroundColor = Theme.backgroundColor
@@ -214,160 +218,6 @@ class StoriesViewController: OWSViewController {
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
         presentFormSheet(AppSettingsViewController.inModalNavigationController(), animated: true)
     }
-
-    private func reloadStories() {
-        loadingQueue.async {
-            self.syncingModels.mutate { _ -> ([StoryViewModel], Void)? in
-                let (listStories, outgoingStories) = Self.databaseStorage.read {
-                    (
-                        StoryFinder.storiesForListView(transaction: $0),
-                        StoryFinder.outgoingStories(limit: 2, transaction: $0)
-                    )
-                }
-                let myStoryModel = Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
-                let groupedMessages = Dictionary(grouping: listStories) { $0.context }
-                self.myStoryModel.set(myStoryModel)
-                let newValues = Self.databaseStorage.read { transaction in
-                    groupedMessages.compactMap { try? StoryViewModel(messages: $1, transaction: transaction) }
-                }.sorted(by: self.sortStoryModels)
-                return (newValues, ())
-            } sync: { (_, _) in
-                self.tableView.reloadData()
-            }
-        }
-    }
-
-    private func updateStories(forRowIds rowIds: Set<Int64>) {
-        AssertIsOnMainThread()
-
-        guard !rowIds.isEmpty else { return }
-
-        loadingQueue.async {
-            let ok =
-            self.syncingModels.mutate { models -> ([StoryViewModel], (Bool, [BatchUpdate<StoryContext>.Item]))? in
-                let myStoryModel = self.myStoryModel.get()
-
-                let (updatedListMessages, outgoingStories) = Self.databaseStorage.read {
-                    (
-                        StoryFinder.listStoriesWithRowIds(Array(rowIds), transaction: $0),
-                        StoryFinder.outgoingStories(limit: 2, transaction: $0)
-                    )
-                }
-                var deletedRowIds = rowIds.subtracting(updatedListMessages.lazy.map { $0.id! })
-                var groupedMessages = Dictionary(grouping: updatedListMessages) { $0.context }
-
-                let oldContexts = models.map { $0.context }
-                var changedContexts = [StoryContext]()
-
-                let newModels: [StoryViewModel]
-                do {
-                    newModels = try Self.databaseStorage.read { transaction in
-                        try models.compactMap { model in
-                            guard let latestMessage = model.messages.first else { return model }
-
-                            let modelDeletedRowIds: [Int64] = model.messages.lazy.compactMap { $0.id }.filter { deletedRowIds.contains($0) }
-                            deletedRowIds.subtract(modelDeletedRowIds)
-
-                            let modelUpdatedMessages = groupedMessages.removeValue(forKey: latestMessage.context) ?? []
-
-                            guard !modelUpdatedMessages.isEmpty || !modelDeletedRowIds.isEmpty else { return model }
-
-                            changedContexts.append(model.context)
-
-                            return try model.copy(
-                                updatedMessages: modelUpdatedMessages,
-                                deletedMessageRowIds: modelDeletedRowIds,
-                                transaction: transaction
-                            )
-                        } + groupedMessages.map { try StoryViewModel(messages: $1, transaction: transaction) }
-                    }.sorted(by: self.sortStoryModels)
-                } catch {
-                    owsFailDebug("Failed to build new models, hard reloading \(error)")
-                    return nil
-                }
-                let myStoryChanged = rowIds.intersection(outgoingStories.map { $0.id! }).count > 0
-                    || Set(myStoryModel?.messages.map { $0.uniqueId } ?? []) != Set(outgoingStories.map { $0.uniqueId })
-                let newMyStoryModel = myStoryChanged
-                    ? Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
-                    : myStoryModel
-
-                let batchUpdateItems: [BatchUpdate<StoryContext>.Item]
-                do {
-                    batchUpdateItems = try BatchUpdate.build(
-                        viewType: .uiTableView,
-                        oldValues: oldContexts,
-                        newValues: newModels.map { $0.context },
-                        changedValues: changedContexts
-                    )
-                } catch {
-                    owsFailDebug("Failed to calculate batch updates, hard reloading \(error)")
-                    return nil
-                }
-                self.myStoryModel.set(newMyStoryModel)
-                return (newModels, (myStoryChanged, batchUpdateItems))
-            } sync: { (newModels, userInfo: (Bool, [BatchUpdate<StoryContext>.Item])) in
-                let (myStoryChanged, batchUpdateItems) = userInfo
-                guard self.isViewLoaded else { return }
-                self.tableView.beginUpdates()
-                if myStoryChanged {
-                    self.tableView.reloadRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .automatic)
-                }
-
-                for update in batchUpdateItems {
-                    switch update.updateType {
-                    case .delete(let oldIndex):
-                        self.tableView.deleteRows(at: [IndexPath(row: oldIndex, section: Section.visibleStories.rawValue)], with: .automatic)
-                    case .insert(let newIndex):
-                        self.tableView.insertRows(at: [IndexPath(row: newIndex, section: Section.visibleStories.rawValue)], with: .automatic)
-                    case .move(let oldIndex, let newIndex):
-                        self.tableView.deleteRows(at: [IndexPath(row: oldIndex, section: Section.visibleStories.rawValue)], with: .automatic)
-                        self.tableView.insertRows(at: [IndexPath(row: newIndex, section: Section.visibleStories.rawValue)], with: .automatic)
-                    case .update(_, let newIndex):
-                        // If the cell is visible, reconfigure it directly without reloading.
-                        let path = IndexPath(row: newIndex, section: Section.visibleStories.rawValue)
-                        if (self.tableView.indexPathsForVisibleRows ?? []).contains(path),
-                            let visibleCell = self.tableView.cellForRow(at: path) as? StoryCell {
-                            guard let model = newModels[safe: newIndex] else {
-                                return owsFailDebug("Missing model for story")
-                            }
-                            visibleCell.configure(with: model)
-                        } else {
-                            self.tableView.reloadRows(at: [path], with: .none)
-                        }
-                    }
-                }
-                self.tableView.endUpdates()
-            }
-
-            if !ok {
-                DispatchQueue.main.async { self.reloadStories() }
-                return
-            }
-        }
-    }
-
-    // Sort story models for display.
-    // * We show system stories first, then other stories. Within each bucket:
-    //   * We show unviewed stories first, sorted by their sent timestamp, with the most recently sent at the top
-    //   * We then show viewed stories, sorted by when they were viewed, with the most recently viewed at the top
-    private func sortStoryModels(lhs: StoryViewModel, rhs: StoryViewModel) -> Bool {
-        if lhs.isSystemStory {
-            return true
-        } else if rhs.isSystemStory {
-            return false
-        } else if
-            let lhsViewedTimestamp = lhs.latestMessageViewedTimestamp,
-            let rhsViewedTimestamp = rhs.latestMessageViewedTimestamp
-        {
-            return lhsViewedTimestamp > rhsViewedTimestamp
-        } else if lhs.latestMessageViewedTimestamp != nil {
-            return false
-        } else if rhs.latestMessageViewedTimestamp != nil {
-            return true
-        } else {
-            return lhs.latestMessageTimestamp > rhs.latestMessageTimestamp
-        }
-    }
 }
 
 extension StoriesViewController: CameraFirstCaptureDelegate {
@@ -380,20 +230,6 @@ extension StoriesViewController: CameraFirstCaptureDelegate {
     }
 }
 
-extension StoriesViewController: DatabaseChangeDelegate {
-    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        updateStories(forRowIds: databaseChanges.storyMessageRowIds)
-    }
-
-    func databaseChangesDidUpdateExternally() {
-        reloadStories()
-    }
-
-    func databaseChangesDidReset() {
-        reloadStories()
-    }
-}
-
 extension StoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -401,7 +237,7 @@ extension StoriesViewController: UITableViewDelegate {
         switch Section(rawValue: indexPath.section) {
         case .myStory:
             navigationController?.pushViewController(MyStoriesViewController(), animated: true)
-        case .visibleStories:
+        case .visibleStories, .hiddenStories:
             guard let model = model(for: indexPath) else {
                 owsFailDebug("Missing model for story")
                 return
@@ -409,45 +245,54 @@ extension StoriesViewController: UITableViewDelegate {
 
             // If we tap on a story with unviewed stories, we only want the viewer
             // to page through unviewed contexts.
-            let viewableContexts: [StoryContext]
-            if model.hasUnviewedMessages {
-                viewableContexts = syncingModels.get().lazy.filter { $0.hasUnviewedMessages }.map { $0.context }
-            } else {
-                viewableContexts = syncingModels.allContexts
-            }
+            let filterViewed = model.hasUnviewedMessages
+            // If we tap on a non-hidden story, we only want the viewer to page through
+            // non-hidden contexts.
+            let filterHidden = !model.isHidden
+            let viewableContexts: [StoryContext] = dataSource.allStories
+                .lazy
+                .filter { !filterViewed || $0.hasUnviewedMessages }
+                .filter { !filterHidden || !$0.isHidden }
+                .map(\.context)
 
             let vc = StoryPageViewController(context: model.context, viewableContexts: viewableContexts)
             vc.contextDataSource = self
             presentFullScreen(vc, animated: true)
-        case .hiddenStories:
-            // TODO:
-            break
-        default:
+        case .none:
             owsFailDebug("Unexpected section \(indexPath.section)")
         }
     }
 }
 
 extension StoriesViewController: UITableViewDataSource {
-    enum Section: Int {
-        case myStory = 0
-        case visibleStories = 1
-        case hiddenStories = 2
-    }
+    typealias Section = StoryListDataSource.Section
 
     func model(for indexPath: IndexPath) -> StoryViewModel? {
-        // TODO: Hidden stories
-        guard indexPath.section == Section.visibleStories.rawValue else { return nil }
-        return syncingModels.get()[safe: indexPath.row]
+        switch Section(rawValue: indexPath.section) {
+        case .visibleStories:
+            return dataSource.visibleStories[safe: indexPath.row]
+        case .hiddenStories:
+            return dataSource.hiddenStories[safe: indexPath.row]
+        case .myStory, .none:
+            return nil
+        }
     }
 
     func model(for context: StoryContext) -> StoryViewModel? {
-        syncingModels.get().first { $0.context == context }
+        dataSource.allStories.first { $0.context == context }
     }
 
     func cell(for context: StoryContext) -> StoryCell? {
-        guard let row = syncingModels.get().firstIndex(where: { $0.context == context }) else { return nil }
-        let indexPath = IndexPath(row: row, section: Section.visibleStories.rawValue)
+        let indexPath: IndexPath
+        if let visibleRow = dataSource.visibleStories.firstIndex(where: { $0.context == context }) {
+            indexPath = IndexPath(row: visibleRow, section: Section.visibleStories.rawValue)
+        } else if
+            !dataSource.isHiddenStoriesSectionCollapsed,
+            let hiddenRow = dataSource.hiddenStories.firstIndex(where: { $0.context == context }) {
+            indexPath = IndexPath(row: hiddenRow, section: Section.hiddenStories.rawValue)
+        } else {
+            return nil
+        }
         guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return nil }
         return tableView.cellForRow(at: indexPath) as? StoryCell
     }
@@ -456,13 +301,13 @@ extension StoriesViewController: UITableViewDataSource {
         switch Section(rawValue: indexPath.section) {
         case .myStory:
             let cell = tableView.dequeueReusableCell(withIdentifier: MyStoryCell.reuseIdentifier) as! MyStoryCell
-            guard let myStoryModel = myStoryModel.get() else {
+            guard let myStoryModel = dataSource.myStory else {
                 owsFailDebug("Missing my story model")
                 return cell
             }
             cell.configure(with: myStoryModel) { [weak self] in self?.showCameraView() }
             return cell
-        case .visibleStories:
+        case .visibleStories, .hiddenStories:
             let cell = tableView.dequeueReusableCell(withIdentifier: StoryCell.reuseIdentifier) as! StoryCell
             guard let model = model(for: indexPath) else {
                 owsFailDebug("Missing model for story")
@@ -470,11 +315,40 @@ extension StoriesViewController: UITableViewDataSource {
             }
             cell.configure(with: model)
             return cell
-        case .hiddenStories:
-            return UITableViewCell()
-        default:
+        case .none:
             owsFailDebug("Unexpected section \(indexPath.section)")
             return UITableViewCell()
+        }
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        switch Section(rawValue: section) {
+        case .myStory, .visibleStories, .none:
+            return nil
+        case .hiddenStories:
+            guard !dataSource.hiddenStories.isEmpty else {
+                return nil
+            }
+            let header = tableView.dequeueReusableHeaderFooterView(
+                withIdentifier: HiddenStoryHeaderView.reuseIdentifier
+            ) as! HiddenStoryHeaderView
+            header.configure(isCollapsed: dataSource.isHiddenStoriesSectionCollapsed)
+            header.tapHandler = { [weak self] in
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.dataSource.isHiddenStoriesSectionCollapsed = !strongSelf.dataSource.isHiddenStoriesSectionCollapsed
+            }
+            return header
+        }
+    }
+
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        switch Section(rawValue: section) {
+        case .myStory, .visibleStories, .none:
+            return 0
+        case .hiddenStories:
+            return dataSource.hiddenStories.isEmpty ? 0 : 44
         }
     }
 
@@ -483,16 +357,16 @@ extension StoriesViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        emptyStateLabel.isHidden = syncingModels.get().count > 0 || myStoryModel.get()?.messages.isEmpty == false
+        emptyStateLabel.isHidden = !dataSource.allStories.isEmpty || dataSource.myStory?.messages.isEmpty == false
 
         switch Section(rawValue: section) {
         case .myStory:
-            return 1
+            return dataSource.myStory == nil ? 0 : 1
         case .visibleStories:
-            return syncingModels.get().count
+            return dataSource.visibleStories.count
         case .hiddenStories:
-            return 0 // TODO: Hidden stories
-        default:
+            return dataSource.isHiddenStoriesSectionCollapsed ? 0 : dataSource.hiddenStories.count
+        case .none:
             owsFailDebug("Unexpected section \(section)")
             return 0
         }
@@ -501,7 +375,7 @@ extension StoriesViewController: UITableViewDataSource {
 
 extension StoriesViewController: StoryPageViewControllerDataSource {
     func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
-        syncingModels.allContexts
+        return dataSource.threadSafeStoryContexts
     }
 }
 
@@ -676,73 +550,5 @@ extension StoriesViewController: ForwardMessageDelegate {
 
     public func forwardMessageFlowDidCancel() {
         self.dismiss(animated: true)
-    }
-}
-
-@propertyWrapper
-struct ThreadBoundValue<T> {
-    private var value: T
-    private var queue: DispatchQueue
-
-    var wrappedValue: T {
-        get {
-            dispatchPrecondition(condition: .onQueue(queue))
-            return value
-        }
-        set {
-            dispatchPrecondition(condition: .onQueue(queue))
-            value = newValue
-        }
-    }
-
-    init(wrappedValue: T, queue: DispatchQueue) {
-        self.value = wrappedValue
-        self.queue = queue
-    }
-}
-
-private class SyncingStoryViewModelArray {
-    // This is always the most up-to-date collection of models.
-    @ThreadBoundValue(wrappedValue: [], queue: loadingQueue) private var trueModels: [StoryViewModel]
-
-    // This may lag behind `trueModels` and is eventually consistent. It is exposed to UITableView.
-    @ThreadBoundValue(wrappedValue: [], queue: .main) private var exposedModels: [StoryViewModel]
-
-    private var contexts = AtomicArray<StoryContext>()
-
-    /// Safely modify the list of models. This method must be called on the loading queue.
-    ///
-    /// - Parameters
-    ///   - closure: Called synchronously. Returns nil to abort mutation without side-effects. Otherwise, it returns the new values for the models array and user data to pass to `sync`.
-    ///   - models: The existing array of models.
-    ///   - sync: Runs asynchronously on the main queue after `closure` returns.
-    ///   - newModels: The array of models returned by `closure`.
-    ///   - userData: The second value returned by `closure`.
-    ///
-    /// - Returns whether the closure returned a nonnil list of models.
-    @discardableResult
-    func mutate<T>(_ closure: (_ models: [StoryViewModel]) -> ([StoryViewModel], T)?,
-                   sync: @escaping (_ newModels: [StoryViewModel], _ userData: T) -> Void) -> Bool {
-        dispatchPrecondition(condition: .onQueue(loadingQueue))
-
-        guard let (newModels, userInfo) = closure(trueModels) else {
-            return false
-        }
-        trueModels = newModels
-        DispatchQueue.main.async {
-            self.contexts.set(newModels.map { $0.context })
-            self.exposedModels = newModels
-            sync(newModels, userInfo)
-        }
-        return true
-    }
-
-    func get() -> [StoryViewModel] {
-        return exposedModels
-    }
-
-    /// Thread safe list of all contexts currently exposed
-    var allContexts: [StoryContext] {
-        contexts.get()
     }
 }
