@@ -208,4 +208,42 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
         storyMessage.updateRecipientStatesWithOutgoingMessageStates(recipientAddressStates, transaction: transaction)
     }
+
+    /// When sending to private stories, each private story list may have overlap in recipients. We want to
+    /// dedupe sends such that we only send one copy of a given story to each recipient even though they
+    /// are represented in multiple targeted lists.
+    ///
+    /// Additionally, each private story has different levels of permissions. Some may allow replies & reactions
+    /// while others do not. Since we convey to the recipient if this is allowed in the sent proto, it's important that
+    /// we send to a recipient only from the thread with the most privilege (or randomly select one with equal privilege)
+    public static func dedupePrivateStoryRecipients(for messages: [OutgoingStoryMessage], transaction: SDSAnyWriteTransaction) {
+        // Bucket outgoing messages per recipient and story. We may be sending multiple stories if the user selected multiple attachments.
+        let messagesPerRecipientPerStory = messages.reduce(into: [String: [SignalServiceAddress: [OutgoingStoryMessage]]]()) { result, message in
+            guard message.isPrivateStorySend.boolValue else { return }
+            var messagesByRecipient = result[message.storyMessageId] ?? [:]
+            for address in message.recipientAddresses() {
+                var messages = messagesByRecipient[address] ?? []
+                // Always prioritize sending to stories that allow replies,
+                // we'll later select the first message from this list as
+                // the one to actually send to for a given recipient.
+                if message.storyAllowsReplies.boolValue {
+                    messages.insert(message, at: 0)
+                } else {
+                    messages.append(message)
+                }
+                messagesByRecipient[address] = messages
+            }
+            result[message.storyMessageId] = messagesByRecipient
+        }
+
+        for messagesPerRecipient in messagesPerRecipientPerStory.values {
+            for (address, messages) in messagesPerRecipient {
+                // For every message after the first for a given recipient, mark the
+                // recipient as skipped so we don't send them any additional copies.
+                for message in messages.dropFirst() {
+                    message.update(withSkippedRecipient: address, transaction: transaction)
+                }
+            }
+        }
+    }
 }

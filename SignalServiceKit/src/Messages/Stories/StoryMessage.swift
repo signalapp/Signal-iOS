@@ -42,6 +42,22 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     public private(set) var manifest: StoryManifest
     public let attachment: StoryMessageAttachment
 
+    public var sendingState: TSOutgoingMessageState {
+        switch manifest {
+        case .incoming: return .sent
+        case .outgoing(let recipientStates):
+            if recipientStates.values.contains(where: { $0.sendingState == .pending }) {
+                return .pending
+            } else if recipientStates.values.contains(where: { $0.sendingState == .sending }) {
+                return .sending
+            } else if recipientStates.values.contains(where: { $0.sendingState == .failed }) {
+                return .failed
+            } else {
+                return .sent
+            }
+        }
+    }
+
     public var localUserViewedTimestamp: UInt64? {
         switch manifest {
         case .incoming(let receivedState):
@@ -468,6 +484,40 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             messageSenderJobQueue.add(message: sentTranscriptUpdate.asPreparer, transaction: transaction)
         default:
             owsFailDebug("Cannot remotely delete unexpected thread type \(type(of: thread))")
+        }
+    }
+
+    public func resendMessageToFailedRecipients(transaction: SDSAnyWriteTransaction) {
+        guard case .outgoing(let recipientStates) = manifest else {
+            return owsFailDebug("Cannot resend incoming story.")
+        }
+
+        Logger.info("Resending story message \(timestamp)")
+
+        var messages = [OutgoingStoryMessage]()
+        let threads = threads(transaction: transaction)
+        for (idx, thread) in threads.enumerated() {
+            let message = OutgoingStoryMessage(
+                thread: thread,
+                storyMessage: self,
+                // Only send one sync transcript, even if we're sending to multiple threads
+                skipSyncTranscript: idx > 0,
+                transaction: transaction
+            )
+            messages.append(message)
+        }
+
+        // Ensure we only send once per recipient
+        OutgoingStoryMessage.dedupePrivateStoryRecipients(for: messages, transaction: transaction)
+
+        // Only send to recipients in the "failed" state
+        for (uuid, state) in recipientStates {
+            guard state.sendingState != .failed else { continue }
+            messages.forEach { $0.update(withSkippedRecipient: .init(uuid: uuid), transaction: transaction) }
+        }
+
+        messages.forEach { message in
+            messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
         }
     }
 

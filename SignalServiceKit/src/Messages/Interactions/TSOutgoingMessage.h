@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSOutgoingSyncMessage;
 @class SignalServiceAddress;
 
-typedef NS_ENUM(NSInteger, TSOutgoingMessageState) {
+typedef NS_CLOSED_ENUM(NSInteger, TSOutgoingMessageState) {
     // The message is either:
     // a) Enqueued for sending.
     // b) Waiting on attachment upload(s).

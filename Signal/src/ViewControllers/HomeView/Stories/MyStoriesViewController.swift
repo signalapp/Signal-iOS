@@ -127,6 +127,11 @@ extension MyStoriesViewController: UITableViewDelegate {
         tableView.deselectRow(at: indexPath, animated: true)
 
         guard let thread = thread(for: indexPath.section), let item = item(for: indexPath) else { return }
+
+        if item.message.sendingState == .failed {
+            return attemptResend(for: item)
+        }
+
         let vc = StoryPageViewController(
             context: thread.storyContext,
             viewableContexts: items.orderedKeys.map { $0.storyContext },
@@ -135,6 +140,25 @@ extension MyStoriesViewController: UITableViewDelegate {
         )
         vc.contextDataSource = self
         present(vc, animated: true)
+    }
+
+    private func attemptResend(for item: OutgoingStoryItem) {
+        let actionSheet = ActionSheetController(message: NSLocalizedString(
+            "STORY_RESEND_MESSAGE_ACTION_SHEET",
+            comment: "Title for the dialog asking user if they wish to resend a failed story message."
+        ))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
+            Self.databaseStorage.write { transaction in
+                item.message.remotelyDelete(for: item.thread, transaction: transaction)
+            }
+        }))
+        actionSheet.addAction(.init(title: CommonStrings.sendMessage, handler: { _ in
+            Self.databaseStorage.write { transaction in
+                item.message.resendMessageToFailedRecipients(transaction: transaction)
+            }
+        }))
+        presentActionSheet(actionSheet, animated: true)
     }
 }
 
@@ -435,11 +459,14 @@ private class SentStoryCell: UITableViewCell {
     static let reuseIdentifier = "SentStoryCell"
 
     let contentHStackView = UIStackView()
-    let viewsLabel = UILabel()
-    let timestampLabel = UILabel()
+    let titleLabel = UILabel()
+    let subtitleLabel = UILabel()
     let thumbnailContainer = UIView()
     let saveButton = OWSButton()
     let contextButton = ContextMenuButton()
+
+    let failedIconContainer = UIView()
+    let failedIconView = UIImageView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -456,17 +483,26 @@ private class SentStoryCell: UITableViewCell {
 
         contentHStackView.addArrangedSubview(.spacer(withWidth: 16))
 
+        contentHStackView.addArrangedSubview(failedIconContainer)
+        failedIconContainer.autoSetDimension(.width, toSize: 28)
+        failedIconContainer.addSubview(failedIconView)
+        failedIconView.autoPinHeightToSuperview()
+        failedIconView.autoPinEdge(toSuperviewEdge: .leading)
+        failedIconView.autoSetDimension(.width, toSize: 16)
+        failedIconView.contentMode = .scaleAspectFit
+        failedIconView.tintColor = .ows_accentRed
+
         let vStackView = UIStackView()
         vStackView.axis = .vertical
         vStackView.alignment = .leading
         contentHStackView.addArrangedSubview(vStackView)
 
-        viewsLabel.font = .ows_dynamicTypeHeadline
+        titleLabel.font = .ows_dynamicTypeHeadline
 
-        vStackView.addArrangedSubview(viewsLabel)
+        vStackView.addArrangedSubview(titleLabel)
 
-        timestampLabel.font = .ows_dynamicTypeSubheadline
-        vStackView.addArrangedSubview(timestampLabel)
+        subtitleLabel.font = .ows_dynamicTypeSubheadline
+        vStackView.addArrangedSubview(subtitleLabel)
 
         contentHStackView.addArrangedSubview(.hStretchingSpacer())
 
@@ -499,15 +535,30 @@ private class SentStoryCell: UITableViewCell {
         thumbnailContainer.addSubview(thumbnailView)
         thumbnailView.autoPinEdgesToSuperviewEdges()
 
-        let format = NSLocalizedString(
-            "STORY_VIEWS_%d", tableName: "PluralAware",
-            comment: "Text explaining how many views a story has. Embeds {{ %d number of views }}"
-        )
-        viewsLabel.text = String(format: format, item.message.remoteViewCount)
-        viewsLabel.textColor = Theme.primaryTextColor
+        titleLabel.textColor = Theme.primaryTextColor
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
 
-        timestampLabel.text = DateUtil.formatTimestampRelatively(item.message.timestamp)
-        timestampLabel.textColor = Theme.secondaryTextAndIconColor
+        switch item.message.sendingState {
+        case .pending, .sending:
+            titleLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
+            subtitleLabel.text = ""
+            failedIconContainer.isHiddenInStackView = true
+        case .failed:
+            failedIconView.image = Theme.iconImage(.error16)
+            failedIconContainer.isHiddenInStackView = false
+            titleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+            subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED_RETRY", comment: "Text indicating that you can tap to retry sending")
+        case .sent:
+            let format = NSLocalizedString(
+                "STORY_VIEWS_%d", tableName: "PluralAware",
+                comment: "Text explaining how many views a story has. Embeds {{ %d number of views }}"
+            )
+            titleLabel.text = String(format: format, item.message.remoteViewCount)
+            subtitleLabel.text = DateUtil.formatTimestampRelatively(item.message.timestamp)
+            failedIconContainer.isHiddenInStackView = true
+        case .sent_OBSOLETE, .delivered_OBSOLETE:
+            owsFailDebug("Unexpected legacy sending state")
+        }
 
         saveButton.tintColor = Theme.primaryIconColor
         saveButton.setImage(Theme.iconImage(.messageActionSave), for: .normal)

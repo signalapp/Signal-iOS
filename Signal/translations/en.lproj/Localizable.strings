@@ -6253,11 +6253,23 @@
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "Reply to Group";
 
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "Send failed";
+
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "Tap to retry";
+
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "Sending...";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
