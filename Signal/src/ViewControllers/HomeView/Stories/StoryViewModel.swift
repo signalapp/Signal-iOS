@@ -40,10 +40,7 @@ struct StoryViewModel: Dependencies {
             contactsManager: Self.contactsManager,
             transaction: transaction
         )
-        latestMessageAvatarDataSource = try StoryAuthorUtil.authorAvatarDataSource(
-            for: latestMessage,
-            transaction: transaction
-        )
+        latestMessageAvatarDataSource = try StoryAuthorUtil.contextAvatarDataSource(for: latestMessage, transaction: transaction)
         latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
         latestMessageTimestamp = latestMessage.timestamp
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp

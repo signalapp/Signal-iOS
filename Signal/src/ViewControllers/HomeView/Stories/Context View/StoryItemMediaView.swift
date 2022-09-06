@@ -274,13 +274,21 @@ class StoryItemMediaView: UIView {
         )
 
         authorAvatarView.update(transaction) { config in
-            config.dataSource = try? StoryAuthorUtil.authorAvatarDataSource(for: item.message, transaction: transaction)
+            config.dataSource = try? StoryAuthorUtil.authorAvatarDataSource(
+                for: item.message,
+                transaction: transaction
+            )
         }
 
         switch item.message.context {
-        case .groupId(let groupId):
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                owsFailDebug("Unexpectedly missing group thread")
+        case .groupId:
+            guard
+                let groupAvatarDataSource = try? StoryAuthorUtil.contextAvatarDataSource(
+                    for: item.message,
+                    transaction: transaction
+                )
+            else {
+                owsFailDebug("Unexpectedly missing group avatar")
                 return authorAvatarView
             }
 
@@ -292,7 +300,7 @@ class StoryItemMediaView: UIView {
                 useAutolayout: true
             )
             groupAvatarView.update(transaction) { config in
-                config.dataSource = .thread(groupThread)
+                config.dataSource = groupAvatarDataSource
             }
 
             let avatarContainer = UIView()

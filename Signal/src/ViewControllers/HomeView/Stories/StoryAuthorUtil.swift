@@ -54,26 +54,38 @@ public enum StoryAuthorUtil {
         }
     }
 
+    /// Avatar for the _context_ of a story message. e.g. the group avatar if a group thread story, or the author's avatar otherwise.
+    static func contextAvatarDataSource(
+        for storyMessage: StoryMessage,
+        transaction: SDSAnyReadTransaction
+    ) throws -> ConversationAvatarDataSource {
+        guard let groupId = storyMessage.groupId else {
+            return try authorAvatarDataSource(for: storyMessage, transaction: transaction)
+        }
+        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+            throw OWSAssertionError("Missing group thread for group story")
+        }
+        return .thread(groupThread)
+    }
+
+    /// Avatar for the author of a story message, regardless of its context.
     static func authorAvatarDataSource(
         for storyMessage: StoryMessage,
         transaction: SDSAnyReadTransaction
     ) throws -> ConversationAvatarDataSource {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
-            return .asset(
-                avatar: UIImage(named: "signal-logo-128")?
-                    .withRenderingMode(.alwaysTemplate)
-                    .asTintedImage(color: .white)?
-                    .withBackgroundColor(.ows_accentBlue, insets: UIEdgeInsets(margin: 24)),
-                badge: nil
-            )
+            return systemStoryAvatar
         }
-        if let groupId = storyMessage.groupId {
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                throw OWSAssertionError("Missing group thread for group story")
-            }
-            return .thread(groupThread)
-        } else {
-            return .address(storyMessage.authorAddress)
-        }
+        return .address(storyMessage.authorAddress)
+    }
+
+    private static var systemStoryAvatar: ConversationAvatarDataSource {
+        return .asset(
+            avatar: UIImage(named: "signal-logo-128")?
+                .withRenderingMode(.alwaysTemplate)
+                .asTintedImage(color: .white)?
+                .withBackgroundColor(.ows_accentBlue, insets: UIEdgeInsets(margin: 24)),
+            badge: nil
+        )
     }
 }
