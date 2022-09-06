@@ -1091,7 +1091,9 @@
 		D925938128B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h in Headers */ = {isa = PBXBuildFile; fileRef = D925937E28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D925938228B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = D925937F28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
+		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
+		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
@@ -3464,7 +3466,9 @@
 		D925937E28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLocalUserLeaveGroupJobRecord.h; sourceTree = "<group>"; };
 		D925937F28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLocalUserLeaveGroupJobRecord.m; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
+		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
+		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
@@ -4814,6 +4818,7 @@
 				4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */,
 				88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */,
 				3426A369255D9D7C0036407F /* ConversationViewController+Selection.swift */,
+				D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */,
 				34A4D88A26795AF800A794E7 /* ConversationViewController+UI.swift */,
 				34A4D8882679296600A794E7 /* ConversationViewController+UIScrollView.swift */,
 				88928A70264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift */,
@@ -6973,6 +6978,7 @@
 				F942622E289B1B5500460798 /* SMKTestUtils.swift */,
 				F9426230289B1B5500460798 /* SMKUDAccessKeyTest.swift */,
 				F942621E289B1B5500460798 /* TestProtocolRunnerTest.swift */,
+				D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */,
 				F9426227289B1B5500460798 /* TypingIndicatorMessageTest.swift */,
 			);
 			name = Messages;
@@ -10031,6 +10037,7 @@
 				4CD675C522E7CF22008010D2 /* ConversationViewController+OWS.swift in Sources */,
 				88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */,
 				3426A36A255D9D7C0036407F /* ConversationViewController+Selection.swift in Sources */,
+				D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */,
 				34A4D88B26795AF800A794E7 /* ConversationViewController+UI.swift in Sources */,
 				34A4D8892679296600A794E7 /* ConversationViewController+UIScrollView.swift in Sources */,
 				88928A71264099EC009C9B30 /* ConversationViewController+VoiceMessage.swift in Sources */,
@@ -11114,6 +11121,7 @@
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
 				F9426281289B1B5600460798 /* TSContactThreadTest.m in Sources */,
 				F9426278289B1B5600460798 /* TSGroupThreadTest.m in Sources */,
+				D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */,
 				F9426258289B1B5500460798 /* TSMessageStorageTests.m in Sources */,
 				F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */,
 				F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */,

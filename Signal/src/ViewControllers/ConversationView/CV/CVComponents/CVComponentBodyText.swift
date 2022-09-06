@@ -475,18 +475,24 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return conversationStyle.bubbleTextColor(message: message)
     }
 
-    private var textSelectionColor: UIColor {
-        guard let message = interaction as? TSMessage else {
-            return .black
+    private var textSelectionStyling: [NSAttributedString.Key: Any] {
+        var foregroundColor: UIColor = .black
+        if let message = interaction as? TSMessage {
+            foregroundColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: message.isIncoming)
         }
-        return conversationStyle.bubbleSecondaryTextColor(isIncoming: message.isIncoming)
+
+        return [
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+            .underlineColor: foregroundColor,
+            .foregroundColor: foregroundColor
+        ]
     }
 
     public func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVTextLabel.Config {
         CVTextLabel.Config(attributedString: textViewConfig.text.attributedString,
                            font: textViewConfig.font,
                            textColor: textViewConfig.textColor,
-                           selectionColor: textSelectionColor,
+                           selectionStyling: textSelectionStyling,
                            textAlignment: textViewConfig.textAlignment ?? .natural,
                            lineBreakMode: .byWordWrapping,
                            numberOfLines: 0,
@@ -513,7 +519,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return CVTextLabel.Config(attributedString: attributedText,
                                   font: labelConfig.font,
                                   textColor: labelConfig.textColor,
-                                  selectionColor: textSelectionColor,
+                                  selectionStyling: textSelectionStyling,
                                   textAlignment: textAlignment,
                                   lineBreakMode: .byWordWrapping,
                                   numberOfLines: 0,
@@ -666,8 +672,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 continue
             }
             switch item {
-            case .mention:
-                // Do nothing; mentions are already styled.
+            case .mention, .referencedUser:
+                // Do nothing; mentions and referenced users are already styled.
                 continue
             case .dataItem(let dataItem):
                 guard let link = dataItem.url.absoluteString.nilIfEmpty else {

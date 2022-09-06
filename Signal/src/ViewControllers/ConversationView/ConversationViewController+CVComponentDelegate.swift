@@ -35,6 +35,12 @@ extension ConversationViewController: CVComponentDelegate {
         didLongPressBodyTextItem(item)
     }
 
+    // MARK: - System Message Items
+
+    public func cvc_didTapSystemMessageItem(_ item: CVTextLabel.Item) {
+        didTapSystemMessageItem(item)
+    }
+
     // MARK: - Long Press
 
     public func cvc_didLongPressTextViewItem(_ cell: CVCell,

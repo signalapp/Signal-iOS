@@ -179,9 +179,52 @@ public class CVComponentState: Equatable, Dependencies {
     let giftBadge: GiftBadge?
 
     struct SystemMessage: Equatable {
+        typealias ReferencedUser = CVTextLabel.ReferencedUserItem
+
         let title: NSAttributedString
         let titleColor: UIColor
+        let titleSelectionBackgroundColor: UIColor
         let action: CVMessageAction?
+
+        /// Represents users whose names appear in the title. Only applies to
+        /// system messages in group threads.
+        let namesInTitle: [ReferencedUser]
+
+        init(
+            title: NSAttributedString,
+            titleColor: UIColor,
+            titleSelectionBackgroundColor: UIColor,
+            action: CVMessageAction?
+        ) {
+            let mutableTitle = NSMutableAttributedString(attributedString: title)
+            mutableTitle.removeAttribute(
+                .addressOfName,
+                range: NSRange(location: 0, length: mutableTitle.length)
+            )
+            self.title = NSAttributedString(attributedString: mutableTitle)
+
+            self.titleColor = titleColor
+            self.titleSelectionBackgroundColor = titleSelectionBackgroundColor
+            self.action = action
+
+            self.namesInTitle = {
+                // Extract the addresses for names in the string. These are only
+                // stored for system messages in group threads.
+
+                var referencedUsers = [ReferencedUser]()
+
+                title.enumerateAddressesOfNames { address, range, _ in
+                    if let address = address {
+                        referencedUsers.append(ReferencedUser(
+                            address: address,
+                            range: range
+                        ))
+                    }
+                }
+
+                return referencedUsers
+            }()
+        }
     }
     let systemMessage: SystemMessage?
 
