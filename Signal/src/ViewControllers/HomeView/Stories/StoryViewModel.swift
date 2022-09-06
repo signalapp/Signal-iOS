@@ -20,6 +20,7 @@ struct StoryViewModel: Dependencies {
     let latestMessageName: String
     let latestMessageTimestamp: UInt64
     let latestMessageViewedTimestamp: UInt64?
+    let latestMessageSendingState: TSOutgoingMessageState
 
     let threadUniqueId: String?
 
@@ -45,15 +46,16 @@ struct StoryViewModel: Dependencies {
         self.context = latestMessage.context
         self.hasReplies = InteractionFinder.hasReplies(for: sortedFilteredMessages, transaction: transaction)
 
-        latestMessageName = StoryAuthorUtil.authorDisplayName(
+        latestMessageName = StoryUtil.authorDisplayName(
             for: latestMessage,
             contactsManager: Self.contactsManager,
             transaction: transaction
         )
-        latestMessageAvatarDataSource = try StoryAuthorUtil.contextAvatarDataSource(for: latestMessage, transaction: transaction)
+        latestMessageAvatarDataSource = try StoryUtil.contextAvatarDataSource(for: latestMessage, transaction: transaction)
         latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
         latestMessageTimestamp = latestMessage.timestamp
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp
+        latestMessageSendingState = latestMessage.sendingState
 
         let threadUniqueId = context.threadUniqueId(transaction: transaction)
         self.threadUniqueId = threadUniqueId

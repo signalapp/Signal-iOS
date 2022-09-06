@@ -781,7 +781,7 @@
 		669E8FED28B4177900043D28 /* OWSSignalServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */; };
 		669E8FEF28B417D500043D28 /* OWSSignalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEE28B417D500043D28 /* OWSSignalService.swift */; };
 		669E8FF028B4185300043D28 /* OWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */; };
-		669E8FF128B41A8500043D28 /* StoryAuthorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668AB0CB28AD610600B31984 /* StoryAuthorUtil.swift */; };
+		669E8FF128B41A8500043D28 /* StoryUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668AB0CB28AD610600B31984 /* StoryUtil.swift */; };
 		669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */; };
 		669E900528B42CCF00043D28 /* SystemStoryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900428B42CCF00043D28 /* SystemStoryManagerTest.swift */; };
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
@@ -3030,7 +3030,7 @@
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
 		6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		668AB0CB28AD610600B31984 /* StoryAuthorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAuthorUtil.swift; sourceTree = "<group>"; };
+		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
 		668FE09E28B947ED008B9071 /* StoryHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryHidingManager.swift; sourceTree = "<group>"; };
@@ -6105,10 +6105,10 @@
 				886292112835606D00AA0C3B /* MyStoryCell.swift */,
 				8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */,
 				8852572827DD366D0032073C /* StoriesViewController.swift */,
-				668AB0CB28AD610600B31984 /* StoryAuthorUtil.swift */,
 				884DB94627DD754700C6A309 /* StoryCell.swift */,
 				661602A328BEB94400C1932D /* StoryListDataSource.swift */,
 				88B2234B284FABE600A25048 /* StoryThumbnailView.swift */,
+				668AB0CB28AD610600B31984 /* StoryUtil.swift */,
 				884DB94427DD70F700C6A309 /* StoryViewModel.swift */,
 			);
 			path = Stories;
@@ -10374,7 +10374,6 @@
 				34B3F87B1E8DF1700035BE1A /* SplashViewController.swift in Sources */,
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,
-				669E8FF128B41A8500043D28 /* StoryAuthorUtil.swift in Sources */,
 				884DB94727DD754700C6A309 /* StoryCell.swift in Sources */,
 				884DB95027DE67BB00C6A309 /* StoryContextViewController.swift in Sources */,
 				88423A52280A171E007D2918 /* StoryDirectReplySheet.swift in Sources */,
@@ -10398,6 +10397,7 @@
 				88863A54280CAEAA00977F69 /* StoryReplySheetAnimator.swift in Sources */,
 				88863A4E280CAE0800977F69 /* StorySlideAnimator.swift in Sources */,
 				88B2234C284FABE600A25048 /* StoryThumbnailView.swift in Sources */,
+				669E8FF128B41A8500043D28 /* StoryUtil.swift in Sources */,
 				884DB94527DD70F700C6A309 /* StoryViewModel.swift in Sources */,
 				88B00D4D28A3346100BC9CA0 /* StoryViewsViewController.swift in Sources */,
 				88863A50280CAE4400977F69 /* StoryZoomAnimator.swift in Sources */,

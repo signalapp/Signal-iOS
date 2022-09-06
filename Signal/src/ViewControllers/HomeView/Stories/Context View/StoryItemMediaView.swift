@@ -274,7 +274,7 @@ class StoryItemMediaView: UIView {
         )
 
         authorAvatarView.update(transaction) { config in
-            config.dataSource = try? StoryAuthorUtil.authorAvatarDataSource(
+            config.dataSource = try? StoryUtil.authorAvatarDataSource(
                 for: item.message,
                 transaction: transaction
             )
@@ -283,7 +283,7 @@ class StoryItemMediaView: UIView {
         switch item.message.context {
         case .groupId:
             guard
-                let groupAvatarDataSource = try? StoryAuthorUtil.contextAvatarDataSource(
+                let groupAvatarDataSource = try? StoryUtil.contextAvatarDataSource(
                     for: item.message,
                     transaction: transaction
                 )
@@ -323,7 +323,7 @@ class StoryItemMediaView: UIView {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
-        label.text = StoryAuthorUtil.authorDisplayName(
+        label.text = StoryUtil.authorDisplayName(
             for: item.message,
             contactsManager: contactsManager,
             useFullNameForLocalAddress: false,

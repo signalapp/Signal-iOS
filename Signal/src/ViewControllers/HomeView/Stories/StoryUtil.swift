@@ -3,9 +3,10 @@
 //
 
 import Foundation
+import SignalServiceKit
 
 /// Container for util methods related to story authors.
-public enum StoryAuthorUtil {
+public enum StoryUtil: Dependencies {
 
     static func authorDisplayName(
         for storyMessage: StoryMessage,
@@ -87,5 +88,39 @@ public enum StoryAuthorUtil {
                 .withBackgroundColor(.ows_accentBlue, insets: UIEdgeInsets(margin: 24)),
             badge: nil
         )
+    }
+
+    static func askToResend(_ message: StoryMessage, in thread: TSThread, from vc: UIViewController) {
+        let actionSheet = ActionSheetController(message: NSLocalizedString(
+            "STORY_RESEND_MESSAGE_ACTION_SHEET",
+            comment: "Title for the dialog asking user if they wish to resend a failed story message."
+        ))
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
+            Self.databaseStorage.write { transaction in
+                message.remotelyDelete(for: thread, transaction: transaction)
+            }
+        }))
+        actionSheet.addAction(.init(title: CommonStrings.sendMessage, handler: { _ in
+            resend(message)
+        }))
+        vc.presentActionSheet(actionSheet, animated: true)
+    }
+
+    private static func resend(_ message: StoryMessage) {
+        guard case .outgoing(let recipientStates) = message.manifest else { return }
+        let stoppedBySafetyNumberChange = SafetyNumberConfirmationSheet.presentIfNecessary(
+            addresses: recipientStates.keys.map { .init(uuid: $0) },
+            confirmationText: SafetyNumberStrings.confirmSendButton
+        ) { confirmedSafetyNumberChange in
+            guard confirmedSafetyNumberChange else { return }
+            resend(message)
+        }
+
+        guard !stoppedBySafetyNumberChange else { return }
+
+        Self.databaseStorage.write { transaction in
+            message.resendMessageToFailedRecipients(transaction: transaction)
+        }
     }
 }

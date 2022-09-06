@@ -129,7 +129,7 @@ extension MyStoriesViewController: UITableViewDelegate {
         guard let thread = thread(for: indexPath.section), let item = item(for: indexPath) else { return }
 
         if item.message.sendingState == .failed {
-            return askToResend(for: item)
+            return StoryUtil.askToResend(item.message, in: item.thread, from: self)
         }
 
         let vc = StoryPageViewController(
@@ -140,40 +140,6 @@ extension MyStoriesViewController: UITableViewDelegate {
         )
         vc.contextDataSource = self
         present(vc, animated: true)
-    }
-
-    private func askToResend(for item: OutgoingStoryItem) {
-        let actionSheet = ActionSheetController(message: NSLocalizedString(
-            "STORY_RESEND_MESSAGE_ACTION_SHEET",
-            comment: "Title for the dialog asking user if they wish to resend a failed story message."
-        ))
-        actionSheet.addAction(OWSActionSheets.cancelAction)
-        actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
-            Self.databaseStorage.write { transaction in
-                item.message.remotelyDelete(for: item.thread, transaction: transaction)
-            }
-        }))
-        actionSheet.addAction(.init(title: CommonStrings.sendMessage, handler: { [weak self] _ in
-            self?.resend(item: item)
-        }))
-        presentActionSheet(actionSheet, animated: true)
-    }
-
-    private func resend(item: OutgoingStoryItem) {
-        guard case .outgoing(let recipientStates) = item.message.manifest else { return }
-        let stoppedBySafetyNumberChange = SafetyNumberConfirmationSheet.presentIfNecessary(
-            addresses: recipientStates.keys.map { .init(uuid: $0) },
-            confirmationText: SafetyNumberStrings.confirmSendButton
-        ) { [weak self] confirmedSafetyNumberChange in
-            guard confirmedSafetyNumberChange else { return }
-            self?.resend(item: item)
-        }
-
-        guard !stoppedBySafetyNumberChange else { return }
-
-        Self.databaseStorage.write { transaction in
-            item.message.resendMessageToFailedRecipients(transaction: transaction)
-        }
     }
 }
 

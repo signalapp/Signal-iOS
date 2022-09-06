@@ -80,7 +80,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
                 case .visibleStories, .hiddenStories:
                     guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
                     guard let model = self.model(for: indexPath) else { continue }
-                    cell.configureTimestamp(with: model)
+                    cell.configureSubtitle(with: model)
                 case .none:
                     owsFailDebug("Unexpected story type")
                 }
@@ -240,6 +240,20 @@ extension StoriesViewController: UITableViewDelegate {
         case .visibleStories, .hiddenStories:
             guard let model = model(for: indexPath) else {
                 owsFailDebug("Missing model for story")
+                return
+            }
+
+            // Navigate to "My Stories" rather than the viewer if the message is failed
+            if model.latestMessageSendingState == .failed {
+                guard let latestMessage = model.messages.last else {
+                    owsFailDebug("Missing message for failed send")
+                    return
+                }
+                guard let latestMessageThread = databaseStorage.read(block: { latestMessage.context.thread(transaction: $0) }) else {
+                    owsFailDebug("Missing thread for failed send")
+                    return
+                }
+                StoryUtil.askToResend(latestMessage, in: latestMessageThread, from: self)
                 return
             }
 
