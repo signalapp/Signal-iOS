@@ -76,7 +76,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
                 case .myStory:
                     guard let cell = self.tableView.cellForRow(at: indexPath) as? MyStoryCell else { continue }
                     guard let model = self.dataSource.myStory else { continue }
-                    cell.configureTimestamp(with: model)
+                    cell.configureSubtitle(with: model)
                 case .visibleStories, .hiddenStories:
                     guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
                     guard let model = self.model(for: indexPath) else { continue }

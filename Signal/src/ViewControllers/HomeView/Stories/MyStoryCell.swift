@@ -12,9 +12,11 @@ class MyStoryCell: UITableViewCell {
 
     let titleLabel = UILabel()
     let titleChevron = UIImageView()
-    let timestampLabel = UILabel()
+    let subtitleLabel = UILabel()
     let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
     let attachmentThumbnail = UIView()
+
+    let failedIconView = UIImageView()
 
     let addStoryButton = OWSButton()
 
@@ -36,12 +38,21 @@ class MyStoryCell: UITableViewCell {
 
         titleChevron.image = chevronImage.withRenderingMode(.alwaysTemplate)
 
-        let hStack = UIStackView(arrangedSubviews: [titleLabel, titleChevron])
-        hStack.axis = .horizontal
-        hStack.alignment = .center
-        hStack.spacing = 6
+        let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleChevron])
+        titleStack.axis = .horizontal
+        titleStack.alignment = .center
+        titleStack.spacing = 6
 
-        let vStack = UIStackView(arrangedSubviews: [hStack, timestampLabel])
+        failedIconView.autoSetDimension(.width, toSize: 16)
+        failedIconView.contentMode = .scaleAspectFit
+        failedIconView.tintColor = .ows_accentRed
+
+        let subtitleStack = UIStackView(arrangedSubviews: [failedIconView, subtitleLabel])
+        subtitleStack.axis = .horizontal
+        subtitleStack.alignment = .center
+        subtitleStack.spacing = 6
+
+        let vStack = UIStackView(arrangedSubviews: [titleStack, subtitleStack])
         vStack.axis = .vertical
         vStack.alignment = .leading
 
@@ -66,7 +77,7 @@ class MyStoryCell: UITableViewCell {
     }
 
     func configure(with model: MyStoryViewModel, addStoryAction: @escaping () -> Void) {
-        configureTimestamp(with: model)
+        configureSubtitle(with: model)
 
         titleLabel.font = .ows_dynamicTypeHeadline
         titleLabel.textColor = Theme.primaryTextColor
@@ -114,13 +125,24 @@ class MyStoryCell: UITableViewCell {
         }
     }
 
-    func configureTimestamp(with model: MyStoryViewModel) {
-        timestampLabel.font = .ows_dynamicTypeSubheadline
-        timestampLabel.textColor = Theme.secondaryTextAndIconColor
-        if let latestMessageTimestamp = model.latestMessageTimestamp {
-            timestampLabel.text = DateUtil.formatTimestampRelatively(latestMessageTimestamp)
+    func configureSubtitle(with model: MyStoryViewModel) {
+        subtitleLabel.font = .ows_dynamicTypeSubheadline
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        failedIconView.image = Theme.iconImage(.error16)
+
+        if model.sendingCount > 0 {
+            let format = NSLocalizedString("STORY_SENDING_%d", tableName: "PluralAware", comment: "Indicates that N stories are currently sending")
+            subtitleLabel.text = .localizedStringWithFormat(format, model.sendingCount)
+            failedIconView.isHiddenInStackView = !model.hasFailedSends
+        } else if model.hasFailedSends {
+            failedIconView.isHiddenInStackView = false
+            subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+        } else if let latestMessageTimestamp = model.latestMessageTimestamp {
+            subtitleLabel.text = DateUtil.formatTimestampRelatively(latestMessageTimestamp)
+            failedIconView.isHiddenInStackView = true
         } else {
-            timestampLabel.text = nil
+            subtitleLabel.text = nil
+            failedIconView.isHiddenInStackView = true
         }
     }
 }

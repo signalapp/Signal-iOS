@@ -74,7 +74,7 @@ class StoryListDataSource: NSObject, Dependencies {
                 let (listStories, outgoingStories) = Self.databaseStorage.read {
                     (
                         StoryFinder.storiesForListView(transaction: $0),
-                        StoryFinder.outgoingStories(limit: 2, transaction: $0)
+                        StoryFinder.outgoingStories(transaction: $0)
                     )
                 }
                 let myStoryModel = Self.databaseStorage.read { MyStoryViewModel(messages: outgoingStories, transaction: $0) }
@@ -429,7 +429,7 @@ class StoryListDataSource: NSObject, Dependencies {
     ) -> MyStoryViewModel? {
         let oldStoryModel = oldModel.myStory
         let outgoingStories = Self.databaseStorage.read {
-            StoryFinder.outgoingStories(limit: 2, transaction: $0)
+            StoryFinder.outgoingStories(transaction: $0)
         }
         let myStoryChanged = changedMessageRowIds.intersection(outgoingStories.map { $0.id! }).count > 0
             || Set(oldStoryModel?.messages.map { $0.uniqueId } ?? []) != Set(outgoingStories.map { $0.uniqueId })
@@ -458,7 +458,7 @@ class StoryListDataSource: NSObject, Dependencies {
             // My story should never go away after being loaded, but for the sake of completeness...
             tableView.deleteRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .automatic)
         } else if changes.myStoryChanged {
-            tableView.reloadRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .automatic)
+            tableView.reloadRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .none)
         }
 
         // Visible stories section is always visible, directly apply changes.
