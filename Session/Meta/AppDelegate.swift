@@ -146,6 +146,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
     
+    func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
+        Logger.info("applicationDidReceiveMemoryWarning")
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        DDLog.flushLog()
+
+        stopPollers()
+    }
+    
     func applicationDidBecomeActive(_ application: UIApplication) {
         guard !CurrentAppContext().isRunningTests else { return }
         
