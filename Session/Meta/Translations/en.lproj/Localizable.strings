@@ -505,10 +505,10 @@
 "vc_create_closed_group_group_name_too_long_error" = "Please enter a shorter group name";
 "vc_create_closed_group_too_many_group_members_error" = "A closed group cannot have more than 100 members";
 "vc_join_public_chat_title" = "Join Community";
-"vc_join_public_chat_enter_group_url_tab_title" = "Open Group URL";
+"vc_join_public_chat_enter_group_url_tab_title" = "Community URL";
 "vc_join_public_chat_scan_qr_code_tab_title" = "Scan QR Code";
 "vc_join_public_chat_scan_qr_code_explanation" = "Scan the QR code of the open group you'd like to join";
-"vc_enter_chat_url_text_field_hint" = "Enter an open group URL";
+"vc_enter_chat_url_text_field_hint" = "Enter Community URL";
 "vc_settings_title" = "Settings";
 "vc_settings_display_name_text_field_hint" = "Enter a display name";
 "vc_settings_display_name_missing_error" = "Please pick a display name";
