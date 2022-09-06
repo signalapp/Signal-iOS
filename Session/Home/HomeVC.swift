@@ -742,7 +742,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     }
     
     @objc func createNewDM() {
-        let newDMVC = NewDMVC()
+        let newDMVC = NewDMVC(shouldShowBackButton: false)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
@@ -753,7 +753,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     
     @objc(createNewDMFromDeepLink:)
     func createNewDMFromDeepLink(sessionID: String) {
-        let newDMVC = NewDMVC(sessionID: sessionID)
+        let newDMVC = NewDMVC(sessionID: sessionID, shouldShowBackButton: false)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen

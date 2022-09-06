@@ -7,6 +7,7 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 
 final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+    private var shouldShowBackButton: Bool = true
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
@@ -44,7 +45,13 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         return result
     }()
     
-    init(sessionID: String) {
+    init(shouldShowBackButton: Bool) {
+        self.shouldShowBackButton = shouldShowBackButton
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    init(sessionID: String, shouldShowBackButton: Bool = true) {
+        self.shouldShowBackButton = shouldShowBackButton
         super.init(nibName: nil, bundle: nil)
         enterPublicKeyVC.setSessionID(to: sessionID)
     }
@@ -65,9 +72,11 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         setNavBarTitle(NSLocalizedString("vc_create_private_chat_title", comment: ""))
         let navigationBar = navigationController!.navigationBar
         // Set up navigation bar buttons
-        let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
-        navigationItem.leftBarButtonItem = closeButton
+        if !shouldShowBackButton {
+            let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
+            closeButton.tintColor = Colors.text
+            navigationItem.leftBarButtonItem = closeButton
+        }
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ enterPublicKeyVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
@@ -77,20 +86,16 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         // Set up tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        let tabBarInset: CGFloat = (UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height())
-        tabBar.pin(.top, to: .top, of: view, withInset: tabBarInset)
-        view.pin(.trailing, to: .trailing, of: tabBar)
+        tabBar.pin(.top, to: .top, of: view)
+        tabBar.pin(.trailing, to: .trailing, of: view)
         // Set up page VC constraints
         let pageVCView = pageVC.view!
         view.addSubview(pageVCView)
         pageVCView.pin(.leading, to: .leading, of: view)
         pageVCView.pin(.top, to: .bottom, of: tabBar)
-        view.pin(.trailing, to: .trailing, of: pageVCView)
-        view.pin(.bottom, to: .bottom, of: pageVCView)
-        let screen = UIScreen.main.bounds
-        pageVCView.set(.width, to: screen.width)
+        pageVCView.pin(.trailing, to: .trailing, of: view)
+        pageVCView.pin(.bottom, to: .bottom, of: view)
         let height: CGFloat = (navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight)
-        pageVCView.set(.height, to: height)
         enterPublicKeyVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
     }

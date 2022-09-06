@@ -59,12 +59,6 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         setUpNavBarStyle()
         setNavBarTitle("vc_join_public_chat_title".localized())
         
-        // Navigation bar buttons
-        let navBarHeight: CGFloat = (navigationController?.navigationBar.frame.size.height ?? 0)
-        let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
-        navigationItem.leftBarButtonItem = closeButton
-        
         // Page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ enterURLVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
@@ -75,26 +69,18 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         // Tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        tabBar.pin(
-            .top,
-            to: .top,
-            of: view,
-            withInset: (UIDevice.current.isIPad ? navBarHeight + 20 : navBarHeight)
-        )
-        view.pin(.trailing, to: .trailing, of: tabBar)
+        tabBar.pin(.top, to: .top, of: view)
+        tabBar.pin(.trailing, to: .trailing, of: view)
         
         // Page VC constraints
         let pageVCView = pageVC.view!
         view.addSubview(pageVCView)
         pageVCView.pin(.leading, to: .leading, of: view)
         pageVCView.pin(.top, to: .bottom, of: tabBar)
-        view.pin(.trailing, to: .trailing, of: pageVCView)
-        view.pin(.bottom, to: .bottom, of: pageVCView)
-        
-        let screen = UIScreen.main.bounds
+        pageVCView.pin(.trailing, to: .trailing, of: view)
+        pageVCView.pin(.bottom, to: .bottom, of: view)
+        let navBarHeight: CGFloat = (navigationController?.navigationBar.frame.size.height ?? 0)
         let height: CGFloat = ((navigationController?.view.bounds.height ?? 0) - navBarHeight - TabBar.snHeight)
-        pageVCView.set(.width, to: screen.width)
-        pageVCView.set(.height, to: height)
         enterURLVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
     }
