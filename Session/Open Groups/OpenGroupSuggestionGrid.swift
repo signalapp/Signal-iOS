@@ -150,14 +150,32 @@ final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UIColle
     
     // MARK: - Data Source
     
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return (min(rooms.count, 8) + 1) / 2 // Cap to a maximum of 4 (4 rows of 2)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return min(rooms.count, 8) // Cap to a maximum of 8 (4 rows of 2)
+        if (section + 1) * 2 <= min(rooms.count, 8) {
+            return 2
+        } else {
+            return 1
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
-        cell.room = rooms[indexPath.item]
+        cell.room = rooms[indexPath.item + indexPath.section * 2]
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        if (section + 1) * 2 <= min(rooms.count, 8) {
+            return .zero
+        } else {
+            let cellWidth = UIDevice.current.isIPad ? maxWidth / 4 : maxWidth / 2
+            let sideInset = (maxWidth - cellWidth) / 2
+            return UIEdgeInsets(top: 0, left: sideInset, bottom: 0, right: sideInset)
+        }
     }
     
     // MARK: - Interaction
