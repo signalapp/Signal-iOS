@@ -87,9 +87,8 @@ public class TSConstants: NSObject {
     public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
 
     @objc
-    public static var contactDiscoveryEnclaveName: String { shared.contactDiscoveryEnclaveName }
-    @objc
-    public static var contactDiscoveryMrEnclave: String { shared.contactDiscoveryMrEnclave }
+    public static var contactDiscoveryEnclaveName: String { shared.contactDiscoveryMrEnclave.stringValue }
+    public static var contactDiscoveryMrEnclave: MrEnclave { shared.contactDiscoveryMrEnclave }
     @objc
     public static var contactDiscoveryPublicKey: String { shared.contactDiscoveryPublicKey }
     @objc
@@ -144,8 +143,7 @@ private protocol TSConstantsProtocol: AnyObject {
     var storageServiceCensorshipPrefix: String { get }
 
     // SGX Backed Contact Discovery
-    var contactDiscoveryEnclaveName: String { get }
-    var contactDiscoveryMrEnclave: String { get }
+    var contactDiscoveryMrEnclave: MrEnclave { get }
 
     // HSM Backed Contact Discovery
     var contactDiscoveryPublicKey: String { get }
@@ -161,8 +159,25 @@ private protocol TSConstantsProtocol: AnyObject {
 
 public struct KeyBackupEnclave: Equatable {
     let name: String
-    let mrenclave: String
+    let mrenclave: MrEnclave
     let serviceId: String
+}
+
+public struct MrEnclave: Equatable {
+    public let dataValue: Data
+    public let stringValue: String
+
+    init(_ stringValue: StaticString) {
+        self.stringValue = stringValue.withUTF8Buffer { String(decoding: $0, as: UTF8.self) }
+        // This is a constant -- it should never fail to parse.
+        self.dataValue = Data.data(fromHex: self.stringValue)!
+        // All of our MrEnclave values are currently 32 bytes.
+        owsAssert(self.dataValue.count == 32)
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.dataValue == rhs.dataValue
+    }
 }
 
 // MARK: - Production
@@ -195,10 +210,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let keyBackupCensorshipPrefix = "backup"
     public let storageServiceCensorshipPrefix = "storage"
 
-    public let contactDiscoveryEnclaveName = "74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081"
-    public var contactDiscoveryMrEnclave: String {
-        return contactDiscoveryEnclaveName
-    }
+    public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
 
     public var contactDiscoveryPublicKey: String {
         owsFailDebug("CDSH unsupported in production")
@@ -211,7 +223,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
     public let keyBackupEnclave = KeyBackupEnclave(
         name: "e18376436159cda3ad7a45d9320e382e4a497f26b0dca34d8eab0bd0139483b5",
-        mrenclave: "45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c",
+        mrenclave: MrEnclave("45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c"),
         serviceId: "3a485adb56e2058ef7737764c738c4069dd62bc457637eafb6bbce1ce29ddb89"
     )
 
@@ -223,7 +235,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
         // Add the current `keyBackupEnclave` value here when replacing it.
         KeyBackupEnclave(
             name: "0cedba03535b41b67729ce9924185f831d7767928a1d1689acb689bc079c375f",
-            mrenclave: "ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba",
+            mrenclave: MrEnclave("ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba"),
             serviceId: "187d2739d22be65e74b65f0055e74d31310e4267e5fac2b1246cc8beba81af39"
         )
     ]
@@ -268,10 +280,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage-staging"
 
     // CDS uses the same EnclaveName and MrEnclave
-    public let contactDiscoveryEnclaveName = "74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081"
-    public var contactDiscoveryMrEnclave: String {
-        return contactDiscoveryEnclaveName
-    }
+    public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
 
     public let contactDiscoveryPublicKey = "2fe57da347cd62431528daac5fbb290730fff684afc4cfc2ed90995f58cb3b74"
     public let contactDiscoveryCodeHashes = [
@@ -280,7 +289,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
 
     public let keyBackupEnclave = KeyBackupEnclave(
         name: "39963b736823d5780be96ab174869a9499d56d66497aa8f9b2244f777ebc366b",
-        mrenclave: "45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c",
+        mrenclave: MrEnclave("45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c"),
         serviceId: "9dbc6855c198e04f21b5cc35df839fdcd51b53658454dfa3f817afefaffc95ef"
     )
 
@@ -292,7 +301,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
         // Add the current `keyBackupEnclave` value here when replacing it.
         KeyBackupEnclave(
             name: "dd6f66d397d9e8cf6ec6db238e59a7be078dd50e9715427b9c89b409ffe53f99",
-            mrenclave: "ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba",
+            mrenclave: MrEnclave("ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba"),
             serviceId: "4200003414528c151e2dccafbc87aa6d3d66a5eb8f8c05979a6e97cb33cd493a"
         )
     ]
