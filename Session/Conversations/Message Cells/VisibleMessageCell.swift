@@ -900,19 +900,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     // MARK: - Convenience
     
     private func getCornersToRound() -> UIRectCorner {
-        guard viewModel?.isOnlyMessageInCluster == false else { return .allCorners }
-        
-        let direction: Direction = (viewModel?.variant == .standardOutgoing ? .outgoing : .incoming)
-        
-        switch (viewModel?.positionInCluster, direction) {
-            case (.top, .outgoing): return [ .bottomLeft, .topLeft, .topRight ]
-            case (.middle, .outgoing): return [ .bottomLeft, .topLeft ]
-            case (.bottom, .outgoing): return [ .bottomRight, .bottomLeft, .topLeft ]
-            case (.top, .incoming): return [ .topLeft, .topRight, .bottomRight ]
-            case (.middle, .incoming): return [ .topRight, .bottomRight ]
-            case (.bottom, .incoming): return [ .topRight, .bottomRight, .bottomLeft ]
-            case (.none, _): return .allCorners
-        }
+        return .allCorners
     }
     
     private func getCornerMask(from rectCorner: UIRectCorner) -> CACornerMask {

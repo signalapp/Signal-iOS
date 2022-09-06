@@ -369,12 +369,20 @@ public extension Message {
                rawReaction.count > 0,
                let reactors = rawReaction.reactors
             {
+                // Decide whether we need to ignore all reactions
+                let pendingChangeRemoveAllReaction: Bool = associatedPendingChanges.contains { pendingChange in
+                    if case .reaction(_, let emoji, let action) = pendingChange.metadata {
+                        return emoji == decodedEmoji && action == .removeAll
+                    }
+                    return false
+                }
+                
                 // Decide whether we need to add an extra reaction from current user
                 let pendingChangeSelfReaction: Bool? = {
                     // Find the newest 'PendingChange' entry with a matching emoji, if one exists, and
                     // set the "self reaction" value based on it's action
                     let maybePendingChange: OpenGroupAPI.PendingChange? = associatedPendingChanges
-                        .sorted(by: { lhs, rhs -> Bool in (lhs.seqNo ?? Int64.max) > (rhs.seqNo ?? Int64.max) })
+                        .sorted(by: { lhs, rhs -> Bool in (lhs.seqNo ?? Int64.max) >= (rhs.seqNo ?? Int64.max) })
                         .first { pendingChange in
                             if case .reaction(_, let emoji, _) = pendingChange.metadata {
                                 return emoji == decodedEmoji
@@ -390,11 +398,11 @@ public extension Message {
                     else { return nil }
 
                     // Otherwise add/remove accordingly
-                    return (action == .react)
+                    return action == .add
                 }()
                 let shouldAddSelfReaction: Bool = (
                     pendingChangeSelfReaction ??
-                    (rawReaction.you || reactors.contains(userPublicKey))
+                    ((rawReaction.you || reactors.contains(userPublicKey)) && !pendingChangeRemoveAllReaction)
                 )
                 
                 let count: Int64 = rawReaction.you ? rawReaction.count - 1 : rawReaction.count
@@ -408,6 +416,8 @@ public extension Message {
 
                 results = results
                     .appending( // Add the first reaction (with the count)
+                        pendingChangeRemoveAllReaction ?
+                        nil :
                         desiredReactorIds.first
                             .map { reactor in
                                 Reaction(
@@ -422,7 +432,7 @@ public extension Message {
                             }
                     )
                     .appending( // Add all other reactions
-                        contentsOf: desiredReactorIds.count <= 1 ?
+                        contentsOf: desiredReactorIds.count <= 1 || pendingChangeRemoveAllReaction ?
                             [] :
                             desiredReactorIds
                                 .suffix(from: 1)

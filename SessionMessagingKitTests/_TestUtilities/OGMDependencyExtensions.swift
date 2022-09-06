@@ -24,20 +24,20 @@ extension OpenGroupManager.OGMDependencies {
         date: Date? = nil
     ) -> OpenGroupManager.OGMDependencies {
         return OpenGroupManager.OGMDependencies(
-            cache: (cache ?? self._mutableCache),
-            onionApi: (onionApi ?? self._onionApi),
-            generalCache: (generalCache ?? self._generalCache),
-            storage: (storage ?? self._storage),
-            sodium: (sodium ?? self._sodium),
-            box: (box ?? self._box),
-            genericHash: (genericHash ?? self._genericHash),
-            sign: (sign ?? self._sign),
-            aeadXChaCha20Poly1305Ietf: (aeadXChaCha20Poly1305Ietf ?? self._aeadXChaCha20Poly1305Ietf),
-            ed25519: (ed25519 ?? self._ed25519),
-            nonceGenerator16: (nonceGenerator16 ?? self._nonceGenerator16),
-            nonceGenerator24: (nonceGenerator24 ?? self._nonceGenerator24),
-            standardUserDefaults: (standardUserDefaults ?? self._standardUserDefaults),
-            date: (date ?? self._date)
+            cache: (cache ?? self._mutableCache.wrappedValue),
+            onionApi: (onionApi ?? self._onionApi.wrappedValue),
+            generalCache: (generalCache ?? self._generalCache.wrappedValue),
+            storage: (storage ?? self._storage.wrappedValue),
+            sodium: (sodium ?? self._sodium.wrappedValue),
+            box: (box ?? self._box.wrappedValue),
+            genericHash: (genericHash ?? self._genericHash.wrappedValue),
+            sign: (sign ?? self._sign.wrappedValue),
+            aeadXChaCha20Poly1305Ietf: (aeadXChaCha20Poly1305Ietf ?? self._aeadXChaCha20Poly1305Ietf.wrappedValue),
+            ed25519: (ed25519 ?? self._ed25519.wrappedValue),
+            nonceGenerator16: (nonceGenerator16 ?? self._nonceGenerator16.wrappedValue),
+            nonceGenerator24: (nonceGenerator24 ?? self._nonceGenerator24.wrappedValue),
+            standardUserDefaults: (standardUserDefaults ?? self._standardUserDefaults.wrappedValue),
+            date: (date ?? self._date.wrappedValue)
         )
     }
 }

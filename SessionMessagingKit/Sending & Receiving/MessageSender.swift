@@ -665,6 +665,7 @@ public final class MessageSender {
         with error: MessageSenderError,
         interactionId: Int64?
     ) {
+        // TODO: Revert the local database change
         // If the message was a reaction then we don't want to do anything to the original
         // interaciton (which the 'interactionId' is pointing to
         guard (message as? VisibleMessage)?.reaction == nil else { return }
