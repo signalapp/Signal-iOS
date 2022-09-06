@@ -88,11 +88,16 @@ public extension DecodableDefault {
         public enum GenerateUUIDString: Source {
             public static var defaultValue: String { UUID().uuidString }
         }
+
+        public enum OutgoingMessageSending: Source {
+            public static var defaultValue: OWSOutgoingMessageRecipientState { .sending }
+        }
     }
 }
 
 public extension DecodableDefault {
     typealias GenerateUUIDString = Wrapper<Sources.GenerateUUIDString>
+    typealias OutgoingMessageSending = Wrapper<Sources.OutgoingMessageSending>
     typealias True<T: DecodableBooleanLiteral> = Wrapper<Sources.True<T>>
     typealias False<T: DecodableBooleanLiteral> = Wrapper<Sources.False<T>>
     typealias Zero<T: DecodableIntegerLiteral> = Wrapper<Sources.Zero<T>>

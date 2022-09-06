@@ -345,6 +345,29 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    public func updateRecipientStatesWithOutgoingMessageStates(
+        _ outgoingMessageStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]?,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        guard let outgoingMessageStates = outgoingMessageStates else { return }
+        anyUpdate(transaction: transaction) { message in
+            guard case .outgoing(let recipientStates) = message.manifest else {
+                return owsFailDebug("Unexpectedly tried to update recipient states on message of wrong type.")
+            }
+
+            var newRecipientStates = [UUID: StoryRecipientState]()
+
+            for (address, outgoingMessageState) in outgoingMessageStates {
+                guard let uuid = address.uuid else { continue }
+                guard var recipientState = recipientStates[uuid] else { continue }
+                recipientState.sendingState = outgoingMessageState.state
+                newRecipientStates[uuid] = recipientState
+            }
+
+            message.manifest = .outgoing(recipientStates: newRecipientStates)
+        }
+    }
+
     public func threads(transaction: SDSAnyReadTransaction) -> [TSThread] {
         var threads = [TSThread]()
 
@@ -527,8 +550,12 @@ public struct StoryReceivedState: Codable {
 public struct StoryRecipientState: Codable {
     public var allowsReplies: Bool
     public var contexts: [UUID]
+    @DecodableDefault.OutgoingMessageSending
+    public var sendingState: OWSOutgoingMessageRecipientState = .sending
     public var viewedTimestamp: UInt64?
 }
+
+extension OWSOutgoingMessageRecipientState: Codable {}
 
 public enum StoryMessageAttachment: Codable {
     case file(attachmentId: String)
