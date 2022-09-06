@@ -11,6 +11,10 @@ struct StoryViewModel: Dependencies {
     let messages: [StoryMessage]
     let hasUnviewedMessages: Bool
 
+    // NOTE: "hidden" stories are still shown,
+    // just in a separate section thats collapsed by default.
+    let isHidden: Bool
+
     let latestMessageAttachment: StoryThumbnailView.Attachment
     let hasReplies: Bool
     let latestMessageName: String
@@ -44,6 +48,14 @@ struct StoryViewModel: Dependencies {
         latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)
         latestMessageTimestamp = latestMessage.timestamp
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp
+
+        if latestMessage.authorAddress.isSystemStoryAddress {
+            self.isHidden = Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction)
+        } else {
+            self.isHidden = context.thread(transaction: transaction).map {
+                return ThreadAssociatedData.fetchOrDefault(for: $0, transaction: transaction).hideStory
+            } ?? false
+        }
     }
 
     func copy(updatedMessages: [StoryMessage], deletedMessageRowIds: [Int64], transaction: SDSAnyReadTransaction) throws -> Self? {

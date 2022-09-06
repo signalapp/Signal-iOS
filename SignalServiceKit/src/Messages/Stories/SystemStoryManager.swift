@@ -85,6 +85,53 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }.map(on: queue) { _ in () }
     }
 
+    // MARK: Hidden State
+
+    private var stateChangeObservers = [SystemStoryStateChangeObserver]()
+
+    public func addStateChangedObserver(_ observer: SystemStoryStateChangeObserver) {
+        stateChangeObservers.append(observer)
+    }
+
+    public func removeStateChangedObserver(_ observer: SystemStoryStateChangeObserver) {
+        stateChangeObservers.removeAll(where: { $0 == observer })
+    }
+
+    public func areSystemStoriesHidden(transaction: SDSAnyReadTransaction) -> Bool {
+        // No need to make this serial with the other calls, db transactions cover us.
+        kvStore.getBool(Constants.kvStoreHiddenStateKey, defaultValue: false, transaction: transaction)
+    }
+
+    public func setSystemStoriesHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
+        var changedRowIds = [Int64]()
+        defer {
+            DispatchQueue.main.async {
+                self.stateChangeObservers.forEach { $0.systemStoryHiddenStateDidChange(rowIds: changedRowIds) }
+            }
+        }
+
+        // No need to make this serial with the other calls, db transactions cover us.
+        kvStore.setBool(hidden, key: Constants.kvStoreHiddenStateKey, transaction: transaction)
+
+        guard
+            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryStatusKey, transaction: transaction),
+            let onboardingStatus = try? JSONDecoder().decode(DownloadStatus.self, from: rawStatus),
+            let messageUniqueIds = onboardingStatus.messageUniqueIds,
+            !messageUniqueIds.isEmpty
+        else {
+            return
+        }
+        let stories = StoryFinder.listStoriesWithUniqueIds(messageUniqueIds, transaction: transaction)
+        stories.forEach {
+            if hidden {
+                $0.markAsViewed(at: Date().ows_millisecondsSince1970, circumstance: .onThisDevice, transaction: transaction)
+            }
+            if let rowId = $0.id {
+                changedRowIds.append(rowId)
+            }
+        }
+    }
+
     // MARK: - Event Observation
 
     private var isObservingBackgrounding = false
@@ -159,26 +206,38 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     }
 
     private func checkDownloadStatus() -> Promise<DownloadStatus> {
-        return databaseStorage.write(.promise) { [kvStore] transaction in
-            guard
-                let rawStatus = kvStore.getData(Constants.kvStoreStatusKey, transaction: transaction),
-                let status = try? JSONDecoder().decode(DownloadStatus.self, from: rawStatus)
-            else {
-                return .requiresDownload
+        return databaseStorage.write(.promise) { [weak self] transaction in
+            guard let strongSelf = self else {
+                throw OWSAssertionError("SystemStoryManager unretained")
             }
-            if status.isDownloaded {
-                // clean up opportunistically.
-                try? self.cleanUpStoriesIfNeeded(
-                    messageUniqueIds: status.messageUniqueIds,
-                    transaction: transaction
-                )
-            }
-            return status
+            return strongSelf.checkDownloadStatus(forceDeleteIfDownloaded: false, transaction: transaction)
         }
+    }
+
+    private func checkDownloadStatus(
+        forceDeleteIfDownloaded: Bool,
+        transaction: SDSAnyWriteTransaction
+    ) -> DownloadStatus {
+        guard
+            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryStatusKey, transaction: transaction),
+            let status = try? JSONDecoder().decode(DownloadStatus.self, from: rawStatus)
+        else {
+            return .requiresDownload
+        }
+        if status.isDownloaded {
+            // clean up opportunistically.
+            try? self.cleanUpStoriesIfNeeded(
+                messageUniqueIds: status.messageUniqueIds,
+                forceDeleteIfDownloaded: forceDeleteIfDownloaded,
+                transaction: transaction
+            )
+        }
+        return status
     }
 
     private func cleanUpStoriesIfNeeded(
         messageUniqueIds: [String]?,
+        forceDeleteIfDownloaded: Bool,
         transaction: SDSAnyWriteTransaction
     ) throws {
         guard let messageUniqueIds = messageUniqueIds, !messageUniqueIds.isEmpty else {
@@ -189,11 +248,18 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         guard !stories.isEmpty else {
             return
         }
+
+        var shouldDelete = forceDeleteIfDownloaded
+
         // If they exist and are expired, delete them.
         if
             let minViewTime = stories.lazy.compactMap(\.localUserViewedTimestamp).min(),
             Date().timeIntervalSince(Date(millisecondsSince1970: minViewTime)) >= Constants.postViewingTimeout
         {
+            shouldDelete = true
+        }
+
+        if shouldDelete {
             stories.forEach {
                 $0.sdsRemove(transaction: transaction)
             }
@@ -305,13 +371,14 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
     ) throws {
         try kvStore.setData(
             JSONEncoder().encode(DownloadStatus(messageUniqueIds: messageUniqueIds)),
-            key: Constants.kvStoreStatusKey,
+            key: Constants.kvStoreOnboardingStoryStatusKey,
             transaction: transaction
         )
     }
 
     internal enum Constants {
-        static let kvStoreStatusKey = "OnboardingStoryStatus"
+        static let kvStoreOnboardingStoryStatusKey = "OnboardingStoryStatus"
+        static let kvStoreHiddenStateKey = "SystemStoriesAreHidden"
 
         static let manifestPath = "dynamic/ios/stories/onboarding/manifest.json"
         static let manifestVersionKey = "version"

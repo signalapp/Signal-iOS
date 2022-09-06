@@ -507,21 +507,18 @@ extension StoriesViewController: StoryPageViewControllerDataSource {
 
 extension StoriesViewController: ContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
-        guard let indexPath = tableView.indexPathForRow(at: location),
-                let model = model(for: indexPath) else { return nil }
+        guard
+            let indexPath = tableView.indexPathForRow(at: location),
+            let model = model(for: indexPath)
+        else {
+            return nil
+        }
 
         return .init(identifier: indexPath as NSCopying) { _ in
 
             var actions = [ContextMenuAction]()
 
-            actions.append(.init(
-                title: NSLocalizedString(
-                    "STORIES_HIDE_STORY_ACTION",
-                    comment: "Context menu action to hide the selected story"),
-                image: Theme.iconImage(.xCircle24),
-                handler: { _ in
-                    OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Hiding stories is not yet implemented."))
-                }))
+            actions.append(StoryHidingManager(model: model).contextMenuAction(forPresentingController: self))
 
             func appendForwardAction() {
                 actions.append(.init(

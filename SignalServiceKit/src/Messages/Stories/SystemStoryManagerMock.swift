@@ -24,6 +24,22 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
     public func cleanUpOnboardingStoryIfNeeded() -> Promise<Void> {
         return cleanUpOnboardingStoryHandler()
     }
+
+    public func addStateChangedObserver(_ observer: SystemStoryStateChangeObserver) {
+        fatalError("Unimplemented for tests")
+    }
+
+    public func removeStateChangedObserver(_ observer: SystemStoryStateChangeObserver) {
+        fatalError("Unimplemented for tests")
+    }
+
+    public func areSystemStoriesHidden(transaction: SDSAnyReadTransaction) -> Bool {
+        fatalError("Unimplemented for tests")
+    }
+
+    public func setSystemStoriesHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
+        fatalError("Unimplemented for tests")
+    }
 }
 
 public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesystem {

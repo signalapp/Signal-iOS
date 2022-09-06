@@ -6160,6 +6160,15 @@
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Hide Story";
 
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "New story updates from %@ won't appear at the top of the stories list anymore.";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Hide Story?";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
+
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
 
@@ -6204,6 +6213,12 @@
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Stories";
+
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "Unhide Story";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Views";

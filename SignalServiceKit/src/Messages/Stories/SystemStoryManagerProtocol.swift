@@ -19,4 +19,20 @@ public protocol SystemStoryManagerProtocol: SystemStoryManagerProtocolObjc {
     /// to be expired, deletes it and cleans up references.
     /// Called on its own when the app is backgrounded.
     func cleanUpOnboardingStoryIfNeeded() -> Promise<Void>
+
+    // MARK: Hidden State
+
+    func addStateChangedObserver(_ observer: SystemStoryStateChangeObserver)
+
+    func removeStateChangedObserver(_ observer: SystemStoryStateChangeObserver)
+
+    func areSystemStoriesHidden(transaction: SDSAnyReadTransaction) -> Bool
+
+    /// Sets system stories hidden state. If hiding, marks the onboarding story as viewed.
+    func setSystemStoriesHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction)
+}
+
+public protocol SystemStoryStateChangeObserver: NSObject {
+
+    func systemStoryHiddenStateDidChange(rowIds: [Int64])
 }

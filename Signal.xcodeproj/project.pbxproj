@@ -773,6 +773,7 @@
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
+		668FE09F28B947ED008B9071 /* StoryHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09E28B947ED008B9071 /* StoryHidingManager.swift */; };
 		669E8FE828B4153C00043D28 /* OWSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSURLSession.swift */; };
 		669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */; };
 		669E8FED28B4177900043D28 /* OWSSignalServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */; };
@@ -3026,6 +3027,7 @@
 		668AB0CB28AD610600B31984 /* StoryAuthorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryAuthorUtil.swift; sourceTree = "<group>"; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
+		668FE09E28B947ED008B9071 /* StoryHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryHidingManager.swift; sourceTree = "<group>"; };
 		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
 		669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionMock.swift; sourceTree = "<group>"; };
 		669E8FE728B4153B00043D28 /* OWSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSession.swift; sourceTree = "<group>"; };
@@ -6051,6 +6053,7 @@
 			children = (
 				8864072F27F21AA7009916B6 /* Group Reply Sheet */,
 				88423A51280A171E007D2918 /* StoryDirectReplySheet.swift */,
+				668FE09E28B947ED008B9071 /* StoryHidingManager.swift */,
 				88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */,
 				8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */,
 				88423A53280A2675007D2918 /* StoryReplyPreviewView.swift */,
@@ -10367,6 +10370,7 @@
 				8864072827EEA658009916B6 /* StoryGroupReplySheet.swift in Sources */,
 				88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */,
 				8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */,
+				668FE09F28B947ED008B9071 /* StoryHidingManager.swift in Sources */,
 				88863A52280CAE6A00977F69 /* StoryInteractiveTransitionCoordinator.swift in Sources */,
 				884DB95227DE67D900C6A309 /* StoryItemMediaView.swift in Sources */,
 				884DB94F27DE67BB00C6A309 /* StoryPageViewController.swift in Sources */,

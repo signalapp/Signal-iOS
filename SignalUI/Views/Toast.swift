@@ -35,9 +35,16 @@ public class ToastController: NSObject, ToastViewDelegate {
         owsAssertDebug(edge == .bottom || edge == .top)
         let offset = (edge == .top) ? inset : -inset
 
+        // Add to the first non-scrollview in the hierarchy, but still pin to the original view.
+        // We don't want the toast to be a subview of any scrollview or it will be subject to scrolling.
+        var parentView = view
+        while parentView is UIScrollView, let superview = view.superview {
+            parentView = superview
+        }
+
         Logger.debug("")
         toastView.alpha = 0
-        view.addSubview(toastView)
+        parentView.addSubview(toastView)
         toastView.setCompressionResistanceHigh()
         toastView.autoPinEdge(edge, to: edge, of: view, withOffset: offset)
         toastView.autoPinWidthToSuperview(withMargin: 8)
