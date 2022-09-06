@@ -321,11 +321,7 @@ public class RemoteConfig: BaseFlags {
             return 0
         }
 
-        let uuidBytes = withUnsafePointer(to: uuid.uuid) {
-            Data(bytes: $0, count: MemoryLayout.size(ofValue: uuid.uuid))
-        }
-
-        data.append(uuidBytes)
+        data.append(uuid.data)
 
         guard let hash = Cryptography.computeSHA256Digest(data) else {
             owsFailDebug("Failed to calculate hash")
