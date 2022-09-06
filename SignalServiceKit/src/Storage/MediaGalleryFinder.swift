@@ -45,7 +45,6 @@ public final class MediaGalleryManager: NSObject {
                                                   transaction: GRDBWriteTransaction) throws -> MediaGalleryRecord? {
         guard let attachmentRowId = attachmentStream.grdbId else {
             throw OWSAssertionError("attachmentRowId was unexpectedly nil")
-            return nil
         }
 
         guard let messageUniqueId = attachmentStream.albumMessageId else {
