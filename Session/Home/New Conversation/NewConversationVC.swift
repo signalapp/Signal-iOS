@@ -19,6 +19,9 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         lineBottom.set(.height, to: 0.5)
         lineBottom.backgroundColor = Colors.border.withAlphaComponent(0.3)
         
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        tapGestureRecognizer.numberOfTapsRequired = 1
+        
         let result = UIStackView(
             arrangedSubviews: [
                 lineTop,
@@ -29,6 +32,7 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
             ]
         )
         result.axis = .vertical
+        result.addGestureRecognizer(tapGestureRecognizer)
         return result
     }()
     
@@ -71,7 +75,7 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         buttonStackViewContainer.backgroundColor = Colors.cellBackground
         view.addSubview(buttonStackViewContainer)
         buttonStackViewContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: view)
-        buttonStackViewContainer.pin(.top, to: .top, of: view, withInset: Values.mediumSpacing)
+        buttonStackViewContainer.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
         
         view.addSubview(contactsTitleLabel)
         contactsTitleLabel.pin(.leading, to: .leading, of: view, withInset: Values.mediumSpacing)
@@ -113,6 +117,19 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
     }
     
     // MARK: - Interaction
+    
+    @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
+        let location = gestureRecognizer.location(in: self.view)
+        if newDMButton.frame.contains(location) {
+            createNewDM()
+        }
+        else if newGroupButton.frame.contains(location) {
+            createClosedGroup()
+        }
+        else if joinCommunityButton.frame.contains(location) {
+            joinOpenGroup()
+        }
+    }
     
     @objc private func close() {
         dismiss(animated: true, completion: nil)
