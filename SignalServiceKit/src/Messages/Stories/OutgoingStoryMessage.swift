@@ -200,8 +200,13 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     public override func anyUpdateOutgoingMessage(transaction: SDSAnyWriteTransaction, block: (TSOutgoingMessage) -> Void) {
         super.anyUpdateOutgoingMessage(transaction: transaction, block: block)
 
-        guard let storyMessageId = storyMessageId,
-                let storyMessage = StoryMessage.anyFetch(uniqueId: storyMessageId, transaction: transaction) else {
+        guard
+            let storyMessageId = storyMessageId,
+            let storyMessage = StoryMessage.anyFetch(
+                uniqueId: storyMessageId,
+                transaction: transaction
+            )
+        else {
             owsFailDebug("Missing story message for outgoing story message")
             return
         }

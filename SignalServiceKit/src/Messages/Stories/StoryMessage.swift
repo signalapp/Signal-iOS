@@ -367,20 +367,18 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     ) {
         guard let outgoingMessageStates = outgoingMessageStates else { return }
         anyUpdate(transaction: transaction) { message in
-            guard case .outgoing(let recipientStates) = message.manifest else {
+            guard case .outgoing(var recipientStates) = message.manifest else {
                 return owsFailDebug("Unexpectedly tried to update recipient states on message of wrong type.")
             }
-
-            var newRecipientStates = [UUID: StoryRecipientState]()
 
             for (address, outgoingMessageState) in outgoingMessageStates {
                 guard let uuid = address.uuid else { continue }
                 guard var recipientState = recipientStates[uuid] else { continue }
                 recipientState.sendingState = outgoingMessageState.state
-                newRecipientStates[uuid] = recipientState
+                recipientStates[uuid] = recipientState
             }
 
-            message.manifest = .outgoing(recipientStates: newRecipientStates)
+            message.manifest = .outgoing(recipientStates: recipientStates)
         }
     }
 
