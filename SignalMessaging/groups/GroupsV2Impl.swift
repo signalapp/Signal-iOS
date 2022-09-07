@@ -924,8 +924,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     // MARK: - Perform Request
 
-    private typealias AuthCredentialMap = [UInt32: AuthCredential]
-    private typealias RequestBuilder = (AuthCredential) throws -> Promise<GroupsV2Request>
+    private typealias AuthCredentialWithPniMap = [UInt64: AuthCredentialWithPni]
+    private typealias RequestBuilder = (AuthCredentialWithPni) throws -> Promise<GroupsV2Request>
 
     // Represents how we should respond to 403 status codes.
     private enum Behavior403 {
@@ -948,13 +948,16 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                                        behavior403: Behavior403,
                                        behavior404: Behavior404,
                                        remainingRetries: UInt = 3) -> Promise<HTTPResponse> {
-        guard let localUuid = tsAccountManager.localUuid else {
-            return Promise(error: OWSAssertionError("Missing localUuid."))
+        guard
+            let localAci = tsAccountManager.localUuid,
+            let localPni = tsAccountManager.localPni
+        else {
+            return Promise(error: OWSAssertionError("Missing local ACI/PNI."))
         }
 
         return firstly {
-            self.ensureTemporalCredentials(localUuid: localUuid)
-        }.then(on: .global()) { (authCredential: AuthCredential) -> Promise<GroupsV2Request> in
+            self.ensureTemporalCredentials(localAci: localAci, localPni: localPni)
+        }.then(on: .global()) { (authCredential: AuthCredentialWithPni) -> Promise<GroupsV2Request> in
             try requestBuilder(authCredential)
         }.then(on: .global()) { (request: GroupsV2Request) -> Promise<HTTPResponse> in
             self.performServiceRequestAttempt(request: request)
@@ -1281,49 +1284,84 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     // MARK: - Auth Credentials
 
-    private let authCredentialStore = SDSKeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
+    private enum AuthCredentialStore {
+        private static let store = SDSKeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
 
-    private func ensureTemporalCredentials(localUuid: UUID) -> Promise<AuthCredential> {
-        let redemptionTime = self.daysSinceEpoch
-
-        let authCredentialCacheKey = { (redemptionTime: UInt32) -> String in
-            return "\(redemptionTime)"
+        private static func cacheKey(forRedemptionTime redemptionTime: UInt64) -> String {
+            return "ACWP_\(redemptionTime)"
         }
 
-        return firstly(on: .global()) { () -> AuthCredential? in
+        static func credential(
+            forRedemptionTime redemptionTime: UInt64,
+            transaction: SDSAnyReadTransaction
+        ) throws -> AuthCredentialWithPni? {
+            let key = cacheKey(forRedemptionTime: redemptionTime)
+
+            guard let data = store.getData(key, transaction: transaction) else {
+                return nil
+            }
+
+            return try AuthCredentialWithPni(contents: [UInt8](data))
+        }
+
+        static func set(
+            credential: AuthCredentialWithPni,
+            forRedemptionTime redemptionTime: UInt64,
+            transaction: SDSAnyWriteTransaction
+        ) {
+            let key = cacheKey(forRedemptionTime: redemptionTime)
+            let value = credential.serialize().asData
+
+            store.setData(value, key: key, transaction: transaction)
+        }
+
+        static func removeAll(transaction: SDSAnyWriteTransaction) {
+            store.removeAll(transaction: transaction)
+        }
+    }
+
+    private func ensureTemporalCredentials(
+        localAci: UUID,
+        localPni: UUID
+    ) -> Promise<AuthCredentialWithPni> {
+        let redemptionTime = Self.todaySecondsSinceEpoch
+
+        return firstly(on: .global()) { () -> AuthCredentialWithPni? in
             do {
-                let data = self.databaseStorage.read { (transaction) -> Data? in
-                    let key = authCredentialCacheKey(redemptionTime)
-                    return self.authCredentialStore.getData(key, transaction: transaction)
+                return try self.databaseStorage.read { (transaction) throws -> AuthCredentialWithPni? in
+                    try AuthCredentialStore.credential(forRedemptionTime: redemptionTime, transaction: transaction)
                 }
-                guard let authCredentialData = data else {
-                    return nil
-                }
-                return try AuthCredential(contents: [UInt8](authCredentialData))
             } catch {
                 owsFailDebug("Error retrieving cached auth credential: \(error)")
                 return nil
             }
-        }.then(on: .global()) { (cachedAuthCredential: AuthCredential?) throws -> Promise<AuthCredential> in
+        }.then(on: .global()) { (cachedAuthCredential: AuthCredentialWithPni?) throws -> Promise<AuthCredentialWithPni> in
             if let cachedAuthCredential = cachedAuthCredential {
                 return Promise.value(cachedAuthCredential)
             }
-            return firstly {
-                self.retrieveTemporalCredentialsFromService(localUuid: localUuid)
-            }.map(on: .global()) { (authCredentialMap: AuthCredentialMap) throws -> AuthCredential in
+
+            return self.retrieveTemporalCredentialsFromService(
+                localAci: localAci,
+                localPni: localPni
+            ).map(on: .global()) { (authCredentialMap: AuthCredentialWithPniMap) throws -> AuthCredentialWithPni in
                 self.databaseStorage.write { transaction in
                     // Remove stale auth credentials.
-                    self.authCredentialStore.removeAll(transaction: transaction)
+                    AuthCredentialStore.removeAll(transaction: transaction)
+
                     // Store new auth credentials.
                     for (authTime, authCredential) in authCredentialMap {
-                        let key = authCredentialCacheKey(authTime)
-                        let value = authCredential.serialize().asData
-                        self.authCredentialStore.setData(value, key: key, transaction: transaction)
+                        AuthCredentialStore.set(
+                            credential: authCredential,
+                            forRedemptionTime: authTime,
+                            transaction: transaction
+                        )
                     }
                 }
+
                 guard let authCredential = authCredentialMap[redemptionTime] else {
                     throw OWSAssertionError("No auth credential for redemption time.")
                 }
+
                 return authCredential
             }
         }
@@ -1331,42 +1369,70 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     public func clearTemporalCredentials(transaction: SDSAnyWriteTransaction) {
         // Remove stale auth credentials.
-        self.authCredentialStore.removeAll(transaction: transaction)
+        AuthCredentialStore.removeAll(transaction: transaction)
     }
 
-    private func retrieveTemporalCredentialsFromService(localUuid: UUID) -> Promise<AuthCredentialMap> {
+    private func retrieveTemporalCredentialsFromService(
+        localAci: UUID,
+        localPni: UUID
+    ) -> Promise<AuthCredentialWithPniMap> {
+        let sevenDaysSeconds = 7 * Self.dayInSeconds
+        let todaySeconds = Self.todaySecondsSinceEpoch
+        let todaySecondsPlus7Days = todaySeconds + sevenDaysSeconds
 
-        let today = self.daysSinceEpoch
-        let todayPlus7 = today + 7
-        let request = OWSRequestFactory.groupAuthenticationCredentialRequest(fromRedemptionDays: today,
-                                                                             toRedemptionDays: todayPlus7)
+        let request = OWSRequestFactory.groupAuthenticationCredentialRequest(
+            fromRedemptionSeconds: todaySeconds,
+            toRedemptionSeconds: todaySecondsPlus7Days
+        )
+
         return firstly {
             networkManager.makePromise(request: request)
-        }.map(on: .global()) { response -> AuthCredentialMap in
+        }.map(on: .global()) { response -> AuthCredentialWithPniMap in
             guard let json = response.responseBodyJson else {
                 throw OWSAssertionError("Missing or invalid JSON")
             }
-            let temporalCredentials = try self.parseCredentialResponse(responseObject: json)
+
+            let (temporalCredentials, pni) = try self.parseCredentialResponse(responseObject: json)
+
+            if pni != localPni {
+                Logger.error("PNI from fetching auth credentials (\(pni)) did not match local PNI \(localPni)! Did the phone number change?")
+            }
+
             let serverPublicParams = try GroupsV2Protos.serverPublicParams()
             let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)
-            var credentialMap = AuthCredentialMap()
+            var credentialMap = AuthCredentialWithPniMap()
             for temporalCredential in temporalCredentials {
                 // Verify the credentials.
-                let authCredential: AuthCredential = try clientZkAuthOperations.receiveAuthCredential(uuid: localUuid,
-                                                                                                      redemptionTime: temporalCredential.redemptionTime,
-                                                                                                      authCredentialResponse: temporalCredential.authCredentialResponse)
+                let authCredential: AuthCredentialWithPni = try clientZkAuthOperations.receiveAuthCredentialWithPni(
+                    aci: localAci,
+                    pni: pni,
+                    redemptionTime: temporalCredential.redemptionTime,
+                    authCredentialResponse: temporalCredential.authCredentialWithPniResponse
+                )
                 credentialMap[temporalCredential.redemptionTime] = authCredential
             }
             return credentialMap
         }
     }
 
-    private struct TemporalCredential {
-        let redemptionTime: UInt32
-        let authCredentialResponse: AuthCredentialResponse
+    /// The "start of today", i.e. midnight at the beginning of today, in epoch
+    /// seconds.
+    private static var todaySecondsSinceEpoch: UInt64 {
+        let msSinceEpoch = NSDate.ows_millisecondTimeStamp()
+        let daysSinceEpoch = msSinceEpoch / kDayInMs
+        return daysSinceEpoch * dayInSeconds
     }
 
-    private func parseCredentialResponse(responseObject: Any?) throws -> [TemporalCredential] {
+    private static let dayInSeconds = kDayInMs / kSecondInMs
+
+    private struct TemporalCredential {
+        let redemptionTime: UInt64
+        let authCredentialWithPniResponse: AuthCredentialWithPniResponse
+    }
+
+    private func parseCredentialResponse(
+        responseObject: Any?
+    ) throws -> (credentials: [TemporalCredential], pni: UUID) {
         guard let responseObject = responseObject else {
             throw OWSAssertionError("Missing response.")
         }
@@ -1374,23 +1440,28 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         guard let params = ParamParser(responseObject: responseObject) else {
             throw OWSAssertionError("invalid response: \(String(describing: responseObject))")
         }
-        guard let credentials: [Any] = try params.required(key: "credentials") else {
-            throw OWSAssertionError("Missing or invalid credentials.")
-        }
+
+        let pni: UUID = try params.required(key: "pni")
+        let credentials: [Any] = try params.required(key: "credentials")
+
         var temporalCredentials = [TemporalCredential]()
         for credential in credentials {
             guard let credentialParser = ParamParser(responseObject: credential) else {
                 throw OWSAssertionError("invalid credential: \(String(describing: credential))")
             }
-            guard let redemptionTime: UInt32 = try credentialParser.required(key: "redemptionTime") else {
-                throw OWSAssertionError("Missing or invalid redemptionTime.")
-            }
-            let responseData: Data = try credentialParser.requiredBase64EncodedData(key: "credential")
-            let response = try AuthCredentialResponse(contents: [UInt8](responseData))
 
-            temporalCredentials.append(TemporalCredential(redemptionTime: redemptionTime, authCredentialResponse: response))
+            let redemptionTime: UInt64 = try credentialParser.required(key: "redemptionTime")
+            let responseData: Data = try credentialParser.requiredBase64EncodedData(key: "credential")
+
+            let response = try AuthCredentialWithPniResponse(contents: [UInt8](responseData))
+
+            temporalCredentials.append(TemporalCredential(
+                redemptionTime: redemptionTime,
+                authCredentialWithPniResponse: response
+            ))
         }
-        return temporalCredentials
+
+        return (credentials: temporalCredentials, pni: pni)
     }
 
     // MARK: - Protos
@@ -2265,12 +2336,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     }
 
     // MARK: - Utils
-
-    private var daysSinceEpoch: UInt32 {
-        let msSinceEpoch = NSDate.ows_millisecondTimeStamp()
-        let daysSinceEpoch = UInt32(msSinceEpoch / kDayInMs)
-        return daysSinceEpoch
-    }
 
     private func uuids(for addresses: [SignalServiceAddress]) -> [UUID] {
         var uuids = [UUID]()

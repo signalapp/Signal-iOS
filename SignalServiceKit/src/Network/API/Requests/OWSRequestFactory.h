@@ -199,9 +199,9 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 #pragma mark - Groups v2
 
-+ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionDays:(uint32_t)fromRedemptionDays
-                                                         toRedemptionDays:(uint32_t)toRedemptionDays
-    NS_SWIFT_NAME(groupAuthenticationCredentialRequest(fromRedemptionDays:toRedemptionDays:));
++ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionSeconds:(uint64_t)fromRedemptionSeconds
+                                                         toRedemptionSeconds:(uint64_t)toRedemptionSeconds
+    NS_SWIFT_NAME(groupAuthenticationCredentialRequest(fromRedemptionSeconds:toRedemptionSeconds:));
 
 #pragma mark - Payments
 

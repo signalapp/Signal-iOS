@@ -882,15 +882,16 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 #pragma mark - Groups v2
 
-+ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionDays:(uint32_t)fromRedemptionDays
-                                                         toRedemptionDays:(uint32_t)toRedemptionDays
++ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionSeconds:(uint64_t)fromRedemptionSeconds
+                                                         toRedemptionSeconds:(uint64_t)toRedemptionSeconds
 {
-    OWSAssertDebug(fromRedemptionDays > 0);
-    OWSAssertDebug(toRedemptionDays > 0);
+    OWSAssertDebug(fromRedemptionSeconds > 0);
+    OWSAssertDebug(toRedemptionSeconds > 0);
 
-    NSString *path = [NSString stringWithFormat:@"/v1/certificate/group/%lu/%lu",
-                               (unsigned long)fromRedemptionDays,
-                               (unsigned long)toRedemptionDays];
+    NSString *path =
+        [NSString stringWithFormat:@"/v1/certificate/auth/group?redemptionStartSeconds=%llu&redemptionEndSeconds=%llu",
+                  (unsigned long long)fromRedemptionSeconds,
+                  (unsigned long long)toRedemptionSeconds];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
