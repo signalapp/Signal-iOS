@@ -145,27 +145,27 @@ NS_ASSUME_NONNULL_BEGIN
     self.hasObservedNotifications = YES;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
+                                             selector:@selector(handleKeyboardNotificationBase:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidShow:)
+                                             selector:@selector(handleKeyboardNotificationBase:)
                                                  name:UIKeyboardDidShowNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillHide:)
+                                             selector:@selector(handleKeyboardNotificationBase:)
                                                  name:UIKeyboardWillHideNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidHide:)
+                                             selector:@selector(handleKeyboardNotificationBase:)
                                                  name:UIKeyboardDidHideNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillChangeFrame:)
+                                             selector:@selector(handleKeyboardNotificationBase:)
                                                  name:UIKeyboardWillChangeFrameNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardDidChangeFrame:)
+                                             selector:@selector(handleKeyboardNotificationBase:)
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
 }
@@ -202,36 +202,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     // Do nothing; this is a convenience hook for subclasses.
-}
-
-- (void)keyboardWillShow:(NSNotification *)notification
-{
-    [self handleKeyboardNotificationBase:notification];
-}
-
-- (void)keyboardDidShow:(NSNotification *)notification
-{
-    [self handleKeyboardNotificationBase:notification];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    [self handleKeyboardNotificationBase:notification];
-}
-
-- (void)keyboardDidHide:(NSNotification *)notification
-{
-    [self handleKeyboardNotificationBase:notification];
-}
-
-- (void)keyboardWillChangeFrame:(NSNotification *)notification
-{
-    [self handleKeyboardNotificationBase:notification];
-}
-
-- (void)keyboardDidChangeFrame:(NSNotification *)notification
-{
-    [self handleKeyboardNotificationBase:notification];
 }
 
 // We use the name `handleKeyboardNotificationBase` instead of
