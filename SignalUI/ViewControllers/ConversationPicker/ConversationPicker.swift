@@ -116,6 +116,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     public var maxStoryConversationsToRender = 2
     public var isStorySectionExpanded = false
+    public var shouldBatchUpdateIdentityKeys = false
 
     public var shouldHideRecentConversationsTitle: Bool = false {
         didSet {
@@ -1004,11 +1005,13 @@ extension ConversationPickerViewController: ConversationPickerSelectionDelegate 
 protocol ConversationPickerSelectionDelegate: AnyObject {
     func conversationPickerSelectionDidAdd()
     func conversationPickerSelectionDidRemove()
+
+    var shouldBatchUpdateIdentityKeys: Bool { get }
 }
 
 // MARK: -
 
-public class ConversationPickerSelection {
+public class ConversationPickerSelection: Dependencies {
     fileprivate weak var delegate: ConversationPickerSelectionDelegate?
 
     public private(set) var conversations: [ConversationItem] = []
@@ -1018,6 +1021,20 @@ public class ConversationPickerSelection {
     public func add(_ conversation: ConversationItem) {
         conversations.append(conversation)
         delegate?.conversationPickerSelectionDidAdd()
+
+        guard delegate?.shouldBatchUpdateIdentityKeys == true else { return }
+
+        let recipients: [SignalServiceAddress] = databaseStorage.read { transaction in
+            guard let thread = conversation.getExistingThread(transaction: transaction) else { return [] }
+            return thread.recipientAddresses(with: transaction)
+        }
+
+        Logger.info("Batch updating identity keys for \(recipients.count) selected recipients.")
+        identityManager.batchUpdateIdentityKeys(addresses: recipients).done {
+            Logger.info("Successfully batch updated identity keys.")
+        }.catch { error in
+            owsFailDebug("Failed to batch update identity keys: \(error)")
+        }
     }
 
     public func remove(_ conversation: ConversationItem) {
