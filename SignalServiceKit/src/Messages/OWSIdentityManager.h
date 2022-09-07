@@ -113,6 +113,12 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey
                      address:(SignalServiceAddress *)address
                    direction:(TSMessageDirection)direction
+          untrustedThreshold:(NSTimeInterval)untrustedThreshold
+                 transaction:(SDSAnyReadTransaction *)transaction;
+
+- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
+                     address:(SignalServiceAddress *)address
+                   direction:(TSMessageDirection)direction
                  transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSData *)identityKeyForAddress:(SignalServiceAddress *)address;
