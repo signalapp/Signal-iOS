@@ -90,9 +90,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 
 @property (nonatomic, readwrite) NSTimeInterval launchStartedAt;
 
-@property (nonatomic, readwrite) BOOL didAppLaunchFail;
-@property (nonatomic) BOOL shouldKillAppWhenBackgrounded;
-
 @end
 
 #pragma mark -
@@ -239,11 +236,12 @@ static void uncaughtExceptionHandler(NSException *exception)
         return YES;
     }
 
-    [self launchToHomeScreen:launchOptions instrumentsMonitorId:monitorId];
+    [self launchToHomeScreenWithLaunchOptions:launchOptions instrumentsMonitorId:monitorId];
     return YES;
 }
 
-- (BOOL)launchToHomeScreen:(NSDictionary *_Nullable)launchOptions instrumentsMonitorId:(unsigned long long)monitorId
+- (BOOL)launchToHomeScreenWithLaunchOptions:(NSDictionary *_Nullable)launchOptions
+                       instrumentsMonitorId:(unsigned long long)monitorId
 {
     [self setupNSEInteroperation];
 
@@ -374,46 +372,6 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     OWSLogFlush();
     exit(0);
-}
-
-- (void)showUIForLaunchFailure:(LaunchFailure)launchFailure
-{
-    OWSLogInfo(@"launchFailure: %@", [AppDelegate stringForLaunchFailure:launchFailure]);
-
-    // Disable normal functioning of app.
-    self.didAppLaunchFail = YES;
-
-    if (launchFailure == LaunchFailureLowStorageSpaceAvailable) {
-        self.shouldKillAppWhenBackgrounded = YES;
-    }
-
-    // We perform a subset of the [application:didFinishLaunchingWithOptions:].
-    if (self.window == nil) {
-        self.window = [OWSWindow new];
-        CurrentAppContext().mainWindow = self.window;
-    }
-
-    // Show the launch screen
-    UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Launch Screen"
-                                                                  bundle:nil] instantiateInitialViewController];
-    self.window.rootViewController = viewController;
-
-    [self.window makeKeyAndVisible];
-
-    ActionSheetController *actionSheet =
-        [self getActionSheetForLaunchFailure:launchFailure
-                          fromViewController:viewController
-                                  onContinue:^{
-                                      if (launchFailure == LaunchFailureLastAppLaunchCrashed) {
-                                          // Pretend we didn't fail!
-                                          self.didAppLaunchFail = NO;
-                                          [self launchToHomeScreen:nil instrumentsMonitorId:0];
-                                      } else {
-                                          OWSFail(@"exiting after sharing debug logs.");
-                                      }
-                                  }];
-
-    [viewController presentActionSheet:actionSheet];
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
