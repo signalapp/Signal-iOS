@@ -20,6 +20,7 @@
 #import "FingerprintViewController.h"
 #import "MediaDetailViewController.h"
 #import "OWSBezierPathView.h"
+#import "OWSDeviceProvisioningURLParser.h"
 #import "OWSDeviceTableViewCell.h"
 #import "OWSLinkDeviceViewController.h"
 #import "OWSQuotedMessageView.h"
