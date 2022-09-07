@@ -375,6 +375,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                 guard let uuid = address.uuid else { continue }
                 guard var recipientState = recipientStates[uuid] else { continue }
                 recipientState.sendingState = outgoingMessageState.state
+                recipientState.sendingErrorCode = outgoingMessageState.errorCode?.intValue
                 recipientStates[uuid] = recipientState
             }
 
@@ -483,6 +484,14 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         default:
             owsFailDebug("Cannot remotely delete unexpected thread type \(type(of: thread))")
         }
+    }
+
+    public func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
+        guard case .outgoing(let recipientStates) = manifest else { return [] }
+
+        return recipientStates.filter { _, state in
+            return state.sendingState == .failed && errorCode == state.sendingErrorCode
+        }.map { .init(uuid: $0.key) }
     }
 
     public func resendMessageToFailedRecipients(transaction: SDSAnyWriteTransaction) {
@@ -600,6 +609,7 @@ public struct StoryRecipientState: Codable {
     public var contexts: [UUID]
     @DecodableDefault.OutgoingMessageSending
     public var sendingState: OWSOutgoingMessageRecipientState = .sending
+    public var sendingErrorCode: Int?
     public var viewedTimestamp: UInt64?
 }
 

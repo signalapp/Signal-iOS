@@ -91,6 +91,8 @@ public enum StoryUtil: Dependencies {
     }
 
     static func askToResend(_ message: StoryMessage, in thread: TSThread, from vc: UIViewController) {
+        guard !askToConfirmSafetyNumberChangesIfNecessary(for: message, from: vc) else { return }
+
         let actionSheet = ActionSheetController(message: NSLocalizedString(
             "STORY_RESEND_MESSAGE_ACTION_SHEET",
             comment: "Title for the dialog asking user if they wish to resend a failed story message."
@@ -102,25 +104,28 @@ public enum StoryUtil: Dependencies {
             }
         }))
         actionSheet.addAction(.init(title: CommonStrings.sendMessage, handler: { _ in
-            resend(message)
+            Self.databaseStorage.write { transaction in
+                message.resendMessageToFailedRecipients(transaction: transaction)
+            }
         }))
         vc.presentActionSheet(actionSheet, animated: true)
     }
 
-    private static func resend(_ message: StoryMessage) {
-        guard case .outgoing(let recipientStates) = message.manifest else { return }
-        let stoppedBySafetyNumberChange = SafetyNumberConfirmationSheet.presentIfNecessary(
-            addresses: recipientStates.keys.map { .init(uuid: $0) },
-            confirmationText: SafetyNumberStrings.confirmSendButton
+    private static func askToConfirmSafetyNumberChangesIfNecessary(for message: StoryMessage, from vc: UIViewController) -> Bool {
+        let recipientsWithChangedSafetyNumber = message.failedRecipientAddresses(errorCode: UntrustedIdentityError.errorCode)
+        guard !recipientsWithChangedSafetyNumber.isEmpty else { return false }
+
+        let sheet = SafetyNumberConfirmationSheet(
+            addressesToConfirm: recipientsWithChangedSafetyNumber,
+            confirmationText: MessageStrings.sendButton
         ) { confirmedSafetyNumberChange in
             guard confirmedSafetyNumberChange else { return }
-            resend(message)
+            Self.databaseStorage.write { transaction in
+                message.resendMessageToFailedRecipients(transaction: transaction)
+            }
         }
+        vc.present(sheet, animated: true)
 
-        guard !stoppedBySafetyNumberChange else { return }
-
-        Self.databaseStorage.write { transaction in
-            message.resendMessageToFailedRecipients(transaction: transaction)
-        }
+        return true
     }
 }
