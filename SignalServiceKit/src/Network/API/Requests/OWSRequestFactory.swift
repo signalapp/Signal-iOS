@@ -83,4 +83,10 @@ public extension OWSRequestFactory {
                   method: HTTPMethod.get.methodName,
                   parameters: [:])
     }
+
+    static let batchIdentityCheckElementsLimit = 1000
+    static func batchIdentityCheckRequest(elements: [[String: String]]) -> TSRequest {
+        precondition(elements.count <= batchIdentityCheckElementsLimit)
+        return .init(url: .init(string: "v1/profile/identity_check/batch")!, method: HTTPMethod.post.methodName, parameters: ["elements": elements])
+    }
 }

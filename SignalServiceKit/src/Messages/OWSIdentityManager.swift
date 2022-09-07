@@ -213,4 +213,88 @@ extension OWSIdentityManager {
     public func clearShouldSharePhoneNumberForEveryone(transaction: SDSAnyWriteTransaction) {
         shareMyPhoneNumberStore.removeAll(transaction: transaction)
     }
+
+    // MARK: - Batch Identity Lookup
+
+    // TODO: PNP – currently the batch update endpoint only supports ACIs, eventually we'll want to
+    // also handle PNIs.
+    @discardableResult
+    public func batchUpdateIdentityKeys(addresses: [SignalServiceAddress]) -> Promise<Void> {
+        guard !addresses.isEmpty else { return .value(()) }
+
+        let addresses = Set(addresses)
+        let batchAddresses = addresses.prefix(OWSRequestFactory.batchIdentityCheckElementsLimit)
+        let remainingAddresses = Array(addresses.subtracting(batchAddresses))
+
+        return firstly(on: .global()) { () -> Promise<HTTPResponse> in
+            Logger.info("Performing batch identity key lookup for \(batchAddresses.count) addresses. \(remainingAddresses.count) remaining.")
+
+            let elements = self.databaseStorage.read { transaction in
+                batchAddresses.compactMap { address -> [String: String]? in
+                    guard let uuid = address.uuid else { return nil }
+                    guard let identityKey = self.identityKey(for: address, transaction: transaction) else { return nil }
+
+                    let rawIdentityKey = (identityKey as NSData).prependKeyType()
+                    guard let identityKeyDigest = Cryptography.computeSHA256Digest(rawIdentityKey as Data) else {
+                        owsFailDebug("Failed to calculate SHA-256 digest for batch identity key update")
+                        return nil
+                    }
+
+                    return ["aci": uuid.uuidString, "fingerprint": Data(identityKeyDigest.prefix(4)).base64EncodedString()]
+                }
+            }
+
+            let request = OWSRequestFactory.batchIdentityCheckRequest(elements: elements)
+
+            return self.networkManager.makePromise(request: request)
+        }.done(on: .global()) { response in
+            guard response.responseStatusCode == 200 else {
+                throw OWSAssertionError("Unexpected response from batch identity request \(response.responseStatusCode)")
+            }
+
+            guard let json = response.responseBodyJson, let responseDictionary = json as? [String: AnyObject] else {
+                throw OWSAssertionError("Missing or invalid JSON")
+            }
+
+            guard let responseElements = responseDictionary["elements"] as? [[String: String]], !responseElements.isEmpty else {
+                return // No safety number changes
+            }
+
+            Logger.info("Detected \(responseElements.count) identity key changes via batch request")
+
+            self.databaseStorage.write { transaction in
+                for element in responseElements {
+                    guard let aciString = element["aci"], let aci = UUID(uuidString: aciString) else {
+                        owsFailDebug("Invalid ACI in batch identity response")
+                        continue
+                    }
+
+                    guard let encodedRawIdentityKey = element["identityKey"], let rawIdentityKey = Data(base64Encoded: encodedRawIdentityKey) else {
+                        owsFailDebug("Missing identityKey in batch identity response")
+                        continue
+                    }
+
+                    guard rawIdentityKey.count == kIdentityKeyLength else {
+                        owsFailDebug("identityKey with invalid length \(rawIdentityKey.count) in batch identity response")
+                        continue
+                    }
+
+                    guard let identityKey = try? (rawIdentityKey as NSData).removeKeyType() as Data else {
+                        owsFailDebug("Failed to remove type byte from identity key in batch identity response")
+                        continue
+                    }
+
+                    let address = SignalServiceAddress(uuid: aci)
+                    Logger.info("Identity key changed via batch request for address \(address)")
+
+                    self.saveRemoteIdentity(identityKey, address: address, transaction: transaction)
+                }
+            }
+        }.then { () -> Promise<Void> in
+            guard !remainingAddresses.isEmpty else { return .value(()) }
+            return self.batchUpdateIdentityKeys(addresses: remainingAddresses)
+        }.catch { error in
+            owsFailDebug("Batch identity key update failed with error \(error)")
+        }
+    }
 }
