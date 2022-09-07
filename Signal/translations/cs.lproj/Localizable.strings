@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nyní ne";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "O Signal";
+"ABOUT_SECTION_TITLE" = "O aplikaci Signal";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Přijmout nové bezpečnostní číslo";
@@ -1166,10 +1166,10 @@
 "CONTEXT_MENU_SHARE_MEDIA" = "Sdílet";
 
 /* Context menu button title */
-"CONTEXT_MENU_SPEAK_MESSAGE" = "Speak";
+"CONTEXT_MENU_SPEAK_MESSAGE" = "Přečíst";
 
 /* Context menu button title */
-"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Zastavit";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tento chat bude odstraněn z tohoto zařízení.";
@@ -3416,10 +3416,10 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Sdílet média";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SPEAK_MESSAGE" = "Speak Message";
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "Přečíst zprávu";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Stop Speaking Message";
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Zastavit čtení zprávy";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Skupinová pozvánka";
