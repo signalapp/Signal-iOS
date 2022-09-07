@@ -32,6 +32,23 @@ class StoryGroupReplyCell: UITableViewCell {
     }()
     lazy var bubbleCornerMaskLayer = CAShapeLayer()
 
+    private lazy var sendingSpinner = SendingSpinner()
+
+    private lazy var sendFailureIcon: UIView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = #imageLiteral(resourceName: "error-20").withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = .ows_accentRed
+        imageView.autoSetDimensions(to: .square(20))
+
+        let container = UIView()
+        container.layoutMargins = UIEdgeInsets(hMargin: 12, vMargin: 0)
+        container.addSubview(imageView)
+        imageView.autoPinEdgesToSuperviewMargins()
+
+        return container
+    }()
+
     enum CellType: String, CaseIterable {
         case standalone
         case top
@@ -39,7 +56,7 @@ class StoryGroupReplyCell: UITableViewCell {
         case middle
         case reaction
 
-        var hasTimestamp: Bool {
+        var hasFooter: Bool {
             switch self {
             case .standalone, .bottom, .reaction: return true
             case .top, .middle: return false
@@ -153,6 +170,9 @@ class StoryGroupReplyCell: UITableViewCell {
             hStack.addArrangedSubview(vStack)
         }
 
+        hStack.addArrangedSubview(sendFailureIcon)
+        sendFailureIcon.isHidden = true
+
         hStack.addArrangedSubview(.hStretchingSpacer())
 
         if cellType.hasReaction {
@@ -163,7 +183,16 @@ class StoryGroupReplyCell: UITableViewCell {
             vStack.addArrangedSubview(authorNameLabel)
         }
 
-        vStack.addArrangedSubview(messageLabel)
+        let internalHStack = UIStackView(arrangedSubviews: [messageLabel, sendingSpinner])
+        internalHStack.axis = .horizontal
+        internalHStack.alignment = .bottom
+        internalHStack.spacing = 6
+
+        sendingSpinner.isHidden = true
+        sendingSpinner.autoSetDimension(.width, toSize: 12)
+        sendingSpinner.tintColor = Theme.darkThemePrimaryColor
+
+        vStack.addArrangedSubview(internalHStack)
 
         contentView.addSubview(hStack)
         hStack.autoPinEdgesToSuperviewEdges()
@@ -189,10 +218,10 @@ class StoryGroupReplyCell: UITableViewCell {
             reactionLabel.text = item.reactionEmoji
         }
 
-        configureTextAndTimestamp(for: item)
+        configureBodyAndFooter(for: item)
     }
 
-    func configureTextAndTimestamp(for item: StoryGroupReplyViewItem) {
+    func configureBodyAndFooter(for item: StoryGroupReplyViewItem) {
         guard let messageText: NSAttributedString = {
             if item.wasRemotelyDeleted {
                 return NSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
@@ -216,24 +245,55 @@ class StoryGroupReplyCell: UITableViewCell {
             }
         }() else { return }
 
-        guard cellType.hasTimestamp else {
+        guard cellType.hasFooter else {
             messageLabel.attributedText = messageText
             return
         }
 
+        var maxMessageWidth = min(512, CurrentAppContext().frame.width) - 92
+        let footerSpacer: CGFloat = 6
+
+        var allowFooterOnLastMessageLine = true
+        var renderTimestamp = true
+        let footerText = NSMutableAttributedString()
+
+        sendingSpinner.isHidden = true
+        sendFailureIcon.isHidden = true
+
+        if let recipientStatus = item.recipientStatus {
+            switch recipientStatus {
+            case .pending, .uploading, .sending:
+                // Make room for the spinner
+                maxMessageWidth -= 18
+                sendingSpinner.isHidden = false
+            case .sent, .skipped, .delivered, .read, .viewed:
+                // No indicator
+                break
+            case .failed:
+                allowFooterOnLastMessageLine = false
+                renderTimestamp = false
+                maxMessageWidth -= 44
+                sendFailureIcon.isHidden = false
+                footerText.append(NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed"))
+            }
+        }
+
         // Append timestamp to attributed text
-        let timestampText = item.timeString.styled(
-            with: .font(.ows_dynamicTypeCaption1Clamped),
-            .color(.ows_gray25)
-        )
+        if renderTimestamp {
+            footerText.append(item.timeString)
+        }
 
-        let maxMessageWidth = min(512, CurrentAppContext().frame.width) - 92
-        let timestampSpacer: CGFloat = 6
+        // Style footer
+        footerText.addAttributesToEntireString([
+            .font: UIFont.ows_dynamicTypeCaption1Clamped,
+            .foregroundColor: UIColor.ows_gray25
+        ])
 
+        // Render footer inline if possible
         let messageMeasurement = measure(messageText, maxWidth: maxMessageWidth)
-        let timestampMeasurement = measure(timestampText, maxWidth: maxMessageWidth)
+        let footerMeasurement = measure(footerText, maxWidth: maxMessageWidth)
 
-        let lastLineFreeSpace = maxMessageWidth - timestampSpacer - messageMeasurement.lastLineRect.width
+        let lastLineFreeSpace = maxMessageWidth - footerSpacer - messageMeasurement.lastLineRect.width
 
         let textDirectionMatchesAppDirection: Bool
         switch item.displayableText?.displayTextNaturalAlignment ?? .natural {
@@ -248,13 +308,13 @@ class StoryGroupReplyCell: UITableViewCell {
             textDirectionMatchesAppDirection = true
         }
 
-        let hasSpacedForTimestampOnLastMessageLine = lastLineFreeSpace >= timestampMeasurement.rect.width
-        let shouldRenderTimestampOnLastMessageLine = hasSpacedForTimestampOnLastMessageLine && textDirectionMatchesAppDirection
+        let hasSpacedForFooterOnLastMessageLine = lastLineFreeSpace >= footerMeasurement.rect.width
+        let shouldRenderFooterOnLastMessageLine = hasSpacedForFooterOnLastMessageLine && textDirectionMatchesAppDirection && allowFooterOnLastMessageLine
 
-        if shouldRenderTimestampOnLastMessageLine {
+        if shouldRenderFooterOnLastMessageLine {
             var possibleMessageBubbleWidths = [
                 messageMeasurement.rect.width,
-                messageMeasurement.lastLineRect.width + timestampSpacer + timestampMeasurement.rect.width
+                messageMeasurement.lastLineRect.width + footerSpacer + footerMeasurement.rect.width
             ]
             if cellType.hasAuthor, let authorDisplayName = item.authorDisplayName {
                 let authorMeasurement = measure(authorDisplayName.styled(with: .font(authorNameLabel.font)), maxWidth: maxMessageWidth)
@@ -266,15 +326,15 @@ class StoryGroupReplyCell: UITableViewCell {
             messageLabel.attributedText = .composed(of: [
                 messageText,
                 "\n",
-                timestampText.styled(
-                    with: .paragraphSpacingBefore(-timestampMeasurement.rect.height),
-                    .firstLineHeadIndent(finalMessageLabelWidth - timestampMeasurement.rect.width)
+                footerText.styled(
+                    with: .paragraphSpacingBefore(-footerMeasurement.rect.height),
+                    .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
                 )
             ])
         } else {
             var possibleMessageBubbleWidths = [
                 messageMeasurement.rect.width,
-                timestampMeasurement.rect.width
+                footerMeasurement.rect.width
             ]
             if cellType.hasAuthor, let authorDisplayName = item.authorDisplayName {
                 let authorMeasurement = measure(authorDisplayName.styled(with: .font(authorNameLabel.font)), maxWidth: maxMessageWidth)
@@ -286,9 +346,9 @@ class StoryGroupReplyCell: UITableViewCell {
             messageLabel.attributedText = .composed(of: [
                 messageText,
                 "\n",
-                timestampText.styled(
+                footerText.styled(
                     with: textDirectionMatchesAppDirection
-                    ? .firstLineHeadIndent(finalMessageLabelWidth - timestampMeasurement.rect.width)
+                    ? .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
                     : .alignment(.trailing)
                 )
             ])
@@ -333,5 +393,42 @@ class StoryGroupReplyCell: UITableViewCell {
             sharpCornerRadius: cellType.sharpCornerRadius,
             wideCornerRadius: cellType.cornerRadius
         ).cgPath
+    }
+}
+
+private class SendingSpinner: UIImageView {
+    init() {
+        super.init(image: #imageLiteral(resourceName: "message_status_sending").withRenderingMode(.alwaysTemplate).withAlignmentRectInsets(.init(hMargin: 0, vMargin: -2)))
+
+        startAnimating()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func startAnimating() {
+        super.startAnimating()
+
+        guard layer.animation(forKey: "spin") == nil else { return }
+
+        let animation = CABasicAnimation.init(keyPath: "transform.rotation.z")
+        animation.toValue = CGFloat.pi * 2
+        animation.duration = kSecondInterval * 1
+        animation.isCumulative = true
+        animation.repeatCount = .infinity
+        layer.add(animation, forKey: "spin")
+    }
+
+    override func stopAnimating() {
+        super.stopAnimating()
+
+        layer.removeAnimation(forKey: "spin")
+    }
+
+    override var isHidden: Bool {
+        didSet {
+            isHidden ? stopAnimating() : startAnimating()
+        }
     }
 }

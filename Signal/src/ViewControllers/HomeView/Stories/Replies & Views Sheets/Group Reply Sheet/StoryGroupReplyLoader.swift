@@ -244,6 +244,13 @@ class StoryGroupReplyLoader: Dependencies {
             if reusableInteractionIds.contains(message.uniqueId), let reusableReplyItem = replyItems[message.uniqueId] {
                 replyItem = reusableReplyItem
             } else {
+                let recipientStatus: MessageReceiptStatus?
+                if let message = message as? TSOutgoingMessage {
+                    recipientStatus = MessageRecipientStatusUtils.recipientStatus(outgoingMessage: message)
+                } else {
+                    recipientStatus = nil
+                }
+
                 let displayName = authorAddress.isLocalAddress
                     ? CommonStrings.you
                     : displayNamesByAddress[authorAddress]
@@ -252,6 +259,7 @@ class StoryGroupReplyLoader: Dependencies {
                     authorAddress: authorAddress,
                     authorDisplayName: displayName,
                     authorColor: groupNameColors.color(for: authorAddress),
+                    recipientStatus: recipientStatus,
                     transaction: transaction
                 )
             }
@@ -261,6 +269,7 @@ class StoryGroupReplyLoader: Dependencies {
             if let previousItem = previousItem,
                previousItem.authorAddress == authorAddress,
                previousItem.timeString == replyItem.timeString,
+               ![.pending, .uploading, .sending, .failed].contains(previousItem.recipientStatus),
                replyItem.cellType != .reaction,
                previousItem.cellType != .reaction {
                 switch previousItem.cellType {

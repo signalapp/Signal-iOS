@@ -15,6 +15,7 @@ class StoryGroupReplyViewItem: Dependencies {
     let authorDisplayName: String?
     let authorAddress: SignalServiceAddress
     let authorColor: UIColor
+    let recipientStatus: MessageReceiptStatus?
 
     var cellType: StoryGroupReplyCell.CellType
 
@@ -25,6 +26,7 @@ class StoryGroupReplyViewItem: Dependencies {
         authorAddress: SignalServiceAddress,
         authorDisplayName: String?,
         authorColor: UIColor,
+        recipientStatus: MessageReceiptStatus?,
         transaction: SDSAnyReadTransaction
     ) {
         self.interactionUniqueId = message.uniqueId
@@ -44,6 +46,7 @@ class StoryGroupReplyViewItem: Dependencies {
         self.authorAddress = authorAddress
         self.authorDisplayName = authorDisplayName
         self.authorColor = authorColor
+        self.recipientStatus = recipientStatus
 
         if let reactionEmoji = message.storyReactionEmoji {
             self.cellType = .reaction
