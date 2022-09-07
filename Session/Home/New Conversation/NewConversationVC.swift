@@ -7,7 +7,7 @@ import SessionUIKit
 import SessionMessagingKit
 
 final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSource {
-    private let contactProfiles: [Profile] = Profile.fetchAllContactProfiles(excludeCurrentUser: true)
+    private let newConversationViewModel = NewConversationViewModel()
     private var groupedContacts: OrderedDictionary<String, [Profile]> = OrderedDictionary()
     
     // MARK: - UI
@@ -48,7 +48,7 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         let result = UILabel()
         result.textColor = Colors.text
         result.text = "Contacts"
-        result.font = .systemFont(ofSize: Values.mediumSpacing)
+        result.font = .systemFont(ofSize: Values.mediumFontSize)
         return result
     }()
     
@@ -58,6 +58,9 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         result.dataSource = self
         result.separatorStyle = .none
         result.backgroundColor = .clear
+        if #available(iOS 15.0, *) {
+            result.sectionHeaderTopPadding = 0
+        }
         result.register(view: UserCell.self)
         
         return result
@@ -74,47 +77,45 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
         setUpViewHierarchy()
-        populateData()
     }
     
     private func setUpViewHierarchy() {
         buttonStackViewContainer.backgroundColor = Colors.cellBackground
-        view.addSubview(buttonStackViewContainer)
-        buttonStackViewContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: view)
-        buttonStackViewContainer.pin(.top, to: .top, of: view, withInset: Values.smallSpacing)
         
-        view.addSubview(contactsTitleLabel)
-        contactsTitleLabel.pin(.leading, to: .leading, of: view, withInset: Values.mediumSpacing)
+        let headerView = UIView(
+            frame: CGRect(
+                x: 0, y: 0,
+                width: UIScreen.main.bounds.width,
+                height: NewConversationButton.height * 3 + Values.smallSpacing * 2 + Values.mediumFontSize
+            )
+        )
+        headerView.addSubview(buttonStackViewContainer)
+        buttonStackViewContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: headerView)
+        headerView.addSubview(contactsTitleLabel)
+        contactsTitleLabel.pin(.leading, to: .leading, of: headerView, withInset: Values.mediumSpacing)
         contactsTitleLabel.pin(.top, to: .bottom, of: buttonStackViewContainer, withInset: Values.smallSpacing)
         
+        contactsTableView.tableHeaderView = headerView
         view.addSubview(contactsTableView)
-        contactsTableView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.bottom], to: view)
-        contactsTableView.pin(.top, to: .bottom, of: contactsTitleLabel, withInset: Values.smallSpacing)
-    }
-    
-    private func populateData() {
-        contactProfiles.map{ profile in
-            let latinString = NSMutableString(string: profile.displayName())
-            CFStringTransform(latinString, nil, kCFStringTransformToLatin, false)
-            CFStringTransform(latinString, nil, kCFStringTransformStripDiacritics, false)
-        }
+        contactsTableView.pin(to: view)
     }
     
     // MARK: - UITableViewDataSource
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return newConversationViewModel.sectionData.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return contactProfiles.count
+        return newConversationViewModel.sectionData[section].contacts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        let profile = newConversationViewModel.sectionData[indexPath.section].contacts[indexPath.row]
         cell.update(
-            with: contactProfiles[indexPath.row].id,
-            profile: contactProfiles[indexPath.row],
+            with: profile.id,
+            profile: profile,
             isZombie: false,
             accessory: .none
         )
@@ -122,14 +123,20 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return nil
+        let label = UILabel()
+        label.textColor = Colors.sessionMessageRequestsInfoText
+        label.font = .systemFont(ofSize: Values.smallFontSize)
+        label.text = newConversationViewModel.sectionData[section].sectionName
+        let headerView = UIView()
+        headerView.backgroundColor = self.view.backgroundColor
+        headerView.addSubview(label)
+        label.pin(.left, to: .left, of: headerView, withInset: Values.mediumSpacing)
+        label.pin(.top, to: .top, of: headerView, withInset: Values.verySmallSpacing)
+        label.pin(.bottom, to: .bottom, of: headerView, withInset: -Values.verySmallSpacing)
+        return headerView
     }
     
     // MARK: - UITableViewDelegate
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 0
-    }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -177,7 +184,7 @@ private final class NewConversationButton: UIView {
     private let title: String
     private let shouldShowSeparator: Bool
     
-    private static let height: CGFloat = 56
+    public static let height: CGFloat = 56
     private static let iconSize: CGFloat = 38
     
     init(icon: UIImage, title: String, shouldShowSeparator: Bool = true) {
