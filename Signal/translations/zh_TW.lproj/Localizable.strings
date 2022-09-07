@@ -73,9 +73,6 @@
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@已經是%@的成員";
 
-/* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "最近的對話";
-
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@已被加入到%@";
 
@@ -1166,10 +1163,10 @@
 "CONTEXT_MENU_SHARE_MEDIA" = "分享";
 
 /* Context menu button title */
-"CONTEXT_MENU_SPEAK_MESSAGE" = "Speak";
+"CONTEXT_MENU_SPEAK_MESSAGE" = "朗讀";
 
 /* Context menu button title */
-"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "停止";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "此聊天將從該裝置中刪除。";
@@ -3416,10 +3413,10 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "分享多媒體檔案";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SPEAK_MESSAGE" = "Speak Message";
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "朗讀訊息";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Stop Speaking Message";
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "停止朗讀訊息";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "群組邀請";
@@ -6160,8 +6157,20 @@
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "前往聊天";
 
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "隱藏限時動態";
+
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "New story updates from %@ won't appear at the top of the stories list anymore.";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Hide Story?";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "目前沒有可顯示的更新內容。\n點選「+」來新增你的限動。";
@@ -6208,6 +6217,12 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "報導";
 
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "Unhide Story";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
+
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "檢視";
 
@@ -6238,11 +6253,23 @@
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "回覆給群組";
 
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "聯絡人";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "已排除的聯絡人";
+
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "傳送失敗";
+
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "點擊已重試";
+
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "傳送中...";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "複製訂閱者ID到剪貼簿";

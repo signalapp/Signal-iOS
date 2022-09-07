@@ -73,9 +73,6 @@
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ 님은 이미 %@ 그룹의 멤버입니다";
 
-/* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "최근 대화";
-
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ 님을 %@ 그룹에 추가함";
 
@@ -1166,10 +1163,10 @@
 "CONTEXT_MENU_SHARE_MEDIA" = "공유";
 
 /* Context menu button title */
-"CONTEXT_MENU_SPEAK_MESSAGE" = "Speak";
+"CONTEXT_MENU_SPEAK_MESSAGE" = "음성 재생";
 
 /* Context menu button title */
-"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "중지";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "이 기기에서 대화가 삭제됩니다.";
@@ -3416,10 +3413,10 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "미디어 공유";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SPEAK_MESSAGE" = "Speak Message";
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "메시지 음성 재생";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Stop Speaking Message";
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "메시지 음성 재생 중지";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "그룹 초대";
@@ -6160,8 +6157,20 @@
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "채팅으로 이동";
 
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "스토리 숨기기";
+
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "New story updates from %@ won't appear at the top of the stories list anymore.";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Hide Story?";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "표시할 업데이트가 없습니다.\n+ 아이콘을 탭하여 스토리를 추가하세요.";
@@ -6208,6 +6217,12 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "스토리";
 
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "Unhide Story";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
+
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "조회";
 
@@ -6238,11 +6253,23 @@
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "그룹에 답장";
 
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "커넥션";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "제외된 커넥션";
+
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "보내기 실패";
+
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "탭하여 다시 시도";
+
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "보내는 중…";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "구독자 ID를 클립보드에 복사함";

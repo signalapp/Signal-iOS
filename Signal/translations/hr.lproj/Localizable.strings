@@ -73,9 +73,6 @@
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ je već član %@";
 
-/* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Nedavni razgovori";
-
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ je dodan u %@";
 
@@ -1166,10 +1163,10 @@
 "CONTEXT_MENU_SHARE_MEDIA" = "Podijeli";
 
 /* Context menu button title */
-"CONTEXT_MENU_SPEAK_MESSAGE" = "Speak";
+"CONTEXT_MENU_SPEAK_MESSAGE" = "Čitaj";
 
 /* Context menu button title */
-"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stop";
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Zaustavi";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Ovaj razgovor će biti izbrisan s ovog uređaja.";
@@ -3416,10 +3413,10 @@
 "MESSAGE_ACTION_SHARE_MEDIA" = "Podijeli medijske zapise";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SPEAK_MESSAGE" = "Speak Message";
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "Čitanje poruke";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Stop Speaking Message";
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Zaustavi čitanje poruke";
 
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Grupna pozivnica";
@@ -6160,8 +6157,20 @@
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Idi na razgovor";
 
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Sakrij priču";
+
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "New story updates from %@ won't appear at the top of the stories list anymore.";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Hide Story?";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "Trenutno nema novosti za prikaz.\nPritisnite + za dodavanje nove priče.";
@@ -6208,6 +6217,12 @@
 /* Title for the stories view. */
 "STORIES_TITLE" = "Priče";
 
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "Unhide Story";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
+
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Pregledi";
 
@@ -6238,11 +6253,23 @@
 /* Button for replying to a group story with no existing replies. */
 "STORY_REPLY_TO_GROUP_BUTTON" = "Odgovori grupi";
 
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
+
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Svi kontakti";
 
 /* The title for the 'select excluded connections for story' view. */
 "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Isključeni kontakti";
+
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "Slanje nije uspjelo";
+
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "Dodirni za za ponovni pokušaj";
+
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "Slanje...";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID pretplatnika kopiran u međuspremnik";
