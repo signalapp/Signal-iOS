@@ -706,6 +706,17 @@
 		FD6A7A6B2818C17C00035AC1 /* UpdateProfilePictureJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6A7A6A2818C17C00035AC1 /* UpdateProfilePictureJob.swift */; };
 		FD6A7A6D2818C61500035AC1 /* _002_SetupStandardJobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD6A7A6C2818C61500035AC1 /* _002_SetupStandardJobs.swift */; };
 		FD705A92278D051200F16121 /* ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD705A91278D051200F16121 /* ReusableView.swift */; };
+		FD7115EB28C5D78E00B47552 /* ThreadSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115EA28C5D78E00B47552 /* ThreadSettingsViewModel.swift */; };
+		FD7115EE28C5D79B00B47552 /* SettingsAvatarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115ED28C5D79B00B47552 /* SettingsAvatarCell.swift */; };
+		FD7115F028C5D7DE00B47552 /* SettingHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115EF28C5D7DE00B47552 /* SettingHeaderView.swift */; };
+		FD7115F228C6CB3900B47552 /* _009_AddThreadIdToFTS.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115F128C6CB3900B47552 /* _009_AddThreadIdToFTS.swift */; };
+		FD7115F428C71EB200B47552 /* ThreadDisappearingMessagesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115F328C71EB200B47552 /* ThreadDisappearingMessagesViewModel.swift */; };
+		FD7115F828C8151C00B47552 /* DisposableBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115F728C8151C00B47552 /* DisposableBarButtonItem.swift */; };
+		FD7115FA28C8153400B47552 /* UIBarButtonItem+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115F928C8153400B47552 /* UIBarButtonItem+Combine.swift */; };
+		FD7115FC28C8155800B47552 /* Publisher+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115FB28C8155800B47552 /* Publisher+Utilities.swift */; };
+		FD7115FE28C8202D00B47552 /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115FD28C8202D00B47552 /* ReplaySubject.swift */; };
+		FD71160028C8253500B47552 /* UIView+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115FF28C8253500B47552 /* UIView+Combine.swift */; };
+		FD71160228C8255900B47552 /* UIControl+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71160128C8255900B47552 /* UIControl+Combine.swift */; };
 		FD7162DB281B6C440060647B /* TypedTableAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7162DA281B6C440060647B /* TypedTableAlias.swift */; };
 		FD716E6428502DDD00C96BF4 /* CallManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD716E6328502DDD00C96BF4 /* CallManagerProtocol.swift */; };
 		FD716E6628502EE200C96BF4 /* CurrentCallProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD716E6528502EE200C96BF4 /* CurrentCallProtocol.swift */; };
@@ -814,7 +825,6 @@
 		FDC6D7602862B3F600B04575 /* Dependencies.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC6D75F2862B3F600B04575 /* Dependencies.swift */; };
 		FDCDB8DE2810F73B00352A0C /* Differentiable+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCDB8DD2810F73B00352A0C /* Differentiable+Utilities.swift */; };
 		FDCDB8E02811007F00352A0C /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDCDB8DF2811007F00352A0C /* HomeViewModel.swift */; };
-		FDCDB8E42817819600352A0C /* (null) in Sources */ = {isa = PBXBuildFile; };
 		FDD2506E283711D600198BDA /* DifferenceKit+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD2506D283711D600198BDA /* DifferenceKit+Utilities.swift */; };
 		FDD250702837199200198BDA /* GarbageCollectionJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD2506F2837199200198BDA /* GarbageCollectionJob.swift */; };
 		FDD250722837234B00198BDA /* MediaGalleryNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD250712837234B00198BDA /* MediaGalleryNavigationController.swift */; };
@@ -1785,6 +1795,17 @@
 		FD6A7A6A2818C17C00035AC1 /* UpdateProfilePictureJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateProfilePictureJob.swift; sourceTree = "<group>"; };
 		FD6A7A6C2818C61500035AC1 /* _002_SetupStandardJobs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _002_SetupStandardJobs.swift; sourceTree = "<group>"; };
 		FD705A91278D051200F16121 /* ReusableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReusableView.swift; sourceTree = "<group>"; };
+		FD7115EA28C5D78E00B47552 /* ThreadSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSettingsViewModel.swift; sourceTree = "<group>"; };
+		FD7115ED28C5D79B00B47552 /* SettingsAvatarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsAvatarCell.swift; sourceTree = "<group>"; };
+		FD7115EF28C5D7DE00B47552 /* SettingHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingHeaderView.swift; sourceTree = "<group>"; };
+		FD7115F128C6CB3900B47552 /* _009_AddThreadIdToFTS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _009_AddThreadIdToFTS.swift; sourceTree = "<group>"; };
+		FD7115F328C71EB200B47552 /* ThreadDisappearingMessagesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDisappearingMessagesViewModel.swift; sourceTree = "<group>"; };
+		FD7115F728C8151C00B47552 /* DisposableBarButtonItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisposableBarButtonItem.swift; sourceTree = "<group>"; };
+		FD7115F928C8153400B47552 /* UIBarButtonItem+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Combine.swift"; sourceTree = "<group>"; };
+		FD7115FB28C8155800B47552 /* Publisher+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Utilities.swift"; sourceTree = "<group>"; };
+		FD7115FD28C8202D00B47552 /* ReplaySubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
+		FD7115FF28C8253500B47552 /* UIView+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Combine.swift"; sourceTree = "<group>"; };
+		FD71160128C8255900B47552 /* UIControl+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Combine.swift"; sourceTree = "<group>"; };
 		FD7162DA281B6C440060647B /* TypedTableAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedTableAlias.swift; sourceTree = "<group>"; };
 		FD716E6328502DDD00C96BF4 /* CallManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManagerProtocol.swift; sourceTree = "<group>"; };
 		FD716E6528502EE200C96BF4 /* CurrentCallProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCallProtocol.swift; sourceTree = "<group>"; };
@@ -2659,12 +2680,15 @@
 		C302094625DCDFD3001F572D /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				FD7115EC28C5D79100B47552 /* Views */,
 				340FC8A0204DAC8D007AEB0F /* OWSConversationSettingsViewController.h */,
 				340FC89A204DAC8D007AEB0F /* OWSConversationSettingsViewController.m */,
 				340FC899204DAC8D007AEB0F /* OWSConversationSettingsViewDelegate.h */,
 				B84A89BB25DE328A0040017D /* ProfilePictureVC.swift */,
 				3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */,
 				3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */,
+				FD7115EA28C5D78E00B47552 /* ThreadSettingsViewModel.swift */,
+				FD7115F328C71EB200B47552 /* ThreadDisappearingMessagesViewModel.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -3222,6 +3246,7 @@
 			isa = PBXGroup;
 			children = (
 				C3C2A68B255388D500C340D1 /* Meta */,
+				FD7115F528C8150600B47552 /* Combine */,
 				B8A582AC258C653C00AFD84C /* Crypto */,
 				B8A582AB258C64E800AFD84C /* Database */,
 				B8A582B0258C66C900AFD84C /* General */,
@@ -3574,6 +3599,7 @@
 				FD37EA0E28AB3330003AE748 /* _006_FixHiddenModAdminSupport.swift */,
 				7B81682728B310D50069F315 /* _007_HomeQueryOptimisationIndexes.swift */,
 				FD09B7E4288670BB00ED0B66 /* _008_EmojiReacts.swift */,
+				FD7115F128C6CB3900B47552 /* _009_AddThreadIdToFTS.swift */,
 			);
 			path = Migrations;
 			sourceTree = "<group>";
@@ -3708,6 +3734,8 @@
 				FD37E9D028A1F2EB003AE748 /* ThemeSelectionView.swift */,
 				FD37E9DA28A244E9003AE748 /* ThemePreviewView.swift */,
 				FD37E9DC28A384EB003AE748 /* PrimaryColorSelectionView.swift */,
+				FD7115EF28C5D7DE00B47552 /* SettingHeaderView.swift */,
+				FD7115ED28C5D79B00B47552 /* SettingsAvatarCell.swift */,
 				FD37EA0A28AB12E2003AE748 /* SettingsCell.swift */,
 				FD87DCFF28B820F200AF0F98 /* BlockedContactCell.swift */,
 			);
@@ -3797,6 +3825,34 @@
 				FD3E0C83283B5835002A425C /* SessionThreadViewModel.swift */,
 			);
 			path = "Shared Models";
+			sourceTree = "<group>";
+		};
+		FD7115EC28C5D79100B47552 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		FD7115F528C8150600B47552 /* Combine */ = {
+			isa = PBXGroup;
+			children = (
+				FD7115F628C8150D00B47552 /* Disposable Views */,
+				FD7115FD28C8202D00B47552 /* ReplaySubject.swift */,
+				FD7115FB28C8155800B47552 /* Publisher+Utilities.swift */,
+				FD71160128C8255900B47552 /* UIControl+Combine.swift */,
+				FD7115F928C8153400B47552 /* UIBarButtonItem+Combine.swift */,
+				FD7115FF28C8253500B47552 /* UIView+Combine.swift */,
+			);
+			path = Combine;
+			sourceTree = "<group>";
+		};
+		FD7115F628C8150D00B47552 /* Disposable Views */ = {
+			isa = PBXGroup;
+			children = (
+				FD7115F728C8151C00B47552 /* DisposableBarButtonItem.swift */,
+			);
+			path = "Disposable Views";
 			sourceTree = "<group>";
 		};
 		FD716E6F28505E5100C96BF4 /* Views */ = {
@@ -5182,10 +5238,11 @@
 				FDED2E3C282E1B5D00B2CD2A /* UICollectionView+ReusableView.swift in Sources */,
 				FD9004122818ABDC00ABAAF6 /* Job.swift in Sources */,
 				FD09797927FAB7E800936362 /* ImageFormat.swift in Sources */,
-				FDCDB8E42817819600352A0C /* (null) in Sources */,
+				FD7115FE28C8202D00B47552 /* ReplaySubject.swift in Sources */,
 				C32C5DC9256DD935003C73A2 /* ProxiedContentDownloader.swift in Sources */,
 				C3D9E4C02567767F0040E4F3 /* DataSource.m in Sources */,
 				C32C5DD2256DD9E5003C73A2 /* LRUCache.swift in Sources */,
+				FD71160228C8255900B47552 /* UIControl+Combine.swift in Sources */,
 				FD9004152818B46300ABAAF6 /* JobRunner.swift in Sources */,
 				C3A7211A2558BCA10043A11F /* DiffieHellman.swift in Sources */,
 				C3A7225E2558C38D0043A11F /* Promise+Retaining.swift in Sources */,
@@ -5204,6 +5261,7 @@
 				FD17D7C727F5207C00122BE0 /* DatabaseMigrator+Utilities.swift in Sources */,
 				FD848B9328420164000E298B /* UnicodeScalar+Utilities.swift in Sources */,
 				FD09796B27F6C67500936362 /* Failable.swift in Sources */,
+				FD7115FA28C8153400B47552 /* UIBarButtonItem+Combine.swift in Sources */,
 				FD705A92278D051200F16121 /* ReusableView.swift in Sources */,
 				FD17D7BA27F51F2100122BE0 /* TargetMigrations.swift in Sources */,
 				FD17D7C327F5204C00122BE0 /* Database+Utilities.swift in Sources */,
@@ -5239,8 +5297,10 @@
 				FDF222092818D2B0000A4995 /* NSAttributedString+Utilities.swift in Sources */,
 				C32C5E0C256DDAFA003C73A2 /* NSRegularExpression+SSK.swift in Sources */,
 				C3BBE0A92554D4DE0050F1E3 /* HTTP.swift in Sources */,
+				FD71160028C8253500B47552 /* UIView+Combine.swift in Sources */,
 				B8856D23256F116B001CE70E /* Weak.swift in Sources */,
 				FD17D7CD27F546FF00122BE0 /* Setting.swift in Sources */,
+				FD7115FC28C8155800B47552 /* Publisher+Utilities.swift in Sources */,
 				C32C5A48256DB8F0003C73A2 /* BuildConfiguration.swift in Sources */,
 				FD17D7BF27F51F8200122BE0 /* ColumnExpressible.swift in Sources */,
 				FD17D7E527F6A09900122BE0 /* Identity.swift in Sources */,
@@ -5255,6 +5315,7 @@
 				FD7162DB281B6C440060647B /* TypedTableAlias.swift in Sources */,
 				FDFD645B27F26D4600808CA1 /* Data+Utilities.swift in Sources */,
 				C3A7219A2558C1660043A11F /* AnyPromise+Conversion.swift in Sources */,
+				FD7115F828C8151C00B47552 /* DisposableBarButtonItem.swift in Sources */,
 				FD17D7E727F6A16700122BE0 /* _003_YDBToGRDBMigration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -5360,6 +5421,7 @@
 				FD42F9A8285064B800A0C77D /* PushNotificationAPI.swift in Sources */,
 				FD245C6C2850669200B966DD /* MessageReceiveJob.swift in Sources */,
 				FD83B9CC27D179BC005E1583 /* FSEndpoint.swift in Sources */,
+				FD7115F228C6CB3900B47552 /* _009_AddThreadIdToFTS.swift in Sources */,
 				FD716E6428502DDD00C96BF4 /* CallManagerProtocol.swift in Sources */,
 				FDC438C727BB6DF000C60D73 /* DirectMessage.swift in Sources */,
 				FDC4384F27B4804F00C60D73 /* Header.swift in Sources */,
@@ -5441,6 +5503,7 @@
 			files = (
 				FD52090928B59411006098F6 /* ScreenLockUI.swift in Sources */,
 				FDF2220B2818F38D000A4995 /* SessionApp.swift in Sources */,
+				FD7115EB28C5D78E00B47552 /* ThreadSettingsViewModel.swift in Sources */,
 				B8041AA725C90927003C2166 /* TypingIndicatorCell.swift in Sources */,
 				B8CCF63723961D6D0091D419 /* NewDMVC.swift in Sources */,
 				FDFDE12A282D056B0098B17F /* MediaZoomAnimationController.swift in Sources */,
@@ -5528,6 +5591,7 @@
 				FD716E7128505E5200C96BF4 /* MessageRequestsCell.swift in Sources */,
 				B88FA7F2260C3EB10049422F /* OpenGroupSuggestionGrid.swift in Sources */,
 				FD37EA1928AC5CCA003AE748 /* NotificationSoundViewModel.swift in Sources */,
+				FD7115EE28C5D79B00B47552 /* SettingsAvatarCell.swift in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				C328254925CA60E60062D0A7 /* ContextMenuVC+Action.swift in Sources */,
@@ -5558,6 +5622,7 @@
 				45B5360E206DD8BB00D61655 /* UIResponder+OWS.swift in Sources */,
 				7B9F71C928470667006DFE7B /* ReactionListSheet.swift in Sources */,
 				7B7037452834BCC0000DCF35 /* ReactionView.swift in Sources */,
+				FD7115F428C71EB200B47552 /* ThreadDisappearingMessagesViewModel.swift in Sources */,
 				B8D84ECF25E3108A005A043E /* ExpandingAttachmentsButton.swift in Sources */,
 				7B7CB190270FB2150079FF93 /* MiniCallView.swift in Sources */,
 				B875885A264503A6000E60D0 /* JoinOpenGroupModal.swift in Sources */,
@@ -5585,6 +5650,7 @@
 				7B7CB189270430D20079FF93 /* CallMessageView.swift in Sources */,
 				7B9F71D32852EEE2006DFE7B /* Emoji.swift in Sources */,
 				C328250F25CA06020062D0A7 /* VoiceMessageView.swift in Sources */,
+				FD7115F028C5D7DE00B47552 /* SettingHeaderView.swift in Sources */,
 				B82B4090239DD75000A248E7 /* RestoreVC.swift in Sources */,
 				3488F9362191CC4000E524CC /* MediaView.swift in Sources */,
 				B8569AC325CB5D2900DBA3DB /* ConversationVC+Interaction.swift in Sources */,

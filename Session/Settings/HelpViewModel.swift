@@ -7,7 +7,7 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class HelpViewModel: SettingsTableViewModel<HelpViewModel.Section, HelpViewModel.Section> {
+class HelpViewModel: SettingsTableViewModel<NoNav, HelpViewModel.Section, HelpViewModel.Section> {
     // MARK: - Section
     
     public enum Section: SettingSection {
@@ -17,7 +17,7 @@ class HelpViewModel: SettingsTableViewModel<HelpViewModel.Section, HelpViewModel
         case faq
         case support
         
-        var title: String { "" }    // No titles
+        var style: SettingSectionHeaderStyle { .padding }
     }
     
     // MARK: - Content
@@ -126,8 +126,6 @@ class HelpViewModel: SettingsTableViewModel<HelpViewModel.Section, HelpViewModel
     public override func updateSettings(_ updatedSettings: [SectionModel]) {
         self._settingsData = updatedSettings
     }
-    
-    public override func saveChanges() {}
     
     public static func shareLogs(
         viewControllerToDismiss: UIViewController? = nil,

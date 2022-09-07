@@ -7,8 +7,18 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.Section, PrivacySettingsViewModel.Section> {
-    // MARK: - Section
+class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.NavButton, PrivacySettingsViewModel.Section, PrivacySettingsViewModel.Section> {
+    // MARK: - Initialization
+    
+    init(shouldShowCloseButton: Bool = false) {
+        super.init(closeNavItemId: (shouldShowCloseButton ? NavButton.close : nil))
+    }
+    
+    // MARK: - Config
+    
+    enum NavButton: Equatable {
+        case close
+    }
     
     public enum Section: SettingSection {
         case screenLock
@@ -18,14 +28,21 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
         case linkPreviews
         case calls
         
-        var title: String {
+        var title: String? {
             switch self {
                 case .screenLock: return "PRIVACY_SECTION_SCREEN_SECURITY".localized()
-                case .screenshotNotifications: return ""   // No title
+                case .screenshotNotifications: return nil
                 case .readReceipts: return "PRIVACY_SECTION_READ_RECEIPTS".localized()
                 case .typingIndicators: return "PRIVACY_SECTION_TYPING_INDICATORS".localized()
                 case .linkPreviews: return "PRIVACY_SECTION_LINK_PREVIEWS".localized()
                 case .calls: return "PRIVACY_SECTION_CALLS".localized()
+            }
+        }
+        
+        var style: SettingSectionHeaderStyle {
+            switch self {
+                case .screenshotNotifications: return .padding
+                default: return .title
             }
         }
     }
@@ -159,6 +176,4 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
     public override func updateSettings(_ updatedSettings: [SectionModel]) {
         self._settingsData = updatedSettings
     }
-    
-    public override func saveChanges() {}
 }

@@ -130,6 +130,8 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Dies kann nicht rückgängig gemacht werden.";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Unterhaltung löschen?";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Keine Treffer";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -510,6 +512,7 @@
 "vc_join_public_chat_scan_qr_code_explanation" = "Scannen Sie den QR-Code der offenen Gruppe, der Sie beitreten möchten.";
 "vc_enter_chat_url_text_field_hint" = "Geben Sie eine offene Gruppen-URL ein.";
 "vc_settings_title" = "Einstellungen";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_text_field_hint" = "Geben Sie einen Anzeigenamen ein.";
 "vc_settings_display_name_missing_error" = "Bitte wählen Sie einen Anzeigenamen.";
 "vc_settings_display_name_too_long_error" = "Bitte wählen Sie einen kürzeren Anzeigenamen.";
@@ -776,3 +779,5 @@
 "modal_permission_camera" = "camera";
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"COPY_GROUP_URL" = "Copy Group URL";

@@ -191,15 +191,13 @@ final class QuoteView: UIView {
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byTruncatingTail
         
-        let isOutgoing = (direction == .outgoing)
+        let targetThemeColor: ThemeValue = (direction == .outgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
         
         ThemeManager.onThemeChange(observer: bodyLabel) { [weak bodyLabel] theme, primaryColor in
-            let targetThemeColor: ThemeValue = (direction == .outgoing ?
-                .messageBubble_outgoingText :
-                .messageBubble_incomingText
-            )
-            
             guard let textColor: UIColor = theme.colors[targetThemeColor] else { return }
             
             bodyLabel?.attributedText = body
@@ -209,8 +207,9 @@ final class QuoteView: UIView {
                         threadVariant: threadVariant,
                         currentUserPublicKey: currentUserPublicKey,
                         currentUserBlindedPublicKey: currentUserBlindedPublicKey,
-                        isOutgoingMessage: isOutgoing,
+                        isOutgoingMessage: (direction == .outgoing),
                         textColor: textColor,
+                        theme: theme,
                         primaryColor: primaryColor,
                         attributes: [
                             .foregroundColor: textColor
@@ -229,42 +228,37 @@ final class QuoteView: UIView {
         let bodyLabelSize = bodyLabel.systemLayoutSizeFitting(availableSpace)
         var authorLabelHeight: CGFloat?
         
-        if threadVariant == .openGroup || threadVariant == .closedGroup {
-            let isCurrentUser: Bool = [
-                currentUserPublicKey,
-                currentUserBlindedPublicKey,
-            ]
-            .compactMap { $0 }
-            .asSet()
-            .contains(authorId)
-            let authorLabel = UILabel()
-            authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
-            authorLabel.text = (isCurrentUser ?
-                "MEDIA_GALLERY_SENDER_NAME_YOU".localized() :
-                Profile.displayName(
-                    id: authorId,
-                    threadVariant: threadVariant
-                )
+        let isCurrentUser: Bool = [
+            currentUserPublicKey,
+            currentUserBlindedPublicKey,
+        ]
+        .compactMap { $0 }
+        .asSet()
+        .contains(authorId)
+        let authorLabel = UILabel()
+        authorLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        authorLabel.text = (isCurrentUser ?
+            "MEDIA_GALLERY_SENDER_NAME_YOU".localized() :
+            Profile.displayName(
+                id: authorId,
+                threadVariant: threadVariant
             )
-            authorLabel.themeTextColor = .messageBubble_outgoingText
-            authorLabel.lineBreakMode = .byTruncatingTail
-            
-            let authorLabelSize = authorLabel.systemLayoutSizeFitting(availableSpace)
-            authorLabel.set(.height, to: authorLabelSize.height)
-            authorLabelHeight = authorLabelSize.height
-            
-            let labelStackView = UIStackView(arrangedSubviews: [ authorLabel, bodyLabel ])
-            labelStackView.axis = .vertical
-            labelStackView.spacing = labelStackViewSpacing
-            labelStackView.distribution = .equalCentering
-            labelStackView.set(.width, to: max(bodyLabelSize.width, authorLabelSize.width))
-            labelStackView.isLayoutMarginsRelativeArrangement = true
-            labelStackView.layoutMargins = UIEdgeInsets(top: labelStackViewVMargin, left: 0, bottom: labelStackViewVMargin, right: 0)
-            mainStackView.addArrangedSubview(labelStackView)
-        }
-        else {
-            mainStackView.addArrangedSubview(bodyLabel)
-        }
+        )
+        authorLabel.themeTextColor = targetThemeColor
+        authorLabel.lineBreakMode = .byTruncatingTail
+        
+        let authorLabelSize = authorLabel.systemLayoutSizeFitting(availableSpace)
+        authorLabel.set(.height, to: authorLabelSize.height)
+        authorLabelHeight = authorLabelSize.height
+        
+        let labelStackView = UIStackView(arrangedSubviews: [ authorLabel, bodyLabel ])
+        labelStackView.axis = .vertical
+        labelStackView.spacing = labelStackViewSpacing
+        labelStackView.distribution = .equalCentering
+        labelStackView.set(.width, to: max(bodyLabelSize.width, authorLabelSize.width))
+        labelStackView.isLayoutMarginsRelativeArrangement = true
+        labelStackView.layoutMargins = UIEdgeInsets(top: labelStackViewVMargin, left: 0, bottom: labelStackViewVMargin, right: 0)
+        mainStackView.addArrangedSubview(labelStackView)
         
         // Constraints
         contentView.addSubview(mainStackView)

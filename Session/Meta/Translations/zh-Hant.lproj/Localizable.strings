@@ -130,6 +130,8 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "此操作無法復原。";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "刪除對話？";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "沒有相符項目";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -510,6 +512,7 @@
 "vc_join_public_chat_scan_qr_code_explanation" = "掃描開放式群組的 QR Code 來加入";
 "vc_enter_chat_url_text_field_hint" = "請輸入開放式群組的網址";
 "vc_settings_title" = "設定";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_text_field_hint" = "輸入一個名稱";
 "vc_settings_display_name_missing_error" = "請選擇一個名稱";
 "vc_settings_display_name_too_long_error" = "請選擇一個較短的名稱";
@@ -776,3 +779,5 @@
 "modal_permission_camera" = "camera";
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"COPY_GROUP_URL" = "Copy Group URL";

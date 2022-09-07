@@ -130,6 +130,8 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "该操作无法撤销。";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "删除会话？";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "没有结果";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -510,6 +512,7 @@
 "vc_join_public_chat_scan_qr_code_explanation" = "扫描您想加入的公开群组的二维码";
 "vc_enter_chat_url_text_field_hint" = "输入公开群组链接";
 "vc_settings_title" = "设置";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_text_field_hint" = "输入您想显示的名称";
 "vc_settings_display_name_missing_error" = "请设定一个名称";
 "vc_settings_display_name_too_long_error" = "请设定一个较短的名称";
@@ -776,3 +779,5 @@
 "modal_permission_camera" = "camera";
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"COPY_GROUP_URL" = "Copy Group URL";

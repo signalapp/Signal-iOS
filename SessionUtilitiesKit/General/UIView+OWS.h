@@ -140,16 +140,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 #pragma mark -
 
-@interface UIStackView (OWS)
-
-- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
-
-- (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius;
-
-@end
-
-#pragma mark -
-
 @interface UIAlertAction (OWS)
 
 + (instancetype)actionWithTitle:(nullable NSString *)title

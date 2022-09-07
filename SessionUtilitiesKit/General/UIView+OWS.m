@@ -484,40 +484,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 
 #pragma mark -
 
-@implementation UIStackView (OWS)
-
-- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor
-{
-    UIView *subview = [UIView new];
-    subview.backgroundColor = backgroundColor;
-    [self addSubview:subview];
-    [subview autoPinEdgesToSuperviewEdges];
-    [subview setCompressionResistanceLow];
-    [subview setContentHuggingLow];
-    [self sendSubviewToBack:subview];
-    return subview;
-}
-
-- (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius
-{
-    UIView *borderView = [UIView new];
-    borderView.userInteractionEnabled = NO;
-    borderView.backgroundColor = UIColor.clearColor;
-    borderView.opaque = NO;
-    borderView.layer.borderColor = color.CGColor;
-    borderView.layer.borderWidth = strokeWidth;
-    borderView.layer.cornerRadius = cornerRadius;
-    [self addSubview:borderView];
-    [borderView autoPinEdgesToSuperviewEdges];
-    [borderView setCompressionResistanceLow];
-    [borderView setContentHuggingLow];
-    return borderView;
-}
-
-@end
-
-#pragma mark -
-
 @implementation UIAlertAction (OWS)
 
 + (instancetype)actionWithTitle:(nullable NSString *)title

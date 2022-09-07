@@ -130,6 +130,8 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tác vụ này không thể hoàn tất.";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Xóa cuộc hội thoại?";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Không trùng khớp";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -510,6 +512,7 @@
 "vc_join_public_chat_scan_qr_code_explanation" = " Quét mã QR của nhóm mở mà bạn muốn tham gia";
 "vc_enter_chat_url_text_field_hint" = "Nhập URL của nhóm mở";
 "vc_settings_title" = "Cài đặt";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_text_field_hint" = "Nhập tên hiển thị";
 "vc_settings_display_name_missing_error" = "Vui lòng chọn một tên hiển thị ";
 "vc_settings_display_name_too_long_error" = "Vui lòng chọn một tên hiển thị ngắn hơn ";
@@ -776,3 +779,5 @@
 "modal_permission_camera" = "camera";
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"COPY_GROUP_URL" = "Copy Group URL";

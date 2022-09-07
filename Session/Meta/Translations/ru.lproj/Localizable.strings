@@ -130,6 +130,8 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Это не может быть отменено.";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Удалить разговор?";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Нет совпадений";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -510,6 +512,7 @@
 "vc_join_public_chat_scan_qr_code_explanation" = "Отсканируйте QR-код открытой группы, в которую вы хотите вступить";
 "vc_enter_chat_url_text_field_hint" = "Введите URL открытой группы";
 "vc_settings_title" = "Настройки";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_text_field_hint" = "Введите отображаемое имя";
 "vc_settings_display_name_missing_error" = "Пожалуйста, выберите отображаемое имя";
 "vc_settings_display_name_too_long_error" = "Пожалуйста, выберите более короткое отображаемое имя";
@@ -776,3 +779,5 @@
 "modal_permission_camera" = "camera";
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"COPY_GROUP_URL" = "Copy Group URL";

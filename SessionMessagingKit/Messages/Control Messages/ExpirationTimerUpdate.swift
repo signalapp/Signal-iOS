@@ -20,7 +20,7 @@ public final class ExpirationTimerUpdate: ControlMessage {
 
     // MARK: - Initialization
     
-    internal init(syncTarget: String?, duration: UInt32) {
+    public init(syncTarget: String?, duration: UInt32) {
         super.init()
         
         self.syncTarget = syncTarget

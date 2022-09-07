@@ -130,6 +130,8 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "این نمیتواند انجام نشود.";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو حذف شود؟";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "مشابهی یافت نشد";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -510,6 +512,7 @@
 "vc_join_public_chat_scan_qr_code_explanation" = "کد QR متعلق به گروه باز را که می‌خواهید به آن بپیوندید، اسکن کنید";
 "vc_enter_chat_url_text_field_hint" = "یک URL گروه باز وارد کنید";
 "vc_settings_title" = "تنظیمات";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_text_field_hint" = "یک نام نمایشی را وارد کنید";
 "vc_settings_display_name_missing_error" = "لطفا یک نام نمایشی را انتخاب کنید";
 "vc_settings_display_name_too_long_error" = "لطفا یک نام نمایشی کوتاه‌تر انتخاب کنید";
@@ -776,3 +779,5 @@
 "modal_permission_camera" = "camera";
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"COPY_GROUP_URL" = "Copy Group URL";

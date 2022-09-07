@@ -556,15 +556,16 @@ public extension Interaction {
     static func idsForTermWithin(threadId: String, pattern: FTS5Pattern) -> SQLRequest<Int64> {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let interactionFullTextSearch: SQL = SQL(stringLiteral: Interaction.fullTextSearchTableName)
+        let threadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
         
         let request: SQLRequest<Int64> = """
             SELECT \(interaction[.id])
             FROM \(Interaction.self)
             JOIN \(interactionFullTextSearch) ON (
                 \(interactionFullTextSearch).rowid = \(interaction.alias[Column.rowID]) AND
+                \(SQL("\(interactionFullTextSearch).\(threadIdLiteral) = \(threadId)")) AND
                 \(interactionFullTextSearch).\(SQL(stringLiteral: Interaction.Columns.body.name)) MATCH \(pattern)
             )
-            WHERE \(SQL("\(interaction[.threadId]) = \(threadId)"))
         
             ORDER BY \(interaction[.timestampMs].desc)
         """

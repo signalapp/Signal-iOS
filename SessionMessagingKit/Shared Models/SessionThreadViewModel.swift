@@ -813,8 +813,9 @@ public extension SessionThreadViewModel {
         }
     }
     
-    static func conversationSettingsProfileQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
+    static func conversationSettingsQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
         let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
@@ -827,7 +828,7 @@ public extension SessionThreadViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 6
+        let numColumnsBeforeProfiles: Int = 9
         let request: SQLRequest<ViewModel> = """
             SELECT
                 \(thread.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
@@ -835,21 +836,35 @@ public extension SessionThreadViewModel {
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
                 
-                false AS \(ViewModel.threadIsNoteToSelfKey),
-                false AS \(ViewModel.threadIsPinnedKey),
+                (\(SQL("\(thread[.id]) = \(userPublicKey)"))) AS \(ViewModel.threadIsNoteToSelfKey),
+                
+                \(thread[.isPinned]) AS \(ViewModel.threadIsPinnedKey),
+                \(contact[.isBlocked]) AS \(ViewModel.threadIsBlockedKey),
+                \(thread[.mutedUntilTimestamp]) AS \(ViewModel.threadMutedUntilTimestampKey),
+                \(thread[.onlyNotifyForMentions]) AS \(ViewModel.threadOnlyNotifyForMentionsKey),
         
                 \(ViewModel.contactProfileKey).*,
                 \(ViewModel.closedGroupProfileFrontKey).*,
                 \(ViewModel.closedGroupProfileBackKey).*,
                 \(ViewModel.closedGroupProfileBackFallbackKey).*,
+                
+                \(closedGroup[.name]) AS \(ViewModel.closedGroupNameKey),
+                (\(groupMember[.profileId]) IS NOT NULL) AS \(ViewModel.currentUserIsClosedGroupMemberKey),
+                \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
                 \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
-        
+                    
                 \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
             
             FROM \(SessionThread.self)
+            LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
             LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
-            LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
             LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
+            LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
+            LEFT JOIN \(GroupMember.self) ON (
+                \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                \(SQL("\(groupMember[.profileId]) = \(userPublicKey)"))
+            )
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
@@ -907,7 +922,7 @@ public extension SessionThreadViewModel {
 // MARK: - Search Queries
 
 public extension SessionThreadViewModel {
-    fileprivate static let searchResultsLimit: Int = 500
+    static let searchResultsLimit: Int = 500
     
     static func searchTermParts(_ searchTerm: String) -> [String] {
         /// Process the search term in order to extract the parts of the search pattern we want

@@ -27,21 +27,25 @@ public final class Separator: UIView {
     
     // MARK: - Initialization
     
-    public init(title: String) {
+    public init(title: String? = nil) {
         super.init(frame: CGRect.zero)
         
         setUpViewHierarchy(title: title)
     }
     
     public override init(frame: CGRect) {
-        preconditionFailure("Use init(title:) instead.")
+        super.init(frame: frame)
+        
+        setUpViewHierarchy(title: nil)
     }
     
     public required init?(coder: NSCoder) {
-        preconditionFailure("Use init(title:) instead.")
+        super.init(coder: coder)
+        
+        setUpViewHierarchy(title: nil)
     }
     
-    private func setUpViewHierarchy(title: String) {
+    private func setUpViewHierarchy(title: String?) {
         titleLabel.text = title
         addSubview(titleLabel)
         
@@ -76,5 +80,9 @@ public final class Separator: UIView {
         path.close()
         
         lineLayer.path = path.cgPath
+    }
+    
+    public func update(title: String?) {
+        titleLabel.text = title
     }
 }

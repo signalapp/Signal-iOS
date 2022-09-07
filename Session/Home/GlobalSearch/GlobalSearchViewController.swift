@@ -31,6 +31,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         return [ result.map { ArraySection(model: .contactsAndGroups, elements: [$0]) } ]
             .compactMap { $0 }
     }()
+    private var readConnection: Atomic<Database?> = Atomic(nil)
     private lazy var searchResultSet: [SectionModel] = self.defaultSearchResults
     private var termForCurrentSearchResultSet: String = ""
     private var lastSearchText: String?
@@ -156,52 +157,60 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
         lastSearchText = searchText
 
-        let result: Result<[SectionModel], Error>? = Storage.shared.read { db -> Result<[SectionModel], Error> in
-            do {
-                let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                let contactsAndGroupsResults: [SessionThreadViewModel] = try SessionThreadViewModel
-                    .contactsAndGroupsQuery(
-                        userPublicKey: userPublicKey,
-                        pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText),
-                        searchTerm: searchText
-                    )
-                    .fetchAll(db)
-                let messageResults: [SessionThreadViewModel] = try SessionThreadViewModel
-                    .messagesQuery(
-                        userPublicKey: userPublicKey,
-                        pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
-                    )
-                    .fetchAll(db)
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            self?.readConnection.wrappedValue?.interrupt()
+            
+            let result: Result<[SectionModel], Error>? = Storage.shared.read { db -> Result<[SectionModel], Error> in
+                self?.readConnection.mutate { $0 = db }
                 
-                return .success([
-                    ArraySection(model: .contactsAndGroups, elements: contactsAndGroupsResults),
-                    ArraySection(model: .messages, elements: messageResults)
-                ])
+                do {
+                    let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                    let contactsAndGroupsResults: [SessionThreadViewModel] = try SessionThreadViewModel
+                        .contactsAndGroupsQuery(
+                            userPublicKey: userPublicKey,
+                            pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText),
+                            searchTerm: searchText
+                        )
+                        .fetchAll(db)
+                    let messageResults: [SessionThreadViewModel] = try SessionThreadViewModel
+                        .messagesQuery(
+                            userPublicKey: userPublicKey,
+                            pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
+                        )
+                        .fetchAll(db)
+                    
+                    return .success([
+                        ArraySection(model: .contactsAndGroups, elements: contactsAndGroupsResults),
+                        ArraySection(model: .messages, elements: messageResults)
+                    ])
+                }
+                catch {
+                    return .failure(error)
+                }
             }
-            catch {
-                return .failure(error)
+            
+            DispatchQueue.main.async {
+                switch result {
+                    case .success(let sections):
+                        let hasResults: Bool = (
+                            !searchText.isEmpty &&
+                            (sections.map { $0.elements.count }.reduce(0, +) > 0)
+                        )
+                        
+                        self?.termForCurrentSearchResultSet = searchText
+                        self?.searchResultSet = [
+                            (hasResults ? nil : [ArraySection(model: .noResults, elements: [SessionThreadViewModel(unreadCount: 0)])]),
+                            (hasResults ? sections : nil)
+                        ]
+                        .compactMap { $0 }
+                        .flatMap { $0 }
+                        self?.isLoading = false
+                        self?.reloadTableData()
+                        self?.refreshTimer = nil
+                        
+                    default: break
+                }
             }
-        }
-        
-        switch result {
-            case .success(let sections):
-                let hasResults: Bool = (
-                    !searchText.isEmpty &&
-                    (sections.map { $0.elements.count }.reduce(0, +) > 0)
-                )
-                
-                self.termForCurrentSearchResultSet = searchText
-                self.searchResultSet = [
-                    (hasResults ? nil : [ArraySection(model: .noResults, elements: [SessionThreadViewModel(unreadCount: 0)])]),
-                    (hasResults ? sections : nil)
-                ]
-                .compactMap { $0 }
-                .flatMap { $0 }
-                self.isLoading = false
-                self.reloadTableData()
-                self.refreshTimer = nil
-                
-            default: break
         }
     }
     

@@ -8,7 +8,7 @@ import SessionMessagingKit
 import SignalUtilitiesKit
 
 class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
-    private static let loadingHeaderHeight: CGFloat = 20
+    private static let loadingHeaderHeight: CGFloat = 40
     
     private let viewModel: BlockedContactsViewModel = BlockedContactsViewModel()
     private var dataChangeObservable: DatabaseCancellable?

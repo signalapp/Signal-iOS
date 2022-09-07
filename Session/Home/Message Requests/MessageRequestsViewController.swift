@@ -8,7 +8,7 @@ import SessionMessagingKit
 import SignalUtilitiesKit
 
 class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
-    private static let loadingHeaderHeight: CGFloat = 20
+    private static let loadingHeaderHeight: CGFloat = 40
     
     private let viewModel: MessageRequestsViewModel = MessageRequestsViewModel()
     private var dataChangeObservable: DatabaseCancellable?

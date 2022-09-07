@@ -1,17 +1,30 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import Combine
 import GRDB
 import DifferenceKit
 import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsViewModel.Section, Preferences.Sound> {
+class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewModel.NavButton, NotificationSettingsViewModel.Section, Preferences.Sound> {
+    // MARK: - Config
+    
+    enum NavButton: Equatable {
+        case cancel
+        case save
+    }
+    
+    public enum Section: SettingSection {
+        case content
+    }
+    
     // FIXME: Remove `threadId` once we ditch the per-thread notification sound
     private let threadId: String?
     private var audioPlayer: OWSAudioPlayer?
-    private var currentSelection: Preferences.Sound?
+    private var storedSelection: Preferences.Sound?
+    private var currentSelection: CurrentValueSubject<Preferences.Sound?, Never> = CurrentValueSubject(nil)
     
     // MARK: - Initialization
     
@@ -24,12 +37,47 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsVie
         self.audioPlayer = nil
     }
     
-    // MARK: - Section
+    // MARK: - Navigation
     
-    public enum Section: SettingSection {
-        case content
-        
-        var title: String { return "" }   // No title
+    override var leftNavItems: AnyPublisher<[NavItem]?, Never> {
+        Just([
+            NavItem(
+                id: .cancel,
+                systemItem: .cancel,
+                accessibilityIdentifier: "Cancel button"
+            )
+        ]).eraseToAnyPublisher()
+    }
+
+    override var rightNavItems: AnyPublisher<[NavItem]?, Never> {
+        currentSelection
+            .removeDuplicates()
+            .map { [weak self] currentSelection in (self?.storedSelection != currentSelection) }
+            .map { isChanged in
+                guard isChanged else { return [] }
+                
+                return [
+                    NavItem(
+                        id: .save,
+                        systemItem: .save,
+                        accessibilityIdentifier: "Save button"
+                    )
+                ]
+            }
+           .eraseToAnyPublisher()
+    }
+    
+    override var closeScreen: AnyPublisher<Bool, Never> {
+        navItemTapped
+            .handleEvents(receiveOutput: { [weak self] navItemId in
+                switch navItemId {
+                    case .save: self?.saveChanges()
+                    default: break
+                }
+                self?.setIsEditing(true)
+            })
+            .map { _ in false }
+            .eraseToAnyPublisher()
     }
     
     // MARK: - Content
@@ -50,8 +98,23 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsVie
     /// just in case the database has changed between the two reads - unfortunately it doesn't look like there is a way to prevent this
     private lazy var _observableSettingsData: ObservableData = ValueObservation
         .trackingConstantRegion { [weak self] db -> [SectionModel] in
-            self?.currentSelection = (self?.currentSelection ?? db[.defaultNotificationSound])
-                .defaulting(to: .defaultNotificationSound)
+            self?.storedSelection = try {
+                guard let threadId: String = self?.threadId else {
+                    return db[.defaultNotificationSound]
+                        .defaulting(to: .defaultNotificationSound)
+                }
+                
+                return try SessionThread
+                    .filter(id: threadId)
+                    .select(.notificationSound)
+                    .asRequest(of: Preferences.Sound.self)
+                    .fetchOne(db)
+                    .defaulting(
+                        to: db[.defaultNotificationSound]
+                            .defaulting(to: .defaultNotificationSound)
+                    )
+            }()
+            self?.currentSelection.send(self?.currentSelection.value ?? self?.storedSelection)
             
             return [
                 SectionModel(
@@ -71,22 +134,19 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsVie
                                     return sound.displayName
                                 }(),
                                 action: .listSelection(
-                                    isSelected: { (self?.currentSelection == sound) },
-                                    storedSelection: (
-                                        sound == db[.defaultNotificationSound]
-                                            .defaulting(to: .defaultNotificationSound)
-                                    ),
+                                    isSelected: { (self?.currentSelection.value == sound) },
+                                    storedSelection: (self?.storedSelection == sound),
                                     shouldAutoSave: false,
                                     selectValue: {
-                                        self?.currentSelection = sound
+                                        self?.currentSelection.send(sound)
                                         
                                         // Play the sound (to prevent UI lag we dispatch this to the next
                                         // run loop
                                         DispatchQueue.main.async {
                                             self?.audioPlayer?.stop()
-                                            self?.audioPlayer = SMKSound.audioPlayer(
-                                                for: sound.rawValue,
-                                                audioBehavior: .playback
+                                            self?.audioPlayer = Preferences.Sound.audioPlayer(
+                                                for: sound,
+                                                behavior: .playback
                                             )
                                             self?.audioPlayer?.isLooping = false
                                             self?.audioPlayer?.play()
@@ -106,22 +166,23 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSettingsVie
         self._settingsData = updatedSettings
     }
     
-    public override func saveChanges() {
-        guard let currentSelection: Preferences.Sound = self.currentSelection else { return }
+    private func saveChanges() {
+        guard let currentSelection: Preferences.Sound = self.currentSelection.value else { return }
+
+        let threadId: String? = self.threadId
         
         Storage.shared.write { db in
-            db[.defaultNotificationSound] = currentSelection
+            guard let threadId: String = threadId else {
+                db[.defaultNotificationSound] = currentSelection
+                return
+            }
+            
+            try SessionThread
+                .filter(id: threadId)
+                .updateAll(
+                    db,
+                    SessionThread.Columns.notificationSound.set(to: currentSelection)
+                )
         }
-    }
-}
-
-// MARK: - Objective-C Support
-
-// FIXME: Remove this once we ditch the per-thread notification sound
-@objc class OWSNotificationSoundSettings: NSObject {
-    @objc static func create(with threadId: String?) -> UIViewController {
-        return SettingsTableViewController(
-            viewModel: NotificationSoundViewModel(threadId: threadId)
-        )
     }
 }

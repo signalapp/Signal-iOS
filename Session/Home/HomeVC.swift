@@ -8,7 +8,7 @@ import SessionUtilitiesKit
 import SignalUtilitiesKit
 
 final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
-    private static let loadingHeaderHeight: CGFloat = 20
+    private static let loadingHeaderHeight: CGFloat = 40
     
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?

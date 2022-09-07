@@ -35,13 +35,18 @@ public class MediaAlbumView: UIStackView {
 
         super.init(frame: .zero)
 
-        // UIStackView's backgroundColor property has no effect.
-        addBackgroundView(withBackgroundColor: Colors.navigationBarBackground)
-
         createContents(maxMessageWidth: maxMessageWidth)
     }
 
     private func createContents(maxMessageWidth: CGFloat) {
+        let backgroundView: UIView = UIView()
+        backgroundView.themeBackgroundColor = .backgroundPrimary
+        addSubview(backgroundView)
+        
+        backgroundView.setContentHuggingLow()
+        backgroundView.setCompressionResistanceLow()
+        backgroundView.pin(to: backgroundView)
+        
         switch itemViews.count {
             case 0: return owsFailDebug("No item views.")
                 
@@ -155,7 +160,7 @@ public class MediaAlbumView: UIStackView {
                     moreItemsView = lastView
 
                     let tintView = UIView()
-                    tintView.backgroundColor = UIColor(white: 0, alpha: 0.4)
+                    tintView.themeBackgroundColor = .messageBubble_overlay
                     lastView.addSubview(tintView)
                     tintView.autoPinEdgesToSuperviewEdges()
 
@@ -166,11 +171,10 @@ public class MediaAlbumView: UIStackView {
                         format: "MEDIA_GALLERY_MORE_ITEMS_FORMAT".localized(),
                         moreCountText
                     )
-                    let moreLabel = UILabel()
+                    let moreLabel: UILabel = UILabel()
+                    moreLabel.font = .systemFont(ofSize: 24)
                     moreLabel.text = moreText
-                    moreLabel.textColor = UIColor.ows_white
-                    // We don't want to use dynamic text here.
-                    moreLabel.font = UIFont.systemFont(ofSize: 24)
+                    moreLabel.themeTextColor = .white
                     lastView.addSubview(moreLabel)
                     moreLabel.autoCenterInSuperview()
                 }

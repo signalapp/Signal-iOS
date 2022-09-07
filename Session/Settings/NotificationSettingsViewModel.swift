@@ -7,19 +7,26 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class NotificationSettingsViewModel: SettingsTableViewModel<NotificationSettingsViewModel.Section, NotificationSettingsViewModel.Setting> {
-    // MARK: - Section
+class NotificationSettingsViewModel: SettingsTableViewModel<NoNav, NotificationSettingsViewModel.Section, NotificationSettingsViewModel.Setting> {
+    // MARK: - Config
     
     public enum Section: SettingSection {
         case strategy
         case style
         case content
         
-        var title: String {
+        var title: String? {
             switch self {
                 case .strategy: return "NOTIFICATIONS_SECTION_STRATEGY".localized()
                 case .style: return "NOTIFICATIONS_SECTION_STYLE".localized()
-                case .content: return ""   // No title
+                case .content: return nil
+            }
+        }
+        
+        var style: SettingSectionHeaderStyle {
+            switch self {
+                case .content: return .padding
+                default: return .title
             }
         }
     }
@@ -139,6 +146,4 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NotificationSettings
     public override func updateSettings(_ updatedSettings: [SectionModel]) {
         self._settingsData = updatedSettings
     }
-    
-    public override func saveChanges() {}
 }

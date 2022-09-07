@@ -532,6 +532,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             for: targetId,
                             tableName: pagedTableName,
                             idColumn: idColumnName,
+                            requiredJoinSQL: joinSQL,
                             orderSQL: orderSQL,
                             filterSQL: filterSQL
                         )
@@ -581,6 +582,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             for: targetId,
                             tableName: pagedTableName,
                             idColumn: idColumnName,
+                            requiredJoinSQL: joinSQL,
                             orderSQL: orderSQL,
                             filterSQL: filterSQL
                         )

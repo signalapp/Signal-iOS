@@ -552,9 +552,11 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     
     @objc private func minimize() {
         self.shouldRestartCamera = false
+        self.conversationVC?.showInputAccessoryView()
+        
         let miniCallView = MiniCallView(from: self)
         miniCallView.show()
-        self.conversationVC?.showInputAccessoryView()
+        
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
     

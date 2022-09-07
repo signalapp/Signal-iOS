@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUIKit
 
 public extension UIEdgeInsets {
     init(top: CGFloat, leading: CGFloat, bottom: CGFloat, trailing: CGFloat) {
@@ -107,9 +108,16 @@ public extension UIView {
         constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
         return constraints
     }
+}
 
-    func setShadow(radius: CGFloat = 2.0, opacity: Float = 0.66, offset: CGSize = .zero, color: CGColor = UIColor.black.cgColor) {
-        layer.shadowColor = color
+public extension UIView {
+    func setShadow(
+        radius: CGFloat = 2.0,
+        opacity: Float = 0.66,
+        offset: CGSize = .zero,
+        color: ThemeValue = .black
+    ) {
+        layer.themeShadowColor = color
         layer.shadowRadius = radius
         layer.shadowOpacity = opacity
         layer.shadowOffset = offset
@@ -376,29 +384,39 @@ public extension UIBarButtonItem {
         self.init(image: image, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 
     convenience init(image: UIImage?, landscapeImagePhone: UIImage?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(image: image, landscapeImagePhone: landscapeImagePhone, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 
     convenience init(title: String?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(title: title, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 
     convenience init(barButtonSystemItem systemItem: UIBarButtonItem.SystemItem, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(barButtonSystemItem: systemItem, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 
     convenience init(customView: UIView, accessibilityIdentifier: String) {
         self.init(customView: customView)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 }

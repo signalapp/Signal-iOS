@@ -130,6 +130,8 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "การกระทำนี้ไม่สามารถยกเลิกได้";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "ลบการสนทนาไหม";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "ไม่​มี​รายการ​ตรง​กัน";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -510,6 +512,7 @@
 "vc_join_public_chat_scan_qr_code_explanation" = "แสกน QR โค้ดของกลุ่มสาธารณะ";
 "vc_enter_chat_url_text_field_hint" = "ป้อนลินค์ URL ของกลุ่มสถาณนะ";
 "vc_settings_title" = "ตั้งค่า";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_text_field_hint" = "เลือกชื่อที่ใช้แสดง";
 "vc_settings_display_name_missing_error" = "ขอเลือกชื่อที่ใช้แสดง";
 "vc_settings_display_name_too_long_error" = "ขอเลือกชื่อสั้นกว่า";
@@ -776,3 +779,5 @@
 "modal_permission_camera" = "camera";
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"COPY_GROUP_URL" = "Copy Group URL";

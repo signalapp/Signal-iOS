@@ -7,7 +7,6 @@ import SessionUIKit
 import SessionMessagingKit
 import SignalUtilitiesKit
 
-@objc(SNEditClosedGroupVC)
 final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate {
     private struct GroupMemberDisplayInfo: FetchableRecord, Decodable {
         let profileId: String
@@ -30,8 +29,8 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     
     private lazy var groupNameLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byTruncatingTail
         result.textAlignment = .center
         
@@ -59,7 +58,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         result.dataSource = self
         result.delegate = self
         result.separatorStyle = .none
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.isScrollEnabled = false
         result.register(view: UserCell.self)
         
@@ -68,8 +67,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
 
     // MARK: - Lifecycle
     
-    @objc(initWithThreadId:)
-    init(with threadId: String) {
+    init(threadId: String) {
         self.threadId = threadId
         
         super.init(nibName: nil, bundle: nil)
@@ -84,14 +82,11 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         
         setNavBarTitle("Edit Group")
         
-        let backButton = UIBarButtonItem(title: "Back", style: .plain, target: nil, action: nil)
-        backButton.tintColor = Colors.text
-        navigationItem.backBarButtonItem = backButton
-        
         let threadId: String = self.threadId
         
         Storage.shared.read { [weak self] db in
-            self?.userPublicKey = getUserHexEncodedPublicKey(db)
+            let userPublicKey: String = getUserHexEncodedPublicKey(db)
+            self?.userPublicKey = userPublicKey
             self?.name = try ClosedGroup
                 .select(.name)
                 .filter(id: threadId)
@@ -123,7 +118,12 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
                 .map { $0.profileId }
                 .asSet()
             self?.originalMembersAndZombieIds = uniqueGroupMemberIds
-            self?.hasContactsToAdd = ((try Profile.fetchCount(db) - uniqueGroupMemberIds.count) > 0)
+            self?.hasContactsToAdd = ((try? Profile
+                .allContactProfiles(
+                    excluding: uniqueGroupMemberIds.inserting(userPublicKey)
+                )
+                .fetchCount(db))
+                .defaulting(to: 0) > 0)
         }
         
         setUpViewHierarchy()
@@ -153,17 +153,11 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         
         // Members label
         let membersLabel = UILabel()
-        membersLabel.textColor = Colors.text
         membersLabel.font = .systemFont(ofSize: Values.mediumFontSize)
+        membersLabel.themeTextColor = .textPrimary
         membersLabel.text = "Members"
         
-        // Add members button
-        if !self.hasContactsToAdd {
-            addMembersButton.isUserInteractionEnabled = false
-            let disabledColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
-            addMembersButton.layer.borderColor = disabledColor.cgColor
-            addMembersButton.setTitleColor(disabledColor, for: UIControl.State.normal)
-        }
+        addMembersButton.isEnabled = self.hasContactsToAdd
         
         // Middle stack view
         let middleStackView = UIStackView(arrangedSubviews: [ membersLabel, addMembersButton ])
@@ -199,7 +193,8 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         scrollView.pin(to: view)
     }
 
-    // MARK: Table View Data Source / Delegate
+    // MARK: - Table View Data Source / Delegate
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return membersAndZombies.count
     }
@@ -222,18 +217,23 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return adminIds.contains(userPublicKey)
     }
-
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let profileId: String = self.membersAndZombies[indexPath.row].profileId
         
-        let removeAction = UITableViewRowAction(style: .destructive, title: "Remove") { [weak self] _, _ in
+        let delete: UIContextualAction = UIContextualAction(
+            style: .destructive,
+            title: "Remove"
+        ) { [weak self] _, _, completionHandler in
             self?.adminIds.remove(profileId)
             self?.membersAndZombies.remove(at: indexPath.row)
             self?.handleMembersChanged()
+            
+            completionHandler(true)
         }
-        removeAction.backgroundColor = Colors.destructive
+        delete.themeBackgroundColor = .conversationButton_swipeDestructive
         
-        return [ removeAction ]
+        return UISwipeActionsConfiguration(actions: [ delete ])
     }
 
     // MARK: - Updating
@@ -241,7 +241,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     private func updateNavigationBarButtons() {
         if isEditingGroupName {
             let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancelGroupNameEditingButtonTapped))
-            cancelButton.tintColor = Colors.text
+            cancelButton.themeTintColor = .textPrimary
             navigationItem.leftBarButtonItem = cancelButton
         }
         else {
@@ -249,7 +249,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         }
         
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleDoneButtonTapped))
-        doneButton.tintColor = Colors.text
+        doneButton.themeTintColor = .textPrimary
         navigationItem.rightBarButtonItem = doneButton
     }
 
@@ -305,14 +305,15 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
             return showError(title: "vc_create_closed_group_group_name_too_long_error".localized())
         }
         
-        isEditingGroupName = false
-        groupNameLabel.text = updatedName
+        self.isEditingGroupName = false
+        self.groupNameLabel.text = updatedName
         self.name = updatedName
     }
 
     @objc private func addMembers() {
-        let title = "Add Members"
+        let title: String = "Add Members"
         
+        let userPublicKey: String = self.userPublicKey
         let userSelectionVC: UserSelectionVC = UserSelectionVC(
             with: title,
             excluding: membersAndZombies
@@ -361,16 +362,15 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
                     .map { $0.profileId }
                     .asSet()
                     .inserting(contentsOf: self?.adminIds)
-                self?.hasContactsToAdd = ((try Profile.fetchCount(db) - uniqueGroupMemberIds.count) > 0)
+                self?.hasContactsToAdd = ((try? Profile
+                    .allContactProfiles(
+                        excluding: uniqueGroupMemberIds.inserting(userPublicKey)
+                    )
+                    .fetchCount(db))
+                    .defaulting(to: 0) > 0)
             }
             
-            let color = (self?.hasContactsToAdd == true ?
-                Colors.accent :
-                Colors.text.withAlphaComponent(Values.mediumOpacity)
-            )
-            self?.addMembersButton.isUserInteractionEnabled = (self?.hasContactsToAdd == true)
-            self?.addMembersButton.layer.borderColor = color.cgColor
-            self?.addMembersButton.setTitleColor(color, for: UIControl.State.normal)
+            self?.addMembersButton.isEnabled = (self?.hasContactsToAdd == true)
             self?.handleMembersChanged()
         }
         

@@ -193,19 +193,24 @@ public extension Profile {
 // MARK: - GRDB Interactions
 
 public extension Profile {
+    static func allContactProfiles(excluding idsToExclude: Set<String> = []) -> QueryInterfaceRequest<Profile> {
+        return Profile
+            .filter(!idsToExclude.contains(Profile.Columns.id))
+            .joining(
+                required: Profile.contact
+                    .filter(Contact.Columns.isApproved == true)
+                    .filter(Contact.Columns.didApproveMe == true)
+            )
+    }
+    
     static func fetchAllContactProfiles(excluding: Set<String> = [], excludeCurrentUser: Bool = true) -> [Profile] {
         return Storage.shared
             .read { db in
-                let idsToExclude: Set<String> = excluding
-                    .inserting(excludeCurrentUser ? getUserHexEncodedPublicKey(db) : nil)
-                
                 // Sort the contacts by their displayName value
-                return try Profile
-                    .filter(!idsToExclude.contains(Profile.Columns.id))
-                    .joining(
-                        required: Profile.contact
-                            .filter(Contact.Columns.isApproved == true)
-                            .filter(Contact.Columns.didApproveMe == true)
+                try Profile
+                    .allContactProfiles(
+                        excluding: excluding
+                            .inserting(excludeCurrentUser ? getUserHexEncodedPublicKey(db) : nil)
                     )
                     .fetchAll(db)
                     .sorted(by: { lhs, rhs -> Bool in lhs.displayName() < rhs.displayName() })

@@ -495,7 +495,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
             guard
                 let viewControllers: [UIViewController] = self.navigationController?.viewControllers,
                 viewControllers.count > 1,
-                viewControllers[viewControllers.count - 2] is OWSConversationSettingsViewController
+                (viewControllers[viewControllers.count - 2] as? SettingsViewModelAccessible)?.viewModelType == ThreadSettingsViewModel.self
             else { return }
             
             let detailViewController: UIViewController? = MediaGalleryViewModel.createDetailViewController(

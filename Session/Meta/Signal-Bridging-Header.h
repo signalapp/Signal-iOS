@@ -11,7 +11,6 @@
 #import "AVAudioSession+OWS.h"
 #import "OWSAudioPlayer.h"
 #import "OWSBezierPathView.h"
-#import "OWSConversationSettingsViewController.h"
 #import "OWSMessageTimerView.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"

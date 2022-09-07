@@ -131,35 +131,7 @@ public final class ProfilePictureView: UIView {
         additionalProfilePlaceholderImageView.pin(.top, to: .top, of: additionalImageContainerView, withInset: 3)
         additionalProfilePlaceholderImageView.pin(.left, to: .left, of: additionalImageContainerView)
         additionalProfilePlaceholderImageView.pin(.right, to: .right, of: additionalImageContainerView)
-        additionalProfilePlaceholderImageView.pin(.bottom, to: .bottom, of: additionalImageContainerView, withInset: 3)
-    }
-    
-    // FIXME: Remove this once we refactor the OWSConversationSettingsViewController to Swift (use the HomeViewModel approach)
-    @objc(updateForThreadId:)
-    public func update(forThreadId threadId: String?) {
-        guard
-            let threadId: String = threadId,
-            let viewModel: SessionThreadViewModel = Storage.shared.read({ db -> SessionThreadViewModel? in
-                let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                
-                return try SessionThreadViewModel
-                    .conversationSettingsProfileQuery(threadId: threadId, userPublicKey: userPublicKey)
-                    .fetchOne(db)
-            })
-        else { return }
-        
-        update(
-            publicKey: viewModel.threadId,
-            profile: viewModel.profile,
-            additionalProfile: viewModel.additionalProfile,
-            threadVariant: viewModel.threadVariant,
-            openGroupProfilePictureData: viewModel.openGroupProfilePictureData,
-            useFallbackPicture: (
-                viewModel.threadVariant == .openGroup &&
-                viewModel.openGroupProfilePictureData == nil
-            ),
-            showMultiAvatarForClosedGroup: true
-        )
+        additionalProfilePlaceholderImageView.pin(.bottom, to: .bottom, of: additionalImageContainerView, withInset: 5)
     }
 
     public func update(

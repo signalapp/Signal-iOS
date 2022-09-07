@@ -225,6 +225,13 @@ public enum ThemeManager {
     }
     
     private static func updateAllUI() {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                updateAllUI()
+            }
+            return
+        }
+        
         ThemeManager.uiRegistry.objectEnumerator()?.forEach { applier in
             (applier as? ThemeApplier)?.apply(theme: currentTheme)
         }

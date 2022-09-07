@@ -29,16 +29,25 @@ extension ConversationVC:
     }
 
     @objc func openSettings() {
-        let settingsVC: OWSConversationSettingsViewController = OWSConversationSettingsViewController()
-        settingsVC.configure(
-            withThreadId: viewModel.threadData.threadId,
-            threadName: viewModel.threadData.displayName,
-            isClosedGroup: (viewModel.threadData.threadVariant == .closedGroup),
-            isOpenGroup: (viewModel.threadData.threadVariant == .openGroup),
-            isNoteToSelf: viewModel.threadData.threadIsNoteToSelf
+        let viewController: SettingsTableViewController = SettingsTableViewController(
+            viewModel: ThreadSettingsViewModel(
+                threadId: self.viewModel.threadData.threadId,
+                threadVariant: self.viewModel.threadData.threadVariant,
+                didTriggerSearch: { [weak self] in
+                    DispatchQueue.main.async {
+                        self?.showSearchUI()
+                        self?.popAllConversationSettingsViews {
+                            // Note: Without this delay the search bar doesn't show
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                self?.searchController.uiSearchController.searchBar.becomeFirstResponder()
+                            }
+                        }
+                    }
+                }
+            )
         )
-        settingsVC.conversationSettingsViewDelegate = self
-        navigationController?.pushViewController(settingsVC, animated: true, completion: nil)
+        
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     // MARK: - ScrollToBottomButtonDelegate
@@ -65,8 +74,9 @@ extension ConversationVC:
                     self?.dismiss(animated: true) {
                         let navController: OWSNavigationController = OWSNavigationController(
                             rootViewController: SettingsTableViewController(
-                                viewModel: PrivacySettingsViewModel(),
-                                shouldShowCloseButton: true
+                                viewModel: PrivacySettingsViewModel(
+                                    shouldShowCloseButton: true
+                                )
                             )
                         )
                         navController.modalPresentationStyle = .fullScreen

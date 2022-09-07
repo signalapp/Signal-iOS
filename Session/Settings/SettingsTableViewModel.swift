@@ -1,14 +1,62 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
+import UIKit.UIImage
+import Combine
 import GRDB
 import DifferenceKit
 import SessionUIKit
+import SessionMessagingKit
 import SessionUtilitiesKit
 
-class SettingsTableViewModel<Section: SettingSection, SettingItem: Hashable & Differentiable> {
+class SettingsTableViewModel<NavItemId: Equatable, Section: SettingSection, SettingItem: Hashable & Differentiable> {
     typealias SectionModel = ArraySection<Section, SettingInfo<SettingItem>>
     typealias ObservableData = ValueObservation<ValueReducers.RemoveDuplicates<ValueReducers.Fetch<[SectionModel]>>>
+    
+    var closeNavItemId: NavItemId?
+    
+    // MARK: - Initialization
+    
+    /// Provide a `closeNavItemId` in order to show a close button
+    init(closeNavItemId: NavItemId? = nil) {
+        self.closeNavItemId = closeNavItemId
+    }
+    
+    // MARK: - Input
+    
+    let navItemTapped: PassthroughSubject<NavItemId, Never> = PassthroughSubject()
+    private let _isEditing: CurrentValueSubject<Bool, Never> = CurrentValueSubject(false)
+    lazy var isEditing: AnyPublisher<Bool, Never> = _isEditing
+        .removeDuplicates()
+        .shareReplay(1)
+    
+    // MARK: - Navigation
+    
+    open var leftNavItems: AnyPublisher<[NavItem]?, Never> {
+        guard let closeNavItemId: NavItemId = self.closeNavItemId else {
+            return Just(nil).eraseToAnyPublisher()
+        }
+        
+        return Just([
+            NavItem(
+                id: closeNavItemId,
+                image: UIImage(named: "X")?
+                    .withRenderingMode(.alwaysTemplate),
+                style: .plain,
+                accessibilityIdentifier: "Close Button"
+            )
+        ]).eraseToAnyPublisher()
+    }
+    
+    open var rightNavItems: AnyPublisher<[NavItem]?, Never> { Just(nil).eraseToAnyPublisher() }
+    
+    open var closeScreen: AnyPublisher<Bool, Never> {
+        navItemTapped
+            .filter { [weak self] itemId in itemId == self?.closeNavItemId }
+            .map { _ in true }
+            .eraseToAnyPublisher()
+    }
+    
+    // MARK: - Content
     
     open var title: String { preconditionFailure("abstract class - override in subclass") }
     open var settingsData: [SectionModel] { preconditionFailure("abstract class - override in subclass") }
@@ -20,23 +68,102 @@ class SettingsTableViewModel<Section: SettingSection, SettingItem: Hashable & Di
         preconditionFailure("abstract class - override in subclass")
     }
     
-    func saveChanges() {
-        preconditionFailure("abstract class - override in subclass")
+    func setIsEditing(_ isEditing: Bool) {
+        _isEditing.send(isEditing)
     }
+}
+
+// MARK: - NavItem
+
+public enum NoNav: Equatable {}
+
+extension SettingsTableViewModel {
+    public struct NavItem {
+        let id: NavItemId
+        let image: UIImage?
+        let style: UIBarButtonItem.Style
+        let systemItem: UIBarButtonItem.SystemItem?
+        let accessibilityIdentifier: String
+        
+        // MARK: - Initialization
+        
+        public init(
+            id: NavItemId,
+            systemItem: UIBarButtonItem.SystemItem?,
+            accessibilityIdentifier: String
+        ) {
+            self.id = id
+            self.image = nil
+            self.style = .plain
+            self.systemItem = systemItem
+            self.accessibilityIdentifier = accessibilityIdentifier
+        }
+        
+        public init(
+            id: NavItemId,
+            image: UIImage?,
+            style: UIBarButtonItem.Style,
+            accessibilityIdentifier: String
+        ) {
+            self.id = id
+            self.image = image
+            self.style = style
+            self.systemItem = nil
+            self.accessibilityIdentifier = accessibilityIdentifier
+        }
+        
+        // MARK: - Functions
+        
+        public func createBarButtonItem() -> DisposableBarButtonItem {
+            guard let systemItem: UIBarButtonItem.SystemItem = systemItem else {
+                return DisposableBarButtonItem(
+                    image: image,
+                    style: style,
+                    target: nil,
+                    action: nil,
+                    accessibilityIdentifier: accessibilityIdentifier
+                )
+            }
+
+            return DisposableBarButtonItem(
+                barButtonSystemItem: systemItem,
+                target: nil,
+                action: nil,
+                accessibilityIdentifier: accessibilityIdentifier
+            )
+        }
+    }
+}
+
+// MARK: - SettingSectionHeaderStyle
+
+public enum SettingSectionHeaderStyle: Differentiable {
+    case none
+    case title
+    case padding
 }
 
 // MARK: - SettingSection
 
 protocol SettingSection: Differentiable {
-    var title: String { get }
+    var title: String? { get }
+    var style: SettingSectionHeaderStyle { get }
+}
+
+extension SettingSection {
+    var title: String? { nil }
+    var style: SettingSectionHeaderStyle { .none }
 }
 
 // MARK: - SettingInfo
 
 struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differentiable {
     let id: ID
+    let icon: UIImage?
     let title: String
     let subtitle: String?
+    let alignment: NSTextAlignment
+    let accessibilityIdentifier: String?
     let action: SettingsAction
     let subtitleExtraViewGenerator: (() -> UIView)?
     let extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString)?
@@ -46,16 +173,22 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
     
     init(
         id: ID,
+        icon: UIImage? = nil,
         title: String,
         subtitle: String? = nil,
+        alignment: NSTextAlignment = .left,
+        accessibilityIdentifier: String? = nil,
         subtitleExtraViewGenerator: (() -> UIView)? = nil,
         action: SettingsAction,
         extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString)? = nil,
         onExtraAction: (() -> Void)? = nil
     ) {
         self.id = id
+        self.icon = icon
         self.title = title
         self.subtitle = subtitle
+        self.alignment = alignment
+        self.accessibilityIdentifier = accessibilityIdentifier
         self.subtitleExtraViewGenerator = subtitleExtraViewGenerator
         self.action = action
         self.extraActionTitle = extraActionTitle
@@ -68,17 +201,40 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
     
     func hash(into hasher: inout Hasher) {
         id.hash(into: &hasher)
+        icon.hash(into: &hasher)
         title.hash(into: &hasher)
         subtitle.hash(into: &hasher)
+        alignment.hash(into: &hasher)
+        accessibilityIdentifier.hash(into: &hasher)
         action.hash(into: &hasher)
     }
     
     static func == (lhs: SettingInfo<ID>, rhs: SettingInfo<ID>) -> Bool {
         return (
             lhs.id == rhs.id &&
+            lhs.icon == rhs.icon &&
             lhs.title == rhs.title &&
             lhs.subtitle == rhs.subtitle &&
+            lhs.alignment == rhs.alignment &&
+            lhs.accessibilityIdentifier == rhs.accessibilityIdentifier &&
             lhs.action == rhs.action
+        )
+    }
+    
+    // MARK: - Mutation
+    
+    func with(action: SettingsAction) -> SettingInfo {
+        return SettingInfo(
+            id: self.id,
+            icon: self.icon,
+            title: self.title,
+            subtitle: self.subtitle,
+            alignment: self.alignment,
+            accessibilityIdentifier: self.accessibilityIdentifier,
+            subtitleExtraViewGenerator: self.subtitleExtraViewGenerator,
+            action: action,
+            extraActionTitle: self.extraActionTitle,
+            onExtraAction: self.onExtraAction
         )
     }
 }
@@ -86,24 +242,51 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
 // MARK: - SettingsAction
 
 public enum SettingsAction: Hashable, Equatable {
+    case threadInfo(
+        threadViewModel: SessionThreadViewModel,
+        style: ThreadInfoStyle = ThreadInfoStyle(),
+        createAvatarTapDestination: (() -> UIViewController?)? = nil,
+        titleTapped: (() -> Void)? = nil,
+        titleChanged: ((String) -> Void)? = nil
+    )
     case userDefaultsBool(
         defaults: UserDefaults,
         key: String,
+        isEnabled: Bool = true,
         onChange: (() -> Void)?
     )
     case settingBool(
         key: Setting.BoolKey,
-        confirmationInfo: ConfirmationModal.Info?
+        confirmationInfo: ConfirmationModal.Info?,
+        isEnabled: Bool = true
+    )
+    case customToggle(
+        value: Bool,
+        isEnabled: Bool = true,
+        confirmationInfo: ConfirmationModal.Info? = nil,
+        onChange: ((Bool) -> Void)? = nil
     )
     case settingEnum(
         key: String,
         title: String?,
         createUpdateScreen: () -> UIViewController
     )
+    case generalEnum(
+        title: String?,
+        createUpdateScreen: () -> UIViewController
+    )
     
-    case trigger(action: () -> Void)
-    case push(createDestination: () -> UIViewController)
-    case dangerPush(createDestination: () -> UIViewController)
+    case trigger(
+        showChevron: Bool = true,
+        action: () -> Void
+    )
+    case push(
+        showChevron: Bool = true,
+        textColor: ThemeValue = .textPrimary,
+        shouldHaveBackground: Bool = true,
+        createDestination: () -> UIViewController
+    )
+    case present(createDestination: () -> UIViewController)
     case listSelection(
         isSelected: () -> Bool,
         storedSelection: Bool,
@@ -117,13 +300,16 @@ public enum SettingsAction: Hashable, Equatable {
     
     private var actionName: String {
         switch self {
+            case .threadInfo: return "threadInfo"
             case .userDefaultsBool: return "userDefaultsBool"
             case .settingBool: return "settingBool"
+            case .customToggle: return "customToggle"
             case .settingEnum: return "settingEnum"
+            case .generalEnum: return "generalEnum"
             
             case .trigger: return "trigger"
             case .push: return "push"
-            case .dangerPush: return "dangerPush"
+            case .present: return "present"
             case .listSelection: return "listSelection"
             case .rightButtonAction: return "rightButtonAction"
         }
@@ -131,7 +317,8 @@ public enum SettingsAction: Hashable, Equatable {
     
     var shouldHaveBackground: Bool {
         switch self {
-            case .dangerPush: return false
+            case .threadInfo: return false
+            case .push(_, _, let shouldHaveBackground, _): return shouldHaveBackground
             default: return true
         }
     }
@@ -176,32 +363,76 @@ public enum SettingsAction: Hashable, Equatable {
         actionName.hash(into: &hasher)
         
         switch self {
-            case .userDefaultsBool(_, let key, _): key.hash(into: &hasher)
-            case .settingBool(let key, let confirmationInfo):
+            case .threadInfo(let threadViewModel, let style, _, _, _):
+                threadViewModel.hash(into: &hasher)
+                style.hash(into: &hasher)
+                
+            case .userDefaultsBool(_, let key, let isEnabled, _):
                 key.hash(into: &hasher)
+                isEnabled.hash(into: &hasher)
+                
+            case .settingBool(let key, let confirmationInfo, let isEnabled):
+                key.hash(into: &hasher)
+                confirmationInfo.hash(into: &hasher)
+                isEnabled.hash(into: &hasher)
+                
+            case .customToggle(let value, let isEnabled, let confirmationInfo, _):
+                value.hash(into: &hasher)
+                isEnabled.hash(into: &hasher)
                 confirmationInfo.hash(into: &hasher)
                 
             case .settingEnum(let key, let title, _):
                 key.hash(into: &hasher)
                 title.hash(into: &hasher)
                 
+            case .generalEnum(let title, _):
+                title.hash(into: &hasher)
+                
+            case .trigger(let showChevron, _):
+                showChevron.hash(into: &hasher)
+                
+            case .push(let showChevron, let textColor, let shouldHaveBackground, _):
+                showChevron.hash(into: &hasher)
+                textColor.hash(into: &hasher)
+                shouldHaveBackground.hash(into: &hasher)
+                
+            case .present(_): break
+                
             case .listSelection(let isSelected, let storedSelection, let shouldAutoSave, _):
                 isSelected().hash(into: &hasher)
                 storedSelection.hash(into: &hasher)
                 shouldAutoSave.hash(into: &hasher)
-            
-            default: break
+                
+            case .rightButtonAction(let title, _):
+                title.hash(into: &hasher)
         }
     }
     
     public static func == (lhs: SettingsAction, rhs: SettingsAction) -> Bool {
         switch (lhs, rhs) {
-            case (.userDefaultsBool(_, let lhsKey, _), .userDefaultsBool(_, let rhsKey, _)):
-                return (lhsKey == rhsKey)
-            
-            case (.settingBool(let lhsKey, let lhsConfirmationInfo), .settingBool(let rhsKey, let rhsConfirmationInfo)):
+            case (.threadInfo(let lhsThreadViewModel, let lhsStyle, _, _, _), .threadInfo(let rhsThreadViewModel, let rhsStyle, _, _, _)):
+                return (
+                    lhsThreadViewModel == rhsThreadViewModel &&
+                    lhsStyle == rhsStyle
+                )
+                
+            case (.userDefaultsBool(_, let lhsKey, let lhsIsEnabled, _), .userDefaultsBool(_, let rhsKey, let rhsIsEnabled, _)):
                 return (
                     lhsKey == rhsKey &&
+                    lhsIsEnabled == rhsIsEnabled
+                )
+            
+            case (.settingBool(let lhsKey, let lhsConfirmationInfo, let lhsIsEnabled), .settingBool(let rhsKey, let rhsConfirmationInfo, let rhsIsEnabled)):
+                return (
+                    lhsKey == rhsKey &&
+                    lhsConfirmationInfo == rhsConfirmationInfo &&
+                    lhsIsEnabled == rhsIsEnabled
+                )
+            
+            case (.customToggle(let lhsValue, let lhsIsEnabled, let lhsConfirmationInfo, _), .customToggle(let rhsValue, let rhsIsEnabled, let rhsConfirmationInfo, _)):
+                return (
+                    lhsValue == rhsValue &&
+                    lhsIsEnabled == rhsIsEnabled &&
                     lhsConfirmationInfo == rhsConfirmationInfo
                 )
                 
@@ -211,6 +442,21 @@ public enum SettingsAction: Hashable, Equatable {
                     lhsTitle == rhsTitle
                 )
                 
+            case (.generalEnum(let lhsTitle, _), .generalEnum(let rhsTitle, _)):
+                return (lhsTitle == rhsTitle)
+                
+            case (.trigger(let lhsShowChevron, _), .trigger(let rhsShowChevron, _)):
+                return (lhsShowChevron == rhsShowChevron)
+                
+            case (.push(let lhsShowChevron, let lhsTextColor, let lhsHasBackground, _), .push(let rhsShowChevron, let rhsTextColor, let rhsHasBackground, _)):
+                return (
+                    lhsShowChevron == rhsShowChevron &&
+                    lhsTextColor == rhsTextColor &&
+                    lhsHasBackground == rhsHasBackground
+                )
+                
+            case (.present(_), .present(_)): return true
+                
             case (.listSelection(let lhsIsSelected, let lhsStoredSelection, let lhsShouldAutoSave, _), .listSelection(let rhsIsSelected, let rhsStoredSelection, let rhsShouldAutoSave, _)):
                 return (
                     lhsIsSelected() == rhsIsSelected() &&
@@ -218,7 +464,47 @@ public enum SettingsAction: Hashable, Equatable {
                     lhsShouldAutoSave == rhsShouldAutoSave
                 )
                 
+            case (.rightButtonAction(let lhsTitle, _), .rightButtonAction(let rhsTitle, _)):
+                return (lhsTitle == rhsTitle)
+                
             default: return false
         }
+    }
+}
+
+// MARK: - ThreadInfoStyle
+
+public struct ThreadInfoStyle: Hashable, Equatable {
+    public enum Style: Hashable, Equatable {
+        case small
+        case monoSmall
+        case monoLarge
+    }
+    
+    public struct Action: Hashable, Equatable {
+        let title: String
+        let run: () -> ()
+        
+        public func hash(into hasher: inout Hasher) {
+            title.hash(into: &hasher)
+        }
+        
+        public static func == (lhs: Action, rhs: Action) -> Bool {
+            return (lhs.title == rhs.title)
+        }
+    }
+    
+    public let separatorTitle: String?
+    public let descriptionStyle: Style
+    public let descriptionActions: [Action]
+    
+    public init(
+        separatorTitle: String? = nil,
+        descriptionStyle: Style = .monoSmall,
+        descriptionActions: [Action] = []
+    ) {
+        self.separatorTitle = separatorTitle
+        self.descriptionStyle = descriptionStyle
+        self.descriptionActions = descriptionActions
     }
 }

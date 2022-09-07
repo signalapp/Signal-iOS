@@ -20,6 +20,7 @@ public enum MentionUtilities {
             currentUserBlindedPublicKey: currentUserBlindedPublicKey,
             isOutgoingMessage: false,
             textColor: .black,
+            theme: .classicDark,
             primaryColor: Theme.PrimaryColor.green,
             attributes: [:]
         ).string
@@ -32,6 +33,7 @@ public enum MentionUtilities {
         currentUserBlindedPublicKey: String?,
         isOutgoingMessage: Bool,
         textColor: UIColor,
+        theme: Theme,
         primaryColor: Theme.PrimaryColor,
         attributes: [NSAttributedString.Key: Any]
     ) -> NSAttributedString {
@@ -102,7 +104,10 @@ public enum MentionUtilities {
             else {
                 result.addAttribute(
                     .foregroundColor,
-                    value: (isOutgoingMessage ? primaryColor.color : textColor),
+                    value: (isOutgoingMessage || theme.interfaceStyle == .light ?
+                        textColor :
+                        primaryColor.color
+                    ),
                     range: mention.range
                 )
             }

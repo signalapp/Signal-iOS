@@ -28,7 +28,12 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
     }()
     
 #if targetEnvironment(simulator)
-    // Note: 'RTCMTLVideoView' doesn't seem to work on the simulator so use 'RTCEAGLVideoView' instead
+    /// **Note:** `RTCMTLVideoView` doesn't seem to work on the simulator so use `RTCEAGLVideoView` instead
+    ///
+    /// Unfortunately this seems to have some issues on M1 macs where an `EXC_BAD_ACCESS` can be thrown when stopping and
+    /// starting playback (eg. when swapping to the `MiniCallView` while on a video call, as such there isn't much we can do to
+    /// resolve this issue but it should only occur on the Simulator on M1 Macs
+    /// (see https://code.videolan.org/videolan/VLCKit/-/issues/566 for more information)
     private lazy var remoteVideoView: RTCEAGLVideoView = {
         let result = RTCEAGLVideoView()
         result.delegate = self
@@ -123,8 +128,8 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
         background.pin(to: result)
         
         let imageView = UIImageView()
+        imageView.clipsToBounds = true
         imageView.layer.cornerRadius = 32
-        imageView.layer.masksToBounds = true
         imageView.contentMode = .scaleAspectFill
         imageView.image = callVC.call.profilePicture
         result.addSubview(imageView)

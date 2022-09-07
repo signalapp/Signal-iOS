@@ -8,8 +8,8 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
-    private static let loadingHeaderHeight: CGFloat = 20
+final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITableViewDataSource, UITableViewDelegate {
+    private static let loadingHeaderHeight: CGFloat = 40
     
     internal let viewModel: ConversationViewModel
     private var dataChangeObservable: DatabaseCancellable?
@@ -774,25 +774,31 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
                     numRowsInSections == numItemsInUpdatedData
                 },
                 then: { [weak self] in
-                    UIView.performWithoutAnimation {
-                        let calculatedRowHeights: CGFloat = (0..<itemChangeInfo.visibleIndexPath.row)
-                            .reduce(into: 0) { result, next in
-                                result += (self?.tableView
-                                    .rectForRow(
-                                        at: IndexPath(
-                                            row: next,
-                                            section: itemChangeInfo.visibleIndexPath.section
+                    // Only recalculate the contentOffset when loading new data if the amount of data
+                    // loaded was smaller than 2 pages (this will prevent calculating the frames of
+                    // a large number of cells when getting search results which are very far away
+                    // only to instantly start scrolling making the calculation redundant)
+                    if (abs(itemChangeInfo.visibleIndexPath.row - itemChangeInfo.oldVisibleIndexPath.row) <= (ConversationViewModel.pageSize * 2)) {
+                        UIView.performWithoutAnimation {
+                            let calculatedRowHeights: CGFloat = (0..<itemChangeInfo.visibleIndexPath.row)
+                                .reduce(into: 0) { result, next in
+                                    result += (self?.tableView
+                                        .rectForRow(
+                                            at: IndexPath(
+                                                row: next,
+                                                section: itemChangeInfo.visibleIndexPath.section
+                                            )
                                         )
-                                    )
-                                    .height)
-                                    .defaulting(to: 0)
-                            }
-                        let newTargetHeight: CGFloat? = self?.tableView
-                            .rectForRow(at: itemChangeInfo.visibleIndexPath)
-                            .height
-                        let heightDiff: CGFloat = (oldCellHeight - (newTargetHeight ?? oldCellHeight))
-                        
-                        self?.tableView.contentOffset.y += (calculatedRowHeights - heightDiff)
+                                        .height)
+                                        .defaulting(to: 0)
+                                }
+                            let newTargetHeight: CGFloat? = self?.tableView
+                                .rectForRow(at: itemChangeInfo.visibleIndexPath)
+                                .height
+                            let heightDiff: CGFloat = (oldCellHeight - (newTargetHeight ?? oldCellHeight))
+                            
+                            self?.tableView.contentOffset.y += (calculatedRowHeights - heightDiff)
+                        }
                     }
                     
                     if let focusedInteractionId: Int64 = self?.focusedInteractionId {
@@ -1320,19 +1326,19 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
 
     // MARK: - Search
     
-    func conversationSettingsDidRequestConversationSearch(_ conversationSettingsViewController: OWSConversationSettingsViewController) {
-        showSearchUI()
-        
-        guard presentedViewController != nil else {
-            self.navigationController?.popToViewController(self, animated: true, completion: nil)
-            return
+    func popAllConversationSettingsViews(completion completionBlock: (() -> Void)? = nil) {
+        if presentedViewController != nil {
+            dismiss(animated: true) { [weak self] in
+                guard let strongSelf: UIViewController = self else { return }
+                
+                self?.navigationController?.popToViewController(strongSelf, animated: true, completion: completionBlock)
+            }
         }
-        
-        dismiss(animated: true) {
-            self.navigationController?.popToViewController(self, animated: true, completion: nil)
+        else {
+            navigationController?.popToViewController(self, animated: true, completion: completionBlock)
         }
     }
-
+    
     func showSearchUI() {
         isShowingSearchUI = true
         
@@ -1353,7 +1359,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         // See more https://developer.apple.com/documentation/uikit/uisearchbar/1624283-showscancelbutton?language=objc
         if UIDevice.current.isIPad {
             let ipadCancelButton = UIButton()
-            ipadCancelButton.setTitle("Cancel", for: .normal)
+            ipadCancelButton.setTitle("cancel".localized(), for: .normal)
             ipadCancelButton.addTarget(self, action: #selector(hideSearchUI), for: .touchUpInside)
             ipadCancelButton.setTitleColor(Colors.text, for: .normal)
             searchBarContainer.addSubview(ipadCancelButton)
@@ -1361,7 +1367,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             ipadCancelButton.autoVCenterInSuperview()
             searchBar.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .trailing)
             searchBar.pin(.trailing, to: .leading, of: ipadCancelButton, withInset: -Values.smallSpacing)
-        } else {
+        }
+        else {
             searchBar.autoPinEdgesToSuperviewMargins()
         }
         
@@ -1413,7 +1420,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     func didDismissSearchController(_ searchController: UISearchController) {
         hideSearchUI()
     }
-
+    
     func conversationSearchController(_ conversationSearchController: ConversationSearchController, didUpdateSearchResults results: [Int64]?, searchText: String?) {
         viewModel.lastSearchedText = searchText
         tableView.reloadRows(at: tableView.indexPathsForVisibleRows ?? [], with: UITableView.RowAnimation.none)

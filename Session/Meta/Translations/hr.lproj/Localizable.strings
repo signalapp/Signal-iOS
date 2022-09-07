@@ -130,6 +130,8 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Ovaj je postupak nepovratan.";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Obriši razgovor?";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Nema podudaranja";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -510,6 +512,7 @@
 "vc_join_public_chat_scan_qr_code_explanation" = "Skenirajte QR kôd otvorene grupe kojoj se želite pridružiti";
 "vc_enter_chat_url_text_field_hint" = "Unesite poveznicu otvorene grupe";
 "vc_settings_title" = "Postavke";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_text_field_hint" = "Unesite ime za prikaz";
 "vc_settings_display_name_missing_error" = "Molimo odaberite svoje ime za prikaz";
 "vc_settings_display_name_too_long_error" = "Odaberite kraće ime za prikaz";
@@ -776,3 +779,5 @@
 "modal_permission_camera" = "camera";
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"COPY_GROUP_URL" = "Copy Group URL";

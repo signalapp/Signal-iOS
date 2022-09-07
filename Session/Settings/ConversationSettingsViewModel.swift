@@ -7,7 +7,7 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class ConversationSettingsViewModel: SettingsTableViewModel<ConversationSettingsViewModel.Section, ConversationSettingsViewModel.Section> {
+class ConversationSettingsViewModel: SettingsTableViewModel<NoNav, ConversationSettingsViewModel.Section, ConversationSettingsViewModel.Section> {
     // MARK: - Section
     
     public enum Section: SettingSection {
@@ -15,11 +15,18 @@ class ConversationSettingsViewModel: SettingsTableViewModel<ConversationSettings
         case audioMessages
         case blockedContacts
         
-        var title: String {
+        var title: String? {
             switch self {
                 case .messageTrimming: return "CONVERSATION_SETTINGS_SECTION_MESSAGE_TRIMMING".localized()
                 case .audioMessages: return "CONVERSATION_SETTINGS_SECTION_AUDIO_MESSAGES".localized()
-                case .blockedContacts: return ""   // No title
+                case .blockedContacts: return nil
+            }
+        }
+        
+        var style: SettingSectionHeaderStyle {
+            switch self {
+                case .blockedContacts: return .padding
+                default: return .title
             }
         }
     }
@@ -71,9 +78,11 @@ class ConversationSettingsViewModel: SettingsTableViewModel<ConversationSettings
                         SettingInfo(
                             id: .blockedContacts,
                             title: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE".localized(),
-                            action: .dangerPush(createDestination: {
-                                BlockedContactsViewController()
-                            })
+                            action: .push(
+                                showChevron: false,
+                                textColor: .danger,
+                                shouldHaveBackground: false
+                            ) { BlockedContactsViewController() }
                         )
                     ]
                 )
@@ -86,6 +95,4 @@ class ConversationSettingsViewModel: SettingsTableViewModel<ConversationSettings
     public override func updateSettings(_ updatedSettings: [SectionModel]) {
         self._settingsData = updatedSettings
     }
-    
-    public override func saveChanges() {}
 }

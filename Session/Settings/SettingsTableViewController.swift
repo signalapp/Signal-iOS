@@ -1,19 +1,26 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import Combine
 import GRDB
 import DifferenceKit
 import SessionUIKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable & Differentiable>: BaseVC, UITableViewDataSource, UITableViewDelegate {
-    typealias SectionModel = SettingsTableViewModel<Section, SettingItem>.SectionModel
+protocol SettingsViewModelAccessible {
+    var viewModelType: AnyObject.Type { get }
+}
+
+class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection, SettingItem: Hashable & Differentiable>: BaseVC, UITableViewDataSource, UITableViewDelegate, SettingsViewModelAccessible {
+    typealias SectionModel = SettingsTableViewModel<NavItemId, Section, SettingItem>.SectionModel
     
-    private let viewModel: SettingsTableViewModel<Section, SettingItem>
-    private let shouldShowCloseButton: Bool
+    private let viewModel: SettingsTableViewModel<NavItemId, Section, SettingItem>
     private var dataChangeObservable: DatabaseCancellable?
     private var hasLoadedInitialSettingsData: Bool = false
+    private var disposables: Set<AnyCancellable> = Set()
+    
+    public var viewModelType: AnyObject.Type { return type(of: viewModel) }
     
     // MARK: - Components
     
@@ -24,6 +31,7 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
         result.backgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.showsHorizontalScrollIndicator = false
+        result.register(view: SettingsAvatarCell.self)
         result.register(view: SettingsCell.self)
         result.registerHeaderFooterView(view: SettingHeaderView.self)
         result.dataSource = self
@@ -38,9 +46,8 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
     
     // MARK: - Initialization
     
-    init(viewModel: SettingsTableViewModel<Section, SettingItem>, shouldShowCloseButton: Bool = false) {
+    init(viewModel: SettingsTableViewModel<NavItemId, Section, SettingItem>) {
         self.viewModel = viewModel
-        self.shouldShowCloseButton = shouldShowCloseButton
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -68,6 +75,7 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
         view.addSubview(tableView)
         
         setupLayout()
+        setupBinding()
         
         // Notifications
         NotificationCenter.default.addObserver(
@@ -142,9 +150,6 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
             return
         }
         
-        // Navigation bar
-        updateNavigation(updatedData)
-        
         // Reload the table content (animate changes after the first load)
         tableView.reload(
             using: StagedChangeset(source: viewModel.settingsData, target: updatedData),
@@ -160,41 +165,83 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
         }
     }
     
-    private func updateNavigation(_ data: [SectionModel]) {
-        guard
-            case .listSelection(_, _, let shouldAutoSave, _) = data.first?.elements.first?.action,
-            !shouldAutoSave
-        else {
-            navigationItem.leftBarButtonItem = {
-                guard shouldShowCloseButton else { return nil }
+    // MARK: - Binding
+
+    private func setupBinding() {
+        viewModel.isEditing
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isEditing in
+                self?.setEditing(isEditing, animated: true)
                 
-                return UIBarButtonItem(
-                    image: UIImage(named: "X")?.withRenderingMode(.alwaysTemplate),
-                    style: .plain,
-                    target: self,
-                    action: #selector(closePressed)
-                )
-            }()
-            navigationItem.rightBarButtonItem = nil
-            return
-        }
-        
-        let isStoredSelected: Bool = (data.first?.elements ?? []).contains { info in
-            switch info.action {
-                case .listSelection(let isSelected, let storedSelection, _, _):
-                    return (isSelected() && storedSelection)
-                    
-                default: return false
+                self?.tableView.visibleCells.forEach { cell in
+                    switch cell {
+                        case let settingsCell as SettingsCell:
+                            settingsCell.update(isEditing: isEditing, animated: true)
+                            
+                        case let avatarCell as SettingsAvatarCell:
+                            avatarCell.update(isEditing: isEditing, animated: true)
+                            
+                        default: break
+                    }
+                }
             }
-        }
+            .store(in: &disposables)
         
-        let cancelButton: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonPressed))
-        cancelButton.themeTintColor = .textPrimary
-        navigationItem.leftBarButtonItem = cancelButton
+        viewModel.leftNavItems
+            .receiveOnMainImmediately()
+            .sink { [weak self] maybeItems in
+                self?.navigationItem.setLeftBarButtonItems(
+                    maybeItems.map { items in
+                        items.map { item -> DisposableBarButtonItem in
+                            let buttonItem: DisposableBarButtonItem = item.createBarButtonItem()
+                            buttonItem.themeTintColor = .textPrimary
+
+                            buttonItem.tapPublisher
+                                .map { _ in item.id }
+                                .sink(into: self?.viewModel.navItemTapped)
+                                .store(in: &buttonItem.disposables)
+
+                            return buttonItem
+                        }
+                    },
+                    animated: true
+                )
+            }
+            .store(in: &disposables)
+
+        viewModel.rightNavItems
+            .receiveOnMainImmediately()
+            .sink { [weak self] maybeItems in
+                self?.navigationItem.setRightBarButtonItems(
+                    maybeItems.map { items in
+                        items.map { item -> DisposableBarButtonItem in
+                            let buttonItem: DisposableBarButtonItem = item.createBarButtonItem()
+                            buttonItem.themeTintColor = .textPrimary
+
+                            buttonItem.tapPublisher
+                                .map { _ in item.id }
+                                .sink(into: self?.viewModel.navItemTapped)
+                                .store(in: &buttonItem.disposables)
+
+                            return buttonItem
+                        }
+                    },
+                    animated: true
+                )
+            }
+            .store(in: &disposables)
         
-        let saveButton: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveButtonPressed))
-        saveButton.themeTintColor = .textPrimary
-        navigationItem.rightBarButtonItem = (isStoredSelected ? nil : saveButton)
+        viewModel.closeScreen
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] shouldDismiss in
+                guard shouldDismiss else {
+                    self?.navigationController?.popViewController(animated: true)
+                    return
+                }
+                
+                self?.navigationController?.dismiss(animated: true)
+            }
+            .store(in: &disposables)
     }
     
     // MARK: - UITableViewDataSource
@@ -211,30 +258,75 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
         let section: SectionModel = viewModel.settingsData[indexPath.section]
         let settingInfo: SettingInfo<SettingItem> = section.elements[indexPath.row]
         
-        let cell: SettingsCell = tableView.dequeue(type: SettingsCell.self, for: indexPath)
-        cell.update(
-            title: settingInfo.title,
-            subtitle: settingInfo.subtitle,
-            subtitleExtraViewGenerator: settingInfo.subtitleExtraViewGenerator,
-            action: settingInfo.action,
-            extraActionTitle: settingInfo.extraActionTitle,
-            onExtraAction: settingInfo.onExtraAction,
-            isFirstInSection: (indexPath.row == 0),
-            isLastInSection: (indexPath.row == (section.elements.count - 1))
-        )
-        
-        return cell
+        switch settingInfo.action {
+            case .threadInfo(let threadViewModel, let style, let createAvatarTapDestination, let titleTapped, let titleChanged):
+                let cell: SettingsAvatarCell = tableView.dequeue(type: SettingsAvatarCell.self, for: indexPath)
+                cell.update(
+                    threadViewModel: threadViewModel,
+                    style: style
+                )
+                cell.update(isEditing: self.isEditing, animated: false)
+                
+                cell.profilePictureTapPublisher
+                    .sink(receiveValue: { [weak self] _ in
+                        guard let viewController: UIViewController = createAvatarTapDestination?() else {
+                            return
+                        }
+                        
+                        self?.present(viewController, animated: true, completion: nil)
+                    })
+                    .store(in: &cell.disposables)
+                
+                cell.displayNameTapPublisher
+                    .filter { _ in threadViewModel.threadVariant == .contact }
+                    .sink(receiveValue: { _ in titleTapped?() })
+                    .store(in: &cell.disposables)
+                
+                cell.textPublisher
+                    .sink(receiveValue: { text in titleChanged?(text) })
+                    .store(in: &cell.disposables)
+                
+                return cell
+                
+            default:
+                let cell: SettingsCell = tableView.dequeue(type: SettingsCell.self, for: indexPath)
+                cell.update(
+                    icon: settingInfo.icon,
+                    title: settingInfo.title,
+                    subtitle: settingInfo.subtitle,
+                    alignment: settingInfo.alignment,
+                    accessibilityIdentifier: settingInfo.accessibilityIdentifier,
+                    subtitleExtraViewGenerator: settingInfo.subtitleExtraViewGenerator,
+                    action: settingInfo.action,
+                    extraActionTitle: settingInfo.extraActionTitle,
+                    onExtraAction: settingInfo.onExtraAction,
+                    isFirstInSection: (indexPath.row == 0),
+                    isLastInSection: (indexPath.row == (section.elements.count - 1))
+                )
+                cell.update(isEditing: self.isEditing, animated: false)
+                
+                return cell
+        }
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let section: SectionModel = viewModel.settingsData[section]
-        let view: SettingHeaderView = tableView.dequeueHeaderFooterView(type: SettingHeaderView.self)
-        view.update(
-            with: section.model.title,
-            hasSeparator: (section.elements.first?.action.shouldHaveBackground != false)
-        )
         
-        return view
+        switch section.model.style {
+            case .none:
+                let result: UIView = UIView()
+                result.set(.height, to: 0)
+                return result
+            
+            case .padding, .title:
+                let result: SettingHeaderView = tableView.dequeueHeaderFooterView(type: SettingHeaderView.self)
+                result.update(
+                    with: section.model.title,
+                    hasSeparator: (section.elements.first?.action.shouldHaveBackground != false)
+                )
+                
+                return result
+        }
     }
     
     // MARK: - UITableViewDelegate
@@ -254,7 +346,9 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
         let settingInfo: SettingInfo<SettingItem> = section.elements[indexPath.row]
 
         switch settingInfo.action {
-            case .trigger(let action):
+            case .threadInfo: break
+            
+            case .trigger(_, let action):
                 action()
                 
             case .rightButtonAction(_, let action):
@@ -264,12 +358,15 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
                 
                 action(cell.rightActionButtonContainerView)
                 
-            case .userDefaultsBool(let defaults, let key, let onChange):
+            case .userDefaultsBool(let defaults, let key, let isEnabled, let onChange):
+                guard isEnabled else { return }
+                
                 defaults.set(!defaults.bool(forKey: key), forKey: key)
                 manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
                 onChange?()
                 
-            case .settingBool(let key, let confirmationInfo):
+            case .settingBool(let key, let confirmationInfo, let isEnabled):
+                guard isEnabled else { return }
                 guard
                     let confirmationInfo: ConfirmationModal.Info = confirmationInfo,
                     confirmationInfo.stateToShow.shouldShow(for: Storage.shared[key])
@@ -290,10 +387,69 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
                 )
                 present(confirmationModal, animated: true, completion: nil)
             
-            case .push(let createDestination), .dangerPush(let createDestination),
-                    .settingEnum(_, _, let createDestination):
+            case .customToggle(let value, let isEnabled, let confirmationInfo, let onChange):
+                guard isEnabled else { return }
+                
+                let updatedValue: Bool = !value
+                let performChange: () -> () = { [weak self] in
+                    self?.manuallyReload(
+                        indexPath: indexPath,
+                        section: section,
+                        settingInfo: settingInfo
+                            .with(
+                                action: .customToggle(
+                                    value: updatedValue,
+                                    isEnabled: isEnabled,
+                                    onChange: onChange
+                                )
+                            )
+                    )
+                    onChange?(updatedValue)
+                    
+                    // In this case we need to restart the database observation to force a re-query as
+                    // the change here might not actually trigger a database update so the content wouldn't
+                    // be updated
+                    self?.stopObservingChanges()
+                    self?.startObservingChanges()
+                }
+                
+                guard
+                    let confirmationInfo: ConfirmationModal.Info = confirmationInfo,
+                    confirmationInfo.stateToShow.shouldShow(for: value)
+                else {
+                    performChange()
+                    return
+                }
+                
+                // Show a confirmation modal before continuing
+                let confirmationModal: ConfirmationModal = ConfirmationModal(
+                    info: confirmationInfo
+                        .with(onConfirm: { [weak self] _ in
+                            performChange()
+                            
+                            self?.dismiss(animated: true) {
+                                guard let strongSelf: UIViewController = self else { return }
+                                
+                                confirmationInfo.onConfirm?(strongSelf)
+                            }
+                        })
+                )
+                present(confirmationModal, animated: true, completion: nil)
+            
+            case .push(_, _, _, let createDestination), .settingEnum(_, _, let createDestination), .generalEnum(_, let createDestination):
                 let viewController: UIViewController = createDestination()
                 navigationController?.pushViewController(viewController, animated: true)
+                
+            case .present(let createDestination):
+                let viewController: UIViewController = createDestination()
+                
+                if UIDevice.current.isIPad {
+                    viewController.popoverPresentationController?.permittedArrowDirections = []
+                    viewController.popoverPresentationController?.sourceView = self.view
+                    viewController.popoverPresentationController?.sourceRect = self.view.bounds
+                }
+                
+                navigationController?.present(viewController, animated: true)
                 
             case .listSelection(_, _, let shouldAutoSave, let selectValue):
                 let maybeOldSelection: (Int, SettingInfo<SettingItem>)? = section.elements
@@ -306,7 +462,6 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
                     })
                 
                 selectValue()
-                updateNavigation(viewModel.settingsData)
                 manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
                 
                 // Update the old selection as well
@@ -335,8 +490,11 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
         // Try update the existing cell to have a nice animation instead of reloading the cell
         if let existingCell: SettingsCell = tableView.cellForRow(at: indexPath) as? SettingsCell {
             existingCell.update(
+                icon: settingInfo.icon,
                 title: settingInfo.title,
                 subtitle: settingInfo.subtitle,
+                alignment: settingInfo.alignment,
+                accessibilityIdentifier: settingInfo.accessibilityIdentifier,
                 subtitleExtraViewGenerator: settingInfo.subtitleExtraViewGenerator,
                 action: settingInfo.action,
                 extraActionTitle: settingInfo.extraActionTitle,
@@ -348,100 +506,5 @@ class SettingsTableViewController<Section: SettingSection, SettingItem: Hashable
         else {
             tableView.reloadRows(at: [indexPath], with: .none)
         }
-    }
-    
-    // MARK: - NavigationActions
-    
-    @objc private func closePressed() {
-        navigationController?.dismiss(animated: true)
-    }
-    
-    @objc private func cancelButtonPressed() {
-        navigationController?.popViewController(animated: true)
-    }
-    
-    @objc private func saveButtonPressed() {
-        viewModel.saveChanges()
-        
-        navigationController?.popViewController(animated: true)
-    }
-}
-
-// MARK: - SettingHeaderView
-
-class SettingHeaderView: UITableViewHeaderFooterView {
-    private lazy var emptyHeightConstraint: NSLayoutConstraint = self.heightAnchor
-        .constraint(equalToConstant: (Values.verySmallSpacing * 2))
-    private lazy var filledHeightConstraint: NSLayoutConstraint = self.heightAnchor
-        .constraint(greaterThanOrEqualToConstant: Values.mediumSpacing)
-    
-    // MARK: - UI
-    
-    private let stackView: UIStackView = {
-        let result: UIStackView = UIStackView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.axis = .vertical
-        result.distribution = .fill
-        result.alignment = .fill
-        result.isLayoutMarginsRelativeArrangement = true
-        
-        return result
-    }()
-    
-    private let titleLabel: UILabel = {
-        let result: UILabel = UILabel()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = .systemFont(ofSize: Values.mediumFontSize)
-        result.themeTextColor = .textSecondary
-        
-        return result
-    }()
-    
-    private let separator: UIView = UIView.separator()
-    
-    // MARK: - Initialization
-    
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
-        
-        self.backgroundView = UIView()
-        self.backgroundView?.themeBackgroundColor = .backgroundPrimary
-        
-        addSubview(stackView)
-        addSubview(separator)
-        
-        stackView.addArrangedSubview(titleLabel)
-        
-        setupLayout()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func setupLayout() {
-        stackView.pin(to: self)
-        
-        separator.pin(.left, to: .left, of: self)
-        separator.pin(.right, to: .right, of: self)
-        separator.pin(.bottom, to: .bottom, of: self)
-    }
-    
-    // MARK: - Content
-    
-    fileprivate func update(with title: String, hasSeparator: Bool) {
-        titleLabel.text = title
-        titleLabel.isHidden = title.isEmpty
-        stackView.layoutMargins = UIEdgeInsets(
-            top: (title.isEmpty ? Values.verySmallSpacing : Values.mediumSpacing),
-            left: Values.largeSpacing,
-            bottom: (title.isEmpty ? Values.verySmallSpacing : Values.mediumSpacing),
-            right: Values.largeSpacing
-        )
-        emptyHeightConstraint.isActive = title.isEmpty
-        filledHeightConstraint.isActive = !title.isEmpty
-        separator.isHidden = !hasSeparator
-        
-        self.layoutIfNeeded()
     }
 }

@@ -7,13 +7,11 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class NotificationContentViewModel: SettingsTableViewModel<NotificationSettingsViewModel.Section, Preferences.NotificationPreviewType> {
+class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSettingsViewModel.Section, Preferences.NotificationPreviewType> {
     // MARK: - Section
     
     public enum Section: SettingSection {
         case content
-        
-        var title: String { return "" }   // No title
     }
     
     // MARK: - Content
@@ -67,6 +65,4 @@ class NotificationContentViewModel: SettingsTableViewModel<NotificationSettingsV
     public override func updateSettings(_ updatedSettings: [SectionModel]) {
         self._settingsData = updatedSettings
     }
-    
-    public override func saveChanges() {}
 }

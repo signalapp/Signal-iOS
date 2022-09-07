@@ -725,21 +725,23 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     }
 
     func highlight() {
-        // FIXME: This will have issues with themes
-        let shawdowColour = (isLightMode ? UIColor.black.cgColor : Colors.accent.cgColor)
+        let shadowColor: ThemeValue = (ThemeManager.currentTheme.interfaceStyle == .light ?
+            .black :
+            .primary
+        )
         let opacity: Float = (isLightMode ? 0.5 : 1)
         
         DispatchQueue.main.async { [weak self] in
             let oldMasksToBounds: Bool = (self?.layer.masksToBounds ?? false)
             self?.layer.masksToBounds = false
-            self?.bubbleBackgroundView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shawdowColour)
+            self?.bubbleBackgroundView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shadowColor)
             
             UIView.animate(
                 withDuration: 1.6,
                 delay: 0,
                 options: .curveEaseInOut,
                 animations: {
-                    self?.bubbleBackgroundView.setShadow(radius: 0, opacity: 0, offset: .zero, color: UIColor.clear.cgColor)
+                    self?.bubbleBackgroundView.setShadow(radius: 0, opacity: 0, offset: .zero, color: .clear)
                 },
                 completion: { _ in
                     self?.layer.masksToBounds = oldMasksToBounds
@@ -1036,6 +1038,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                     currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
                     isOutgoingMessage: isOutgoing,
                     textColor: actualTextColor,
+                    theme: theme,
                     primaryColor: primaryColor,
                     attributes: [
                         .foregroundColor: actualTextColor,
