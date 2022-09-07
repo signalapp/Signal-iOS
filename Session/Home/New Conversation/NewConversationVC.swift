@@ -1,8 +1,14 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import GRDB
+import PromiseKit
+import SessionUIKit
+import SessionMessagingKit
 
 final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSource {
+    private let contactProfiles: [Profile] = Profile.fetchAllContactProfiles(excludeCurrentUser: true)
+    private var groupedContacts: OrderedDictionary<String, [Profile]> = OrderedDictionary()
     
     // MARK: - UI
     
@@ -63,12 +69,12 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         super.viewDidLoad()
         setUpNavBarStyle()
         setNavBarTitle(NSLocalizedString("vc_new_conversation_title", comment: ""))
-        let navigationBar = navigationController!.navigationBar
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
         setUpViewHierarchy()
+        populateData()
     }
     
     private func setUpViewHierarchy() {
@@ -86,6 +92,14 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         contactsTableView.pin(.top, to: .bottom, of: contactsTitleLabel, withInset: Values.smallSpacing)
     }
     
+    private func populateData() {
+        contactProfiles.map{ profile in
+            let latinString = NSMutableString(string: profile.displayName())
+            CFStringTransform(latinString, nil, kCFStringTransformToLatin, false)
+            CFStringTransform(latinString, nil, kCFStringTransformStripDiacritics, false)
+        }
+    }
+    
     // MARK: - UITableViewDataSource
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -93,12 +107,17 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return contactProfiles.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
-        
+        cell.update(
+            with: contactProfiles[indexPath.row].id,
+            profile: contactProfiles[indexPath.row],
+            isZombie: false,
+            accessory: .none
+        )
         return cell
     }
     

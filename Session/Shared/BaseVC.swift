@@ -24,7 +24,6 @@ class BaseVC : UIViewController {
 
     override func viewDidLoad() {
         setNeedsStatusBarAppearanceUpdate()
-        view.backgroundColor = isLightMode ? UIColor(hex: 0xF9F9F9) : UIColor(hex: 0x1B1B1B)
         NotificationCenter.default.addObserver(self, selector: #selector(handleAppModeChangedNotification(_:)), name: .appModeChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
     }
