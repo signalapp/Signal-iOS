@@ -114,7 +114,92 @@ extension StoryGroupReplyViewController: UIScrollViewDelegate {
 }
 
 extension StoryGroupReplyViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
 
+        guard let item = replyLoader?.replyItem(for: indexPath) else { return }
+
+        guard case .failed = item.recipientStatus else { return }
+
+        do {
+            try askToResendMessage(for: item)
+        } catch {
+            owsFailDebug("Failed to resend story reply \(error)")
+        }
+    }
+
+    private func askToResendMessage(for item: StoryGroupReplyViewItem) throws {
+        let (failedMessage, messageToSend) = try databaseStorage.read { transaction -> (TSOutgoingMessage, TSOutgoingMessage) in
+            guard let message = TSOutgoingMessage.anyFetchOutgoingMessage(
+                uniqueId: item.interactionUniqueId,
+                transaction: transaction
+            ) else {
+                throw OWSAssertionError("Missing original message")
+            }
+
+            // If the message was remotely deleted, resend a *delete* message rather than the message itself.
+            if message.wasRemotelyDeleted {
+                guard let thread = thread else {
+                    throw OWSAssertionError("Missing thread")
+                }
+
+                return (message, TSOutgoingDeleteMessage(thread: thread, message: message, transaction: transaction))
+            } else {
+                return (message, message)
+            }
+        }
+
+        guard !askToConfirmSafetyNumberChangesIfNecessary(for: failedMessage, messageToSend: messageToSend) else { return }
+
+        let actionSheet = ActionSheetController(
+            message: failedMessage.mostRecentFailureText
+        )
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.deleteForMeButton,
+            style: .destructive
+        ) { _ in
+            Self.databaseStorage.write { transaction in
+                failedMessage.anyRemove(transaction: transaction)
+            }
+        })
+
+        actionSheet.addAction(ActionSheetAction(
+            title: NSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
+            style: .default
+        ) { _ in
+            Self.databaseStorage.write { transaction in
+                Self.messageSenderJobQueue.add(
+                    message: messageToSend.asPreparer,
+                    transaction: transaction
+                )
+            }
+        })
+
+        self.presentActionSheet(actionSheet)
+    }
+
+    private func askToConfirmSafetyNumberChangesIfNecessary(for failedMessage: TSOutgoingMessage, messageToSend: TSOutgoingMessage) -> Bool {
+        let recipientsWithChangedSafetyNumber = failedMessage.failedRecipientAddresses(errorCode: UntrustedIdentityError.errorCode)
+        guard !recipientsWithChangedSafetyNumber.isEmpty else { return false }
+
+        let sheet = SafetyNumberConfirmationSheet(
+            addressesToConfirm: recipientsWithChangedSafetyNumber,
+            confirmationText: MessageStrings.sendButton
+        ) { confirmedSafetyNumberChange in
+            guard confirmedSafetyNumberChange else { return }
+            Self.databaseStorage.write { transaction in
+                Self.messageSenderJobQueue.add(
+                    message: messageToSend.asPreparer,
+                    transaction: transaction
+                )
+            }
+        }
+        self.present(sheet, animated: true, completion: nil)
+
+        return true
+    }
 }
 
 extension StoryGroupReplyViewController: UITableViewDataSource {

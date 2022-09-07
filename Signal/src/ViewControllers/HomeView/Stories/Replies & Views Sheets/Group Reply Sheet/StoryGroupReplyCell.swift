@@ -171,7 +171,7 @@ class StoryGroupReplyCell: UITableViewCell {
         }
 
         hStack.addArrangedSubview(sendFailureIcon)
-        sendFailureIcon.isHidden = true
+        sendFailureIcon.isHiddenInStackView = true
 
         hStack.addArrangedSubview(.hStretchingSpacer())
 
@@ -188,7 +188,7 @@ class StoryGroupReplyCell: UITableViewCell {
         internalHStack.alignment = .bottom
         internalHStack.spacing = 6
 
-        sendingSpinner.isHidden = true
+        sendingSpinner.isHiddenInStackView = true
         sendingSpinner.autoSetDimension(.width, toSize: 12)
         sendingSpinner.tintColor = Theme.darkThemePrimaryColor
 
@@ -257,15 +257,15 @@ class StoryGroupReplyCell: UITableViewCell {
         var renderTimestamp = true
         let footerText = NSMutableAttributedString()
 
-        sendingSpinner.isHidden = true
-        sendFailureIcon.isHidden = true
+        sendingSpinner.isHiddenInStackView = true
+        sendFailureIcon.isHiddenInStackView = true
 
         if let recipientStatus = item.recipientStatus {
             switch recipientStatus {
             case .pending, .uploading, .sending:
                 // Make room for the spinner
                 maxMessageWidth -= 18
-                sendingSpinner.isHidden = false
+                sendingSpinner.isHiddenInStackView = false
             case .sent, .skipped, .delivered, .read, .viewed:
                 // No indicator
                 break
@@ -273,7 +273,7 @@ class StoryGroupReplyCell: UITableViewCell {
                 allowFooterOnLastMessageLine = false
                 renderTimestamp = false
                 maxMessageWidth -= 44
-                sendFailureIcon.isHidden = false
+                sendFailureIcon.isHiddenInStackView = false
                 footerText.append(NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed"))
             }
         }
