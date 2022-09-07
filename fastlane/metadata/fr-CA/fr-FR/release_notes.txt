@@ -1,3 +1,3 @@
-• It’s now easier to crop photos in the media editor before sending them to your waiting audience.
-• Now, search for emoji using text anywhere in the emoji name. For example, look up “plane” instead of “airplane” and take off with ✈️
-• Additional bug fixes to keep your app running smoothly.
+• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.
+• If you have Speak Selection enabled in your iOS settings, you can long press a text and select “Speak” to hear the text message read aloud.
+• Small improvements make it simpler to engage with other members of a group chat.
