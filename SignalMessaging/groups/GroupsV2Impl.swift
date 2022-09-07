@@ -1137,8 +1137,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
 
-        let versionedProfiles = self.versionedProfiles as! VersionedProfilesImpl
-
         // 1. Use known credentials, where possible.
         var credentialMap = ProfileKeyCredentialMap()
 
@@ -1148,8 +1146,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             for uuid in Set(uuids) {
                 do {
                     let address = SignalServiceAddress(uuid: uuid)
-                    if let credential = try versionedProfiles.profileKeyCredential(for: address,
-                                                                                   transaction: transaction) {
+                    if let credential = try self.versionedProfilesSwift.profileKeyCredential(
+                        for: address,
+                        transaction: transaction
+                    ) {
                         credentialMap[uuid] = credential
                         continue
                     }
@@ -1192,8 +1192,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                 try self.databaseStorage.read { transaction in
                     for uuid in uuids {
                         let address = SignalServiceAddress(uuid: uuid)
-                        guard let credential = try versionedProfiles.profileKeyCredential(for: address,
-                                                                                          transaction: transaction) else {
+                        guard let credential = try self.versionedProfilesSwift.profileKeyCredential(
+                            for: address,
+                            transaction: transaction
+                        ) else {
                             throw OWSAssertionError("Could not load credential.")
                         }
                         credentialMap[uuid] = credential
@@ -1207,9 +1209,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
     public func hasProfileKeyCredential(for address: SignalServiceAddress,
                                         transaction: SDSAnyReadTransaction) -> Bool {
         do {
-            let versionedProfiles = self.versionedProfiles as! VersionedProfilesImpl
-            return try versionedProfiles.profileKeyCredential(for: address,
-                                                              transaction: transaction) != nil
+            return try self.versionedProfilesSwift.profileKeyCredential(
+                for: address,
+                transaction: transaction
+            ) != nil
         } catch {
             owsFailDebug("Error: \(error)")
             return false

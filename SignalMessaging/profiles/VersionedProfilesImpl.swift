@@ -295,8 +295,8 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: - Credentials
 
-    public func profileKeyCredentialData(for address: SignalServiceAddress,
-                                         transaction: SDSAnyReadTransaction) throws -> Data? {
+    private func profileKeyCredentialData(for address: SignalServiceAddress,
+                                          transaction: SDSAnyReadTransaction) throws -> Data? {
         guard address.isValid,
               let uuid = address.uuid else {
             throw OWSAssertionError("Invalid address: \(address)")

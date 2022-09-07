@@ -640,13 +640,13 @@ extension OWSProfileManager {
                         "profileBioEmoji?: \(attempt.update.profileBioEmoji != nil) " +
                         "visibleBadges?: \(attempt.update.visibleBadgeIds.count).")
         return firstly(on: .global()) {
-            Self.versionedProfilesImpl.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
-                                                            profileFamilyName: attempt.update.profileFamilyName,
-                                                            profileBio: attempt.update.profileBio,
-                                                            profileBioEmoji: attempt.update.profileBioEmoji,
-                                                            profileAvatarData: attempt.update.profileAvatarData,
-                                                            visibleBadgeIds: attempt.update.visibleBadgeIds,
-                                                            unsavedRotatedProfileKey: attempt.update.unsavedRotatedProfileKey)
+            Self.versionedProfilesSwift.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
+                                                             profileFamilyName: attempt.update.profileFamilyName,
+                                                             profileBio: attempt.update.profileBio,
+                                                             profileBioEmoji: attempt.update.profileBioEmoji,
+                                                             profileAvatarData: attempt.update.profileAvatarData,
+                                                             visibleBadgeIds: attempt.update.visibleBadgeIds,
+                                                             unsavedRotatedProfileKey: attempt.update.unsavedRotatedProfileKey)
         }.map(on: .global()) { versionedUpdate in
             attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
         }
