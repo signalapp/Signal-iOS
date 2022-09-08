@@ -140,6 +140,9 @@ NS_ASSUME_NONNULL_BEGIN
                                          [SSKEnvironment.shared.socketManager cycleSocket];
                                      }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Flag database as corrupted"
+                                     actionBlock:^() { [DebugUIMisc showFlagDatabaseAsCorruptedUi]; }]];
+
     [items addObject:[OWSTableItem itemWithTitle:@"Add 1k KV keys"
                                      actionBlock:^() {
                                          [DebugUIMisc populateRandomKeyValueStores:1 * 1000];

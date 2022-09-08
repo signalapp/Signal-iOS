@@ -286,7 +286,7 @@ public class SSKPreferences: NSObject {
         }
     }
 
-    private static func setHasGrdbDatabaseCorruption(_ value: Bool) {
+    public static func setHasGrdbDatabaseCorruption(_ value: Bool) {
         if value { Logger.warn("Flagging GRDB database as corrupted.") }
 
         let appUserDefaults = CurrentAppContext().appUserDefaults()
