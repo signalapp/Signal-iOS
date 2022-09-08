@@ -124,7 +124,7 @@ public class StoryManager: NSObject {
 
     @objc
     public class func nextExpirationTimestamp(transaction: SDSAnyReadTransaction) -> NSNumber? {
-        guard let timestamp = StoryFinder.oldestTimestamp(transaction: transaction) else { return nil }
+        guard let timestamp = StoryFinder.oldestExpirableTimestamp(transaction: transaction) else { return nil }
         return NSNumber(value: timestamp + storyLifetimeMillis)
     }
 

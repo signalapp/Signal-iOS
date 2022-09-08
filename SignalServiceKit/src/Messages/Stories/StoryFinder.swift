@@ -205,10 +205,11 @@ public class StoryFinder: NSObject {
         }
     }
 
-    public static func oldestTimestamp(transaction: SDSAnyReadTransaction) -> UInt64? {
+    public static func oldestExpirableTimestamp(transaction: SDSAnyReadTransaction) -> UInt64? {
         let sql = """
             SELECT \(StoryMessage.columnName(.timestamp))
             FROM \(StoryMessage.databaseTableName)
+            WHERE \(StoryMessage.columnName(.authorUuid)) != '\(StoryMessage.systemStoryAuthorUUID.uuidString)'
             ORDER BY \(StoryMessage.columnName(.timestamp)) ASC
             LIMIT 1
         """
