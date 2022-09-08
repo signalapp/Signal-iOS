@@ -51,6 +51,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
         super.init(selection: ConversationPickerSelection())
 
+        shouldBatchUpdateIdentityKeys = true
         pickerDelegate = self
     }
 

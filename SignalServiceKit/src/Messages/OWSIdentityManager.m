@@ -425,7 +425,17 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     return result;
 }
 
+
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address
+                                                            transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self untrustedIdentityForSendingToAddress:address
+                                   untrustedThreshold:[self class].minimumUntrustedThreshold
+                                          transaction:transaction];
+}
+
+- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address
+                                                     untrustedThreshold:(NSTimeInterval)untrustedThreshold
                                                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -445,6 +455,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
                                         address:address
                                       direction:TSMessageDirectionOutgoing
+                             untrustedThreshold:untrustedThreshold
                                     transaction:transaction];
     if (isTrusted) {
         return nil;

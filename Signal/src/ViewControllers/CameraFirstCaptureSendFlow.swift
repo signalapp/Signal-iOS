@@ -69,6 +69,7 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 
         let pickerVC = ConversationPickerViewController(selection: selection)
         pickerVC.pickerDelegate = self
+        pickerVC.shouldBatchUpdateIdentityKeys = true
         if storiesOnly {
             pickerVC.isStorySectionExpanded = true
             pickerVC.sectionOptions = .stories

@@ -92,6 +92,9 @@ typedef NS_CLOSED_ENUM(uint8_t, OWSIdentity) {
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address;
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address
                                                             transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address
+                                                     untrustedThreshold:(NSTimeInterval)untrustedThreshold
+                                                            transaction:(SDSAnyReadTransaction *)transaction;
 
 // This method can be called from any thread.
 - (void)throws_processIncomingVerifiedProto:(SSKProtoVerified *)verified

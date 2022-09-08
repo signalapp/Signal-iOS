@@ -116,6 +116,12 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     public var maxStoryConversationsToRender = 2
     public var isStorySectionExpanded = false
+
+    /// When `true`, each time the user selects an item for sending to we will fetch the identity keys for those recipients
+    /// and determine if there have been any safety number changes. When you continue from this screen, we will notify of
+    /// any safety number changes that have been identified during the batch updates. We don't do this all the time, as we
+    /// don't necessarily want to inject safety number changes into every flow where you select conversations (such as
+    /// picking members for a group).
     public var shouldBatchUpdateIdentityKeys = false
 
     public var shouldHideRecentConversationsTitle: Bool = false {
@@ -164,6 +170,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                                                selector: #selector(blockListDidChange),
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
+    }
+
+    var presentationTime: Date?
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        presentationTime = presentationTime ?? Date()
     }
 
     open override func applyTheme() {
@@ -826,6 +839,33 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
             Logger.warn("No conversations selected.")
             return
         }
+
+        if shouldBatchUpdateIdentityKeys {
+            guard let presentationTime = presentationTime else {
+                owsFailDebug("Unexpectedly missing presentation time")
+                return
+            }
+
+            let selectedRecipients = databaseStorage.read { transaction in
+                conversations.flatMap { conversation in
+                    conversation.getExistingThread(transaction: transaction)?.recipientAddresses(with: transaction) ?? []
+                }
+            }
+
+            // Before continuing, prompt for any safety number changes that
+            // we have learned about since the view was presented.
+            let didHaveSafetyNumberChanges = SafetyNumberConfirmationSheet.presentIfNecessary(
+                addresses: selectedRecipients,
+                confirmationText: SafetyNumberStrings.confirmSendButton,
+                untrustedThreshold: abs(presentationTime.timeIntervalSinceNow) + OWSIdentityManager.minimumUntrustedThreshold
+            ) { didConfirmSafetyNumberChange in
+                guard didConfirmSafetyNumberChange else { return }
+                pickerDelegate.conversationPickerDidCompleteSelection(self)
+            }
+
+            guard !didHaveSafetyNumberChanges else { return }
+        }
+
         pickerDelegate.conversationPickerDidCompleteSelection(self)
     }
 

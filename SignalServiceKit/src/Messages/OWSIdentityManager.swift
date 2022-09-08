@@ -79,10 +79,10 @@ public class IdentityStore: IdentityKeyStore {
 extension OWSIdentityManager {
     /// Don't trust an identity for sending to unless they've been around for at least this long
     @objc
-    static let minimumUntrustedThreshold: TimeInterval = 5
+    public static let minimumUntrustedThreshold: TimeInterval = 5
 
     @objc
-    static let maximumUntrustedThreshold: TimeInterval = kHourInterval
+    public static let maximumUntrustedThreshold: TimeInterval = kHourInterval
 
     public func store(for identity: OWSIdentity, transaction: SDSAnyReadTransaction) throws -> IdentityStore {
         guard let identityKeyPair = self.identityKeyPair(for: identity, transaction: transaction) else {
