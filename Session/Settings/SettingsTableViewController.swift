@@ -16,8 +16,9 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
     typealias SectionModel = SettingsTableViewModel<NavItemId, Section, SettingItem>.SectionModel
     
     private let viewModel: SettingsTableViewModel<NavItemId, Section, SettingItem>
-    private var dataChangeObservable: DatabaseCancellable?
     private var hasLoadedInitialSettingsData: Bool = false
+    private var dataStreamJustFailed: Bool = false
+    private var dataChangeCancellable: AnyCancellable?
     private var disposables: Set<AnyCancellable> = Set()
     
     public var viewModelType: AnyObject.Type { return type(of: viewModel) }
@@ -119,26 +120,42 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
     
     private func startObservingChanges() {
         // Start observing for data changes
-        dataChangeObservable = Storage.shared.start(
-            viewModel.observableSettingsData,
-            // If we haven't done the initial load the trigger it immediately (blocking the main
-            // thread so we remain on the launch screen until it completes to be consistent with
-            // the old behaviour)
-            scheduling: (hasLoadedInitialSettingsData ?
-                .async(onQueue: .main) :
-                .immediate
-            ),
-            onError: { _ in },
-            onChange: { [weak self] settingsData in
-                // The default scheduler emits changes on the main thread
-                self?.handleSettingsUpdates(settingsData)
-            }
-        )
+        dataChangeCancellable = viewModel.observableSettingsData
+            .receiveOnMain(
+                // If we haven't done the initial load the trigger it immediately (blocking the main
+                // thread so we remain on the launch screen until it completes to be consistent with
+                // the old behaviour)
+                immediately: !hasLoadedInitialSettingsData
+            )
+            .sink(
+                receiveCompletion: { [weak self] result in
+                    switch result {
+                        case .failure(let error):
+                            let title: String = (self?.viewModel.title ?? "unknown")
+                            
+                            // If we got an error then try to restart the stream once, otherwise log the error
+                            guard self?.dataStreamJustFailed == false else {
+                                SNLog("Unable to recover database stream in '\(title)' settings with error: \(error)")
+                                return
+                            }
+                            
+                            SNLog("Atempting recovery for database stream in '\(title)' settings with error: \(error)")
+                            self?.dataStreamJustFailed = true
+                            self?.startObservingChanges()
+                            
+                        case .finished: break
+                    }
+                },
+                receiveValue: { [weak self] settingsData in
+                    self?.dataStreamJustFailed = false
+                    self?.handleSettingsUpdates(settingsData)
+                }
+            )
     }
     
     private func stopObservingChanges() {
         // Stop observing database changes
-        dataChangeObservable?.cancel()
+        dataChangeCancellable?.cancel()
     }
     
     private func handleSettingsUpdates(_ updatedData: [SectionModel], initialLoad: Bool = false) {
@@ -188,7 +205,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
             .store(in: &disposables)
         
         viewModel.leftNavItems
-            .receiveOnMainImmediately()
+            .receiveOnMain(immediately: true)
             .sink { [weak self] maybeItems in
                 self?.navigationItem.setLeftBarButtonItems(
                     maybeItems.map { items in
@@ -210,7 +227,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
             .store(in: &disposables)
 
         viewModel.rightNavItems
-            .receiveOnMainImmediately()
+            .receiveOnMain(immediately: true)
             .sink { [weak self] maybeItems in
                 self?.navigationItem.setRightBarButtonItems(
                     maybeItems.map { items in
@@ -292,6 +309,8 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
                 let cell: SettingsCell = tableView.dequeue(type: SettingsCell.self, for: indexPath)
                 cell.update(
                     icon: settingInfo.icon,
+                    iconSize: settingInfo.iconSize,
+                    iconSetter: settingInfo.iconSetter,
                     title: settingInfo.title,
                     subtitle: settingInfo.subtitle,
                     alignment: settingInfo.alignment,
@@ -314,9 +333,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
         
         switch section.model.style {
             case .none:
-                let result: UIView = UIView()
-                result.set(.height, to: 0)
-                return result
+                return UIView()
             
             case .padding, .title:
                 let result: SettingHeaderView = tableView.dequeueHeaderFooterView(type: SettingHeaderView.self)
@@ -330,6 +347,15 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
     }
     
     // MARK: - UITableViewDelegate
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let section: SectionModel = viewModel.settingsData[section]
+        
+        switch section.model.style {
+            case .none: return 0
+            case .padding, .title: return UITableView.automaticDimension
+        }
+    }
     
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
@@ -491,6 +517,8 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
         if let existingCell: SettingsCell = tableView.cellForRow(at: indexPath) as? SettingsCell {
             existingCell.update(
                 icon: settingInfo.icon,
+                iconSize: settingInfo.iconSize,
+                iconSetter: settingInfo.iconSetter,
                 title: settingInfo.title,
                 subtitle: settingInfo.subtitle,
                 alignment: settingInfo.alignment,

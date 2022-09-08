@@ -10,7 +10,6 @@
 		1FFD68A448D5A1439F2F02FD /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBA125424EDD2417B515C63A /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SessionShareExtension.framework */; };
 		3289CA2E9E89DA9D4D52A90C /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SignalUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BF4561630A52BE96F164CF6 /* Pods_GlobalDependencies_FrameworkAndExtensionDependencies_ExtendedDependencies_SignalUtilitiesKit.framework */; };
 		340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */; };
-		340FC8B7204DAC8D007AEB0F /* OWSConversationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC89A204DAC8D007AEB0F /* OWSConversationSettingsViewController.m */; };
 		3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */; };
 		3430FE181F7751D4000EC51B /* GiphyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3430FE171F7751D4000EC51B /* GiphyAPI.swift */; };
 		34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34330AA21E79686200DF2FB9 /* OWSProgressView.m */; };
@@ -21,7 +20,6 @@
 		347850551FD749C0007B8332 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = B6F509951AA53F760068F56A /* Localizable.strings */; };
 		3488F9362191CC4000E524CC /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3488F9352191CC4000E524CC /* MediaView.swift */; };
 		3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969559219B605E00DCFE74 /* ImagePickerController.swift */; };
-		3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */; };
 		3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496955B219B605E00DCFE74 /* PhotoLibrary.swift */; };
 		3496956021A2FC8100DCFE74 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3496955F21A2FC8100DCFE74 /* CloudKit.framework */; };
 		34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */; };
@@ -419,8 +417,6 @@
 		C38EF35D255B6DCC007E1867 /* OWSNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF343255B6DC5007E1867 /* OWSNavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF344255B6DC5007E1867 /* OWSViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF363255B6DCC007E1867 /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */; };
-		C38EF365255B6DCC007E1867 /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF34B255B6DC8007E1867 /* OWSTableViewController.m */; };
-		C38EF367255B6DCC007E1867 /* OWSTableViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF34D255B6DC8007E1867 /* OWSTableViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF36F255B6DCC007E1867 /* OWSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF355255B6DCB007E1867 /* OWSViewController.m */; };
 		C38EF370255B6DCC007E1867 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF356255B6DCB007E1867 /* OWSNavigationController.m */; };
 		C38EF372255B6DCC007E1867 /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF358255B6DCC007E1867 /* MediaMessageView.swift */; };
@@ -717,6 +713,7 @@
 		FD7115FE28C8202D00B47552 /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115FD28C8202D00B47552 /* ReplaySubject.swift */; };
 		FD71160028C8253500B47552 /* UIView+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115FF28C8253500B47552 /* UIView+Combine.swift */; };
 		FD71160228C8255900B47552 /* UIControl+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71160128C8255900B47552 /* UIControl+Combine.swift */; };
+		FD71160428C95B5600B47552 /* PhotoCollectionPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71160328C95B5600B47552 /* PhotoCollectionPickerViewModel.swift */; };
 		FD7162DB281B6C440060647B /* TypedTableAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7162DA281B6C440060647B /* TypedTableAlias.swift */; };
 		FD716E6428502DDD00C96BF4 /* CallManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD716E6328502DDD00C96BF4 /* CallManagerProtocol.swift */; };
 		FD716E6628502EE200C96BF4 /* CurrentCallProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD716E6528502EE200C96BF4 /* CurrentCallProtocol.swift */; };
@@ -1054,9 +1051,6 @@
 		29CF8C79F41BF00B1C2E59A0 /* Pods-SessionUIKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SessionUIKit.app store release.xcconfig"; path = "Target Support Files/Pods-SessionUIKit/Pods-SessionUIKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		340FC888204DAC8C007AEB0F /* OWSQRCodeScanningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQRCodeScanningViewController.h; sourceTree = "<group>"; };
 		340FC896204DAC8C007AEB0F /* OWSQRCodeScanningViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSQRCodeScanningViewController.m; sourceTree = "<group>"; };
-		340FC899204DAC8D007AEB0F /* OWSConversationSettingsViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsViewDelegate.h; sourceTree = "<group>"; };
-		340FC89A204DAC8D007AEB0F /* OWSConversationSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSConversationSettingsViewController.m; sourceTree = "<group>"; };
-		340FC8A0204DAC8D007AEB0F /* OWSConversationSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSConversationSettingsViewController.h; sourceTree = "<group>"; };
 		3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageTimerView.h; sourceTree = "<group>"; };
 		3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageTimerView.m; sourceTree = "<group>"; };
 		3430FE171F7751D4000EC51B /* GiphyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GiphyAPI.swift; sourceTree = "<group>"; };
@@ -1069,7 +1063,6 @@
 		346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CropScaleImageViewController.swift; sourceTree = "<group>"; };
 		3488F9352191CC4000E524CC /* MediaView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		34969559219B605E00DCFE74 /* ImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePickerController.swift; sourceTree = "<group>"; };
-		3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionPickerController.swift; sourceTree = "<group>"; };
 		3496955B219B605E00DCFE74 /* PhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoLibrary.swift; sourceTree = "<group>"; };
 		3496955F21A2FC8100DCFE74 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSImagePickerController.swift; sourceTree = "<group>"; };
@@ -1520,8 +1513,6 @@
 		C38EF343255B6DC5007E1867 /* OWSNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSNavigationController.h; path = "SignalUtilitiesKit/Shared View Controllers/OWSNavigationController.h"; sourceTree = SOURCE_ROOT; };
 		C38EF344255B6DC5007E1867 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSViewController.h; path = "SignalUtilitiesKit/Shared View Controllers/OWSViewController.h"; sourceTree = SOURCE_ROOT; };
 		C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ModalActivityIndicatorViewController.swift; path = "SignalUtilitiesKit/Shared View Controllers/ModalActivityIndicatorViewController.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF34B255B6DC8007E1867 /* OWSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSTableViewController.m; path = "SignalUtilitiesKit/Shared View Controllers/OWSTableViewController.m"; sourceTree = SOURCE_ROOT; };
-		C38EF34D255B6DC8007E1867 /* OWSTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSTableViewController.h; path = "SignalUtilitiesKit/Shared View Controllers/OWSTableViewController.h"; sourceTree = SOURCE_ROOT; };
 		C38EF355255B6DCB007E1867 /* OWSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSViewController.m; path = "SignalUtilitiesKit/Shared View Controllers/OWSViewController.m"; sourceTree = SOURCE_ROOT; };
 		C38EF356255B6DCB007E1867 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSNavigationController.m; path = "SignalUtilitiesKit/Shared View Controllers/OWSNavigationController.m"; sourceTree = SOURCE_ROOT; };
 		C38EF358255B6DCC007E1867 /* MediaMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MediaMessageView.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/MediaMessageView.swift"; sourceTree = SOURCE_ROOT; };
@@ -1806,6 +1797,7 @@
 		FD7115FD28C8202D00B47552 /* ReplaySubject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
 		FD7115FF28C8253500B47552 /* UIView+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Combine.swift"; sourceTree = "<group>"; };
 		FD71160128C8255900B47552 /* UIControl+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Combine.swift"; sourceTree = "<group>"; };
+		FD71160328C95B5600B47552 /* PhotoCollectionPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionPickerViewModel.swift; sourceTree = "<group>"; };
 		FD7162DA281B6C440060647B /* TypedTableAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedTableAlias.swift; sourceTree = "<group>"; };
 		FD716E6328502DDD00C96BF4 /* CallManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManagerProtocol.swift; sourceTree = "<group>"; };
 		FD716E6528502EE200C96BF4 /* CurrentCallProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCallProtocol.swift; sourceTree = "<group>"; };
@@ -2681,9 +2673,6 @@
 			isa = PBXGroup;
 			children = (
 				FD7115EC28C5D79100B47552 /* Views */,
-				340FC8A0204DAC8D007AEB0F /* OWSConversationSettingsViewController.h */,
-				340FC89A204DAC8D007AEB0F /* OWSConversationSettingsViewController.m */,
-				340FC899204DAC8D007AEB0F /* OWSConversationSettingsViewDelegate.h */,
 				B84A89BB25DE328A0040017D /* ProfilePictureVC.swift */,
 				3427C64120F500DE00EEC730 /* OWSMessageTimerView.h */,
 				3427C64220F500DF00EEC730 /* OWSMessageTimerView.m */,
@@ -3002,7 +2991,7 @@
 				346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */,
 				34969559219B605E00DCFE74 /* ImagePickerController.swift */,
 				34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */,
-				3496955A219B605E00DCFE74 /* PhotoCollectionPickerController.swift */,
+				FD71160328C95B5600B47552 /* PhotoCollectionPickerViewModel.swift */,
 				3496955B219B605E00DCFE74 /* PhotoLibrary.swift */,
 				4CA485BA2232339F004B9E7D /* PhotoCaptureViewController.swift */,
 				4C21D5D7223AC60F00EF8A77 /* PhotoCapture.swift */,
@@ -3061,8 +3050,6 @@
 				C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */,
 				C38EF343255B6DC5007E1867 /* OWSNavigationController.h */,
 				C38EF356255B6DCB007E1867 /* OWSNavigationController.m */,
-				C38EF34D255B6DC8007E1867 /* OWSTableViewController.h */,
-				C38EF34B255B6DC8007E1867 /* OWSTableViewController.m */,
 				C38EF344255B6DC5007E1867 /* OWSViewController.h */,
 				C38EF355255B6DCB007E1867 /* OWSViewController.m */,
 				C38EF33F255B6DC5007E1867 /* SheetViewController.swift */,
@@ -4166,7 +4153,6 @@
 				C38EF3F5255B6DF7007E1867 /* OWSTextField.h in Headers */,
 				C33FDDB3255A582000E217F9 /* OWSError.h in Headers */,
 				C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */,
-				C38EF367255B6DCC007E1867 /* OWSTableViewController.h in Headers */,
 				C38EF246255B6D67007E1867 /* UIFont+OWS.h in Headers */,
 				C33FD9AF255A548A00E217F9 /* SignalUtilitiesKit.h in Headers */,
 				C33FDC50255A582000E217F9 /* OWSDispatch.h in Headers */,
@@ -5137,7 +5123,6 @@
 				C38EF387255B6DD2007E1867 /* AttachmentItemCollection.swift in Sources */,
 				C38EF22B255B6D5D007E1867 /* ShareViewDelegate.swift in Sources */,
 				C38EF3BF255B6DE7007E1867 /* ImageEditorView.swift in Sources */,
-				C38EF365255B6DCC007E1867 /* OWSTableViewController.m in Sources */,
 				C38EF40C255B6DF7007E1867 /* GradientView.swift in Sources */,
 				C38EF3FA255B6DF7007E1867 /* DirectionalPanGestureRecognizer.swift in Sources */,
 				C38EF3BB255B6DE7007E1867 /* ImageEditorStrokeItem.swift in Sources */,
@@ -5545,7 +5530,6 @@
 				7B9F71D12852EEE2006DFE7B /* EmojiWithSkinTones+String.swift in Sources */,
 				34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */,
 				B886B4A92398BA1500211ABE /* QRCode.swift in Sources */,
-				3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34A8B3512190A40E00218A25 /* MediaAlbumView.swift in Sources */,
 				FD09C5E828264937000CE219 /* MediaDetailViewController.swift in Sources */,
@@ -5590,6 +5574,7 @@
 				C374EEEB25DA3CA70073A857 /* ConversationTitleView.swift in Sources */,
 				FD716E7128505E5200C96BF4 /* MessageRequestsCell.swift in Sources */,
 				B88FA7F2260C3EB10049422F /* OpenGroupSuggestionGrid.swift in Sources */,
+				FD71160428C95B5600B47552 /* PhotoCollectionPickerViewModel.swift in Sources */,
 				FD37EA1928AC5CCA003AE748 /* NotificationSoundViewModel.swift in Sources */,
 				FD7115EE28C5D79B00B47552 /* SettingsAvatarCell.swift in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
@@ -5642,7 +5627,6 @@
 				7B9F71D42852EEE2006DFE7B /* Emoji+Name.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				C328253025CA55370062D0A7 /* ContextMenuWindow.swift in Sources */,
-				340FC8B7204DAC8D007AEB0F /* OWSConversationSettingsViewController.m in Sources */,
 				34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */,
 				B84664F5235022F30083A1CD /* MentionUtilities.swift in Sources */,
 				7B9F71D72853100A006DFE7B /* Emoji+Available.swift in Sources */,

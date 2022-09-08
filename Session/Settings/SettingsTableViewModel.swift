@@ -10,7 +10,7 @@ import SessionUtilitiesKit
 
 class SettingsTableViewModel<NavItemId: Equatable, Section: SettingSection, SettingItem: Hashable & Differentiable> {
     typealias SectionModel = ArraySection<Section, SettingInfo<SettingItem>>
-    typealias ObservableData = ValueObservation<ValueReducers.RemoveDuplicates<ValueReducers.Fetch<[SectionModel]>>>
+    typealias ObservableData = AnyPublisher<[SectionModel], Error>
     
     var closeNavItemId: NavItemId?
     
@@ -155,11 +155,27 @@ extension SettingSection {
     var style: SettingSectionHeaderStyle { .none }
 }
 
+// MARK: - IconSize
+
+public enum IconSize: Differentiable {
+    case small
+    case large
+    
+    var size: CGFloat {
+        switch self {
+            case .small: return 24
+            case .large: return 80
+        }
+    }
+}
+
 // MARK: - SettingInfo
 
 struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differentiable {
     let id: ID
     let icon: UIImage?
+    let iconSize: IconSize
+    let iconSetter: ((UIImageView) -> Void)?
     let title: String
     let subtitle: String?
     let alignment: NSTextAlignment
@@ -174,6 +190,8 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
     init(
         id: ID,
         icon: UIImage? = nil,
+        iconSize: IconSize = .small,
+        iconSetter: ((UIImageView) -> Void)? = nil,
         title: String,
         subtitle: String? = nil,
         alignment: NSTextAlignment = .left,
@@ -185,6 +203,8 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
     ) {
         self.id = id
         self.icon = icon
+        self.iconSize = iconSize
+        self.iconSetter = iconSetter
         self.title = title
         self.subtitle = subtitle
         self.alignment = alignment
@@ -202,6 +222,7 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
     func hash(into hasher: inout Hasher) {
         id.hash(into: &hasher)
         icon.hash(into: &hasher)
+        iconSize.hash(into: &hasher)
         title.hash(into: &hasher)
         subtitle.hash(into: &hasher)
         alignment.hash(into: &hasher)
@@ -213,6 +234,7 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
         return (
             lhs.id == rhs.id &&
             lhs.icon == rhs.icon &&
+            lhs.iconSize == rhs.iconSize &&
             lhs.title == rhs.title &&
             lhs.subtitle == rhs.subtitle &&
             lhs.alignment == rhs.alignment &&

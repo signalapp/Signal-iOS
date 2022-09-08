@@ -19,7 +19,7 @@ protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerCanSelectAdditionalItems(_ imagePicker: ImagePickerGridController) -> Bool
 }
 
-class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate {
+class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate {
 
     weak var delegate: ImagePickerGridControllerDelegate?
 
@@ -415,11 +415,27 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - PhotoCollectionPicker Presentation
 
     var isShowingCollectionPickerController: Bool = false
+    
+    lazy var collectionPickerController: SettingsTableViewController = SettingsTableViewController(
+        viewModel: PhotoCollectionPickerViewModel(library: library) { [weak self] collection in
+            guard self?.photoCollection != collection else {
+                self?.hideCollectionPicker()
+                return
+            }
 
-    lazy var collectionPickerController: PhotoCollectionPickerController = {
-        return PhotoCollectionPickerController(library: library,
-                                               collectionDelegate: self)
-    }()
+            // Any selections are invalid as they refer to indices in a different collection
+            self?.clearCollectionViewSelection()
+
+            self?.photoCollection = collection
+            self?.photoCollectionContents = collection.contents()
+
+            self?.titleView.text = collection.localizedTitle()
+
+            self?.collectionView?.reloadData()
+            self?.scrollToBottom(animated: false)
+            self?.hideCollectionPicker()
+        }
+    )
 
     func showCollectionPicker() {
         Logger.debug("")
@@ -437,8 +453,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionPickerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         collectionPickerView.autoPinEdge(toSuperviewSafeArea: .top)
         collectionPickerView.layoutIfNeeded()
-        collectionPickerView.backgroundColor = .white
-
+        
         // Initially position offscreen, we'll animate it in.
         collectionPickerView.frame = collectionPickerView.frame.offsetBy(dx: 0, dy: collectionPickerView.frame.height)
 
@@ -462,28 +477,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             self.collectionPickerController.removeFromParent()
         }.retainUntilComplete()
     }
-
-    // MARK: - PhotoCollectionPickerDelegate
-
-    func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection) {
-        guard photoCollection != collection else {
-            hideCollectionPicker()
-            return
-        }
-
-        // Any selections are invalid as they refer to indices in a different collection
-        clearCollectionViewSelection()
-
-        photoCollection = collection
-        photoCollectionContents = photoCollection.contents()
-
-        titleView.text = photoCollection.localizedTitle()
-
-        collectionView?.reloadData()
-        scrollToBottom(animated: false)
-        hideCollectionPicker()
-    }
-
+    
     // MARK: - UICollectionView
 
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {

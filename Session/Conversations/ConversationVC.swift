@@ -422,6 +422,15 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     @objc func applicationDidBecomeActive(_ notification: Notification) {
         startObservingChanges(didReturnFromBackground: true)
         recoverInputView()
+        
+        if !isShowingSearchUI {
+            if !self.isFirstResponder {
+                self.becomeFirstResponder()
+            }
+            else {
+                self.reloadInputViews()
+            }
+        }
     }
     
     @objc func applicationDidResignActive(_ notification: Notification) {

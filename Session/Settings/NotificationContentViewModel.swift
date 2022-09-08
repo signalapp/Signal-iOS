@@ -59,6 +59,7 @@ class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSe
             ]
         }
         .removeDuplicates()
+        .publisher(in: Storage.shared)
     
     // MARK: - Functions
 

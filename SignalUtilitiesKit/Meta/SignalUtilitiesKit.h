@@ -17,7 +17,6 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSNavigationController.h>
 #import <SignalUtilitiesKit/OWSOperation.h>
-#import <SignalUtilitiesKit/OWSTableViewController.h>
 #import <SignalUtilitiesKit/OWSTextField.h>
 #import <SignalUtilitiesKit/OWSTextView.h>
 #import <SignalUtilitiesKit/OWSViewController.h>

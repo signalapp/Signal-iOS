@@ -89,6 +89,7 @@ class ConversationSettingsViewModel: SettingsTableViewModel<NoNav, ConversationS
             ]
         }
         .removeDuplicates()
+        .publisher(in: Storage.shared)
     
     // MARK: - Functions
 

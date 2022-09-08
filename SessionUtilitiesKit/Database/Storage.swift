@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import Combine
 import GRDB
 import PromiseKit
 import SignalCoreKit
@@ -26,7 +27,7 @@ public final class Storage {
     public private(set) var isValid: Bool = false
     public private(set) var hasCompletedMigrations: Bool = false
     
-    private var dbWriter: DatabaseWriter?
+    fileprivate var dbWriter: DatabaseWriter?
     private var migrator: DatabaseMigrator?
     private var migrationProgressUpdater: Atomic<((String, CGFloat) -> ())>?
     
@@ -410,5 +411,18 @@ public extension Storage {
         )
         
         return promise
+    }
+}
+
+// MARK: - Combine Extensions
+
+public extension ValueObservation {
+    func publisher(in storage: Storage) -> AnyPublisher<Reducer.Value, Error> {
+        guard storage.isValid, let dbWriter: DatabaseWriter = storage.dbWriter else {
+            return Fail(error: StorageError.databaseInvalid).eraseToAnyPublisher()
+        }
+
+        return self.publisher(in: dbWriter)
+            .eraseToAnyPublisher()
     }
 }

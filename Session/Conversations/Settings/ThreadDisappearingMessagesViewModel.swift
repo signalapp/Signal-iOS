@@ -141,6 +141,7 @@ class ThreadDisappearingMessagesViewModel: SettingsTableViewModel<ThreadDisappea
             ]
         }
         .removeDuplicates()
+        .publisher(in: Storage.shared)
     
     // MARK: - Functions
 

@@ -298,10 +298,10 @@ public enum Preferences {
         
         // MARK: - AudioPlayer
         
-        public static func audioPlayer(for sound: Sound, behaviour: OWSAudioBehavior) -> OWSAudioPlayer? {
+        public static func audioPlayer(for sound: Sound, behavior: OWSAudioBehavior) -> OWSAudioPlayer? {
             guard let soundUrl: URL = sound.soundUrl(quiet: false) else { return nil }
             
-            let player = OWSAudioPlayer(mediaUrl: soundUrl, audioBehavior: behaviour)
+            let player = OWSAudioPlayer(mediaUrl: soundUrl, audioBehavior: behavior)
             
             // These two cases should loop
             if sound == .callConnecting || sound == .callOutboundRinging {

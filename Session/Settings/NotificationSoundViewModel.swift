@@ -159,6 +159,7 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewMo
             ]
         }
         .removeDuplicates()
+        .publisher(in: Storage.shared)
     
     // MARK: - Functions
 

@@ -531,6 +531,7 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
             ]
         }
         .removeDuplicates()
+        .publisher(in: Storage.shared)
     
     // MARK: - Functions
 

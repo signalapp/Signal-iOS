@@ -170,6 +170,7 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
             ]
         }
         .removeDuplicates()
+        .publisher(in: Storage.shared)
     
     // MARK: - Functions
 

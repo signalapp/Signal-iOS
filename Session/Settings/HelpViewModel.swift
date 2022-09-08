@@ -120,6 +120,7 @@ class HelpViewModel: SettingsTableViewModel<NoNav, HelpViewModel.Section, HelpVi
             ]
         }
         .removeDuplicates()
+        .publisher(in: Storage.shared)
     
     // MARK: - Functions
 

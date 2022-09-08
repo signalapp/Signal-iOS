@@ -12,6 +12,8 @@ class SettingsCell: UITableViewCell {
     
     // MARK: - UI
     
+    private lazy var stackViewImageHeightConstraint: NSLayoutConstraint = contentStackView.heightAnchor.constraint(equalTo: iconImageView.heightAnchor)
+    
     private let topSeparator: UIView = {
         let result: UIView = UIView.separator()
         result.translatesAutoresizingMaskIntoConstraints = false
@@ -28,12 +30,6 @@ class SettingsCell: UITableViewCell {
         result.alignment = .center
         result.spacing = Values.mediumSpacing
         result.isLayoutMarginsRelativeArrangement = true
-        result.layoutMargins = UIEdgeInsets(
-            top: Values.mediumSpacing,
-            leading: Values.largeSpacing,
-            bottom: Values.mediumSpacing,
-            trailing: Values.largeSpacing
-        )
         
         return result
     }()
@@ -229,9 +225,6 @@ class SettingsCell: UITableViewCell {
         titleLabel.setCompressionResistanceHorizontalLow()
         subtitleLabel.setCompressionResistanceHorizontalLow()
         
-        iconImageView.set(.width, to: 24)
-        iconImageView.set(.height, to: 24)
-        
         pushChevronImageView.setContentHuggingHigh()
         pushChevronImageView.setCompressionResistanceHigh()
         
@@ -337,6 +330,8 @@ class SettingsCell: UITableViewCell {
         self.onExtraAction = nil
         self.accessibilityIdentifier = nil
         
+        stackViewImageHeightConstraint.isActive = false
+        iconImageView.removeConstraints(iconImageView.constraints)
         iconImageView.image = nil
         titleLabel.text = ""
         titleLabel.themeTextColor = .textPrimary
@@ -363,6 +358,8 @@ class SettingsCell: UITableViewCell {
     
     public func update(
         icon: UIImage?,
+        iconSize: IconSize,
+        iconSetter: ((UIImageView) -> Void)?,
         title: String,
         subtitle: String?,
         alignment: NSTextAlignment,
@@ -379,14 +376,37 @@ class SettingsCell: UITableViewCell {
         self.onExtraAction = onExtraAction
         self.accessibilityIdentifier = accessibilityIdentifier
         
+        stackViewImageHeightConstraint.isActive = {
+            switch iconSize {
+                case .small: return false
+                case .large: return true   // Edge-to-edge in this case
+            }
+        }()
+        contentStackView.layoutMargins = UIEdgeInsets(
+            top: Values.mediumSpacing,
+            leading: {
+                switch iconSize {
+                    case .small: return Values.largeSpacing
+                    case .large: return 0   // Edge-to-edge in this case
+                }
+            }(),
+            bottom: Values.mediumSpacing,
+            trailing: Values.largeSpacing
+        )
+        
         // Left content
+        iconImageView.set(.width, to: iconSize.size)
+        iconImageView.set(.height, to: iconSize.size)
         iconImageView.image = icon
-        iconImageView.isHidden = (icon == nil)
+        iconImageView.isHidden = (icon == nil && iconSetter == nil)
         titleLabel.text = title
         titleLabel.textAlignment = alignment
         subtitleLabel.text = subtitle
         subtitleLabel.isHidden = (subtitle == nil)
         extraActionButton.isHidden = (extraActionTitle == nil)
+        
+        // Call the iconSetter closure if provided to set the icon
+        iconSetter?(iconImageView)
         
         // Separator/background Visibility
         if action.shouldHaveBackground {
