@@ -665,15 +665,29 @@ public final class CallService: LightweightCallManager {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
         let rotationAngle: CGFloat
-        switch UIDevice.current.orientation {
-        case .landscapeLeft:
-            rotationAngle = .halfPi
-        case .landscapeRight:
-            rotationAngle = -.halfPi
-        case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
-            fallthrough
-        @unknown default:
+        if let call = currentCall,
+           call.isIndividualCall,
+           !call.individualCall.hasLocalVideo,
+           !call.individualCall.isRemoteVideoEnabled {
+            // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
+            // Don't distract them with rotating icons.
+            // But we still send the notification in case
+            // 1. either the user or their contact (but not both) has video on
+            // 2. the user has the phone in landscape
+            // 3. whoever had video turns it off (but the icons are still landscape-oriented)
+            // 4. the user rotates back to portrait
             rotationAngle = 0
+        } else {
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                rotationAngle = .halfPi
+            case .landscapeRight:
+                rotationAngle = -.halfPi
+            case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
+                fallthrough
+            @unknown default:
+                rotationAngle = 0
+            }
         }
 
         NotificationCenter.default.post(name: Self.phoneOrientationDidChange, object: rotationAngle)
