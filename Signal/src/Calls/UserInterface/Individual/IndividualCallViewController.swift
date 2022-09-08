@@ -1159,6 +1159,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         // When turning off video, default speakerphone to on.
         if !hasLocalVideo {
+            if !hasAlternateAudioSources {
+                audioModeSourceButton.isSelected = true
+            }
             callService.audioService.requestSpeakerphone(isEnabled: true)
         }
 
