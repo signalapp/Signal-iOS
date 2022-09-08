@@ -202,11 +202,13 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                   let uuid = UUID(uuidString: uuidString) else {
                 throw OWSAssertionError("Invalid UUID on story recipient \(String(describing: recipient.destinationUuid))")
             }
+
             return (
                 key: uuid,
                 value: StoryRecipientState(
                     allowsReplies: recipient.isAllowedToReply,
-                    contexts: recipient.distributionListIds.compactMap { UUID(uuidString: $0) }
+                    contexts: recipient.distributionListIds.compactMap { UUID(uuidString: $0) },
+                    sendingState: .sent // This was sent by our linked device
                 )
             )
         }))
@@ -343,7 +345,11 @@ public final class StoryMessage: NSObject, SDSCodableModel {
                     recipientState.contexts = newContexts
                     newRecipientStates[uuid] = recipientState
                 } else {
-                    newRecipientStates[uuid] = .init(allowsReplies: recipient.isAllowedToReply, contexts: newContexts)
+                    newRecipientStates[uuid] = .init(
+                        allowsReplies: recipient.isAllowedToReply,
+                        contexts: newContexts,
+                        sendingState: .sent // This was sent by our linked device
+                    )
                 }
             }
 
@@ -608,9 +614,15 @@ public struct StoryRecipientState: Codable {
     public var allowsReplies: Bool
     public var contexts: [UUID]
     @DecodableDefault.OutgoingMessageSending
-    public var sendingState: OWSOutgoingMessageRecipientState = .sending
+    public var sendingState: OWSOutgoingMessageRecipientState
     public var sendingErrorCode: Int?
     public var viewedTimestamp: UInt64?
+
+    init(allowsReplies: Bool, contexts: [UUID], sendingState: OWSOutgoingMessageRecipientState = .sending) {
+        self.allowsReplies = allowsReplies
+        self.contexts = contexts
+        self.sendingState = sendingState
+    }
 }
 
 extension OWSOutgoingMessageRecipientState: Codable {}
