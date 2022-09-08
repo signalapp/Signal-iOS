@@ -1,6 +1,22 @@
 # Signal iOS
 
-Signal is a free, open source, messaging app for simple private communication with friends. 
+![Signal Logo](https://upload.wikimedia.org/wikipedia/commons/8/8d/Signal-Logo.svg =200x200)
+
+# Description
+
+Signal is a free, open source, messaging and video/voice calling app for simple private communication with friends and family.
+
+With Signal users are able to send and receive messages and calls that are protected by end-to-end encryption.
+
+Here are some sample screenshots of the Signal app interface during messaging and calling.
+
+![Signal Message](https://drive.google.com/uc?export=view&id=1kYzXU1qjEr3MDOXJ4C7g__6d1cO6lbA7 =200x450)
+Users are able to send instant messages including images, GIFs, files, payments, contact, location, and voicenotes quickly and reliably, even over slow networks.
+
+![Signal Voice Call](https://drive.google.com/uc?export=view&id=1VtWBURfLyCVzE_ipvzvw0Yee2sPkOgxT =200x450) ![Signal Video Call](https://drive.google.com/uc?export=view&id=1O_otJOZqtbho-mE1RQcK_ecs2AzygiC5 =200x450)
+Users are able to make phone/video calls using their existing phone number and address book to communicate with others.
+
+## Download Signal
 
 [![Available on the App Store](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://apps.apple.com/app/id874139669)
 
