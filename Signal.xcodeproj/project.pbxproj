@@ -827,6 +827,10 @@
 		880D902C2480889B003D2B14 /* EmojiPickerCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D902B2480889B003D2B14 /* EmojiPickerCollectionView.swift */; };
 		880D902E2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D902D2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift */; };
 		880D90302481E617003D2B14 /* SignalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D902F2481E617003D2B14 /* SignalApp.swift */; };
+		880FB3EE28CA53D400FA1C10 /* determinate_spinner_44.json in Resources */ = {isa = PBXBuildFile; fileRef = 880FB3EA28CA53D200FA1C10 /* determinate_spinner_44.json */; };
+		880FB3EF28CA53D400FA1C10 /* indeterminate_spinner_56.json in Resources */ = {isa = PBXBuildFile; fileRef = 880FB3EB28CA53D300FA1C10 /* indeterminate_spinner_56.json */; };
+		880FB3F028CA53D400FA1C10 /* determinate_spinner_56.json in Resources */ = {isa = PBXBuildFile; fileRef = 880FB3EC28CA53D300FA1C10 /* determinate_spinner_56.json */; };
+		880FB3F128CA53D400FA1C10 /* indeterminate_spinner_44.json in Resources */ = {isa = PBXBuildFile; fileRef = 880FB3ED28CA53D300FA1C10 /* indeterminate_spinner_44.json */; };
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881218EF238CA51600E6F271 /* MessageReactionPicker.swift */; };
 		8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */; };
@@ -909,10 +913,6 @@
 		8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */; };
 		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
 		8878B2D6286636D8008368F2 /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8878B2D5286636D8008368F2 /* MyStorySettingsViewController.swift */; };
-		8878C88728A4740F00B2D9D4 /* indeterminate_spinner_44.json in Resources */ = {isa = PBXBuildFile; fileRef = 8878C88328A4740E00B2D9D4 /* indeterminate_spinner_44.json */; };
-		8878C88828A4740F00B2D9D4 /* indeterminate_spinner_56.json in Resources */ = {isa = PBXBuildFile; fileRef = 8878C88428A4740F00B2D9D4 /* indeterminate_spinner_56.json */; };
-		8878C88928A4740F00B2D9D4 /* determinate_spinner_44.json in Resources */ = {isa = PBXBuildFile; fileRef = 8878C88528A4740F00B2D9D4 /* determinate_spinner_44.json */; };
-		8878C88A28A4740F00B2D9D4 /* determinate_spinner_56.json in Resources */ = {isa = PBXBuildFile; fileRef = 8878C88628A4740F00B2D9D4 /* determinate_spinner_56.json */; };
 		887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380725F0355700685845 /* ChatsSettingsViewController.swift */; };
 		887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380925F0427F00685845 /* NotificationSettingsViewController.swift */; };
 		887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */; };
@@ -3095,6 +3095,10 @@
 		880D902B2480889B003D2B14 /* EmojiPickerCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerCollectionView.swift; sourceTree = "<group>"; };
 		880D902D2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerSectionToolbar.swift; sourceTree = "<group>"; };
 		880D902F2481E617003D2B14 /* SignalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalApp.swift; sourceTree = "<group>"; };
+		880FB3EA28CA53D200FA1C10 /* determinate_spinner_44.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_44.json; sourceTree = "<group>"; };
+		880FB3EB28CA53D300FA1C10 /* indeterminate_spinner_56.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_56.json; sourceTree = "<group>"; };
+		880FB3EC28CA53D300FA1C10 /* determinate_spinner_56.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_56.json; sourceTree = "<group>"; };
+		880FB3ED28CA53D300FA1C10 /* indeterminate_spinner_44.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_44.json; sourceTree = "<group>"; };
 		880FC0A023BFDADC00A2A900 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = translations/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		881218EF238CA51600E6F271 /* MessageReactionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionPicker.swift; sourceTree = "<group>"; };
@@ -3197,10 +3201,6 @@
 		887889A8247718F7001B5FCF /* jv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = jv; path = translations/jv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889AB247E09B7001B5FCF /* kk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kk; path = translations/kk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8878B2D5286636D8008368F2 /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
-		8878C88328A4740E00B2D9D4 /* indeterminate_spinner_44.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_44.json; sourceTree = "<group>"; };
-		8878C88428A4740F00B2D9D4 /* indeterminate_spinner_56.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_56.json; sourceTree = "<group>"; };
-		8878C88528A4740F00B2D9D4 /* determinate_spinner_44.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_44.json; sourceTree = "<group>"; };
-		8878C88628A4740F00B2D9D4 /* determinate_spinner_56.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = determinate_spinner_56.json; sourceTree = "<group>"; };
 		887B380725F0355700685845 /* ChatsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380925F0427F00685845 /* NotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsContentViewController.swift; sourceTree = "<group>"; };
@@ -6433,10 +6433,10 @@
 				34848D5D25D43ADD00E5034B /* add-money.json */,
 				88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */,
 				34848D5A25D43ADD00E5034B /* cash-out.json */,
-				8878C88528A4740F00B2D9D4 /* determinate_spinner_44.json */,
-				8878C88628A4740F00B2D9D4 /* determinate_spinner_56.json */,
-				8878C88328A4740E00B2D9D4 /* indeterminate_spinner_44.json */,
-				8878C88428A4740F00B2D9D4 /* indeterminate_spinner_56.json */,
+				880FB3EA28CA53D200FA1C10 /* determinate_spinner_44.json */,
+				880FB3EC28CA53D300FA1C10 /* determinate_spinner_56.json */,
+				880FB3ED28CA53D300FA1C10 /* indeterminate_spinner_44.json */,
+				880FB3EB28CA53D300FA1C10 /* indeterminate_spinner_56.json */,
 				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
 				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
 				3406D32A25DD80D600885B14 /* payments_spinner.json */,
@@ -9009,16 +9009,16 @@
 				4503F1BF20470A5B00CEE724 /* classic.aifc in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
-				8878C88928A4740F00B2D9D4 /* determinate_spinner_44.json in Resources */,
-				8878C88A28A4740F00B2D9D4 /* determinate_spinner_56.json in Resources */,
+				880FB3EE28CA53D400FA1C10 /* determinate_spinner_44.json in Resources */,
+				880FB3F028CA53D400FA1C10 /* determinate_spinner_56.json in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
 				88D6E940254CF712003142D9 /* group_call_join.aiff in Resources */,
 				88D6E93F254CF712003142D9 /* group_call_leave.aiff in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
 				B66DBF4A19D5BBC8006EA940 /* Images.xcassets in Resources */,
-				8878C88728A4740F00B2D9D4 /* indeterminate_spinner_44.json in Resources */,
-				8878C88828A4740F00B2D9D4 /* indeterminate_spinner_56.json in Resources */,
+				880FB3F128CA53D400FA1C10 /* indeterminate_spinner_44.json in Resources */,
+				880FB3EF28CA53D400FA1C10 /* indeterminate_spinner_56.json in Resources */,
 				A5E7C675248C5443007C949A /* InfoPlist.strings in Resources */,
 				45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */,
 				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
