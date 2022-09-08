@@ -68,27 +68,14 @@ class GroupCallMemberView: UIView {
         addSubview(muteIndicatorImage)
         muteIndicatorImage.autoMatch(.width, to: .height, of: muteIndicatorImage)
 
-        // We don't support a rotating call screen on phones,
-        // but we do still want to rotate some UI elements.
-        if !UIDevice.current.isIPad {
-            updateOrientationForPhone()
-
-            UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(updateOrientationForPhone),
-                                                   name: UIDevice.orientationDidChangeNotification,
-                                                   object: nil)
-        }
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateOrientationForPhone),
+                                               name: CallService.phoneOrientationDidChange,
+                                               object: nil)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    deinit {
-        if !UIDevice.current.isIPad {
-            UIDevice.current.endGeneratingDeviceOrientationNotifications()
-        }
     }
 
     enum ErrorState {
@@ -97,21 +84,15 @@ class GroupCallMemberView: UIView {
     }
 
     @objc
-    private func updateOrientationForPhone() {
-        let rotationAngle: CGFloat
-        switch UIDevice.current.orientation {
-        case .landscapeLeft:
-            rotationAngle = .halfPi
-        case .landscapeRight:
-            rotationAngle = -.halfPi
-        case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
-            fallthrough
-        @unknown default:
-            rotationAngle = 0
-        }
+    private func updateOrientationForPhone(_ notification: Notification) {
+        let rotationAngle = notification.object as! CGFloat
 
-        UIView.animate(withDuration: 0.3) {
-            self.rotateForPhoneOrientation(rotationAngle)
+        if window == nil {
+            rotateForPhoneOrientation(rotationAngle)
+        } else {
+            UIView.animate(withDuration: 0.3) {
+                self.rotateForPhoneOrientation(rotationAngle)
+            }
         }
     }
 

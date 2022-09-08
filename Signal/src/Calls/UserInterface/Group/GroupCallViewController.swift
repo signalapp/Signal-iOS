@@ -249,6 +249,8 @@ class GroupCallViewController: UIViewController {
         guard !hasAppeared else { return }
         hasAppeared = true
 
+        callService.sendInitialPhoneOrientationNotification()
+
         if let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) {
             view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
             splitViewSnapshot.autoPinEdgesToSuperviewEdges()

@@ -71,6 +71,9 @@ public final class CallService: LightweightCallManager {
             if oldValue != newValue {
                 if let oldValue = oldValue {
                     DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
+                    if !UIDevice.current.isIPad {
+                        UIDevice.current.endGeneratingDeviceOrientationNotifications()
+                    }
                 }
 
                 if let newValue = newValue {
@@ -83,6 +86,10 @@ public final class CallService: LightweightCallManager {
                         self.audioService.requestSpeakerphone(isEnabled: false)
 
                         individualCallService.startCallTimer()
+                    }
+
+                    if !UIDevice.current.isIPad {
+                        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
                     }
                 } else {
                     individualCallService.stopAnyCallTimer()
@@ -177,6 +184,15 @@ public final class CallService: LightweightCallManager {
             selector: #selector(configureBandwidthMode),
             name: .reachabilityChanged,
             object: nil)
+
+        // We don't support a rotating call screen on phones,
+        // but we do still want to rotate the various icons.
+        if !UIDevice.current.isIPad {
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(phoneOrientationDidChange),
+                                                   name: UIDevice.orientationDidChangeNotification,
+                                                   object: nil)
+        }
 
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
@@ -632,6 +648,43 @@ public final class CallService: LightweightCallManager {
         if let localUuid = tsAccountManager.localUuid {
             callManager.setSelfUuid(localUuid)
         }
+    }
+
+    /// The object is the rotation angle necessary to match the new orientation.
+    static var phoneOrientationDidChange = Notification.Name("CallService.phoneOrientationDidChange")
+
+    @objc
+    private func phoneOrientationDidChange() {
+        guard currentCall != nil else {
+            return
+        }
+        sendPhoneOrientationNotification()
+    }
+
+    private func sendPhoneOrientationNotification() {
+        owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
+
+        let rotationAngle: CGFloat
+        switch UIDevice.current.orientation {
+        case .landscapeLeft:
+            rotationAngle = .halfPi
+        case .landscapeRight:
+            rotationAngle = -.halfPi
+        case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
+            fallthrough
+        @unknown default:
+            rotationAngle = 0
+        }
+
+        NotificationCenter.default.post(name: Self.phoneOrientationDidChange, object: rotationAngle)
+    }
+
+    /// Pretend the phone just changed orientations so that the call UI will autorotate.
+    func sendInitialPhoneOrientationNotification() {
+        guard !UIDevice.current.isIPad else {
+            return
+        }
+        sendPhoneOrientationNotification()
     }
 
     // MARK: -
