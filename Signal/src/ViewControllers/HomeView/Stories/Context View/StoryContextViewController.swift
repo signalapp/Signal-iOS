@@ -48,6 +48,7 @@ class StoryContextViewController: OWSViewController {
     }
 
     var loadMessage: StoryMessage?
+    var presentReplies = false
 
     enum LoadPosition {
         case `default`
@@ -101,6 +102,11 @@ class StoryContextViewController: OWSViewController {
             // For subsequent loads, use the default position.
             loadPositionIfRead = .default
             loadMessage = nil
+
+            if presentReplies {
+                presentRepliesAndViewsSheet()
+                presentReplies = false
+            }
         }
 
         playbackProgressView.alpha = 1
@@ -575,6 +581,8 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
                 let groupRepliesAndViewsVC = StoryGroupRepliesAndViewsSheet(storyMessage: currentItem.message)
                 groupRepliesAndViewsVC.interactiveTransitionCoordinator = interactiveTransitionCoordinator
                 groupRepliesAndViewsVC.dismissHandler = { [weak self] in self?.play() }
+                groupRepliesAndViewsVC.focusedTab = currentItem.numberOfReplies > 0 ? .replies : .views
+
                 self.pause()
                 self.present(groupRepliesAndViewsVC, animated: true)
             case .incoming:

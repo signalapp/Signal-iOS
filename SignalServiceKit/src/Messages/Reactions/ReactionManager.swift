@@ -220,6 +220,10 @@ public class ReactionManager: NSObject {
 
             message.anyInsert(transaction: transaction)
 
+            if let incomingMessage = message as? TSIncomingMessage {
+                notificationsManager?.notifyUser(forIncomingMessage: incomingMessage, thread: thread, transaction: transaction)
+            }
+
             return .success
         } else {
             // This is potentially normal. For example, we could've deleted the message locally.

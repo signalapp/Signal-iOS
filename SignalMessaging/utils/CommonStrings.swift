@@ -392,6 +392,12 @@ public class NotificationStrings: NSObject {
     }
 
     @objc
+    static public var incomingGroupStoryReplyTitleFormat: String {
+        OWSLocalizedString("NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE",
+                           comment: "notification title. Embeds {{ %1%@ author name, %2%@ group name}}")
+    }
+
+    @objc
     static public var failedToSendBody: String {
         OWSLocalizedString("SEND_FAILED_NOTIFICATION_BODY", comment: "notification body")
     }

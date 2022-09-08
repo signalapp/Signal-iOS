@@ -7,15 +7,23 @@ import UIKit
 import SignalServiceKit
 import SignalUI
 
-class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController {
+class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroupReplier {
     override var interactiveScrollViews: [UIScrollView] { [groupReplyViewController.tableView, viewsViewController.tableView] }
-    override var minHeight: CGFloat { CurrentAppContext().frame.height * 0.6 }
+    override var minHeight: CGFloat {
+        switch focusedTab {
+        case .views: return CurrentAppContext().frame.height * 0.6
+        case .replies: return maximizedHeight
+        }
+    }
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
     weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
     private let groupReplyViewController: StoryGroupReplyViewController
     private let viewsViewController: StoryViewsViewController
     private let pagingScrollView = UIScrollView()
+
+    var storyMessage: StoryMessage { groupReplyViewController.storyMessage }
+    var threadUniqueId: String? { groupReplyViewController.thread?.uniqueId }
 
     private lazy var viewsButton = createToggleButton(
         title: NSLocalizedString("STORIES_VIEWS_TAB", comment: "Title text for the 'views' tab on the stories views & replies sheet")
@@ -30,6 +38,12 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController {
     }
 
     var dismissHandler: (() -> Void)?
+
+    enum Tab: Int {
+        case views = 0
+        case replies = 1
+    }
+    var focusedTab: Tab = .views
 
     init(storyMessage: StoryMessage) {
         self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage)
@@ -84,8 +98,30 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController {
         groupReplyViewController.view.autoPinHeightToSuperview()
         groupReplyViewController.view.autoPinEdge(.leading, to: .trailing, of: viewsViewController.view)
         groupReplyViewController.view.autoPinEdge(toSuperviewEdge: .trailing)
+    }
 
-        switchToViewsTab(animated: false)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        switch focusedTab {
+        case .views: break
+        case .replies:
+            groupReplyViewController.inputToolbar.becomeFirstResponder()
+        }
+    }
+
+    private var hasCompletedInitialLayout = false
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        guard !hasCompletedInitialLayout, view.frame != .zero else { return }
+        hasCompletedInitialLayout = true
+
+        // Once we have a frame, we need to re-switch to the tab
+        switch focusedTab {
+        case .views: switchToViewsTab(animated: false)
+        case .replies: switchToRepliesTab(animated: false)
+        }
     }
 
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
@@ -98,14 +134,17 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController {
     private var isManuallySwitchingTabs = false
     func switchToRepliesTab(animated: Bool) {
         isManuallySwitchingTabs = true
+        focusedTab = .replies
         repliesButton.isSelected = true
         viewsButton.isSelected = false
+        view.layoutIfNeeded()
         pagingScrollView.setContentOffset(CGPoint(x: pagingScrollView.width, y: 0), animated: animated)
         isManuallySwitchingTabs = false
     }
 
     func switchToViewsTab(animated: Bool) {
         isManuallySwitchingTabs = true
+        focusedTab = .views
         repliesButton.isSelected = false
         viewsButton.isSelected = true
         pagingScrollView.setContentOffset(.zero, animated: animated)
@@ -139,9 +178,11 @@ extension StoryGroupRepliesAndViewsSheet: UIScrollViewDelegate {
         if scrollView.contentOffset.x < scrollView.width / 2 {
             repliesButton.isSelected = false
             viewsButton.isSelected = true
+            focusedTab = .views
         } else {
             repliesButton.isSelected = true
             viewsButton.isSelected = false
+            focusedTab = .replies
         }
     }
 }

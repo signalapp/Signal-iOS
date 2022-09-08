@@ -22,6 +22,10 @@ class StoryPageViewController: UIPageViewController {
     }
     let onlyRenderMyStories: Bool
 
+    var currentMessage: StoryMessage? {
+        currentContextViewController.currentItem?.message
+    }
+
     weak var contextDataSource: StoryPageViewControllerDataSource?
     let viewableContexts: [StoryContext]
     private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
@@ -38,12 +42,13 @@ class StoryPageViewController: UIPageViewController {
 
     // MARK: - Init
 
-    required init(context: StoryContext, viewableContexts: [StoryContext]? = nil, loadMessage: StoryMessage? = nil, onlyRenderMyStories: Bool = false) {
+    required init(context: StoryContext, viewableContexts: [StoryContext]? = nil, loadMessage: StoryMessage? = nil, presentReplies: Bool = false, onlyRenderMyStories: Bool = false) {
         self.onlyRenderMyStories = onlyRenderMyStories
         self.viewableContexts = viewableContexts ?? [context]
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
         self.currentContext = context
         currentContextViewController.loadMessage = loadMessage
+        currentContextViewController.presentReplies = presentReplies
         modalPresentationStyle = .fullScreen
         transitioningDelegate = self
     }

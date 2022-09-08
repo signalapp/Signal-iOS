@@ -36,6 +36,7 @@ public enum AppNotificationCategory: CaseIterable {
     case missedCallFromNoLongerVerifiedIdentity
     case internalError
     case incomingMessageGeneric
+    case incomingGroupStoryReply
 }
 
 public enum AppNotificationAction: String, CaseIterable {
@@ -54,6 +55,7 @@ public struct AppNotificationUserInfoKey {
     public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
     public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
     public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
+    public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
     public static let callBackUuid = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
     public static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
@@ -91,6 +93,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.internalError"
         case .incomingMessageGeneric:
             return "Signal.AppNotificationCategory.incomingMessageGeneric"
+        case .incomingGroupStoryReply:
+            return "Signal.AppNotificationCategory.incomingGroupStoryReply"
         }
     }
 
@@ -127,6 +131,8 @@ extension AppNotificationCategory {
             return []
         case .incomingMessageGeneric:
             return []
+        case .incomingGroupStoryReply:
+            return [.reply]
         }
     }
 }
@@ -495,13 +501,29 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction).isMuted
     }
 
-    public func canNotify(for incomingMessage: TSIncomingMessage,
-                          thread: TSThread,
-                          transaction: SDSAnyReadTransaction) -> Bool {
-        guard !incomingMessage.isGroupStoryReply else { return false }
-
+    public func canNotify(
+        for incomingMessage: TSIncomingMessage,
+        thread: TSThread,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         guard isThreadMuted(thread, transaction: transaction) else {
-            return true
+            guard incomingMessage.isGroupStoryReply else { return true }
+
+            guard
+                let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value,
+                let storyAuthorAddress = incomingMessage.storyAuthorAddress,
+                let storyAuthorUuidString = storyAuthorAddress.uuidString
+            else { return false }
+
+            // Always notify for replies to group stories you sent
+            if storyAuthorAddress.isLocalAddress { return true }
+
+            // Notify people who did not author the story if they've previously replied to it
+            return InteractionFinder.hasLocalUserReplied(
+                storyTimestamp: storyTimestamp,
+                storyAuthorUuidString: storyAuthorUuidString,
+                transaction: transaction
+            )
         }
 
         guard thread.isGroupThread else { return false }
@@ -560,9 +582,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             case is TSContactThread:
                 notificationTitle = senderName
             case let groupThread as TSGroupThread:
-                notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat,
-                                           senderName,
-                                           groupThread.groupNameOrDefault)
+                notificationTitle = String(
+                    format: incomingMessage.isGroupStoryReply
+                    ? NotificationStrings.incomingGroupStoryReplyTitleFormat
+                    : NotificationStrings.incomingGroupMessageTitleFormat,
+                    senderName,
+                    groupThread.groupNameOrDefault
+                )
             default:
                 owsFailDebug("Invalid thread: \(thread.uniqueId)")
                 return
@@ -596,15 +622,21 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             category = .incomingMessageFromNoLongerVerifiedIdentity
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
+        } else if incomingMessage.isGroupStoryReply {
+            category = .incomingGroupStoryReply
         } else {
             category = (thread.canSendChatMessagesToThread()
                             ? .incomingMessageWithActions_CanReply
                             : .incomingMessageWithActions_CannotReply)
         }
-        let userInfo = [
+        var userInfo: [AnyHashable: Any] = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.messageId: incomingMessage.uniqueId
         ]
+
+        if let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value {
+            userInfo[AppNotificationUserInfoKey.storyTimestamp] = storyTimestamp
+        }
 
         var interaction: INInteraction?
         if previewType != .noNameNoPreview,

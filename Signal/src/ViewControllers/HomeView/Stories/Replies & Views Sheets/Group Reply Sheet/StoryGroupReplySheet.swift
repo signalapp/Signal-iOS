@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 import SignalServiceKit
 
-class StoryGroupReplySheet: InteractiveSheetViewController {
+class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
     override var interactiveScrollViews: [UIScrollView] { [groupReplyViewController.tableView] }
     override var minHeight: CGFloat { maximizedHeight }
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
@@ -15,6 +15,9 @@ class StoryGroupReplySheet: InteractiveSheetViewController {
     private let groupReplyViewController: StoryGroupReplyViewController
 
     var dismissHandler: (() -> Void)?
+
+    var storyMessage: StoryMessage { groupReplyViewController.storyMessage }
+    var threadUniqueId: String? { groupReplyViewController.thread?.uniqueId }
 
     init(storyMessage: StoryMessage) {
         self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage)

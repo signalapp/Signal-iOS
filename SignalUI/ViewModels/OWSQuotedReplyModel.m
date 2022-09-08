@@ -378,7 +378,9 @@ NS_ASSUME_NONNULL_BEGIN
     if (message.body.length > 0) {
         quotedText = message.body;
     } else if (message.storyReactionEmoji.length > 0) {
-        quotedText = message.storyReactionEmoji;
+        quotedText = [NSString stringWithFormat:OWSLocalizedString(@"STORY_REACTION_QUOTE_FORMAT",
+                                                    @"quote text for a reaction to a story. Embeds {{reaction emoji}}"),
+                               message.storyReactionEmoji];
     }
 
     BOOL hasText = quotedText.length > 0;

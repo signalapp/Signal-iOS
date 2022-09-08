@@ -514,8 +514,23 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    if (bodyDescription == nil) {
-        bodyDescription = self.storyReactionEmoji;
+    if (bodyDescription == nil && self.storyReactionEmoji.length > 0) {
+        if (self.storyAuthorAddress.isLocalAddress) {
+            bodyDescription =
+                [NSString stringWithFormat:OWSLocalizedString(@"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT",
+                                               @"inbox and notification text for a reaction to a story authored by the "
+                                               @"local user. Embeds {{reaction emoji}}"),
+                          self.storyReactionEmoji];
+        } else {
+            NSString *storyAuthorName = [self.contactsManager shortDisplayNameForAddress:self.storyAuthorAddress
+                                                                             transaction:transaction];
+            bodyDescription = [NSString
+                stringWithFormat:OWSLocalizedString(@"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT",
+                                     @"inbox and notification text for a reaction to a story authored by another user. "
+                                     @"Embeds {{ %1$@ reaction emoji, %2$@ story author name }}"),
+                self.storyReactionEmoji,
+                storyAuthorName];
+        }
     }
 
     NSString *_Nullable attachmentEmoji = nil;

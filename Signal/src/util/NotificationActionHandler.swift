@@ -132,19 +132,28 @@ public class NotificationActionHandler: NSObject {
         }.then(on: .global()) { (notificationMessage: NotificationMessage) -> Promise<Void> in
             let thread = notificationMessage.thread
             let interaction = notificationMessage.interaction
-            guard nil != interaction as? TSIncomingMessage else {
+            guard let incomingMessage = interaction as? TSIncomingMessage else {
                 throw OWSAssertionError("Unexpected interaction type.")
             }
 
             return firstly(on: .global()) { () -> Promise<Void> in
                 self.databaseStorage.write { transaction in
-                    let preparer = OutgoingMessagePreparer(
-                        messageBody: MessageBody(text: replyText, ranges: .empty),
-                        thread: thread,
-                        transaction: transaction
-                    )
-                    preparer.insertMessage(transaction: transaction)
-                    return ThreadUtil.enqueueMessagePromise(message: preparer.unpreparedMessage, transaction: transaction)
+                    let builder = TSOutgoingMessageBuilder(thread: thread)
+                    builder.messageBody = replyText
+
+                    // If we're replying to a group story reply, keep the reply within that context.
+                    if notificationMessage.isGroupStoryReply,
+                       let storyTimestamp = incomingMessage.storyTimestamp,
+                       let storyAuthorAddress = incomingMessage.storyAuthorAddress
+                    {
+                        builder.storyTimestamp = storyTimestamp
+                        builder.storyAuthorAddress = storyAuthorAddress
+                    }
+
+                    let message = TSOutgoingMessage(outgoingMessageWithBuilder: builder, transaction: transaction)
+                    message.anyInsert(transaction: transaction)
+
+                    return ThreadUtil.enqueueMessagePromise(message: message, transaction: transaction)
                 }
             }.recover(on: .global()) { error -> Promise<Void> in
                 Logger.warn("Failed to send reply message from notification with error: \(error)")
@@ -160,7 +169,11 @@ public class NotificationActionHandler: NSObject {
         return firstly { () -> Promise<NotificationMessage> in
             self.notificationMessage(forUserInfo: userInfo)
         }.done(on: .main) { notificationMessage in
-            self.showThread(notificationMessage: notificationMessage)
+            if notificationMessage.isGroupStoryReply {
+                self.showGroupStoryReplyThread(notificationMessage: notificationMessage)
+            } else {
+                self.showThread(notificationMessage: notificationMessage)
+            }
         }
     }
 
@@ -172,6 +185,41 @@ public class NotificationActionHandler: NSObject {
             forThreadId: notificationMessage.thread.uniqueId,
             animated: UIApplication.shared.applicationState == .active
         )
+    }
+
+    private class func showGroupStoryReplyThread(notificationMessage: NotificationMessage) {
+        guard notificationMessage.isGroupStoryReply, let storyMessage = notificationMessage.storyMessage else {
+            return owsFailDebug("Unexpectedly missing story message")
+        }
+
+        guard let frontmostViewController = CurrentAppContext().frontmostViewController() else { return }
+
+        if let replySheet = frontmostViewController as? StoryGroupReplier {
+            if replySheet.storyMessage.uniqueId == storyMessage.uniqueId {
+                return // we're already in the right place
+            } else {
+                // we need to drop the viewer before we present the new viewer
+                replySheet.presentingViewController?.dismiss(animated: false) {
+                    showGroupStoryReplyThread(notificationMessage: notificationMessage)
+                }
+                return
+            }
+        } else if let storyPageViewController = frontmostViewController as? StoryPageViewController {
+            if storyPageViewController.currentMessage?.uniqueId == storyMessage.uniqueId {
+                // we're in the right place, just pop the replies sheet
+                storyPageViewController.currentContextViewController.presentRepliesAndViewsSheet()
+                return
+            } else {
+                // we need to drop the viewer before we present the new viewer
+                storyPageViewController.dismiss(animated: false) {
+                    showGroupStoryReplyThread(notificationMessage: notificationMessage)
+                }
+                return
+            }
+        }
+
+        let vc = StoryPageViewController(context: storyMessage.context, loadMessage: storyMessage, presentReplies: true)
+        frontmostViewController.present(vc, animated: true)
     }
 
     private class func reactWithThumbsUp(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
@@ -234,6 +282,8 @@ public class NotificationActionHandler: NSObject {
     private struct NotificationMessage {
         let thread: TSThread
         let interaction: TSInteraction?
+        let storyMessage: StoryMessage?
+        let isGroupStoryReply: Bool
         let hasPendingMessageRequest: Bool
     }
 
@@ -256,11 +306,24 @@ public class NotificationActionHandler: NSObject {
                     interaction = nil
                 }
 
+                let storyMessage: StoryMessage?
+                if
+                    let message = interaction as? TSMessage,
+                    let storyTimestamp = message.storyTimestamp?.uint64Value,
+                    let storyAuthorAddress = message.storyAuthorAddress
+                {
+                    storyMessage = StoryFinder.story(timestamp: storyTimestamp, author: storyAuthorAddress, transaction: transaction)
+                } else {
+                    storyMessage = nil
+                }
+
                 let hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
 
                 return NotificationMessage(
                     thread: thread,
                     interaction: interaction,
+                    storyMessage: storyMessage,
+                    isGroupStoryReply: (interaction as? TSMessage)?.isGroupStoryReply == true,
                     hasPendingMessageRequest: hasPendingMessageRequest
                 )
             }
