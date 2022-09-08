@@ -368,10 +368,19 @@ class StoryListDataSource: NSObject, Dependencies {
             return changedModels + modelsFromNewContexts
         }.sorted(by: Self.sortStoryModels)
 
+        let newIsHiddenStoriesSectionCollapsed: Bool
+        if !oldViewModel.isHiddenStoriesSectionCollapsed {
+            newIsHiddenStoriesSectionCollapsed = false
+        } else if oldViewModel.hiddenStories.isEmpty && newModels.contains(where: \.isHidden) {
+            newIsHiddenStoriesSectionCollapsed = false
+        } else {
+            newIsHiddenStoriesSectionCollapsed = true
+        }
+
         let newViewModel = StoryListViewModel(
             myStory: myStoryModel ?? oldViewModel.myStory,
             stories: newModels,
-            isHiddenStoriesSectionCollapsed: oldViewModel.isHiddenStoriesSectionCollapsed
+            isHiddenStoriesSectionCollapsed: newIsHiddenStoriesSectionCollapsed
         )
 
         let visibleBatchUpdates = try BatchUpdate.build(
@@ -453,10 +462,10 @@ class StoryListDataSource: NSObject, Dependencies {
         }
 
         if changes.oldModel.myStory == nil, changes.newModel.myStory != nil {
-            tableView.insertRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .automatic)
+            tableView.insertRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .fade)
         } else if changes.oldModel.myStory != nil, changes.newModel.myStory == nil {
             // My story should never go away after being loaded, but for the sake of completeness...
-            tableView.deleteRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .automatic)
+            tableView.deleteRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .fade)
         } else if changes.myStoryChanged {
             tableView.reloadRows(at: [IndexPath(row: 0, section: Section.myStory.rawValue)], with: .none)
         }
@@ -473,37 +482,71 @@ class StoryListDataSource: NSObject, Dependencies {
             return
         }
 
+        switch (changes.oldModel.hiddenStories.isEmpty, changes.newModel.hiddenStories.isEmpty) {
+        case (false, false), (true, true):
+            // Just reload if we have to.
+            if changes.oldModel.isHiddenStoriesSectionCollapsed != changes.newModel.isHiddenStoriesSectionCollapsed {
+                // If the cell is visible, reconfigure it directly without reloading.
+                let path = IndexPath(row: 0, section: Section.hiddenStories.rawValue)
+                if
+                    (tableView.indexPathsForVisibleRows ?? []).contains(path),
+                    let visibleCell = tableView.cellForRow(at: path) as? HiddenStoryHeaderCell
+                {
+                    visibleCell.configure(isCollapsed: changes.newModel.isHiddenStoriesSectionCollapsed)
+                } else {
+                    tableView.reloadRows(at: [path], with: .none)
+                }
+            }
+        case (true, false):
+            tableView.insertRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
+        case (false, true):
+            tableView.deleteRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
+        }
+
         switch (changes.oldModel.isHiddenStoriesSectionCollapsed, changes.newModel.isHiddenStoriesSectionCollapsed) {
 
         case (false, false):
             // Update the hidden section, it was expanded before and after
-            applyTableViewBatchUpdates(changes.hiddenStoryUpdates, toSection: .hiddenStories, models: changes.newModel.hiddenStories)
+            applyTableViewBatchUpdates(
+                changes.hiddenStoryUpdates.map {
+                    // Offset by 1 to account for the header cell.
+                    switch $0.updateType {
+                    case let .update(oldIndex, newIndex):
+                        return .init(value: $0.value, updateType: .update(oldIndex: oldIndex + 1, newIndex: newIndex + 1))
+                    case let .move(oldIndex, newIndex):
+                        return .init(value: $0.value, updateType: .move(oldIndex: oldIndex + 1, newIndex: newIndex + 1))
+                    case let .insert(newIndex):
+                        return .init(value: $0.value, updateType: .insert(newIndex: newIndex + 1))
+                    case let .delete(oldIndex):
+                        return .init(value: $0.value, updateType: .delete(oldIndex: oldIndex + 1))
+                    }
+                },
+                toSection: .hiddenStories,
+                // Offset by 1 to account for the header cell.
+                models: [changes.newModel.hiddenStories.first].compactMap({ $0 }) + changes.newModel.hiddenStories
+            )
 
         case (true, false):
             // Was collapsed and is now expanded, reload.
             applyTableViewBatchUpdates(
                 changes.newModel.hiddenStories.lazy.enumerated().map {
-                    return .init(value: $1.context, updateType: .insert(newIndex: $0))
+                    // Offset by 1 to account for the header cell.
+                    return .init(value: $1.context, updateType: .insert(newIndex: $0 + 1))
                 },
                 toSection: .hiddenStories,
                 models: changes.newModel.hiddenStories
             )
-            // Unfortunately have to just update the header view directly.
-            (tableView.headerView(forSection: Section.hiddenStories.rawValue) as? HiddenStoryHeaderView)?
-                .configure(isCollapsed: changes.newModel.isHiddenStoriesSectionCollapsed)
 
         case (false, true):
             // Was expanded and is now collapsed, everything counts as a delete.
             applyTableViewBatchUpdates(
                 changes.oldModel.hiddenStories.lazy.enumerated().map {
-                    return .init(value: $1.context, updateType: .delete(oldIndex: $0))
+                    // Offset by 1 to account for the header cell.
+                    return .init(value: $1.context, updateType: .delete(oldIndex: $0 + 1))
                 },
                 toSection: .hiddenStories,
                 models: changes.oldModel.hiddenStories
             )
-            // Unfortunately have to just update the header view directly.
-            (tableView.headerView(forSection: Section.hiddenStories.rawValue) as? HiddenStoryHeaderView)?
-                .configure(isCollapsed: changes.newModel.isHiddenStoriesSectionCollapsed)
 
         case (true, true):
             // Was collapsed and is collapsed, so can just ignore any updates.
@@ -524,12 +567,12 @@ class StoryListDataSource: NSObject, Dependencies {
         for update in updates {
             switch update.updateType {
             case .delete(let oldIndex):
-                tableView.deleteRows(at: [IndexPath(row: oldIndex, section: section.rawValue)], with: .automatic)
+                tableView.deleteRows(at: [IndexPath(row: oldIndex, section: section.rawValue)], with: .fade)
             case .insert(let newIndex):
-                tableView.insertRows(at: [IndexPath(row: newIndex, section: section.rawValue)], with: .automatic)
+                tableView.insertRows(at: [IndexPath(row: newIndex, section: section.rawValue)], with: .fade)
             case .move(let oldIndex, let newIndex):
-                tableView.deleteRows(at: [IndexPath(row: oldIndex, section: section.rawValue)], with: .automatic)
-                tableView.insertRows(at: [IndexPath(row: newIndex, section: section.rawValue)], with: .automatic)
+                tableView.deleteRows(at: [IndexPath(row: oldIndex, section: section.rawValue)], with: .fade)
+                tableView.insertRows(at: [IndexPath(row: newIndex, section: section.rawValue)], with: .fade)
             case .update(_, let newIndex):
                 // If the cell is visible, reconfigure it directly without reloading.
                 let path = IndexPath(row: newIndex, section: section.rawValue)

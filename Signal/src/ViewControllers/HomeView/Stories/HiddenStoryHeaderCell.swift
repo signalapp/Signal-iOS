@@ -5,18 +5,19 @@
 import Foundation
 import UIKit
 
-class HiddenStoryHeaderView: UITableViewHeaderFooterView {
+class HiddenStoryHeaderCell: UITableViewCell {
 
-    static let reuseIdentifier = "HiddenStoryHeaderView"
+    static let reuseIdentifier = "HiddenStoryHeaderCell"
 
     private let label = UILabel()
     private let iconView = UIImageView(image: .init(named: "chevron-right-20")?.withRenderingMode(.alwaysTemplate))
 
-    override init(reuseIdentifier: String?) {
-        super.init(reuseIdentifier: reuseIdentifier)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         backgroundView = UIView()
         backgroundView?.backgroundColor = .clear
+        selectionStyle = .none
 
         contentView.addSubview(label)
         contentView.addSubview(iconView)
@@ -31,8 +32,6 @@ class HiddenStoryHeaderView: UITableViewHeaderFooterView {
 
         iconView.autoPinEdge(toSuperviewMargin: .trailing)
         iconView.autoVCenterInSuperview()
-
-        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTap)))
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -61,11 +60,5 @@ class HiddenStoryHeaderView: UITableViewHeaderFooterView {
             return
         }
         UIView.animate(withDuration: 0.2, animations: applyIconRotation)
-    }
-
-    public var tapHandler: (() -> Void)?
-
-    @objc private func didTap() {
-        tapHandler?()
     }
 }

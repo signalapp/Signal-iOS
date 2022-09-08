@@ -6,7 +6,11 @@ import Foundation
 import UIKit
 import SignalCoreKit
 
-public class ContextMenuButton: UIButton {
+/// This class exists to be a drop-in replacement for the Context-menu related APIs available on UIButton
+/// in iOS 14 and above.
+/// When we drop iOS 13, we can remove this class and replace all usages with a vanilla UIButton.
+/// As such, its exposed API should remain identical to what UIButton exposes in iOS 14.
+public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
     public var contextMenu: ContextMenu? {
         didSet { updateHandlers() }
     }
@@ -29,12 +33,26 @@ public class ContextMenuButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // Note: fake value used just to mimic UIButton iOS 14+ behavior
+    private lazy var _contextMenuInteraction = ContextMenuInteraction(delegate: self)
+
     public var isShowingContextMenu: Bool { contextMenuController != nil }
 
+    private var contextMenuConfiguration: ContextMenuConfiguration?
     private var contextMenuController: ContextMenuController?
+
     public func showContextMenu(initiatingGestureRecognizer: UIGestureRecognizer? = nil) {
         guard !isShowingContextMenu else { return }
-        guard let window = window, let contextMenu = contextMenu else { return }
+        guard
+            let window = window,
+            let contextMenuConfiguration = self.contextMenuInteraction(
+                _contextMenuInteraction,
+                configurationForMenuAtLocation: initiatingGestureRecognizer?.location(in: self) ?? bounds.center
+            ),
+            let contextMenu = contextMenuConfiguration.actionProvider?([])
+        else {
+            return
+        }
 
         let menuPosition = ContextMenuPosition(
             rect: window.bounds,
@@ -43,19 +61,13 @@ public class ContextMenuButton: UIButton {
 
         guard let preview = contextMenuTargetedPreview(menuPosition: menuPosition) else { return }
 
-        let configuration = ContextMenuConfiguration(
-            identifier: NSUUID(),
-            forceDarkTheme: forceDarkTheme,
-            actionProvider: { _ in contextMenu }
-        )
-
         let menuAccessory = contextMenuActionsAccessory(
             menuPosition: menuPosition,
             menu: contextMenu
         )
 
         let controller = ContextMenuController(
-            configuration: configuration,
+            configuration: contextMenuConfiguration,
             preview: preview,
             initiatingGestureRecognizer: initiatingGestureRecognizer,
             menuAccessory: menuAccessory,
@@ -65,11 +77,14 @@ public class ContextMenuButton: UIButton {
         )
         contextMenuController = controller
         controller.delegate = self
+        self.contextMenuConfiguration = contextMenuConfiguration
 
         ImpactHapticFeedback.impactOccured(style: .medium, intensity: 0.8)
 
         window.addSubview(controller.view)
         controller.view.frame = window.bounds
+
+        self.contextMenuInteraction(_contextMenuInteraction, willDisplayMenuForConfiguration: contextMenuConfiguration)
     }
 
     public func dismissContextMenu(animated: Bool, completion: (() -> Void)? = nil) {
@@ -77,8 +92,19 @@ public class ContextMenuButton: UIButton {
             contextMenuController?.view?.removeFromSuperview()
             contextMenuController = nil
             completion?()
+            if let contextMenuConfiguration = contextMenuConfiguration {
+                self.contextMenuInteraction(_contextMenuInteraction, didEndForConfiguration: contextMenuConfiguration)
+                self.contextMenuConfiguration = nil
+            } else {
+                owsFailDebug("Dismissing context menu with no configuration present")
+            }
         }
 
+        if let contextMenuConfiguration = contextMenuConfiguration {
+            self.contextMenuInteraction(_contextMenuInteraction, willEndForConfiguration: contextMenuConfiguration)
+        } else {
+            owsFailDebug("Dismissing context menu with no configuration present")
+        }
         if animated {
             contextMenuController?.animateOut(dismiss)
         } else {
@@ -186,6 +212,40 @@ public class ContextMenuButton: UIButton {
         )
         accessory.delegate = self
         return accessory
+    }
+
+    /// Note: If you override this method on UIButton on iOS 14 or later, whatever is returned is used for the
+    /// context menu that is ultimately displayed.
+    /// This class is meant to be a perfect replacement for UIButton to get context menu functionality prior to
+    /// iOS 14, so we mimic that behavior and use this method as the source of truth, allowing it to be overriden.
+    public func contextMenuInteraction(
+        _ interaction: ContextMenuInteraction,
+        configurationForMenuAtLocation location: CGPoint
+    ) -> ContextMenuConfiguration? {
+        return self.contextMenu.map { contextMenu in
+            return .init(identifier: nil, actionProvider: { _ in
+                return contextMenu
+            })
+        }
+    }
+
+    public func contextMenuInteraction(
+        _ interaction: ContextMenuInteraction,
+        previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration
+    ) -> ContextMenuTargetedPreview? {
+        return nil
+    }
+
+    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {
+        // Do nothing
+    }
+
+    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {
+        // Do nothing
+    }
+
+    public func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration: ContextMenuConfiguration) {
+        // Do nothing
     }
 }
 

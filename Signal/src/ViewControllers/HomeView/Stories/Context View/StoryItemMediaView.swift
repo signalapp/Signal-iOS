@@ -10,11 +10,13 @@ import SignalUI
 import SafariServices
 import CoreMedia
 
-protocol StoryItemMediaViewDelegate: AnyObject {
+protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
     func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView)
 
     func storyItemMediaViewShouldBeMuted(_ storyItemMediaView: StoryItemMediaView) -> Bool
+
+    var contextMenuGenerator: StoryContextMenuGenerator { get }
 }
 
 class StoryItemMediaView: UIView {
@@ -112,6 +114,10 @@ class StoryItemMediaView: UIView {
                 }
             }
             return didHandle
+        }
+
+        if contextButton.bounds.contains(gesture.location(in: contextButton)) {
+            return true
         }
 
         return false
@@ -250,10 +256,17 @@ class StoryItemMediaView: UIView {
             nameLabel,
             .spacer(withWidth: nameTrailingSpacing),
             nameTrailingView,
-            .hStretchingSpacer()
+            .hStretchingSpacer(),
+            .spacer(withWidth: Self.contextButtonSize)
         ])
         authorRow.axis = .horizontal
         authorRow.alignment = .center
+
+        authorRow.addSubview(contextButton)
+        contextButton.autoPinEdge(toSuperviewEdge: .trailing)
+        NSLayoutConstraint.activate([
+            contextButton.centerYAnchor.constraint(equalTo: authorRow.centerYAnchor)
+        ])
 
         timestampLabel.setCompressionResistanceHorizontalHigh()
         timestampLabel.setContentHuggingHorizontalHigh()
@@ -331,6 +344,20 @@ class StoryItemMediaView: UIView {
         )
         return label
     }
+
+    static let contextButtonSize: CGFloat = 42
+
+    private lazy var contextButton: DelegatingContextMenuButton = {
+        let contextButton = DelegatingContextMenuButton(delegate: delegate)
+        contextButton.showsContextMenuAsPrimaryAction = true
+        contextButton.tintColor = Theme.darkThemePrimaryColor
+        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.contentMode = .center
+
+        contextButton.autoSetDimensions(to: .square(Self.contextButtonSize))
+
+        return contextButton
+    }()
 
     // MARK: - Caption
 

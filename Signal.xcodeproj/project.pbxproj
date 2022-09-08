@@ -768,13 +768,13 @@
 		5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
-		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderView.swift */; };
+		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
 		661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */; };
 		661396AF28BE881E00E0C4DF /* ChainedPromiseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */; };
 		661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661602A328BEB94400C1932D /* StoryListDataSource.swift */; };
 		668CAB3E289983520085A2C3 /* AudioMessagePlaybackRateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */; };
 		668FE09B28B923A4008B9071 /* Bool+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09A28B923A4008B9071 /* Bool+SSK.swift */; };
-		668FE09F28B947ED008B9071 /* StoryHidingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09E28B947ED008B9071 /* StoryHidingManager.swift */; };
+		668FE09F28B947ED008B9071 /* StoryContextMenuGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */; };
 		669E8FE828B4153C00043D28 /* OWSURLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE728B4153B00043D28 /* OWSURLSession.swift */; };
 		669E8FE928B415C000043D28 /* OWSURLBuilderUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */; };
 		669E8FED28B4177900043D28 /* OWSSignalServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */; };
@@ -786,6 +786,7 @@
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
+		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
 		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
@@ -3024,7 +3025,7 @@
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
-		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderView.swift; sourceTree = "<group>"; };
+		661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiddenStoryHeaderCell.swift; sourceTree = "<group>"; };
 		661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromise.swift; sourceTree = "<group>"; };
 		661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChainedPromiseTest.swift; sourceTree = "<group>"; };
 		661602A328BEB94400C1932D /* StoryListDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryListDataSource.swift; sourceTree = "<group>"; };
@@ -3032,7 +3033,7 @@
 		668AB0CB28AD610600B31984 /* StoryUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryUtil.swift; sourceTree = "<group>"; };
 		668CAB3D289983520085A2C3 /* AudioMessagePlaybackRateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMessagePlaybackRateView.swift; sourceTree = "<group>"; };
 		668FE09A28B923A4008B9071 /* Bool+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+SSK.swift"; sourceTree = "<group>"; };
-		668FE09E28B947ED008B9071 /* StoryHidingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryHidingManager.swift; sourceTree = "<group>"; };
+		668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextMenuGenerator.swift; sourceTree = "<group>"; };
 		669E8FDB28B02CC400043D28 /* OWSURLBuilderUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSURLBuilderUtil.swift; sourceTree = "<group>"; };
 		669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSessionMock.swift; sourceTree = "<group>"; };
 		669E8FE728B4153B00043D28 /* OWSURLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSURLSession.swift; sourceTree = "<group>"; };
@@ -3043,6 +3044,7 @@
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
+		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -6061,8 +6063,8 @@
 			isa = PBXGroup;
 			children = (
 				8864072F27F21AA7009916B6 /* Group Reply Sheet */,
+				668FE09E28B947ED008B9071 /* StoryContextMenuGenerator.swift */,
 				88423A51280A171E007D2918 /* StoryDirectReplySheet.swift */,
-				668FE09E28B947ED008B9071 /* StoryHidingManager.swift */,
 				88B00D4E28A33B5800BC9CA0 /* StoryPrivateViewsSheet.swift */,
 				8864073027F21AD7009916B6 /* StoryReplyInputToolbar.swift */,
 				88423A53280A2675007D2918 /* StoryReplyPreviewView.swift */,
@@ -6100,7 +6102,7 @@
 				88423A50280A1703007D2918 /* Replies & Views Sheets */,
 				8878B2D4286636BC008368F2 /* Settings */,
 				88863A4C280CADDC00977F69 /* Transitions */,
-				661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderView.swift */,
+				661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */,
 				8840B6E1283F16650036BA4C /* MyStoriesViewController.swift */,
 				886292112835606D00AA0C3B /* MyStoryCell.swift */,
 				8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */,
@@ -6823,6 +6825,7 @@
 				F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */,
 				F0B872B5269CF6D900D26481 /* ContextMenuInteraction.swift */,
 				F0EE4DB526A7AC18001DE4ED /* ContextMenuReactionBarAccessory.swift */,
+				66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */,
 			);
 			path = "Context Menus";
 			sourceTree = "<group>";
@@ -10127,6 +10130,7 @@
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				34D8C0281ED3673300188D7C /* DebugUITableViewController.m in Sources */,
 				88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */,
+				66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */,
 				887B6DC925F6C3E900E677D4 /* DeleteAccountConfirmationViewController.swift in Sources */,
 				3498AC892513896400B1F315 /* Dependencies+MainApp.swift in Sources */,
 				88A4CC19246CE6810082211F /* DeviceTransferInitialViewController.swift in Sources */,
@@ -10202,7 +10206,7 @@
 				347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */,
 				347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */,
 				32ECD08824BFBF8000EDDED0 /* HelpViewController.swift in Sources */,
-				661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderView.swift in Sources */,
+				661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */,
 				8852572C27DD40870032073C /* HomeTabBarController.swift in Sources */,
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				4CD4E7D523E8CCFE00834B1B /* IndividualCall.swift in Sources */,
@@ -10375,6 +10379,7 @@
 				349767E425B8744700ECE1B0 /* StickerPackViewController.swift in Sources */,
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,
 				884DB94727DD754700C6A309 /* StoryCell.swift in Sources */,
+				668FE09F28B947ED008B9071 /* StoryContextMenuGenerator.swift in Sources */,
 				884DB95027DE67BB00C6A309 /* StoryContextViewController.swift in Sources */,
 				88423A52280A171E007D2918 /* StoryDirectReplySheet.swift in Sources */,
 				88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift in Sources */,
@@ -10383,7 +10388,6 @@
 				8864072827EEA658009916B6 /* StoryGroupReplySheet.swift in Sources */,
 				88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */,
 				8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */,
-				668FE09F28B947ED008B9071 /* StoryHidingManager.swift in Sources */,
 				88863A52280CAE6A00977F69 /* StoryInteractiveTransitionCoordinator.swift in Sources */,
 				884DB95227DE67D900C6A309 /* StoryItemMediaView.swift in Sources */,
 				661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */,

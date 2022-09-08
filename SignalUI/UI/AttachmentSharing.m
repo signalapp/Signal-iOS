@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "AttachmentSharing.h"
@@ -21,11 +21,29 @@ NS_ASSUME_NONNULL_BEGIN
     [self showShareUIForAttachments:@[ stream ] sender:sender];
 }
 
++ (void)showShareUIForAttachment:(TSAttachmentStream *)stream
+                          sender:(nullable id)sender
+                      completion:(nullable AttachmentSharingCompletion)completion
+{
+    OWSAssertDebug(stream);
+
+    [self showShareUIForAttachments:@[ stream ] sender:sender completion:completion];
+}
+
 + (void)showShareUIForAttachments:(NSArray<TSAttachmentStream *> *)attachments sender:(nullable id)sender
 {
     OWSAssertDebug(attachments.count > 0);
 
     [self showShareUIForActivityItems:attachments sender:sender completion:nil];
+}
+
++ (void)showShareUIForAttachments:(NSArray<TSAttachmentStream *> *)attachments
+                           sender:(nullable id)sender
+                       completion:(nullable AttachmentSharingCompletion)completion
+{
+    OWSAssertDebug(attachments.count > 0);
+
+    [self showShareUIForActivityItems:attachments sender:sender completion:completion];
 }
 
 + (void)showShareUIForURL:(NSURL *)url sender:(nullable id)sender

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Photos
 import SignalServiceKit
 import UIKit
 import SignalUI
@@ -26,6 +27,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)
 
     private lazy var dataSource = StoryListDataSource(delegate: self)
+
+    private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self)
 
     override init() {
         super.init()
@@ -54,7 +57,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
 
         tableView.register(MyStoryCell.self, forCellReuseIdentifier: MyStoryCell.reuseIdentifier)
         tableView.register(StoryCell.self, forCellReuseIdentifier: StoryCell.reuseIdentifier)
-        tableView.register(HiddenStoryHeaderView.self, forHeaderFooterViewReuseIdentifier: HiddenStoryHeaderView.reuseIdentifier)
+        tableView.register(HiddenStoryHeaderCell.self, forCellReuseIdentifier: HiddenStoryHeaderCell.reuseIdentifier)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 116
@@ -131,19 +134,26 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? MyStoryCell else { continue }
                 guard let model = dataSource.myStory else { continue }
                 cell.configure(with: model) { [weak self] in self?.showCameraView() }
-            case .visibleStories, .hiddenStories:
+            case .visibleStories:
                 guard let cell = self.tableView.cellForRow(at: indexPath) as? StoryCell else { continue }
                 guard let model = self.model(for: indexPath) else { continue }
                 cell.configure(with: model)
+            case .hiddenStories:
+                let cell = self.tableView.cellForRow(at: indexPath)
+                if
+                    let storyCell = cell as? StoryCell,
+                    let model = self.model(for: indexPath)
+                {
+                    storyCell.configure(with: model)
+                } else if
+                    let headerCell = cell as? HiddenStoryHeaderCell
+                {
+                    headerCell.configure(isCollapsed: dataSource.isHiddenStoriesSectionCollapsed)
+                }
             case .none:
                 owsFailDebug("Unexpected story type")
             }
         }
-
-        // No easy way to get visible headers, but just update the header view since theres only one.
-        (
-            tableView.headerView(forSection: Section.hiddenStories.rawValue) as? HiddenStoryHeaderView
-        )?.configure(isCollapsed: dataSource.isHiddenStoriesSectionCollapsed)
 
         if splitViewController?.isCollapsed == true {
             view.backgroundColor = Theme.backgroundColor
@@ -237,7 +247,14 @@ extension StoriesViewController: UITableViewDelegate {
         switch Section(rawValue: indexPath.section) {
         case .myStory:
             navigationController?.pushViewController(MyStoriesViewController(), animated: true)
-        case .visibleStories, .hiddenStories:
+        case .hiddenStories:
+            if indexPath.row == 0 {
+                // Tapping the collapsing header.
+                dataSource.isHiddenStoriesSectionCollapsed = !dataSource.isHiddenStoriesSectionCollapsed
+            } else {
+                fallthrough
+            }
+        case .visibleStories:
             guard let model = model(for: indexPath) else {
                 owsFailDebug("Missing model for story")
                 return
@@ -286,7 +303,8 @@ extension StoriesViewController: UITableViewDataSource {
         case .visibleStories:
             return dataSource.visibleStories[safe: indexPath.row]
         case .hiddenStories:
-            return dataSource.hiddenStories[safe: indexPath.row]
+            // Offset by 1 to account for the header cell.
+            return dataSource.hiddenStories[safe: indexPath.row - 1]
         case .myStory, .none:
             return nil
         }
@@ -303,7 +321,8 @@ extension StoriesViewController: UITableViewDataSource {
         } else if
             !dataSource.isHiddenStoriesSectionCollapsed,
             let hiddenRow = dataSource.hiddenStories.firstIndex(where: { $0.context == context }) {
-            indexPath = IndexPath(row: hiddenRow, section: Section.hiddenStories.rawValue)
+            // Offset by 1 to account for the header cell.
+            indexPath = IndexPath(row: hiddenRow + 1, section: Section.hiddenStories.rawValue)
         } else {
             return nil
         }
@@ -321,7 +340,18 @@ extension StoriesViewController: UITableViewDataSource {
             }
             cell.configure(with: myStoryModel) { [weak self] in self?.showCameraView() }
             return cell
-        case .visibleStories, .hiddenStories:
+        case .hiddenStories:
+            if indexPath.row == 0 {
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: HiddenStoryHeaderCell.reuseIdentifier,
+                    for: indexPath
+                ) as! HiddenStoryHeaderCell
+                cell.configure(isCollapsed: dataSource.isHiddenStoriesSectionCollapsed)
+                return cell
+            } else {
+                fallthrough
+            }
+        case .visibleStories:
             let cell = tableView.dequeueReusableCell(withIdentifier: StoryCell.reuseIdentifier) as! StoryCell
             guard let model = model(for: indexPath) else {
                 owsFailDebug("Missing model for story")
@@ -332,37 +362,6 @@ extension StoriesViewController: UITableViewDataSource {
         case .none:
             owsFailDebug("Unexpected section \(indexPath.section)")
             return UITableViewCell()
-        }
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        switch Section(rawValue: section) {
-        case .myStory, .visibleStories, .none:
-            return nil
-        case .hiddenStories:
-            guard !dataSource.hiddenStories.isEmpty else {
-                return nil
-            }
-            let header = tableView.dequeueReusableHeaderFooterView(
-                withIdentifier: HiddenStoryHeaderView.reuseIdentifier
-            ) as! HiddenStoryHeaderView
-            header.configure(isCollapsed: dataSource.isHiddenStoriesSectionCollapsed)
-            header.tapHandler = { [weak self] in
-                guard let strongSelf = self else {
-                    return
-                }
-                strongSelf.dataSource.isHiddenStoriesSectionCollapsed = !strongSelf.dataSource.isHiddenStoriesSectionCollapsed
-            }
-            return header
-        }
-    }
-
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        switch Section(rawValue: section) {
-        case .myStory, .visibleStories, .none:
-            return 0
-        case .hiddenStories:
-            return dataSource.hiddenStories.isEmpty ? 0 : 44
         }
     }
 
@@ -379,7 +378,10 @@ extension StoriesViewController: UITableViewDataSource {
         case .visibleStories:
             return dataSource.visibleStories.count
         case .hiddenStories:
-            return dataSource.isHiddenStoriesSectionCollapsed ? 0 : dataSource.hiddenStories.count
+            guard !dataSource.hiddenStories.isEmpty else {
+                return 0
+            }
+            return dataSource.isHiddenStoriesSectionCollapsed ? 1 : dataSource.hiddenStories.count + 1
         case .none:
             owsFailDebug("Unexpected section \(section)")
             return 0
@@ -397,118 +399,17 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
         guard
             let indexPath = tableView.indexPathForRow(at: location),
-            let model = model(for: indexPath)
+            let model = model(for: indexPath),
+            let cell = tableView.cellForRow(at: indexPath)
         else {
             return nil
         }
 
-        return .init(identifier: indexPath as NSCopying) { _ in
-
-            var actions = [ContextMenuAction]()
-
-            actions.append(StoryHidingManager(model: model).contextMenuAction(forPresentingController: self))
-
-            func appendForwardAction() {
-                actions.append(.init(
-                    title: NSLocalizedString(
-                        "STORIES_FORWARD_STORY_ACTION",
-                        comment: "Context menu action to forward the selected story"),
-                    image: Theme.iconImage(.messageActionForward),
-                    handler: { [weak self] _ in
-                        guard let self = self else { return }
-                        switch model.latestMessageAttachment {
-                        case .file(let attachment):
-                            ForwardMessageViewController.present([attachment], from: self, delegate: self)
-                        case .text:
-                            OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Forwarding text stories is not yet implemented."))
-                        case .missing:
-                            owsFailDebug("Unexpectedly missing attachment for story.")
-                        }
-                    }))
-            }
-
-            func appendShareAction() {
-                actions.append(.init(
-                    title: NSLocalizedString(
-                        "STORIES_SHARE_STORY_ACTION",
-                        comment: "Context menu action to share the selected story"),
-                    image: Theme.iconImage(.messageActionShare),
-                    handler: { [weak self] _ in
-                        guard let self = self else { return }
-                        guard let cell = self.tableView.cellForRow(at: indexPath) else { return }
-
-                        switch model.latestMessageAttachment {
-                        case .file(let attachment):
-                            guard let attachment = attachment as? TSAttachmentStream else {
-                                return owsFailDebug("Unexpectedly tried to share undownloaded attachment")
-                            }
-                            AttachmentSharing.showShareUI(forAttachment: attachment, sender: cell)
-                        case .text(let attachment):
-                            if let url = attachment.preview?.urlString {
-                                AttachmentSharing.showShareUI(for: URL(string: url)!, sender: cell)
-                            } else if let text = attachment.text {
-                                AttachmentSharing.showShareUI(forText: text, sender: cell)
-                            }
-                        case .missing:
-                            owsFailDebug("Unexpectedly missing attachment for story.")
-                        }
-                    }))
-            }
-
-            // Don't add sharing and forwarding actions for system stories.
-            if model.messages.first?.authorAddress.isSystemStoryAddress != true {
-                switch model.latestMessageAttachment {
-                case .file(let attachment):
-                    guard attachment is TSAttachmentStream else { break }
-                    appendForwardAction()
-                    appendShareAction()
-                case .text:
-                    appendForwardAction()
-                    appendShareAction()
-                case .missing:
-                    owsFailDebug("Unexpectedly missing attachment for story.")
-                }
-            }
-
-            let goToChatAction: ContextMenuActionHandler?
-            switch model.context {
-            case .groupId(let groupId):
-                goToChatAction = { _ in
-                    guard let thread = Self.databaseStorage.read(block: { TSGroupThread.fetch(groupId: groupId, transaction: $0) }) else {
-                        return owsFailDebug("Unexpectedly missing thread for group story")
-                    }
-                    Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
-                }
-            case .authorUuid(let authorUuid):
-                guard !authorUuid.asSignalServiceAddress().isSystemStoryAddress else {
-                    goToChatAction = nil
-                    break
-                }
-                goToChatAction = { _ in
-                    guard let thread = Self.databaseStorage.read(
-                        block: { TSContactThread.getWithContactAddress(SignalServiceAddress(uuid: authorUuid), transaction: $0) }
-                    ) else {
-                        return owsFailDebug("Unexpectedly missing thread for 1:1 story")
-                    }
-                    Self.signalApp.presentConversation(for: thread, action: .compose, animated: true)
-                }
-            case .privateStory:
-                owsFailDebug("Unexpectedly had private story on stories list")
-                goToChatAction = nil
-            case .none:
-                owsFailDebug("Unexpectedly missing context for story")
-                goToChatAction = nil
-            }
-            if let goToChatAction = goToChatAction {
-                actions.append(.init(
-                    title: NSLocalizedString(
-                        "STORIES_GO_TO_CHAT_ACTION",
-                        comment: "Context menu action to open the chat associated with the selected story"),
-                    image: Theme.iconImage(.open24),
-                    handler: goToChatAction
-                ))
-            }
-
+        return .init(identifier: indexPath as NSCopying) { [weak self] _ in
+            let actions = self?.contextMenuGenerator.contextMenuActions(
+                for: model,
+                sourceView: cell
+            ) ?? []
             return .init(actions)
         }
     }
@@ -548,21 +449,4 @@ extension StoriesViewController: ContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
 
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
-}
-
-extension StoriesViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem],
-                                              recipientThreads: [TSThread]) {
-        AssertIsOnMainThread()
-
-        self.dismiss(animated: true) {
-            ForwardMessageViewController.finalizeForward(items: items,
-                                                         recipientThreads: recipientThreads,
-                                                         fromViewController: self)
-        }
-    }
-
-    public func forwardMessageFlowDidCancel() {
-        self.dismiss(animated: true)
-    }
 }

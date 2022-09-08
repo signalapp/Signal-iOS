@@ -15,6 +15,7 @@ struct StoryViewModel: Dependencies {
     // just in a separate section thats collapsed by default.
     let isHidden: Bool
 
+    let latestMessage: StoryMessage
     let latestMessageAttachment: StoryThumbnailView.Attachment
     let hasReplies: Bool
     let latestMessageName: String
@@ -43,6 +44,7 @@ struct StoryViewModel: Dependencies {
             throw OWSAssertionError("At least one message is required.")
         }
 
+        self.latestMessage = latestMessage
         self.context = latestMessage.context
         self.hasReplies = InteractionFinder.hasReplies(for: sortedFilteredMessages, transaction: transaction)
 

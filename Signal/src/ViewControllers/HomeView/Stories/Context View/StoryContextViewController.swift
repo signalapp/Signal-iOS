@@ -56,6 +56,8 @@ class StoryContextViewController: OWSViewController {
     }
     private(set) var loadPositionIfRead: LoadPosition
 
+    private(set) lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self, delegate: self)
+
     required init(context: StoryContext, loadPositionIfRead: LoadPosition = .default, delegate: StoryContextViewControllerDelegate) {
         self.context = context
         self.loadPositionIfRead = loadPositionIfRead
@@ -681,6 +683,39 @@ extension StoryContextViewController: DatabaseChangeDelegate {
 }
 
 extension StoryContextViewController: StoryItemMediaViewDelegate {
+
+    func contextMenuConfiguration(for contextMenuButton: DelegatingContextMenuButton) -> ContextMenuConfiguration? {
+        guard let item = currentItem else {
+            return nil
+        }
+        let attachment: StoryThumbnailView.Attachment
+        switch item.attachment {
+        case .pointer(let pointer):
+            attachment = .file(pointer)
+        case .stream(let stream):
+            attachment = .file(stream)
+        case .text(let textAttachment):
+            attachment = .text(textAttachment)
+        }
+        return .init(identifier: nil, actionProvider: { [weak self, weak contextMenuButton] _ in
+            guard
+                let self  = self,
+                let contextMenuButton = contextMenuButton
+            else {
+                return .init([])
+            }
+            return Self.databaseStorage.read {
+                return ContextMenu(self.contextMenuGenerator.contextMenuActions(
+                    for: item.message,
+                    in: item.message.context.thread(transaction: $0),
+                    attachment: attachment,
+                    sourceView: contextMenuButton,
+                    transaction: $0
+                ))
+            }
+        })
+    }
+
     func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView) {
         play()
     }
@@ -691,5 +726,33 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
 
     func storyItemMediaViewShouldBeMuted(_ storyItemMediaView: StoryItemMediaView) -> Bool {
         return delegate?.storyContextViewControllerShouldBeMuted(self) ?? false
+    }
+
+    func contextMenuWillDisplay(from contextMenuButton: DelegatingContextMenuButton) {
+        pause()
+    }
+
+    func contextMenuDidDismiss(from contextMenuButton: ContextMenuButton) {
+        guard !contextMenuGenerator.isDisplayingFollowup else {
+            return
+        }
+        play()
+    }
+}
+
+extension StoryContextViewController: StoryContextMenuDelegate {
+
+    func storyContextMenuWillNavigateToConversation(_ completion: @escaping () -> Void) {
+        // Dismiss the viewer before navigating.
+        self.dismiss(animated: true, completion: completion)
+    }
+
+    func storyContextMenuWillDelete(_ completion: @escaping () -> Void) {
+        // Dismiss the viewer before deleting otherwise things get messed up.
+        self.dismiss(animated: true, completion: completion)
+    }
+
+    func storyContextMenuDidFinishDisplayingFollowups() {
+        play()
     }
 }
