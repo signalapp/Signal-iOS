@@ -1072,7 +1072,7 @@ public extension MessageSender {
                                    transaction: SDSAnyWriteTransaction) {
         owsAssertDebug(!Thread.isMainThread)
 
-        if thread.isGroupThread {
+        if thread.isNonContactThread {
             // Mark as "skipped" group members who no longer have signal accounts.
             message.update(withSkippedRecipient: address, transaction: transaction)
         }

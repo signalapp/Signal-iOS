@@ -76,23 +76,17 @@ public extension MessageSender {
 
 extension NSError {
     @objc
-    public var shouldBeIgnoredForGroups: Bool { shouldBeIgnoredForGroupsImpl }
-
-    fileprivate var shouldBeIgnoredForGroupsImpl: Bool {
-        let error: Error = self as Error
-        if error is MessageSenderNoSuchSignalRecipientError {
-            return true
-        }
-
-        // Default to NOT fatal.
-        return false
+    public var shouldBeIgnoredForNonContactThreads: Bool {
+        (self as Error).shouldBeIgnoredForNonContactThreads
     }
 }
 
 // MARK: -
 
 extension Error {
-    public var shouldBeIgnoredForGroups: Bool { (self as NSError).shouldBeIgnoredForGroupsImpl }
+    public var shouldBeIgnoredForNonContactThreads: Bool {
+        self is MessageSenderNoSuchSignalRecipientError
+    }
 }
 
 // MARK: -

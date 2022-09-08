@@ -8,7 +8,11 @@ import Foundation
 public extension TSThread {
 
     var isGroupThread: Bool {
-        return (self as? TSGroupThread) != nil
+        self is TSGroupThread
+    }
+
+    var isNonContactThread: Bool {
+        !(self is TSContactThread)
     }
 
     var usesSenderKey: Bool {

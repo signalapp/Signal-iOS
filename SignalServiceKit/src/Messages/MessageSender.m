@@ -780,7 +780,7 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
         return;
     }
 
-    BOOL isGroupSend = thread.isGroupThread;
+    BOOL isNonContactThread = thread.isNonContactThread;
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
     NSMutableDictionary<SignalServiceAddress *, NSError *> *sendErrorPerRecipient = [NSMutableDictionary dictionary];
 
@@ -816,9 +816,9 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
                     NSError *error = sendErrorPerRecipientCopy[address];
 
                     // Some errors should be ignored when sending messages
-                    // to groups.  See discussion on
+                    // to threads other than TSContactThread.  See discussion on
                     // NSError (MessageSender) category.
-                    if (isGroupSend && [error shouldBeIgnoredForGroups]) {
+                    if (isNonContactThread && [error shouldBeIgnoredForNonContactThreads]) {
                         continue;
                     }
 
@@ -828,9 +828,9 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
 
             for (NSError *error in sendErrorsCopy) {
                 // Some errors should be ignored when sending messages
-                // to groups.  See discussion on
+                // to threads other than TSContactThread.  See discussion on
                 // NSError (MessageSender) category.
-                if (isGroupSend && [error shouldBeIgnoredForGroups]) {
+                if (isNonContactThread && [error shouldBeIgnoredForNonContactThreads]) {
                     continue;
                 }
 

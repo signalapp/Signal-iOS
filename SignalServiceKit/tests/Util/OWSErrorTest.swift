@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,36 +20,42 @@ class OWSErrorTest: SSKBaseTestSwift {
         let error2 = OWSHTTPError.networkFailure(requestUrl: URL(string: "https://google.com/")!)
         let error3 = OWSUnretryableError()
         let error4 = OWSRetryableError()
+        let error5 = MessageSenderNoSuchSignalRecipientError()
 
         XCTAssertFalse(errorFooBar.hasIsRetryable)
         XCTAssertTrue(errorFooBar.isRetryable)
-        XCTAssertFalse(errorFooBar.shouldBeIgnoredForGroups)
+        XCTAssertFalse(errorFooBar.shouldBeIgnoredForNonContactThreads)
         XCTAssertFalse(errorFooBar.isFatalError)
 
         XCTAssertTrue(errorGeneric.hasIsRetryable)
         XCTAssertFalse(errorGeneric.isRetryable)
-        XCTAssertFalse(errorGeneric.shouldBeIgnoredForGroups)
+        XCTAssertFalse(errorGeneric.shouldBeIgnoredForNonContactThreads)
         XCTAssertFalse(errorGeneric.isFatalError)
 
         XCTAssertTrue(error1.hasIsRetryable)
         XCTAssertFalse(error1.isRetryable)
-        XCTAssertFalse(error1.shouldBeIgnoredForGroups)
+        XCTAssertFalse(error1.shouldBeIgnoredForNonContactThreads)
         XCTAssertFalse(error1.isFatalError)
 
         XCTAssertTrue(error2.hasIsRetryable)
         XCTAssertTrue(error2.isRetryable)
-        XCTAssertFalse(error2.shouldBeIgnoredForGroups)
+        XCTAssertFalse(error2.shouldBeIgnoredForNonContactThreads)
         XCTAssertFalse(error2.isFatalError)
 
         XCTAssertTrue(error3.hasIsRetryable)
         XCTAssertFalse(error3.isRetryable)
-        XCTAssertFalse(error3.shouldBeIgnoredForGroups)
+        XCTAssertFalse(error3.shouldBeIgnoredForNonContactThreads)
         XCTAssertFalse(error3.isFatalError)
 
         XCTAssertTrue(error4.hasIsRetryable)
         XCTAssertTrue(error4.isRetryable)
-        XCTAssertFalse(error4.shouldBeIgnoredForGroups)
+        XCTAssertFalse(error4.shouldBeIgnoredForNonContactThreads)
         XCTAssertFalse(error4.isFatalError)
+
+        XCTAssertTrue(error5.hasIsRetryable)
+        XCTAssertFalse(error5.isRetryable)
+        XCTAssertTrue(error5.shouldBeIgnoredForNonContactThreads)
+        XCTAssertFalse(error5.isFatalError)
     }
 
     func testOWSError1() {
