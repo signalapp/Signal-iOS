@@ -48,24 +48,33 @@ class GroupCallRemoteVideoManager: Dependencies {
             guard let self = self else { return }
             guard let groupCall = self.currentGroupCall else { return }
 
+            var activeSpeakerHeight: UInt16 = 0
+
             let videoRequests: [VideoRequest] = groupCall.remoteDeviceStates.map { demuxId, _ in
-                guard let renderingVideoViews = self.videoViews[demuxId]?.values.filter({ $0.isRenderingVideo }),
-                      !renderingVideoViews.isEmpty else {
+                guard
+                    let renderingVideoViews = self.videoViews[demuxId]?.filter({ $0.value.isRenderingVideo }),
+                    !renderingVideoViews.isEmpty
+                else {
                     return VideoRequest(demuxId: demuxId, width: 0, height: 0, framerate: nil)
                 }
 
-                let width = renderingVideoViews.reduce(into: 0, { $0 = max($0, $1.currentSize.width) })
-                let height = renderingVideoViews.reduce(into: 0, { $0 = max($0, $1.currentSize.height) })
+                if let activeSpeakerVideoView = renderingVideoViews[.speaker] {
+                    activeSpeakerHeight = max(activeSpeakerHeight, UInt16(activeSpeakerVideoView.currentSize.height))
+                }
+
+                let size = renderingVideoViews.reduce(CGSize.zero) { partialResult, element in
+                    partialResult.max(element.value.currentSize)
+                }
 
                 return VideoRequest(
                     demuxId: demuxId,
-                    width: UInt16(width),
-                    height: UInt16(height),
-                    framerate: height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
+                    width: UInt16(size.width),
+                    height: UInt16(size.height),
+                    framerate: size.height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
                 )
             }
 
-            groupCall.updateVideoRequests(resolutions: videoRequests, activeSpeakerHeight: 0)
+            groupCall.updateVideoRequests(resolutions: videoRequests, activeSpeakerHeight: activeSpeakerHeight)
         })
     }
 }
