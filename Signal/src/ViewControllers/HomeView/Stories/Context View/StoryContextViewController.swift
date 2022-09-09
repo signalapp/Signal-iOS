@@ -294,6 +294,7 @@ class StoryContextViewController: OWSViewController {
                                 "STORY_REPLY_TO_GROUP_BUTTON",
                                 comment: "Button for replying to a group story with no existing replies.")
                         } else {
+                            trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
                             let format = NSLocalizedString(
                                 "STORY_REPLIES_COUNT_%d",
                                 tableName: "PluralAware",
