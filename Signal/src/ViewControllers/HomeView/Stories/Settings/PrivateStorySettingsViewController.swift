@@ -269,7 +269,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         )
 
         let actionSheet = ActionSheetController(
-            title: String(format: format, Self.contactsManager.displayName(for: address)),
+            title: String.localizedStringWithFormat(format, Self.contactsManager.displayName(for: address)),
             message: NSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION",
                 comment: "Action sheet description prompting to remove a viewer from a story on the 'private story settings' view."

@@ -432,7 +432,7 @@ private class SentStoryCell: UITableViewCell {
                 "STORY_VIEWS_%d", tableName: "PluralAware",
                 comment: "Text explaining how many views a story has. Embeds {{ %d number of views }}"
             )
-            titleLabel.text = String(format: format, item.message.remoteViewCount)
+            titleLabel.text = String.localizedStringWithFormat(format, item.message.remoteViewCount)
             subtitleLabel.text = DateUtil.formatTimestampRelatively(item.message.timestamp)
             failedIconContainer.isHiddenInStackView = true
         case .sent_OBSOLETE, .delivered_OBSOLETE:

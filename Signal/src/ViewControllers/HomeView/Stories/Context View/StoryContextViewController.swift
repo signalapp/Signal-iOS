@@ -325,7 +325,7 @@ class StoryContextViewController: OWSViewController {
                                 "STORY_REPLIES_COUNT_%d",
                                 tableName: "PluralAware",
                                 comment: "Button for replying to a story with N existing replies.")
-                            repliesAndViewsButtonText = String(format: format, currentItem.numberOfReplies)
+                            repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
                         }
                     } else {
                         leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
@@ -340,13 +340,13 @@ class StoryContextViewController: OWSViewController {
                             "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
                             tableName: "PluralAware",
                             comment: "Button for viewing the replies and views for a story sent to a group")
-                        repliesAndViewsButtonText = String(format: format, currentItem.message.remoteViewCount, currentItem.numberOfReplies)
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount, currentItem.numberOfReplies)
                     } else {
                         let format = NSLocalizedString(
                             "STORY_VIEWS_COUNT_%d",
                             tableName: "PluralAware",
                             comment: "Button for viewing the views for a story sent to a private list")
-                        repliesAndViewsButtonText = String(format: format, currentItem.message.remoteViewCount)
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount)
                     }
                 }
 

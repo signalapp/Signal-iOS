@@ -43,7 +43,7 @@ public enum StoryUtil: Dependencies {
                 "GROUP_STORY_NAME_FORMAT",
                 comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}"
             )
-            return String(format: nameFormat, authorShortName, groupName)
+            return String.localizedStringWithFormat(nameFormat, authorShortName, groupName)
         } else {
             if !useFullNameForLocalAddress && storyMessage.authorAddress.isLocalAddress {
                 return CommonStrings.you

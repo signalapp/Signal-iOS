@@ -50,7 +50,7 @@ class StoryReplyPreviewView: UIView {
             let format = NSLocalizedString(
                 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
                 comment: "Message header when you are quoting a story. Embeds {{ story author name }}")
-            authorText = String(format: format, authorName)
+            authorText = String.localizedStringWithFormat(format, authorName)
         } else {
             authorText = authorName
         }
