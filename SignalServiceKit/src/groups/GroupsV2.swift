@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public enum GroupsV2Error: Error {
     // By the time we tried to apply the change, it was irrelevant.
@@ -64,9 +65,6 @@ public protocol GroupsV2: AnyObject {
     func hasProfileKeyCredential(for address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool
 
-    func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress],
-                                              ignoreMissingProfiles: Bool) -> AnyPromise
-
     func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data
 
     func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
@@ -93,11 +91,22 @@ public protocol GroupsV2: AnyObject {
 // MARK: -
 
 public protocol GroupsV2Swift: GroupsV2 {
+
+    typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
+
     func createNewGroupOnService(groupModel: TSGroupModelV2,
                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<Void>
 
-    func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
-                                          ignoreMissingProfiles: Bool) -> Promise<Void>
+    func loadProfileKeyCredentials(
+        for uuids: [UUID],
+        forceRefresh: Bool
+    ) -> Promise<ProfileKeyCredentialMap>
+
+    func tryToFetchProfileKeyCredentials(
+        for uuids: [UUID],
+        ignoreMissingProfiles: Bool,
+        forceRefresh: Bool
+    ) -> Promise<Void>
 
     func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot>
 
@@ -531,13 +540,18 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress],
-                                                     ignoreMissingProfiles: Bool) -> AnyPromise {
+    public func loadProfileKeyCredentials(
+        for uuids: [UUID],
+        forceRefresh: Bool
+    ) -> Promise<ProfileKeyCredentialMap> {
         owsFail("Not implemented.")
     }
 
-    public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
-                                                 ignoreMissingProfiles: Bool) -> Promise<Void> {
+    public func tryToFetchProfileKeyCredentials(
+        for uuids: [UUID],
+        ignoreMissingProfiles: Bool,
+        forceRefresh: Bool
+    ) -> Promise<Void> {
         return Promise.value(())
     }
 

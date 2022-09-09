@@ -533,8 +533,11 @@ fileprivate extension GroupsV2Migration {
             return firstly(on: .global()) { () -> Promise<Void> in
                 GroupManager.tryToEnableGroupsV2(for: Array(membersToMigrate), isBlocking: true, ignoreErrors: true)
             }.then(on: .global()) { () throws -> Promise<Void> in
-                self.groupsV2Impl.tryToEnsureProfileKeyCredentials(for: Array(membersToMigrate),
-                                                                   ignoreMissingProfiles: true)
+                self.groupsV2Swift.tryToFetchProfileKeyCredentials(
+                    for: membersToMigrate.compactMap { $0.uuid },
+                    ignoreMissingProfiles: true,
+                    forceRefresh: false
+                )
             }.then(on: .global()) { () throws -> Promise<String?> in
                 guard let avatarData = unmigratedState.groupThread.groupModel.avatarData else {
                     // No avatar to upload.

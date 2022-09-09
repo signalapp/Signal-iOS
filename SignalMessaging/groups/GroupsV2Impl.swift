@@ -13,8 +13,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         return self.signalService.urlSessionForStorageService()
     }
 
-    public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
-
     @objc
     public required override init() {
         super.init()
@@ -176,7 +174,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             }.then(on: .global()) { (uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> in
                 // Gather the profile key credentials for all members.
                 let allUuids = uuids + [localUuid]
-                return self.loadProfileKeyCredentialData(for: allUuids)
+                return self.loadProfileKeyCredentials(for: allUuids, forceRefresh: false)
             }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> GroupsV2Request in
                 let groupProto = try GroupsV2Protos.buildNewGroupProto(groupModel: groupModel,
                                                                        disappearingMessageToken: disappearingMessageToken,
@@ -1166,15 +1164,79 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     // MARK: - ProfileKeyCredentials
 
-    public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
+    /// Fetches and returnes the profile key credential for each passed UUID. If
+    /// any are missing, returns an error.
+    public func loadProfileKeyCredentials(
+        for uuids: [UUID],
+        forceRefresh: Bool
+    ) -> Promise<ProfileKeyCredentialMap> {
+        tryToFetchProfileKeyCredentials(
+            for: uuids,
+            ignoreMissingProfiles: false,
+            forceRefresh: forceRefresh
+        ).map(on: .global()) { () -> ProfileKeyCredentialMap in
+            let uuids = Set(uuids)
 
-        // 1. Use known credentials, where possible.
-        var credentialMap = ProfileKeyCredentialMap()
+            let credentialMap = self.loadPresentProfileKeyCredentials(for: uuids)
 
-        var uuidsWithoutCredentials = [UUID]()
+            guard uuids.symmetricDifference(credentialMap.keys).isEmpty else {
+                throw OWSAssertionError("Missing requested keys from credential map!")
+            }
+
+            return credentialMap
+        }
+    }
+
+    /// Makes a best-effort to fetch the profile key credential for each passed
+    /// UUID. If a profile exists for the user but the credential cannot be
+    /// fetched (e.g., the UUID is not a contact of ours), skips it. Optionally
+    /// ignores "missing profile" errors during fetch.
+    public func tryToFetchProfileKeyCredentials(
+        for uuids: [UUID],
+        ignoreMissingProfiles: Bool,
+        forceRefresh: Bool
+    ) -> Promise<Void> {
+        let uuids = Set(uuids)
+
+        let uuidsToFetch: Set<UUID>
+        if forceRefresh {
+            uuidsToFetch = uuids
+        } else {
+            uuidsToFetch = uuids.subtracting(loadPresentProfileKeyCredentials(for: uuids).keys)
+        }
+
+        var promises = [Promise<Void>]()
+        for uuidToFetch in uuidsToFetch {
+            let address = SignalServiceAddress(uuid: uuidToFetch)
+
+            let promise = ProfileFetcherJob.fetchProfilePromise(
+                address: address,
+                mainAppOnly: false,
+                ignoreThrottling: true,
+                fetchType: .versioned
+            ).asVoid().recover(on: .global()) { error throws -> Promise<Void> in
+                if
+                    case ProfileFetchError.missing = error,
+                    ignoreMissingProfiles
+                {
+                    Logger.info("Ignoring missing profile: \(error)")
+                    return Promise.value(())
+                }
+
+                throw error
+            }
+
+            promises.append(promise)
+        }
+
+        return Promise.when(fulfilled: promises)
+    }
+
+    private func loadPresentProfileKeyCredentials(for uuids: Set<UUID>) -> ProfileKeyCredentialMap {
         databaseStorage.read { transaction in
-            // Skip duplicates.
-            for uuid in Set(uuids) {
+            var credentialMap = ProfileKeyCredentialMap()
+
+            for uuid in uuids {
                 do {
                     let address = SignalServiceAddress(uuid: uuid)
                     if let credential = try self.versionedProfilesSwift.profileKeyCredential(
@@ -1182,132 +1244,29 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                         transaction: transaction
                     ) {
                         credentialMap[uuid] = credential
-                        continue
                     }
                 } catch {
-                    owsFailDebug("Error: \(error)")
+                    owsFailDebug("Error loading profile key credential: \(error)")
                 }
-                uuidsWithoutCredentials.append(uuid)
             }
-        }
 
-        // If we already have credentials for all members, no need to fetch.
-        guard uuidsWithoutCredentials.count > 0 else {
-            return Promise.value(credentialMap)
+            return credentialMap
         }
-
-        // 2. Fetch missing credentials.
-        var promises = [Promise<UUID>]()
-        for uuid in uuidsWithoutCredentials {
-            let address = SignalServiceAddress(uuid: uuid)
-            let promise = ProfileFetcherJob.fetchProfilePromise(address: address,
-                                                                mainAppOnly: false,
-                                                                ignoreThrottling: true,
-                                                                fetchType: .versioned)
-                .map(on: .global()) { (_: FetchedProfile) -> (UUID) in
-                    // Ideally we'd pull the credential off of SignalServiceProfile here,
-                    // but the credential response needs to be parsed and verified
-                    // which requires the VersionedProfileRequest.
-                    return uuid
-                }
-            promises.append(promise)
-        }
-        return Promise.when(fulfilled: promises)
-            .map(on: .global()) { _ in
-                // Since we've just successfully fetched versioned profiles
-                // for all of the UUIDs without credentials, we _should_ be
-                // able to load a credential.
-                //
-                // If we change how credentials are cleared, we'll need to
-                // revisit this to avoid races.
-                try self.databaseStorage.read { transaction in
-                    for uuid in uuids {
-                        let address = SignalServiceAddress(uuid: uuid)
-                        guard let credential = try self.versionedProfilesSwift.profileKeyCredential(
-                            for: address,
-                            transaction: transaction
-                        ) else {
-                            throw OWSAssertionError("Could not load credential.")
-                        }
-                        credentialMap[uuid] = credential
-                    }
-                }
-
-                return credentialMap
-            }
     }
 
-    public func hasProfileKeyCredential(for address: SignalServiceAddress,
-                                        transaction: SDSAnyReadTransaction) -> Bool {
+    public func hasProfileKeyCredential(
+        for address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         do {
             return try self.versionedProfilesSwift.profileKeyCredential(
                 for: address,
                 transaction: transaction
             ) != nil
-        } catch {
-            owsFailDebug("Error: \(error)")
+        } catch let error {
+            owsFailDebug("Error getting profile key credential: \(error)")
             return false
         }
-    }
-
-    @objc
-    public func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress],
-                                                     ignoreMissingProfiles: Bool) -> AnyPromise {
-        return AnyPromise(tryToEnsureProfileKeyCredentials(for: addresses,
-                                                           ignoreMissingProfiles: ignoreMissingProfiles))
-    }
-
-    // When creating (or modifying) a v2 group, we need profile key
-    // credentials for all members.  This method tries to find members
-    // with known UUIDs who are missing profile key credentials and
-    // then tries to get those credentials if possible.
-    //
-    // This is particularly important when we create a new group, since
-    // one of the first things we do is decide whether to create a v1
-    // or v2 group.  We have to create a v1 group unless we know the
-    // uuid and profile key credential for all members.
-    public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
-                                                 ignoreMissingProfiles: Bool) -> Promise<Void> {
-
-        var uuidsWithoutProfileKeyCredentials = [UUID]()
-        databaseStorage.read { transaction in
-            for address in addresses {
-                guard let uuid = address.uuid else {
-                    // If we don't know the user's UUID, there's no point in
-                    // trying to get their credential.
-                    continue
-                }
-                guard !self.hasProfileKeyCredential(for: address, transaction: transaction) else {
-                    // If we already have the credential, there's no work to do.
-                    continue
-                }
-                uuidsWithoutProfileKeyCredentials.append(uuid)
-            }
-        }
-        guard uuidsWithoutProfileKeyCredentials.count > 0 else {
-            return Promise.value(())
-        }
-
-        var promises = [Promise<Void>]()
-        for uuid in uuidsWithoutProfileKeyCredentials {
-            let address = SignalServiceAddress(uuid: uuid)
-
-            let promise = firstly(on: .global()) { () -> Promise<Void> in
-                ProfileFetcherJob.fetchProfilePromise(address: address,
-                                                      mainAppOnly: false,
-                                                      ignoreThrottling: true,
-                                                      fetchType: .versioned).asVoid()
-            }.recover(on: .global()) { (error: Error) -> Promise<Void> in
-                if case ProfileFetchError.missing = error,
-                   ignoreMissingProfiles {
-                    Logger.info("Ignoring missing profile: \(error)")
-                    return Promise.value(())
-                }
-                throw error
-            }
-            promises.append(promise)
-        }
-        return Promise.when(fulfilled: promises)
     }
 
     // MARK: - Auth Credentials
@@ -2065,7 +2024,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             }
 
             return firstly(on: .global()) { () -> Promise<ProfileKeyCredentialMap> in
-                self.loadProfileKeyCredentialData(for: [localUuid])
+                self.loadProfileKeyCredentials(for: [localUuid], forceRefresh: false)
             }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) -> (GroupInviteLinkPreview, ProfileKeyCredential) in
                 guard let localProfileKeyCredential = profileKeyCredentialMap[localUuid] else {
                     throw OWSAssertionError("Missing localProfileKeyCredential.")

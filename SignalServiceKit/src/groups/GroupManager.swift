@@ -228,9 +228,12 @@ public class GroupManager: NSObject {
             // try to obtain profile key credentials for all group members
             // including ourself, unless we already have them on hand.
             firstly { () -> Promise<Void> in
-                self.groupsV2Swift.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allMembersOfAnyKind),
-                                                                    ignoreMissingProfiles: false)
-            }.map(on: .global()) { (_) -> GroupMembership in
+                self.groupsV2Swift.tryToFetchProfileKeyCredentials(
+                    for: groupMembership.allMembersOfAnyKind.compactMap { $0.uuid },
+                    ignoreMissingProfiles: false,
+                    forceRefresh: false
+                )
+            }.map(on: .global()) { _ -> GroupMembership in
                 return groupMembership
             }
         }.map(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> TSGroupModel in
