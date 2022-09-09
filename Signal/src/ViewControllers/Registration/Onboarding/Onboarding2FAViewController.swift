@@ -3,6 +3,9 @@
 //
 
 import UIKit
+#if targetEnvironment(simulator)
+import GameController
+#endif
 
 @objc
 public class Onboarding2FAViewController: OnboardingBaseViewController {
@@ -164,6 +167,9 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        #if targetEnvironment(simulator)
+        updatePinType()
+        #endif
         _ = pinTextField.becomeFirstResponder()
     }
 
@@ -430,6 +436,16 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         case .numeric:
             pinTypeToggle.setTitle(title: NSLocalizedString("ONBOARDING_2FA_ENTER_ALPHANUMERIC",
                                                             comment: "Button asking if the user would like to enter an alphanumeric PIN"))
+            #if targetEnvironment(simulator)
+            // Let enter on a physical keyboard go through if one exists;
+            // with asciiCapableNumberPad it gets ignored.
+            if #available(iOS 14, *) {
+                if GCKeyboard.coalesced != nil {
+                    pinTextField.keyboardType = .default
+                    break
+                }
+            }
+            #endif
             pinTextField.keyboardType = .asciiCapableNumberPad
         case .alphanumeric:
             pinTypeToggle.setTitle(title: NSLocalizedString("ONBOARDING_2FA_ENTER_NUMERIC",
