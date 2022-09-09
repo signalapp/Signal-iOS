@@ -943,11 +943,16 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         case groupDoesNotExistOnService
     }
 
-    private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
-                                       groupId: Data?,
-                                       behavior403: Behavior403,
-                                       behavior404: Behavior404,
-                                       remainingRetries: UInt = 3) -> Promise<HTTPResponse> {
+    /// Make a request to the GV2 service, produced by the given
+    /// `requestBuilder`. Specifies how to respond if the request results in
+    /// certain errors.
+    private func performServiceRequest(
+        requestBuilder: @escaping RequestBuilder,
+        groupId: Data?,
+        behavior403: Behavior403,
+        behavior404: Behavior404,
+        remainingRetries: UInt = 3
+    ) -> Promise<HTTPResponse> {
         guard
             let localAci = tsAccountManager.localUuid,
             let localPni = tsAccountManager.localPni
@@ -961,109 +966,132 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             try requestBuilder(authCredential)
         }.then(on: .global()) { (request: GroupsV2Request) -> Promise<HTTPResponse> in
             self.performServiceRequestAttempt(request: request)
-        }.recover(on: .global()) { (error: Error) -> Promise<HTTPResponse> in
-            let retryIfPossible = { () throws -> Promise<HTTPResponse> in
-                if remainingRetries > 0 {
-                    return self.performServiceRequest(requestBuilder: requestBuilder,
-                                                      groupId: groupId,
-                                                      behavior403: behavior403,
-                                                      behavior404: behavior404,
-                                                      remainingRetries: remainingRetries - 1)
-                } else {
-                    throw error
-                }
-            }
-
-            // Fall through to retry if retry-able,
-            // otherwise reject immediately.
-            if let statusCode = error.httpStatusCode {
-                switch statusCode {
-                case 401:
-                    // Retry auth errors after retrieving new temporal credentials.
-                    self.databaseStorage.write { transaction in
-                        self.clearTemporalCredentials(transaction: transaction)
-                    }
-                    return try retryIfPossible()
-                case 403:
-                    // 403 indicates that we are no longer in the group for
-                    // many (but not all) group v2 service requests.
-                    switch behavior403 {
-                    case .fail:
-                        // We should never receive 403 when creating groups.
-                        owsFailDebug("Unexpected 403.")
-                    case .ignore:
-                        // We may get a 403 when fetching change actions if
-                        // they are not yet a member - for example, if they are
-                        // joining via an invite link.
-                        owsAssertDebug(groupId != nil, "Expecting a groupId for this path")
-                    case .removeFromGroup:
-                        guard let groupId = groupId else {
-                            owsFailDebug("GroupId must be set to remove from group")
-                            break
-                        }
-                        // If we receive 403 when trying to fetch group state,
-                        // we have left the group, been removed from the group
-                        // or had our invite revoked and we should make sure
-                        // group state in the database reflects that.
-                        self.databaseStorage.write { transaction in
-                            GroupManager.handleNotInGroup(groupId: groupId, transaction: transaction)
-                        }
-
-                    case .fetchGroupUpdates:
-                        guard let groupId = groupId else {
-                            owsFailDebug("GroupId must be set to fetch group updates")
-                            break
-                        }
-                        // Service returns 403 if client tries to perform an
-                        // update for which it is not authorized (e.g. add a
-                        // new member if membership access is admin-only).
-                        // The local client can't assume that 403 means they
-                        // are not in the group. Therefore we "update group
-                        // to latest" to check for and handle that case (see
-                        // previous case).
-                        self.tryToUpdateGroupToLatest(groupId: groupId)
-
-                    case .reportInvalidOrBlockedGroupLink:
-                        owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
-
-                        if error.httpResponseHeaders?.containsBan == true {
-                            throw GroupsV2Error.localUserBlockedFromJoining
+                .recover(on: .global()) { (error: Error) throws -> Promise<HTTPResponse> in
+                    let retryIfPossible = { () throws -> Promise<HTTPResponse> in
+                        if remainingRetries > 0 {
+                            return self.performServiceRequest(
+                                requestBuilder: requestBuilder,
+                                groupId: groupId,
+                                behavior403: behavior403,
+                                behavior404: behavior404,
+                                remainingRetries: remainingRetries - 1
+                            )
                         } else {
-                            throw GroupsV2Error.expiredGroupInviteLink
+                            throw error
                         }
-
-                    case .localUserIsNotARequestingMember:
-                        owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
-                        throw GroupsV2Error.localUserIsNotARequestingMember
                     }
 
-                    throw GroupsV2Error.localUserNotInGroup
-                case 404:
-                    // 404 indicates that the group does not exist on the
-                    // service for some (but not all) group v2 service requests.
-
-                    switch behavior404 {
-                    case .fail:
-                        throw error
-                    case .groupDoesNotExistOnService:
-                        Logger.warn("Error: \(error)")
-                        throw GroupsV2Error.groupDoesNotExistOnService
-                    }
-                case 409:
-                    // Group update conflict, retry. When updating group state,
-                    // we can often resolve conflicts using the change set.
-                    return try retryIfPossible()
-                default:
-                    // Unexpected status code.
-                    throw error
+                    return try self.tryRecoveryFromServiceRequestFailure(
+                        error: error,
+                        retryBlock: retryIfPossible,
+                        groupId: groupId,
+                        behavior403: behavior403,
+                        behavior404: behavior404,
+                        remainingRetries: remainingRetries
+                    )
                 }
-            } else if error.isNetworkFailureOrTimeout {
-                // Retry on network failure.
-                return try retryIfPossible()
-            } else {
-                // Unexpected error.
+        }
+    }
+
+    /// Upon error from performing a service request, attempt to recover based
+    /// on the error and our 4XX behaviors.
+    private func tryRecoveryFromServiceRequestFailure(
+        error: Error,
+        retryBlock: () throws -> Promise<HTTPResponse>,
+        groupId: Data?,
+        behavior403: Behavior403,
+        behavior404: Behavior404,
+        remainingRetries: UInt
+    ) throws -> Promise<HTTPResponse> {
+        // Fall through to retry if retry-able,
+        // otherwise reject immediately.
+        if let statusCode = error.httpStatusCode {
+            switch statusCode {
+            case 401:
+                // Retry auth errors after retrieving new temporal credentials.
+                self.databaseStorage.write { transaction in
+                    self.clearTemporalCredentials(transaction: transaction)
+                }
+                return try retryBlock()
+            case 403:
+                // 403 indicates that we are no longer in the group for
+                // many (but not all) group v2 service requests.
+                switch behavior403 {
+                case .fail:
+                    // We should never receive 403 when creating groups.
+                    owsFailDebug("Unexpected 403.")
+                case .ignore:
+                    // We may get a 403 when fetching change actions if
+                    // they are not yet a member - for example, if they are
+                    // joining via an invite link.
+                    owsAssertDebug(groupId != nil, "Expecting a groupId for this path")
+                case .removeFromGroup:
+                    guard let groupId = groupId else {
+                        owsFailDebug("GroupId must be set to remove from group")
+                        break
+                    }
+                    // If we receive 403 when trying to fetch group state,
+                    // we have left the group, been removed from the group
+                    // or had our invite revoked and we should make sure
+                    // group state in the database reflects that.
+                    self.databaseStorage.write { transaction in
+                        GroupManager.handleNotInGroup(groupId: groupId, transaction: transaction)
+                    }
+
+                case .fetchGroupUpdates:
+                    guard let groupId = groupId else {
+                        owsFailDebug("GroupId must be set to fetch group updates")
+                        break
+                    }
+                    // Service returns 403 if client tries to perform an
+                    // update for which it is not authorized (e.g. add a
+                    // new member if membership access is admin-only).
+                    // The local client can't assume that 403 means they
+                    // are not in the group. Therefore we "update group
+                    // to latest" to check for and handle that case (see
+                    // previous case).
+                    self.tryToUpdateGroupToLatest(groupId: groupId)
+
+                case .reportInvalidOrBlockedGroupLink:
+                    owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
+
+                    if error.httpResponseHeaders?.containsBan == true {
+                        throw GroupsV2Error.localUserBlockedFromJoining
+                    } else {
+                        throw GroupsV2Error.expiredGroupInviteLink
+                    }
+
+                case .localUserIsNotARequestingMember:
+                    owsAssertDebug(groupId == nil, "groupId should not be set in this code path.")
+                    throw GroupsV2Error.localUserIsNotARequestingMember
+                }
+
+                throw GroupsV2Error.localUserNotInGroup
+            case 404:
+                // 404 indicates that the group does not exist on the
+                // service for some (but not all) group v2 service requests.
+
+                switch behavior404 {
+                case .fail:
+                    throw error
+                case .groupDoesNotExistOnService:
+                    Logger.warn("Error: \(error)")
+                    throw GroupsV2Error.groupDoesNotExistOnService
+                }
+            case 409:
+                // Group update conflict, retry. When updating group state,
+                // we can often resolve conflicts using the change set.
+                return try retryBlock()
+            default:
+                // Unexpected status code.
                 throw error
             }
+        } else if error.isNetworkFailureOrTimeout {
+            // Retry on network failure.
+            return try retryBlock()
+        } else {
+            // Unexpected error.
+            throw error
         }
     }
 
