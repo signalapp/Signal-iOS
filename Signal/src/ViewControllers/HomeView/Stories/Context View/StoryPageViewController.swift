@@ -72,6 +72,12 @@ class StoryPageViewController: UIPageViewController {
         interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
     }
 
+    private var isDisplayLinkPaused = false {
+        didSet {
+            displayLink?.isPaused = isDisplayLinkPaused
+        }
+    }
+
     private var displayLink: CADisplayLink?
 
     private var viewIsAppeared = false {
@@ -89,6 +95,7 @@ class StoryPageViewController: UIPageViewController {
             let displayLink = CADisplayLink(target: self, selector: #selector(displayLinkStep))
             displayLink.add(to: .main, forMode: .common)
             self.displayLink = displayLink
+            displayLink.isPaused = isDisplayLinkPaused
         }
         viewIsAppeared = true
     }
@@ -100,6 +107,8 @@ class StoryPageViewController: UIPageViewController {
         if !UIDevice.current.isIPad && CurrentAppContext().interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
+
+        currentContextViewController.pageControllerDidAppear()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -355,11 +364,11 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
         else {
             return
         }
-        displayLink?.isPaused = true
+        isDisplayLinkPaused = true
     }
 
     func storyContextViewControllerDidResume(_ storyContextViewController: StoryContextViewController) {
-        displayLink?.isPaused = false
+        isDisplayLinkPaused = false
     }
 
     func storyContextViewControllerShouldOnlyRenderMyStories(_ storyContextViewController: StoryContextViewController) -> Bool {

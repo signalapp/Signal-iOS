@@ -132,6 +132,20 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }
     }
 
+    public func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool {
+        let status = downloadStatus(transaction: transaction)
+        guard status.isDownloaded, let messageUniqueIds = status.messageUniqueIds, !messageUniqueIds.isEmpty else {
+            return false
+        }
+        let stories = StoryFinder.listStoriesWithUniqueIds(messageUniqueIds, transaction: transaction)
+        guard !stories.isEmpty else {
+            // If they were deleted, we assume they were viewed and then deleted.
+            return true
+        }
+
+        return stories.contains(where: { $0.localUserViewedTimestamp != nil })
+    }
+
     // MARK: - Event Observation
 
     private var isObservingBackgrounding = false
@@ -218,12 +232,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         forceDeleteIfDownloaded: Bool,
         transaction: SDSAnyWriteTransaction
     ) -> DownloadStatus {
-        guard
-            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryStatusKey, transaction: transaction),
-            let status = try? JSONDecoder().decode(DownloadStatus.self, from: rawStatus)
-        else {
-            return .requiresDownload
-        }
+        let status = downloadStatus(transaction: transaction)
         if status.isDownloaded {
             // clean up opportunistically.
             try? self.cleanUpStoriesIfNeeded(
@@ -231,6 +240,16 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
                 forceDeleteIfDownloaded: forceDeleteIfDownloaded,
                 transaction: transaction
             )
+        }
+        return status
+    }
+
+    private func downloadStatus(transaction: SDSAnyReadTransaction) -> DownloadStatus {
+        guard
+            let rawStatus = kvStore.getData(Constants.kvStoreOnboardingStoryStatusKey, transaction: transaction),
+            let status = try? JSONDecoder().decode(DownloadStatus.self, from: rawStatus)
+        else {
+            return .requiresDownload
         }
         return status
     }

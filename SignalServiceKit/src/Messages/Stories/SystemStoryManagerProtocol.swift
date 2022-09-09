@@ -20,6 +20,8 @@ public protocol SystemStoryManagerProtocol: SystemStoryManagerProtocolObjc {
     /// Called on its own when the app is backgrounded.
     func cleanUpOnboardingStoryIfNeeded() -> Promise<Void>
 
+    func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool
+
     // MARK: Hidden State
 
     func addStateChangedObserver(_ observer: SystemStoryStateChangeObserver)

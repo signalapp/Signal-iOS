@@ -25,6 +25,12 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
         return cleanUpOnboardingStoryHandler()
     }
 
+    public var isOnboardingStoryViewed: Bool = false
+
+    public func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool {
+        return isOnboardingStoryViewed
+    }
+
     public func addStateChangedObserver(_ observer: SystemStoryStateChangeObserver) {
         fatalError("Unimplemented for tests")
     }

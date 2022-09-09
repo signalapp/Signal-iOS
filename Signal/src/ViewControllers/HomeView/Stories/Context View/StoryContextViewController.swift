@@ -112,6 +112,10 @@ class StoryContextViewController: OWSViewController {
         playbackProgressView.alpha = 1
         closeButton.alpha = 1
         repliesAndViewsButton.alpha = 1
+
+        if onboardingOverlay.isDisplaying {
+            pause(hideChrome: true)
+        }
     }
 
     func updateMuteState() {
@@ -147,6 +151,9 @@ class StoryContextViewController: OWSViewController {
     private lazy var closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white)
 
     private lazy var mediaViewContainer = UIView()
+
+    private lazy var onboardingOverlay = StoryContextOnboardingOverlayView(delegate: self)
+
     private lazy var repliesAndViewsButton = OWSButton()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -164,6 +171,9 @@ class StoryContextViewController: OWSViewController {
         rightTapGestureRecognizer.require(toFail: pauseGestureRecognizer)
 
         view.addSubview(mediaViewContainer)
+        view.addSubview(onboardingOverlay)
+
+        onboardingOverlay.autoPinEdges(toEdgesOf: mediaViewContainer)
 
         repliesAndViewsButton.block = { [weak self] in self?.presentRepliesAndViewsSheet() }
         repliesAndViewsButton.autoSetDimension(.height, toSize: 64)
@@ -182,6 +192,8 @@ class StoryContextViewController: OWSViewController {
             // iPhone with notch or iPad (views/replies rendered below media, media is in a card)
             mediaViewContainer.layer.cornerRadius = 18
             mediaViewContainer.clipsToBounds = true
+            onboardingOverlay.layer.cornerRadius = 18
+            onboardingOverlay.clipsToBounds = true
             repliesAndViewsButton.autoPinEdge(.top, to: .bottom, of: mediaViewContainer)
             playbackProgressView.autoPinEdge(.bottom, to: .top, of: repliesAndViewsButton, withOffset: -OWSTableViewController2.defaultHOuterMargin)
         } else {
@@ -225,6 +237,20 @@ class StoryContextViewController: OWSViewController {
             self?.items = storyItems
             self?.resetForPresentation()
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // Precompute if it should display before we mark anything viewed.
+        onboardingOverlay.checkIfShouldDisplay()
+    }
+
+    /// This controller's view gets generated early to use for a zoom animation, which triggers
+    /// viewWill- and viewDidAppear before presentation has really finished.
+    /// The parent page controller calls this method when presentation actually finishes.
+    func pageControllerDidAppear() {
+        onboardingOverlay.showIfNeeded()
     }
 
     private static let maxItemsToRender = 100
@@ -762,6 +788,17 @@ extension StoryContextViewController: StoryContextMenuDelegate {
     }
 
     func storyContextMenuDidFinishDisplayingFollowups() {
+        play()
+    }
+}
+
+extension StoryContextViewController: StoryContextOnboardingOverlayViewDelegate {
+
+    func storyContextOnboardingOverlayWillDisplay(_: StoryContextOnboardingOverlayView) {
+        pause(hideChrome: true)
+    }
+
+    func storyContextOnboardingOverlayDidDismiss(_: StoryContextOnboardingOverlayView) {
         play()
     }
 }

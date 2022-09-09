@@ -787,6 +787,7 @@
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
+		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
 		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
@@ -3045,6 +3046,7 @@
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
+		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -6077,6 +6079,7 @@
 		884DB94A27DE66E000C6A309 /* Context View */ = {
 			isa = PBXGroup;
 			children = (
+				66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */,
 				884DB94E27DE67BB00C6A309 /* StoryContextViewController.swift */,
 				884DB95127DE67D900C6A309 /* StoryItemMediaView.swift */,
 				884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */,
@@ -10380,6 +10383,7 @@
 				8852572927DD366D0032073C /* StoriesViewController.swift in Sources */,
 				884DB94727DD754700C6A309 /* StoryCell.swift in Sources */,
 				668FE09F28B947ED008B9071 /* StoryContextMenuGenerator.swift in Sources */,
+				66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */,
 				884DB95027DE67BB00C6A309 /* StoryContextViewController.swift in Sources */,
 				88423A52280A171E007D2918 /* StoryDirectReplySheet.swift in Sources */,
 				88B00D5128A341D000BC9CA0 /* StoryGroupRepliesAndViewsSheet.swift in Sources */,
