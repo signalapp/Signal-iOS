@@ -1663,6 +1663,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       timestamp:syncMessage.sent.timestamp
                                                 serverTimestamp:envelope.serverTimestamp
                                                expiresInSeconds:dataMessage.expireTimer
+                                                 sentTranscript:transcript
                                                     transaction:transaction];
                 switch (result) {
                     case OWSReactionProcessingResultSuccess:
@@ -2011,6 +2012,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                timestamp:timestamp
                                                                          serverTimestamp:envelope.serverTimestamp
                                                                         expiresInSeconds:dataMessage.expireTimer
+                                                                          sentTranscript:nil
                                                                              transaction:transaction];
 
         switch (result) {

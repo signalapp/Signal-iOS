@@ -129,6 +129,7 @@ public class ReactionManager: NSObject {
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
+        sentTranscript: OWSIncomingSentMessageTranscript?,
         transaction: SDSAnyWriteTransaction
     ) -> ReactionProcessingResult {
         guard let emoji = reaction.emoji.strippedOrNil else {
@@ -222,6 +223,13 @@ public class ReactionManager: NSObject {
 
             if let incomingMessage = message as? TSIncomingMessage {
                 notificationsManager?.notifyUser(forIncomingMessage: incomingMessage, thread: thread, transaction: transaction)
+            } else if let outgoingMessage = message as? TSOutgoingMessage {
+                outgoingMessage.updateWithWasSentFromLinkedDevice(
+                    withUDRecipientAddresses: sentTranscript?.udRecipientAddresses,
+                    nonUdRecipientAddresses: sentTranscript?.nonUdRecipientAddresses,
+                    isSentUpdate: false,
+                    transaction: transaction
+                )
             }
 
             return .success
