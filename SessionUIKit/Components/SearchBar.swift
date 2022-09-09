@@ -13,6 +13,19 @@ public final class SearchBar : UISearchBar {
     }
 }
 
+public final class ContactsSearchBar : UISearchBar {
+    
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        setUpContactSearchStyle()
+    }
+    
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setUpContactSearchStyle()
+    }
+}
+
 public extension UISearchBar {
     
     func setUpSessionStyle() {
@@ -27,6 +40,23 @@ public extension UISearchBar {
         searchTextField.backgroundColor = Colors.searchBarBackground // The search bar background color
         searchTextField.textColor = Colors.text
         searchTextField.attributedPlaceholder = NSAttributedString(string: "Search", attributes: [ .foregroundColor : Colors.searchBarPlaceholder ])
+        setPositionAdjustment(UIOffset(horizontal: 4, vertical: 0), for: UISearchBar.Icon.search)
+        searchTextPositionAdjustment = UIOffset(horizontal: 2, vertical: 0)
+        setPositionAdjustment(UIOffset(horizontal: -4, vertical: 0), for: UISearchBar.Icon.clear)
+    }
+    
+    func setUpContactSearchStyle() {
+        searchBarStyle = .minimal
+        barStyle = .default
+        tintColor = Colors.text
+        let searchImage = #imageLiteral(resourceName: "searchbar_search").withTint(Colors.text)!
+        setImage(searchImage, for: .search, state: .normal)
+        let clearImage = #imageLiteral(resourceName: "searchbar_clear").withTint(Colors.text)!
+        setImage(clearImage, for: .clear, state: .normal)
+        let searchTextField: UITextField = self.searchTextField
+        searchTextField.backgroundColor = .white // The search bar background color
+        searchTextField.textColor = Colors.text
+        searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Contacts", attributes: [ .foregroundColor : Colors.searchBarPlaceholder ])
         setPositionAdjustment(UIOffset(horizontal: 4, vertical: 0), for: UISearchBar.Icon.search)
         searchTextPositionAdjustment = UIOffset(horizontal: 2, vertical: 0)
         setPositionAdjustment(UIOffset(horizontal: -4, vertical: 0), for: UISearchBar.Icon.clear)

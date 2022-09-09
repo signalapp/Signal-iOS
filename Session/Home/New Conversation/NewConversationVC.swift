@@ -57,7 +57,6 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         result.delegate = self
         result.dataSource = self
         result.separatorStyle = .none
-        result.backgroundColor = .clear
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
         }

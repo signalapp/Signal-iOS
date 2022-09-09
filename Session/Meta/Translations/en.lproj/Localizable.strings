@@ -707,3 +707,4 @@
 "EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted %@ to this message.";
 /* New conversation screen*/
 "vc_new_conversation_title" = "New Conversation";
+"CREATE_GROUP_BUTTON_TITLE" = "Create";

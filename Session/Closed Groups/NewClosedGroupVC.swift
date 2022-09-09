@@ -25,7 +25,18 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     
     // MARK: - Components
     
-    private lazy var nameTextField = TextField(placeholder: "vc_create_closed_group_text_field_hint".localized())
+    private lazy var nameTextField = TextField(
+        placeholder: "vc_create_closed_group_text_field_hint".localized(),
+        customHeight: 48
+    )
+    
+    private lazy var searchBar: ContactsSearchBar = {
+        let result = ContactsSearchBar()
+        result.tintColor = Colors.text
+        result.backgroundColor = .clear
+        result.delegate = self
+        return result
+    }()
 
     private lazy var tableView: TableView = {
         let result: TableView = TableView()
@@ -40,6 +51,15 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         return result
     }()
     
+    private lazy var createGroupButton: Button = {
+        let result = Button(style: .prominentOutline, size: .large)
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.setTitle(NSLocalizedString("CREATE_GROUP_BUTTON_TITLE", comment: ""), for: .normal)
+        result.addTarget(self, action: #selector(createClosedGroup), for: .touchUpInside)
+        result.set(.width, to: 160)
+        return result
+    }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -50,10 +70,6 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         
         let customTitleFontSize = Values.largeFontSize
         setNavBarTitle("vc_create_closed_group_title".localized(), customFontSize: customTitleFontSize)
-        
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(createClosedGroup))
-        doneButton.tintColor = Colors.text
-        navigationItem.rightBarButtonItem = doneButton
         
         // Set up content
         setUpViewHierarchy()
@@ -95,14 +111,22 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.largeSpacing)
         nameTextField.pin(.top, to: .top, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
         nameTextFieldContainer.pin(.trailing, to: .trailing, of: nameTextField, withInset: Values.largeSpacing)
-        nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
+        nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField)
         mainStackView.addArrangedSubview(nameTextFieldContainer)
+        
+        let searchBarContainer: UIView = UIView()
+        searchBarContainer.addSubview(searchBar)
+        searchBar.pin(.leading, to: .leading, of: searchBarContainer, withInset: Values.largeSpacing)
+        searchBarContainer.pin(.trailing, to: .trailing, of: searchBar, withInset: Values.largeSpacing)
+        searchBar.pin([ UIView.VerticalEdge.top, UIView.VerticalEdge.bottom ], to: searchBarContainer)
+        mainStackView.addArrangedSubview(searchBarContainer)
         
         let separator: UIView = UIView()
         separator.backgroundColor = Colors.separator
         separator.set(.height, to: Values.separatorThickness)
         mainStackView.addArrangedSubview(separator)
-        tableView.set(.height, to: CGFloat(contactProfiles.count * 65)) // A cell is exactly 65 points high
+        
+        tableView.set(.height, to: CGFloat(contactProfiles.count * 65 + 100)) // A cell is exactly 65 points high
         tableView.set(.width, to: UIScreen.main.bounds.width)
         mainStackView.addArrangedSubview(tableView)
         
@@ -113,6 +137,10 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         
         scrollView.set(.width, to: UIScreen.main.bounds.width)
         scrollView.pin(to: view)
+        
+        view.addSubview(createGroupButton)
+        createGroupButton.center(.horizontal, in: view)
+        createGroupButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.largeSpacing)
     }
     
     // MARK: - Table View Data Source
@@ -127,7 +155,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             with: contactProfiles[indexPath.row].id,
             profile: contactProfiles[indexPath.row],
             isZombie: false,
-            accessory: .tick(isSelected: selectedContacts.contains(contactProfiles[indexPath.row].id))
+            accessory: .o(isSelected: selectedContacts.contains(contactProfiles[indexPath.row].id))
         )
         
         return cell
@@ -220,5 +248,21 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         presentingViewController?.dismiss(animated: true, completion: nil)
         
         SessionApp.homeViewController.wrappedValue?.createNewDM()
+    }
+}
+
+extension NewClosedGroupVC: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        searchText = searchText
+    }
+    
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.showsCancelButton = true
+        return true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.showsCancelButton = false
+        searchBar.resignFirstResponder()
     }
 }
