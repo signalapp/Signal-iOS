@@ -308,23 +308,16 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
     @objc
     public var serviceIdentifier: String? {
-        if uuid != nil {
-            guard let uuidString = uuidString else {
-                owsFailDebug("uuidString was unexpectedly nil")
-                return phoneNumber
-            }
-
-            return uuidString
-        } else {
-            guard let phoneNumber = phoneNumber else {
-                if !CurrentAppContext().isRunningTests {
-                    owsFailDebug("phoneNumber was unexpectedly nil")
-                }
-                return uuidString
-            }
-
+        if let uuid = uuid {
+            return uuid.uuidString
+        }
+        if let phoneNumber = phoneNumber {
             return phoneNumber
         }
+        if !CurrentAppContext().isRunningTests {
+            owsFailDebug("phoneNumber was unexpectedly nil")
+        }
+        return nil
     }
 
     @objc
