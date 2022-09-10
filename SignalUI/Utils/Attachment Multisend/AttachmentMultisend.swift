@@ -88,6 +88,14 @@ public class AttachmentMultisend: Dependencies {
     ) throws -> PreparedMultisend {
         var attachmentsByMessageType = [TypeWrapper: [(ConversationItem, [SignalAttachment])]]()
 
+        // If we're sending to any stories, limit all attachments to the standard quality level.
+        var approvedAttachments = approvedAttachments
+        if conversations.contains(where: { $0 is StoryConversationItem }) {
+            approvedAttachments = approvedAttachments.map {
+                $0.preparedForOutput(qualityLevel: .standard)
+            }
+        }
+
         for conversation in conversations {
             // Duplicate attachments per conversation
             let clonedAttachments = try approvedAttachments.map { try $0.cloneAttachment() }
