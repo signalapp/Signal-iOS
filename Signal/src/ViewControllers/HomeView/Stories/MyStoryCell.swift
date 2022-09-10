@@ -13,12 +13,13 @@ class MyStoryCell: UITableViewCell {
     let titleLabel = UILabel()
     let titleChevron = UIImageView()
     let subtitleLabel = UILabel()
-    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
+    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, badged: false, useAutolayout: true)
     let attachmentThumbnail = UIView()
 
     let failedIconView = UIImageView()
 
     let addStoryButton = OWSButton()
+    let plusIcon = UIImageView()
 
     let contentHStackView = UIStackView()
 
@@ -56,7 +57,23 @@ class MyStoryCell: UITableViewCell {
         vStack.axis = .vertical
         vStack.alignment = .leading
 
-        contentHStackView.addArrangedSubviews([avatarView, vStack, .hStretchingSpacer(), attachmentThumbnail])
+        addStoryButton.addSubview(avatarView)
+        avatarView.autoPinEdgesToSuperviewEdges()
+
+        plusIcon.image = #imageLiteral(resourceName: "plus-12").withRenderingMode(.alwaysTemplate)
+        plusIcon.tintColor = .white
+        plusIcon.contentMode = .center
+        plusIcon.autoSetDimensions(to: .square(26))
+        plusIcon.layer.cornerRadius = 13
+        plusIcon.layer.borderWidth = 3
+        plusIcon.backgroundColor = .ows_accentBlue
+        plusIcon.isUserInteractionEnabled = false
+
+        addStoryButton.addSubview(plusIcon)
+        plusIcon.autoPinEdge(toSuperviewEdge: .trailing, withInset: -3)
+        plusIcon.autoPinEdge(toSuperviewEdge: .bottom, withInset: -3)
+
+        contentHStackView.addArrangedSubviews([addStoryButton, vStack, .hStretchingSpacer(), attachmentThumbnail])
         contentHStackView.axis = .horizontal
         contentHStackView.alignment = .center
         contentHStackView.spacing = 16
@@ -65,11 +82,6 @@ class MyStoryCell: UITableViewCell {
         contentHStackView.autoPinEdgesToSuperviewMargins()
 
         attachmentThumbnail.autoSetDimensions(to: CGSize(width: 64, height: 84))
-
-        addStoryButton.setImage(imageName: "plus-24")
-        addStoryButton.layer.cornerRadius = 12
-        addStoryButton.clipsToBounds = true
-        addStoryButton.autoSetDimensions(to: CGSize(width: 56, height: 84))
     }
 
     required init?(coder: NSCoder) {
@@ -81,11 +93,17 @@ class MyStoryCell: UITableViewCell {
 
         titleLabel.font = .ows_dynamicTypeHeadline
         titleLabel.textColor = Theme.primaryTextColor
+
         titleChevron.tintColor = Theme.primaryTextColor
+        titleChevron.isHiddenInStackView = model.messages.isEmpty
+
+        plusIcon.layer.borderColor = Theme.backgroundColor.cgColor
+
+        addStoryButton.block = addStoryAction
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(Self.tsAccountManager.localAddress!)
-            config.storyState = .viewed
+            config.storyState = model.messages.isEmpty ? .none : .viewed
             config.usePlaceholderImages()
         }
 
@@ -115,13 +133,6 @@ class MyStoryCell: UITableViewCell {
                 dividerView.autoPinEdge(toSuperviewEdge: .trailing, withInset: -2)
                 dividerView.autoPinEdge(toSuperviewEdge: .top, withInset: -2)
             }
-        } else {
-            addStoryButton.block = addStoryAction
-            addStoryButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray10
-            addStoryButton.tintColor = Theme.primaryTextColor
-            attachmentThumbnail.addSubview(addStoryButton)
-            addStoryButton.autoPinHeightToSuperview()
-            addStoryButton.autoPinEdge(toSuperviewEdge: .trailing)
         }
     }
 
@@ -141,7 +152,7 @@ class MyStoryCell: UITableViewCell {
             subtitleLabel.text = DateUtil.formatTimestampRelatively(latestMessageTimestamp)
             failedIconView.isHiddenInStackView = true
         } else {
-            subtitleLabel.text = nil
+            subtitleLabel.text = NSLocalizedString("MY_STORY_TAP_TO_ADD", comment: "Prompt to add to your story")
             failedIconView.isHiddenInStackView = true
         }
     }

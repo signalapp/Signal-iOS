@@ -3724,6 +3724,9 @@
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "My Story";
 
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "Tap to add a story";
+
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Recently changed their profile name from %1$@ to %2$@.";
 

@@ -267,7 +267,11 @@ extension StoriesViewController: UITableViewDelegate {
 
         switch Section(rawValue: indexPath.section) {
         case .myStory:
-            navigationController?.pushViewController(MyStoriesViewController(), animated: true)
+            if dataSource.myStory?.messages.isEmpty == true {
+                showCameraView()
+            } else {
+                navigationController?.pushViewController(MyStoriesViewController(), animated: true)
+            }
         case .hiddenStories:
             if indexPath.row == 0 {
                 // Tapping the collapsing header.
