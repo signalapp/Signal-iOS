@@ -165,6 +165,9 @@ message AccountRecord {
            bool                   displayBadgesOnProfile        = 23;
            bool                   subscriptionManuallyCancelled = 24;
            bool                   keepMutedChatsArchived        = 25;
+           // reserved 26
+           // reserved 27
+           bool                   storiesDisabled               = 28;
 }
 
 message StoryDistributionListRecord {

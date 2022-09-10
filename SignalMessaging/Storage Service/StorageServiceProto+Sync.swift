@@ -611,6 +611,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
 
         builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
 
+        builder.setStoriesDisabled(!StoryManager.areStoriesEnabled)
+
         return try builder.build()
     }
 
@@ -844,6 +846,11 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         } else {
             // If no "local phone number" has been written to the storage service yet, do so now.
             mergeState = .needsUpdate
+        }
+
+        let localStoriesDisabled = !StoryManager.areStoriesEnabled
+        if localStoriesDisabled != storiesDisabled {
+            StoryManager.setAreStoriesEnabled(!storiesDisabled, shouldUpdateStorageService: false, transaction: transaction)
         }
 
         return mergeState

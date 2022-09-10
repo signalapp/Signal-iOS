@@ -357,7 +357,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     func didTapAvatar() {
         guard avatarView != nil else { return }
 
-        if threadViewModel.storyState == .none {
+        if threadViewModel.storyState == .none || !StoryManager.areStoriesEnabled {
             presentAvatarViewController()
         } else {
             let vc = StoryPageViewController(context: thread.storyContext)

@@ -120,7 +120,7 @@ public class ConversationHeaderView: UIStackView {
     public func configure(threadViewModel: ThreadViewModel) {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(threadViewModel.threadRecord)
-            config.storyState = threadViewModel.storyState
+            config.storyState = StoryManager.areStoriesEnabled ? threadViewModel.storyState : .none
             config.applyConfigurationSynchronously()
         }
     }

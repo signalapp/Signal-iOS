@@ -406,7 +406,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         // Stories Section
         do {
             let section = OWSTableSection()
-            if RemoteConfig.stories && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
+            if StoryManager.areStoriesEnabled && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
                 section.customHeaderView = NewStoryHeaderView(title: Strings.storiesSection, delegate: self)
 
                 addExpandableConversations(

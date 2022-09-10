@@ -544,6 +544,13 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._keepMutedChatsArchived = newValue}
   }
 
+  /// reserved 26
+  /// reserved 27
+  var storiesDisabled: Bool {
+    get {return _storage._storiesDisabled}
+    set {_uniqueStorage()._storiesDisabled = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum PhoneNumberSharingMode: SwiftProtobuf.Enum {
@@ -1424,6 +1431,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     23: .same(proto: "displayBadgesOnProfile"),
     24: .same(proto: "subscriptionManuallyCancelled"),
     25: .same(proto: "keepMutedChatsArchived"),
+    28: .same(proto: "storiesDisabled"),
   ]
 
   fileprivate class _StorageClass {
@@ -1451,6 +1459,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _displayBadgesOnProfile: Bool = false
     var _subscriptionManuallyCancelled: Bool = false
     var _keepMutedChatsArchived: Bool = false
+    var _storiesDisabled: Bool = false
 
     static let defaultInstance = _StorageClass()
 
@@ -1481,6 +1490,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _displayBadgesOnProfile = source._displayBadgesOnProfile
       _subscriptionManuallyCancelled = source._subscriptionManuallyCancelled
       _keepMutedChatsArchived = source._keepMutedChatsArchived
+      _storiesDisabled = source._storiesDisabled
     }
   }
 
@@ -1523,6 +1533,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 23: try { try decoder.decodeSingularBoolField(value: &_storage._displayBadgesOnProfile) }()
         case 24: try { try decoder.decodeSingularBoolField(value: &_storage._subscriptionManuallyCancelled) }()
         case 25: try { try decoder.decodeSingularBoolField(value: &_storage._keepMutedChatsArchived) }()
+        case 28: try { try decoder.decodeSingularBoolField(value: &_storage._storiesDisabled) }()
         default: break
         }
       }
@@ -1607,6 +1618,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._keepMutedChatsArchived != false {
         try visitor.visitSingularBoolField(value: _storage._keepMutedChatsArchived, fieldNumber: 25)
       }
+      if _storage._storiesDisabled != false {
+        try visitor.visitSingularBoolField(value: _storage._storiesDisabled, fieldNumber: 28)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1640,6 +1654,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._displayBadgesOnProfile != rhs_storage._displayBadgesOnProfile {return false}
         if _storage._subscriptionManuallyCancelled != rhs_storage._subscriptionManuallyCancelled {return false}
         if _storage._keepMutedChatsArchived != rhs_storage._keepMutedChatsArchived {return false}
+        if _storage._storiesDisabled != rhs_storage._storiesDisabled {return false}
         return true
       }
       if !storagesAreEqual {return false}

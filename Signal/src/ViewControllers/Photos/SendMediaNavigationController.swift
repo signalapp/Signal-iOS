@@ -35,7 +35,7 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
         true
     }
 
-    override var canSendToStories: Bool { RemoteConfig.stories }
+    override var canSendToStories: Bool { StoryManager.areStoriesEnabled }
 
     @objc
     private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 @objc
 public class StoryManager: NSObject {
@@ -11,6 +12,8 @@ public class StoryManager: NSObject {
     @objc
     public class func setup() {
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
+            cacheAreStoriesEnabled()
+
             // Create My Story thread if necessary
             Self.databaseStorage.asyncWrite { transaction in
                 TSPrivateStoryThread.getOrCreateMyStory(transaction: transaction)
@@ -193,6 +196,52 @@ public class StoryManager: NSObject {
         }
     }
 }
+
+// MARK: -
+
+public extension Notification.Name {
+    static let storiesEnabledStateDidChange = Notification.Name("storiesEnabledStateDidChange")
+}
+
+extension StoryManager {
+    private static let keyValueStore = SDSKeyValueStore(collection: "StoryManager")
+    private static let areStoriesEnabledKey = "areStoriesEnabled"
+
+    private static var areStoriesEnabledCache = AtomicBool(true)
+
+    @objc
+    public static var areStoriesEnabled: Bool { RemoteConfig.stories && areStoriesEnabledCache.get() }
+
+    public static func setAreStoriesEnabled(_ areStoriesEnabled: Bool, shouldUpdateStorageService: Bool = true, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setBool(areStoriesEnabled, key: areStoriesEnabledKey, transaction: transaction)
+        areStoriesEnabledCache.set(areStoriesEnabled)
+
+        if shouldUpdateStorageService {
+            storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+
+        transaction.addAsyncCompletionOnMain {
+            NotificationCenter.default.post(name: .storiesEnabledStateDidChange, object: nil)
+        }
+    }
+
+    public static func areStoriesEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+        keyValueStore.getBool(areStoriesEnabledKey, defaultValue: true, transaction: transaction)
+    }
+
+    private static func cacheAreStoriesEnabled() {
+        AssertIsOnMainThread()
+
+        let areStoriesEnabled = databaseStorage.read { Self.areStoriesEnabled(transaction: $0) }
+        areStoriesEnabledCache.set(areStoriesEnabled)
+
+        if !areStoriesEnabled {
+            NotificationCenter.default.post(name: .storiesEnabledStateDidChange, object: nil)
+        }
+    }
+}
+
+// MARK: -
 
 public enum StoryContext: Equatable, Hashable {
     case groupId(Data)

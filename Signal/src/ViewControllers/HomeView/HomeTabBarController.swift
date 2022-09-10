@@ -34,6 +34,14 @@ class HomeTabBarController: UITabBarController {
         set { selectedIndex = newValue.rawValue }
     }
 
+    var tabBarHidden: Bool {
+        get { tabBar.isHidden }
+        set {
+            tabBar.isHidden = newValue
+            chatListViewController.extendedLayoutIncludesOpaqueBars = newValue
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -42,14 +50,14 @@ class HomeTabBarController: UITabBarController {
 
         delegate = self
 
-        // Don't render the tab bar if stories isn't enabled.
-        // TODO: Eventually there will be a setting for hiding stories.
+        // Don't render the tab bar at all if stories isn't enabled.
         guard RemoteConfig.stories else {
             viewControllers = [chatListNavController]
             tabBar.isHidden = true
             return
         }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
         applyTheme()
 
@@ -61,11 +69,26 @@ class HomeTabBarController: UITabBarController {
         storiesNavController.tabBarItem = storiesTabBarItem
 
         updateAllBadges()
+
+        // We read directly from the database here, as the cache may not have been warmed by the time
+        // this view is loaded (since it's the very first thing to load). Otherwise, there can be a
+        // small window where the tab bar is in the wrong state at app launch.
+        tabBarHidden = !databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
     }
 
     @objc
     func applyTheme() {
         tabBar.tintColor = Theme.primaryTextColor
+    }
+
+    @objc
+    func storiesEnabledStateDidChange() {
+        if StoryManager.areStoriesEnabled {
+            tabBarHidden = false
+        } else {
+            tabBarHidden = true
+            selectedTab = .chatList
+        }
     }
 
     func updateAllBadges() {

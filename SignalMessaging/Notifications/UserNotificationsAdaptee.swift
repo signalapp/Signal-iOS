@@ -469,6 +469,8 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             // Show notifications for any *other* thread than the currently selected thread
             return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
         case .incomingGroupStoryReply:
+            guard StoryManager.areStoriesEnabled else { return false }
+
             guard CurrentAppContext().isMainAppAndActive else { return true }
 
             guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
