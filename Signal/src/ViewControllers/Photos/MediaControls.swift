@@ -558,7 +558,7 @@ protocol CameraZoomSelectionControlDelegate: AnyObject {
     func cameraZoomControl(_ cameraZoomControl: CameraZoomSelectionControl, didChangeZoomFactor zoomFactor: CGFloat)
 }
 
-class CameraZoomSelectionControl: PillView {
+class CameraZoomSelectionControl: UIView {
 
     weak var delegate: CameraZoomSelectionControlDelegate?
 
@@ -618,6 +618,7 @@ class CameraZoomSelectionControl: PillView {
 
         super.init(frame: .zero)
 
+        translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = selectionViews.count > 1 ? .ows_blackAlpha20 : .clear
         layoutMargins = UIEdgeInsets(margin: 2)
 
@@ -637,6 +638,15 @@ class CameraZoomSelectionControl: PillView {
     @available(*, unavailable, message: "Use init(availableCameras:) instead")
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        // Only do pill shape if background color is set (see initializer).
+        if selectionViews.count > 1 {
+            layer.cornerRadius = 0.5 * min(width, height)
+        }
     }
 
     // MARK: - Selection
