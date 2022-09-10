@@ -170,9 +170,24 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
     func profileDidChange() { updateNavigationBar() }
 
     private func updateNavigationBar() {
-        let avatarButton = UIButton(type: .custom)
-        avatarButton.accessibilityLabel = CommonStrings.openSettingsButton
-        avatarButton.addTarget(self, action: #selector(showAppSettings), for: .touchUpInside)
+        let contextButton = ContextMenuButton()
+        contextButton.showsContextMenuAsPrimaryAction = true
+        contextButton.contextMenu = .init([
+            .init(
+                title: NSLocalizedString("STORIES_SETTINGS_TITLE", comment: "Title for the story privacy settings view"),
+                image: Theme.iconImage(.settingsPrivacy),
+                handler: { [weak self] _ in
+                    self?.showPrivacySettings()
+                }
+            ),
+            .init(
+                title: CommonStrings.openSettingsButton,
+                image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"),
+                handler: { [weak self] _ in
+                    self?.showAppSettings()
+                }
+            )
+        ])
 
         let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser)
         databaseStorage.read { transaction in
@@ -184,10 +199,10 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
             }
         }
 
-        avatarButton.addSubview(avatarView)
+        contextButton.addSubview(avatarView)
         avatarView.autoPinEdgesToSuperviewEdges()
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: avatarButton)
+        navigationItem.leftBarButtonItem = .init(customView: contextButton)
 
         let cameraButton = UIBarButtonItem(image: Theme.iconImage(.cameraButton), style: .plain, target: self, action: #selector(showCameraView))
         cameraButton.accessibilityLabel = NSLocalizedString("CAMERA_BUTTON_LABEL", comment: "Accessibility label for camera button.")
@@ -221,12 +236,18 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         }
     }
 
-    @objc
     func showAppSettings() {
         AssertIsOnMainThread()
 
         conversationSplitViewController?.selectedConversationViewController?.dismissMessageContextMenu(animated: true)
         presentFormSheet(AppSettingsViewController.inModalNavigationController(), animated: true)
+    }
+
+    func showPrivacySettings() {
+        AssertIsOnMainThread()
+
+        let vc = StoryPrivacySettingsViewController()
+        presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
 }
 
