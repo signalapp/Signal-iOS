@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalUI
 
 class StoryPrivacySettingsViewController: OWSTableViewController2 {
     override func viewDidLoad() {
@@ -10,7 +11,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
 
         title = NSLocalizedString("STORIES_SETTINGS_TITLE", comment: "Title for the story privacy settings view")
         navigationItem.leftBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
-        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
+        tableView.register(StoryThreadCell.self, forCellReuseIdentifier: StoryThreadCell.reuseIdentifier)
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
@@ -32,121 +33,133 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
         defer { self.contents = contents }
 
-        let myStorySection = OWSTableSection()
-        contents.addSection(myStorySection)
-        myStorySection.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-            guard let cell = self.tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
-                owsFailDebug("Missing cell.")
-                return OWSTableItem.newCell()
-            }
+        let myStoriesSection = OWSTableSection()
+        myStoriesSection.customHeaderView = NewStoryHeaderView(
+            title: NSLocalizedString(
+                "STORIES_SETTINGS_MY_STORIES_HEADER",
+                comment: "Header for the 'My Stories' section of the stories settings"
+            ),
+            delegate: self
+        )
+        myStoriesSection.footerTitle = NSLocalizedString(
+            "STORIES_SETTINGS_MY_STORIES_FOOTER",
+            comment: "Footer for the 'My Stories' section of the stories settings"
+        )
+        contents.addSection(myStoriesSection)
 
-            let configuration = ContactCellConfiguration(address: self.tsAccountManager.localAddress!, localUserDisplayMode: .asLocalUser)
-            configuration.customName = NSLocalizedString(
-                "MY_STORY_NAME",
-                comment: "Name for the 'My Story' default story that sends to all the user's contacts."
-            )
+        let storyItems = databaseStorage.read { transaction -> [StoryConversationItem] in
+            StoryConversationItem
+                .allItems(transaction: transaction)
+                .sorted { lhs, rhs in
+                    if case .privateStory(let item) = lhs.backingItem, item.isMyStory { return true }
+                    if case .privateStory(let item) = rhs.backingItem, item.isMyStory { return false }
+                    return lhs.title(transaction: transaction).localizedCaseInsensitiveCompare(rhs.title(transaction: transaction)) == .orderedAscending
+                }
+        }
 
-            self.databaseStorage.read { transaction in
-                cell.configure(configuration: configuration, transaction: transaction)
-            }
-
-            cell.accessoryType = .disclosureIndicator
-
-            return cell
-        }) { [weak self] in
-            let vc = MyStorySettingsViewController()
-            self?.navigationController?.pushViewController(vc, animated: true)
-        })
-
-        let privateStoriesSection = OWSTableSection()
-        privateStoriesSection.headerTitle = NSLocalizedString(
-            "STORIES_SETTINGS_PRIVATE_STORIES_HEADER",
-            comment: "Header for the 'Private Stories' section of the stories settings")
-        privateStoriesSection.footerTitle = NSLocalizedString(
-            "STORIES_SETTINGS_PRIVATE_STORIES_FOOTER",
-            comment: "Footer for the 'Private Stories' section of the stories settings")
-        contents.addSection(privateStoriesSection)
-
-        privateStoriesSection.add(OWSTableItem(customCellBlock: {
-            let cell = OWSTableItem.newCell()
-            cell.preservesSuperviewLayoutMargins = true
-            cell.contentView.preservesSuperviewLayoutMargins = true
-
-            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers,
-                                                              iconSize: AvatarBuilder.smallAvatarSizePoints,
-                                                              innerIconSize: 24,
-                                                              iconTintColor: Theme.primaryTextColor)
-
-            let rowLabel = UILabel()
-            rowLabel.text = NSLocalizedString(
-                "STORIES_SETTINGS_NEW_STORY",
-                comment: "Label for 'new private story' button in story settings view.")
-            rowLabel.textColor = Theme.primaryTextColor
-            rowLabel.font = OWSTableItem.primaryLabelFont
-            rowLabel.lineBreakMode = .byTruncatingTail
-
-            let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-            contentRow.spacing = ContactCellView.avatarTextHSpacing
-
-            cell.contentView.addSubview(contentRow)
-            contentRow.autoPinWidthToSuperviewMargins()
-            contentRow.autoPinHeightToSuperview(withMargin: 7)
-
-            return cell
-        }) { [weak self] in
-            self?.showNewPrivateStoryView()
-        })
-
-        let storyThreads = databaseStorage.read { AnyThreadFinder().privateStoryThreads(transaction: $0) }
-            .lazy
-            .filter { !$0.isMyStory }
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-
-        for thread in storyThreads {
-            privateStoriesSection.add(OWSTableItem(customCellBlock: {
-                let cell = OWSTableItem.newCell()
-                cell.accessoryType = .disclosureIndicator
-                cell.preservesSuperviewLayoutMargins = true
-                cell.contentView.preservesSuperviewLayoutMargins = true
-
-                let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsPrivateStory,
-                                                                  iconSize: AvatarBuilder.smallAvatarSizePoints,
-                                                                  innerIconSize: 24,
-                                                                  iconTintColor: Theme.primaryTextColor)
-
-                let rowLabel = UILabel()
-                rowLabel.text = thread.name
-                rowLabel.textColor = Theme.primaryTextColor
-                rowLabel.font = OWSTableItem.primaryLabelFont
-                rowLabel.lineBreakMode = .byTruncatingTail
-
-                let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-                contentRow.spacing = ContactCellView.avatarTextHSpacing
-
-                cell.contentView.addSubview(contentRow)
-                contentRow.autoPinWidthToSuperviewMargins()
-                contentRow.autoPinHeightToSuperview(withMargin: 7)
-
+        for item in storyItems {
+            myStoriesSection.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let cell = self?.tableView.dequeueReusableCell(withIdentifier: StoryThreadCell.reuseIdentifier) as? StoryThreadCell else {
+                    owsFailDebug("Missing cell.")
+                    return UITableViewCell()
+                }
+                Self.databaseStorage.read { transaction in
+                    cell.configure(conversationItem: item, transaction: transaction)
+                }
                 return cell
             }) { [weak self] in
-                self?.showPrivateStoryView(for: thread)
+                self?.showSettings(for: item)
             })
         }
     }
 
-    func showNewPrivateStoryView() {
-        let vc = NewPrivateStoryRecipientsViewController { [weak self] _ in
-            self?.updateTableContents()
-        }
-        presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+    override func applyTheme() {
+        super.applyTheme()
+        updateTableContents()
     }
 
-    func showPrivateStoryView(for thread: TSPrivateStoryThread) {
-        let vc = PrivateStorySettingsViewController(thread: thread)
+    func showSettings(for item: StoryConversationItem) {
+        switch item.backingItem {
+        case .groupStory(let groupItem):
+            showGroupStorySettings(for: groupItem)
+        case .privateStory(let privateStory):
+            if privateStory.isMyStory {
+                showMyStorySettings()
+            } else {
+                showPrivateStorySettings(for: privateStory)
+            }
+        }
+    }
+
+    func showMyStorySettings() {
+        let vc = MyStorySettingsViewController()
         navigationController?.pushViewController(vc, animated: true)
+    }
+
+    func showPrivateStorySettings(for item: PrivateStoryConversationItem) {
+        guard let storyThread = item.storyThread else {
+            return owsFailDebug("Missing thread for private story")
+        }
+        let vc = PrivateStorySettingsViewController(thread: storyThread)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    func showGroupStorySettings(for item: GroupConversationItem) {
+        guard let groupThread = item.groupThread else {
+            return owsFailDebug("Missing thread for group story")
+        }
+        let vc = GroupStorySettingsViewController(thread: groupThread)
+        navigationController?.pushViewController(vc, animated: true)
+    }
+}
+
+extension StoryPrivacySettingsViewController: NewStoryHeaderDelegate {
+    func newStoryHeaderView(_ newStoryHeaderView: NewStoryHeaderView, didCreateNewStoryItems items: [StoryConversationItem]) {
+        updateTableContents()
+    }
+}
+
+private class StoryThreadCell: ContactTableViewCell {
+    open override class var reuseIdentifier: String { "StoryThreadCell" }
+
+    // MARK: - ContactTableViewCell
+
+    public func configure(conversationItem: StoryConversationItem, transaction: SDSAnyReadTransaction) {
+        let configuration: ContactCellConfiguration
+        switch conversationItem.messageRecipient {
+        case .contact:
+            owsFailDebug("Unexpected recipient for story")
+            return
+        case .group(let groupThreadId):
+            guard let groupThread = TSGroupThread.anyFetchGroupThread(
+                uniqueId: groupThreadId,
+                transaction: transaction
+            ) else {
+                owsFailDebug("Failed to find group thread")
+                return
+            }
+            configuration = ContactCellConfiguration(groupThread: groupThread, localUserDisplayMode: .noteToSelf)
+        case .privateStory(_, let isMyStory):
+            if isMyStory {
+                guard let localAddress = tsAccountManager.localAddress else {
+                    owsFailDebug("Unexpectedly missing local address")
+                    return
+                }
+                configuration = ContactCellConfiguration(address: localAddress, localUserDisplayMode: .asUser)
+                configuration.customName = conversationItem.title(transaction: transaction)
+            } else {
+                guard let image = conversationItem.image else {
+                    owsFailDebug("Unexpectedly missing image for private story")
+                    return
+                }
+                configuration = ContactCellConfiguration(name: conversationItem.title(transaction: transaction), avatar: image)
+            }
+        }
+
+        configuration.attributedSubtitle = conversationItem.subtitle(transaction: transaction)?.asAttributedString
+
+        super.configure(configuration: configuration, transaction: transaction)
+
+        accessoryType = .disclosureIndicator
     }
 }

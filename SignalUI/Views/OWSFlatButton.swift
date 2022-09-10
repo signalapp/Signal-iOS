@@ -60,6 +60,15 @@ public class OWSFlatButton: UIView {
         }
     }
 
+    public override var tintColor: UIColor! {
+        get {
+            return button.tintColor
+        }
+        set {
+            button.tintColor = newValue
+        }
+    }
+
     @objc
     public init() {
         AssertIsOnMainThread()

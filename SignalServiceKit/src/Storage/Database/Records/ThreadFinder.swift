@@ -14,7 +14,6 @@ public protocol ThreadFinder {
     func sortIndex(thread: TSThread, transaction: ReadTransaction) throws -> UInt?
     func threads(withThreadIds threadIds: Set<String>, transaction: ReadTransaction) throws -> Set<TSThread>
     func storyThreads(transaction: ReadTransaction) -> [TSThread]
-    func privateStoryThreads(transaction: ReadTransaction) -> [TSPrivateStoryThread]
     func threadsWithRecentInteractions(limit: UInt, transaction: ReadTransaction) -> [TSThread]
     func threadsWithRecentlyViewedStories(limit: UInt, transaction: ReadTransaction) -> [TSThread]
 }
@@ -87,13 +86,6 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             return grdbAdapter.storyThreads(transaction: grdb)
-        }
-    }
-
-    public func privateStoryThreads(transaction: SDSAnyReadTransaction) -> [TSPrivateStoryThread] {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdb):
-            return grdbAdapter.privateStoryThreads(transaction: grdb)
         }
     }
 
@@ -327,25 +319,6 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         var threads = [TSThread]()
         do {
             while let thread = try cursor.next() {
-                threads.append(thread)
-            }
-        } catch {
-            owsFailDebug("Failed to query story threads \(error)")
-        }
-        return threads
-    }
-
-    public func privateStoryThreads(transaction: GRDBReadTransaction) -> [TSPrivateStoryThread] {
-        let sql = """
-            SELECT *
-            FROM \(ThreadRecord.databaseTableName)
-            WHERE \(threadColumn: .recordType) = \(SDSRecordType.privateStoryThread.rawValue)
-            ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC
-        """
-        let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
-        var threads = [TSPrivateStoryThread]()
-        do {
-            while let thread = try cursor.next() as? TSPrivateStoryThread {
                 threads.append(thread)
             }
         } catch {
