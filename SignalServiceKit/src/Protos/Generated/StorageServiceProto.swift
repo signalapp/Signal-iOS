@@ -1900,6 +1900,13 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
         return true
     }
 
+    public var storySendEnabled: Bool {
+        return proto.storySendEnabled
+    }
+    public var hasStorySendEnabled: Bool {
+        return true
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1975,6 +1982,9 @@ extension StorageServiceProtoGroupV2Record {
         if hasHideStory {
             builder.setHideStory(hideStory)
         }
+        if hasStorySendEnabled {
+            builder.setStorySendEnabled(storySendEnabled)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -2025,6 +2035,10 @@ public struct StorageServiceProtoGroupV2RecordBuilder {
 
     public mutating func setHideStory(_ valueParam: Bool) {
         proto.hideStory = valueParam
+    }
+
+    public mutating func setStorySendEnabled(_ valueParam: Bool) {
+        proto.storySendEnabled = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

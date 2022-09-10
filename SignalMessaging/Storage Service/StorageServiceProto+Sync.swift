@@ -388,6 +388,18 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
         builder.setHideStory(threadAssociatedData.hideStory)
 
+        if let thread = TSGroupThread.anyFetchGroupThread(uniqueId: threadId, transaction: transaction) {
+            builder.setStorySendEnabled(thread.isStorySendEnabled)
+        } else if let enqueuedRecord = groupsV2Swift.groupRecordPendingStorageServiceRestore(
+            masterKeyData: masterKeyData,
+            transaction: transaction
+        ) {
+            // We have a record pending restoration from storage service,
+            // preserve any of the data that we weren't able to restore
+            // yet because the thread record doesn't exist.
+            builder.setStorySendEnabled(enqueuedRecord.storySendEnabled)
+        }
+
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
         }
@@ -453,8 +465,12 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
 
         var mergeState: MergeState = .resolved(masterKey)
 
-        let isGroupInDatabase = TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil
-        if !isGroupInDatabase {
+        if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            let localStorySendEnabled = localThread.isStorySendEnabled
+            if localStorySendEnabled != storySendEnabled {
+                localThread.updateWithStorySendEnabled(storySendEnabled, shouldUpdateStorageService: false, transaction: transaction)
+            }
+        } else {
             mergeState = .needsRefreshFromService(masterKey)
         }
 

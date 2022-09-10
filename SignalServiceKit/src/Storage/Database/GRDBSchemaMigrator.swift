@@ -220,6 +220,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_dropEmojiAvailabilityStore
         case dataMigration_dropSentStories
         case dataMigration_indexMultipleNameComponentsForReceipients
+        case dataMigration_syncGroupStories
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2289,6 +2290,16 @@ public class GRDBSchemaMigrator: NSObject {
 
             SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient, _: UnsafeMutablePointer<ObjCBool>) in
                 GRDBFullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: transaction)
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_syncGroupStories) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            for thread in AnyThreadFinder().storyThreads(transaction: transaction.asAnyRead) {
+                guard let thread = thread as? TSGroupThread else { continue }
+                self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
             }
         }
     }

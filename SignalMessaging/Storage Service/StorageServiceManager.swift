@@ -1737,8 +1737,10 @@ class StorageServiceOperation: OWSOperation {
             // update the mapping
             state.groupV2MasterKeyToIdentifierMap[groupMasterKey] = identifier
 
-            self.groupsV2.restoreGroupFromStorageServiceIfNecessary(masterKeyData: groupMasterKey,
-                                                                    transaction: transaction)
+            groupsV2Swift.restoreGroupFromStorageServiceIfNecessary(
+                groupRecord: groupV2Record,
+                transaction: transaction
+            )
 
         case .needsRefreshFromService(let groupMasterKey):
             // If the record has unknown fields, we need to hold on to it, so that
@@ -1752,8 +1754,11 @@ class StorageServiceOperation: OWSOperation {
             // update the mapping
             state.groupV2MasterKeyToIdentifierMap[groupMasterKey] = identifier
 
-            self.groupsV2.restoreGroupFromStorageServiceIfNecessary(masterKeyData: groupMasterKey,
-                                                                    transaction: transaction)
+            groupsV2Swift.restoreGroupFromStorageServiceIfNecessary(
+                groupRecord: groupV2Record,
+                transaction: transaction
+            )
+
         case .resolved(let groupMasterKey):
             // If the record has unknown fields, we need to hold on to it, so that
             // when we later update this record, we can preserve the unknown fields

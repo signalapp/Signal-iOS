@@ -81,8 +81,6 @@ public protocol GroupsV2: AnyObject {
     func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
                                       transaction: SDSAnyReadTransaction) -> Bool
 
-    func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction)
-
     func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool
 
     func clearTemporalCredentials(transaction: SDSAnyWriteTransaction)
@@ -162,6 +160,16 @@ public protocol GroupsV2Swift: GroupsV2 {
     func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential>
 
     func updateAlreadyMigratedGroupIfNecessary(v2GroupId: Data) -> Promise<Void>
+
+    func groupRecordPendingStorageServiceRestore(
+        masterKeyData: Data,
+        transaction: SDSAnyReadTransaction
+    ) -> StorageServiceProtoGroupV2Record?
+
+    func restoreGroupFromStorageServiceIfNecessary(
+        groupRecord: StorageServiceProtoGroupV2Record,
+        transaction: SDSAnyWriteTransaction
+    )
 }
 
 // MARK: -
@@ -622,7 +630,11 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         return true
     }
 
-    public func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction) {
+    public func groupRecordPendingStorageServiceRestore(masterKeyData: Data, transaction: SDSAnyReadTransaction) -> StorageServiceProtoGroupV2Record? {
+        return nil
+    }
+
+    public func restoreGroupFromStorageServiceIfNecessary(groupRecord: StorageServiceProtoGroupV2Record, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 

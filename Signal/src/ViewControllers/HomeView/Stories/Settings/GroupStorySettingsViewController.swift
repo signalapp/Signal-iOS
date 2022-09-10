@@ -172,7 +172,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         ) { [weak self] _ in
             guard let self = self else { return }
             self.databaseStorage.write { transaction in
-                self.thread.updateWithStoryViewMode(.none, transaction: transaction)
+                self.thread.updateWithStorySendEnabled(false, transaction: transaction)
             }
             self.navigationController?.popViewController(animated: true)
         }

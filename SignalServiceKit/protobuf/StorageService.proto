@@ -114,6 +114,7 @@ message GroupV2Record {
   uint64 mutedUntilTimestamp        = 6;
 //bool dontNotifyForMentionsIfMuted = 7;
   bool   hideStory                  = 8;
+  bool   storySendEnabled           = 9;
 }
 
 message AccountRecord {

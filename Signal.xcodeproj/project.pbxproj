@@ -836,6 +836,7 @@
 		880FB3F328CC161800FA1C10 /* NewStoryHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */; };
 		880FB40428CC251A00FA1C10 /* GroupStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40328CC251A00FA1C10 /* GroupStorySettingsViewController.swift */; };
 		880FB40828CD437600FA1C10 /* StoryInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */; };
+		880FB40628CD205F00FA1C10 /* TSGroupThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40528CD205F00FA1C10 /* TSGroupThread.swift */; };
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881218EF238CA51600E6F271 /* MessageReactionPicker.swift */; };
 		8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */; };
@@ -3109,6 +3110,7 @@
 		880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStoryHeaderView.swift; sourceTree = "<group>"; };
 		880FB40328CC251A00FA1C10 /* GroupStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupStorySettingsViewController.swift; sourceTree = "<group>"; };
 		880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryInfoSheet.swift; sourceTree = "<group>"; };
+		880FB40528CD205F00FA1C10 /* TSGroupThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupThread.swift; sourceTree = "<group>"; };
 		880FC0A023BFDADC00A2A900 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = translations/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		881218EF238CA51600E6F271 /* MessageReactionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionPicker.swift; sourceTree = "<group>"; };
@@ -7595,6 +7597,7 @@
 				F9C5C9E8289453B100548EEE /* TSGroupThread+SDS.swift */,
 				F9C5C9EC289453B100548EEE /* TSGroupThread.h */,
 				F9C5C9E7289453B100548EEE /* TSGroupThread.m */,
+				880FB40528CD205F00FA1C10 /* TSGroupThread.swift */,
 				F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */,
 				F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */,
 				F9C5C9ED289453B100548EEE /* TSPrivateStoryThread.m */,
@@ -10999,6 +11002,7 @@
 				F9C5CCD5289453B300548EEE /* TSGroupThread+OWS.swift in Sources */,
 				F9C5CCCE289453B300548EEE /* TSGroupThread+SDS.swift in Sources */,
 				F9C5CCCD289453B300548EEE /* TSGroupThread.m in Sources */,
+				880FB40628CD205F00FA1C10 /* TSGroupThread.swift in Sources */,
 				F9C5CBDB289453B300548EEE /* TSIncomingMessage+Builder.swift in Sources */,
 				F9C5CBD5289453B300548EEE /* TSIncomingMessage+SDS.swift in Sources */,
 				F9C5CBF0289453B300548EEE /* TSIncomingMessage.m in Sources */,

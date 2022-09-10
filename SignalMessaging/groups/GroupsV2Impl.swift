@@ -1476,13 +1476,25 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
 
     // MARK: - Restore Groups
 
-    public func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
-                                             transaction: SDSAnyReadTransaction) -> Bool {
+    public func isGroupKnownToStorageService(
+        groupModel: TSGroupModelV2,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         GroupsV2Impl.isGroupKnownToStorageService(groupModel: groupModel, transaction: transaction)
     }
 
-    public func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction) {
-        GroupsV2Impl.enqueueGroupRestore(masterKeyData: masterKeyData, transaction: transaction)
+    public func groupRecordPendingStorageServiceRestore(
+        masterKeyData: Data,
+        transaction: SDSAnyReadTransaction
+    ) -> StorageServiceProtoGroupV2Record? {
+        GroupsV2Impl.enqueuedGroupRecordForRestore(masterKeyData: masterKeyData, transaction: transaction)
+    }
+
+    public func restoreGroupFromStorageServiceIfNecessary(
+        groupRecord: StorageServiceProtoGroupV2Record,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        GroupsV2Impl.enqueueGroupRestore(groupRecord: groupRecord, transaction: transaction)
     }
 
     // MARK: - Groups Secrets
