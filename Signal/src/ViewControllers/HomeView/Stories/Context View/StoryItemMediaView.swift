@@ -17,6 +17,7 @@ protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
     func storyItemMediaViewShouldBeMuted(_ storyItemMediaView: StoryItemMediaView) -> Bool
 
     var contextMenuGenerator: StoryContextMenuGenerator { get }
+    var context: StoryContext { get }
 }
 
 class StoryItemMediaView: UIView {
@@ -250,12 +251,55 @@ class StoryItemMediaView: UIView {
             nameTrailingSpacing = 8
         }
 
+        let metadataStackView: UIStackView
+
+        let nameHStack = UIStackView(arrangedSubviews: [
+            nameLabel,
+            nameTrailingView
+        ])
+        nameHStack.spacing = nameTrailingSpacing
+        nameHStack.axis = .horizontal
+        nameHStack.alignment = .center
+
+        if
+            case .privateStory(let uniqueId) = delegate?.context,
+            let privateStoryThread = databaseStorage.read(
+                block: { TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: $0) }
+            ),
+            !privateStoryThread.isMyStory
+        {
+            // For private stories, other than "My Story", render the name of the story
+
+            let contextIcon = UIImageView()
+            contextIcon.setTemplateImageName("lock-16", tintColor: Theme.darkThemePrimaryColor)
+            contextIcon.autoSetDimensions(to: .square(16))
+
+            let contextNameLabel = UILabel()
+            contextNameLabel.textColor = Theme.darkThemePrimaryColor
+            contextNameLabel.font = .ows_dynamicTypeFootnote
+            contextNameLabel.text = privateStoryThread.name
+
+            let contextHStack = UIStackView(arrangedSubviews: [
+                contextIcon,
+                contextNameLabel
+            ])
+            contextHStack.spacing = 4
+            contextHStack.axis = .horizontal
+            contextHStack.alignment = .center
+            contextHStack.alpha = 0.8
+
+            metadataStackView = UIStackView(arrangedSubviews: [nameHStack, contextHStack])
+            metadataStackView.axis = .vertical
+            metadataStackView.alignment = .leading
+            metadataStackView.spacing = 1
+        } else {
+            metadataStackView = nameHStack
+        }
+
         authorRow.addArrangedSubviews([
             avatarView,
             .spacer(withWidth: 12),
-            nameLabel,
-            .spacer(withWidth: nameTrailingSpacing),
-            nameTrailingView,
+            metadataStackView,
             .hStretchingSpacer(),
             .spacer(withWidth: Self.contextButtonSize)
         ])
@@ -271,7 +315,8 @@ class StoryItemMediaView: UIView {
         timestampLabel.setCompressionResistanceHorizontalHigh()
         timestampLabel.setContentHuggingHorizontalHigh()
         timestampLabel.font = .ows_dynamicTypeFootnote
-        timestampLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        timestampLabel.textColor = Theme.darkThemePrimaryColor
+        timestampLabel.alpha = 0.8
         updateTimestampText()
 
         bottomContentVStack.addArrangedSubview(authorRow)
