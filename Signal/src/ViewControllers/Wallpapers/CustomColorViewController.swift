@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 class CustomColorViewController: OWSTableViewController2 {
 
@@ -228,34 +229,53 @@ class CustomColorViewController: OWSTableViewController2 {
         hueSlider.delegate = self
         let hueSection = OWSTableSection()
         hueSection.hasBackground = false
-        hueSection.headerTitle = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_HUE",
-                                                   comment: "Title for the 'hue' section in the chat color settings view.")
-        hueSection.customHeaderHeight = 14
-        hueSection.add(OWSTableItem {
-            let cell = OWSTableItem.newCell()
-            cell.selectionStyle = .none
-            cell.contentView.addSubview(hueSlider)
-            hueSlider.autoPinEdgesToSuperviewMargins()
-            return cell
-        } actionBlock: {})
+        hueSection.customHeaderHeight = 1
+        hueSection.add(self.sliderItem(
+            sliderView: hueSlider,
+            headerText: NSLocalizedString(
+                "CUSTOM_CHAT_COLOR_SETTINGS_HUE",
+                comment: "Title for the 'hue' section in the chat color settings view."
+            )
+        ))
         contents.addSection(hueSection)
 
         saturationSlider.delegate = self
         let saturationSection = OWSTableSection()
         saturationSection.hasBackground = false
-        saturationSection.headerTitle = NSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_SATURATION",
-                                                          comment: "Title for the 'Saturation' section in the chat color settings view.")
-        saturationSection.customHeaderHeight = 14
-        saturationSection.add(OWSTableItem {
-            let cell = OWSTableItem.newCell()
-            cell.selectionStyle = .none
-            cell.contentView.addSubview(saturationSlider)
-            saturationSlider.autoPinEdgesToSuperviewMargins()
-            return cell
-        } actionBlock: {})
+        saturationSection.customHeaderHeight = 1
+        saturationSection.add(self.sliderItem(
+            sliderView: saturationSlider,
+            headerText: NSLocalizedString(
+                "CUSTOM_CHAT_COLOR_SETTINGS_SATURATION",
+                comment: "Title for the 'Saturation' section in the chat color settings view."
+            )
+        ))
         contents.addSection(saturationSection)
 
         self.contents = contents
+    }
+
+    private func sliderItem(sliderView: UIView, headerText: String) -> OWSTableItem {
+        return .init {
+            let cell = OWSTableItem.newCell()
+            cell.selectionStyle = .none
+
+            let headerLabel = UILabel()
+            headerLabel.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
+            headerLabel.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray15 : UIColor.ows_gray60
+            headerLabel.text = headerText
+            cell.contentView.addSubview(headerLabel)
+            headerLabel.autoPinEdge(toSuperviewMargin: .leading, withInset: 6)
+            headerLabel.autoPinEdge(toSuperviewMargin: .trailing, withInset: 6)
+            headerLabel.autoPinEdge(toSuperviewMargin: .top)
+
+            cell.contentView.addSubview(sliderView)
+            sliderView.autoPinWidthToSuperviewMargins()
+            sliderView.autoPinEdge(toSuperviewMargin: .bottom)
+            sliderView.autoPinEdge(.top, to: .bottom, of: headerLabel, withOffset: 6)
+
+            return cell
+        }
     }
 
     // A custom spectrum that can ensures accessible contrast.
