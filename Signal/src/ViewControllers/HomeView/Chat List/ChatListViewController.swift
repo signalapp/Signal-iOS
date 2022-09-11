@@ -510,7 +510,7 @@ public extension ChatListViewController {
         }
 
         let currentlySelectedThread = currentSelection.first.flatMap {
-            self.tableDataSource.thread(forIndexPath: $0)
+            self.tableDataSource.thread(forIndexPath: $0, expectsSuccess: false)
         }
 
         if currentlySelectedThread?.uniqueId != targetThread.uniqueId {
