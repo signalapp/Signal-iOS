@@ -415,52 +415,103 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 + (UIColor *)tableCell2BackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : UIColor.ows_whiteColor;
+    return Theme.isDarkThemeEnabled ? Theme.darkThemeTableCell2BackgroundColor : UIColor.ows_whiteColor;
 }
 
 + (UIColor *)tableCell2PresentedBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_whiteColor;
+    return Theme.isDarkThemeEnabled ? Theme.darkThemeTableCell2PresentedBackgroundColor : UIColor.ows_whiteColor;
 }
 
 + (UIColor *)tableCell2SelectedBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_gray80Color : UIColor.ows_gray15Color;
+    return Theme.isDarkThemeEnabled ? Theme.darkThemeTableCell2SelectedBackgroundColor : UIColor.ows_gray15Color;
 }
 
 + (UIColor *)tableCell2SelectedBackgroundColor2
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray15Color;
+    return Theme.isDarkThemeEnabled ? Theme.darkThemeTableCell2SelectedBackgroundColor2 : UIColor.ows_gray15Color;
 }
 
 + (UIColor *)tableCell2MultiSelectedBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray05Color;
+    return Theme.isDarkThemeEnabled ? Theme.darkThemeTableCell2MultiSelectedBackgroundColor : UIColor.ows_gray05Color;
 }
 
 + (UIColor *)tableCell2PresentedSelectedBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray15Color;
+    return Theme.isDarkThemeEnabled ? Theme.darkThemeTableCell2PresentedSelectedBackgroundColor
+                                    : UIColor.ows_gray15Color;
 }
 
 + (UIColor *)tableView2BackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_blackColor : UIColor.ows_gray10Color);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeTableView2BackgroundColor : UIColor.ows_gray10Color);
 }
 
 + (UIColor *)tableView2PresentedBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : UIColor.ows_gray10Color);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeTableView2PresentedBackgroundColor : UIColor.ows_gray10Color);
 }
 
 + (UIColor *)tableView2SeparatorColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray20Color);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeTableView2SeparatorColor : UIColor.ows_gray20Color);
 }
 
 + (UIColor *)tableView2PresentedSeparatorColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray65Color : UIColor.ows_gray20Color);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeTableView2PresentedSeparatorColor : UIColor.ows_gray20Color);
+}
+
++ (UIColor *)darkThemeTableCell2BackgroundColor
+{
+    return UIColor.ows_gray90Color;
+}
+
++ (UIColor *)darkThemeTableCell2PresentedBackgroundColor
+{
+    return UIColor.ows_gray80Color;
+}
+
++ (UIColor *)darkThemeTableCell2SelectedBackgroundColor
+{
+    return UIColor.ows_gray80Color;
+}
+
++ (UIColor *)darkThemeTableCell2SelectedBackgroundColor2
+{
+    return UIColor.ows_gray65Color;
+}
+
++ (UIColor *)darkThemeTableCell2MultiSelectedBackgroundColor
+{
+    return UIColor.ows_gray75Color;
+}
+
++ (UIColor *)darkThemeTableCell2PresentedSelectedBackgroundColor
+{
+    return UIColor.ows_gray75Color;
+}
+
++ (UIColor *)darkThemeTableView2BackgroundColor
+{
+    return UIColor.ows_blackColor;
+}
+
++ (UIColor *)darkThemeTableView2PresentedBackgroundColor
+{
+    return UIColor.ows_gray90Color;
+}
+
++ (UIColor *)darkThemeTableView2SeparatorColor
+{
+    return UIColor.ows_gray75Color;
+}
+
++ (UIColor *)darkThemeTableView2PresentedSeparatorColor
+{
+    return UIColor.ows_gray65Color;
 }
 
 + (UIColor *)darkThemeBackgroundColor

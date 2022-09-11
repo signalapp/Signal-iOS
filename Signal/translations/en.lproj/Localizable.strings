@@ -6169,6 +6169,9 @@
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
 
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "Info";
+
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
 

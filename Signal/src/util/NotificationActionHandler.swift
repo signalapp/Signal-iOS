@@ -144,8 +144,7 @@ public class NotificationActionHandler: NSObject {
                     // If we're replying to a group story reply, keep the reply within that context.
                     if notificationMessage.isGroupStoryReply,
                        let storyTimestamp = incomingMessage.storyTimestamp,
-                       let storyAuthorAddress = incomingMessage.storyAuthorAddress
-                    {
+                       let storyAuthorAddress = incomingMessage.storyAuthorAddress {
                         builder.storyTimestamp = storyTimestamp
                         builder.storyAuthorAddress = storyAuthorAddress
                     }
@@ -218,7 +217,7 @@ public class NotificationActionHandler: NSObject {
             }
         }
 
-        let vc = StoryPageViewController(context: storyMessage.context, loadMessage: storyMessage, presentReplies: true)
+        let vc = StoryPageViewController(context: storyMessage.context, loadMessage: storyMessage, action: .presentReplies)
         frontmostViewController.present(vc, animated: true)
     }
 

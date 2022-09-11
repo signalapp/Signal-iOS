@@ -48,7 +48,13 @@ class StoryContextViewController: OWSViewController {
     }
 
     var loadMessage: StoryMessage?
-    var presentReplies = false
+
+    enum Action {
+        case none
+        case presentReplies
+        case presentInfo
+    }
+    var action: Action = .none
 
     enum LoadPosition {
         case `default`
@@ -103,9 +109,15 @@ class StoryContextViewController: OWSViewController {
             loadPositionIfRead = .default
             loadMessage = nil
 
-            if presentReplies {
+            switch action {
+            case .none:
+                break
+            case .presentReplies:
                 presentRepliesAndViewsSheet()
-                presentReplies = false
+                action = .none
+            case .presentInfo:
+                presentInfoSheet()
+                action = .none
             }
         }
 
@@ -705,6 +717,15 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
         }
     }
 
+    func presentInfoSheet() {
+        guard let currentItem = currentItem else { return }
+
+        let vc = StoryInfoSheet(storyMessage: currentItem.message)
+        vc.dismissHandler = { [weak self] in self?.play() }
+        pause()
+        present(vc, animated: true)
+    }
+
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         let isMultiTouchGesture = gestureRecognizer == zoomPinchGestureRecognizer || gestureRecognizer == zoomPanGestureRecognizer
 
@@ -820,7 +841,7 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
             return Self.databaseStorage.read {
                 return ContextMenu(self.contextMenuGenerator.contextMenuActions(
                     for: item.message,
-                    in: item.message.context.thread(transaction: $0),
+                    in: self.context.thread(transaction: $0),
                     attachment: attachment,
                     sourceView: contextMenuButton,
                     transaction: $0

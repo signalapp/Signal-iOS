@@ -58,6 +58,7 @@ public class StoryManager: NSObject {
         guard let message = try StoryMessage.create(
             withIncomingStoryMessage: storyMessage,
             timestamp: timestamp,
+            receivedTimestamp: Date().ows_millisecondsSince1970,
             author: author,
             transaction: transaction
         ) else { return }

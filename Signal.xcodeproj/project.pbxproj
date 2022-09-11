@@ -834,6 +834,7 @@
 		880FB3F128CA53D400FA1C10 /* indeterminate_spinner_44.json in Resources */ = {isa = PBXBuildFile; fileRef = 880FB3ED28CA53D300FA1C10 /* indeterminate_spinner_44.json */; };
 		880FB3F328CC161800FA1C10 /* NewStoryHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */; };
 		880FB40428CC251A00FA1C10 /* GroupStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40328CC251A00FA1C10 /* GroupStorySettingsViewController.swift */; };
+		880FB40828CD437600FA1C10 /* StoryInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */; };
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881218EF238CA51600E6F271 /* MessageReactionPicker.swift */; };
 		8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */; };
@@ -3105,6 +3106,7 @@
 		880FB3ED28CA53D300FA1C10 /* indeterminate_spinner_44.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_44.json; sourceTree = "<group>"; };
 		880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStoryHeaderView.swift; sourceTree = "<group>"; };
 		880FB40328CC251A00FA1C10 /* GroupStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupStorySettingsViewController.swift; sourceTree = "<group>"; };
+		880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryInfoSheet.swift; sourceTree = "<group>"; };
 		880FC0A023BFDADC00A2A900 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = translations/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		881218EF238CA51600E6F271 /* MessageReactionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionPicker.swift; sourceTree = "<group>"; };
@@ -6115,6 +6117,7 @@
 				8862920F28355B8000AA0C3B /* MyStoryViewModel.swift */,
 				8852572827DD366D0032073C /* StoriesViewController.swift */,
 				884DB94627DD754700C6A309 /* StoryCell.swift */,
+				880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */,
 				661602A328BEB94400C1932D /* StoryListDataSource.swift */,
 				88B2234B284FABE600A25048 /* StoryThumbnailView.swift */,
 				668AB0CB28AD610600B31984 /* StoryUtil.swift */,
@@ -10400,6 +10403,7 @@
 				8864072827EEA658009916B6 /* StoryGroupReplySheet.swift in Sources */,
 				88B00D4B28A32DB600BC9CA0 /* StoryGroupReplyViewController.swift in Sources */,
 				8864072C27F0DA38009916B6 /* StoryGroupReplyViewItem.swift in Sources */,
+				880FB40828CD437600FA1C10 /* StoryInfoSheet.swift in Sources */,
 				88863A52280CAE6A00977F69 /* StoryInteractiveTransitionCoordinator.swift in Sources */,
 				884DB95227DE67D900C6A309 /* StoryItemMediaView.swift in Sources */,
 				661602A428BEB94400C1932D /* StoryListDataSource.swift in Sources */,

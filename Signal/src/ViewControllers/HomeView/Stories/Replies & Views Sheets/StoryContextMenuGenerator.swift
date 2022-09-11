@@ -64,6 +64,7 @@ class StoryContextMenuGenerator: Dependencies {
         return [
             deleteAction(for: message, in: thread),
             hideAction(for: message, in: thread, transaction: transaction),
+            infoAction(for: message, in: thread),
             saveAction(message: message, attachment: attachment),
             forwardAction(message: message, attachment: attachment),
             shareAction(message: message, attachment: attachment, sourceView: sourceView),
@@ -248,6 +249,46 @@ extension StoryContextMenuGenerator {
             )
         }
         presentingController?.presentToast(text: toastText)
+    }
+}
+
+// MARK: - Info Action
+
+extension StoryContextMenuGenerator {
+
+    private func infoAction(
+        for message: StoryMessage,
+        in thread: TSThread?
+    ) -> ContextMenuAction? {
+        guard let thread = thread else { return nil }
+
+        return .init(
+            title: NSLocalizedString(
+                "STORIES_INFO_ACTION",
+                comment: "Context menu action to view metadata about the story"
+            ),
+            image: Theme.iconImage(.contextMenuInfo),
+            handler: { [weak self] _ in
+                self?.presentInfoSheet(message, in: thread)
+            }
+        )
+    }
+
+    private func presentInfoSheet(
+        _ message: StoryMessage,
+        in thread: TSThread
+    ) {
+        if presentingController is StoryContextViewController {
+            isDisplayingFollowup = true
+            let vc = StoryInfoSheet(storyMessage: message)
+            vc.dismissHandler = { [weak self] in
+                self?.isDisplayingFollowup = false
+            }
+            presentingController?.present(vc, animated: true)
+        } else {
+            let vc = StoryPageViewController(context: thread.storyContext, loadMessage: message, action: .presentInfo)
+            presentingController?.present(vc, animated: true)
+        }
     }
 }
 

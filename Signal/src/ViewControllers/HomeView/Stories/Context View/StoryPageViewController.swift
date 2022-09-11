@@ -42,13 +42,19 @@ class StoryPageViewController: UIPageViewController {
 
     // MARK: - Init
 
-    required init(context: StoryContext, viewableContexts: [StoryContext]? = nil, loadMessage: StoryMessage? = nil, presentReplies: Bool = false, onlyRenderMyStories: Bool = false) {
+    required init(
+        context: StoryContext,
+        viewableContexts: [StoryContext]? = nil,
+        loadMessage: StoryMessage? = nil,
+        action: StoryContextViewController.Action = .none,
+        onlyRenderMyStories: Bool = false
+    ) {
         self.onlyRenderMyStories = onlyRenderMyStories
         self.viewableContexts = viewableContexts ?? [context]
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
         self.currentContext = context
         currentContextViewController.loadMessage = loadMessage
-        currentContextViewController.presentReplies = presentReplies
+        currentContextViewController.action = action
         modalPresentationStyle = .fullScreen
         transitioningDelegate = self
     }

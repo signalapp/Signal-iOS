@@ -126,6 +126,7 @@ public final class StoryMessage: NSObject, SDSCodableModel {
     public static func create(
         withIncomingStoryMessage storyMessage: SSKProtoStoryMessage,
         timestamp: UInt64,
+        receivedTimestamp: UInt64,
         author: SignalServiceAddress,
         transaction: SDSAnyWriteTransaction
     ) throws -> StoryMessage? {
@@ -151,7 +152,10 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             return nil
         }
 
-        let manifest = StoryManifest.incoming(receivedState: .init(allowsReplies: storyMessage.allowsReplies))
+        let manifest = StoryManifest.incoming(receivedState: .init(
+            allowsReplies: storyMessage.allowsReplies,
+            receivedTimestamp: receivedTimestamp
+        ))
 
         let attachment: StoryMessageAttachment
         if let fileAttachment = storyMessage.fileAttachment {
@@ -251,7 +255,11 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         Logger.info("Processing StoryMessage for system author")
 
         let manifest = StoryManifest.incoming(
-            receivedState: StoryReceivedState(allowsReplies: false, viewedTimestamp: nil)
+            receivedState: StoryReceivedState(
+                allowsReplies: false,
+                receivedTimestamp: timestamp,
+                viewedTimestamp: nil
+            )
         )
 
         attachment.anyInsert(transaction: transaction)
@@ -281,7 +289,11 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             guard case .incoming(let receivedState) = record.manifest else {
                 return owsFailDebug("Unexpectedly tried to mark outgoing message as viewed with wrong method.")
             }
-            record.manifest = .incoming(receivedState: .init(allowsReplies: receivedState.allowsReplies, viewedTimestamp: timestamp))
+            record.manifest = .incoming(receivedState: .init(
+                allowsReplies: receivedState.allowsReplies,
+                receivedTimestamp: receivedState.receivedTimestamp,
+                viewedTimestamp: timestamp
+            ))
         }
 
         // Don't perform thread operations, make downloads, or send receipts for system stories.
@@ -603,9 +615,11 @@ public enum StoryManifest: Codable {
 public struct StoryReceivedState: Codable {
     public let allowsReplies: Bool
     public var viewedTimestamp: UInt64?
+    public var receivedTimestamp: UInt64?
 
-    init(allowsReplies: Bool, viewedTimestamp: UInt64? = nil) {
+    init(allowsReplies: Bool, receivedTimestamp: UInt64?, viewedTimestamp: UInt64? = nil) {
         self.allowsReplies = allowsReplies
+        self.receivedTimestamp = receivedTimestamp
         self.viewedTimestamp = viewedTimestamp
     }
 }

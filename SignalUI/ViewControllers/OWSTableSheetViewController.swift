@@ -9,7 +9,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
     public let tableViewController = OWSTableViewController2()
     public override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
 
-    public override var sheetBackgroundColor: UIColor {
+    open override var sheetBackgroundColor: UIColor {
         OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
     }
 
