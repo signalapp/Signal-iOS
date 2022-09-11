@@ -12,9 +12,18 @@ class NSDataImageTests: XCTestCase {
     func testIsAnimatedPngData_png() {
         let image = UIImage(color: .red, size: CGSize(width: 1, height: 1))
         let data = image.pngData()!
-        let isApng: NSNumber? = (data as NSData).isAnimatedPngData()
-        XCTAssertNotNil(isApng)
-        XCTAssertFalse(isApng!.boolValue)
+        let isApng = (data as NSData).isAnimatedPngData()
+        XCTAssertEqual(isApng?.boolValue, false)
+    }
+
+    func testIsAnimatedPngData_apng() {
+        let data: Data = {
+            let testBundle = Bundle(for: Self.self)
+            let url = testBundle.url(forResource: "test-apng", withExtension: "png")!
+            return try! Data(contentsOf: url)
+        }()
+        let isApng = (data as NSData).isAnimatedPngData()
+        XCTAssertEqual(isApng?.boolValue, true)
     }
 
     func testIsAnimatedPngData_invalid() {

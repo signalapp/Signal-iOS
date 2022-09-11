@@ -1115,6 +1115,7 @@
 		F0FB6B20269E625A00AC2A41 /* ContextMenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0FB6B1F269E625A00AC2A41 /* ContextMenuController.swift */; };
 		F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */; };
 		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
+		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
 		F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */; };
 		F93999EC28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999EB28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift */; };
@@ -3506,6 +3507,7 @@
 		F27BDDCCAEDF770CCFFF1C14 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
+		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
 		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F93999EB28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioningURLParserTest.swift; sourceTree = "<group>"; };
 		F941B16F28412D5F00498CCD /* ApplePayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayButton.swift; sourceTree = "<group>"; };
@@ -6847,6 +6849,14 @@
 			path = "Context Menus";
 			sourceTree = "<group>";
 		};
+		F908AA7B28CE628700472E68 /* Fixtures */ = {
+			isa = PBXGroup;
+			children = (
+				F908AA7C28CE629700472E68 /* test-apng.png */,
+			);
+			path = Fixtures;
+			sourceTree = "<group>";
+		};
 		F94261C7289B1B5300460798 /* Devices */ = {
 			isa = PBXGroup;
 			children = (
@@ -7137,6 +7147,7 @@
 				F94261FF289B1B5400460798 /* Account */,
 				F9426205289B1B5500460798 /* Contacts */,
 				F94261C7289B1B5300460798 /* Devices */,
+				F908AA7B28CE628700472E68 /* Fixtures */,
 				F94261E2289B1B5400460798 /* Groups */,
 				F942621C289B1B5500460798 /* Messages */,
 				F94261CF289B1B5400460798 /* Network */,
@@ -9138,6 +9149,7 @@
 				F9426252289B1B5500460798 /* kbs_vectors.json in Resources */,
 				F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */,
 				F942628C289B1B5600460798 /* sample-sticker.webp in Resources */,
+				F908AA7D28CE629700472E68 /* test-apng.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
