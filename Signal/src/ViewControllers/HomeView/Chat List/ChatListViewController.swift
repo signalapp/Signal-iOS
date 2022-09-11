@@ -496,6 +496,21 @@ public extension ChatListViewController {
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true, completion: completion)
     }
+
+    /// Verifies that the currently selected cell matches the provided thread's uniqueId.
+    /// If it does: Do nothing.
+    /// If it doesn't: Select the first cell matching the provided thread, if one exists.
+    func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
+        let currentSelection = tableView.indexPathsForSelectedRows ?? []
+        let isThreadCurrentlySelected = currentSelection.lazy
+            .map { self.tableDataSource.thread(forIndexPath: $0) }
+            .contains { $0?.uniqueId == targetThread.uniqueId }
+
+        if !isThreadCurrentlySelected,
+           let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
+            tableView.selectRow(at: targetPath, animated: animated, scrollPosition: .none)
+        }
+    }
 }
 
 extension ChatListViewController: BadgeExpirationSheetDelegate {

@@ -21,7 +21,6 @@ extension ChatListViewController {
         if let previousIndexPath = renderState.indexPath(beforeThread: currentThread),
            let thread = self.thread(forIndexPath: previousIndexPath) {
             self.present(thread, action: .compose, animated: true)
-            tableView.selectRow(at: previousIndexPath, animated: true, scrollPosition: .none)
         }
     }
 
@@ -40,7 +39,6 @@ extension ChatListViewController {
         if let nextIndexPath = renderState.indexPath(afterThread: currentThread),
            let thread = self.thread(forIndexPath: nextIndexPath) {
             self.present(thread, action: .compose, animated: true)
-            tableView.selectRow(at: nextIndexPath, animated: true, scrollPosition: .none)
         }
     }
 }

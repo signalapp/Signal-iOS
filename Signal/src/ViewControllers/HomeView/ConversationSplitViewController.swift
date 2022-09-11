@@ -175,6 +175,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
         // Update the last viewed thread on the conversation list so it
         // can maintain its scroll position when navigating back.
         homeVC.chatListViewController.lastViewedThread = thread
+        homeVC.chatListViewController.ensureSelectedThread(thread, animated: animated)
 
         let threadViewModel = databaseStorage.read {
             return ThreadViewModel(thread: thread,
