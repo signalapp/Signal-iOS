@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,7 +7,7 @@ import XCTest
 
 @testable import SignalServiceKit
 
-class NSDataImageTests: SSKBaseTestSwift {
+class NSDataImageTests: XCTestCase {
 
     func testIsAnimatedPngData_png() {
         let image = UIImage(color: .red, size: CGSize(width: 1, height: 1))
