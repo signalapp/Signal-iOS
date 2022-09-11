@@ -18,6 +18,9 @@ extension NSData {
     ///   `nil` if the contents are invalid.
     @objc
     func isAnimatedPngData() -> NSNumber? {
+        let actl = "acTL".data(using: .ascii)
+        let idat = "IDAT".data(using: .ascii)
+
         do {
             let parser = OWSDataParser(data: self as Data)
 
@@ -42,9 +45,9 @@ extension NSData {
                 // See also the PNG specification:
                 //
                 // https://www.w3.org/TR/PNG
-                if chunkType == "acTL".data(using: .utf8) {
+                if chunkType == actl {
                     return NSNumber(value: true)
-                } else if chunkType == "IDAT".data(using: .utf8) {
+                } else if chunkType == idat {
                     return NSNumber(value: false)
                 }
 
