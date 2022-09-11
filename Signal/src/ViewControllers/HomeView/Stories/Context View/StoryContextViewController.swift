@@ -147,6 +147,8 @@ class StoryContextViewController: OWSViewController {
     private lazy var leftTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapLeft))
     private lazy var rightTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapRight))
     private lazy var pauseGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+    private lazy var zoomPinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchZoom))
+    private lazy var zoomPanGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePinchZoom))
 
     private lazy var closeButton = OWSButton(imageName: "x-24", tintColor: .ows_white)
 
@@ -161,10 +163,14 @@ class StoryContextViewController: OWSViewController {
         view.addGestureRecognizer(leftTapGestureRecognizer)
         view.addGestureRecognizer(rightTapGestureRecognizer)
         view.addGestureRecognizer(pauseGestureRecognizer)
+        view.addGestureRecognizer(zoomPinchGestureRecognizer)
+        view.addGestureRecognizer(zoomPanGestureRecognizer)
 
         leftTapGestureRecognizer.delegate = self
         rightTapGestureRecognizer.delegate = self
         pauseGestureRecognizer.delegate = self
+        zoomPinchGestureRecognizer.delegate = self
+        zoomPanGestureRecognizer.delegate = self
         pauseGestureRecognizer.minimumPressDuration = 0.2
 
         leftTapGestureRecognizer.require(toFail: pauseGestureRecognizer)
@@ -537,6 +543,66 @@ class StoryContextViewController: OWSViewController {
             self.applyConstraints()
         }
     }
+
+    private var isPinchZooming = false
+
+    @objc
+    private func handlePinchZoom() {
+        func beginIfNecessary(with sender: UIGestureRecognizer) {
+            guard !isPinchZooming else { return }
+            isPinchZooming = true
+            pause(hideChrome: true)
+
+            let touchPoint = sender.location(in: mediaViewContainer)
+            mediaViewContainer.setAnchorPointAndMaintainPosition(CGPoint(
+                x: touchPoint.x / mediaViewContainer.width,
+                y: touchPoint.y / mediaViewContainer.height
+            ))
+        }
+
+        func endIfNecessary() {
+            guard isPinchZooming else { return }
+
+            let endableStates: [UIGestureRecognizer.State] = [
+                .possible,
+                .ended,
+                .cancelled,
+                .failed
+            ]
+
+            guard endableStates.contains(zoomPanGestureRecognizer.state)
+                    && endableStates.contains(zoomPinchGestureRecognizer.state) else { return }
+
+            isPinchZooming = false
+
+            UIView.animate(withDuration: 0.35) {
+                self.mediaViewContainer.transform = .identity
+                self.mediaViewContainer.setAnchorPointAndMaintainPosition(CGPoint(x: 0.5, y: 0.5))
+            } completion: { _ in
+                self.play()
+            }
+        }
+
+        func update() {
+            mediaViewContainer.transform = .scale(zoomPinchGestureRecognizer.scale)
+                .translate(zoomPanGestureRecognizer.translation(in: mediaViewContainer))
+        }
+
+        for gesture in [zoomPanGestureRecognizer, zoomPinchGestureRecognizer] {
+            switch gesture.state {
+            case .possible:
+                break
+            case .began:
+                beginIfNecessary(with: gesture)
+            case .changed:
+                update()
+            case .ended, .cancelled, .failed:
+                endIfNecessary()
+            @unknown default:
+                break
+            }
+        }
+    }
 }
 
 extension StoryContextViewController: UIGestureRecognizerDelegate {
@@ -640,6 +706,17 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        let isMultiTouchGesture = gestureRecognizer == zoomPinchGestureRecognizer || gestureRecognizer == zoomPanGestureRecognizer
+
+        if gestureRecognizer.numberOfTouches > 1 {
+            // Only allow pinch-zoom on downloaded image attachments
+            guard case .stream = currentItem?.attachment else { return false }
+
+            return isMultiTouchGesture
+        } else if isMultiTouchGesture {
+            return false
+        }
+
         let nextFrameWidth = mediaViewContainer.width * 0.8
         let previousFrameWidth = mediaViewContainer.width * 0.2
 
@@ -669,7 +746,8 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
     }
 
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-        return true
+        [zoomPanGestureRecognizer, zoomPinchGestureRecognizer].contains(gestureRecognizer)
+            && [zoomPanGestureRecognizer, zoomPinchGestureRecognizer].contains(otherGestureRecognizer)
     }
 }
 
@@ -800,5 +878,15 @@ extension StoryContextViewController: StoryContextOnboardingOverlayViewDelegate 
 
     func storyContextOnboardingOverlayDidDismiss(_: StoryContextOnboardingOverlayView) {
         play()
+    }
+}
+
+private extension UIView {
+    func setAnchorPointAndMaintainPosition(_ newAnchorPoint: CGPoint) {
+        layer.position = CGPoint(
+            x: layer.position.x + (newAnchorPoint.x * width) - (layer.anchorPoint.x * width),
+            y: layer.position.y + (newAnchorPoint.y * height) - (layer.anchorPoint.y * height)
+        )
+        layer.anchorPoint = newAnchorPoint
     }
 }

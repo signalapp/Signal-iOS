@@ -134,6 +134,7 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer == panGestureRecognizer else { return false }
+        guard gestureRecognizer.numberOfTouches == 1 else { return false }
         self.interactiveEdge = interactiveEdgeForCurrentGesture()
         return interactiveEdge != .none
     }
