@@ -498,17 +498,28 @@ public extension ChatListViewController {
     }
 
     /// Verifies that the currently selected cell matches the provided thread's uniqueId.
-    /// If it does: Do nothing.
-    /// If it doesn't: Select the first cell matching the provided thread, if one exists.
+    /// If it does or if the user's in multi-select: Do nothing.
+    /// If it doesn't: Select the first cell matching the provided thread, if one exists. Otherwise, deselect the current row.
+    @objc
     func ensureSelectedThread(_ targetThread: TSThread, animated: Bool) {
+        // Ignore any updates if we're in multiselect mode. I don't think this can happen,
+        // but if it does let's avoid stepping over the user's manual selection.
         let currentSelection = tableView.indexPathsForSelectedRows ?? []
-        let isThreadCurrentlySelected = currentSelection.lazy
-            .map { self.tableDataSource.thread(forIndexPath: $0) }
-            .contains { $0?.uniqueId == targetThread.uniqueId }
+        guard viewState.multiSelectState.isActive == false, currentSelection.count < 2 else {
+            return
+        }
 
-        if !isThreadCurrentlySelected,
-           let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
-            tableView.selectRow(at: targetPath, animated: animated, scrollPosition: .none)
+        let currentlySelectedThread = currentSelection.first.flatMap {
+            self.tableDataSource.thread(forIndexPath: $0)
+        }
+
+        if currentlySelectedThread?.uniqueId != targetThread.uniqueId {
+            if let targetPath = tableDataSource.renderState.indexPath(forUniqueId: targetThread.uniqueId) {
+                tableView.selectRow(at: targetPath, animated: animated, scrollPosition: .none)
+                tableView.scrollToRow(at: targetPath, at: .none, animated: animated)
+            } else if let stalePath = currentSelection.first {
+                tableView.deselectRow(at: stalePath, animated: animated)
+            }
         }
     }
 }
