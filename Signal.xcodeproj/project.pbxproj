@@ -1116,6 +1116,7 @@
 		F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */; };
 		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
 		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
+		F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
 		F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */; };
 		F927478828CFE9B10056EAFE /* test-png.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478728CFE9B10056EAFE /* test-png.png */; };
@@ -1174,7 +1175,6 @@
 		F9426273289B1B5500460798 /* BlockingManagerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426208289B1B5500460798 /* BlockingManagerStateTests.swift */; };
 		F9426274289B1B5500460798 /* PhoneNumberTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426209289B1B5500460798 /* PhoneNumberTest.swift */; };
 		F9426277289B1B5600460798 /* PhoneNumberUtilTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */; };
-		F9426278289B1B5600460798 /* TSGroupThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F942620D289B1B5500460798 /* TSGroupThreadTest.m */; };
 		F942627A289B1B5600460798 /* OWSRecipientIdentityTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */; };
 		F942627B289B1B5600460798 /* OWSDisappearingMessagesConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426210289B1B5500460798 /* OWSDisappearingMessagesConfigurationTest.m */; };
 		F942627E289B1B5600460798 /* SignalRecipientTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426213289B1B5500460798 /* SignalRecipientTest.swift */; };
@@ -3515,6 +3515,7 @@
 		F908AA7728CB894400472E68 /* PngChunkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunkerTest.swift; sourceTree = "<group>"; };
 		F908AA7928CB89CC00472E68 /* PngChunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunker.swift; sourceTree = "<group>"; };
 		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
+		F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupThreadTest.swift; sourceTree = "<group>"; };
 		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F927478728CFE9B10056EAFE /* test-png.png */ = {isa = PBXFileReference; explicitFileType = compiled; path = "test-png.png"; sourceTree = "<group>"; };
 		F927478928CFE9C60056EAFE /* test-png-with-metadata.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-png-with-metadata.png"; sourceTree = "<group>"; };
@@ -3572,7 +3573,6 @@
 		F9426208289B1B5500460798 /* BlockingManagerStateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManagerStateTests.swift; sourceTree = "<group>"; };
 		F9426209289B1B5500460798 /* PhoneNumberTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberTest.swift; sourceTree = "<group>"; };
 		F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberUtilTest.swift; sourceTree = "<group>"; };
-		F942620D289B1B5500460798 /* TSGroupThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGroupThreadTest.m; sourceTree = "<group>"; };
 		F942620F289B1B5500460798 /* OWSRecipientIdentityTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSRecipientIdentityTest.swift; sourceTree = "<group>"; };
 		F9426210289B1B5500460798 /* OWSDisappearingMessagesConfigurationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDisappearingMessagesConfigurationTest.m; sourceTree = "<group>"; };
 		F9426213289B1B5500460798 /* SignalRecipientTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipientTest.swift; sourceTree = "<group>"; };
@@ -6987,7 +6987,7 @@
 				F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */,
 				F9426213289B1B5500460798 /* SignalRecipientTest.swift */,
 				F9426216289B1B5500460798 /* TSContactThreadTest.m */,
-				F942620D289B1B5500460798 /* TSGroupThreadTest.m */,
+				F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */,
 				F9426214289B1B5500460798 /* TSThreadTest.m */,
 				F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */,
 			);
@@ -11178,7 +11178,7 @@
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
 				F9426281289B1B5600460798 /* TSContactThreadTest.m in Sources */,
-				F9426278289B1B5600460798 /* TSGroupThreadTest.m in Sources */,
+				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,
 				D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */,
 				F9426258289B1B5500460798 /* TSMessageStorageTests.m in Sources */,
 				F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */,
