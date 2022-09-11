@@ -52,6 +52,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic) BOOL hasEverPresentedExperienceUpgrade;
 
+@property (nonatomic, nullable) TSThread *lastViewedThread;
+
 @end
 
 #pragma mark -
@@ -693,6 +695,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.isViewVisible = NO;
 
     [self.searchResultsController viewWillDisappear:animated];
+}
+
+- (void)updateLastViewedThread:(TSThread *)thread animated:(BOOL)animated
+{
+    self.lastViewedThread = thread;
+    [self ensureSelectedThread:thread animated:animated];
 }
 
 #pragma mark -
