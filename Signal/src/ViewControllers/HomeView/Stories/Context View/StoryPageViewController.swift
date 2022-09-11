@@ -417,30 +417,49 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         guard let splitViewController = presentingViewController as? ConversationSplitViewController else { return nil }
         guard splitViewController.homeVC.selectedTab == .stories else { return nil }
 
-        let storiesVC = splitViewController.homeVC.storiesViewController
-
-        guard storiesVC.navigationController?.topViewController == storiesVC else { return nil }
-
-        // If the story cell isn't visible, use a default animation
-        guard let storyCell = storiesVC.cell(for: currentContext) else { return nil }
-
-        guard let storyModel = storiesVC.model(for: currentContext), !storyModel.messages.isEmpty else {
-            throw OWSAssertionError("Unexpectedly missing story model for presentation")
-        }
-
+        let thumbnailView: UIView
         let storyMessage: StoryMessage
-        if let currentMessage = currentContextViewController.currentItem?.message {
-            storyMessage = currentMessage
-        } else {
-            storyMessage = storyModel.messages.first(where: { $0.localUserViewedTimestamp == nil }) ?? storyModel.messages.first!
+        let thumbnailRepresentsStoryView: Bool
+
+        switch splitViewController.homeVC.storiesNavController.topViewController {
+        case let storiesVC as StoriesViewController:
+            // If the story cell isn't visible, use a default animation
+            guard let storyCell = storiesVC.cell(for: currentContext) else { return nil }
+
+            guard let storyModel = storiesVC.model(for: currentContext), !storyModel.messages.isEmpty else {
+                throw OWSAssertionError("Unexpectedly missing story model for presentation")
+            }
+
+            if let currentMessage = currentMessage {
+                storyMessage = currentMessage
+            } else {
+                storyMessage = storyModel.messages.first(where: { $0.localUserViewedTimestamp == nil }) ?? storyModel.messages.first!
+            }
+
+            thumbnailView = storyCell.attachmentThumbnail
+            thumbnailRepresentsStoryView = storyMessage.uniqueId == storyModel.messages.last?.uniqueId
+        case let myStoriesVC as MyStoriesViewController:
+            guard let message = currentMessage ?? currentContextViewController.loadMessage else {
+                owsFailDebug("Unexpectedly missing current message when presenting story from MyStoriesViewController")
+                return nil
+            }
+
+            // If the story cell isn't visible, use a default animation
+            guard let sentStoryCell = myStoriesVC.cell(for: message, and: currentContext) else { return nil }
+
+            storyMessage = message
+            thumbnailView = sentStoryCell.attachmentThumbnail
+            thumbnailRepresentsStoryView = true
+        default:
+            return nil
         }
 
         return .init(
             isPresenting: isPresenting,
-            thumbnailView: storyCell.attachmentThumbnail,
+            thumbnailView: thumbnailView,
             storyView: try storyView(for: storyMessage),
             storyThumbnailSize: try storyThumbnailSize(for: storyMessage),
-            thumbnailRepresentsStoryView: storyMessage.uniqueId == storyModel.messages.last?.uniqueId,
+            thumbnailRepresentsStoryView: thumbnailRepresentsStoryView,
             pageViewController: self,
             interactiveGesture: interactiveDismissCoordinator?.interactionInProgress == true
                 ? interactiveDismissCoordinator?.panGestureRecognizer : nil

@@ -122,6 +122,16 @@ class MyStoriesViewController: OWSViewController {
     private func thread(for section: Int) -> TSThread? {
         items.orderedKeys[safe: section]
     }
+
+    func cell(for message: StoryMessage, and context: StoryContext) -> SentStoryCell? {
+        guard let thread = databaseStorage.read(block: { context.thread(transaction: $0) }) else { return nil }
+        guard let section = items.orderedKeys.firstIndex(of: thread) else { return nil }
+        guard let row = items[thread]?.firstIndex(where: { $0.message.uniqueId == message.uniqueId }) else { return nil }
+
+        let indexPath = IndexPath(row: row, section: section)
+        guard tableView.indexPathsForVisibleRows?.contains(indexPath) == true else { return nil }
+        return tableView.cellForRow(at: indexPath) as? SentStoryCell
+    }
 }
 
 extension MyStoriesViewController: UITableViewDelegate {
@@ -330,18 +340,20 @@ private struct OutgoingStoryItem {
     }
 }
 
-private class SentStoryCell: UITableViewCell {
+class SentStoryCell: UITableViewCell {
     static let reuseIdentifier = "SentStoryCell"
 
-    let contentHStackView = UIStackView()
-    let titleLabel = UILabel()
-    let subtitleLabel = UILabel()
-    let thumbnailContainer = UIView()
-    let saveButton = OWSButton()
-    let contextButton = IndexPathContextMenuButton()
+    let attachmentThumbnail = UIView()
 
-    let failedIconContainer = UIView()
-    let failedIconView = UIImageView()
+    fileprivate let contentHStackView = UIStackView()
+
+    private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
+    private let saveButton = OWSButton()
+    private let contextButton = IndexPathContextMenuButton()
+
+    private let failedIconContainer = UIView()
+    private let failedIconView = UIImageView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -353,8 +365,8 @@ private class SentStoryCell: UITableViewCell {
         contentView.addSubview(contentHStackView)
         contentHStackView.autoPinEdgesToSuperviewMargins()
 
-        thumbnailContainer.autoSetDimensions(to: CGSize(width: 56, height: 84))
-        contentHStackView.addArrangedSubview(thumbnailContainer)
+        attachmentThumbnail.autoSetDimensions(to: CGSize(width: 56, height: 84))
+        contentHStackView.addArrangedSubview(attachmentThumbnail)
 
         contentHStackView.addArrangedSubview(.spacer(withWidth: 16))
 
@@ -404,14 +416,14 @@ private class SentStoryCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(
+    fileprivate func configure(
         with item: OutgoingStoryItem,
         contextMenuButtonDelegate: ContextMenuButtonDelegate,
         indexPath: IndexPath
     ) {
         let thumbnailView = StoryThumbnailView(attachment: item.attachment)
-        thumbnailContainer.removeAllSubviews()
-        thumbnailContainer.addSubview(thumbnailView)
+        attachmentThumbnail.removeAllSubviews()
+        attachmentThumbnail.addSubview(thumbnailView)
         thumbnailView.autoPinEdgesToSuperviewEdges()
 
         titleLabel.textColor = Theme.primaryTextColor
