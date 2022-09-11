@@ -113,10 +113,10 @@ const NSUInteger kMinimumSearchLength = 1;
     _searchBar = searchBar;
     searchBar.delegate = self;
     if (SSKFeatureFlags.usernames) {
-        searchBar.placeholder = NSLocalizedString(@"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+        searchBar.placeholder = OWSLocalizedString(@"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
             @"Placeholder text indicating the user can search for contacts by name, username, or phone number.");
     } else {
-        searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
+        searchBar.placeholder = OWSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
             @"Placeholder text indicating the user can search for contacts by name or phone number.");
     }
     [searchBar sizeToFit];
@@ -220,7 +220,7 @@ const NSUInteger kMinimumSearchLength = 1;
     [heroImageView autoSetDimension:ALDimensionHeight toSize:kHeroSize];
 
     UILabel *titleLabel = [UILabel new];
-    titleLabel.text = NSLocalizedString(
+    titleLabel.text = OWSLocalizedString(
         @"EMPTY_CONTACTS_LABEL_LINE1", "Full width label displayed when attempting to compose message");
     titleLabel.textColor = Theme.primaryTextColor;
     titleLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(17.f, 20.f)];
@@ -229,7 +229,7 @@ const NSUInteger kMinimumSearchLength = 1;
     titleLabel.numberOfLines = 0;
 
     UILabel *subtitleLabel = [UILabel new];
-    subtitleLabel.text = NSLocalizedString(
+    subtitleLabel.text = OWSLocalizedString(
         @"EMPTY_CONTACTS_LABEL_LINE2", "Full width label displayed when attempting to compose message");
     subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
     subtitleLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(12.f, 14.f)];
@@ -286,7 +286,7 @@ const NSUInteger kMinimumSearchLength = 1;
           };
 
     if (self.shouldShowNewGroup) {
-        addButton(NSLocalizedString(@"NEW_GROUP_BUTTON", comment
+        addButton(OWSLocalizedString(@"NEW_GROUP_BUTTON", comment
                                     : @"Label for the 'create new group' button."),
             @selector(newGroupButtonPressed),
             @"newGroupButton",
@@ -295,7 +295,7 @@ const NSUInteger kMinimumSearchLength = 1;
     }
 
     if (self.allowsAddByPhoneNumber) {
-        addButton(NSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
+        addButton(OWSLocalizedString(@"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER",
                       @"Label for a button that lets users search for contacts by phone number"),
             @selector(hideBackgroundView),
             @"searchByPhoneNumberButton",
@@ -304,7 +304,7 @@ const NSUInteger kMinimumSearchLength = 1;
     }
 
     if (self.shouldShowInvites) {
-        addButton(NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+        addButton(OWSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                       "Label for the cell that presents the 'invite contacts' workflow."),
             @selector(presentInviteFlow),
             @"inviteContactsButton",
@@ -336,7 +336,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
     [self.contactsViewHelper warmNonSignalContactsCacheAsync];
 
-    self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
+    self.title = OWSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 
     [self applyTheme];
 }
@@ -381,7 +381,7 @@ const NSUInteger kMinimumSearchLength = 1;
                 UITableViewCell *cell = [OWSTableItem newCell];
 
                 ReminderView *reminderView = [ReminderView
-                    nagWithText:NSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
+                    nagWithText:OWSLocalizedString(@"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION",
                                     @"Multi-line label explaining why compose-screen contact picker is empty.")
                       tapAction:^{
                     [CurrentAppContext() openSystemSettings];
@@ -408,7 +408,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
     if (self.shouldShowNewGroup && !isSearching) {
         [staticSection addItem:[OWSTableItem disclosureItemWithIcon:ThemeIconComposeNewGroup
-                                                               name:NSLocalizedString(
+                                                               name:OWSLocalizedString(
                                                                         @"NEW_GROUP_BUTTON", comment
                                                                         : @"Label for the 'create new group' button.")
                                                       accessoryText:nil
@@ -422,7 +422,7 @@ const NSUInteger kMinimumSearchLength = 1;
         [staticSection
             addItem:[OWSTableItem
                          disclosureItemWithIcon:ThemeIconComposeFindByPhoneNumber
-                                           name:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+                                           name:OWSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
                                                     @"A label the cell that lets you add a new member to a group.")
                                   accessoryText:nil
                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
@@ -448,7 +448,7 @@ const NSUInteger kMinimumSearchLength = 1;
         [staticSection
             addItem:[OWSTableItem
                          disclosureItemWithIcon:ThemeIconComposeInvite
-                                           name:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                                           name:OWSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                                     @"Label for the cell that presents the 'invite contacts' workflow.")
                                   accessoryText:nil
                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
@@ -479,7 +479,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
         // If we have non-contact selections, add a title to the picked section
         if (hadNonContactRecipient) {
-            pickedSection.headerTitle = NSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
+            pickedSection.headerTitle = OWSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
                 @"a title for the selected section of the 'recipient picker' view.");
             [contents addSection:pickedSection];
         }
@@ -572,7 +572,7 @@ const NSUInteger kMinimumSearchLength = 1;
 
                 [contactsSection
                     addItem:[OWSTableItem
-                                softCenterLabelItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
+                                softCenterLabelItemWithText:OWSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
                                                                 @"A label that indicates the user has no Signal "
                                                                 @"contacts that they haven't blocked.")
                                             customRowHeight:UITableViewAutomaticDimension]];
@@ -642,7 +642,7 @@ const NSUInteger kMinimumSearchLength = 1;
         }
     } else {
         OWSTableSection *contactsSection =
-            [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
+            [self buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
                                             @"Table section header for contact listing when composing a new message")];
 
         for (SignalAccount *signalAccount in signalAccountsToShow) {
@@ -687,7 +687,7 @@ const NSUInteger kMinimumSearchLength = 1;
     NSMutableSet<NSString *> *matchedAccountUsernames = [NSMutableSet new];
 
     OWSTableSection *contactsSection =
-        [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
+        [self buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
                                         @"Table section header for contact listing when composing a new message")];
 
     OWSAssertIsOnMainThread();
@@ -723,7 +723,7 @@ const NSUInteger kMinimumSearchLength = 1;
     if (self.shouldShowGroups) {
         // When searching, we include matching groups
         OWSTableSection *groupSection =
-            [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_GROUP_SECTION_TITLE",
+            [self buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_GROUP_SECTION_TITLE",
                                             @"Table section header for group listing when composing a new message")];
         NSArray<TSGroupThread *> *filteredGroupThreads = searchResults.groupThreads;
         for (TSGroupThread *thread in filteredGroupThreads) {
@@ -737,7 +737,7 @@ const NSUInteger kMinimumSearchLength = 1;
     }
 
     OWSTableSection *phoneNumbersSection =
-        [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE",
+        [self buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE",
                                         @"Table section header for phone number search when composing a new message")];
 
     NSArray<NSString *> *searchPhoneNumbers = [self parsePossibleSearchPhoneNumbers];
@@ -824,7 +824,7 @@ const NSUInteger kMinimumSearchLength = 1;
             hasSearchResults = YES;
 
             OWSTableSection *usernameSection = [self
-                buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE",
+                buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE",
                                           @"Table section header for username search when composing a new message")];
 
             [usernameSection addItem:[OWSTableItem
@@ -859,7 +859,7 @@ const NSUInteger kMinimumSearchLength = 1;
         OWSTableSection *noResultsSection = [OWSTableSection new];
         [noResultsSection
             addItem:[OWSTableItem softCenterLabelItemWithText:
-                                      NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
+                     OWSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS",
                                           @"A label that indicates the user's search has no matching results.")
                                               customRowHeight:UITableViewAutomaticDimension]];
 
@@ -954,14 +954,14 @@ const NSUInteger kMinimumSearchLength = 1;
     self.inviteFlow = inviteFlow;
 
     OWSAssertDebug([phoneNumber length] > 0);
-    NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
+    NSString *confirmMessage = OWSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
     if ([phoneNumber length] > 0) {
-        confirmMessage = [[NSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"") stringByAppendingString:phoneNumber]
-            stringByAppendingString:NSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
+        confirmMessage = [[OWSLocalizedString(@"SEND_SMS_INVITE_TITLE", @"") stringByAppendingString:phoneNumber]
+            stringByAppendingString:OWSLocalizedString(@"QUESTIONMARK_PUNCTUATION", @"")];
     }
 
     ActionSheetController *alert =
-        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRMATION_TITLE", @"")
+        [[ActionSheetController alloc] initWithTitle:OWSLocalizedString(@"CONFIRMATION_TITLE", @"")
                                              message:confirmMessage];
 
     ActionSheetAction *okAction = [[ActionSheetAction alloc]
@@ -974,7 +974,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                 [inviteFlow sendSMSToPhoneNumbers:@[ phoneNumber ]];
                             } else {
                                 [OWSActionSheets
-                                    showErrorAlertWithMessage:NSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
+                                    showErrorAlertWithMessage:OWSLocalizedString(@"UNSUPPORTED_FEATURE_ERROR", @"")];
                             }
                         }];
 
@@ -1003,7 +1003,7 @@ const NSUInteger kMinimumSearchLength = 1;
         case MessageComposeResultCancelled:
             break;
         case MessageComposeResultFailed: {
-            [OWSActionSheets showErrorAlertWithMessage:NSLocalizedString(@"SEND_INVITE_FAILURE", @"")];
+            [OWSActionSheets showErrorAlertWithMessage:OWSLocalizedString(@"SEND_INVITE_FAILURE", @"")];
             break;
         }
         case MessageComposeResultSent: {
@@ -1011,7 +1011,7 @@ const NSUInteger kMinimumSearchLength = 1;
                                      completion:^{
                                          OWSLogDebug(@"view controller dismissed");
                                      }];
-            [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"SEND_INVITE_SUCCESS",
+            [OWSActionSheets showActionSheetWithTitle:OWSLocalizedString(@"SEND_INVITE_SUCCESS",
                                                           @"Alert body after invite succeeded")];
             break;
         }
@@ -1053,13 +1053,13 @@ const NSUInteger kMinimumSearchLength = 1;
 
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modal dismissWithCompletion:^{
-                                      NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
+                                      NSString *usernameNotFoundFormat = OWSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
                                           @"A message indicating that the given username is not a registered signal "
                                           @"account. Embeds "
                                           @"{{username}}");
                                       [OWSActionSheets
                                           showActionSheetWithTitle:
-                                              NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
+                                           OWSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
                                                   @"A message indicating that the given username was not "
                                                   @"registered with signal.")
                                                            message:[[NSString alloc]
@@ -1076,7 +1076,7 @@ const NSUInteger kMinimumSearchLength = 1;
                               dispatch_async(dispatch_get_main_queue(), ^{
                                   [modal dismissWithCompletion:^{
                                       [OWSActionSheets showErrorAlertWithMessage:
-                                                           NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
+                                       OWSLocalizedString(@"USERNAME_LOOKUP_ERROR",
                                                                @"A message indicating that username lookup failed.")];
                                   }];
                               });

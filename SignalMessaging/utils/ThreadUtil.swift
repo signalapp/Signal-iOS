@@ -182,7 +182,7 @@ extension TSThread {
         var threadName = contactsManager.displayName(for: self, transaction: transaction)
         if isGroupThread && message?.isGroupStoryReply == true {
             threadName = String(
-                format: NSLocalizedString(
+                format: OWSLocalizedString(
                     "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
                     comment: "Message header when you are quoting a story. Embeds {{ story author name }}"
                 ),

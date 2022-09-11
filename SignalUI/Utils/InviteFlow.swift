@@ -109,7 +109,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
     public func contactsPicker(_: ContactsPicker, contactFetchDidFail error: NSError) {
         Logger.error("with error: \(error)")
         popToPresentingViewController(animated: true) {
-            OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("ERROR_COULD_NOT_FETCH_CONTACTS", comment: "Error indicating that the phone's contacts could not be retrieved."))
         }
     }
 
@@ -131,7 +131,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
             return nil
         }
 
-        let messageTitle = NSLocalizedString("SHARE_ACTION_MESSAGE", comment: "action sheet item to open native messages app")
+        let messageTitle = OWSLocalizedString("SHARE_ACTION_MESSAGE", comment: "action sheet item to open native messages app")
         return ActionSheetAction(title: messageTitle, style: .default) { [weak self] _ in
             Logger.debug("Chose message.")
             self?.presentInviteViaSMSFlow()
@@ -142,7 +142,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         self.channel = .message
         let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
         picker.contactsPickerDelegate = self
-        picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
+        picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
 
         presentViewController(picker, animated: true)
     }
@@ -151,8 +151,8 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         popToPresentingViewController(animated: true) {
             if phoneNumbers.count > 1 {
                 let warning = ActionSheetController(title: nil,
-                                                message: NSLocalizedString("INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
-                                                                           comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."))
+                                                    message: OWSLocalizedString("INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
+                                                                                comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."))
                 warning.addAction(ActionSheetAction(title: CommonStrings.continueButton,
                                                 style: .default, handler: { [weak self] _ in
                                                     self?.sendSMSTo(phoneNumbers: phoneNumbers)
@@ -172,7 +172,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         messageComposeViewController.messageComposeDelegate = self
         messageComposeViewController.recipients = phoneNumbers
 
-        let inviteText = NSLocalizedString("SMS_INVITE_BODY", comment: "body sent to contacts when inviting to Install Signal")
+        let inviteText = OWSLocalizedString("SMS_INVITE_BODY", comment: "body sent to contacts when inviting to Install Signal")
         messageComposeViewController.body = inviteText.appending(" \(self.installUrl)")
         presentingViewController?.present(messageComposeViewController, animated: true)
     }
@@ -183,7 +183,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         presentingViewController?.dismiss(animated: true) {
             switch result {
             case .failed:
-                let warning = ActionSheetController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"))
+                let warning = ActionSheetController(title: nil, message: OWSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"))
                 warning.addAction(OWSActionSheets.dismissAction)
                 self.presentingViewController?.present(warning, animated: true, completion: nil)
             case .sent:
@@ -204,7 +204,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
             return nil
         }
 
-        let mailActionTitle = NSLocalizedString("SHARE_ACTION_MAIL", comment: "action sheet item to open native mail app")
+        let mailActionTitle = OWSLocalizedString("SHARE_ACTION_MAIL", comment: "action sheet item to open native mail app")
         return ActionSheetAction(title: mailActionTitle, style: .default) { [weak self] _ in
             Logger.debug("Chose mail.")
             self?.presentInviteViaMailFlow()
@@ -216,7 +216,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
 
         let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
         picker.contactsPickerDelegate = self
-        picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
+        picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
 
         presentViewController(picker, animated: true)
     }
@@ -226,8 +226,8 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         mailComposeViewController.mailComposeDelegate = self
         mailComposeViewController.setBccRecipients(recipientEmails)
 
-        let subject = NSLocalizedString("EMAIL_INVITE_SUBJECT", comment: "subject of email sent to contacts when inviting to install Signal")
-        let bodyFormat = NSLocalizedString("EMAIL_INVITE_BODY", comment: "body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}}")
+        let subject = OWSLocalizedString("EMAIL_INVITE_SUBJECT", comment: "subject of email sent to contacts when inviting to install Signal")
+        let bodyFormat = OWSLocalizedString("EMAIL_INVITE_BODY", comment: "body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}}")
         let body = String.init(format: bodyFormat, installUrl, homepageUrl)
         mailComposeViewController.setSubject(subject)
         mailComposeViewController.setMessageBody(body, isHTML: false)
@@ -243,7 +243,7 @@ public class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMai
         presentingViewController?.dismiss(animated: true) {
             switch result {
             case .failed:
-                let warning = ActionSheetController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"))
+                let warning = ActionSheetController(title: nil, message: OWSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"))
                 warning.addAction(OWSActionSheets.dismissAction)
                 self.presentingViewController?.present(warning, animated: true, completion: nil)
             case .sent:

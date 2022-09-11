@@ -153,21 +153,21 @@ extension RecipientPickerViewController {
         let errorMessage: String
         switch recipientPickerRecipientState {
         case .duplicateGroupMember:
-            errorMessage = NSLocalizedString("GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP",
-                                             comment: "Error message indicating that a member can't be added to a group because they are already in the group.")
+            errorMessage = OWSLocalizedString("GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP",
+                                              comment: "Error message indicating that a member can't be added to a group because they are already in the group.")
         case .userAlreadyInBlocklist:
-            errorMessage = NSLocalizedString("BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST",
-                                             comment: "Error message indicating that a user can't be blocked because they are already blocked.")
+            errorMessage = OWSLocalizedString("BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST",
+                                              comment: "Error message indicating that a user can't be blocked because they are already blocked.")
         case .conversationAlreadyInBlocklist:
-            errorMessage = NSLocalizedString("BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST",
-                                             comment: "Error message indicating that a conversation can't be blocked because they are already blocked.")
+            errorMessage = OWSLocalizedString("BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST",
+                                              comment: "Error message indicating that a conversation can't be blocked because they are already blocked.")
         case .canBeSelected, .unknownError:
             owsFailDebug("Unexpected value.")
-            errorMessage = NSLocalizedString("RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED",
-                                             comment: "Error message indicating that a user can't be selected.")
+            errorMessage = OWSLocalizedString("RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED",
+                                              comment: "Error message indicating that a user can't be selected.")
         case .userLacksGroupCapability:
-            errorMessage = NSLocalizedString("RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT",
-                                             comment: "Error message indicating that a user can't be added to a group until they upgrade their app.")
+            errorMessage = OWSLocalizedString("RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT",
+                                              comment: "Error message indicating that a user can't be added to a group until they upgrade their app.")
         }
         OWSActionSheets.showErrorAlert(message: errorMessage)
         return

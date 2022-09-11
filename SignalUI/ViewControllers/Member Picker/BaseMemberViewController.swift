@@ -139,8 +139,8 @@ open class BaseMemberViewController: OWSViewController {
         }
 
         memberCountWrapper.isHidden = false
-        let format = NSLocalizedString("GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d", tableName: "PluralAware",
-                                       comment: "Format string for the group member count indicator. Embeds {{ the number of members in the group }}.")
+        let format = OWSLocalizedString("GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d", tableName: "PluralAware",
+                                        comment: "Format string for the group member count indicator. Embeds {{ the number of members in the group }}.")
         let memberCount = memberViewDelegate.memberViewMemberCountForDisplay()
 
         memberCountLabel.text = String.localizedStringWithFormat(format, memberCount)
@@ -359,8 +359,8 @@ extension BaseMemberViewController: RecipientPickerDelegate {
                 }
             }
         } else {
-            let confirmationText = NSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION",
-                                                     comment: "button title to confirm adding a recipient when their safety number has recently changed")
+            let confirmationText = OWSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION",
+                                                      comment: "button title to confirm adding a recipient when their safety number has recently changed")
             let didShowSNAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
                 address: address,
                 confirmationText: confirmationText
