@@ -56,7 +56,7 @@ public extension UISearchBar {
         let searchTextField: UITextField = self.searchTextField
         searchTextField.borderStyle = .none
         searchTextField.layer.cornerRadius = 18
-        searchTextField.backgroundColor = .white // The search bar background color
+        searchTextField.backgroundColor = isLightMode ? .white : .black // The search bar background color
         searchTextField.textColor = Colors.text
         searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Contacts", attributes: [ .foregroundColor : Colors.searchBarPlaceholder ])
         setPositionAdjustment(UIOffset(horizontal: 4, vertical: 0), for: UISearchBar.Icon.search)

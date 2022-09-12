@@ -21,15 +21,21 @@ private final class TableView: UITableView {
 
 final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate, TableViewTouchDelegate, UITextFieldDelegate, UIScrollViewDelegate {
     private let contactProfiles: [Profile] = Profile.fetchAllContactProfiles(excludeCurrentUser: true)
+    private var searchResults: [Profile] {
+        return searchText.isEmpty ? contactProfiles : contactProfiles.filter { $0.displayName().contains(searchText) }
+    }
     private var selectedContacts: Set<String> = []
+    private var searchText: String = ""
     
     // MARK: - Components
     
     private lazy var nameTextField: TextField = {
         let result = TextField(
             placeholder: "vc_create_closed_group_text_field_hint".localized(),
-            customHeight: 48
+            usesDefaultHeight: false,
+            customHeight: 50
         )
+        result.set(.height, to: 50)
         result.layer.borderColor = Colors.border.withAlphaComponent(0.5).cgColor
         result.layer.cornerRadius = 13
         return result
@@ -62,6 +68,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         result.setTitle(NSLocalizedString("CREATE_GROUP_BUTTON_TITLE", comment: ""), for: .normal)
         result.addTarget(self, action: #selector(createClosedGroup), for: .touchUpInside)
         result.set(.width, to: 160)
+        result.backgroundColor = Colors.navigationBarBackground
         return result
     }()
     
@@ -144,22 +151,22 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         
         view.addSubview(createGroupButton)
         createGroupButton.center(.horizontal, in: view)
-        createGroupButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.largeSpacing)
+        createGroupButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.veryLargeSpacing)
     }
     
     // MARK: - Table View Data Source
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return contactProfiles.count
+        return searchResults.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
         cell.update(
-            with: contactProfiles[indexPath.row].id,
-            profile: contactProfiles[indexPath.row],
+            with: searchResults[indexPath.row].id,
+            profile: searchResults[indexPath.row],
             isZombie: false,
-            accessory: .o(isSelected: selectedContacts.contains(contactProfiles[indexPath.row].id))
+            accessory: .o(isSelected: selectedContacts.contains(searchResults[indexPath.row].id))
         )
         
         return cell
@@ -187,11 +194,11 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if !selectedContacts.contains(contactProfiles[indexPath.row].id) {
-            selectedContacts.insert(contactProfiles[indexPath.row].id)
+        if !selectedContacts.contains(searchResults[indexPath.row].id) {
+            selectedContacts.insert(searchResults[indexPath.row].id)
         }
         else {
-            selectedContacts.remove(contactProfiles[indexPath.row].id)
+            selectedContacts.remove(searchResults[indexPath.row].id)
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
@@ -257,7 +264,8 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
 
 extension NewClosedGroupVC: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        searchText = searchText
+        self.searchText = searchText
+        self.tableView.reloadData()
     }
     
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
