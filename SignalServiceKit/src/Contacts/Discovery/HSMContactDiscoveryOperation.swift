@@ -114,7 +114,7 @@ class HSMContactDiscoveryOperation: ContactDiscovering, CDSHWebSocketDelegate, D
 
         try batches.enumerated().forEach { idx, batch in
             var builder = ContactDiscoveryMessageClientRequest.builder()
-            let encodedE164s = try Self.encodeE164s(batch)
+            let encodedE164s = try ContactDiscoveryE164Collection(batch).encodedValues
             builder.setNewE164List(encodedE164s)
 
             let lastBatchIdx = batches.count - 1

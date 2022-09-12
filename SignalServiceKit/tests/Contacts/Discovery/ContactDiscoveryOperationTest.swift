@@ -34,15 +34,15 @@ class ContactDiscoveryOperationTest: SSKBaseTestSwift {
 
     func test_encodeNumber() {
         let phoneNumbers = [ "+1011" ]
-        let actual = try! SGXContactDiscoveryOperation.encodeE164s(phoneNumbers)
+        let actual = try! ContactDiscoveryE164Collection(phoneNumbers).encodedValues
         let expected: Data = Data([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xf3])
 
         XCTAssertEqual(expected, actual)
     }
 
     func test_encodeMultipleNumber() {
-        let phoneNumbers = [ "+1011", "+15551231234"]
-        let actual = try! SGXContactDiscoveryOperation.encodeE164s(phoneNumbers)
+        let phoneNumbers = [ "+1011", "+15551231234" ]
+        let actual = try! ContactDiscoveryE164Collection(phoneNumbers).encodedValues
         let expected: Data = Data([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0xf3,
                                    0x00, 0x00, 0x00, 0x03, 0x9e, 0xec, 0xf5, 0x02])
 
