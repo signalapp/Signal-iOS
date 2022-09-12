@@ -494,7 +494,7 @@
 "vc_create_private_chat_enter_session_id_tab_title" = "Введите Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Сканировать QR-код";
 "vc_create_private_chat_scan_qr_code_explanation" = "Сканируйте QR-код пользователя, чтобы начать сессию. QR-коды можно найти, нажав значок QR-кода в настройках учетной записи.";
-"vc_enter_public_key_explanation" = "Пользователи могут поделиться своим Session ID, зайдя в настройки своей учетной записи и нажав «Отправить Session ID», или поделившись своим QR-кодом.";
+"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session нужен доступ к камере для сканирования QR-кодов";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Предоставить доступ к камере";
 "vc_create_closed_group_title" = "Новая закрытая группа";

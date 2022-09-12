@@ -494,7 +494,7 @@
 "vc_create_private_chat_enter_session_id_tab_title" = "Ange Sessions-ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Scanna QR-kod";
 "vc_create_private_chat_scan_qr_code_explanation" = "Skanna en användares QR-kod för att starta en session. QR-koder kan finnas genom att trycka på ikonen för QR-kod i kontoinställningarna.";
-"vc_enter_public_key_explanation" = "Användare kan dela sitt sessions-ID genom att gå in på sina kontoinställningar och trycka på \"Dela sessions-ID\" eller genom att dela sin QR-kod.";
+"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Sessionen behöver kameraåtkomst för att skanna QR-koder";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Tillåt kameraåtkomst";
 "vc_create_closed_group_title" = "Ny Sluten Grupp";

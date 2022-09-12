@@ -494,7 +494,7 @@
 "vc_create_private_chat_enter_session_id_tab_title" = "Enter Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Scan QR Code";
 "vc_create_private_chat_scan_qr_code_explanation" = "Scan a user’s QR code to start a session. QR codes can be found by tapping the QR code icon in account settings.";
-"vc_enter_public_key_explanation" = "Users can share their Session ID by going into their account settings and tapping \"Share Session ID\", or by sharing their QR code.";
+"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session needs camera access to scan QR codes";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Grant Camera Access";
 "vc_create_closed_group_title" = "Create Group";

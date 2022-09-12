@@ -494,7 +494,7 @@
 "vc_create_private_chat_enter_session_id_tab_title" = "Syötä Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Skannaa QR-koodi";
 "vc_create_private_chat_scan_qr_code_explanation" = "Skannaa käyttäjän QR-koodi aloittaaksesi keskustelu. QR-koodin voit löytää napauttamalla QR-koodi kuvaketta tilin asetuksissa.";
-"vc_enter_public_key_explanation" = "Käyttäjät voivat jakaa heidän Session ID:n menemällä tilin asetuksiin ja painamalla \"Jaa\" tai jakamalla heidän QR-koodin.";
+"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session tarvitsee kameraa skannatakseen QR-koodeja";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Anna kameran käyttölupa";
 "vc_create_closed_group_title" = "Uusi yksityinen ryhmä";

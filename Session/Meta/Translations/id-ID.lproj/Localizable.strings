@@ -494,7 +494,7 @@
 "vc_create_private_chat_enter_session_id_tab_title" = "Masukkan Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Pindai kode QR";
 "vc_create_private_chat_scan_qr_code_explanation" = "Pindai kode QR pengguna lain untuk memulai Session. Kode QR bisa ditemukan dengan mengetukan gambar kode QR di pengaturan akun";
-"vc_enter_public_key_explanation" = "Pengguna bisa membagikan Session ID miliknya dengan masuk ke pengaturan akun dan mengetuk \"Bagikan Session ID\" atau dengan membagikan kode QR mereka";
+"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session membutuhkan akses kamera untuk memindai kode QR";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Berikan akses kamera";
 "vc_create_closed_group_title" = "Grup tertutup baru";

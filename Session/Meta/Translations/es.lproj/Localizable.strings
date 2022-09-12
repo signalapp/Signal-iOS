@@ -494,7 +494,7 @@
 "vc_create_private_chat_enter_session_id_tab_title" = "Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Escanear código QR";
 "vc_create_private_chat_scan_qr_code_explanation" = "Escanea el código QR de un usuario para empezar una Session. Los códigos QR se pueden encontrar tocando el icono del código QR en los ajustes de la cuenta.";
-"vc_enter_public_key_explanation" = "Los usuarios pueden compartir su ID de Session yendo a los ajustes de su cuenta y pulsando en Compartir ID de Session o compartiendo su código QR";
+"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session necesita acceso a la cámara para escanear códigos QR";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Permitir acceso a cámara";
 "vc_create_closed_group_title" = "Nuevo grupo cerrado";
