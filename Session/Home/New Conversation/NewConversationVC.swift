@@ -53,9 +53,10 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
     }()
     
     private lazy var contactsTableView: UITableView = {
-        let result = UITableView(frame: .zero, style: .grouped)
+        let result = UITableView()
         result.delegate = self
         result.dataSource = self
+        result.separatorStyle = .none
         result.backgroundColor = Colors.navigationBarBackground
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
