@@ -212,8 +212,8 @@ private final class EnterPublicKeyVC : UIViewController {
         return result
     }()
     
-    private lazy var userPublicKeyLabel: UILabel = {
-        let result = UILabel()
+    private lazy var userPublicKeyLabel: SRCopyableLabel = {
+        let result = SRCopyableLabel()
         result.textColor = Colors.text
         result.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
         result.numberOfLines = 0
@@ -272,7 +272,11 @@ private final class EnterPublicKeyVC : UIViewController {
         // Remove background color
         view.backgroundColor = .clear
         // User session id container
-        let userPublicKeyContainer = UIView(wrapping: userPublicKeyLabel, withInsets: .zero, shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth)
+        let userPublicKeyContainer = UIView(
+            wrapping: userPublicKeyLabel,
+            withInsets: .zero,
+            shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth
+        )
         // Explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
