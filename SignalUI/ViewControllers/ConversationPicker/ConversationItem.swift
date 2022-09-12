@@ -217,6 +217,9 @@ public struct StoryConversationItem {
             }
             .compactMap { thread -> StoryConversationItem.ItemType? in
                 if let groupThread = thread as? TSGroupThread {
+                    guard groupThread.isLocalUserFullMember else {
+                        return nil
+                    }
                     return .groupStory(GroupConversationItem(
                         groupThreadId: groupThread.uniqueId,
                         isBlocked: false,
