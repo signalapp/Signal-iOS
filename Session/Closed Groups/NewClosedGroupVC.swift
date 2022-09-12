@@ -25,10 +25,15 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     
     // MARK: - Components
     
-    private lazy var nameTextField = TextField(
-        placeholder: "vc_create_closed_group_text_field_hint".localized(),
-        customHeight: 48
-    )
+    private lazy var nameTextField: TextField = {
+        let result = TextField(
+            placeholder: "vc_create_closed_group_text_field_hint".localized(),
+            customHeight: 48
+        )
+        result.layer.borderColor = Colors.border.withAlphaComponent(0.5).cgColor
+        result.layer.cornerRadius = 13
+        return result
+    }()
     
     private lazy var searchBar: ContactsSearchBar = {
         let result = ContactsSearchBar()
@@ -64,8 +69,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        setUpGradientBackground()
+        view.backgroundColor = Colors.navigationBarBackground
         setUpNavBarStyle()
         
         let customTitleFontSize = Values.largeFontSize
@@ -108,16 +112,16 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         
         let nameTextFieldContainer: UIView = UIView()
         nameTextFieldContainer.addSubview(nameTextField)
-        nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.largeSpacing)
+        nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
         nameTextField.pin(.top, to: .top, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
-        nameTextFieldContainer.pin(.trailing, to: .trailing, of: nameTextField, withInset: Values.largeSpacing)
+        nameTextFieldContainer.pin(.trailing, to: .trailing, of: nameTextField, withInset: Values.mediumSpacing)
         nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField)
         mainStackView.addArrangedSubview(nameTextFieldContainer)
         
         let searchBarContainer: UIView = UIView()
         searchBarContainer.addSubview(searchBar)
-        searchBar.pin(.leading, to: .leading, of: searchBarContainer, withInset: Values.largeSpacing)
-        searchBarContainer.pin(.trailing, to: .trailing, of: searchBar, withInset: Values.largeSpacing)
+        searchBar.pin(.leading, to: .leading, of: searchBarContainer, withInset: Values.smallSpacing)
+        searchBarContainer.pin(.trailing, to: .trailing, of: searchBar, withInset: Values.smallSpacing)
         searchBar.pin([ UIView.VerticalEdge.top, UIView.VerticalEdge.bottom ], to: searchBarContainer)
         mainStackView.addArrangedSubview(searchBarContainer)
         

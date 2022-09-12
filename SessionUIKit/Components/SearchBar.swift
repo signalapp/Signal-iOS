@@ -54,6 +54,8 @@ public extension UISearchBar {
         let clearImage = #imageLiteral(resourceName: "searchbar_clear").withTint(Colors.text)!
         setImage(clearImage, for: .clear, state: .normal)
         let searchTextField: UITextField = self.searchTextField
+        searchTextField.borderStyle = .none
+        searchTextField.layer.cornerRadius = 18
         searchTextField.backgroundColor = .white // The search bar background color
         searchTextField.textColor = Colors.text
         searchTextField.attributedPlaceholder = NSAttributedString(string: "Search Contacts", attributes: [ .foregroundColor : Colors.searchBarPlaceholder ])

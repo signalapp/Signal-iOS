@@ -42,7 +42,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     self.view.backgroundColor = UIColor.clearColor;
     CAGradientLayer *layer = [CAGradientLayer new];
     layer.frame = UIScreen.mainScreen.bounds;
-    UIColor *gradientStartColor = LKAppModeUtilities.isLightMode ? [UIColor colorWithRGBHex:0xFCFCFC] : [UIColor colorWithRGBHex:0x171717];
+    UIColor *gradientStartColor = LKAppModeUtilities.isLightMode ? [UIColor colorWithRGBHex:0xF9F9F9] : [UIColor colorWithRGBHex:0x171717];
     UIColor *gradientEndColor = LKAppModeUtilities.isLightMode ? [UIColor colorWithRGBHex:0xFFFFFF] : [UIColor colorWithRGBHex:0x121212];
     layer.colors = @[ (id)gradientStartColor.CGColor, (id)gradientEndColor.CGColor ];
     [self.view.layer insertSublayer:layer atIndex:0];

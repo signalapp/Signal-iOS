@@ -33,7 +33,7 @@ final public class Gradients : NSObject {
 
     @objc public static var defaultBackground: Gradient {
         switch AppModeManager.shared.currentAppMode {
-        case .light: return Gradient(start: UIColor(hex: 0xFCFCFC), end: UIColor(hex: 0xFFFFFF))
+        case .light: return Gradient(start: UIColor(hex: 0xF9F9F9), end: UIColor(hex: 0xFFFFFF))
         case .dark: return Gradient(start: UIColor(hex: 0x171717), end: UIColor(hex: 0x121212))
         }
     }
