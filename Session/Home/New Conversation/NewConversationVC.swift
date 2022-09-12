@@ -53,10 +53,10 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
     }()
     
     private lazy var contactsTableView: UITableView = {
-        let result = UITableView()
+        let result = UITableView(frame: .zero, style: .grouped)
         result.delegate = self
         result.dataSource = self
-        result.separatorStyle = .none
+        result.backgroundColor = Colors.navigationBarBackground
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
         }
@@ -85,14 +85,15 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
             frame: CGRect(
                 x: 0, y: 0,
                 width: UIScreen.main.bounds.width,
-                height: NewConversationButton.height * 3 + Values.smallSpacing * 2 + Values.mediumFontSize
+                height: NewConversationButton.height * 3 + Values.mediumSpacing * 2 + Values.mediumFontSize
             )
         )
         headerView.addSubview(buttonStackViewContainer)
-        buttonStackViewContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: headerView)
+        buttonStackViewContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing], to: headerView)
+        buttonStackViewContainer.pin(.top, to: .top, of: headerView, withInset: Values.verySmallSpacing)
         headerView.addSubview(contactsTitleLabel)
         contactsTitleLabel.pin(.leading, to: .leading, of: headerView, withInset: Values.mediumSpacing)
-        contactsTitleLabel.pin(.top, to: .bottom, of: buttonStackViewContainer, withInset: Values.smallSpacing)
+        contactsTitleLabel.pin(.top, to: .bottom, of: buttonStackViewContainer, withInset: Values.mediumSpacing)
         
         contactsTableView.tableHeaderView = headerView
         view.addSubview(contactsTableView)
@@ -112,6 +113,7 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
         let profile = newConversationViewModel.sectionData[indexPath.section].contacts[indexPath.row]
+        cell.backgroundColor = Colors.sessionNewConversationCellBackground
         cell.update(
             with: profile.id,
             profile: profile,
@@ -149,6 +151,10 @@ final class NewConversationVC: BaseVC, UITableViewDelegate, UITableViewDataSourc
         self.navigationController?.dismiss(animated: true, completion: nil)
         
         SessionApp.presentConversation(for: sessionId, action: .compose, animated: false)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.backgroundColor = Colors.navigationBarBackground
     }
     
     // MARK: - Interaction
@@ -201,6 +207,7 @@ private final class NewConversationButton: UIView {
         self.title = title
         self.shouldShowSeparator = shouldShowSeparator
         super.init(frame: .zero)
+        self.backgroundColor = Colors.sessionNewConversationCellBackground
         setUpViewHierarchy()
     }
     
