@@ -70,7 +70,7 @@ class CallAudioService: NSObject, CallObserver {
 
     internal func individualCallStateDidChange(_ call: SignalCall, state: CallState) {
         AssertIsOnMainThread()
-        handleState(call: call.individualCall)
+        handleState(call: call)
     }
 
     internal func individualCallLocalAudioMuteDidChange(_ call: SignalCall, isAudioMuted: Bool) {
@@ -146,7 +146,7 @@ class CallAudioService: NSObject, CallObserver {
         }
     }
 
-    private func ensureProperAudioSession(call: SignalCall) {
+    fileprivate func ensureProperAudioSession(call: SignalCall) {
         switch call.mode {
         case .individual(let call):
             ensureProperAudioSession(call: call)
@@ -178,7 +178,7 @@ class CallAudioService: NSObject, CallObserver {
     /// Set the AudioSession based on the state of the call. If video is captured locally,
     /// it is assumed that the speaker should be used. Otherwise audio will be routed
     /// through the receiver, or speaker if enabled.
-    fileprivate func ensureProperAudioSession(call: IndividualCall) {
+    private func ensureProperAudioSession(call: IndividualCall) {
         AssertIsOnMainThread()
 
         guard !call.isEnded, call.state != .answering else {
@@ -211,17 +211,18 @@ class CallAudioService: NSObject, CallObserver {
 
     // MARK: - Service action handlers
 
-    public func handleState(call: IndividualCall) {
-        assert(Thread.isMainThread)
+    private func handleState(call: SignalCall) {
+        AssertIsOnMainThread()
+        owsAssertDebug(call.isIndividualCall)
 
-        Logger.verbose("new state: \(call.state)")
+        Logger.verbose("new state: \(call.individualCall.state)")
 
         // Stop playing sounds while switching audio session so we don't 
         // get any blips across a temporary unintended route.
         stopPlayingAnySounds()
         self.ensureProperAudioSession(call: call)
 
-        switch call.state {
+        switch call.individualCall.state {
         case .idle: handleIdle(call: call)
         case .dialing: handleDialing(call: call)
         case .answering: handleAnswering(call: call)
@@ -241,11 +242,11 @@ class CallAudioService: NSObject, CallObserver {
         }
     }
 
-    private func handleIdle(call: IndividualCall) {
+    private func handleIdle(call: SignalCall) {
         Logger.debug("")
     }
 
-    private func handleDialing(call: IndividualCall) {
+    private func handleDialing(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -256,44 +257,36 @@ class CallAudioService: NSObject, CallObserver {
         }
     }
 
-    private func handleAnswering(call: IndividualCall) {
+    private func handleAnswering(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
     }
 
-    private func handleRemoteRinging(call: IndividualCall) {
+    private func handleRemoteRinging(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
         self.play(sound: .callOutboundRinging)
     }
 
-    private func handleLocalRinging(call: IndividualCall) {
+    private func handleLocalRinging(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
         startRinging(call: call)
     }
 
-    private func handleConnected(call: IndividualCall) {
+    private func handleConnected(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
     }
 
-    private func handleReconnecting(call: IndividualCall) {
+    private func handleReconnecting(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
     }
 
-    private func handleLocalFailure(call: IndividualCall) {
-        AssertIsOnMainThread()
-        Logger.debug("")
-
-        play(sound: .callEnded)
-        handleCallEnded(call: call)
-    }
-
-    private func handleLocalHangup(call: IndividualCall) {
+    private func handleLocalFailure(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -301,7 +294,15 @@ class CallAudioService: NSObject, CallObserver {
         handleCallEnded(call: call)
     }
 
-    private func handleRemoteHangup(call: IndividualCall) {
+    private func handleLocalHangup(call: SignalCall) {
+        AssertIsOnMainThread()
+        Logger.debug("")
+
+        play(sound: .callEnded)
+        handleCallEnded(call: call)
+    }
+
+    private func handleRemoteHangup(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -311,7 +312,7 @@ class CallAudioService: NSObject, CallObserver {
         handleCallEnded(call: call)
     }
 
-    private func handleBusy(call: IndividualCall) {
+    private func handleBusy(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -323,7 +324,7 @@ class CallAudioService: NSObject, CallObserver {
         }
     }
 
-    private func handleAnsweredElsewhere(call: IndividualCall) {
+    private func handleAnsweredElsewhere(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -331,7 +332,7 @@ class CallAudioService: NSObject, CallObserver {
         handleCallEnded(call: call)
     }
 
-    private func handleCallEnded(call: IndividualCall) {
+    private func handleCallEnded(call: SignalCall) {
         AssertIsOnMainThread()
         Logger.debug("")
 
@@ -383,14 +384,14 @@ class CallAudioService: NSObject, CallObserver {
 
     private var ringerSwitchObserver: CallRingerSwitchObserver?
 
-    private func startRinging(call: IndividualCall) {
+    private func startRinging(call: SignalCall) {
         guard handleRinging else {
             Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
             return
         }
 
         // Only CallKit calls should be in the transitory ringing states
-        owsAssertDebug(call.state == .localRinging_ReadyToAnswer)
+        owsAssertDebug(call.individualCall.state == .localRinging_ReadyToAnswer)
 
         vibrateTimer?.invalidate()
         vibrateTimer = .scheduledTimer(withTimeInterval: vibrateRepeatDuration, repeats: true) { [weak self] _ in
@@ -573,10 +574,10 @@ extension CallAudioService: CallServiceObserver {
 private class CallRingerSwitchObserver: RingerSwitchObserver {
 
     private let player: OWSAudioPlayer
-    private let call: IndividualCall
+    private let call: SignalCall
     private weak var callService: CallAudioService?
 
-    init(callService: CallAudioService, player: OWSAudioPlayer, call: IndividualCall) {
+    init(callService: CallAudioService, player: OWSAudioPlayer, call: SignalCall) {
         self.callService = callService
         self.player = player
         self.call = call
