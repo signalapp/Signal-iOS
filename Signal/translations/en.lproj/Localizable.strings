@@ -6730,6 +6730,12 @@
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "View Photo";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
+
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to cancel";
 
