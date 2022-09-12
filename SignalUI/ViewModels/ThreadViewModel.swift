@@ -93,7 +93,7 @@ public class ThreadViewModel: NSObject {
             self.isWallpaperPhoto = false
         }
 
-        if let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction) {
+        if !thread.isNoteToSelf, let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction) {
             storyState = latestStory.localUserViewedTimestamp != nil ? .viewed : .unviewed
         } else {
             self.storyState = .none
