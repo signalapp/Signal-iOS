@@ -277,8 +277,10 @@ extension MemberActionSheet: ConversationHeaderDelegate {
         if threadViewModel.storyState == .none || !StoryManager.areStoriesEnabled {
             presentAvatarViewController()
         } else {
-            let vc = StoryPageViewController(context: thread.storyContext)
-            presentFullScreen(vc, animated: true)
+            dismiss(animated: true) {
+                let vc = StoryPageViewController(context: self.thread.storyContext)
+                self.fromViewController?.present(vc, animated: true)
+            }
         }
     }
 
