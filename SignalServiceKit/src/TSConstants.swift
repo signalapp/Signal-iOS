@@ -50,6 +50,8 @@ public class TSConstants: NSObject {
     @objc
     public static var contactDiscoverySGXURL: String { shared.contactDiscoverySGXURL }
     @objc
+    public static var contactDiscoveryV2URL: String { shared.contactDiscoveryV2URL }
+    @objc
     public static var contactDiscoveryHSMURL: String { shared.contactDiscoveryHSMURL }
     @objc
     public static var keyBackupURL: String { shared.keyBackupURL }
@@ -89,6 +91,7 @@ public class TSConstants: NSObject {
     @objc
     public static var contactDiscoveryEnclaveName: String { shared.contactDiscoveryMrEnclave.stringValue }
     public static var contactDiscoveryMrEnclave: MrEnclave { shared.contactDiscoveryMrEnclave }
+    static var contactDiscoveryV2MrEnclave: MrEnclave { shared.contactDiscoveryV2MrEnclave }
     @objc
     public static var contactDiscoveryPublicKey: String { shared.contactDiscoveryPublicKey }
     @objc
@@ -122,6 +125,7 @@ private protocol TSConstantsProtocol: AnyObject {
     var textSecureCDN0ServerURL: String { get }
     var textSecureCDN2ServerURL: String { get }
     var contactDiscoverySGXURL: String { get }
+    var contactDiscoveryV2URL: String { get }
     var contactDiscoveryHSMURL: String { get }
     var keyBackupURL: String { get }
     var storageServiceURL: String { get }
@@ -144,6 +148,7 @@ private protocol TSConstantsProtocol: AnyObject {
 
     // SGX Backed Contact Discovery
     var contactDiscoveryMrEnclave: MrEnclave { get }
+    var contactDiscoveryV2MrEnclave: MrEnclave { get }
 
     // HSM Backed Contact Discovery
     var contactDiscoveryPublicKey: String { get }
@@ -190,6 +195,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let textSecureCDN0ServerURL = "https://cdn.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2.signal.org"
     public let contactDiscoverySGXURL = "https://api.directory.signal.org"
+    public let contactDiscoveryV2URL = "wss://cdsi.signal.org"
     public let contactDiscoveryHSMURL = "wss://cdsh.signal.org/discovery/"
     public let keyBackupURL = "https://api.backup.signal.org"
     public let storageServiceURL = "https://storage.signal.org"
@@ -211,6 +217,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage"
 
     public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
+    public let contactDiscoveryV2MrEnclave = MrEnclave("ef4787a56a154ac6d009138cac17155acd23cfe4329281252365dd7c252e7fbf")
 
     public var contactDiscoveryPublicKey: String {
         owsFailDebug("CDSH unsupported in production")
@@ -257,6 +264,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let textSecureCDN0ServerURL = "https://cdn-staging.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2-staging.signal.org"
     public let contactDiscoverySGXURL = "https://api-staging.directory.signal.org"
+    public let contactDiscoveryV2URL = "wss://cdsi.staging.signal.org"
     public let contactDiscoveryHSMURL = "wss://cdsh.staging.signal.org/discovery/"
     public let keyBackupURL = "https://api-staging.backup.signal.org"
     public let storageServiceURL = "https://storage-staging.signal.org"
@@ -281,6 +289,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
 
     // CDS uses the same EnclaveName and MrEnclave
     public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
+    public let contactDiscoveryV2MrEnclave = MrEnclave("ef4787a56a154ac6d009138cac17155acd23cfe4329281252365dd7c252e7fbf")
 
     public let contactDiscoveryPublicKey = "2fe57da347cd62431528daac5fbb290730fff684afc4cfc2ed90995f58cb3b74"
     public let contactDiscoveryCodeHashes = [
