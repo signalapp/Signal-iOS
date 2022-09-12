@@ -9,6 +9,7 @@ import SignalUI
 @objc
 public protocol ConversationHeaderViewDelegate {
     func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView)
+    func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView)
 }
 
 public class ConversationHeaderView: UIStackView {
@@ -155,6 +156,10 @@ public class ConversationHeaderView: UIStackView {
             return
         }
 
-        self.delegate?.didTapConversationHeaderView(self)
+        if avatarView.bounds.contains(tapGesture.location(in: avatarView)) {
+            self.delegate?.didTapConversationHeaderViewAvatar(self)
+        } else {
+            self.delegate?.didTapConversationHeaderView(self)
+        }
     }
 }
