@@ -100,9 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     UIColor *searchFieldBackgroundColor = Theme.searchFieldBackgroundColor;
-    if (style == OWSSearchBarStyle_SecondaryBar) {
-        searchFieldBackgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_gray05Color;
-    } else if ([searchBar isKindOfClass:[OWSSearchBar class]]
+    if ([searchBar isKindOfClass:[OWSSearchBar class]]
         && ((OWSSearchBar *)searchBar).searchFieldBackgroundColorOverride) {
         searchFieldBackgroundColor = ((OWSSearchBar *)searchBar).searchFieldBackgroundColorOverride;
     }

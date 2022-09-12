@@ -145,8 +145,8 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
     private func applyTheme() {
         AssertIsOnMainThread()
 
-        self.view.backgroundColor = self.hasExpandedSplitViewController ? Theme.secondaryBackgroundColor : Theme.backgroundColor
-        self.tableView.backgroundColor = self.hasExpandedSplitViewController ? Theme.secondaryBackgroundColor : Theme.backgroundColor
+        self.view.backgroundColor = Theme.backgroundColor
+        self.tableView.backgroundColor = Theme.backgroundColor
     }
 
     private func updateSeparators() {
@@ -304,7 +304,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 return UITableViewCell()
             }
 
-            OWSTableItem.configureCell(cell, isSplitViewControllerExpanded: self.hasExpandedSplitViewController)
+            OWSTableItem.configureCell(cell)
 
             let searchText = self.searchResultSet.searchText
             cell.configure(searchText: searchText)
@@ -321,9 +321,6 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
             }
             cell.configureWithSneakyTransaction(address: searchResult.signalAccount.recipientAddress,
                                                 localUserDisplayMode: .noteToSelf)
-            if self.hasExpandedSplitViewController {
-                cell.backgroundColor = Theme.secondaryBackgroundColor
-            }
             return cell
         case .contactThreads, .groupThreads, .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ChatListCell.reuseIdentifier) as? ChatListCell else {
@@ -362,8 +359,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
             return ChatListCell.Configuration(
                 thread: searchResult.thread,
                 lastReloadDate: lastReloadDate,
-                isBlocked: isBlocked(thread: searchResult.thread),
-                isSplitViewControllerExpanded: self.hasExpandedSplitViewController
+                isBlocked: isBlocked(thread: searchResult.thread)
             )
         case .groupThreads:
             guard let searchResult = self.searchResultSet.groupThreads[safe: row] else {
@@ -375,8 +371,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: searchResult.matchedMembersSnippet?.styled(with: Self.matchSnippetStyle),
-                overrideDate: nil,
-                isSplitViewControllerExpanded: self.hasExpandedSplitViewController
+                overrideDate: nil
             )
         case .contacts:
             owsFailDebug("Invalid section.")
@@ -410,8 +405,7 @@ public class ConversationSearchViewController: UITableViewController, ThreadSwip
                 lastReloadDate: lastReloadDate,
                 isBlocked: isBlocked(thread: searchResult.thread),
                 overrideSnippet: overrideSnippet,
-                overrideDate: overrideDate,
-                isSplitViewControllerExpanded: self.hasExpandedSplitViewController
+                overrideDate: overrideDate
             )
         }
     }

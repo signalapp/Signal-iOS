@@ -448,10 +448,6 @@ public extension UIViewController {
         }
         present(viewControllerToPresent, animated: animated, completion: completion)
     }
-
-    var hasExpandedSplitViewController: Bool {
-        splitViewController != nil && !splitViewController!.isCollapsed
-    }
 }
 
 // MARK: -

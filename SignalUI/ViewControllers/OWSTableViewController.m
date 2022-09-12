@@ -153,7 +153,9 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     UIView *selectedBackgroundView = [UIView new];
     cell.selectedBackgroundView = selectedBackgroundView;
     cell.backgroundColor = Theme.backgroundColor;
-    cell.selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;
+    cell.selectedBackgroundView.backgroundColor = Theme.tableCell2SelectedBackgroundColor;
+    cell.multipleSelectionBackgroundView.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor;
+
     [self configureCellLabels:cell];
 }
 

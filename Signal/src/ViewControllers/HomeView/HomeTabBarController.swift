@@ -181,10 +181,7 @@ public class OWSTabBar: UITabBar {
     // MARK: Theme
 
     var tabBarBackgroundColor: UIColor {
-        switch currentStyle {
-        case .secondaryBar: return Theme.secondaryBackgroundColor
-        default: return Theme.navbarBackgroundColor
-        }
+        Theme.navbarBackgroundColor
     }
 
     private func applyTheme() {
@@ -192,10 +189,7 @@ public class OWSTabBar: UITabBar {
             return
         }
 
-        if currentStyle == .secondaryBar {
-            barTintColor = tabBarBackgroundColor
-            self.backgroundImage = UIImage(color: tabBarBackgroundColor)
-        } else if UIAccessibility.isReduceTransparencyEnabled {
+        if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             self.backgroundImage = UIImage(color: tabBarBackgroundColor)
         } else {
@@ -259,7 +253,7 @@ public class OWSTabBar: UITabBar {
 
     @objc
     public enum TabBarStyle: Int {
-        case `default`, secondaryBar
+        case `default`
     }
 
     private var currentStyle: TabBarStyle?
@@ -280,26 +274,11 @@ public class OWSTabBar: UITabBar {
             layer.removeAnimation(forKey: "ows_fade")
         }
 
-        func applySecondaryBarOverride() {
-            self.blurEffectView?.isHidden = true
-            self.shadowImage = UIImage()
-        }
-
-        func removeSecondaryBarOverride() {
-            self.blurEffectView?.isHidden = false
-            self.shadowImage = nil
-        }
-
         currentStyle = style
 
         switch style {
         case .default:
             respectsTheme = true
-            removeSecondaryBarOverride()
-            applyTheme()
-        case .secondaryBar:
-            respectsTheme = true
-            applySecondaryBarOverride()
             applyTheme()
         }
     }

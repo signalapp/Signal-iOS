@@ -670,7 +670,7 @@ extension CLVTableDataSource: UITableViewDataSource {
             return UITableViewCell()
         }
         if let cell = cell as? ArchivedConversationsCell, let viewController = viewController {
-            cell.configure(enabled: !viewState.multiSelectState.isActive, isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
+            cell.configure(enabled: !viewState.multiSelectState.isActive)
         }
         return cell
     }
@@ -818,13 +818,11 @@ extension CLVTableDataSource {
 
     // This method can be called from any thread.
     private static func buildCellConfiguration(threadViewModel: ThreadViewModel,
-                                               lastReloadDate: Date?,
-                                               isSplitViewControllerExpanded: Bool) -> ChatListCell.Configuration {
+                                               lastReloadDate: Date?) -> ChatListCell.Configuration {
         owsAssertDebug(threadViewModel.chatListInfo != nil)
         let configuration = ChatListCell.Configuration(thread: threadViewModel,
                                                        lastReloadDate: lastReloadDate,
-                                                       isBlocked: threadViewModel.isBlocked,
-                                                       isSplitViewControllerExpanded: isSplitViewControllerExpanded)
+                                                       isBlocked: threadViewModel.isBlocked)
         return configuration
     }
 
@@ -846,8 +844,7 @@ extension CLVTableDataSource {
             return self.lastReloadDate
         }()
         let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                        lastReloadDate: lastReloadDate,
-                                                        isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
+                                                        lastReloadDate: lastReloadDate)
         let cellContentCache = viewController.cellContentCache
         let contentToken = { () -> CLVCellContentToken in
             // If we have an existing CLVCellContentToken, use it.
@@ -913,8 +910,7 @@ extension CLVTableDataSource {
                 ThreadViewModel(thread: thread, forChatList: true, transaction: transaction)
             }
             let configuration = Self.buildCellConfiguration(threadViewModel: threadViewModel,
-                                                            lastReloadDate: lastReloadDate,
-                                                            isSplitViewControllerExpanded: viewController.hasExpandedSplitViewController)
+                                                            lastReloadDate: lastReloadDate)
             let contentToken = ChatListCell.buildCellContentToken(forConfiguration: configuration)
             return (threadViewModel, contentToken)
         }.done(on: .main) { (threadViewModel: ThreadViewModel, contentToken: CLVCellContentToken) in

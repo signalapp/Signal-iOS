@@ -48,10 +48,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     var navbarBackgroundColor: UIColor {
         if let navbarBackgroundColorOverride = navbarBackgroundColorOverride { return navbarBackgroundColorOverride }
-        switch currentStyle {
-        case .secondaryBar: return Theme.secondaryBackgroundColor
-        default: return Theme.navbarBackgroundColor
-        }
+        return Theme.navbarBackgroundColor
     }
 
     private func applyTheme() {
@@ -59,7 +56,7 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
-        if [.secondaryBar, .solid].contains(currentStyle) {
+        if currentStyle == .solid {
             let backgroundImage = UIImage(color: navbarBackgroundColor)
             self.setBackgroundImage(backgroundImage, for: .default)
         } else if UIAccessibility.isReduceTransparencyEnabled {
@@ -136,7 +133,7 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public enum NavigationBarStyle: Int {
-        case clear, solid, alwaysDarkAndClear, alwaysDark, `default`, secondaryBar
+        case clear, solid, alwaysDarkAndClear, alwaysDark, `default`
     }
 
     private var currentStyle: NavigationBarStyle?
@@ -189,7 +186,7 @@ public class OWSNavigationBar: UINavigationBar {
             self.shadowImage = nil
         }
 
-        let applySecondaryAndSolidBarOverride = {
+        let applySolidBarOverride = {
             self.blurEffectView?.isHidden = true
             self.shadowImage = UIImage()
         }
@@ -223,11 +220,11 @@ public class OWSNavigationBar: UINavigationBar {
             removeTransparentBarOverride()
             removeSecondaryAndSolidBarOverride()
             applyTheme()
-        case .solid, .secondaryBar:
+        case .solid:
             respectsTheme = true
             removeDarkThemeOverride()
             removeTransparentBarOverride()
-            applySecondaryAndSolidBarOverride()
+            applySolidBarOverride()
             applyTheme()
         }
     }

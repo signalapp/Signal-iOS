@@ -155,13 +155,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
             }
         }
 
-        if splitViewController?.isCollapsed == true {
-            view.backgroundColor = Theme.backgroundColor
-            tableView.backgroundColor = Theme.backgroundColor
-        } else {
-            view.backgroundColor = Theme.secondaryBackgroundColor
-            tableView.backgroundColor = Theme.secondaryBackgroundColor
-        }
+        view.backgroundColor = Theme.backgroundColor
+        tableView.backgroundColor = Theme.backgroundColor
 
         updateNavigationBar()
     }

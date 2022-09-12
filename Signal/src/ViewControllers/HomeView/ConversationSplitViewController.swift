@@ -89,8 +89,7 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
     @objc
     func applyTheme() {
-        view.backgroundColor = Theme.backgroundColor
-        applyBarStyle(collapsed: isCollapsed)
+        view.backgroundColor = Theme.isDarkThemeEnabled ? UIColor(rgbHex: 0x292929) : UIColor(rgbHex: 0xd6d6d6)
     }
 
     @objc
@@ -104,26 +103,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
     func didBecomeActive() {
         AssertIsOnMainThread()
         lastActiveInterfaceOrientation = CurrentAppContext().interfaceOrientation
-    }
-
-    func applyBarStyle(collapsed: Bool) {
-        if let owsNavBar = chatListNavController.navigationBar as? OWSNavigationBar {
-            owsNavBar.switchToStyle(collapsed ? .default : .secondaryBar)
-        } else {
-            owsFailDebug("unexpected nav bar")
-        }
-
-        if let owsNavBar = homeVC.storiesNavController.navigationBar as? OWSNavigationBar {
-            owsNavBar.switchToStyle(collapsed ? .default : .secondaryBar)
-        } else {
-            owsFailDebug("unexpected nav bar")
-        }
-
-        if let owsTabBar = homeVC.tabBar as? OWSTabBar {
-            owsTabBar.switchToStyle(collapsed ? .default : .secondaryBar)
-        } else {
-            owsFailDebug("unexpected tab bar")
-        }
     }
 
     private var hasHiddenExtraSubivew = false
@@ -540,7 +519,6 @@ class ConversationSplitViewController: UISplitViewController, ConversationSplit 
 
 extension ConversationSplitViewController: UISplitViewControllerDelegate {
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
-        applyBarStyle(collapsed: true)
 
         // If we're currently showing the placeholder view, we want to do nothing with in
         // when collapsing into a single nav controller without a side panel.
@@ -556,8 +534,6 @@ extension ConversationSplitViewController: UISplitViewControllerDelegate {
 
     func splitViewController(_ splitViewController: UISplitViewController, separateSecondaryFrom primaryViewController: UIViewController) -> UIViewController? {
         assert(primaryViewController == homeVC)
-
-        applyBarStyle(collapsed: false)
 
         // See if the current conversation is currently in the view hierarchy. If not,
         // show the placeholder view as no conversation is selected. The conversation
@@ -637,41 +613,17 @@ extension ConversationViewController {
 }
 
 private class NoSelectedConversationViewController: OWSViewController {
-    let titleLabel = UILabel()
-    let bodyLabel = UILabel()
     let logoImageView = UIImageView()
 
     override func loadView() {
         view = UIView()
 
-        let logoContainer = UIView.container()
         logoImageView.image = #imageLiteral(resourceName: "signal-logo-128").withRenderingMode(.alwaysTemplate)
         logoImageView.contentMode = .scaleAspectFit
-        logoContainer.addSubview(logoImageView)
-        logoImageView.autoPinTopToSuperviewMargin()
-        logoImageView.autoPinBottomToSuperviewMargin(withInset: 8)
-        logoImageView.autoHCenterInSuperview()
-        logoImageView.autoSetDimension(.height, toSize: 72)
+        logoImageView.autoSetDimension(.height, toSize: 112)
+        view.addSubview(logoImageView)
 
-        titleLabel.font = UIFont.ows_dynamicTypeBody.ows_semibold
-        titleLabel.textAlignment = .center
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.text = NSLocalizedString("NO_SELECTED_CONVERSATION_TITLE", comment: "Title welcoming to the app")
-
-        bodyLabel.font = .ows_dynamicTypeBody
-        bodyLabel.textAlignment = .center
-        bodyLabel.numberOfLines = 0
-        bodyLabel.lineBreakMode = .byWordWrapping
-        bodyLabel.text = NSLocalizedString("NO_SELECTED_CONVERSATION_DESCRIPTION", comment: "Explanation of how to see a conversation.")
-
-        let centerStackView = UIStackView(arrangedSubviews: [logoContainer, titleLabel, bodyLabel])
-        centerStackView.axis = .vertical
-        centerStackView.spacing = 4
-        view.addSubview(centerStackView)
-        // Slightly offset from center to better optically center
-        centerStackView.autoAlignAxis(.horizontal, toSameAxisOf: view, withMultiplier: 0.88)
-        centerStackView.autoPinWidthToSuperview()
+        logoImageView.autoCenterInSuperview()
     }
 
     override func viewDidLoad() {
@@ -685,9 +637,7 @@ private class NoSelectedConversationViewController: OWSViewController {
     @objc
     override func applyTheme() {
         view.backgroundColor = Theme.backgroundColor
-        titleLabel.textColor = Theme.primaryTextColor
-        bodyLabel.textColor = Theme.secondaryTextAndIconColor
-        logoImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray65
+        logoImageView.tintColor = Theme.isDarkThemeEnabled ? UIColor.white.withAlphaComponent(0.12) : UIColor.black.withAlphaComponent(0.12)
     }
 }
 

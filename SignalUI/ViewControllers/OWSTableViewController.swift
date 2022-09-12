@@ -481,13 +481,6 @@ public extension OWSTableItem {
             }
         )
     }
-
-    static func configureCell(_ cell: UITableViewCell, isSplitViewControllerExpanded: Bool) {
-        Self.configureCell(cell)
-        cell.selectedBackgroundView?.backgroundColor = isSplitViewControllerExpanded ? Theme.tableCell2SelectedBackgroundColor2 : Theme.tableCell2SelectedBackgroundColor
-        cell.backgroundColor = isSplitViewControllerExpanded ? Theme.secondaryBackgroundColor : Theme.backgroundColor
-        cell.multipleSelectionBackgroundView?.backgroundColor = Theme.tableCell2MultiSelectedBackgroundColor
-    }
 }
 
 // MARK: - Declarative Initializers
