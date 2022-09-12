@@ -310,7 +310,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         self.forceDarkTheme = forceDarkTheme
 
         scrollView = UIScrollView(frame: CGRect.zero)
-        let effect = UIBlurEffect(style: UIBlurEffect.Style.prominent)
+        let effect = UIBlurEffect(style: .regular)
         backdropView = UIVisualEffectView(effect: effect)
 
         var actionViews: [ContextMenuActionRow] = []
@@ -339,10 +339,10 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         }
 
         layer.cornerRadius = cornerRadius
-        layer.shadowRadius = 4
-        layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowRadius = 40
+        layer.shadowOffset = CGSize(width: 8, height: 20)
         layer.shadowColor = UIColor.ows_black.cgColor
-        layer.shadowOpacity = 0.06
+        layer.shadowOpacity = 0.3
 
         backdropView.layer.cornerRadius = cornerRadius
         backdropView.layer.masksToBounds = true

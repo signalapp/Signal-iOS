@@ -79,8 +79,6 @@ public class ContextMenuButton: UIButton, ContextMenuInteractionDelegate {
         controller.delegate = self
         self.contextMenuConfiguration = contextMenuConfiguration
 
-        ImpactHapticFeedback.impactOccured(style: .medium, intensity: 0.8)
-
         window.addSubview(controller.view)
         controller.view.frame = window.bounds
 
