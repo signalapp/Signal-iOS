@@ -65,6 +65,8 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         updateNavigationBar()
 
         tableView.addInteraction(contextMenu)
+
+        OWSTableViewController2.removeBackButtonText(viewController: self)
     }
 
     private var timestampUpdateTimer: Timer?

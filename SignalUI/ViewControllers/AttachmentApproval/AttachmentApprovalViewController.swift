@@ -240,6 +240,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         view.addSubview(bottomToolView)
         bottomToolView.autoPinWidthToSuperview()
         bottomToolViewBottomConstraint = bottomToolView.autoPinEdge(toSuperviewEdge: .bottom)
+
+        OWSTableViewController2.removeBackButtonText(viewController: self)
     }
 
     public override func viewWillAppear(_ animated: Bool) {
