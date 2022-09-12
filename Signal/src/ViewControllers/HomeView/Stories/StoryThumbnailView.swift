@@ -43,9 +43,6 @@ class StoryThumbnailView: UIView {
                 addSubview(pointerView)
                 pointerView.autoPinEdgesToSuperviewEdges()
             } else if let stream = attachment as? TSAttachmentStream {
-                let backgroundImageView = buildBackgroundImageView(stream: stream)
-                addSubview(backgroundImageView)
-                backgroundImageView.autoPinEdgesToSuperviewEdges()
                 let imageView = buildThumbnailImageView(stream: stream)
                 addSubview(imageView)
                 imageView.autoPinEdgesToSuperviewEdges()
@@ -66,22 +63,9 @@ class StoryThumbnailView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private func buildBackgroundImageView(stream: TSAttachmentStream) -> UIView {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-
-        applyThumbnailImage(to: imageView, for: stream)
-
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-        imageView.addSubview(blurView)
-        blurView.autoPinEdgesToSuperviewEdges()
-
-        return imageView
-    }
-
     private func buildThumbnailImageView(stream: TSAttachmentStream) -> UIView {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.allowsEdgeAntialiasing = true

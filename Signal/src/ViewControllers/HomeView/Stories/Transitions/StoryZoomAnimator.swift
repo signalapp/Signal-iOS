@@ -9,6 +9,7 @@ struct StoryTransitionContext {
     let isPresenting: Bool
     let thumbnailView: UIView
     let storyView: UIView
+    let storyThumbnailSize: CGSize?
     let thumbnailRepresentsStoryView: Bool
     weak var pageViewController: StoryPageViewController!
     weak var interactiveGesture: UIPanGestureRecognizer?
@@ -17,6 +18,7 @@ struct StoryTransitionContext {
 class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     private let context: StoryTransitionContext
     private let backgroundView = UIView()
+    private let storyViewContainer = UIView()
     private var interactiveCompletion: (() -> Void)?
 
     init(storyTransitionContext: StoryTransitionContext) {
@@ -45,10 +47,31 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             return
         }
 
-        let dismissedFrame = containerView.convert(
+        let centerCroppedDismissedFrame = containerView.convert(
             context.thumbnailView.frame,
             from: context.thumbnailView.superview
         )
+
+        var storyViewDismissedSize = centerCroppedDismissedFrame.size
+
+        // The thumbnailView uses contentMode scaleAspectFill to center crop the thumbnail,
+        // but the storyView uses contentMode scaleAspectFit to letter box the full screen
+        // story. We need to cleanly animate between them, but UIKit doesn't support
+        // animating between contentModes. Instead, calculate what the frame of the letter
+        // boxed storyView would need to be to exactly line up with the center cropped image,
+        // and then crop it ourselves within storyViewContainer.
+        if let storyThumbnailSize = context.storyThumbnailSize {
+            if storyThumbnailSize.height > storyThumbnailSize.width {
+                if storyThumbnailSize.aspectRatio > centerCroppedDismissedFrame.size.aspectRatio {
+                    storyViewDismissedSize.width = storyViewDismissedSize.height * storyThumbnailSize.aspectRatio
+                }
+
+                storyViewDismissedSize.height = storyViewDismissedSize.width / storyThumbnailSize.aspectRatio
+            }
+
+            storyViewDismissedSize.width = storyViewDismissedSize.height * storyThumbnailSize.aspectRatio
+        }
+
         let presentedFrame = mediaFrame(in: transitionContext.finalFrame(for: toVC), containerView: containerView)
 
         backgroundView.backgroundColor = .ows_black
@@ -56,25 +79,34 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
         toVC.view.frame = transitionContext.finalFrame(for: toVC)
 
+        storyViewContainer.clipsToBounds = true
+        storyViewContainer.addSubview(context.storyView)
+
         if context.isPresenting {
             containerView.addSubview(backgroundView)
-            containerView.addSubview(context.storyView)
+            containerView.addSubview(storyViewContainer)
             containerView.addSubview(toVC.view)
 
-            context.storyView.frame = dismissedFrame
+            storyViewContainer.frame = centerCroppedDismissedFrame
+            context.storyView.frame = storyViewContainer.bounds.centerCropping(fullSize: storyViewDismissedSize)
             context.storyView.layoutIfNeeded()
 
             backgroundView.alpha = 0
             toVC.view.alpha = 0
 
-            context.storyView.layer.cornerRadius = 12
-            context.storyView.alpha = 0
+            storyViewContainer.layer.cornerRadius = 12
+            storyViewContainer.alpha = 0
 
             UIView.animateKeyframes(withDuration: totalDuration, delay: 0) {
                 self.animateThumbnailFade()
-                self.animatePresentation(delay: self.presentationDelay, endFrame: presentedFrame)
+                self.animatePresentation(
+                    delay: self.presentationDelay,
+                    endFrame: presentedFrame,
+                    storyViewEndSize: presentedFrame.size
+                )
                 self.animateChromeFade(delay: self.presentationDelay + self.presentationDuration)
             } completion: { _ in
+                self.storyViewContainer.removeFromSuperview()
                 self.context.storyView.removeFromSuperview()
                 self.context.thumbnailView.alpha = 1
                 self.backgroundView.removeFromSuperview()
@@ -82,11 +114,12 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             }
         } else {
             containerView.addSubview(toVC.view)
-            containerView.addSubview(context.storyView)
+            containerView.addSubview(storyViewContainer)
             containerView.addSubview(context.pageViewController.view)
 
-            context.storyView.layer.cornerRadius = UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad ? 18 : 0
-            context.storyView.frame = presentedFrame
+            storyViewContainer.layer.cornerRadius = UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad ? 18 : 0
+            storyViewContainer.frame = presentedFrame
+            context.storyView.frame = context.storyView.convert(presentedFrame, from: containerView)
             if let storyView = context.storyView as? TextAttachmentThumbnailView {
                 storyView.renderSize = presentedFrame.size
             }
@@ -114,9 +147,11 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                         }
                     } else {
                         self.animateCompletedInteractiveDismissal(
-                            endFrame: dismissedFrame,
+                            endFrame: centerCroppedDismissedFrame,
+                            storyViewEndSize: storyViewDismissedSize,
                             interactiveGesture: interactiveGesture
                         ) {
+                            self.storyViewContainer.removeFromSuperview()
                             self.context.storyView.removeFromSuperview()
                             self.backgroundView.removeFromSuperview()
                             self.context.pageViewController.view.removeFromSuperview()
@@ -130,9 +165,14 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
                 UIView.animateKeyframes(withDuration: totalDuration, delay: 0) {
                     self.animateChromeFade()
-                    self.animatePresentation(delay: self.presentationDelay, endFrame: dismissedFrame)
+                    self.animatePresentation(
+                        delay: self.presentationDelay,
+                        endFrame: centerCroppedDismissedFrame,
+                        storyViewEndSize: storyViewDismissedSize
+                    )
                     self.animateThumbnailFade(delay: self.presentationDuration + self.crossFadeDuration)
                 } completion: { _ in
+                    self.storyViewContainer.removeFromSuperview()
                     self.context.storyView.removeFromSuperview()
                     self.backgroundView.removeFromSuperview()
 
@@ -164,8 +204,8 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         if UIDevice.current.isIPad {
             // Center in view
             mediaFrame.origin = CGPoint(
-                x: mediaFrame.origin.x + containerView.safeAreaLayoutGuide.layoutFrame.midX - (mediaFrame.width / 2),
-                y: mediaFrame.origin.y + containerView.safeAreaLayoutGuide.layoutFrame.midY - (mediaFrame.height / 2)
+                x: mediaFrame.origin.x + containerView.frame.midX - (mediaFrame.width / 2),
+                y: mediaFrame.origin.y + containerView.frame.midY - (mediaFrame.height / 2)
             )
         } else {
             // Pin to top of view
@@ -182,7 +222,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             let translation = interactiveGesture.translation(in: context.pageViewController.view)
             let translatedFrame = context.pageViewController.view.frame.offsetBy(dx: translation.x, dy: translation.y)
             context.pageViewController.currentContextViewController.view.center = translatedFrame.center
-            context.storyView.frame = mediaFrame(in: translatedFrame, containerView: context.pageViewController.view)
+            self.storyViewContainer.frame = mediaFrame(in: translatedFrame, containerView: context.pageViewController.view)
         case .ended, .cancelled:
             interactiveCompletion?()
             interactiveCompletion = nil
@@ -195,6 +235,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     /// When finishing the interactive dismissal, we spring from the translated position to the final position
     private func animateCompletedInteractiveDismissal(
         endFrame: CGRect,
+        storyViewEndSize: CGSize,
         interactiveGesture: UIPanGestureRecognizer,
         completion: @escaping () -> Void
     ) {
@@ -216,13 +257,14 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             if let storyView = self.context.storyView as? TextAttachmentThumbnailView {
                 storyView.renderSize = TextAttachmentThumbnailView.defaultRenderSize
             }
-            self.context.storyView.layer.cornerRadius = 12
-            self.context.storyView.frame = endFrame
+            self.storyViewContainer.layer.cornerRadius = 12
+            self.storyViewContainer.frame = endFrame
+            self.context.storyView.frame = self.storyViewContainer.bounds.centerCropping(fullSize: storyViewEndSize)
             self.context.storyView.layoutIfNeeded()
         } completion: { _ in
             let duration = self.context.thumbnailRepresentsStoryView ? 0 : self.crossFadeDuration
             UIView.animate(withDuration: duration) {
-                self.context.storyView.alpha = self.context.isPresenting ? 1 : 0
+                self.storyViewContainer.alpha = self.context.isPresenting ? 1 : 0
                 self.context.thumbnailView.alpha = self.context.isPresenting ? 0 : 1
             } completion: { _ in
                 completion()
@@ -236,6 +278,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         completion: @escaping () -> Void
     ) {
         context.storyView.removeFromSuperview()
+        storyViewContainer.removeFromSuperview()
 
         let velocity = interactiveGesture.velocity(in: context.pageViewController.view)
         let averageVelocity = abs(velocity.x) + abs(velocity.y) / 2
@@ -261,25 +304,30 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     private func animateThumbnailFade(delay: TimeInterval = 0) {
         let duration = context.thumbnailRepresentsStoryView ? 0 : crossFadeDuration
         UIView.addKeyframe(withRelativeStartTime: delay / totalDuration, relativeDuration: duration / totalDuration) {
-            self.context.storyView.alpha = self.context.isPresenting ? 1 : 0
+            self.storyViewContainer.alpha = self.context.isPresenting ? 1 : 0
             self.context.thumbnailView.alpha = self.context.isPresenting ? 0 : 1
         }
     }
 
     /// Move the story to its final location
-    private func animatePresentation(delay: TimeInterval = 0, endFrame: CGRect) {
+    private func animatePresentation(delay: TimeInterval = 0, endFrame: CGRect, storyViewEndSize: CGSize) {
         UIView.addKeyframe(withRelativeStartTime: delay / totalDuration, relativeDuration: presentationDuration / totalDuration) {
             if let storyView = self.context.storyView as? TextAttachmentThumbnailView {
                 storyView.renderSize = self.context.isPresenting
                     ? endFrame.size : TextAttachmentThumbnailView.defaultRenderSize
             }
-            self.context.storyView.layer.cornerRadius = self.context.isPresenting
+            self.storyViewContainer.layer.cornerRadius = self.context.isPresenting
                 ? UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad ? 18 : 0
                 : 12
-            self.context.storyView.frame = endFrame
+            self.storyViewContainer.frame = endFrame
+            self.context.storyView.frame = self.storyViewContainer.bounds.centerCropping(fullSize: storyViewEndSize)
             self.context.storyView.layoutIfNeeded()
             self.backgroundView.alpha = self.context.isPresenting ? 1 : 0
         }
+    }
+
+    private func centerCroppedRect(from rect: CGRect, fullSize size: CGSize) -> CGRect {
+        rect.insetBy(dx: rect.width - size.width, dy: rect.height - size.height)
     }
 
     /// Fade the UI chrome
@@ -287,5 +335,14 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         UIView.addKeyframe(withRelativeStartTime: delay / totalDuration, relativeDuration: crossFadeDuration / totalDuration) {
             self.context.pageViewController.view.alpha = self.context.isPresenting ? 1 : 0
         }
+    }
+}
+
+private extension CGRect {
+    func centerCropping(fullSize: CGSize) -> CGRect {
+        insetBy(
+            dx: width - fullSize.width,
+            dy: height - fullSize.height
+        )
     }
 }

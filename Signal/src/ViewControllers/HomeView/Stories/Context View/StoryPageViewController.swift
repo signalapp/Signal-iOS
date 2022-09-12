@@ -439,11 +439,29 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             isPresenting: isPresenting,
             thumbnailView: storyCell.attachmentThumbnail,
             storyView: try storyView(for: storyMessage),
+            storyThumbnailSize: try storyThumbnailSize(for: storyMessage),
             thumbnailRepresentsStoryView: storyMessage.uniqueId == storyModel.messages.last?.uniqueId,
             pageViewController: self,
             interactiveGesture: interactiveDismissCoordinator?.interactionInProgress == true
                 ? interactiveDismissCoordinator?.panGestureRecognizer : nil
         )
+    }
+
+    private func storyThumbnailSize(for presentingMessage: StoryMessage) throws -> CGSize? {
+        switch presentingMessage.attachment {
+        case .file(let attachmentId):
+            guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: attachmentId, transaction: $0) }) else {
+                throw OWSAssertionError("Unexpectedly missing attachment for story message")
+            }
+
+            if let stream = attachment as? TSAttachmentStream, let thumbnailImage = stream.thumbnailImageSmallSync() {
+                return thumbnailImage.size
+            } else {
+                return nil
+            }
+        case .text:
+            return nil
+        }
     }
 
     private func storyView(for presentingMessage: StoryMessage) throws -> UIView {
