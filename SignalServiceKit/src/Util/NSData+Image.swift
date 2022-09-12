@@ -1,14 +1,21 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 extension NSData {
-
-    // Returns false if contents are still PNG.
-    // Returns true if contents are animated PNG.
-    // Returns nil if the contents are invalid or can't be parsed.
+    /// Determine whether something is an animated PNG.
+    ///
+    /// Does this by checking that the `acTL` chunk appears before any `IDAT` chunk.
+    /// See [the APNG spec][0] for more.
+    ///
+    /// [0]: https://wiki.mozilla.org/APNG_Specification
+    ///
+    /// - Returns:
+    ///   `true` if the contents appear to be an APNG.
+    ///   `false` if the contents are a still PNG.
+    ///   `nil` if the contents are invalid.
     @objc
     func isAnimatedPngData() -> NSNumber? {
         do {
