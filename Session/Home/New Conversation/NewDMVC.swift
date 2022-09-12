@@ -72,9 +72,11 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         setNavBarTitle(NSLocalizedString("vc_create_private_chat_title", comment: ""))
         let navigationBar = navigationController!.navigationBar
         // Set up navigation bar buttons
-        if !shouldShowBackButton {
-            let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-            closeButton.tintColor = Colors.text
+        let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
+        closeButton.tintColor = Colors.text
+        if shouldShowBackButton {
+            navigationItem.rightBarButtonItem = closeButton
+        } else {
             navigationItem.leftBarButtonItem = closeButton
         }
         // Set up page VC

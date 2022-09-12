@@ -82,6 +82,10 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         let customTitleFontSize = Values.largeFontSize
         setNavBarTitle("vc_create_closed_group_title".localized(), customFontSize: customTitleFontSize)
         
+        let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
+        closeButton.tintColor = Colors.text
+        navigationItem.rightBarButtonItem = closeButton
+        
         // Set up content
         setUpViewHierarchy()
     }
