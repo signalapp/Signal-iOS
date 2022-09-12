@@ -675,8 +675,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             }
 
             CameraFirstCaptureNavigationController *cameraModal =
-                [CameraFirstCaptureNavigationController cameraFirstModalWithStoriesOnly:NO];
-            cameraModal.cameraFirstCaptureSendFlow.delegate = self;
+                [CameraFirstCaptureNavigationController cameraFirstModalWithStoriesOnly:NO delegate:self];
             cameraModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
 
             // Defer hiding status bar until modal is fully onscreen

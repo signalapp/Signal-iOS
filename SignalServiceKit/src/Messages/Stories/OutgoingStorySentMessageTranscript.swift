@@ -109,8 +109,11 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
             }
             builder.setFileAttachment(attachmentProto)
         case .text(let attachment):
-            // TODO: Sending text attachments
-            break
+            guard let attachmentProto = try? attachment.buildProto(transaction: transaction) else {
+                owsFailDebug("Missing attachment for outgoing story message")
+                return nil
+            }
+            builder.setTextAttachment(attachmentProto)
         }
 
         builder.setAllowsReplies(true)

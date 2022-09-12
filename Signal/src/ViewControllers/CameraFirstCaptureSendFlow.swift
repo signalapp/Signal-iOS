@@ -12,11 +12,12 @@ protocol CameraFirstCaptureDelegate: AnyObject {
 
 @objc
 class CameraFirstCaptureSendFlow: NSObject {
-    @objc
-    weak var delegate: CameraFirstCaptureDelegate?
+
+    private weak var delegate: CameraFirstCaptureDelegate?
 
     private var approvedAttachments: [SignalAttachment]?
     private var approvalMessageBody: MessageBody?
+    private var textAttachment: TextAttachment?
 
     private var mentionCandidates: [SignalServiceAddress] = []
 
@@ -24,8 +25,9 @@ class CameraFirstCaptureSendFlow: NSObject {
     private var selectedConversations: [ConversationItem] { selection.conversations }
 
     private let storiesOnly: Bool
-    init(storiesOnly: Bool) {
+    init(storiesOnly: Bool, delegate: CameraFirstCaptureDelegate?) {
         self.storiesOnly = storiesOnly
+        self.delegate = delegate
         super.init()
     }
 
@@ -79,6 +81,16 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: TextAttachment) {
+        self.textAttachment = textAttachment
+
+        let pickerVC = ConversationPickerViewController(selection: selection)
+        pickerVC.pickerDelegate = self
+        pickerVC.isStorySectionExpanded = true
+        pickerVC.sectionOptions = .stories
+        sendMediaNavigationController.pushViewController(pickerVC, animated: true)
+    }
+
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?) {
         self.approvalMessageBody = newMessageBody
     }
@@ -110,6 +122,25 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
     }
 
     public func conversationPickerDidCompleteSelection(_ conversationPickerViewController: ConversationPickerViewController) {
+        if let textAttachment = textAttachment {
+            let selectedStoryItems = selectedConversations.filter { $0 is StoryConversationItem }
+            guard !selectedStoryItems.isEmpty else {
+                owsFailDebug("Selection was unexpectedly empty.")
+                delegate?.cameraFirstCaptureSendFlowDidCancel(self)
+                return
+            }
+
+            firstly {
+                AttachmentMultisend.sendTextAttachment(textAttachment, to: selectedStoryItems)
+            }.done { _ in
+                self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
+            }.catch { error in
+                owsFailDebug("Error: \(error)")
+            }
+
+            return
+        }
+
         guard let approvedAttachments = self.approvedAttachments else {
             owsFailDebug("approvedAttachments was unexpectedly nil")
             delegate?.cameraFirstCaptureSendFlowDidCancel(self)

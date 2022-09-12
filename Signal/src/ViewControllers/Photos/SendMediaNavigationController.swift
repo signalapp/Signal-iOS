@@ -6,17 +6,17 @@ import Foundation
 import Photos
 import SignalUI
 
-@objc
 protocol SendMediaNavDelegate: AnyObject {
 
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?)
 
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: TextAttachment)
+
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?)
 }
 
-@objc
 protocol SendMediaNavDataSource: AnyObject {
 
     func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody?
@@ -28,7 +28,6 @@ protocol SendMediaNavDataSource: AnyObject {
     var sendMediaNavMentionableAddresses: [SignalServiceAddress] { get }
 }
 
-@objc
 class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     override var requiresContactPickerToProceed: Bool {
@@ -37,15 +36,14 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     override var canSendToStories: Bool { StoryManager.areStoriesEnabled }
 
-    @objc
-    private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
+    private var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
 
     @objc
-    class func cameraFirstModal(storiesOnly: Bool = false) -> CameraFirstCaptureNavigationController {
+    class func cameraFirstModal(storiesOnly: Bool = false, delegate: CameraFirstCaptureDelegate?) -> CameraFirstCaptureNavigationController {
         let navController = CameraFirstCaptureNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
 
-        let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow(storiesOnly: storiesOnly)
+        let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow(storiesOnly: storiesOnly, delegate: delegate)
         navController.cameraFirstCaptureSendFlow = cameraFirstCaptureSendFlow
         navController.sendMediaNavDelegate = cameraFirstCaptureSendFlow
         navController.sendMediaNavDataSource = cameraFirstCaptureSendFlow
@@ -54,7 +52,6 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
     }
 }
 
-@objc
 class SendMediaNavigationController: OWSNavigationController {
 
     fileprivate var requiresContactPickerToProceed: Bool {
@@ -288,6 +285,11 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             return
         }
         showApprovalAfterProcessingAnyMediaLibrarySelections()
+    }
+
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
+                                    didFinishWithTextAttachment textAttachment: TextAttachment) {
+        sendMediaNavDelegate?.sendMediaNav(self, didFinishWithTextAttachment: textAttachment)
     }
 
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController) {

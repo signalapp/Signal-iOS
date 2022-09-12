@@ -224,8 +224,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
                     Logger.warn("proceeding, though mic permission denied.")
                 }
 
-                let modal = CameraFirstCaptureNavigationController.cameraFirstModal(storiesOnly: true)
-                modal.cameraFirstCaptureSendFlow.delegate = self
+                let modal = CameraFirstCaptureNavigationController.cameraFirstModal(storiesOnly: true, delegate: self)
                 self.presentFullScreen(modal, animated: true)
             }
         }

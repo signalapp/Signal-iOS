@@ -61,7 +61,7 @@ public class AttachmentMultisend: Dependencies {
         }
     }
 
-    private struct PreparedMultisend {
+    private struct PreparedMediaMultisend {
         let attachmentIdMap: [String: [String]]
         let messages: [TSOutgoingMessage]
         let unsavedMessages: [TSOutgoingMessage]
@@ -85,7 +85,7 @@ public class AttachmentMultisend: Dependencies {
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
-    ) throws -> PreparedMultisend {
+    ) throws -> PreparedMediaMultisend {
         var attachmentsByMessageType = [TypeWrapper: [(ConversationItem, [SignalAttachment])]]()
 
         // If we're sending to any stories, limit all attachments to the standard quality level.
@@ -126,7 +126,7 @@ public class AttachmentMultisend: Dependencies {
                     guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
                         throw OWSAssertionError("Missing thread for conversation")
                     }
-                    return .init(thread: thread, attachments: attachments)
+                    return .init(thread: thread, content: .media(attachments))
                 }
 
                 try wrapper.type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
@@ -151,7 +151,7 @@ public class AttachmentMultisend: Dependencies {
             }
         }
 
-        return PreparedMultisend(
+        return PreparedMediaMultisend(
             attachmentIdMap: state.attachmentIdMap,
             messages: state.messages,
             unsavedMessages: state.unsavedMessages,
@@ -159,18 +159,69 @@ public class AttachmentMultisend: Dependencies {
     }
 }
 
-@objc
-class MultisendDestination: NSObject {
-    let thread: TSThread
-    let attachments: [SignalAttachment]
+public extension AttachmentMultisend {
 
-    init(thread: TSThread, attachments: [SignalAttachment]) {
-        self.thread = thread
-        self.attachments = attachments
+    class func sendTextAttachment(
+        _ textAttachment: TextAttachment,
+        to conversations: [ConversationItem]
+    ) -> Promise<[TSThread]> {
+        return firstly(on: ThreadUtil.enqueueSendQueue) {
+            let preparedSend = try self.prepareForSending(conversations: conversations, textAttachment: textAttachment)
+            self.databaseStorage.write { transaction in
+                for message in preparedSend.messages {
+                    self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+                }
+            }
+            return preparedSend.threads
+        }
+    }
+
+    private struct PreparedTextMultisend {
+        let messages: [TSOutgoingMessage]
+        let threads: [TSThread]
+    }
+
+    private class func prepareForSending(
+        conversations: [ConversationItem],
+        textAttachment: TextAttachment
+    ) throws -> PreparedTextMultisend {
+
+        let state = MultisendState(approvalMessageBody: nil)
+        let conversationsByMessageType = Dictionary(grouping: conversations, by: { TypeWrapper(type: $0.outgoingMessageClass) })
+        try self.databaseStorage.write { transaction in
+            for (wrapper, conversations) in conversationsByMessageType {
+                let destinations = try conversations.lazy.map { conversation -> MultisendDestination in
+                    guard let thread = conversation.getOrCreateThread(transaction: transaction) else {
+                        throw OWSAssertionError("Missing thread for conversation")
+                    }
+                    return .init(thread: thread, content: .text(textAttachment))
+                }
+
+                try wrapper.type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
+            }
+        }
+
+        return PreparedTextMultisend(
+            messages: state.unsavedMessages,
+            threads: state.threads)
     }
 }
 
-@objc
+enum MultisendContent {
+    case media([SignalAttachment])
+    case text(TextAttachment)
+}
+
+class MultisendDestination: NSObject {
+    let thread: TSThread
+    let content: MultisendContent
+
+    init(thread: TSThread, content: MultisendContent) {
+        self.thread = thread
+        self.content = content
+    }
+}
+
 class MultisendState: NSObject {
     let approvalMessageBody: MessageBody?
     var messages: [TSOutgoingMessage] = []

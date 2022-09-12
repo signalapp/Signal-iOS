@@ -23,12 +23,20 @@ extension TSOutgoingMessage {
                 transaction: transaction.unwrapGrdbRead
             )
 
-            let message = try ThreadUtil.createUnsentMessage(
-                body: messageBodyForContext,
-                mediaAttachments: destination.attachments,
-                thread: destination.thread,
-                transaction: transaction
-            )
+            let message: TSOutgoingMessage
+            switch destination.content {
+            case .media(let attachments):
+                message = try ThreadUtil.createUnsentMessage(
+                    body: messageBodyForContext,
+                    mediaAttachments: attachments,
+                    thread: destination.thread,
+                    transaction: transaction
+                )
+
+            case .text:
+                owsFailDebug("Cannot send TextAttachment to chats.")
+                continue
+            }
 
             state.messages.append(message)
             state.threads.append(destination.thread)

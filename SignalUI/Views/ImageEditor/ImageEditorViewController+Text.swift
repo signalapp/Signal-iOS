@@ -93,9 +93,7 @@ extension ImageEditorViewController {
     // in order to reflect the changes right away.
     func updateTextViewAttributes(using textToolbar: TextStylingToolbar) {
         let fontPointSize = textView.font?.pointSize ?? ImageEditorTextItem.defaultFontSize
-        textView.update(withColor: textToolbar.colorPickerView.selectedValue.color,
-                        font: MediaTextView.font(forTextStyle: textToolbar.textStyle, pointSize: fontPointSize),
-                        decorationStyle: textToolbar.decorationStyle)
+        textView.update(using: textToolbar, fontPointSize: fontPointSize)
     }
 
     override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {

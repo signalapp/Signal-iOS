@@ -1169,11 +1169,7 @@ class FlashModeButton: RoundMediaButton {
     private var flashMode: AVCaptureDevice.FlashMode = .auto
 
     required init() {
-        super.init(image: FlashModeButton.flashAuto, backgroundStyle: .blur)
-    }
-
-    required init(image: UIImage?, backgroundStyle: RoundMediaButton.BackgroundStyle) {
-        fatalError("init(image:backgroundStyle:) has not been implemented")
+        super.init(image: FlashModeButton.flashAuto, backgroundStyle: .blur, customView: nil)
     }
 
     func setFlashMode(_ flashMode: AVCaptureDevice.FlashMode, animated: Bool) {
@@ -1201,12 +1197,8 @@ class CameraChooserButton: RoundMediaButton {
 
     var isFrontCameraActive = false
 
-    required init(backgroundStyle: RoundMediaButton.BackgroundStyle) {
-        super.init(image: UIImage(named: "media-composer-switch-camera"), backgroundStyle: backgroundStyle)
-    }
-
-    required init(image: UIImage?, backgroundStyle: RoundMediaButton.BackgroundStyle) {
-        fatalError("init(image:backgroundStyle:) has not been implemented")
+    init(backgroundStyle: RoundMediaButton.BackgroundStyle) {
+        super.init(image: UIImage(named: "media-composer-switch-camera"), backgroundStyle: backgroundStyle, customView: nil)
     }
 
     func performSwitchAnimation() {
@@ -1222,12 +1214,8 @@ class CaptureModeButton: RoundMediaButton {
     private static let batchModeOn = UIImage(named: "media-composer-create-album-solid")
     private static let batchModeOff = UIImage(named: "media-composer-create-album-outline")
 
-    required init() {
-        super.init(image: CaptureModeButton.batchModeOff, backgroundStyle: .blur)
-    }
-
-    required init(image: UIImage?, backgroundStyle: RoundMediaButton.BackgroundStyle) {
-        fatalError("init(image:backgroundStyle:) has not been implemented")
+    init() {
+        super.init(image: CaptureModeButton.batchModeOff, backgroundStyle: .blur, customView: nil)
     }
 
     private var captureMode = PhotoCaptureViewController.CaptureMode.single
@@ -1416,18 +1404,33 @@ class CameraBottomBar: UIView {
         }
     }
 
-    var isRecordingVideo = false {
-        didSet {
-            photoLibraryButton.isHidden = isRecordingVideo
-            switchCameraButton.isHidden = isRecordingVideo
-            if isContentTypeSelectionControlAvailable {
-                contentTypeSelectionControl.isHidden = isRecordingVideo
-            }
+    enum Mode {
+        case camera
+        case videoRecording
+        case text
+    }
+    private var _internalMode: Mode = .camera
+    var mode: Mode { _internalMode }
+    func setMode(_ mode: Mode, animated: Bool) {
+        guard _internalMode != mode else { return }
+        _internalMode = mode
+
+        let hideBottomButtons = mode != .camera
+        photoLibraryButton.setIsHidden(hideBottomButtons, animated: animated)
+        switchCameraButton.setIsHidden(hideBottomButtons, animated: animated)
+
+        let hideCameraCaptureControl = mode == .text
+        captureControl.setIsHidden(hideCameraCaptureControl, animated: animated)
+
+        if isContentTypeSelectionControlAvailable {
+            contentTypeSelectionControl.setIsHidden(mode == .videoRecording, animated: animated)
+            proceedButton.setIsHidden(mode != .text, animated: animated)
         }
     }
 
     let photoLibraryButton = MediaPickerThumbnailButton()
     let switchCameraButton = CameraChooserButton(backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor))
+    let proceedButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "arrow-right-24"), backgroundStyle: .solid(.ows_accentBlue))
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
 
     let captureControl = CameraCaptureControl(axis: .horizontal)
@@ -1445,6 +1448,7 @@ class CameraBottomBar: UIView {
 
         preservesSuperviewLayoutMargins = true
 
+        controlButtonsLayoutGuide.identifier = "ControlButtonsLayoutGuide"
         addLayoutGuide(controlButtonsLayoutGuide)
         addConstraints([ controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
                          controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: topAnchor),
@@ -1465,37 +1469,49 @@ class CameraBottomBar: UIView {
         switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(switchCameraButton)
         addConstraints([ switchCameraButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
-                         switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
+                         switchCameraButton.topAnchor.constraint(equalTo: controlButtonsLayoutGuide.topAnchor),
                          switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
 
         if isContentTypeSelectionControlAvailable {
             contentTypeSelectionControl.translatesAutoresizingMaskIntoConstraints = false
             addSubview(contentTypeSelectionControl)
-            addConstraints([ contentTypeSelectionControl.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor) ])
+            addConstraints([ contentTypeSelectionControl.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor),
+                             contentTypeSelectionControl.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
+
+            proceedButton.isHidden = true
+            proceedButton.isEnabled = false
+            proceedButton.contentEdgeInsets = UIEdgeInsets(margin: proceedButton.layoutMargins.leading + 9) // image is 24x24 and we want 42x42 button.
+            proceedButton.accessibilityValue = NSLocalizedString("CAMERA_VO_ARROW_RIGHT_PROCEED",
+                                                                 value: "Proceed",
+                                                                 comment: "VoiceOver label for -> button in text story composer.")
+            proceedButton.translatesAutoresizingMaskIntoConstraints = false
+            addSubview(proceedButton)
+            addConstraints([ proceedButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
+                             proceedButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
         }
 
         // Compact Height:
-        // • control buttons are vertically centered with the shutter button.
-        // • shutter button control takes entire view height.
         // With this layout owner of this view should be able to just define vertical position of the bar.
-        compactHeightLayoutConstraints.append(contentsOf: [ captureControl.shutterButtonLayoutGuide.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
         if isContentTypeSelectionControlAvailable {
-            compactHeightLayoutConstraints.append(contentsOf: [ contentTypeSelectionControl.topAnchor.constraint(equalTo: captureControl.bottomAnchor, constant: 8),
-                                                                contentTypeSelectionControl.bottomAnchor.constraint(equalTo: bottomAnchor) ])
+            // • control buttons are located below shutter button with a fixed spacing and are pinned to the bottom.
+           compactHeightLayoutConstraints.append(
+                contentsOf: [ controlButtonsLayoutGuide.topAnchor.constraint(equalTo: captureControl.bottomAnchor, constant: 8),
+                              controlButtonsLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor) ])
         } else {
-            compactHeightLayoutConstraints.append(captureControl.bottomAnchor.constraint(equalTo: bottomAnchor))
+            // • control buttons are vertically centered with the shutter button.
+            // • shutter button control takes the entire view height.
+            compactHeightLayoutConstraints.append(
+                contentsOf: [ controlButtonsLayoutGuide.centerYAnchor.constraint(equalTo: captureControl.shutterButtonLayoutGuide.centerYAnchor),
+                              captureControl.bottomAnchor.constraint(equalTo: bottomAnchor) ])
         }
 
         // Regular Height:
-        // • controls are located below the shutter button.
+        // • controls are located below the shutter button but exact spacing is to be defined by view controller.
         // • area with the controls is pinned to the bottom edge of the view.
         // With this layout owner of this view is supposed to add additional constraints
         // to top and bottom anchors of controlButtonsLayoutGuide thus positioning buttons properly.
         regularHeightLayoutConstraints.append(contentsOf: [ controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: captureControl.bottomAnchor),
                                                             controlButtonsLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor) ])
-        if isContentTypeSelectionControlAvailable {
-            regularHeightLayoutConstraints.append(contentTypeSelectionControl.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor))
-        }
 
         updateCompactHeightLayoutConstraints()
     }
@@ -1523,6 +1539,13 @@ class CameraBottomBar: UIView {
                 self.updateContentTypePickerAccessibilityFrame()
             }
         }
+    }
+
+    // Override to allow touches that hit empty area of the toobar to pass through to views underneath.
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let view = super.hitTest(point, with: event)
+        guard view != self else { return nil }
+        return view
     }
 
     private func updateContentTypePickerAccessibilityFrame() {

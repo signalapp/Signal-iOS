@@ -199,7 +199,7 @@ class ImageEditorViewController: OWSViewController {
         return textView
     }()
     lazy var textToolbar: TextStylingToolbar = {
-        let toolbar = TextStylingToolbar(currentColor: currentTextItem?.textItem.color ?? model.color)
+        let toolbar = TextStylingToolbar(layout: .photoOverlay, currentColor: currentTextItem?.textItem.color ?? model.color)
         toolbar.preservesSuperviewLayoutMargins = true
         toolbar.colorPickerView.delegate = self
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
@@ -207,7 +207,7 @@ class ImageEditorViewController: OWSViewController {
         return toolbar
     }()
     lazy var textViewAccessoryToolbar: TextStylingToolbar = {
-        let toolbar = TextStylingToolbar(currentColor: currentTextItem?.textItem.color ?? model.color)
+        let toolbar = TextStylingToolbar(layout: .photoOverlay, currentColor: currentTextItem?.textItem.color ?? model.color)
         toolbar.preservesSuperviewLayoutMargins = true
         toolbar.colorPickerView.delegate = self
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)

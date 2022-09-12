@@ -821,6 +821,11 @@ extension ConversationViewController: SendMediaNavDelegate {
         self.dismiss(animated: true, completion: nil)
     }
 
+    func sendMediaNav(_ sendMediaNavifationController: SendMediaNavigationController,
+                      didFinishWithTextAttachment textAttachment: TextAttachment) {
+        owsFailDebug("Can not post text stories to chat.")
+    }
+
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController,
                       didChangeMessageBody newMessageBody: MessageBody?) {
         guard hasViewWillAppearEverBegun else {

@@ -33,6 +33,10 @@ public class ColorPickerBarColor {
         return ColorPickerBarColor(color: UIColor(rgbHex: 0xff0000), palettePhase: 1/9)
     }
 
+    class var white: ColorPickerBarColor {
+        ColorPickerBarColor(color: UIColor(rgbHex: 0xffffff), palettePhase: 1)
+    }
+
     static var gradientUIColors: [UIColor] {
         return [
             UIColor(rgbHex: 0x000000),
@@ -166,19 +170,18 @@ private class ColorPreviewView: OWSLayerView {
 
 public class ColorPickerBarView: UIView {
 
-    weak var delegate: ColorPickerBarViewDelegate?
+    public weak var delegate: ColorPickerBarViewDelegate?
 
+    public var color: UIColor { selectedValue.color }
     var selectedValue: ColorPickerBarColor {
         didSet {
             updateState()
         }
     }
 
-    required init(currentColor: ColorPickerBarColor) {
-        self.selectedValue = currentColor
-
+    required init(currentColor: ColorPickerBarColor? = nil) {
+        selectedValue = currentColor ?? ColorPickerBarColor.defaultColor()
         super.init(frame: .zero)
-
         createContents()
     }
 

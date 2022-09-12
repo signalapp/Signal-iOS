@@ -27,6 +27,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
         self.skipSyncTranscript = NSNumber(value: skipSyncTranscript)
         let builder = TSOutgoingMessageBuilder(thread: thread)
         builder.timestamp = storyMessage.timestamp
+        builder.attachmentIds = storyMessage.allAttachmentIds
         super.init(outgoingMessageWithBuilder: builder, transaction: transaction)
     }
 
@@ -60,7 +61,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     }
 
     public class func createUnsentMessage(
-        attachment: TSAttachmentStream,
+        attachment: StoryMessageAttachment,
         thread: TSThread,
         transaction: SDSAnyWriteTransaction
     ) throws -> OutgoingStoryMessage {
@@ -84,7 +85,7 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             authorUuid: tsAccountManager.localUuid!,
             groupId: (thread as? TSGroupThread)?.groupId,
             manifest: storyManifest,
-            attachment: .file(attachmentId: attachment.uniqueId)
+            attachment: attachment
         )
         storyMessage.anyInsert(transaction: transaction)
 
@@ -179,8 +180,11 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             }
             builder.setFileAttachment(attachmentProto)
         case .text(let attachment):
-            // TODO: Sending text attachments
-            break
+            guard let attachmentProto = try? attachment.buildProto(transaction: transaction) else {
+                owsFailDebug("Missing attachment for outgoing story message")
+                return nil
+            }
+            builder.setTextAttachment(attachmentProto)
         }
 
         builder.setAllowsReplies((thread as? TSPrivateStoryThread)?.allowsReplies ?? true)

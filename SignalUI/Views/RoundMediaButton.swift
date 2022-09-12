@@ -15,14 +15,22 @@ open class RoundMediaButton: UIButton {
 
     let backgroundStyle: BackgroundStyle
     private var backgroundContainerView: UIView?
-    let backgroundView: UIView?
+    private let backgroundView: UIView?
     private var backgroundDimmerView: UIView?
     public static let defaultBackgroundColor = UIColor.ows_gray80
     static let visibleButtonSize: CGFloat = 42
     private static let defaultInset: CGFloat = 8
     private static let defaultContentInset: CGFloat = 15
 
-    public required init(image: UIImage?, backgroundStyle: BackgroundStyle) {
+    public convenience init(image: UIImage?, backgroundStyle: BackgroundStyle) {
+        self.init(image: image, backgroundStyle: backgroundStyle, customView: nil)
+    }
+
+    public convenience init(customView: UIView, backgroundStyle: BackgroundStyle) {
+        self.init(image: nil, backgroundStyle: backgroundStyle, customView: customView)
+    }
+
+    public init(image: UIImage?, backgroundStyle: BackgroundStyle, customView: UIView?) {
         self.backgroundStyle = backgroundStyle
         self.backgroundView = {
             switch backgroundStyle {
@@ -44,22 +52,23 @@ open class RoundMediaButton: UIButton {
         tintColor = Theme.darkThemePrimaryColor
         insetsLayoutMarginsFromSafeArea = false
 
-        switch backgroundStyle {
-        case .solid, .blur:
-            backgroundContainerView = PillView()
-
-        case .none:
-            break
-        }
-
-        if let backgroundContainerView = backgroundContainerView, let backgroundView = backgroundView {
+        if backgroundView != nil || customView != nil {
+            let backgroundContainerView = PillView()
             backgroundContainerView.isUserInteractionEnabled = false
             addSubview(backgroundContainerView)
             backgroundContainerView.autoPinEdgesToSuperviewMargins()
+            self.backgroundContainerView = backgroundContainerView
 
-            backgroundView.isUserInteractionEnabled = false
-            backgroundContainerView.addSubview(backgroundView)
-            backgroundView.autoPinEdgesToSuperviewEdges()
+            if let backgroundView = backgroundView {
+                backgroundView.isUserInteractionEnabled = false
+                backgroundContainerView.addSubview(backgroundView)
+                backgroundView.autoPinEdgesToSuperviewEdges()
+            }
+
+            if let customView = customView {
+                backgroundContainerView.addSubview(customView)
+                customView.autoCenterInSuperview()
+            }
 
             let backgroundDimmerView = UIView(frame: backgroundContainerView.bounds)
             // Match color of the highlighted white button image.

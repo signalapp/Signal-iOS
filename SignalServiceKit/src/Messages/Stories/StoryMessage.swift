@@ -671,6 +671,14 @@ public struct TextAttachment: Codable {
             let startColorHex: UInt32
             let endColorHex: UInt32
             let angle: UInt32
+
+            func buildProto() throws -> SSKProtoTextAttachmentGradient {
+                let builder = SSKProtoTextAttachmentGradient.builder()
+                builder.setStartColor(startColorHex)
+                builder.setEndColor(endColorHex)
+                builder.setAngle(angle)
+                return try builder.build()
+            }
         }
     }
     private let rawBackground: RawBackground
@@ -751,6 +759,70 @@ public struct TextAttachment: Codable {
         if let preview = proto.preview {
             self.preview = try OWSLinkPreview.buildValidatedLinkPreview(proto: preview, transaction: transaction)
         }
+    }
+
+    public func buildProto(transaction: SDSAnyReadTransaction) throws -> SSKProtoTextAttachment {
+        let builder = SSKProtoTextAttachment.builder()
+
+        if let text = text {
+            builder.setText(text)
+        }
+
+        let textStyle: SSKProtoTextAttachmentStyle = {
+            switch self.textStyle {
+            case .regular: return .regular
+            case .bold: return .bold
+            case .serif: return .serif
+            case .script: return .script
+            case .condensed: return .condensed
+            }
+        }()
+        builder.setTextStyle(textStyle)
+
+        if let textForegroundColorHex = textForegroundColorHex {
+            builder.setTextForegroundColor(textForegroundColorHex)
+        }
+
+        if let textBackgroundColorHex = textBackgroundColorHex {
+            builder.setTextBackgroundColor(textBackgroundColorHex)
+        }
+
+        switch rawBackground {
+        case .color(let hex):
+            builder.setColor(hex)
+        case .gradient(let raw):
+            builder.setGradient(try raw.buildProto())
+        }
+
+        if let preview = preview {
+            builder.setPreview(try preview.buildProto(transaction: transaction))
+        }
+
+        return try builder.build()
+    }
+
+    public init(text: String,
+                textStyle: TextStyle,
+                textForegroundColor: UIColor,
+                textBackgroundColor: UIColor?,
+                background: Background,
+                linkPreview: OWSLinkPreview?) {
+        self.text = text
+        self.textStyle = textStyle
+        self.textForegroundColorHex = textForegroundColor.argbHex
+        self.textBackgroundColorHex = textBackgroundColor?.argbHex
+        self.rawBackground = {
+            switch background {
+            case .color(let color):
+                return .color(hex: color.argbHex)
+
+            case .gradient(let gradient):
+                return .gradient(raw: .init(startColorHex: gradient.startColor.argbHex,
+                                            endColorHex: gradient.endColor.argbHex,
+                                            angle: gradient.angle))
+            }
+        }()
+        self.preview = linkPreview
     }
 }
 

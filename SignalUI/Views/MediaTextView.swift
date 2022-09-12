@@ -6,14 +6,14 @@ import UIKit
 
 public class MediaTextView: UITextView {
 
-    enum DecorationStyle: Int {
+    public enum DecorationStyle: Int {
         case none = 0
         case inverted
         case underline
         case outline
     }
 
-    enum TextStyle: Int {
+    public enum TextStyle: Int {
         case regular = 0
         case bold
         case serif
@@ -77,7 +77,20 @@ public class MediaTextView: UITextView {
         // TODO: Figure out correct way to handle long text and implement it.
     }
 
-    func update(withColor color: UIColor, font: UIFont, decorationStyle: MediaTextView.DecorationStyle) {
+    public func update(using textStylingToolbar: TextStylingToolbar,
+                       fontPointSize: CGFloat,
+                       textAlignment: NSTextAlignment = .center) {
+        let font = MediaTextView.font(forTextStyle: textStylingToolbar.textStyle, pointSize: fontPointSize)
+        update(withColor: textStylingToolbar.colorPickerView.color,
+               font: font,
+               textAlignment: textAlignment,
+               decorationStyle: textStylingToolbar.decorationStyle)
+    }
+
+    public func update(withColor color: UIColor,
+                       font: UIFont,
+                       textAlignment: NSTextAlignment = .center,
+                       decorationStyle: MediaTextView.DecorationStyle) {
         var attributes: [NSAttributedString.Key: Any] = [ .font: font]
 
         let textColor: UIColor = {
@@ -89,7 +102,7 @@ public class MediaTextView: UITextView {
         attributes[.foregroundColor] = textColor
 
         if let paragraphStyle = NSParagraphStyle.default.mutableCopy() as? NSMutableParagraphStyle {
-            paragraphStyle.alignment = .center
+            paragraphStyle.alignment = textAlignment
             attributes[.paragraphStyle] = paragraphStyle
         }
 
@@ -137,20 +150,39 @@ public class MediaTextView: UITextView {
 
 public class TextStylingToolbar: UIView {
 
-    let colorPickerView: ColorPickerBarView
+    public enum Layout {
+        case photoOverlay
+        case textStory
+    }
+    let layout: Layout
 
-    let textStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-font"), backgroundStyle: .blur)
-    var textStyle: MediaTextView.TextStyle = .regular
+    public let colorPickerView: ColorPickerBarView
 
-    let decorationStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-style-1"), backgroundStyle: .blur)
-    var decorationStyle: MediaTextView.DecorationStyle = .none {
+    private static func defaultColor(forLayout layout: Layout) -> ColorPickerBarColor {
+        switch layout {
+        case .photoOverlay:
+            return ColorPickerBarColor.defaultColor()
+        case .textStory:
+            return ColorPickerBarColor.white
+        }
+    }
+
+    public let textStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-font"), backgroundStyle: .blur)
+    public var textStyle: MediaTextView.TextStyle = .regular
+
+    public let decorationStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-style-1"), backgroundStyle: .blur)
+    public var decorationStyle: MediaTextView.DecorationStyle = .none {
         didSet {
             decorationStyleButton.isSelected = (decorationStyle != .none)
         }
     }
 
-    init(currentColor: ColorPickerBarColor) {
-        self.colorPickerView = ColorPickerBarView(currentColor: currentColor)
+    public lazy var doneButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "check-24"), backgroundStyle: .blur)
+
+    public init(layout: Layout, currentColor: ColorPickerBarColor? = nil) {
+        self.layout = layout
+        colorPickerView = ColorPickerBarView(currentColor: currentColor ?? TextStylingToolbar.defaultColor(forLayout: layout))
+
         super.init(frame: .zero)
 
         decorationStyleButton.setContentCompressionResistancePriority(.required, for: .vertical)
@@ -173,16 +205,34 @@ public class TextStylingToolbar: UIView {
 
         // I had to use a custom layout guide because stack view isn't centered
         // but instead has slight offset towards the trailing edge.
-        let stackView = UIStackView(arrangedSubviews: [ colorPickerView, textStyleButton, decorationStyleButton ])
+        let stackViewSubviews: [UIView] = {
+            switch layout {
+            case .photoOverlay:
+                return [ colorPickerView, textStyleButton, decorationStyleButton ]
+            case .textStory:
+                return [ textStyleButton, decorationStyleButton, colorPickerView, doneButton ]
+            }
+        }()
+        let stackView = UIStackView(arrangedSubviews: stackViewSubviews)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.alignment = .center
         stackView.spacing = 8
         stackView.setCustomSpacing(0, after: textStyleButton)
         addSubview(stackView)
+
+        // Round buttons have no-zero layout margins. Use values of those margins
+        // to offset button positions so that they appear properly aligned.
+        var leadingMargin: CGFloat = 0
+        var trailingMargin: CGFloat = 0
+        if let button = stackViewSubviews.first as? RoundMediaButton {
+            leadingMargin = button.layoutMargins.leading
+        }
+        if let button = stackViewSubviews.last as? RoundMediaButton {
+            trailingMargin = button.layoutMargins.trailing
+        }
         addConstraints([
-            stackView.leadingAnchor.constraint(equalTo: stackViewLayoutGuide.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: stackViewLayoutGuide.trailingAnchor,
-                                                constant: decorationStyleButton.layoutMargins.trailing),
+            stackView.leadingAnchor.constraint(equalTo: stackViewLayoutGuide.leadingAnchor, constant: -leadingMargin),
+            stackView.trailingAnchor.constraint(equalTo: stackViewLayoutGuide.trailingAnchor, constant: trailingMargin),
             stackView.topAnchor.constraint(equalTo: stackViewLayoutGuide.topAnchor),
             stackView.bottomAnchor.constraint(equalTo: stackViewLayoutGuide.bottomAnchor) ])
     }
