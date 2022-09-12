@@ -440,11 +440,18 @@ class SentStoryCell: UITableViewCell {
             titleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
             subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED_RETRY", comment: "Text indicating that you can tap to retry sending")
         case .sent:
-            let format = NSLocalizedString(
-                "STORY_VIEWS_%d", tableName: "PluralAware",
-                comment: "Text explaining how many views a story has. Embeds {{ %d number of views }}"
-            )
-            titleLabel.text = String.localizedStringWithFormat(format, item.message.remoteViewCount)
+            if receiptManager.areReadReceiptsEnabled() {
+                let format = NSLocalizedString(
+                    "STORY_VIEWS_%d", tableName: "PluralAware",
+                    comment: "Text explaining how many views a story has. Embeds {{ %d number of views }}"
+                )
+                titleLabel.text = String.localizedStringWithFormat(format, item.message.remoteViewCount)
+            } else {
+                titleLabel.text = NSLocalizedString(
+                    "STORY_VIEWS_OFF",
+                    comment: "Text indicating that the user has views turned off"
+                )
+            }
             subtitleLabel.text = DateUtil.formatTimestampRelatively(item.message.timestamp)
             failedIconContainer.isHiddenInStackView = true
         case .sent_OBSOLETE, .delivered_OBSOLETE:

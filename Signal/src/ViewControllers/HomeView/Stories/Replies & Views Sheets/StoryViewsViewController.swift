@@ -18,16 +18,7 @@ class StoryViewsViewController: OWSViewController {
 
     let tableView = UITableView(frame: .zero, style: .grouped)
 
-    private lazy var emptyStateView: UIView = {
-        let label = UILabel()
-        label.font = .ows_dynamicTypeBody
-        label.textColor = .ows_gray45
-        label.textAlignment = .center
-        label.text = NSLocalizedString("STORIES_NO_VIEWS_YET", comment: "Indicates that this story has no views yet")
-        label.isHidden = true
-        label.isUserInteractionEnabled = false
-        return label
-    }()
+    private let emptyStateView = UIView()
 
     init(storyMessage: StoryMessage) {
         self.storyMessage = storyMessage
@@ -56,7 +47,15 @@ class StoryViewsViewController: OWSViewController {
 
     private var viewers = [Viewer]()
     private func updateViewers(reloadStoryMessage: Bool = false) {
-        defer { tableView.reloadData() }
+        defer {
+            tableView.reloadData()
+            updateEmptyStateView()
+        }
+
+        guard receiptManager.areReadReceiptsEnabled() else {
+            self.viewers = []
+            return
+        }
 
         databaseStorage.read { transaction in
             if reloadStoryMessage {
@@ -91,6 +90,81 @@ class StoryViewsViewController: OWSViewController {
             }
         }
     }
+
+    private func updateEmptyStateView() {
+        emptyStateView.removeAllSubviews()
+        emptyStateView.isHidden = viewers.count > 0
+
+        let label = UILabel()
+        label.textAlignment = .center
+
+        if receiptManager.areReadReceiptsEnabled() {
+            label.font = .ows_dynamicTypeBody
+            label.textColor = .ows_gray45
+            label.text = NSLocalizedString(
+                "STORIES_NO_VIEWS_YET",
+                comment: "Indicates that this story has no views yet"
+            )
+
+            emptyStateView.isUserInteractionEnabled = false
+            emptyStateView.addSubview(label)
+            label.autoPinEdgesToSuperviewEdges()
+        } else {
+            label.font = .ows_dynamicTypeCallout
+            label.textColor = .ows_gray25
+            label.text = NSLocalizedString(
+                "STORIES_VIEWS_OFF_DESCRIPTION",
+                comment: "Text explaining that you will not see any views for your story because you have read receipts turned off"
+            )
+            label.numberOfLines = 0
+            label.setContentHuggingVerticalHigh()
+
+            let settingsButton = OWSButton { [weak self] in
+                let settingsNav = OWSNavigationController(rootViewController: AppSettingsViewController())
+                settingsNav.pushViewController(PrivacySettingsViewController(), animated: false)
+
+                // Dismiss the story view and present the privacy settings screen
+                owsAssertDebug(self?.presentingViewController?.presentingViewController is ConversationSplitViewController)
+                self?.presentingViewController?.presentingViewController?.dismiss(animated: true, completion: {
+                    CurrentAppContext().frontmostViewController()?.present(settingsNav, animated: true)
+                })
+            }
+            settingsButton.setTitle(CommonStrings.goToSettingsButton, for: .normal)
+            settingsButton.titleLabel?.font = UIFont.ows_dynamicTypeCaption1.ows_semibold
+            settingsButton.setTitleColor(.ows_gray25, for: .normal)
+            settingsButton.contentEdgeInsets = UIEdgeInsets(hMargin: 14, vMargin: 6)
+            settingsButton.layer.borderWidth = 1.5
+            settingsButton.layer.borderColor = UIColor.ows_gray25.cgColor
+
+            let settingsButtonPillWrapper = ManualLayoutView(name: "SettingsButton")
+            settingsButtonPillWrapper.shouldDeactivateConstraints = false
+            settingsButtonPillWrapper.addSubview(settingsButton) { view in
+                settingsButton.layer.cornerRadius = settingsButton.height / 2
+            }
+            settingsButton.autoPinEdgesToSuperviewEdges()
+
+            let topSpacer = UIView.vStretchingSpacer()
+            let bottomSpacer = UIView.vStretchingSpacer()
+
+            let stackView = UIStackView(arrangedSubviews: [
+                topSpacer,
+                label,
+                settingsButtonPillWrapper,
+                bottomSpacer
+            ])
+            stackView.isLayoutMarginsRelativeArrangement = true
+            stackView.layoutMargins = UIEdgeInsets(hMargin: 65, vMargin: 0)
+            stackView.axis = .vertical
+            stackView.spacing = 20
+            stackView.alignment = .center
+            emptyStateView.addSubview(stackView)
+            stackView.autoPinEdgesToSuperviewEdges()
+
+            topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+
+            emptyStateView.isUserInteractionEnabled = true
+        }
+    }
 }
 
 extension StoryViewsViewController: UITableViewDelegate {}
@@ -101,8 +175,7 @@ extension StoryViewsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        emptyStateView.isHidden = viewers.count > 0
-        return viewers.count
+        viewers.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

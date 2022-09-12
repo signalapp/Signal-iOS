@@ -118,6 +118,14 @@ public class CommonStrings: NSObject {
     }
 
     @objc
+    static public var goToSettingsButton: String {
+        OWSLocalizedString(
+            "GO_TO_SETTINGS_BUTTON",
+            comment: "Label for the 'go to settings' button"
+        )
+    }
+
+    @objc
     static public var help: String {
         OWSLocalizedString("SETTINGS_HELP", comment: "Title for help button and help pages in app settings.")
     }
