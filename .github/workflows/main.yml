@@ -11,6 +11,8 @@ jobs:
   build_and_test:
     name: Build and Test
 
+    timeout-minutes: 40
+
     runs-on: macos-12
 
     steps:
@@ -74,6 +76,8 @@ jobs:
   check_autogenstrings:
     name: Check if strings file is outdated
 
+    timeout-minutes: 5
+
     runs-on: macos-12
 
     if: github.event_name == 'pull_request'
@@ -93,6 +97,8 @@ jobs:
 
   lint:
     name: Lint
+
+    timeout-minutes: 5
 
     runs-on: macos-11
 
