@@ -11,7 +11,7 @@ final class UserCell: UITableViewCell {
         case none
         case lock
         case tick(isSelected: Bool)
-        case o(isSelected: Bool)
+        case radio(isSelected: Bool)
         case x
     }
 
@@ -159,7 +159,7 @@ final class UserCell: UITableViewCell {
                 accessoryImageView.image = #imageLiteral(resourceName: "X").withRenderingMode(.alwaysTemplate)
                 accessoryImageView.contentMode = .center
                 accessoryImageView.tintColor = Colors.text
-            case .o(let isSelected):
+            case .radio(let isSelected):
                 accessoryImageView.isHidden = true
                 roundSelectionView.isHidden = false
                 roundSelectionView.update(isSelected: isSelected)

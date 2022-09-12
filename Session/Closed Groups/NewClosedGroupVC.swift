@@ -170,7 +170,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             with: searchResults[indexPath.row].id,
             profile: searchResults[indexPath.row],
             isZombie: false,
-            accessory: .o(isSelected: selectedContacts.contains(searchResults[indexPath.row].id))
+            accessory: .radio(isSelected: selectedContacts.contains(searchResults[indexPath.row].id))
         )
         
         return cell
