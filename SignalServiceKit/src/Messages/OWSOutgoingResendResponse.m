@@ -120,10 +120,9 @@
         if (self.originalThreadId) {
             originalThread = [TSThread anyFetchWithUniqueId:self.originalThreadId transaction:transaction];
         }
-        if (originalThread.isGroupThread) {
+        if (originalThread.usesSenderKey) {
             NSError *error = nil;
-            TSGroupThread *groupThread = (TSGroupThread *)originalThread;
-            [self.senderKeyStore recordSenderKeySentFor:groupThread
+            [self.senderKeyStore recordSenderKeySentFor:originalThread
                                                      to:recipientAddress
                                               timestamp:self.timestamp
                                                 writeTx:transaction
@@ -132,7 +131,7 @@
                 OWSFailDebug(@"Unexpected error when updating sender key store: %@", error);
             }
         } else {
-            OWSFailDebug(@"Appended an SKDM but not a group thread. Not expected.");
+            OWSFailDebug(@"Appended an SKDM but not a sender key thread. Not expected.");
         }
     }
 }
