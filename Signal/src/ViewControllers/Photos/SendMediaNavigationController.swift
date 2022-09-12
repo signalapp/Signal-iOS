@@ -366,7 +366,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewControllerCanShowTextEditor(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool {
-        return canSendToStories && FeatureFlags.textStorySending
+        return canSendToStories
     }
 }
 

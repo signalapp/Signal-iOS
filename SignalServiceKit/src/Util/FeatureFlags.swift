@@ -86,9 +86,6 @@ public class FeatureFlags: BaseFlags {
     public static let deprecateREST = false
 
     @objc
-    public static let textStorySending = build.includes(.qa)
-
-    @objc
     public static let canUseNativeWebsocket = true
 
     @objc
