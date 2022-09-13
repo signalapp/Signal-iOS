@@ -67,9 +67,7 @@ final class ScanQRCodeWrapperVC : BaseVC {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         UIDevice.current.ows_setOrientation(.portrait)
-        DispatchQueue.main.async { [weak self] in
-            self?.scanQRCodeVC.startCapture()
-        }
+        self.scanQRCodeVC.startCapture()
     }
     
     // MARK: Interaction
@@ -78,8 +76,6 @@ final class ScanQRCodeWrapperVC : BaseVC {
     }
     
     public func startCapture() {
-        DispatchQueue.main.async { [weak self] in
-            self?.scanQRCodeVC.startCapture()
-        }
+        self.scanQRCodeVC.startCapture()
     }
 }

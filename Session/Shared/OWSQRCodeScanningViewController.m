@@ -115,7 +115,10 @@ NS_ASSUME_NONNULL_BEGIN
                 self.capture.layer.frame = self.view.bounds;
                 [self.view.layer addSublayer:self.capture.layer];
                 [self.view bringSubviewToFront:self.maskingView];
-                [self.capture start];
+                
+                dispatch_async(self.captureQueue, ^{
+                    [self.capture start];
+                });
             });
         });
     } else {
