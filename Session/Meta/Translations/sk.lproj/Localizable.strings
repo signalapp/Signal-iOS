@@ -493,7 +493,6 @@
 "vc_create_private_chat_title" = "Nová relácia";
 "vc_create_private_chat_enter_session_id_tab_title" = "Zadajte Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Skenovať QR kód";
-"vc_create_private_chat_scan_qr_code_explanation" = "Začnite stretnutie naskenovaním QR kódu iného používateľa. QR kód nájdete ťuknutím na ikonu QR kódu v nastaveniach účtu.";
 "vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session potrebuje prístup ku kamere na skenovanie QR kódov";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Povoliť prístup ku kamere";
@@ -507,7 +506,6 @@
 "vc_join_public_chat_title" = "Pripojiť sa k otvorenej skupine";
 "vc_join_public_chat_enter_group_url_tab_title" = "Otvoriť URL skupiny";
 "vc_join_public_chat_scan_qr_code_tab_title" = "Skenovať QR kód";
-"vc_join_public_chat_scan_qr_code_explanation" = "Oskenujte QR kód skupiny ku ktorej sa chcete pripojiť";
 "vc_enter_chat_url_text_field_hint" = "Zadajte URL otvorenej skupiny";
 "vc_settings_title" = "Nastavenia";
 "vc_settings_display_name_text_field_hint" = "Zadajte zobrazované meno";

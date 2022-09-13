@@ -493,7 +493,6 @@
 "vc_create_private_chat_title" = "เซสชันใหม่";
 "vc_create_private_chat_enter_session_id_tab_title" = "ป้อนไอดี Session";
 "vc_create_private_chat_scan_qr_code_tab_title" = "สแกน QR โค้ด";
-"vc_create_private_chat_scan_qr_code_explanation" = "สแกนรหัส QR ของเพื่อนเพื่อเริ่มคุยกัน คุณสามารถค้นหารหัส QR ได้โดยแตะที่ไอคอนรหัส QR ในการตั้งค่าบัญชี";
 "vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "เปิดใช้กล้องเพื่อสแกนรหัส QR โค้ด";
 "vc_scan_qr_code_grant_camera_access_button_title" = "ให้สิทธิใช้กล้อง";
@@ -507,7 +506,6 @@
 "vc_join_public_chat_title" = "เข้าร่วมกลุ่มสาธารณะ";
 "vc_join_public_chat_enter_group_url_tab_title" = "ลินค์ URL กลุ่มสาธารณะ";
 "vc_join_public_chat_scan_qr_code_tab_title" = "สแกน QR โค้ด";
-"vc_join_public_chat_scan_qr_code_explanation" = "แสกน QR โค้ดของกลุ่มสาธารณะ";
 "vc_enter_chat_url_text_field_hint" = "ป้อนลินค์ URL ของกลุ่มสถาณนะ";
 "vc_settings_title" = "ตั้งค่า";
 "vc_settings_display_name_text_field_hint" = "เลือกชื่อที่ใช้แสดง";

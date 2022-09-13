@@ -493,7 +493,6 @@
 "vc_create_private_chat_title" = "新建私人聊天";
 "vc_create_private_chat_enter_session_id_tab_title" = "输入Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "扫描二维码";
-"vc_create_private_chat_scan_qr_code_explanation" = "扫描其他用户的二维码来发起对话。您可以在帐号设置中点击二维码图标找到二维码。";
 "vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session需要摄像头访问权限才能扫描二维码";
 "vc_scan_qr_code_grant_camera_access_button_title" = "授予摄像头访问权限";
@@ -507,7 +506,6 @@
 "vc_join_public_chat_title" = "加入公开群组";
 "vc_join_public_chat_enter_group_url_tab_title" = "公开群组链接";
 "vc_join_public_chat_scan_qr_code_tab_title" = "扫描二维码";
-"vc_join_public_chat_scan_qr_code_explanation" = "扫描您想加入的公开群组的二维码";
 "vc_enter_chat_url_text_field_hint" = "输入公开群组链接";
 "vc_settings_title" = "设置";
 "vc_settings_display_name_text_field_hint" = "输入您想显示的名称";
