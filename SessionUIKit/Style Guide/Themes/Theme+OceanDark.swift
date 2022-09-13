@@ -80,15 +80,18 @@ internal enum Theme_OceanDark: ThemeColors {
         
         // ConversationButton
         .conversationButton_background: .oceanDark3,
-        .conversationButton_highlight: .oceanDark3,
+        .conversationButton_highlight: .oceanDark4,
         .conversationButton_unreadBackground: .oceanDark2,
-        .conversationButton_unreadHighlight: .oceanDark3,
+        .conversationButton_unreadHighlight: .oceanDark4,
         .conversationButton_unreadStripBackground: .primary,
         .conversationButton_unreadBubbleBackground: .primary,
         .conversationButton_unreadBubbleText: .oceanDark0,
         .conversationButton_swipeDestructive: .dangerDark,
         .conversationButton_swipeSecondary: .oceanDark2,
         .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color,
+        
+        // InputButton
+        .inputButton_background: .oceanDark4,
         
         // Call
         .callAccept_background: Theme.PrimaryColor.green.color,

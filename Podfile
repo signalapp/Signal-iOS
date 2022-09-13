@@ -26,6 +26,13 @@ abstract_target 'GlobalDependencies' do
     pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage'
     pod 'ZXingObjC'
     pod 'DifferenceKit'
+    
+    target 'SessionTests' do
+      inherit! :complete
+      
+      pod 'Quick'
+      pod 'Nimble'
+    end
   end
   
   # Dependencies to be included only in all extensions/frameworks

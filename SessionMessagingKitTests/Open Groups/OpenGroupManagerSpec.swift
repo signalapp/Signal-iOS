@@ -204,7 +204,8 @@ class OpenGroupManagerSpec: QuickSpec {
                         "AAAAAAAAAAAAAAAAAAAAA",
                         "AA"
                     ].joined(),
-                    base64EncodedSignature: nil
+                    base64EncodedSignature: nil,
+                    reactions: nil
                 )
                 testDirectMessage = OpenGroupAPI.DirectMessage(
                     id: 128,
@@ -2115,7 +2116,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                     whisperMods: false,
                                     whisperTo: nil,
                                     base64EncodedData: nil,
-                                    base64EncodedSignature: nil
+                                    base64EncodedSignature: nil,
+                                    reactions: nil
                                 )
                             ],
                             for: "testRoom",
@@ -2175,7 +2177,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                     whisperMods: false,
                                     whisperTo: nil,
                                     base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
-                                    base64EncodedSignature: nil
+                                    base64EncodedSignature: nil,
+                                    reactions: nil
                                 )
                             ],
                             for: "testRoom",
@@ -2207,7 +2210,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                     whisperMods: false,
                                     whisperTo: nil,
                                     base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
-                                    base64EncodedSignature: nil
+                                    base64EncodedSignature: nil,
+                                    reactions: nil
                                 )
                             ],
                             for: "testRoom",
@@ -2249,7 +2253,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                     whisperMods: false,
                                     whisperTo: nil,
                                     base64EncodedData: Data([1, 2, 3]).base64EncodedString(),
-                                    base64EncodedSignature: nil
+                                    base64EncodedSignature: nil,
+                                    reactions: nil
                                 ),
                                 testMessage,
                             ],
@@ -2287,7 +2292,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                         whisperMods: false,
                                         whisperTo: nil,
                                         base64EncodedData: nil,
-                                        base64EncodedSignature: nil
+                                        base64EncodedSignature: nil,
+                                        reactions: nil
                                     )
                                 ],
                                 for: "testRoom",
@@ -2315,7 +2321,8 @@ class OpenGroupManagerSpec: QuickSpec {
                                         whisperMods: false,
                                         whisperTo: nil,
                                         base64EncodedData: nil,
-                                        base64EncodedSignature: nil
+                                        base64EncodedSignature: nil,
+                                        reactions: nil
                                     )
                                 ],
                                 for: "testRoom",

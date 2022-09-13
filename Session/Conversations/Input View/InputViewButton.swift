@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class InputViewButton : UIView {
+import UIKit
+import SessionUIKit
+
+final class InputViewButton: UIView {
     private let icon: UIImage
     private let isSendButton: Bool
     private weak var delegate: InputViewButtonDelegate?
@@ -9,21 +13,27 @@ final class InputViewButton : UIView {
     private var longPressTimer: Timer?
     private var isLongPress = false
     
-    // MARK: UI Components
-    private lazy var backgroundView = UIView()
+    // MARK: - UI Components
     
-    // MARK: Settings
-    static let size = CGFloat(40)
-    static let expandedSize = CGFloat(48)
+    private lazy var backgroundView: UIView = UIView()
+    private lazy var iconImageView: UIImageView = UIImageView()
+    
+    // MARK: - Settings
+    
+    static let size: CGFloat = 40
+    static let expandedSize: CGFloat = 48
     static let iconSize: CGFloat = 20
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init(icon: UIImage, isSendButton: Bool = false, delegate: InputViewButtonDelegate, hasOpaqueBackground: Bool = false) {
         self.icon = icon
         self.isSendButton = isSendButton
         self.delegate = delegate
         self.hasOpaqueBackground = hasOpaqueBackground
+        
         super.init(frame: CGRect.zero)
+        
         setUpViewHierarchy()
         self.isAccessibilityElement = true
     }
@@ -37,63 +47,84 @@ final class InputViewButton : UIView {
     }
     
     private func setUpViewHierarchy() {
-        backgroundColor = .clear
+        themeBackgroundColor = .clear
+        
         if hasOpaqueBackground {
-            let backgroundView = UIView()
-            backgroundView.backgroundColor = isLightMode ? .white : .black
+            let backgroundView: UIView = UIView()
+            backgroundView.themeBackgroundColor = .inputButton_background
             backgroundView.alpha = Values.lowOpacity
             addSubview(backgroundView)
             backgroundView.pin(to: self)
-            let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+            
+            let blurView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
             addSubview(blurView)
             blurView.pin(to: self)
+            
+            themeBorderColor = .borderSeparator
             layer.borderWidth = Values.separatorThickness
-            let borderColor = (isLightMode ? UIColor.black : UIColor.white).withAlphaComponent(Values.veryLowOpacity)
-            layer.borderColor = borderColor.cgColor
         }
-        backgroundView.backgroundColor = isSendButton ? Colors.accent : Colors.text.withAlphaComponent(0.05)
+        
+        backgroundView.themeBackgroundColor = (isSendButton ? .primary : .inputButton_background)
+        backgroundView.alpha = (isSendButton ? 1 : Values.lowOpacity)
         addSubview(backgroundView)
         backgroundView.pin(to: self)
-        layer.cornerRadius = InputViewButton.size / 2
+        
+        layer.cornerRadius = (InputViewButton.size / 2)
         layer.masksToBounds = true
         isUserInteractionEnabled = true
         widthConstraint.isActive = true
         heightConstraint.isActive = true
-        let iconImageView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
-        iconImageView.tintColor = (isSendButton ? UIColor.black : Colors.text)
+        
+        iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
+        iconImageView.themeTintColor = (isSendButton ? .black : .textPrimary)
         iconImageView.contentMode = .scaleAspectFit
-        let iconSize = InputViewButton.iconSize
-        iconImageView.set(.width, to: iconSize)
-        iconImageView.set(.height, to: iconSize)
         addSubview(iconImageView)
         iconImageView.center(in: self)
+        iconImageView.set(.width, to: InputViewButton.iconSize)
+        iconImageView.set(.height, to: InputViewButton.iconSize)
     }
     
-    // MARK: Animation
-    private func animate(to size: CGFloat, glowColor: UIColor, backgroundColor: UIColor) {
+    // MARK: - Animation
+    
+    private func animate(
+        to size: CGFloat,
+        themeBackgroundColor: ThemeValue,
+        themeTintColor: ThemeValue,
+        alpha: CGFloat
+    ) {
         let frame = CGRect(center: center, size: CGSize(width: size, height: size))
         widthConstraint.constant = size
         heightConstraint.constant = size
+        
         UIView.animate(withDuration: 0.25) {
             self.layoutIfNeeded()
             self.frame = frame
-            self.layer.cornerRadius = size / 2
-            let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: true, radius: isLightMode ? 4 : 6)
-            self.setCircularGlow(with: glowConfiguration)
-            self.backgroundView.backgroundColor = backgroundColor
+            self.layer.cornerRadius = (size / 2)
+            self.iconImageView.themeTintColor = themeTintColor
+            self.backgroundView.themeBackgroundColor = themeBackgroundColor
+            self.backgroundView.alpha = alpha
         }
     }
     
     private func expand() {
-        animate(to: InputViewButton.expandedSize, glowColor: Colors.expandedButtonGlowColor, backgroundColor: Colors.accent)
+        animate(
+            to: InputViewButton.expandedSize,
+            themeBackgroundColor: .primary,
+            themeTintColor: .black,
+            alpha: 1
+        )
     }
     
     private func collapse() {
-        let backgroundColor = isSendButton ? Colors.accent : Colors.text.withAlphaComponent(0.05)
-        animate(to: InputViewButton.size, glowColor: .clear, backgroundColor: backgroundColor)
+        animate(
+            to: InputViewButton.size,
+            themeBackgroundColor: (isSendButton ? .primary : .inputButton_background),
+            themeTintColor: (isSendButton ? .black : .textPrimary),
+            alpha: (isSendButton ? 1 : Values.lowOpacity)
+        )
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
     
     // We want to detect both taps and long presses
     
@@ -104,9 +135,8 @@ final class InputViewButton : UIView {
         expand()
         invalidateLongPressIfNeeded()
         longPressTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { [weak self] _ in
-            guard let self = self else { return }
-            self.isLongPress = true
-            self.delegate?.handleInputViewButtonLongPressBegan(self)
+            self?.isLongPress = true
+            self?.delegate?.handleInputViewButtonLongPressBegan(self)
         })
     }
 
@@ -114,7 +144,7 @@ final class InputViewButton : UIView {
         guard isUserInteractionEnabled else { return }
         
         if isLongPress {
-            delegate?.handleInputViewButtonLongPressMoved(self, with: touches.first!)
+            delegate?.handleInputViewButtonLongPressMoved(self, with: touches.first)
         }
     }
 
@@ -125,7 +155,7 @@ final class InputViewButton : UIView {
         if !isLongPress {
             delegate?.handleInputViewButtonTapped(self)
         } else {
-            delegate?.handleInputViewButtonLongPressEnded(self, with: touches.first!)
+            delegate?.handleInputViewButtonLongPressEnded(self, with: touches.first)
         }
         invalidateLongPressIfNeeded()
     }
@@ -145,13 +175,13 @@ final class InputViewButton : UIView {
 
 protocol InputViewButtonDelegate: AnyObject {
     func handleInputViewButtonTapped(_ inputViewButton: InputViewButton)
-    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton)
-    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch)
-    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch)
+    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton?)
+    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch?)
+    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch?)
 }
 
 extension InputViewButtonDelegate {    
-    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton) { }
-    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch) { }
-    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch) { }
+    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton?) { }
+    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch?) { }
+    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch?) { }
 }

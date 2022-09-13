@@ -90,6 +90,9 @@ internal enum Theme_OceanLight: ThemeColors {
         .conversationButton_swipeSecondary: .oceanLight1,
         .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color,
         
+        // InputButton
+        .inputButton_background: .oceanLight6,
+        
         // Call
         .callAccept_background: Theme.PrimaryColor.green.color,
         .callDecline_background: .dangerLight

@@ -90,6 +90,9 @@ internal enum Theme_ClassicLight: ThemeColors {
         .conversationButton_swipeSecondary: .classicLight1,
         .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color,
         
+        // InputButton
+        .inputButton_background: .classicDark6,
+        
         // Call
         .callAccept_background: Theme.PrimaryColor.green.color,
         .callDecline_background: .dangerLight

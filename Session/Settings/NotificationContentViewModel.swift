@@ -8,6 +8,14 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 
 class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSettingsViewModel.Section, Preferences.NotificationPreviewType> {
+    private let storage: Storage
+    
+    // MARK: - Initialization
+    
+    init(storage: Storage = Storage.shared) {
+        self.storage = storage
+    }
+    
     // MARK: - Section
     
     public enum Section: SettingSection {
@@ -31,7 +39,7 @@ class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSe
     /// fetch (after the ones in `ValueConcurrentObserver.asyncStart`/`ValueConcurrentObserver.syncStart`)
     /// just in case the database has changed between the two reads - unfortunately it doesn't look like there is a way to prevent this
     private lazy var _observableSettingsData: ObservableData = ValueObservation
-        .trackingConstantRegion { [weak self] db -> [SectionModel] in
+        .trackingConstantRegion { [storage] db -> [SectionModel] in
             let currentSelection: Preferences.NotificationPreviewType? = db[.preferencesNotificationPreviewType]
                 .defaulting(to: .defaultPreviewType)
             
@@ -48,7 +56,7 @@ class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSe
                                     storedSelection: (currentSelection == previewType),
                                     shouldAutoSave: true,
                                     selectValue: {
-                                        Storage.shared.write { db in
+                                        storage.write { db in
                                             db[.preferencesNotificationPreviewType] = previewType
                                         }
                                     }
@@ -59,7 +67,7 @@ class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSe
             ]
         }
         .removeDuplicates()
-        .publisher(in: Storage.shared)
+        .publisher(in: storage)
     
     // MARK: - Functions
 

@@ -165,11 +165,11 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
 
     lazy var unreadCountView: UIView = {
         let result: UIView = UIView()
-        result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
-        result.set(.width, greaterThanOrEqualTo: ConversationVC.unreadCountViewSize)
-        result.set(.height, to: ConversationVC.unreadCountViewSize)
+        result.themeBackgroundColor = .backgroundSecondary
         result.layer.masksToBounds = true
         result.layer.cornerRadius = (ConversationVC.unreadCountViewSize / 2)
+        result.set(.width, greaterThanOrEqualTo: ConversationVC.unreadCountViewSize)
+        result.set(.height, to: ConversationVC.unreadCountViewSize)
         
         return result
     }()
@@ -177,7 +177,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     lazy var unreadCountLabel: UILabel = {
         let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
         
         return result

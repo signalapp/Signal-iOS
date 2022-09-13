@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 
 final class ScrollToBottomButton: UIView {
     private weak var delegate: ScrollToBottomButtonDelegate?
@@ -14,7 +15,9 @@ final class ScrollToBottomButton: UIView {
     
     init(delegate: ScrollToBottomButtonDelegate) {
         self.delegate = delegate
+        
         super.init(frame: CGRect.zero)
+        
         setUpViewHierarchy()
     }
     
@@ -29,32 +32,37 @@ final class ScrollToBottomButton: UIView {
     private func setUpViewHierarchy() {
         // Background & blur
         let backgroundView = UIView()
-        backgroundView.backgroundColor = isLightMode ? .white : .black
+        backgroundView.themeBackgroundColor = .backgroundSecondary
         backgroundView.alpha = Values.lowOpacity
         addSubview(backgroundView)
         backgroundView.pin(to: self)
+        
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         addSubview(blurView)
         blurView.pin(to: self)
+        
         // Size & shape
-        let size = ScrollToBottomButton.size
-        set(.width, to: size)
-        set(.height, to: size)
-        layer.cornerRadius = size / 2
+        set(.width, to: ScrollToBottomButton.size)
+        set(.height, to: ScrollToBottomButton.size)
+        layer.cornerRadius = (ScrollToBottomButton.size / 2)
         layer.masksToBounds = true
+        
         // Border
+        self.themeBorderColor = .borderSeparator
         layer.borderWidth = Values.separatorThickness
-        let borderColor = (isLightMode ? UIColor.black : UIColor.white).withAlphaComponent(Values.veryLowOpacity)
-        layer.borderColor = borderColor.cgColor
+        
         // Icon
-        let tint = isLightMode ? UIColor.black : UIColor.white
-        let icon = UIImage(named: "ic_chevron_down")!.withTint(tint)
-        let iconImageView = UIImageView(image: icon)
-        iconImageView.set(.width, to: ScrollToBottomButton.iconSize)
-        iconImageView.set(.height, to: ScrollToBottomButton.iconSize)
+        let iconImageView = UIImageView(
+            image: UIImage(named: "ic_chevron_down")?
+                .withRenderingMode(.alwaysTemplate)
+        )
+        iconImageView.themeTintColor = .textPrimary
         iconImageView.contentMode = .scaleAspectFit
         addSubview(iconImageView)
         iconImageView.center(in: self)
+        iconImageView.set(.width, to: ScrollToBottomButton.iconSize)
+        iconImageView.set(.height, to: ScrollToBottomButton.iconSize)
+        
         // Gesture recognizer
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         addGestureRecognizer(tapGestureRecognizer)
