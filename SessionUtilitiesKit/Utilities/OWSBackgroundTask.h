@@ -10,6 +10,7 @@ typedef NS_ENUM(NSUInteger, BackgroundTaskState) {
     BackgroundTaskState_Success,
     BackgroundTaskState_CouldNotStart,
     BackgroundTaskState_Expired,
+    BackgroundTaskState_Cancelled,
 };
 
 typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTaskState);
@@ -56,6 +57,8 @@ typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTask
 // completionBlock will be called exactly once on the main thread.
 + (OWSBackgroundTask *)backgroundTaskWithLabel:(NSString *)label
                                completionBlock:(BackgroundTaskCompletionBlock)completionBlock;
+
+- (void)cancel;
 
 @end
 

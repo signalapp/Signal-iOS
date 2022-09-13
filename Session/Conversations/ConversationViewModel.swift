@@ -132,10 +132,13 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         return ValueObservation
             .trackingConstantRegion { db -> SessionThreadViewModel? in
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                
-                return try SessionThreadViewModel
+                let recentReactionEmoji: [String] = try Emoji.getRecent(db, withDefaultEmoji: true)
+                let threadViewModel: SessionThreadViewModel? = try SessionThreadViewModel
                     .conversationQuery(threadId: threadId, userPublicKey: userPublicKey)
                     .fetchOne(db)
+                
+                return threadViewModel
+                    .map { $0.with(recentReactionEmoji: recentReactionEmoji) }
             }
             .removeDuplicates()
     }
@@ -148,6 +151,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     public private(set) var unobservedInteractionDataChanges: [SectionModel]?
     public private(set) var interactionData: [SectionModel] = []
+    public private(set) var reactionExpandedInteractionIds: Set<Int64> = []
     public private(set) var pagedDataObserver: PagedDatabaseObserver<Interaction, MessageViewModel>?
     
     public var onInteractionChange: (([SectionModel]) -> ())? {
@@ -214,6 +218,18 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     dataQuery: MessageViewModel.AttachmentInteractionInfo.baseQuery,
                     joinToPagedType: MessageViewModel.AttachmentInteractionInfo.joinToViewModelQuerySQL,
                     associateData: MessageViewModel.AttachmentInteractionInfo.createAssociateDataClosure()
+                ),
+                AssociatedRecord<MessageViewModel.ReactionInfo, MessageViewModel>(
+                    trackedAgainst: Reaction.self,
+                    observedChanges: [
+                        PagedData.ObservedChanges(
+                            table: Reaction.self,
+                            columns: [.count]
+                        )
+                    ],
+                    dataQuery: MessageViewModel.ReactionInfo.baseQuery,
+                    joinToPagedType: MessageViewModel.ReactionInfo.joinToViewModelQuerySQL,
+                    associateData: MessageViewModel.ReactionInfo.createAssociateDataClosure()
                 ),
                 AssociatedRecord<MessageViewModel.TypingIndicatorInfo, MessageViewModel>(
                     trackedAgainst: ThreadTypingIndicator.self,
@@ -292,6 +308,14 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     public func updateInteractionData(_ updatedData: [SectionModel]) {
         self.interactionData = updatedData
+    }
+    
+    public func expandReactions(for interactionId: Int64) {
+        reactionExpandedInteractionIds.insert(interactionId)
+    }
+    
+    public func collapseReactions(for interactionId: Int64) {
+        reactionExpandedInteractionIds.remove(interactionId)
     }
     
     // MARK: - Mentions

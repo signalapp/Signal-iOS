@@ -375,6 +375,31 @@ typedef NSNumber *OWSTaskId;
     }
 }
 
+- (void)cancel
+{
+    // Make a local copy of this state, since this method is called by `dealloc`.
+    BackgroundTaskCompletionBlock _Nullable completionBlock;
+
+    @synchronized(self)
+    {
+        if (!self.taskId) {
+            return;
+        }
+        [OWSBackgroundTaskManager.sharedManager removeTask:self.taskId];
+        self.taskId = nil;
+
+        completionBlock = self.completionBlock;
+        self.completionBlock = nil;
+    }
+
+    // endBackgroundTask must be called on the main thread.
+    DispatchMainThreadSafe(^{
+        if (completionBlock) {
+            completionBlock(BackgroundTaskState_Cancelled);
+        }
+    });
+}
+
 - (void)endBackgroundTask
 {
     // Make a local copy of this state, since this method is called by `dealloc`.

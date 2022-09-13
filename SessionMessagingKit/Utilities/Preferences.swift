@@ -69,6 +69,14 @@ public extension Setting.StringKey {
     
     /// This is the most recently recorded Voip token
     static let lastRecordedVoipToken: Setting.StringKey = "lastRecordedVoipToken"
+    
+    /// This is the last six emoji used by the user
+    static let recentReactionEmoji: Setting.StringKey = "recentReactionEmoji"
+    
+    /// This is the preferred skin tones preference for the given emoji
+    static func emojiPreferredSkinTones(emoji: String) -> Setting.StringKey {
+        return Setting.StringKey("preferredSkinTones-\(emoji)")
+    }
 }
 
 public extension Setting.DoubleKey {

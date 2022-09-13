@@ -388,7 +388,7 @@ public class MediaGalleryViewModel {
             .removeDuplicates()
     }
     
-    @discardableResult public func loadAndCacheAlbumData(for interactionId: Int64) -> [Item] {
+    @discardableResult public func loadAndCacheAlbumData(for interactionId: Int64, in threadId: String) -> [Item] {
         typealias AlbumInfo = (albumData: [Item], interactionIdBefore: Int64?, interactionIdAfter: Int64?)
         
         // Note: It's possible we already have cached album data for this interaction
@@ -415,13 +415,19 @@ public class MediaGalleryViewModel {
             let itemBefore: Item? = try Item
                 .baseQuery(
                     orderSQL: Item.galleryReverseOrderSQL,
-                    customFilters: SQL("\(interaction[.timestampMs]) > \(albumTimestampMs)")
+                    customFilters: SQL("""
+                        \(interaction[.timestampMs]) > \(albumTimestampMs) AND
+                        \(interaction[.threadId]) = \(threadId)
+                    """)
                 )
                 .fetchOne(db)
             let itemAfter: Item? = try Item
                 .baseQuery(
                     orderSQL: Item.galleryOrderSQL,
-                    customFilters: SQL("\(interaction[.timestampMs]) < \(albumTimestampMs)")
+                    customFilters: SQL("""
+                        \(interaction[.timestampMs]) < \(albumTimestampMs) AND
+                        \(interaction[.threadId]) = \(threadId)
+                    """)
                 )
                 .fetchOne(db)
             
@@ -527,7 +533,7 @@ public class MediaGalleryViewModel {
             isPagedData: false,
             mediaType: .media
         )
-        viewModel.loadAndCacheAlbumData(for: interactionId)
+        viewModel.loadAndCacheAlbumData(for: interactionId, in: threadId)
         viewModel.replaceAlbumObservation(toObservationFor: interactionId)
         
         guard

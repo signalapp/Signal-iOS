@@ -681,10 +681,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
         
         // Then check if there is an interaction before the current album interaction
-        guard let interactionIdAfter: Int64 = self.viewModel.interactionIdAfter[interactionId] else { return nil }
+        guard let interactionIdAfter: Int64 = self.viewModel.interactionIdAfter[interactionId] else {
+            return nil
+        }
         
         // Cache and retrieve the new album items
-        let newAlbumItems: [MediaGalleryViewModel.Item] = viewModel.loadAndCacheAlbumData(for: interactionIdAfter)
+        let newAlbumItems: [MediaGalleryViewModel.Item] = viewModel.loadAndCacheAlbumData(
+            for: interactionIdAfter,
+            in: self.viewModel.threadId
+        )
         
         guard
             !newAlbumItems.isEmpty,
@@ -723,10 +728,15 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
         
         // Then check if there is an interaction before the current album interaction
-        guard let interactionIdBefore: Int64 = self.viewModel.interactionIdBefore[interactionId] else { return nil }
+        guard let interactionIdBefore: Int64 = self.viewModel.interactionIdBefore[interactionId] else {
+            return nil
+        }
 
         // Cache and retrieve the new album items
-        let newAlbumItems: [MediaGalleryViewModel.Item] = viewModel.loadAndCacheAlbumData(for: interactionIdBefore)
+        let newAlbumItems: [MediaGalleryViewModel.Item] = viewModel.loadAndCacheAlbumData(
+            for: interactionIdBefore,
+            in: self.viewModel.threadId
+        )
         
         guard
             !newAlbumItems.isEmpty,

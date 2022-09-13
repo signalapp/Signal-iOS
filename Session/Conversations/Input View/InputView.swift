@@ -397,7 +397,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         inputTextView.becomeFirstResponder()
     }
 
-    func handleLongPress() {
+    func handleLongPress(_ gestureRecognizer: UITapGestureRecognizer) {
         // Not relevant in this case
     }
 
@@ -454,6 +454,10 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
 
     func handleMentionSelected(_ mentionInfo: ConversationViewModel.MentionInfo, from view: MentionSelectionView) {
         delegate?.handleMentionSelected(mentionInfo, from: view)
+    }
+    
+    func tapableLabel(_ label: TappableLabel, didTapUrl url: String, atRange range: NSRange) {
+        // Do nothing
     }
 
     // MARK: - Convenience

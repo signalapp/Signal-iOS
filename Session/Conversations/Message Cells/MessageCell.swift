@@ -43,7 +43,13 @@ public class MessageCell: UITableViewCell {
 
     // MARK: - Updating
     
-    func update(with cellViewModel: MessageViewModel, mediaCache: NSCache<NSString, AnyObject>, playbackInfo: ConversationViewModel.PlaybackInfo?, lastSearchText: String?) {
+    func update(
+        with cellViewModel: MessageViewModel,
+        mediaCache: NSCache<NSString, AnyObject>,
+        playbackInfo: ConversationViewModel.PlaybackInfo?,
+        showExpandedReactions: Bool,
+        lastSearchText: String?
+    ) {
         preconditionFailure("Must be overridden by subclasses.")
     }
     
@@ -75,7 +81,7 @@ public class MessageCell: UITableViewCell {
 
 // MARK: - MessageCellDelegate
 
-protocol MessageCellDelegate: AnyObject {
+protocol MessageCellDelegate: ReactionDelegate {
     func handleItemLongPressed(_ cellViewModel: MessageViewModel)
     func handleItemTapped(_ cellViewModel: MessageViewModel, gestureRecognizer: UITapGestureRecognizer)
     func handleItemDoubleTapped(_ cellViewModel: MessageViewModel)
@@ -84,4 +90,6 @@ protocol MessageCellDelegate: AnyObject {
     func handleReplyButtonTapped(for cellViewModel: MessageViewModel)
     func showUserDetails(for profile: Profile)
     func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?)
+    func showReactionList(_ cellViewModel: MessageViewModel, selectedReaction: EmojiWithSkinTones?)
+    func needsLayout(for cellViewModel: MessageViewModel, expandingReactions: Bool)
 }

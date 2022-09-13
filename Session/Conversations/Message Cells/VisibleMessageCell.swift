@@ -5,12 +5,13 @@ import SignalUtilitiesKit
 import SessionUtilitiesKit
 import SessionMessagingKit
 
-final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDelegate {
+final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
+    private var isHandlingLongPress: Bool = false
     private var unloadContent: (() -> Void)?
     private var previousX: CGFloat = 0
     
     var albumView: MediaAlbumView?
-    var bodyTextView: UITextView?
+    var bodyTappableLabel: TappableLabel?
     var voiceMessageView: VoiceMessageView?
     var audioStateChanged: ((TimeInterval, Bool) -> ())?
     
@@ -19,14 +20,20 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
     private lazy var profilePictureViewLeftConstraint = profilePictureView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var profilePictureViewWidthConstraint = profilePictureView.set(.width, to: Values.verySmallProfilePictureSize)
+    
     private lazy var bubbleViewLeftConstraint1 = bubbleView.pin(.left, to: .right, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var bubbleViewLeftConstraint2 = bubbleView.leftAnchor.constraint(greaterThanOrEqualTo: leftAnchor, constant: VisibleMessageCell.gutterSize)
     private lazy var bubbleViewTopConstraint = bubbleView.pin(.top, to: .bottom, of: authorLabel, withInset: VisibleMessageCell.authorLabelBottomSpacing)
     private lazy var bubbleViewRightConstraint1 = bubbleView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
     private lazy var bubbleViewRightConstraint2 = bubbleView.rightAnchor.constraint(lessThanOrEqualTo: rightAnchor, constant: -VisibleMessageCell.gutterSize)
-    private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: bubbleView, withInset: 0)
+    
+    private lazy var reactionContainerViewLeftConstraint = reactionContainerView.pin(.left, to: .left, of: bubbleView)
+    private lazy var reactionContainerViewRightConstraint = reactionContainerView.pin(.right, to: .right, of: bubbleView)
+    
+    private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: reactionContainerView, withInset: 0)
     private lazy var messageStatusImageViewWidthConstraint = messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
     private lazy var messageStatusImageViewHeightConstraint = messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
+    
     private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.contactThreadHSpacing)
     private lazy var timerViewIncomingMessageConstraint = timerView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
 
@@ -44,7 +51,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         profilePictureView,
         replyButton,
         timerView,
-        messageStatusImageView
+        messageStatusImageView,
+        reactionContainerView
     ]
     
     private lazy var profilePictureView: ProfilePictureView = {
@@ -80,7 +88,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     }()
 
     private lazy var snContentView = UIView()
-
+    private lazy var reactionContainerView = ReactionContainerView()
+    
     internal lazy var messageStatusImageView: UIImageView = {
         let result = UIImageView()
         result.contentMode = .scaleAspectFit
@@ -161,7 +170,6 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         addSubview(profilePictureView)
         profilePictureViewLeftConstraint.isActive = true
         profilePictureViewWidthConstraint.isActive = true
-        profilePictureView.pin(.bottom, to: .bottom, of: self, withInset: -1)
         
         // Moderator icon image view
         moderatorIconImageView.set(.width, to: 20)
@@ -178,6 +186,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         bubbleViewLeftConstraint1.isActive = true
         bubbleViewTopConstraint.isActive = true
         bubbleViewRightConstraint1.isActive = true
+        bubbleView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: -1)
         bubbleBackgroundView.pin(to: bubbleView)
         
         // Timer view
@@ -188,6 +197,11 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         // Content view
         bubbleView.addSubview(snContentView)
         snContentView.pin(to: bubbleView)
+        
+        // Reaction view
+        addSubview(reactionContainerView)
+        reactionContainerView.pin(.top, to: .bottom, of: bubbleView, withInset: Values.verySmallSpacing)
+        reactionContainerViewLeftConstraint.isActive = true
         
         // Message status image view
         addSubview(messageStatusImageView)
@@ -228,6 +242,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         with cellViewModel: MessageViewModel,
         mediaCache: NSCache<NSString, AnyObject>,
         playbackInfo: ConversationViewModel.PlaybackInfo?,
+        showExpandedReactions: Bool,
         lastSearchText: String?
     ) {
         self.viewModel = cellViewModel
@@ -279,6 +294,12 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             playbackInfo: playbackInfo,
             lastSearchText: lastSearchText
         )
+        
+        // Reaction view
+        reactionContainerView.isHidden = (cellViewModel.reactionInfo?.isEmpty == true)
+        reactionContainerViewLeftConstraint.isActive = (cellViewModel.variant == .standardIncoming)
+        reactionContainerViewRightConstraint.isActive = (cellViewModel.variant == .standardOutgoing)
+        populateReaction(for: cellViewModel, showExpandedReactions: showExpandedReactions)
         
         // Date break
         headerViewTopConstraint.constant = (shouldInsetHeader ? Values.mediumSpacing : 1)
@@ -389,7 +410,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         
         snContentView.subviews.forEach { $0.removeFromSuperview() }
         albumView = nil
-        bodyTextView = nil
+        bodyTappableLabel = nil
         
         // Handle the deleted state first (it's much simpler than the others)
         guard cellViewModel.variant != .standardIncomingDeleted else {
@@ -431,7 +452,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                             )
                             snContentView.addSubview(linkPreviewView)
                             linkPreviewView.pin(to: snContentView)
-                            self.bodyTextView = linkPreviewView.bodyTextView
+                            self.bodyTappableLabel = linkPreviewView.bodyTappableLabel
                             
                         case .openGroupInvitation:
                             let openGroupInvitationView: OpenGroupInvitationView = OpenGroupInvitationView(
@@ -474,15 +495,15 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                     }
                     
                     // Body text view
-                    let bodyTextView = VisibleMessageCell.getBodyTextView(
+                    let bodyTappableLabel = VisibleMessageCell.getBodyTappableLabel(
                         for: cellViewModel,
                         with: maxWidth,
                         textColor: bodyLabelTextColor,
                         searchText: lastSearchText,
                         delegate: self
                     )
-                    self.bodyTextView = bodyTextView
-                    stackView.addArrangedSubview(bodyTextView)
+                    self.bodyTappableLabel = bodyTappableLabel
+                    stackView.addArrangedSubview(bodyTappableLabel)
                     
                     // Constraints
                     snContentView.addSubview(stackView)
@@ -516,7 +537,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 if let body: String = cellViewModel.body, !body.isEmpty {
                     let inset: CGFloat = 12
                     let maxWidth: CGFloat = (size.width - (2 * inset))
-                    let bodyTextView = VisibleMessageCell.getBodyTextView(
+                    let bodyTappableLabel = VisibleMessageCell.getBodyTappableLabel(
                         for: cellViewModel,
                         with: maxWidth,
                         textColor: bodyLabelTextColor,
@@ -524,8 +545,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                         delegate: self
                     )
 
-                    self.bodyTextView = bodyTextView
-                    stackView.addArrangedSubview(UIView(wrapping: bodyTextView, withInsets: UIEdgeInsets(top: 0, left: inset, bottom: inset, right: inset)))
+                    self.bodyTappableLabel = bodyTappableLabel
+                    stackView.addArrangedSubview(UIView(wrapping: bodyTappableLabel, withInsets: UIEdgeInsets(top: 0, left: inset, bottom: inset, right: inset)))
                 }
                 unloadContent = { albumView.unloadMedia() }
                 
@@ -568,7 +589,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 
                 // Body text view
                 if let body: String = cellViewModel.body, !body.isEmpty { // delegate should always be set at this point
-                    let bodyTextView = VisibleMessageCell.getBodyTextView(
+                    let bodyTappableLabel = VisibleMessageCell.getBodyTappableLabel(
                         for: cellViewModel,
                         with: maxWidth,
                         textColor: bodyLabelTextColor,
@@ -576,8 +597,8 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                         delegate: self
                     )
                     
-                    self.bodyTextView = bodyTextView
-                    stackView.addArrangedSubview(bodyTextView)
+                    self.bodyTappableLabel = bodyTappableLabel
+                    stackView.addArrangedSubview(bodyTappableLabel)
                 }
                 
                 // Constraints
@@ -585,7 +606,48 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 stackView.pin(to: snContentView, withInset: inset)
         }
     }
-
+    
+    private func populateReaction(for cellViewModel: MessageViewModel, showExpandedReactions: Bool) {
+        let reactions: OrderedDictionary<EmojiWithSkinTones, ReactionViewModel> = (cellViewModel.reactionInfo ?? [])
+            .reduce(into: OrderedDictionary()) { result, reactionInfo in
+                guard let emoji: EmojiWithSkinTones = EmojiWithSkinTones(rawValue: reactionInfo.reaction.emoji) else {
+                    return
+                }
+                
+                let isSelfSend: Bool = (reactionInfo.reaction.authorId == cellViewModel.currentUserPublicKey)
+                
+                if let value: ReactionViewModel = result.value(forKey: emoji) {
+                    result.replace(
+                        key: emoji,
+                        value: ReactionViewModel(
+                            emoji: emoji,
+                            number: (value.number + Int(reactionInfo.reaction.count)),
+                            showBorder: (value.showBorder || isSelfSend)
+                        )
+                    )
+                }
+                else {
+                    result.append(
+                        key: emoji,
+                        value: ReactionViewModel(
+                            emoji: emoji,
+                            number: Int(reactionInfo.reaction.count),
+                            showBorder: isSelfSend
+                        )
+                    )
+                }
+            }
+        
+        reactionContainerView.showingAllReactions = showExpandedReactions
+        reactionContainerView.update(
+            reactions.orderedValues,
+            showNumbers: (
+                cellViewModel.threadVariant == .closedGroup ||
+                cellViewModel.threadVariant == .openGroup
+            )
+        )
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         updateBubbleViewCorners()
@@ -638,10 +700,10 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     // MARK: - Interaction
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        if let bodyTextView = bodyTextView {
-            let pointInBodyTextViewCoordinates = convert(point, to: bodyTextView)
-            if bodyTextView.bounds.contains(pointInBodyTextViewCoordinates) {
-                return bodyTextView
+        if let bodyTappableLabel = bodyTappableLabel {
+            let btIngetBodyTappableLabelCoordinates = convert(point, to: bodyTappableLabel)
+            if bodyTappableLabel.bounds.contains(btIngetBodyTappableLabelCoordinates) {
+                return bodyTappableLabel
             }
         }
         return super.hitTest(point, with: event)
@@ -687,11 +749,31 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             )
         }
     }
-
-    @objc func handleLongPress() {
-        guard let cellViewModel: MessageViewModel = self.viewModel else { return }
+    
+    @objc func handleLongPress(_ gestureRecognizer: UITapGestureRecognizer) {
+        if [ .ended, .cancelled, .failed ].contains(gestureRecognizer.state) {
+            isHandlingLongPress = false
+            return
+        }
+        guard !isHandlingLongPress, let cellViewModel: MessageViewModel = self.viewModel else { return }
         
-        delegate?.handleItemLongPressed(cellViewModel)
+        let location = gestureRecognizer.location(in: self)
+        
+        if reactionContainerView.frame.contains(location) {
+            let convertedLocation = reactionContainerView.convert(location, from: self)
+            
+            for reactionView in reactionContainerView.reactionViews {
+                if reactionContainerView.convert(reactionView.frame, from: reactionView.superview).contains(convertedLocation) {
+                    delegate?.showReactionList(cellViewModel, selectedReaction: reactionView.viewModel.emoji)
+                    break
+                }
+            }
+        }
+        else {
+            delegate?.handleItemLongPressed(cellViewModel)
+        }
+        
+        isHandlingLongPress = true
     }
 
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {
@@ -721,6 +803,32 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         else if replyButton.alpha > 0 && replyButton.frame.contains(location) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             reply()
+        }
+        else if reactionContainerView.frame.contains(location) {
+            let convertedLocation = reactionContainerView.convert(location, from: self)
+            
+            for reactionView in reactionContainerView.reactionViews {
+                if reactionContainerView.convert(reactionView.frame, from: reactionView.superview).contains(convertedLocation) {
+                    
+                    if reactionView.viewModel.showBorder {
+                        delegate?.removeReact(cellViewModel, for: reactionView.viewModel.emoji)
+                    }
+                    else {
+                        delegate?.react(cellViewModel, with: reactionView.viewModel.emoji)
+                    }
+                    return
+                }
+            }
+            
+            if let expandButton = reactionContainerView.expandButton, expandButton.frame.contains(convertedLocation) {
+                reactionContainerView.showAllEmojis()
+                delegate?.needsLayout(for: cellViewModel, expandingReactions: true)
+            }
+            
+            if reactionContainerView.collapseButton.frame.contains(convertedLocation) {
+                reactionContainerView.showLessEmojis()
+                delegate?.needsLayout(for: cellViewModel, expandingReactions: false)
+            }
         }
         else if bubbleView.frame.contains(location) {
             delegate?.handleItemTapped(cellViewModel, gestureRecognizer: gestureRecognizer)
@@ -770,20 +878,11 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             default: break
         }
     }
-
-    func textView(_ textView: UITextView, shouldInteractWith url: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
-        delegate?.openUrl(url.absoluteString)
-        return false
+    
+    func tapableLabel(_ label: TappableLabel, didTapUrl url: String, atRange range: NSRange) {
+        delegate?.openUrl(url)
     }
     
-    func textViewDidChangeSelection(_ textView: UITextView) {
-        // Note: We can't just set 'isSelectable' to false otherwise the link detection/selection
-        // stops working (do a null check to avoid an infinite loop on older iOS versions)
-        if textView.selectedTextRange != nil {
-            textView.selectedTextRange = nil
-        }
-    }
-
     private func resetReply() {
         UIView.animate(withDuration: 0.25) { [weak self] in
             self?.viewsToMoveForReply.forEach { $0.transform = .identity }
@@ -801,19 +900,7 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
     // MARK: - Convenience
     
     private func getCornersToRound() -> UIRectCorner {
-        guard viewModel?.isOnlyMessageInCluster == false else { return .allCorners }
-        
-        let direction: Direction = (viewModel?.variant == .standardOutgoing ? .outgoing : .incoming)
-        
-        switch (viewModel?.positionInCluster, direction) {
-            case (.top, .outgoing): return [ .bottomLeft, .topLeft, .topRight ]
-            case (.middle, .outgoing): return [ .bottomLeft, .topLeft ]
-            case (.bottom, .outgoing): return [ .bottomRight, .bottomLeft, .topLeft ]
-            case (.top, .incoming): return [ .topLeft, .topRight, .bottomRight ]
-            case (.middle, .incoming): return [ .topRight, .bottomRight ]
-            case (.bottom, .incoming): return [ .topRight, .bottomRight, .bottomLeft ]
-            case (.none, _): return .allCorners
-        }
+        return .allCorners
     }
     
     private func getCornerMask(from rectCorner: UIRectCorner) -> CACornerMask {
@@ -935,24 +1022,16 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
             default: preconditionFailure()
         }
     }
-
-    static func getBodyTextView(
+    
+    static func getBodyTappableLabel(
         for cellViewModel: MessageViewModel,
         with availableWidth: CGFloat,
         textColor: UIColor,
         searchText: String?,
-        delegate: (UITextViewDelegate & BodyTextViewDelegate)?
-    ) -> UITextView {
-        // Take care of:
-        // • Highlighting mentions
-        // • Linkification
-        // • Highlighting search results
-        //
-        // Note: We can't just set 'isSelectable' to false otherwise the link detection/selection
-        // stops working
+        delegate: TappableLabelDelegate?
+    ) -> TappableLabel {
+        let result = TappableLabel()
         let isOutgoing: Bool = (cellViewModel.variant == .standardOutgoing)
-        let result: BodyTextView = BodyTextView(snDelegate: delegate)
-        result.isEditable = false
         
         let attributedText: NSMutableAttributedString = NSMutableAttributedString(
             attributedString: MentionUtilities.highlightMentions(
@@ -967,6 +1046,55 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
                 ]
             )
         )
+        
+        // Custom handle links
+        let links: [String: NSRange] = {
+            guard
+                let body: String = cellViewModel.body,
+                let detector: NSDataDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
+            else { return [:] }
+            
+            var links: [String: NSRange] = [:]
+            let matches = detector.matches(
+                in: body,
+                options: [],
+                range: NSRange(location: 0, length: body.count)
+            )
+            
+            for match in matches {
+                guard let matchURL = match.url else { continue }
+                
+                /// If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
+                /// set the scheme to 'https' instead as we don't load previews for 'http' so this will result
+                /// in more previews actually getting loaded without forcing the user to enter 'https://' before
+                /// every URL they enter
+                let urlString: String = (matchURL.absoluteString == "http://\(body)" ?
+                    "https://\(body)" :
+                    matchURL.absoluteString
+                )
+                
+                if URL(string: urlString) != nil {
+                    links[urlString] = (body as NSString).range(of: urlString)
+                }
+            }
+            
+            return links
+        }()
+        
+        for (urlString, range) in links {
+            guard let url: URL = URL(string: urlString) else { continue }
+            
+            attributedText.addAttributes(
+                [
+                    .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel)),
+                    .foregroundColor: textColor,
+                    .underlineColor: textColor,
+                    .underlineStyle: NSUnderlineStyle.single.rawValue,
+                    .attachment: url
+                ],
+                range: range
+            )
+        }
         
         // If there is a valid search term then highlight each part that matched
         if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
@@ -998,19 +1126,10 @@ final class VisibleMessageCell: MessageCell, UITextViewDelegate, BodyTextViewDel
         }
         
         result.attributedText = attributedText
-        result.dataDetectorTypes = .link
         result.backgroundColor = .clear
         result.isOpaque = false
-        result.textContainerInset = UIEdgeInsets.zero
-        result.contentInset = UIEdgeInsets.zero
-        result.textContainer.lineFragmentPadding = 0
-        result.isScrollEnabled = false
         result.isUserInteractionEnabled = true
         result.delegate = delegate
-        result.linkTextAttributes = [
-            .foregroundColor: textColor,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
-        ]
         
         let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
         let size = result.sizeThatFits(availableSpace)
