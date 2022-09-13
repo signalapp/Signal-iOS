@@ -6,15 +6,17 @@ import Foundation
 import LibSignalClient
 
 public enum GroupsV2Error: Error {
-    // By the time we tried to apply the change, it was irrelevant.
+    /// By the time we tried to apply the change, it was irrelevant.
     case redundantChange
+    /// The change we attempted conflicts with what is on the service.
+    case conflictingChangeOnService
     case shouldRetry
     case shouldDiscard
     case timeout
     case localUserNotInGroup
-    case conflictingChange
-    case lastAdminCantLeaveGroup
-    case tooManyMembers
+    case cannotBuildGroupChangeProto_conflictingChange
+    case cannotBuildGroupChangeProto_lastAdminCantLeaveGroup
+    case cannotBuildGroupChangeProto_tooManyMembers
     case gv2NotEnabled
     case localUserIsAlreadyRequestingMember
     case localUserIsNotARequestingMember

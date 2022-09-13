@@ -1177,6 +1177,7 @@ extension GroupsV2Error: IsRetryableProvider {
         switch self {
         case
                 .redundantChange,
+                .conflictingChangeOnService,
                 .shouldRetry,
                 .timeout,
                 .newMemberMissingAnnouncementOnlyCapability:
@@ -1184,9 +1185,9 @@ extension GroupsV2Error: IsRetryableProvider {
         case
                 .shouldDiscard,
                 .localUserNotInGroup,
-                .conflictingChange,
-                .lastAdminCantLeaveGroup,
-                .tooManyMembers,
+                .cannotBuildGroupChangeProto_conflictingChange,
+                .cannotBuildGroupChangeProto_lastAdminCantLeaveGroup,
+                .cannotBuildGroupChangeProto_tooManyMembers,
                 .gv2NotEnabled,
                 .localUserIsAlreadyRequestingMember,
                 .localUserIsNotARequestingMember,

@@ -234,16 +234,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         }
 
         let finalGroupChangeProto = AtomicOptional<GroupsProtoGroupChangeActions>(nil)
-        var isFirstAttempt = true
-        let requestBuilder: RequestBuilder = { (authCredential) in
-            return firstly { () -> Promise<Void> in
-                if isFirstAttempt {
-                    isFirstAttempt = false
-                    return Promise.value(())
-                }
-                return self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
-                                                                                             groupSecretParamsData: groupSecretParamsData).asVoid()
-            }.map(on: .global()) { _ throws -> (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) in
+
+        let requestBuilder: RequestBuilder = { authCredential in
+            firstly(on: .global()) { () throws -> (thread: TSGroupThread, disappearingMessageToken: DisappearingMessageToken) in
                 return try self.databaseStorage.read { transaction in
                     guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                         throw OWSAssertionError("Thread does not exist.")
@@ -267,10 +260,28 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
         }
 
         return firstly {
-            self.performServiceRequest(requestBuilder: requestBuilder,
-                                       groupId: groupId,
-                                       behavior403: .fetchGroupUpdates,
-                                       behavior404: .fail)
+            self.performServiceRequest(
+                requestBuilder: requestBuilder,
+                groupId: groupId,
+                behavior403: .fetchGroupUpdates,
+                behavior404: .fail
+            ).recover(on: .global()) { error throws -> Promise<HTTPResponse> in
+                guard case GroupsV2Error.conflictingChangeOnService = error else {
+                    throw error
+                }
+
+                return self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(
+                    groupId: groupId,
+                    groupSecretParamsData: groupSecretParamsData
+                ).then(on: .global()) { _ in
+                    self.performServiceRequest(
+                        requestBuilder: requestBuilder,
+                        groupId: groupId,
+                        behavior403: .fetchGroupUpdates,
+                        behavior404: .fail
+                    )
+                }
+            }
         }.then(on: .global()) { (response: HTTPResponse) -> Promise<UpdatedV2Group> in
 
             guard let changeActionsProtoData = response.responseBodyData else {
@@ -1077,9 +1088,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
                     throw GroupsV2Error.groupDoesNotExistOnService
                 }
             case 409:
-                // Group update conflict, retry. When updating group state,
-                // we can often resolve conflicts using the change set.
-                return try retryBlock()
+                // Group update conflict. The caller may be able to recover by
+                // retrying, using the change set and the most recent state
+                // from the service.
+                throw GroupsV2Error.conflictingChangeOnService
             default:
                 // Unexpected status code.
                 throw error

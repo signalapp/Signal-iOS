@@ -574,7 +574,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
             }
 
             guard remainingMemberOfAnyKindUuids.count <= GroupManager.groupsV2MaxGroupSizeHardLimit else {
-                throw GroupsV2Error.tooManyMembers
+                throw GroupsV2Error.cannotBuildGroupChangeProto_tooManyMembers
             }
 
             var actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
@@ -621,7 +621,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         for (uuid, newRole) in self.membersToChangeRole {
             guard currentGroupMembership.isFullMember(uuid) else {
                 // User is no longer a member.
-                throw GroupsV2Error.conflictingChange
+                throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
             }
             let currentRole = currentGroupMembership.role(for: uuid)
             guard currentRole != newRole else {
@@ -691,7 +691,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
                 if currentGroupMembership.isFullMember(uuid) {
                     throw GroupsV2Error.redundantChange
                 } else {
-                    throw GroupsV2Error.conflictingChange
+                    throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
                 }
             }
             guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
@@ -714,7 +714,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
             guard canLeaveGroup else {
                 // This could happen if the last two admins leave at the same time
                 // and race.
-                throw GroupsV2Error.lastAdminCantLeaveGroup
+                throw GroupsV2Error.cannotBuildGroupChangeProto_lastAdminCantLeaveGroup
             }
 
             // Check that we are still invited or in group.
