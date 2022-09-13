@@ -835,8 +835,8 @@
 		880FB3F128CA53D400FA1C10 /* indeterminate_spinner_44.json in Resources */ = {isa = PBXBuildFile; fileRef = 880FB3ED28CA53D300FA1C10 /* indeterminate_spinner_44.json */; };
 		880FB3F328CC161800FA1C10 /* NewStoryHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */; };
 		880FB40428CC251A00FA1C10 /* GroupStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40328CC251A00FA1C10 /* GroupStorySettingsViewController.swift */; };
-		880FB40828CD437600FA1C10 /* StoryInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */; };
 		880FB40628CD205F00FA1C10 /* TSGroupThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40528CD205F00FA1C10 /* TSGroupThread.swift */; };
+		880FB40828CD437600FA1C10 /* StoryInfoSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */; };
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881218EF238CA51600E6F271 /* MessageReactionPicker.swift */; };
 		8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */; };
@@ -1118,6 +1118,9 @@
 		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
 		F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */; };
+		F927478828CFE9B10056EAFE /* test-png.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478728CFE9B10056EAFE /* test-png.png */; };
+		F927478A28CFE9C60056EAFE /* test-png-with-metadata.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478928CFE9C60056EAFE /* test-png-with-metadata.png */; };
+		F927478B28CFEA680056EAFE /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F93999EC28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999EB28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift */; };
 		F941B17028412D5F00498CCD /* ApplePayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F941B16F28412D5F00498CCD /* ApplePayButton.swift */; };
 		F942623B289B1B5500460798 /* OWSDeviceProvisionerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */; };
@@ -1211,6 +1214,8 @@
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
+		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
+		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
 		F97A2EEA282578C000610669 /* BadgeExpirationSheetStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */; };
 		F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9844C482867936400B16DD4 /* SignalMeTest.swift */; };
 		F988DC13289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */; };
@@ -3110,8 +3115,8 @@
 		880FB3ED28CA53D300FA1C10 /* indeterminate_spinner_44.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = indeterminate_spinner_44.json; sourceTree = "<group>"; };
 		880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewStoryHeaderView.swift; sourceTree = "<group>"; };
 		880FB40328CC251A00FA1C10 /* GroupStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupStorySettingsViewController.swift; sourceTree = "<group>"; };
-		880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryInfoSheet.swift; sourceTree = "<group>"; };
 		880FB40528CD205F00FA1C10 /* TSGroupThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupThread.swift; sourceTree = "<group>"; };
+		880FB40728CD437500FA1C10 /* StoryInfoSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryInfoSheet.swift; sourceTree = "<group>"; };
 		880FC0A023BFDADC00A2A900 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = translations/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		881218EF238CA51600E6F271 /* MessageReactionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageReactionPicker.swift; sourceTree = "<group>"; };
@@ -3507,8 +3512,12 @@
 		F27BDDCCAEDF770CCFFF1C14 /* Pods-SignalServiceKit.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalServiceKit.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalServiceKit/Pods-SignalServiceKit.app store release.xcconfig"; sourceTree = "<group>"; };
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
+		F908AA7728CB894400472E68 /* PngChunkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunkerTest.swift; sourceTree = "<group>"; };
+		F908AA7928CB89CC00472E68 /* PngChunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunker.swift; sourceTree = "<group>"; };
 		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
 		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F927478728CFE9B10056EAFE /* test-png.png */ = {isa = PBXFileReference; explicitFileType = compiled; path = "test-png.png"; sourceTree = "<group>"; };
+		F927478928CFE9C60056EAFE /* test-png-with-metadata.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-png-with-metadata.png"; sourceTree = "<group>"; };
 		F93999EB28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioningURLParserTest.swift; sourceTree = "<group>"; };
 		F941B16F28412D5F00498CCD /* ApplePayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePayButton.swift; sourceTree = "<group>"; };
 		F94261C8289B1B5300460798 /* OWSDeviceProvisionerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisionerTest.swift; sourceTree = "<group>"; };
@@ -5624,6 +5633,7 @@
 				34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */,
 				34C6B0A71FA0E46F00D35993 /* test-mp3.mp3 */,
 				34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */,
+				F927478928CFE9C60056EAFE /* test-png-with-metadata.png */,
 			);
 			path = Assets;
 			sourceTree = "<group>";
@@ -6853,6 +6863,7 @@
 			isa = PBXGroup;
 			children = (
 				F908AA7C28CE629700472E68 /* test-apng.png */,
+				F927478728CFE9B10056EAFE /* test-png.png */,
 			);
 			path = Fixtures;
 			sourceTree = "<group>";
@@ -6939,6 +6950,7 @@
 				F94261E6289B1B5400460798 /* OWSErrorTest.swift */,
 				F94261EE289B1B5400460798 /* OWSFormatTest.swift */,
 				F94261FB289B1B5400460798 /* OWSOperationTest.swift */,
+				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
 				F94261F0289B1B5400460798 /* RefineryTest.swift */,
 				F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */,
 				F94261EB289B1B5400460798 /* TSMessageStorageTests.m */,
@@ -8114,6 +8126,7 @@
 				F9C5CB4E289453B200548EEE /* PendingTasks.swift */,
 				F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */,
 				F9C5CB58289453B200548EEE /* Platform.swift */,
+				F908AA7928CB89CC00472E68 /* PngChunker.swift */,
 				F9C5CB4B289453B200548EEE /* Promise+OWS.swift */,
 				F9C5CB42289453B200548EEE /* ReadyFlag.swift */,
 				F9C5CB46289453B200548EEE /* Refinery.swift */,
@@ -9106,11 +9119,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F927478B28CFEA680056EAFE /* test-apng.png in Resources */,
 				34C6B0A91FA0E46F00D35993 /* test-gif.gif in Resources */,
 				1704690C25D4C92B000793D8 /* test-jpg-rotated.jpg in Resources */,
 				34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */,
 				34C6B0AB1FA0E46F00D35993 /* test-mp3.mp3 in Resources */,
 				34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */,
+				F927478A28CFE9C60056EAFE /* test-png-with-metadata.png in Resources */,
 				B660F6D41C29868000687D6E /* whisperFake.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -9150,6 +9165,7 @@
 				F942628B289B1B5600460798 /* sample-sticker.encrypted in Resources */,
 				F942628C289B1B5600460798 /* sample-sticker.webp in Resources */,
 				F908AA7D28CE629700472E68 /* test-apng.png in Resources */,
+				F927478828CFE9B10056EAFE /* test-png.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10870,6 +10886,7 @@
 				F9C5CCD6289453B300548EEE /* PhoneNumberUtil.swift in Sources */,
 				F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */,
 				F9C5CE2A289453B400548EEE /* Platform.swift in Sources */,
+				F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */,
 				F9C5CBCB289453B300548EEE /* PreKeyBundle+jsonDict.m in Sources */,
 				F9C5CD50289453B300548EEE /* PreKeyBundle.m in Sources */,
 				F9C5CD4D289453B300548EEE /* PreKeyRecord.m in Sources */,
@@ -11137,6 +11154,7 @@
 				F9426274289B1B5500460798 /* PhoneNumberTest.swift in Sources */,
 				F9426272289B1B5500460798 /* PhoneNumberUtilTest.m in Sources */,
 				F9426277289B1B5600460798 /* PhoneNumberUtilTest.swift in Sources */,
+				F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,
 				F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */,
 				F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */,
