@@ -110,15 +110,12 @@ NS_ASSUME_NONNULL_BEGIN
             self.capture.camera = self.capture.back;
             self.capture.focusMode = AVCaptureFocusModeContinuousAutoFocus;
             self.capture.delegate = self;
-
+            [self.capture start];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.capture.layer.frame = self.view.bounds;
                 [self.view.layer addSublayer:self.capture.layer];
                 [self.view bringSubviewToFront:self.maskingView];
-                
-                dispatch_async(self.captureQueue, ^{
-                    [self.capture start];
-                });
             });
         });
     } else {

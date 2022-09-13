@@ -167,17 +167,12 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
                         try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                     }
                     
-                    let maybeThread: SessionThread? = Storage.shared.write { db in
-                        let threadId: String = OpenGroup.idFor(roomToken: roomToken, server: server)
-                        return try SessionThread.fetchOrCreate(db, id: threadId, variant: .openGroup)
-                    }
-
                     self?.presentingViewController?.dismiss(animated: true, completion: nil)
                     
-                    if let thread = maybeThread, shouldOpenCommunity {
+                    if shouldOpenCommunity {
                         SessionApp.presentConversation(
-                            for: thread.id,
-                            threadVariant: thread.variant,
+                            for: OpenGroup.idFor(roomToken: roomToken, server: server),
+                            threadVariant: .openGroup,
                             isMessageRequest: false,
                             action: .compose,
                             focusInteractionId: nil,
