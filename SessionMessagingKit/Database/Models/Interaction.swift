@@ -262,7 +262,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
         self.body = body
         self.timestampMs = timestampMs
         self.receivedAtTimestampMs = receivedAtTimestampMs
-        self.wasRead = (wasRead && variant.canBeUnread)
+        self.wasRead = (wasRead || !variant.canBeUnread)
         self.hasMention = hasMention
         self.expiresInSeconds = expiresInSeconds
         self.expiresStartedAtMs = expiresStartedAtMs
@@ -304,7 +304,7 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                 default: return timestampMs
             }
         }()
-        self.wasRead = (wasRead && variant.canBeUnread)
+        self.wasRead = (wasRead || !variant.canBeUnread)
         self.hasMention = hasMention
         self.expiresInSeconds = expiresInSeconds
         self.expiresStartedAtMs = expiresStartedAtMs
@@ -348,10 +348,14 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                         ).insert(db)
                         
                     case .closedGroup:
-                        guard
-                            let closedGroup: ClosedGroup = try? thread.closedGroup.fetchOne(db),
-                            let members: [GroupMember] = try? closedGroup.members.fetchAll(db)
-                        else {
+                        let closedGroupMemberIds: Set<String> = (try? GroupMember
+                            .select(.profileId)
+                            .filter(GroupMember.Columns.groupId == thread.id)
+                            .asRequest(of: String.self)
+                            .fetchSet(db))
+                            .defaulting(to: [])
+                        
+                        guard !closedGroupMemberIds.isEmpty else {
                             SNLog("Inserted an interaction but couldn't find it's associated thread members")
                             return
                         }
@@ -359,12 +363,12 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                         // Exclude the current user when creating recipient states (as they will never
                         // receive the message resulting in the message getting flagged as failed)
                         let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                        try members
-                            .filter { member -> Bool in member.profileId != userPublicKey }
-                            .forEach { member in
+                        try closedGroupMemberIds
+                            .filter { memberId -> Bool in memberId != userPublicKey }
+                            .forEach { memberId in
                                 try RecipientState(
                                     interactionId: interactionId,
-                                    recipientId: member.profileId,
+                                    recipientId: memberId,
                                     state: .sending
                                 ).insert(db)
                             }
@@ -409,7 +413,7 @@ public extension Interaction {
             body: (body ?? self.body),
             timestampMs: (timestampMs ?? self.timestampMs),
             receivedAtTimestampMs: self.receivedAtTimestampMs,
-            wasRead: (wasRead ?? self.wasRead),
+            wasRead: ((wasRead ?? self.wasRead) || !self.variant.canBeUnread),
             hasMention: (hasMention ?? self.hasMention),
             expiresInSeconds: (expiresInSeconds ?? self.expiresInSeconds),
             expiresStartedAtMs: (expiresStartedAtMs ?? self.expiresStartedAtMs),
@@ -451,6 +455,23 @@ public extension Interaction {
                     interactionIds: interactionIds,
                     startedAtMs: (Date().timeIntervalSince1970 * 1000)
                 )
+            )
+            
+            // Clear out any notifications for the interactions we mark as read
+            Environment.shared?.notificationsManager.wrappedValue?.cancelNotifications(
+                identifiers: interactionIds
+                    .map { interactionId in
+                        Interaction.notificationIdentifier(
+                            for: interactionId,
+                            threadId: threadId,
+                            shouldGroupMessagesForThread: false
+                        )
+                    }
+                    .appending(Interaction.notificationIdentifier(
+                        for: 0,
+                        threadId: threadId,
+                        shouldGroupMessagesForThread: true
+                    ))
             )
             
             // If we want to send read receipts then try to add the 'SendReadReceiptsJob'
@@ -573,18 +594,27 @@ public extension Interaction {
     
     var notificationIdentifiers: [String] {
         [
-            notificationIdentifier(isBackgroundPoll: true),
-            notificationIdentifier(isBackgroundPoll: false)
+            notificationIdentifier(shouldGroupMessagesForThread: true),
+            notificationIdentifier(shouldGroupMessagesForThread: false)
         ]
     }
     
     // MARK: - Functions
     
-    func notificationIdentifier(isBackgroundPoll: Bool) -> String {
+    func notificationIdentifier(shouldGroupMessagesForThread: Bool) -> String {
         // When the app is in the background we want the notifications to be grouped to prevent spam
-        guard !isBackgroundPoll else { return threadId }
+        return Interaction.notificationIdentifier(
+            for: (id ?? 0),
+            threadId: threadId,
+            shouldGroupMessagesForThread: shouldGroupMessagesForThread
+        )
+    }
+    
+    fileprivate static func notificationIdentifier(for id: Int64, threadId: String, shouldGroupMessagesForThread: Bool) -> String {
+        // When the app is in the background we want the notifications to be grouped to prevent spam
+        guard !shouldGroupMessagesForThread else { return threadId }
         
-        return "\(threadId)-\(id ?? 0)"
+        return "\(threadId)-\(id)"
     }
     
     func markingAsDeleted() -> Interaction {
@@ -598,7 +628,7 @@ public extension Interaction {
             body: nil,
             timestampMs: timestampMs,
             receivedAtTimestampMs: receivedAtTimestampMs,
-            wasRead: (wasRead && Variant.standardIncomingDeleted.canBeUnread),
+            wasRead: (wasRead || !Variant.standardIncomingDeleted.canBeUnread),
             hasMention: hasMention,
             expiresInSeconds: expiresInSeconds,
             expiresStartedAtMs: expiresStartedAtMs,

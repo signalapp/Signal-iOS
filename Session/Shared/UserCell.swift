@@ -11,6 +11,7 @@ final class UserCell: UITableViewCell {
         case none
         case lock
         case tick(isSelected: Bool)
+        case x
     }
 
     // MARK: - Components
@@ -101,13 +102,14 @@ final class UserCell: UITableViewCell {
             to: contentView
         )
     }
-
+    
     // MARK: - Updating
     
     func update(
         with publicKey: String,
         profile: Profile?,
         isZombie: Bool,
+        mediumFont: Bool = false,
         accessory: Accessory
     ) {
         profilePictureView.update(
@@ -116,11 +118,19 @@ final class UserCell: UITableViewCell {
             threadVariant: .contact
         )
         
-        displayNameLabel.text = Profile.displayName(
-            for: .contact,
-            id: publicKey,
-            name: profile?.name,
-            nickname: profile?.nickname
+        displayNameLabel.font = (mediumFont ?
+            .systemFont(ofSize: Values.mediumFontSize) :
+            .boldSystemFont(ofSize: Values.mediumFontSize)
+        )
+
+        displayNameLabel.text = (getUserHexEncodedPublicKey() == publicKey ?
+            "MEDIA_GALLERY_SENDER_NAME_YOU".localized() :
+            Profile.displayName(
+                for: .contact,
+                id: publicKey,
+                name: profile?.name,
+                nickname: profile?.nickname
+            )
         )
         
         switch accessory {
@@ -135,6 +145,11 @@ final class UserCell: UITableViewCell {
                 let icon: UIImage = (isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle"))
                 accessoryImageView.isHidden = false
                 accessoryImageView.image = icon.withRenderingMode(.alwaysTemplate)
+                accessoryImageView.tintColor = Colors.text
+            case .x:
+                accessoryImageView.isHidden = false
+                accessoryImageView.image = #imageLiteral(resourceName: "X").withRenderingMode(.alwaysTemplate)
+                accessoryImageView.contentMode = .center
                 accessoryImageView.tintColor = Colors.text
         }
         

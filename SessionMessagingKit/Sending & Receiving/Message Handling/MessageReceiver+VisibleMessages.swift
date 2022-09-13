@@ -12,7 +12,6 @@ extension MessageReceiver {
         message: VisibleMessage,
         associatedWithProto proto: SNProtoContent,
         openGroupId: String?,
-        isBackgroundPoll: Bool,
         dependencies: Dependencies = Dependencies()
     ) throws -> Int64 {
         guard let sender: String = message.sender, let dataMessage = proto.dataMessage else {
@@ -87,6 +86,11 @@ extension MessageReceiver {
                     )
             }
         }()
+        
+        // Handle emoji reacts first (otherwise it's essentially an invalid message)
+        if let interactionId: Int64 = try handleEmojiReactIfNeeded(db, message: message, associatedWithProto: proto, sender: sender, messageSentTimestamp: messageSentTimestamp, openGroupId: openGroupId, thread: thread) {
+            return interactionId
+        }
         
         // Retrieve the disappearing messages config to set the 'expiresInSeconds' value
         // accoring to the config
@@ -285,9 +289,71 @@ extension MessageReceiver {
             .notifyUser(
                 db,
                 for: interaction,
-                in: thread,
-                isBackgroundPoll: isBackgroundPoll
+                in: thread
             )
+        
+        return interactionId
+    }
+    
+    private static func handleEmojiReactIfNeeded(
+        _ db: Database,
+        message: VisibleMessage,
+        associatedWithProto proto: SNProtoContent,
+        sender: String,
+        messageSentTimestamp: TimeInterval,
+        openGroupId: String?,
+        thread: SessionThread
+    ) throws -> Int64? {
+        guard
+            let reaction: VisibleMessage.VMReaction = message.reaction,
+            proto.dataMessage?.reaction != nil
+        else { return nil }
+        
+        let maybeInteractionId: Int64? = try? Interaction
+            .select(.id)
+            .filter(Interaction.Columns.threadId == thread.id)
+            .filter(Interaction.Columns.timestampMs == reaction.timestamp)
+            .filter(Interaction.Columns.authorId == reaction.publicKey)
+            .filter(Interaction.Columns.variant != Interaction.Variant.standardIncomingDeleted)
+            .asRequest(of: Int64.self)
+            .fetchOne(db)
+        
+        guard let interactionId: Int64 = maybeInteractionId else {
+            throw StorageError.objectNotFound
+        }
+        
+        let sortId = Reaction.getSortId(
+            db,
+            interactionId: interactionId,
+            emoji: reaction.emoji
+        )
+        
+        switch reaction.kind {
+            case .react:
+                let reaction = Reaction(
+                    interactionId: interactionId,
+                    serverHash: message.serverHash,
+                    timestampMs: Int64(messageSentTimestamp * 1000),
+                    authorId: sender,
+                    emoji: reaction.emoji,
+                    count: 1,
+                    sortId: sortId
+                )
+                try reaction.insert(db)
+                Environment.shared?.notificationsManager.wrappedValue?
+                    .notifyUser(
+                        db,
+                        forReaction: reaction,
+                        in: thread
+                    )
+                
+            case .remove:
+                try Reaction
+                    .filter(Reaction.Columns.interactionId == interactionId)
+                    .filter(Reaction.Columns.authorId == sender)
+                    .filter(Reaction.Columns.emoji == reaction.emoji)
+                    .deleteAll(db)
+        }
         
         return interactionId
     }

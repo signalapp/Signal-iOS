@@ -9,7 +9,7 @@ import SessionMessagingKit
 public class NSENotificationPresenter: NSObject, NotificationsProtocol {
     private var notifications: [String: UNNotificationRequest] = [:]
      
-    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
+    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread) {
         let isMessageRequest: Bool = thread.isMessageRequest(db, includeNonVisible: true)
         
         // Ensure we should be showing a notification for the thread
@@ -18,6 +18,12 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         }
         
         let senderName: String = Profile.displayName(db, id: interaction.authorId, threadVariant: thread.variant)
+        let groupName: String = SessionThread.displayName(
+            threadId: thread.id,
+            variant: thread.variant,
+            closedGroupName: (try? thread.closedGroup.fetchOne(db))?.name,
+            openGroupName: (try? thread.openGroup.fetchOne(db))?.name
+        )
         var notificationTitle: String = senderName
         
         if thread.variant == .closedGroup || thread.variant == .openGroup {
@@ -26,22 +32,11 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
                 return
             }
             
-            notificationTitle = {
-                let groupName: String = SessionThread.displayName(
-                    threadId: thread.id,
-                    variant: thread.variant,
-                    closedGroupName: (try? thread.closedGroup.fetchOne(db))?.name,
-                    openGroupName: (try? thread.openGroup.fetchOne(db))?.name
-                )
-                
-                guard !isBackgroundPoll else { return groupName }
-                
-                return String(
-                    format: NotificationStrings.incomingGroupMessageTitleFormat,
-                    senderName,
-                    groupName
-                )
-            }()
+            notificationTitle = String(
+                format: NotificationStrings.incomingGroupMessageTitleFormat,
+                senderName,
+                groupName
+            )
         }
         
         let snippet: String = (interaction.previewText(db)
@@ -88,21 +83,31 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             notificationContent.body = "MESSAGE_REQUESTS_NOTIFICATION".localized()
         }
         
-        // Add request
-        let identifier = interaction.notificationIdentifier(isBackgroundPoll: isBackgroundPoll)
+        // Add request (try to group notifications for interactions from open groups)
+        let identifier: String = interaction.notificationIdentifier(
+            shouldGroupMessagesForThread: (thread.variant == .openGroup)
+        )
         var trigger: UNNotificationTrigger?
         
-        if isBackgroundPoll {
-            trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        if thread.variant == .openGroup {
+            trigger = UNTimeIntervalNotificationTrigger(
+                timeInterval: Notifications.delayForGroupedNotifications,
+                repeats: false
+            )
             
-            var numberOfNotifications: Int = (notifications[identifier]?
+            let numberExistingNotifications: Int? = notifications[identifier]?
                 .content
                 .userInfo[NotificationServiceExtension.threadNotificationCounter]
-                .asType(Int.self))
-                .defaulting(to: 1)
+                .asType(Int.self)
+            var numberOfNotifications: Int = (numberExistingNotifications ?? 1)
             
-            if numberOfNotifications > 1 {
+            if numberExistingNotifications != nil {
                 numberOfNotifications += 1  // Add one for the current notification
+                
+                notificationContent.title = (previewType == .noNameNoPreview ?
+                    notificationContent.title :
+                    groupName
+                )
                 notificationContent.body = String(
                     format: NotificationStrings.incomingCollapsedMessagesBody,
                     "\(numberOfNotifications)"
@@ -112,20 +117,11 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             notificationContent.userInfo[NotificationServiceExtension.threadNotificationCounter] = numberOfNotifications
         }
         
-        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)
-        
-        SNLog("Add remote notification request: \(notificationContent.body)")
-        let semaphore = DispatchSemaphore(value: 0)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                SNLog("Failed to add notification request due to error:\(error)")
-            }
-            
-            self.notifications[identifier] = request
-            semaphore.signal()
-        }
-        semaphore.wait()
-        SNLog("Finish adding remote notification request")
+        addNotifcationRequest(
+            identifier: identifier,
+            notificationContent: notificationContent,
+            trigger: trigger
+        )
     }
     
     public func notifyUser(_ db: Database, forIncomingCall interaction: Interaction, in thread: SessionThread) {
@@ -176,20 +172,46 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
             )
         }
         
-        // Add request
-        let identifier = UUID().uuidString
-        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: nil)
+        addNotifcationRequest(
+            identifier: UUID().uuidString,
+            notificationContent: notificationContent,
+            trigger: nil
+        )
+    }
+    
+    public func notifyUser(_ db: Database, forReaction reaction: Reaction, in thread: SessionThread) {
+        let isMessageRequest: Bool = thread.isMessageRequest(db, includeNonVisible: true)
         
-        SNLog("Add remote notification request: \(notificationContent.body)")
-        let semaphore = DispatchSemaphore(value: 0)
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                SNLog("Failed to add notification request due to error:\(error)")
-            }
-            semaphore.signal()
+        // No reaction notifications for muted, group threads or message requests
+        guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
+        guard thread.variant != .closedGroup && thread.variant != .openGroup else { return }
+        guard !isMessageRequest else { return }
+        
+        let senderName: String = Profile.displayName(db, id: reaction.authorId, threadVariant: thread.variant)
+        let notificationTitle = "Session"
+        var notificationBody = String(format: "EMOJI_REACTS_NOTIFICATION".localized(), senderName, reaction.emoji)
+        
+        // Title & body
+        let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+            .defaulting(to: .nameAndPreview)
+        
+        switch previewType {
+            case .nameAndPreview: break
+            default: notificationBody = NotificationStrings.incomingMessageBody
         }
-        semaphore.wait()
-        SNLog("Finish adding remote notification request")
+
+        var userInfo: [String: Any] = [ NotificationServiceExtension.isFromRemoteKey: true ]
+        userInfo[NotificationServiceExtension.threadIdKey] = thread.id
+        
+        let notificationContent = UNMutableNotificationContent()
+        notificationContent.userInfo = userInfo
+        notificationContent.sound = thread.notificationSound
+            .defaulting(to: db[.defaultNotificationSound] ?? Preferences.Sound.defaultNotificationSound)
+            .notificationSound(isQuiet: false)
+        notificationContent.title = notificationTitle
+        notificationContent.body = notificationBody
+        
+        addNotifcationRequest(identifier: UUID().uuidString, notificationContent: notificationContent, trigger: nil)
     }
     
     public func cancelNotifications(identifiers: [String]) {
@@ -202,6 +224,21 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
+    }
+    
+    private func addNotifcationRequest(identifier: String, notificationContent: UNNotificationContent, trigger: UNNotificationTrigger?) {
+        let request = UNNotificationRequest(identifier: identifier, content: notificationContent, trigger: trigger)
+        
+        SNLog("Add remote notification request: \(notificationContent.body)")
+        let semaphore = DispatchSemaphore(value: 0)
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                SNLog("Failed to add notification request due to error:\(error)")
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
+        SNLog("Finish adding remote notification request")
     }
 }
 

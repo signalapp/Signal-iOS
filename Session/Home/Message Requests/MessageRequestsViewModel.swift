@@ -86,14 +86,14 @@ public class MessageRequestsViewModel {
                     }()
                 )
             ],
-            /// **Note:** This `optimisedJoinSQL` value includes the required minimum joins needed for the query
+            /// **Note:** This `optimisedJoinSQL` value includes the required minimum joins needed for the query but differs
+            /// from the JOINs that are actually used for performance reasons as the basic logic can be simpler for where it's used
             joinSQL: SessionThreadViewModel.optimisedJoinSQL,
             filterSQL: SessionThreadViewModel.messageRequestsFilterSQL(userPublicKey: userPublicKey),
             groupSQL: SessionThreadViewModel.groupSQL,
             orderSQL: SessionThreadViewModel.messageRequetsOrderSQL,
             dataQuery: SessionThreadViewModel.baseQuery(
                 userPublicKey: userPublicKey,
-                filterSQL: SessionThreadViewModel.messageRequestsFilterSQL(userPublicKey: userPublicKey),
                 groupSQL: SessionThreadViewModel.groupSQL,
                 orderSQL: SessionThreadViewModel.messageRequetsOrderSQL
             ),

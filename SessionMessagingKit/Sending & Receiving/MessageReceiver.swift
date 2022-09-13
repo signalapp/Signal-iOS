@@ -180,7 +180,6 @@ public enum MessageReceiver {
         message: Message,
         associatedWithProto proto: SNProtoContent,
         openGroupId: String?,
-        isBackgroundPoll: Bool,
         dependencies: SMKDependencies = SMKDependencies()
     ) throws {
         switch message {
@@ -206,7 +205,7 @@ public enum MessageReceiver {
                 try MessageReceiver.handleUnsendRequest(db, message: message)
                 
             case let message as CallMessage:
-                try MessageReceiver.handleCallMessage(db, message:  message)
+                try MessageReceiver.handleCallMessage(db, message: message)
                 
             case let message as MessageRequestResponse:
                 try MessageReceiver.handleMessageRequestResponse(db, message: message, dependencies: dependencies)
@@ -216,8 +215,7 @@ public enum MessageReceiver {
                     db,
                     message: message,
                     associatedWithProto: proto,
-                    openGroupId: openGroupId,
-                    isBackgroundPoll: isBackgroundPoll
+                    openGroupId: openGroupId
                 )
                 
             default: fatalError()
@@ -246,6 +244,31 @@ public enum MessageReceiver {
                     .fetchOrCreate(db, id: threadInfo.id, variant: threadInfo.variant)
                     .with(shouldBeVisible: true)
                     .saved(db)
+        }
+    }
+    
+    public static func handleOpenGroupReactions(
+        _ db: Database,
+        threadId: String,
+        openGroupMessageServerId: Int64,
+        openGroupReactions: [Reaction]
+    ) throws {
+        guard let interactionId: Int64 = try? Interaction
+            .select(.id)
+            .filter(Interaction.Columns.threadId == threadId)
+            .filter(Interaction.Columns.openGroupServerMessageId == openGroupMessageServerId)
+            .asRequest(of: Int64.self)
+            .fetchOne(db)
+        else {
+            throw MessageReceiverError.invalidMessage
+        }
+        
+        _ = try Reaction
+            .filter(Reaction.Columns.interactionId == interactionId)
+            .deleteAll(db)
+        
+        for reaction in openGroupReactions {
+            try reaction.with(interactionId: interactionId).insert(db)
         }
     }
     

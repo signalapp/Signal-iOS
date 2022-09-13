@@ -8,14 +8,16 @@ public extension NSAttributedString.Key {
     static let currentUserMentionBackgroundPadding: NSAttributedString.Key = NSAttributedString.Key(rawValue: "currentUserMentionBackgroundPadding")
 }
 
-class HighlightMentionBackgroundView: UIView {
+public class HighlightMentionBackgroundView: UIView {
+    weak var targetLabel: UILabel?
     var maxPadding: CGFloat = 0
     
-    init() {
+    init(targetLabel: UILabel) {
+        self.targetLabel = targetLabel
+        
         super.init(frame: .zero)
         
         self.isOpaque = false
-        self.layer.zPosition = -1
     }
     
     required init?(coder: NSCoder) {
@@ -50,17 +52,19 @@ class HighlightMentionBackgroundView: UIView {
             }
         }
         
-        return allMentionRadii
+        let maxRadii: CGFloat? = allMentionRadii
             .compactMap { $0 }
             .max()
-            .defaulting(to: 0)
+        
+        return (maxRadii ?? 0)
     }
     
     // MARK: - Drawing
     
-    override func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         guard
-            let superview: UITextView = (self.superview as? UITextView),
+            let targetLabel: UILabel = self.targetLabel,
+            let attributedText: NSAttributedString = targetLabel.attributedText,
             let context = UIGraphicsGetCurrentContext()
         else { return }
         
@@ -69,14 +73,14 @@ class HighlightMentionBackgroundView: UIView {
         context.translateBy(x: 0, y: bounds.size.height)
         context.scaleBy(x: 1.0, y: -1.0)
        
-        // Note: Calculations MUST happen based on the 'superview' size as this class has extra padding which
-        // can result in calculations being off
+        // Note: Calculations MUST happen based on the 'targetLabel' size as this class has extra padding
+        // which can result in calculations being off
         let path = CGMutablePath()
-        let size = superview.sizeThatFits(CGSize(width: superview.bounds.width, height: .greatestFiniteMagnitude))
+        let size = targetLabel.sizeThatFits(CGSize(width: targetLabel.bounds.width, height: .greatestFiniteMagnitude))
         path.addRect(CGRect(x: 0, y: 0, width: size.width, height: size.height), transform: .identity)
 
-        let framesetter = CTFramesetterCreateWithAttributedString(superview.attributedText as CFAttributedString)
-        let frame: CTFrame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, superview.attributedText.length), path, nil)
+        let framesetter = CTFramesetterCreateWithAttributedString(attributedText as CFAttributedString)
+        let frame: CTFrame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, attributedText.length), path, nil)
         let lines: [CTLine] = frame.lines
 
         var origins = [CGPoint](repeating: .zero, count: lines.count)
@@ -97,12 +101,11 @@ class HighlightMentionBackgroundView: UIView {
                     continue
                 }
                 
-                let cornerRadius: CGFloat = (attributes
+                let maybeCornerRadius: CGFloat? = (attributes
                     .value(forKey: NSAttributedString.Key.currentUserMentionBackgroundCornerRadius.rawValue) as? CGFloat)
-                    .defaulting(to: 0)
-                let padding: CGFloat = (attributes
+                let maybePadding: CGFloat? = (attributes
                     .value(forKey: NSAttributedString.Key.currentUserMentionBackgroundPadding.rawValue) as? CGFloat)
-                    .defaulting(to: 0)
+                let padding: CGFloat = (maybePadding ?? 0)
                 
                 let range = CTRunGetStringRange(run)
                 var runBounds: CGRect = .zero
@@ -121,10 +124,10 @@ class HighlightMentionBackgroundView: UIView {
                     }
                 }()
                 
-                // HACK: This `extraYOffset` value is a hack to resolve a weird issue where the positioning
-                // seems to be slightly off every additional line of text we add (it doesn't seem to be related
-                // to line spacing or anything, more related to the bold mention text being positioned slightly
-                // differently from the non-bold text)
+                // HACK: This `extraYOffset` value is a hack to resolve a weird issue where the
+                // positioning seems to be slightly off every additional line of text we add (it
+                // doesn't seem to be related to line spacing or anything, more related to the
+                // bold mention text being positioned slightly differently from the non-bold text)
                 let extraYOffset: CGFloat = (CGFloat(lineIndex) * (runDescent / 12))
                 
                 // Note: Changes to `origin.y` need to be inverted since the context has been flipped
@@ -137,7 +140,7 @@ class HighlightMentionBackgroundView: UIView {
                     extraYOffset
                 )
                 
-                let path = UIBezierPath(roundedRect: runBounds, cornerRadius: cornerRadius)
+                let path = UIBezierPath(roundedRect: runBounds, cornerRadius: (maybeCornerRadius ?? 0))
                 mentionBackgroundColor.setFill()
                 path.fill()
             }

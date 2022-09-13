@@ -175,7 +175,7 @@ enum _001_InitialSetupMigration: Migration {
                 .notNull()
         }
         
-        try db.create(table: GroupMember.self) { t in
+        try db.create(table: _006_FixHiddenModAdminSupport.PreMigrationGroupMember.self) { t in
             // Note: Since we don't know whether this will be stored against a 'ClosedGroup' or
             // an 'OpenGroup' we add the foreign key constraint against the thread itself (which
             // shares the same 'id' as the 'groupId') so we can cascade delete automatically

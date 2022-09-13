@@ -433,7 +433,8 @@ public final class MessageSender {
             )
             .done(on: DispatchQueue.global(qos: .default)) { responseInfo, data in
                 message.openGroupServerMessageId = UInt64(data.id)
-
+                let serverTimestampMs: UInt64? = data.posted.map { UInt64(floor($0 * 1000)) }
+                
                 dependencies.storage.write { db in
                     // The `posted` value is in seconds but we sent it in ms so need that for de-duping
                     try MessageSender.handleSuccessfulMessageSend(
@@ -441,7 +442,7 @@ public final class MessageSender {
                         message: message,
                         to: destination,
                         interactionId: interactionId,
-                        serverTimestampMs: UInt64(floor(data.posted * 1000))
+                        serverTimestampMs: serverTimestampMs
                     )
                     seal.fulfill(())
                 }
@@ -575,39 +576,51 @@ public final class MessageSender {
         serverTimestampMs: UInt64? = nil,
         isSyncMessage: Bool = false
     ) throws {
-        let interaction: Interaction? = try interaction(db, for: message, interactionId: interactionId)
-        
-        // Get the visible message if possible
-        if let interaction: Interaction = interaction {
-            // When the sync message is successfully sent, the hash value of this TSOutgoingMessage
-            // will be replaced by the hash value of the sync message. Since the hash value of the
-            // real message has no use when we delete a message. It is OK to let it be.
-            try interaction.with(
-                serverHash: message.serverHash,
+        // If the message was a reaction then we want to update the reaction instead of the original
+        // interaciton (which the 'interactionId' is pointing to
+        if let visibleMessage: VisibleMessage = message as? VisibleMessage, let reaction: VisibleMessage.VMReaction = visibleMessage.reaction {
+            try Reaction
+                .filter(Reaction.Columns.interactionId == interactionId)
+                .filter(Reaction.Columns.authorId == reaction.publicKey)
+                .filter(Reaction.Columns.emoji == reaction.emoji)
+                .updateAll(db, Reaction.Columns.serverHash.set(to: message.serverHash))
+        }
+        else {
+            // Otherwise we do want to try and update the referenced interaction
+            let interaction: Interaction? = try interaction(db, for: message, interactionId: interactionId)
+            
+            // Get the visible message if possible
+            if let interaction: Interaction = interaction {
+                // When the sync message is successfully sent, the hash value of this TSOutgoingMessage
+                // will be replaced by the hash value of the sync message. Since the hash value of the
+                // real message has no use when we delete a message. It is OK to let it be.
+                try interaction.with(
+                    serverHash: message.serverHash,
+                    
+                    // Track the open group server message ID and update server timestamp (use server
+                    // timestamp for open group messages otherwise the quote messages may not be able
+                    // to be found by the timestamp on other devices
+                    timestampMs: (message.openGroupServerMessageId == nil ?
+                        nil :
+                        serverTimestampMs.map { Int64($0) }
+                    ),
+                    openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) }
+                ).update(db)
                 
-                // Track the open group server message ID and update server timestamp (use server
-                // timestamp for open group messages otherwise the quote messages may not be able
-                // to be found by the timestamp on other devices
-                timestampMs: (message.openGroupServerMessageId == nil ?
-                    nil :
-                    serverTimestampMs.map { Int64($0) }
-                ),
-                openGroupServerMessageId: message.openGroupServerMessageId.map { Int64($0) }
-            ).update(db)
-            
-            // Mark the message as sent
-            try interaction.recipientStates
-                .updateAll(db, RecipientState.Columns.state.set(to: RecipientState.State.sent))
-            
-            // Start the disappearing messages timer if needed
-            JobRunner.upsert(
-                db,
-                job: DisappearingMessagesJob.updateNextRunIfNeeded(
+                // Mark the message as sent
+                try interaction.recipientStates
+                    .updateAll(db, RecipientState.Columns.state.set(to: RecipientState.State.sent))
+                
+                // Start the disappearing messages timer if needed
+                JobRunner.upsert(
                     db,
-                    interaction: interaction,
-                    startedAtMs: (Date().timeIntervalSince1970 * 1000)
+                    job: DisappearingMessagesJob.updateNextRunIfNeeded(
+                        db,
+                        interaction: interaction,
+                        startedAtMs: (Date().timeIntervalSince1970 * 1000)
+                    )
                 )
-            )
+            }
         }
         
         // Prevent ControlMessages from being handled multiple times if not supported
@@ -652,6 +665,11 @@ public final class MessageSender {
         with error: MessageSenderError,
         interactionId: Int64?
     ) {
+        // TODO: Revert the local database change
+        // If the message was a reaction then we don't want to do anything to the original
+        // interaciton (which the 'interactionId' is pointing to
+        guard (message as? VisibleMessage)?.reaction == nil else { return }
+        
         // Check if we need to mark any "sending" recipients as "failed"
         //
         // Note: The 'db' could be either read-only or writeable so we determine
