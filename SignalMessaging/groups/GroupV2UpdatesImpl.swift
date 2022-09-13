@@ -1175,49 +1175,31 @@ extension GroupsV2Error: IsRetryableProvider {
         }
 
         switch self {
-        case .redundantChange:
+        case
+                .redundantChange,
+                .shouldRetry,
+                .timeout,
+                .newMemberMissingAnnouncementOnlyCapability:
             return true
-        case .shouldRetry:
-            return true
-        case .shouldDiscard:
-            return false
-        case .timeout:
-            return true
-        case .localUserNotInGroup:
-            return false
-        case .conflictingChange:
-            return true
-        case .lastAdminCantLeaveGroup:
-            return false
-        case .tooManyMembers:
-            return false
-        case .gv2NotEnabled:
-            return false
-        case .localUserIsAlreadyRequestingMember:
-            return false
-        case .localUserIsNotARequestingMember:
-            return false
-        case .requestingMemberCantLoadGroupState:
-            return false
-        case .cantApplyChangesToPlaceholder:
-            return false
-        case .expiredGroupInviteLink:
-            return false
-        case .groupDoesNotExistOnService:
-            return false
-        case .groupNeedsToBeMigrated:
-            return false
-        case .groupCannotBeMigrated:
-            return false
-        case .groupDowngradeNotAllowed:
-            return false
-        case .missingGroupChangeProtos:
-            return false
-        case .groupBlocked:
-            return false
-        case .newMemberMissingAnnouncementOnlyCapability:
-            return true
-        case .localUserBlockedFromJoining:
+        case
+                .shouldDiscard,
+                .localUserNotInGroup,
+                .conflictingChange,
+                .lastAdminCantLeaveGroup,
+                .tooManyMembers,
+                .gv2NotEnabled,
+                .localUserIsAlreadyRequestingMember,
+                .localUserIsNotARequestingMember,
+                .requestingMemberCantLoadGroupState,
+                .cantApplyChangesToPlaceholder,
+                .expiredGroupInviteLink,
+                .groupDoesNotExistOnService,
+                .groupNeedsToBeMigrated,
+                .groupCannotBeMigrated,
+                .groupDowngradeNotAllowed,
+                .missingGroupChangeProtos,
+                .groupBlocked,
+                .localUserBlockedFromJoining:
             return false
         }
     }

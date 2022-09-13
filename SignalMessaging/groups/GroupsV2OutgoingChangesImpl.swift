@@ -688,7 +688,11 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         for uuid in invitedMembersToPromote {
             // Check that pending member is still invited.
             guard currentGroupMembership.isInvitedMember(uuid) else {
-                throw GroupsV2Error.redundantChange
+                if currentGroupMembership.isFullMember(uuid) {
+                    throw GroupsV2Error.redundantChange
+                } else {
+                    throw GroupsV2Error.conflictingChange
+                }
             }
             guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
                 throw OWSAssertionError("Missing profile key credential: \(uuid)")
