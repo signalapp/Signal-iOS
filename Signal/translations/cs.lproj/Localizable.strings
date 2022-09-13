@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Nyní ne";
 
 /* Title for the 'about' help section */
-"ABOUT_SECTION_TITLE" = "O Signal";
+"ABOUT_SECTION_TITLE" = "O aplikaci Signal";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Přijmout nové bezpečnostní číslo";
@@ -6158,19 +6158,19 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Jít do konverzace";
 
 /* Header for the hidden stories section of the stories list */
-"STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
+"STORIES_HIDDEN_SECTION_HEADER" = "Skrýt příběhy";
 
 /* Context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION" = "Schovat příběh";
+"STORIES_HIDE_STORY_ACTION" = "Skrýt příběh";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "New story updates from %@ won't appear at the top of the stories list anymore.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nové aktualizace příběhů od %@ se již nezobrazují na začátku seznamu příběhů.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Hide Story?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Skrýt příběh?";
 
 /* Toast shown when a story is successfuly hidden */
-"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Příběh skryt";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "V tuto chvíli nejsou žádné aktualizace k zobrazení. Klepnutím na + přidáte do svého příběhu.";
@@ -6221,7 +6221,7 @@
 "STORIES_UNHIDE_STORY_ACTION" = "Unhide Story";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Příběh neskrytý";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Zobrazení";
@@ -6254,7 +6254,7 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Odpovědět skupině";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "Tento příběh nemohl být odeslán. Zkontrolujte připojení a zkuste to znovu";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Spojení";
