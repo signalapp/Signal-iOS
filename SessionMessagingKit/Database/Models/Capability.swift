@@ -16,11 +16,12 @@ public struct Capability: Codable, FetchableRecord, PersistableRecord, TableReco
     
     public enum Variant: Equatable, Hashable, CaseIterable, Codable, DatabaseValueConvertible {
         public static var allCases: [Variant] {
-            [.sogs, .blind]
+            [.sogs, .blind, .reactions]
         }
         
         case sogs
         case blind
+        case reactions
         
         /// Fallback case if the capability isn't supported by this version of the app
         case unsupported(String)

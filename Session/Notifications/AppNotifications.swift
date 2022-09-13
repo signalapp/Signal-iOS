@@ -82,10 +82,6 @@ extension AppNotificationAction {
     }
 }
 
-// Delay notification of incoming messages when it's a background polling to
-// avoid too many notifications fired at the same time
-let kNotificationDelayForBackgroumdPoll: TimeInterval = 5
-
 let kAudioNotificationsThrottleCount = 2
 let kAudioNotificationsThrottleInterval: TimeInterval = 5
 
@@ -93,12 +89,46 @@ protocol NotificationPresenterAdaptee: AnyObject {
 
     func registerNotificationSettings() -> Promise<Void>
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?)
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: Preferences.Sound?, replacingIdentifier: String?)
+    func notify(
+        category: AppNotificationCategory,
+        title: String?,
+        body: String,
+        userInfo: [AnyHashable: Any],
+        previewType: Preferences.NotificationPreviewType,
+        sound: Preferences.Sound?,
+        threadVariant: SessionThread.Variant,
+        threadName: String,
+        replacingIdentifier: String?
+    )
 
     func cancelNotifications(threadId: String)
     func cancelNotifications(identifiers: [String])
     func clearAllNotifications()
+}
+
+extension NotificationPresenterAdaptee {
+    func notify(
+        category: AppNotificationCategory,
+        title: String?,
+        body: String,
+        userInfo: [AnyHashable: Any],
+        previewType: Preferences.NotificationPreviewType,
+        sound: Preferences.Sound?,
+        threadVariant: SessionThread.Variant,
+        threadName: String
+    ) {
+        notify(
+            category: category,
+            title: title,
+            body: body,
+            userInfo: userInfo,
+            previewType: previewType,
+            sound: sound,
+            threadVariant: threadVariant,
+            threadName: threadName,
+            replacingIdentifier: nil
+        )
+    }
 }
 
 @objc(OWSNotificationPresenter)
@@ -141,7 +171,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return adaptee.registerNotificationSettings()
     }
 
-    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread, isBackgroundPoll: Bool) {
+    public func notifyUser(_ db: Database, for interaction: Interaction, in thread: SessionThread) {
         let isMessageRequest: Bool = thread.isMessageRequest(db, includeNonVisible: true)
         
         // Ensure we should be showing a notification for the thread
@@ -149,7 +179,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
         
-        let identifier: String = interaction.notificationIdentifier(isBackgroundPoll: isBackgroundPoll)
+        // Try to group notifications for interactions from open groups
+        let identifier: String = interaction.notificationIdentifier(
+            shouldGroupMessagesForThread: (thread.variant == .openGroup)
+        )
 
         // While batch processing, some of the necessary changes have not been commited.
         let rawMessageText = interaction.previewText(db)
@@ -166,6 +199,18 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let senderName = Profile.displayName(db, id: interaction.authorId, threadVariant: thread.variant)
         let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
             .defaulting(to: .nameAndPreview)
+        let groupName: String = SessionThread.displayName(
+            threadId: thread.id,
+            variant: thread.variant,
+            closedGroupName: try? thread.closedGroup
+                .select(.name)
+                .asRequest(of: String.self)
+                .fetchOne(db),
+            openGroupName: try? thread.openGroup
+                .select(.name)
+                .asRequest(of: String.self)
+                .fetchOne(db)
+        )
         
         switch previewType {
             case .noNameNoPreview:
@@ -177,26 +222,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                         notificationTitle = (isMessageRequest ? "Session" : senderName)
                         
                     case .closedGroup, .openGroup:
-                        let groupName: String = SessionThread
-                            .displayName(
-                                threadId: thread.id,
-                                variant: thread.variant,
-                                closedGroupName: try? thread.closedGroup
-                                    .select(.name)
-                                    .asRequest(of: String.self)
-                                    .fetchOne(db),
-                                openGroupName: try? thread.openGroup
-                                    .select(.name)
-                                    .asRequest(of: String.self)
-                                    .fetchOne(db)
-                            )
-                        
-                        notificationTitle = (isBackgroundPoll ? groupName :
-                            String(
-                                format: NotificationStrings.incomingGroupMessageTitleFormat,
-                                senderName,
-                                groupName
-                            )
+                        notificationTitle = String(
+                            format: NotificationStrings.incomingGroupMessageTitleFormat,
+                            senderName,
+                            groupName
                         )
                 }
         }
@@ -230,22 +259,31 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadId: thread.id,
             threadVariant: thread.variant
         )
+        let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
 
         DispatchQueue.main.async {
+            let sound: Preferences.Sound? = self.requestSound(
+                thread: thread,
+                fallbackSound: fallbackSound
+            )
+            
             notificationBody = MentionUtilities.highlightMentions(
                 in: (notificationBody ?? ""),
                 threadVariant: thread.variant,
                 currentUserPublicKey: userPublicKey,
                 currentUserBlindedPublicKey: userBlindedKey
             )
-            let sound: Preferences.Sound? = self.requestSound(thread: thread)
             
             self.adaptee.notify(
                 category: category,
                 title: notificationTitle,
-                body: notificationBody ?? "",
+                body: (notificationBody ?? ""),
                 userInfo: userInfo,
+                previewType: previewType,
                 sound: sound,
+                threadVariant: thread.variant,
+                threadName: groupName,
                 replacingIdentifier: identifier
             )
         }
@@ -268,35 +306,102 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         guard messageInfo.state == .missed || messageInfo.state == .permissionDenied else { return }
         
         let category = AppNotificationCategory.errorMessage
-
+        let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+            .defaulting(to: .nameAndPreview)
+        
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.id
         ]
         
-        let notificationTitle = interaction.previewText(db)
+        let notificationTitle: String = interaction.previewText(db)
+        let threadName: String = SessionThread.displayName(
+            threadId: thread.id,
+            variant: thread.variant,
+            closedGroupName: nil,       // Not supported
+            openGroupName: nil          // Not supported
+        )
         var notificationBody: String?
         
         if messageInfo.state == .permissionDenied {
             notificationBody = String(
                 format: "modal_call_missed_tips_explanation".localized(),
-                SessionThread.displayName(
-                    threadId: thread.id,
-                    variant: thread.variant,
-                    closedGroupName: nil,       // Not supported
-                    openGroupName: nil          // Not supported
-                )
+                threadName
             )
         }
+        let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
         
         DispatchQueue.main.async {
-            let sound = self.requestSound(thread: thread)
+            let sound = self.requestSound(
+                thread: thread,
+                fallbackSound: fallbackSound
+            )
             
             self.adaptee.notify(
                 category: category,
                 title: notificationTitle,
-                body: notificationBody ?? "",
+                body: (notificationBody ?? ""),
                 userInfo: userInfo,
+                previewType: previewType,
                 sound: sound,
+                threadVariant: thread.variant,
+                threadName: threadName,
+                replacingIdentifier: UUID().uuidString
+            )
+        }
+    }
+    
+    public func notifyUser(_ db: Database, forReaction reaction: Reaction, in thread: SessionThread) {
+        let isMessageRequest: Bool = thread.isMessageRequest(db, includeNonVisible: true)
+        
+        // No reaction notifications for muted, group threads or message requests
+        guard Date().timeIntervalSince1970 > (thread.mutedUntilTimestamp ?? 0) else { return }
+        guard thread.variant != .closedGroup && thread.variant != .openGroup else { return }
+        guard !isMessageRequest else { return }
+        
+        let senderName: String = Profile.displayName(db, id: reaction.authorId, threadVariant: thread.variant)
+        let notificationTitle = "Session"
+        var notificationBody = String(format: "EMOJI_REACTS_NOTIFICATION".localized(), senderName, reaction.emoji)
+        
+        // Title & body
+        let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+            .defaulting(to: .nameAndPreview)
+        
+        switch previewType {
+            case .nameAndPreview: break
+            default: notificationBody = NotificationStrings.incomingMessageBody
+        }
+        
+        let category = AppNotificationCategory.incomingMessage
+
+        let userInfo = [
+            AppNotificationUserInfoKey.threadId: thread.id
+        ]
+        
+        let threadName: String = SessionThread.displayName(
+            threadId: thread.id,
+            variant: thread.variant,
+            closedGroupName: nil,       // Not supported
+            openGroupName: nil          // Not supported
+        )
+        let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
+
+        DispatchQueue.main.async {
+            let sound = self.requestSound(
+                thread: thread,
+                fallbackSound: fallbackSound
+            )
+            
+            self.adaptee.notify(
+                category: category,
+                title: notificationTitle,
+                body: notificationBody,
+                userInfo: userInfo,
+                previewType: previewType,
+                sound: sound,
+                threadVariant: thread.variant,
+                threadName: threadName,
                 replacingIdentifier: UUID().uuidString
             )
         }
@@ -306,24 +411,24 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let notificationTitle: String?
         let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
             .defaulting(to: .nameAndPreview)
+        let threadName: String = SessionThread.displayName(
+            threadId: thread.id,
+            variant: thread.variant,
+            closedGroupName: try? thread.closedGroup
+                .select(.name)
+                .asRequest(of: String.self)
+                .fetchOne(db),
+            openGroupName: try? thread.openGroup
+                .select(.name)
+                .asRequest(of: String.self)
+                .fetchOne(db),
+            isNoteToSelf: (thread.isNoteToSelf(db) == true),
+            profile: try? Profile.fetchOne(db, id: thread.id)
+        )
         
         switch previewType {
             case .noNameNoPreview: notificationTitle = nil
-            case .nameNoPreview, .nameAndPreview:
-                notificationTitle = SessionThread.displayName(
-                    threadId: thread.id,
-                    variant: thread.variant,
-                    closedGroupName: try? thread.closedGroup
-                        .select(.name)
-                        .asRequest(of: String.self)
-                        .fetchOne(db),
-                    openGroupName: try? thread.openGroup
-                        .select(.name)
-                        .asRequest(of: String.self)
-                        .fetchOne(db),
-                    isNoteToSelf: (thread.isNoteToSelf(db) == true),
-                    profile: try? Profile.fetchOne(db, id: thread.id)
-                )
+            case .nameNoPreview, .nameAndPreview: notificationTitle = threadName
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
@@ -331,16 +436,24 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let userInfo = [
             AppNotificationUserInfoKey.threadId: thread.id
         ]
+        let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
+            .defaulting(to: Preferences.Sound.defaultNotificationSound)
 
         DispatchQueue.main.async {
-            let sound: Preferences.Sound? = self.requestSound(thread: thread)
+            let sound: Preferences.Sound? = self.requestSound(
+                thread: thread,
+                fallbackSound: fallbackSound
+            )
             
             self.adaptee.notify(
                 category: .errorMessage,
                 title: notificationTitle,
                 body: notificationBody,
                 userInfo: userInfo,
-                sound: sound
+                previewType: previewType,
+                sound: sound,
+                threadVariant: thread.variant,
+                threadName: threadName
             )
         }
     }
@@ -366,12 +479,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     var mostRecentNotifications = TruncatedList<UInt64>(maxLength: kAudioNotificationsThrottleCount)
 
-    private func requestSound(thread: SessionThread) -> Preferences.Sound? {
+    private func requestSound(thread: SessionThread, fallbackSound: Preferences.Sound) -> Preferences.Sound? {
         guard checkIfShouldPlaySound() else {
             return nil
         }
-
-        return thread.notificationSound
+        
+        return (thread.notificationSound ?? fallbackSound)
     }
 
     private func checkIfShouldPlaySound() -> Bool {

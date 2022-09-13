@@ -145,7 +145,7 @@ public final class ClosedGroupPoller {
         _ groupPublicKey: String,
         on queue: DispatchQueue = SessionSnodeKit.Threading.workQueue,
         maxRetryCount: UInt = 0,
-        isBackgroundPoll: Bool = false,
+        calledFromBackgroundPoller: Bool = false,
         isBackgroundPollValid: @escaping (() -> Bool) = { true },
         poller: ClosedGroupPoller? = nil
     ) -> Promise<Void> {
@@ -156,7 +156,7 @@ public final class ClosedGroupPoller {
                 
                 return attempt(maxRetryCount: maxRetryCount, recoveringOn: queue) {
                     guard
-                        (isBackgroundPoll && isBackgroundPollValid()) ||
+                        (calledFromBackgroundPoller && isBackgroundPollValid()) ||
                         poller?.isPolling.wrappedValue[groupPublicKey] == true
                     else { return Promise(error: Error.pollingCanceled) }
                     
@@ -178,7 +178,7 @@ public final class ClosedGroupPoller {
                     return when(resolved: promises)
                         .then(on: queue) { messageResults -> Promise<Void> in
                             guard
-                                (isBackgroundPoll && isBackgroundPollValid()) ||
+                                (calledFromBackgroundPoller && isBackgroundPollValid()) ||
                                 poller?.isPolling.wrappedValue[groupPublicKey] == true
                             else { return Promise.value(()) }
                             
@@ -195,7 +195,7 @@ public final class ClosedGroupPoller {
                             
                             // No need to do anything if there are no messages
                             guard !allMessages.isEmpty else {
-                                if !isBackgroundPoll {
+                                if !calledFromBackgroundPoller {
                                     SNLog("Received no new messages in closed group with public key: \(groupPublicKey)")
                                 }
                                 return Promise.value(())
@@ -221,7 +221,7 @@ public final class ClosedGroupPoller {
                                                 // In the background ignore 'SQLITE_ABORT' (it generally means
                                                 // the BackgroundPoller has timed out
                                                 case DatabaseError.SQLITE_ABORT:
-                                                    guard !isBackgroundPoll else { break }
+                                                    guard !calledFromBackgroundPoller else { break }
                                                     
                                                     SNLog("Failed to the database being suspended (running in background with no background task).")
                                                     break
@@ -241,16 +241,16 @@ public final class ClosedGroupPoller {
                                     threadId: groupPublicKey,
                                     details: MessageReceiveJob.Details(
                                         messages: processedMessages.map { $0.messageInfo },
-                                        isBackgroundPoll: isBackgroundPoll
+                                        calledFromBackgroundPoller: calledFromBackgroundPoller
                                     )
                                 )
 
                                 // If we are force-polling then add to the JobRunner so they are persistent and will retry on
                                 // the next app run if they fail but don't let them auto-start
-                                JobRunner.add(db, job: jobToRun, canStartJob: !isBackgroundPoll)
+                                JobRunner.add(db, job: jobToRun, canStartJob: !calledFromBackgroundPoller)
                             }
                             
-                            if isBackgroundPoll {
+                            if calledFromBackgroundPoller {
                                 // We want to try to handle the receive jobs immediately in the background
                                 promises = promises.appending(
                                     jobToRun.map { job -> Promise<Void> in
@@ -278,7 +278,7 @@ public final class ClosedGroupPoller {
                 }
             }
         
-        if !isBackgroundPoll {
+        if !calledFromBackgroundPoller {
             promise.catch2 { error in
                 SNLog("Polling failed for closed group with public key: \(groupPublicKey) due to error: \(error).")
             }

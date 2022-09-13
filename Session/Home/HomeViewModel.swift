@@ -43,8 +43,7 @@ public class HomeViewModel {
     // MARK: - Initialization
     
     init() {
-        self.state = Storage.shared.read { db in try HomeViewModel.retrieveState(db) }
-            .defaulting(to: State())
+        self.state = State()
         self.pagedDataObserver = nil
         
         // Note: Since this references self we need to finish initializing before setting it, we
@@ -135,18 +134,18 @@ public class HomeViewModel {
                     joinToPagedType: {
                         let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
                         
-                        return SQL("LEFT JOIN \(typingIndicator[.threadId]) = \(thread[.id])")
+                        return SQL("LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])")
                     }()
                 )
             ],
-            /// **Note:** This `optimisedJoinSQL` value includes the required minimum joins needed for the query
+            /// **Note:** This `optimisedJoinSQL` value includes the required minimum joins needed for the query but differs
+            /// from the JOINs that are actually used for performance reasons as the basic logic can be simpler for where it's used
             joinSQL: SessionThreadViewModel.optimisedJoinSQL,
             filterSQL: SessionThreadViewModel.homeFilterSQL(userPublicKey: userPublicKey),
             groupSQL: SessionThreadViewModel.groupSQL,
             orderSQL: SessionThreadViewModel.homeOrderSQL,
             dataQuery: SessionThreadViewModel.baseQuery(
                 userPublicKey: userPublicKey,
-                filterSQL: SessionThreadViewModel.homeFilterSQL(userPublicKey: userPublicKey),
                 groupSQL: SessionThreadViewModel.groupSQL,
                 orderSQL: SessionThreadViewModel.homeOrderSQL
             ),
@@ -194,8 +193,9 @@ public class HomeViewModel {
         let hasHiddenMessageRequests: Bool = db[.hasHiddenMessageRequests]
         let userProfile: Profile = Profile.fetchOrCreateCurrentUser(db)
         let unreadMessageRequestThreadCount: Int = try SessionThread
-            .unreadMessageRequestsThreadIdQuery(userPublicKey: userProfile.id)
-            .fetchCount(db)
+            .unreadMessageRequestsCountQuery(userPublicKey: userProfile.id)
+            .fetchOne(db)
+            .defaulting(to: 0)
         
         return State(
             showViewedSeedBanner: !hasViewedSeed,
@@ -219,7 +219,8 @@ public class HomeViewModel {
         else { return }
         
         /// **MUST** have the same logic as in the 'PagedDataObserver.onChangeUnsorted' above
-        let currentData: [SessionThreadViewModel] = self.threadData.flatMap { $0.elements }
+        let currentData: [SessionThreadViewModel] = (self.unobservedThreadDataChanges ?? self.threadData)
+            .flatMap { $0.elements }
         let updatedThreadData: [SectionModel] = self.process(data: currentData, for: currentPageInfo)
         
         guard let onThreadChange: (([SectionModel]) -> ()) = self.onThreadChange else {

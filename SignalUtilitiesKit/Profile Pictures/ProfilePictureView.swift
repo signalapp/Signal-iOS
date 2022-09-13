@@ -57,10 +57,23 @@ public final class ProfilePictureView: UIView {
         return result
     }()
     
+    private lazy var additionalProfilePlaceholderImageView: UIImageView = {
+        let result: UIImageView = UIImageView(
+            image: UIImage(systemName: "person.fill")?.withRenderingMode(.alwaysTemplate)
+        )
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.contentMode = .scaleAspectFill
+        result.tintColor = Colors.text
+        result.isHidden = true
+        
+        return result
+    }()
+    
     private lazy var additionalImageView: UIImageView = {
         let result: UIImageView = UIImageView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.contentMode = .scaleAspectFill
+        result.tintColor = Colors.text
         result.isHidden = true
         
         return result
@@ -107,11 +120,17 @@ public final class ProfilePictureView: UIView {
         imageContainerView.addSubview(animatedImageView)
         additionalImageContainerView.addSubview(additionalImageView)
         additionalImageContainerView.addSubview(additionalAnimatedImageView)
+        additionalImageContainerView.addSubview(additionalProfilePlaceholderImageView)
         
         imageView.pin(to: imageContainerView)
         animatedImageView.pin(to: imageContainerView)
         additionalImageView.pin(to: additionalImageContainerView)
         additionalAnimatedImageView.pin(to: additionalImageContainerView)
+        
+        additionalProfilePlaceholderImageView.pin(.top, to: .top, of: additionalImageContainerView, withInset: 3)
+        additionalProfilePlaceholderImageView.pin(.left, to: .left, of: additionalImageContainerView)
+        additionalProfilePlaceholderImageView.pin(.right, to: .right, of: additionalImageContainerView)
+        additionalProfilePlaceholderImageView.pin(.bottom, to: .bottom, of: additionalImageContainerView, withInset: 3)
     }
     
     // FIXME: Remove this once we refactor the OWSConversationSettingsViewController to Swift (use the HomeViewModel approach)
@@ -172,6 +191,7 @@ public final class ProfilePictureView: UIView {
             additionalAnimatedImageView.image = nil
             additionalImageView.isHidden = true
             additionalAnimatedImageView.isHidden = true
+            additionalProfilePlaceholderImageView.isHidden = true
             return
         }
         guard !publicKey.isEmpty || openGroupProfilePictureData != nil else { return }
@@ -240,6 +260,12 @@ public final class ProfilePictureView: UIView {
                     additionalAnimatedImageView.image = animatedImage
                     additionalImageView.isHidden = (animatedImage != nil)
                     additionalAnimatedImageView.isHidden = (animatedImage == nil)
+                    additionalProfilePlaceholderImageView.isHidden = true
+                }
+                else {
+                    additionalImageView.isHidden = true
+                    additionalAnimatedImageView.isHidden = true
+                    additionalProfilePlaceholderImageView.isHidden = false
                 }
                 
             default:
@@ -251,6 +277,7 @@ public final class ProfilePictureView: UIView {
                 additionalImageView.isHidden = true
                 additionalAnimatedImageView.image = nil
                 additionalAnimatedImageView.isHidden = true
+                additionalProfilePlaceholderImageView.isHidden = true
         }
         
         // Set the image

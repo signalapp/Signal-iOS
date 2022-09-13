@@ -50,4 +50,5 @@ public final class Colors : NSObject {
     @objc public static var sessionMessageRequestsTitle: UIColor { UIColor(named: "session_message_requests_title")! }
     @objc public static var sessionMessageRequestsInfoText: UIColor { UIColor(named: "session_message_requests_info_text")! }
     @objc public static var blockActionBackground: UIColor { UIColor(named: "session_block_action_background")! }
+    @objc public static var sessionEmojiPlusButtonBackground: UIColor { UIColor(named: "session_emoji_plus_button_background")! }
 }
