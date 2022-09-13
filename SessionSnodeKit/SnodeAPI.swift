@@ -24,7 +24,7 @@ public final class SnodeAPI {
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
     public static var clockOffset: Int64 = 0
     /// - Note: Should only be accessed from `Threading.workQueue` to avoid race conditions.
-    public static var swarmCache: [String: Set<Snode>] = [:]
+    public static var swarmCache: Atomic<[String: Set<Snode>]> = Atomic([:])
     
     // MARK: - Namespaces
     
@@ -96,10 +96,11 @@ public final class SnodeAPI {
     private static func loadSwarmIfNeeded(for publicKey: String) {
         guard !loadedSwarms.contains(publicKey) else { return }
         
-        Storage.shared.read { db in
-            swarmCache[publicKey] = ((try? Snode.fetchSet(db, publicKey: publicKey)) ?? [])
-        }
+        let updatedCacheForKey: Set<Snode> = Storage.shared
+           .read { db in try Snode.fetchSet(db, publicKey: publicKey) }
+           .defaulting(to: [])
         
+        swarmCache.mutate { $0[publicKey] = updatedCacheForKey }
         loadedSwarms.insert(publicKey)
     }
     
@@ -107,7 +108,8 @@ public final class SnodeAPI {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
-        swarmCache[publicKey] = newValue
+        swarmCache.mutate { $0[publicKey] = newValue }
+        
         guard persist else { return }
         
         Storage.shared.write { db in
@@ -119,7 +121,7 @@ public final class SnodeAPI {
         #if DEBUG
         dispatchPrecondition(condition: .onQueue(Threading.workQueue))
         #endif
-        let swarmOrNil = swarmCache[publicKey]
+        let swarmOrNil = swarmCache.wrappedValue[publicKey]
         guard var swarm = swarmOrNil, let index = swarm.firstIndex(of: snode) else { return }
         swarm.remove(at: index)
         setSwarm(to: swarm, for: publicKey)
@@ -460,7 +462,7 @@ public final class SnodeAPI {
     public static func getSwarm(for publicKey: String) -> Promise<Set<Snode>> {
         loadSwarmIfNeeded(for: publicKey)
         
-        if let cachedSwarm = swarmCache[publicKey], cachedSwarm.count >= minSwarmSnodeCount {
+        if let cachedSwarm = swarmCache.wrappedValue[publicKey], cachedSwarm.count >= minSwarmSnodeCount {
             return Promise<Set<Snode>> { $0.fulfill(cachedSwarm) }
         }
         

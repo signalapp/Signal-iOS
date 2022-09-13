@@ -150,7 +150,8 @@ extension ContextMenuVC {
         )
         let canDelete: Bool = (
             cellViewModel.threadVariant != .openGroup ||
-            currentUserIsOpenGroupModerator
+            currentUserIsOpenGroupModerator ||
+            cellViewModel.state == .failed
         )
         let canBan: Bool = (
             cellViewModel.threadVariant == .openGroup &&

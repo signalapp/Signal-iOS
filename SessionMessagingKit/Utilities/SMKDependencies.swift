@@ -6,58 +6,58 @@ import SessionSnodeKit
 import SessionUtilitiesKit
 
 public class SMKDependencies: Dependencies {
-    internal var _onionApi: OnionRequestAPIType.Type?
+    internal var _onionApi: Atomic<OnionRequestAPIType.Type?>
     public var onionApi: OnionRequestAPIType.Type {
         get { Dependencies.getValueSettingIfNull(&_onionApi) { OnionRequestAPI.self } }
-        set { _onionApi = newValue }
+        set { _onionApi.mutate { $0 = newValue } }
     }
     
-    internal var _sodium: SodiumType?
+    internal var _sodium: Atomic<SodiumType?>
     public var sodium: SodiumType {
         get { Dependencies.getValueSettingIfNull(&_sodium) { Sodium() } }
-        set { _sodium = newValue }
+        set { _sodium.mutate { $0 = newValue } }
     }
     
-    internal var _box: BoxType?
+    internal var _box: Atomic<BoxType?>
     public var box: BoxType {
         get { Dependencies.getValueSettingIfNull(&_box) { sodium.getBox() } }
-        set { _box = newValue }
+        set { _box.mutate { $0 = newValue } }
     }
     
-    internal var _genericHash: GenericHashType?
+    internal var _genericHash: Atomic<GenericHashType?>
     public var genericHash: GenericHashType {
         get { Dependencies.getValueSettingIfNull(&_genericHash) { sodium.getGenericHash() } }
-        set { _genericHash = newValue }
+        set { _genericHash.mutate { $0 = newValue } }
     }
     
-    internal var _sign: SignType?
+    internal var _sign: Atomic<SignType?>
     public var sign: SignType {
         get { Dependencies.getValueSettingIfNull(&_sign) { sodium.getSign() } }
-        set { _sign = newValue }
+        set { _sign.mutate { $0 = newValue } }
     }
     
-    internal var _aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType?
+    internal var _aeadXChaCha20Poly1305Ietf: Atomic<AeadXChaCha20Poly1305IetfType?>
     public var aeadXChaCha20Poly1305Ietf: AeadXChaCha20Poly1305IetfType {
         get { Dependencies.getValueSettingIfNull(&_aeadXChaCha20Poly1305Ietf) { sodium.getAeadXChaCha20Poly1305Ietf() } }
-        set { _aeadXChaCha20Poly1305Ietf = newValue }
+        set { _aeadXChaCha20Poly1305Ietf.mutate { $0 = newValue } }
     }
     
-    internal var _ed25519: Ed25519Type?
+    internal var _ed25519: Atomic<Ed25519Type?>
     public var ed25519: Ed25519Type {
         get { Dependencies.getValueSettingIfNull(&_ed25519) { Ed25519Wrapper() } }
-        set { _ed25519 = newValue }
+        set { _ed25519.mutate { $0 = newValue } }
     }
     
-    internal var _nonceGenerator16: NonceGenerator16ByteType?
+    internal var _nonceGenerator16: Atomic<NonceGenerator16ByteType?>
     public var nonceGenerator16: NonceGenerator16ByteType {
         get { Dependencies.getValueSettingIfNull(&_nonceGenerator16) { OpenGroupAPI.NonceGenerator16Byte() } }
-        set { _nonceGenerator16 = newValue }
+        set { _nonceGenerator16.mutate { $0 = newValue } }
     }
     
-    internal var _nonceGenerator24: NonceGenerator24ByteType?
+    internal var _nonceGenerator24: Atomic<NonceGenerator24ByteType?>
     public var nonceGenerator24: NonceGenerator24ByteType {
         get { Dependencies.getValueSettingIfNull(&_nonceGenerator24) { OpenGroupAPI.NonceGenerator24Byte() } }
-        set { _nonceGenerator24 = newValue }
+        set { _nonceGenerator24.mutate { $0 = newValue } }
     }
     
     // MARK: - Initialization
@@ -77,15 +77,15 @@ public class SMKDependencies: Dependencies {
         standardUserDefaults: UserDefaultsType? = nil,
         date: Date? = nil
     ) {
-        _onionApi = onionApi
-        _sodium = sodium
-        _box = box
-        _genericHash = genericHash
-        _sign = sign
-        _aeadXChaCha20Poly1305Ietf = aeadXChaCha20Poly1305Ietf
-        _ed25519 = ed25519
-        _nonceGenerator16 = nonceGenerator16
-        _nonceGenerator24 = nonceGenerator24
+        _onionApi = Atomic(onionApi)
+        _sodium = Atomic(sodium)
+        _box = Atomic(box)
+        _genericHash = Atomic(genericHash)
+        _sign = Atomic(sign)
+        _aeadXChaCha20Poly1305Ietf = Atomic(aeadXChaCha20Poly1305Ietf)
+        _ed25519 = Atomic(ed25519)
+        _nonceGenerator16 = Atomic(nonceGenerator16)
+        _nonceGenerator24 = Atomic(nonceGenerator24)
         
         super.init(
             generalCache: generalCache,

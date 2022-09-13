@@ -110,9 +110,39 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         // changes only include table and column info at this stage
         guard allObservedTableNames.contains(event.tableName) else { return }
         
+        // When generating the tracked change we need to check if the change was
+        // a deletion to a related table (if so then once the change is performed
+        // there won't be a way to associated the deleted related record to the
+        // original so we need to retrieve the association in here)
+        let trackedChange: PagedData.TrackedChange = {
+            guard
+                event.tableName != pagedTableName,
+                event.kind == .delete,
+                let observedChange: PagedData.ObservedChanges = observedTableChangeTypes[event.tableName],
+                let joinToPagedType: SQL = observedChange.joinToPagedType
+            else { return PagedData.TrackedChange(event: event) }
+            
+            // Retrieve the pagedRowId for the related value that is
+            // getting deleted
+            let pagedRowIds: [Int64] = Storage.shared
+                .read { db in
+                    PagedData.pagedRowIdsForRelatedRowIds(
+                        db,
+                        tableName: event.tableName,
+                        pagedTableName: pagedTableName,
+                        relatedRowIds: [event.rowID],
+                        joinToPagedType: joinToPagedType
+                    )
+                }
+                .defaulting(to: [])
+            
+            return PagedData.TrackedChange(event: event, pagedRowIdsForRelatedDeletion: pagedRowIds)
+        }()
+        
         // The 'event' object only exists during this method so we need to copy the info
         // from it, otherwise it will cease to exist after this metod call finishes
         changesInCommit.mutate { $0.insert(PagedData.TrackedChange(event: event)) }
+        changesInCommit.mutate { $0.insert(trackedChange) }
     }
     
     // Note: We will process all updates which come through this method even if
@@ -180,13 +210,17 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             .filter { $0.tableName == pagedTableName }
         let relatedChanges: [String: [PagedData.TrackedChange]] = committedChanges
             .filter { $0.tableName != pagedTableName }
+            .filter { $0.kind != .delete }
             .reduce(into: [:]) { result, next in
                 guard observedTableChangeTypes[next.tableName] != nil else { return }
                 
                 result[next.tableName] = (result[next.tableName] ?? []).appending(next)
             }
+        let relatedDeletions: [PagedData.TrackedChange] = committedChanges
+            .filter { $0.tableName != pagedTableName }
+            .filter { $0.kind == .delete }
         
-        guard !directChanges.isEmpty || !relatedChanges.isEmpty else {
+        guard !directChanges.isEmpty || !relatedChanges.isEmpty || !relatedDeletions.isEmpty else {
             updateDataAndCallbackIfNeeded(self.dataCache.wrappedValue, self.pageInfo.wrappedValue, false)
             return
         }
@@ -219,7 +253,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         let changesToQuery: [PagedData.TrackedChange] = directChanges
             .filter { $0.kind != .delete }
         
-        guard !changesToQuery.isEmpty || !relatedChanges.isEmpty else {
+        guard !changesToQuery.isEmpty || !relatedChanges.isEmpty || !relatedDeletions.isEmpty else {
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, !deletionChanges.isEmpty)
             return
         }
@@ -248,7 +282,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                 .asSet()
         }()
         
-        guard !changesToQuery.isEmpty || !pagedRowIdsForRelatedChanges.isEmpty else {
+        guard !changesToQuery.isEmpty || !pagedRowIdsForRelatedChanges.isEmpty || !relatedDeletions.isEmpty else {
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, !deletionChanges.isEmpty)
             return
         }
@@ -265,6 +299,16 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         let relatedChangeIndexes: [PagedData.RowIndexInfo] = PagedData.indexes(
             db,
             rowIds: Array(pagedRowIdsForRelatedChanges),
+            tableName: pagedTableName,
+            requiredJoinSQL: joinSQL,
+            orderSQL: orderSQL,
+            filterSQL: filterSQL
+        )
+        let relatedDeletionIndexes: [PagedData.RowIndexInfo] = PagedData.indexes(
+            db,
+            rowIds: relatedDeletions
+                .compactMap { $0.pagedRowIdsForRelatedDeletion }
+                .flatMap { $0 },
             tableName: pagedTableName,
             requiredJoinSQL: joinSQL,
             orderSQL: orderSQL,
@@ -306,6 +350,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         }
         let validChangeRowIds: [Int64] = determineValidChanges(for: itemIndexes)
         let validRelatedChangeRowIds: [Int64] = determineValidChanges(for: relatedChangeIndexes)
+        let validRelatedDeletionRowIds: [Int64] = determineValidChanges(for: relatedDeletionIndexes)
         let countBefore: Int = itemIndexes.filter { $0.rowIndex < updatedPageInfo.pageOffset }.count
         
         // Update the offset and totalCount even if the rows are outside of the current page (need to
@@ -325,13 +370,13 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
 
         // If there are no valid row ids then stop here (trigger updates though since the page info
         // has changes)
-        guard !validChangeRowIds.isEmpty || !validRelatedChangeRowIds.isEmpty else {
+        guard !validChangeRowIds.isEmpty || !validRelatedChangeRowIds.isEmpty || !validRelatedDeletionRowIds.isEmpty else {
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, true)
             return
         }
 
         // Fetch the inserted/updated rows
-        let targetRowIds: [Int64] = Array((validChangeRowIds + validRelatedChangeRowIds).asSet())
+        let targetRowIds: [Int64] = Array((validChangeRowIds + validRelatedChangeRowIds + validRelatedDeletionRowIds).asSet())
         let updatedItems: [T] = (try? dataQuery(targetRowIds)
             .fetchAll(db))
             .defaulting(to: [])
@@ -904,11 +949,13 @@ public enum PagedData {
         let tableName: String
         let kind: DatabaseEvent.Kind
         let rowId: Int64
+        let pagedRowIdsForRelatedDeletion: [Int64]?
         
-        init(event: DatabaseEvent) {
+        init(event: DatabaseEvent, pagedRowIdsForRelatedDeletion: [Int64]? = nil) {
             self.tableName = event.tableName
             self.kind = event.kind
             self.rowId = event.rowID
+            self.pagedRowIdsForRelatedDeletion = pagedRowIdsForRelatedDeletion
         }
     }
     
