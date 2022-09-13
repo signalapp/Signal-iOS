@@ -35,7 +35,7 @@ public extension VisibleMessage {
         }
 
         public func toProto() -> SNProtoDataMessageQuote? {
-            preconditionFailure("Use toProto(using:) instead.")
+            preconditionFailure("Use toProto(_:) instead.")
         }
 
         public func toProto(_ db: Database) -> SNProtoDataMessageQuote? {

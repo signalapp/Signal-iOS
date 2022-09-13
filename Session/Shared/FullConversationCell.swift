@@ -164,12 +164,14 @@ public final class FullConversationCell: UITableViewCell {
         
         // Unread count view
         unreadCountView.addSubview(unreadCountLabel)
+        unreadCountLabel.setCompressionResistanceHigh()
         unreadCountLabel.pin([ VerticalEdge.top, VerticalEdge.bottom ], to: unreadCountView)
         unreadCountView.pin(.leading, to: .leading, of: unreadCountLabel, withInset: -4)
         unreadCountView.pin(.trailing, to: .trailing, of: unreadCountLabel, withInset: 4)
         
         // Has mention view
         hasMentionView.addSubview(hasMentionLabel)
+        hasMentionLabel.setCompressionResistanceHigh()
         hasMentionLabel.pin(to: hasMentionView)
         
         // Label stack view

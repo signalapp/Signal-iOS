@@ -83,8 +83,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
                                 db,
                                 message: visibleMessage,
                                 associatedWithProto: processedMessage.proto,
-                                openGroupId: (isOpenGroup ? processedMessage.threadId : nil),
-                                isBackgroundPoll: false
+                                openGroupId: (isOpenGroup ? processedMessage.threadId : nil)
                             )
                             
                             // Remove the notifications if there is an outgoing messages from a linked device
@@ -329,7 +328,7 @@ public final class NotificationServiceExtension: UNNotificationServiceExtension 
             .defaulting(to: [])
             .map { server in
                 OpenGroupAPI.Poller(for: server)
-                    .poll(isBackgroundPoll: true, isPostCapabilitiesRetry: false)
+                    .poll(calledFromBackgroundPoller: true, isPostCapabilitiesRetry: false)
                     .timeout(
                         seconds: 20,
                         timeoutError: NotificationServiceError.timeout

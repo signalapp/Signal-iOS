@@ -7,6 +7,7 @@ import SessionUtilitiesKit
 
 fileprivate typealias ViewModel = MessageViewModel
 fileprivate typealias AttachmentInteractionInfo = MessageViewModel.AttachmentInteractionInfo
+fileprivate typealias ReactionInfo = MessageViewModel.ReactionInfo
 fileprivate typealias TypingIndicatorInfo = MessageViewModel.TypingIndicatorInfo
 
 public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, Hashable, Identifiable, Differentiable {
@@ -100,6 +101,9 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     /// This value includes the associated attachments
     public let attachments: [Attachment]?
     
+    /// This value includes the associated reactions
+    public let reactionInfo: [ReactionInfo]?
+    
     /// This value defines what type of cell should appear and is generated based on the interaction variant
     /// and associated attachment data
     public let cellType: CellType
@@ -141,7 +145,10 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
 
     // MARK: - Mutation
     
-    public func with(attachments: [Attachment]) -> MessageViewModel {
+    public func with(
+        attachments: Updatable<[Attachment]> = .existing,
+        reactionInfo: Updatable<[ReactionInfo]> = .existing
+    ) -> MessageViewModel {
         return MessageViewModel(
             threadId: self.threadId,
             threadVariant: self.threadVariant,
@@ -171,7 +178,8 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             linkPreview: self.linkPreview,
             linkPreviewAttachment: self.linkPreviewAttachment,
             currentUserPublicKey: self.currentUserPublicKey,
-            attachments: attachments,
+            attachments: (attachments ?? self.attachments),
+            reactionInfo: (reactionInfo ?? self.reactionInfo),
             cellType: self.cellType,
             authorName: self.authorName,
             senderName: self.senderName,
@@ -349,6 +357,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             linkPreviewAttachment: self.linkPreviewAttachment,
             currentUserPublicKey: self.currentUserPublicKey,
             attachments: self.attachments,
+            reactionInfo: self.reactionInfo,
             cellType: cellType,
             authorName: authorDisplayName,
             senderName: {
@@ -430,6 +439,37 @@ public extension MessageViewModel {
     }
 }
 
+// MARK: - ReactionInfo
+
+public extension MessageViewModel {
+    struct ReactionInfo: FetchableRecordWithRowId, Decodable, Identifiable, Equatable, Comparable, Hashable, Differentiable {
+        public static let rowIdKey: SQL = SQL(stringLiteral: CodingKeys.rowId.stringValue)
+        public static let reactionKey: SQL = SQL(stringLiteral: CodingKeys.reaction.stringValue)
+        public static let profileKey: SQL = SQL(stringLiteral: CodingKeys.profile.stringValue)
+        
+        public static let reactionString: String = CodingKeys.reaction.stringValue
+        public static let profileString: String = CodingKeys.profile.stringValue
+        
+        public let rowId: Int64
+        public let reaction: Reaction
+        public let profile: Profile?
+        
+        // MARK: - Identifiable
+        
+        public var differenceIdentifier: String { return id }
+        
+        public var id: String {
+            "\(reaction.emoji)-\(reaction.interactionId)-\(reaction.authorId)"
+        }
+        
+        // MARK: - Comparable
+        
+        public static func < (lhs: ReactionInfo, rhs: ReactionInfo) -> Bool {
+            return (lhs.reaction.sortId < rhs.reaction.sortId)
+        }
+    }
+}
+
 // MARK: - TypingIndicatorInfo
 
 public extension MessageViewModel {
@@ -494,6 +534,7 @@ public extension MessageViewModel {
         // Post-Query Processing Data
         
         self.attachments = nil
+        self.reactionInfo = nil
         self.cellType = .typingIndicator
         self.authorName = ""
         self.senderName = nil
@@ -597,6 +638,7 @@ public extension MessageViewModel {
             let attachmentIdColumnLiteral: SQL = SQL(stringLiteral: Attachment.Columns.id.name)
             let groupMemberModeratorTableLiteral: SQL = SQL(stringLiteral: "groupMemberModerator")
             let groupMemberAdminTableLiteral: SQL = SQL(stringLiteral: "groupMemberAdmin")
+            let groupMemberGroupIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.groupId.name)
             let groupMemberProfileIdColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.profileId.name)
             let groupMemberRoleColumnLiteral: SQL = SQL(stringLiteral: GroupMember.Columns.role.name)
             
@@ -687,11 +729,13 @@ public extension MessageViewModel {
                 )
                 LEFT JOIN \(GroupMember.self) AS \(groupMemberModeratorTableLiteral) ON (
                     \(SQL("\(thread[.variant]) = \(SessionThread.Variant.openGroup)")) AND
+                    \(groupMemberModeratorTableLiteral).\(groupMemberGroupIdColumnLiteral) = \(interaction[.threadId]) AND
                     \(groupMemberModeratorTableLiteral).\(groupMemberProfileIdColumnLiteral) = \(interaction[.authorId]) AND
                     \(SQL("\(groupMemberModeratorTableLiteral).\(groupMemberRoleColumnLiteral) = \(GroupMember.Role.moderator)"))
                 )
                 LEFT JOIN \(GroupMember.self) AS \(groupMemberAdminTableLiteral) ON (
                     \(SQL("\(thread[.variant]) = \(SessionThread.Variant.openGroup)")) AND
+                    \(groupMemberAdminTableLiteral).\(groupMemberGroupIdColumnLiteral) = \(interaction[.threadId]) AND
                     \(groupMemberAdminTableLiteral).\(groupMemberProfileIdColumnLiteral) = \(interaction[.authorId]) AND
                     \(SQL("\(groupMemberAdminTableLiteral).\(groupMemberRoleColumnLiteral) = \(GroupMember.Role.admin)"))
                 )
@@ -791,12 +835,100 @@ public extension MessageViewModel.AttachmentInteractionInfo {
                     
                     updatedPagedDataCache = updatedPagedDataCache.upserting(
                         dataToUpdate.with(
-                            attachments: attachments
-                                .sorted()
-                                .map { $0.attachment }
+                            attachments: .update(
+                                attachments
+                                    .sorted()
+                                    .map { $0.attachment }
+                            )
                         )
                     )
                 }
+            
+            return updatedPagedDataCache
+        }
+    }
+}
+
+// MARK: --ReactionInfo
+
+public extension MessageViewModel.ReactionInfo {
+    static let baseQuery: ((SQL?) -> AdaptedFetchRequest<SQLRequest<MessageViewModel.ReactionInfo>>) = {
+        return { additionalFilters -> AdaptedFetchRequest<SQLRequest<ReactionInfo>> in
+            let reaction: TypedTableAlias<Reaction> = TypedTableAlias()
+            let profile: TypedTableAlias<Profile> = TypedTableAlias()
+            
+            let finalFilterSQL: SQL = {
+                guard let additionalFilters: SQL = additionalFilters else {
+                    return SQL(stringLiteral: "")
+                }
+                
+                return """
+                    WHERE \(additionalFilters)
+                """
+            }()
+            let numColumnsBeforeLinkedRecords: Int = 1
+            let request: SQLRequest<ReactionInfo> = """
+                SELECT
+                    \(reaction.alias[Column.rowID]) AS \(ReactionInfo.rowIdKey),
+                    \(ReactionInfo.reactionKey).*,
+                    \(ReactionInfo.profileKey).*
+                FROM \(Reaction.self)
+                LEFT JOIN \(Profile.self) ON \(profile[.id]) = \(reaction[.authorId])
+                \(finalFilterSQL)
+            """
+            
+            return request.adapted { db in
+                let adapters = try splittingRowAdapters(columnCounts: [
+                    numColumnsBeforeLinkedRecords,
+                    Reaction.numberOfSelectedColumns(db),
+                    Profile.numberOfSelectedColumns(db)
+                ])
+                
+                return ScopeAdapter([
+                    ReactionInfo.reactionString: adapters[1],
+                    ReactionInfo.profileString: adapters[2]
+                ])
+            }
+        }
+    }()
+    
+    static var joinToViewModelQuerySQL: SQL = {
+        let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let reaction: TypedTableAlias<Reaction> = TypedTableAlias()
+        
+        return """
+            JOIN \(Reaction.self) ON \(reaction[.interactionId]) = \(interaction[.id])
+        """
+    }()
+    
+    static func createAssociateDataClosure() -> (DataCache<MessageViewModel.ReactionInfo>, DataCache<MessageViewModel>) -> DataCache<MessageViewModel> {
+        return { dataCache, pagedDataCache -> DataCache<MessageViewModel> in
+            var updatedPagedDataCache: DataCache<MessageViewModel> = pagedDataCache
+            var pagedRowIdsWithNoReactions: Set<Int64> = Set(pagedDataCache.data.keys)
+            
+            // Add any new reactions
+            dataCache
+                .values
+                .grouped(by: \.reaction.interactionId)
+                .forEach { (interactionId: Int64, reactionInfo: [MessageViewModel.ReactionInfo]) in
+                    guard
+                        let interactionRowId: Int64 = updatedPagedDataCache.lookup[interactionId],
+                        let dataToUpdate: ViewModel = updatedPagedDataCache.data[interactionRowId]
+                    else { return }
+                    
+                    updatedPagedDataCache = updatedPagedDataCache.upserting(
+                        dataToUpdate.with(reactionInfo: .update(reactionInfo.sorted()))
+                    )
+                    pagedRowIdsWithNoReactions.remove(interactionRowId)
+                }
+            
+            // Remove any removed reactions
+            updatedPagedDataCache = updatedPagedDataCache.upserting(
+                items: pagedRowIdsWithNoReactions
+                    .compactMap { rowId -> ViewModel? in updatedPagedDataCache.data[rowId] }
+                    .filter { viewModel -> Bool in (viewModel.reactionInfo?.isEmpty == false) }
+                    .map { viewModel -> ViewModel in viewModel.with(reactionInfo: nil) }
+            )
             
             return updatedPagedDataCache
         }

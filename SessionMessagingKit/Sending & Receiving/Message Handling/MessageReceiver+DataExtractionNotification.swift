@@ -21,7 +21,11 @@ extension MessageReceiver {
                     case .screenshot: return .infoScreenshotNotification
                     case .mediaSaved: return .infoMediaSavedNotification
                 }
-            }()
+            }(),
+            timestampMs: (
+                message.sentTimestamp.map { Int64($0) } ??
+                Int64(floor(Date().timeIntervalSince1970 * 1000))
+            )
         ).inserted(db)
     }
 }
