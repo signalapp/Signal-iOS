@@ -44,7 +44,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
     }()
 
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let result: ScanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: "vc_join_public_chat_scan_qr_code_explanation".localized())
+        let result: ScanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: nil)
         result.delegate = self
         
         return result
