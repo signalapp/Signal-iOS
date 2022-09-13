@@ -519,8 +519,13 @@ public extension Interaction {
             .asRequest(of: Int64.self)
             .fetchAll(db)
         
-        // Don't bother continuing if there are not interactions to mark as read
-        guard !interactionIdsToMarkAsRead.isEmpty else { return }
+        // If there are no other interactions to mark as read then just schedule the jobs
+        // for this interaction (need to ensure the disapeparing messages run for sync'ed
+        // outgoing messages which will always have 'wasRead' as false)
+        guard !interactionIdsToMarkAsRead.isEmpty else {
+            scheduleJobs(interactionIds: [interactionId])
+            return
+        }
         
         // Update the `wasRead` flag to true
         try interactionQuery.updateAll(db, Columns.wasRead.set(to: true))

@@ -361,12 +361,11 @@ extension ConversationVC:
             let modal = SendSeedModal()
             modal.modalPresentationStyle = .overFullScreen
             modal.modalTransitionStyle = .crossDissolve
-            modal.proceed = { self.sendMessage(hasPermissionToSendSeed: true) }
+            modal.proceed = { [weak self] in self?.sendMessage(hasPermissionToSendSeed: true) }
             return present(modal, animated: true, completion: nil)
         }
         
-        // Clearing this out immediately (even though it already happens in 'messageSent') to prevent
-        // "double sending" if the user rapidly taps the send button
+        // Clearing this out immediately to make this appear more snappy
         DispatchQueue.main.async { [weak self] in
             self?.snInputView.text = ""
             self?.snInputView.quoteDraftInfo = nil
@@ -462,7 +461,7 @@ extension ConversationVC:
         )
     }
 
-    func sendAttachments(_ attachments: [SignalAttachment], with text: String, onComplete: (() -> ())? = nil) {
+    func sendAttachments(_ attachments: [SignalAttachment], with text: String, hasPermissionToSendSeed: Bool = false, onComplete: (() -> ())? = nil) {
         guard !showBlockedModalIfNeeded() else { return }
         
         for attachment in attachments {
@@ -472,6 +471,25 @@ extension ConversationVC:
         }
         
         let text = replaceMentions(in: snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines))
+        
+        if text.contains(mnemonic) && !viewModel.threadData.threadIsNoteToSelf && !hasPermissionToSendSeed {
+            // Warn the user if they're about to send their seed to someone
+            let modal = SendSeedModal()
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            modal.proceed = { [weak self] in
+                self?.sendAttachments(attachments, with: text, hasPermissionToSendSeed: true, onComplete: onComplete)
+            }
+            return present(modal, animated: true, completion: nil)
+        }
+        
+        // Clearing this out immediately to make this appear more snappy
+        DispatchQueue.main.async { [weak self] in
+            self?.snInputView.text = ""
+            self?.snInputView.quoteDraftInfo = nil
+
+            self?.resetMentions()
+        }
 
         // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
         // use it to determine if the user is creating a new thread and update the 'isApproved'
@@ -538,13 +556,6 @@ extension ConversationVC:
     }
 
     func handleMessageSent() {
-        DispatchQueue.main.async { [weak self] in
-            self?.snInputView.text = ""
-            self?.snInputView.quoteDraftInfo = nil
-            
-            self?.resetMentions()
-        }
-
         if Storage.shared[.playNotificationSoundInForeground] {
             let soundID = Preferences.Sound.systemSoundId(for: .messageSent, quiet: true)
             AudioServicesPlaySystemSound(soundID)
