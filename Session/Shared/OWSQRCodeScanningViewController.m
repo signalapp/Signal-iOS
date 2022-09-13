@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic) ZXCapture *capture;
 @property (nonatomic) BOOL captureEnabled;
+@property (nonatomic) BOOL hasCompletedCaptureSetup;
 @property (nonatomic) UIView *maskingView;
 @property (nonatomic) dispatch_queue_t captureQueue;
 
@@ -35,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _captureEnabled = NO;
-    _captureQueue = dispatch_get_main_queue();
+    _captureQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
     return self;
 }
@@ -48,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _captureEnabled = NO;
-    _captureQueue = dispatch_get_main_queue();
+    _captureQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
     return self;
 }
@@ -98,12 +99,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)viewWillLayoutSubviews
 {
-    self.capture.layer.frame = self.view.bounds;
+    [super viewWillLayoutSubviews];
+    
+    // Note: When accessing 'capture.layer' if the setup hasn't been completed it
+    // will result in a layout being triggered which creates an infinite loop, this
+    // check prevents that case
+    if (self.hasCompletedCaptureSetup) {
+        self.capture.layer.frame = self.view.bounds;
+    }
 }
 
 - (void)startCapture
 {
     self.captureEnabled = YES;
+    
+    // Note: The simulator doesn't support video but if we do try to start an
+    // AVCaptureSession it seems to hang on that particular thread indefinitely
+    // this will prevent us from trying to start a session on the simulator
+#if TARGET_OS_SIMULATOR
+#else
     if (!self.capture) {
         dispatch_async(self.captureQueue, ^{
             self.capture = [[ZXCapture alloc] init];
@@ -112,15 +126,25 @@ NS_ASSUME_NONNULL_BEGIN
             self.capture.delegate = self;
             [self.capture start];
             
+            // Note: When accessing the 'layer' for the first time it will create
+            // an instance of 'AVCaptureVideoPreviewLayer', this can hang a little
+            // so we do this on the background thread first
+            if (self.capture.layer) {}
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.capture.layer.frame = self.view.bounds;
                 [self.view.layer addSublayer:self.capture.layer];
                 [self.view bringSubviewToFront:self.maskingView];
+                self.hasCompletedCaptureSetup = YES;
             });
         });
-    } else {
-        [self.capture start];
     }
+    else {
+        dispatch_async(self.captureQueue, ^{
+            [self.capture start];
+        });
+    }
+#endif
 }
 
 - (void)stopCapture
