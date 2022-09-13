@@ -146,7 +146,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         joinOpenGroup(roomToken: room, server: server, publicKey: publicKey)
     }
 
-    fileprivate func joinOpenGroup(roomToken: String, server: String, publicKey: String) {
+    fileprivate func joinOpenGroup(roomToken: String, server: String, publicKey: String, shouldOpenCommunity: Bool = false) {
         guard !isJoining, let navigationController: UINavigationController = navigationController else { return }
         
         isJoining = true
@@ -166,8 +166,24 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
                     Storage.shared.writeAsync { db in
                         try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                     }
+                    
+                    let maybeThread: SessionThread? = Storage.shared.write { db in
+                        let threadId: String = OpenGroup.idFor(roomToken: roomToken, server: server)
+                        return try SessionThread.fetchOrCreate(db, id: threadId, variant: .openGroup)
+                    }
 
                     self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                    
+                    if let thread = maybeThread, shouldOpenCommunity {
+                        SessionApp.presentConversation(
+                            for: thread.id,
+                            threadVariant: thread.variant,
+                            isMessageRequest: false,
+                            action: .compose,
+                            focusInteractionId: nil,
+                            animated: false
+                        )
+                    }
                 }
                 .catch(on: DispatchQueue.main) { [weak self] error in
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader
@@ -309,7 +325,8 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         joinOpenGroupVC?.joinOpenGroup(
             roomToken: room.token,
             server: OpenGroupAPI.defaultServer,
-            publicKey: OpenGroupAPI.defaultServerPublicKey
+            publicKey: OpenGroupAPI.defaultServerPublicKey,
+            shouldOpenCommunity: true
         )
     }
 
