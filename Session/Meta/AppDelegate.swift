@@ -250,15 +250,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Configuration.performMainSetup()
         JobRunner.add(executor: SyncPushTokensJob.self, for: .syncPushTokens)
         
-        // Trigger any launch-specific jobs and start the JobRunner
-        JobRunner.appDidFinishLaunching()
-        
         /// Setup the UI
         ///
-        /// **Note:** This **MUST** be run before calling `AppReadiness.setAppIsReady()` otherwise if
-        /// we are launching the app from a push notification the HomeVC won't be setup yet and it won't open the
-        /// related thread
+        /// **Note:** This **MUST** be run before calling:
+        /// - `AppReadiness.setAppIsReady()`:
+        ///    If we are launching the app from a push notification the HomeVC won't be setup yet
+        ///    and it won't open the related thread
+        ///
+        /// - `JobRunner.appDidFinishLaunching()`:
+        ///    The jobs which run on launch (eg. DisappearingMessages job) can impact the interactions
+        ///    which get fetched to display on the home screen, if the PagedDatabaseObserver hasn't
+        ///    been setup yet then the home screen can show stale (ie. deleted) interactions incorrectly
         self.ensureRootViewController(isPreAppReadyCall: true)
+        
+        // Trigger any launch-specific jobs and start the JobRunner
+        JobRunner.appDidFinishLaunching()
         
         // Note that this does much more than set a flag;
         // it will also run all deferred blocks (including the JobRunner

@@ -892,7 +892,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
-            deleteRowsAnimation: .bottom,
+            deleteRowsAnimation: .fade,
             insertRowsAnimation: .none,
             reloadRowsAnimation: .none,
             interrupt: { itemChangeInfo?.isInsertAtTop == true || $0.changeCount > ConversationViewModel.pageSize }
