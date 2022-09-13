@@ -167,7 +167,7 @@ message AccountRecord {
            bool                   subscriptionManuallyCancelled = 24;
            bool                   keepMutedChatsArchived        = 25;
            // reserved 26
-           // reserved 27
+           bool                   viewedOnboardingStory         = 27; // Removed 'has' prefix on spec definition to avoid name conflict.
            bool                   storiesDisabled               = 28;
 }
 

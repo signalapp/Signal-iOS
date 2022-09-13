@@ -22,6 +22,8 @@ public protocol SystemStoryManagerProtocol: SystemStoryManagerProtocolObjc {
 
     func isOnboardingStoryViewed(transaction: SDSAnyReadTransaction) -> Bool
 
+    func setHasViewedOnboardingStoryOnAnotherDevice(transaction: SDSAnyWriteTransaction)
+
     // MARK: Hidden State
 
     func addStateChangedObserver(_ observer: SystemStoryStateChangeObserver)

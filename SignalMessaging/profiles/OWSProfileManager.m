@@ -1264,7 +1264,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     // Whenever a user's profile key changes, we need to fetch a new
     // profile key credential for them.
-    [self.versionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
+    [self.versionedProfiles clearProfileKeyCredentialForAddress:addressParam transaction:transaction];
 
     [userProfile updateWithProfileKey:profileKey
                     userProfileWriter:userProfileWriter

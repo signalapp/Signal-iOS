@@ -2751,6 +2751,13 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var viewedOnboardingStory: Bool {
+        return proto.viewedOnboardingStory
+    }
+    public var hasViewedOnboardingStory: Bool {
+        return true
+    }
+
     public var storiesDisabled: Bool {
         return proto.storiesDisabled
     }
@@ -2891,6 +2898,9 @@ extension StorageServiceProtoAccountRecord {
         }
         if hasKeepMutedChatsArchived {
             builder.setKeepMutedChatsArchived(keepMutedChatsArchived)
+        }
+        if hasViewedOnboardingStory {
+            builder.setViewedOnboardingStory(viewedOnboardingStory)
         }
         if hasStoriesDisabled {
             builder.setStoriesDisabled(storiesDisabled)
@@ -3058,6 +3068,10 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setKeepMutedChatsArchived(_ valueParam: Bool) {
         proto.keepMutedChatsArchived = valueParam
+    }
+
+    public mutating func setViewedOnboardingStory(_ valueParam: Bool) {
+        proto.viewedOnboardingStory = valueParam
     }
 
     public mutating func setStoriesDisabled(_ valueParam: Bool) {

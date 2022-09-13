@@ -282,6 +282,13 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
             }
         }
 
+        try write {
+            try manager.setOnboardingStoryViewedOnThisDevice(
+                atTimestamp: viewedDate.ows_millisecondsSince1970,
+                transaction: $0
+            )
+        }
+
         let cleanupExpectation = self.expectation(description: "cleanup")
         let cleanupPromise = manager.cleanUpOnboardingStoryIfNeeded()
 

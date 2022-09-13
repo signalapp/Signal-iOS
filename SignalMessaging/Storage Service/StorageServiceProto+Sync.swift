@@ -622,6 +622,8 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setSubscriberCurrencyCode(subscriberCurrencyCode)
         }
 
+        builder.setViewedOnboardingStory(Self.systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
+
         builder.setDisplayBadgesOnProfile(subscriptionManager.displayBadgesOnProfile(transaction: transaction))
         builder.setSubscriptionManuallyCancelled(subscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
 
@@ -827,6 +829,11 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         let localKeepMutedChatsArchived = SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction)
         if localKeepMutedChatsArchived != keepMutedChatsArchived {
             SSKPreferences.setShouldKeepMutedChatsArchived(keepMutedChatsArchived, transaction: transaction)
+        }
+
+        let localHasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(transaction: transaction)
+        if !localHasViewedOnboardingStory && viewedOnboardingStory {
+            systemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
         }
 
         if let serviceLocalE164 = self.e164?.strippedOrNil,
