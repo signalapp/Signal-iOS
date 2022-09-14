@@ -68,7 +68,22 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         result.setTitle(NSLocalizedString("CREATE_GROUP_BUTTON_TITLE", comment: ""), for: .normal)
         result.addTarget(self, action: #selector(createClosedGroup), for: .touchUpInside)
         result.set(.width, to: 160)
-        result.backgroundColor = Colors.navigationBarBackground
+        return result
+    }()
+    
+    private lazy var fadeView: UIView = {
+        let result = UIView()
+        let gradient = Gradients.newClosedGroupVCFade
+        result.setGradient(gradient, frame: .init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 40))
+        result.isUserInteractionEnabled = false
+        result.set(.height, to: 40)
+        return result
+    }()
+    
+    private lazy var buttonBackgroundView: UIView = {
+        let result = UIView()
+        result.backgroundColor = Colors.cellBackground
+        result.set(.height, to: 60)
         return result
     }()
     
@@ -152,6 +167,14 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         
         scrollView.set(.width, to: UIScreen.main.bounds.width)
         scrollView.pin(to: view)
+        
+        view.addSubview(buttonBackgroundView)
+        buttonBackgroundView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.bottom ], to: view)
+        
+        view.addSubview(fadeView)
+        fadeView.pin(.leading, to: .leading, of: view)
+        fadeView.pin(.trailing, to: .trailing, of: view)
+        fadeView.pin(.bottom, to: .top, of: buttonBackgroundView)
         
         view.addSubview(createGroupButton)
         createGroupButton.center(.horizontal, in: view)
