@@ -1404,6 +1404,18 @@ class CameraBottomBar: UIView {
         }
     }
 
+    enum Layout {
+        case iPhone
+        case iPad
+    }
+    private var _internalLayout: Layout = .iPhone
+    var layout: Layout { _internalLayout }
+    func setLayout(_ layout: Layout, animated: Bool) {
+        guard _internalLayout != layout else { return }
+        _internalLayout = layout
+        updateUI(animated: animated)
+    }
+
     enum Mode {
         case camera
         case videoRecording
@@ -1414,12 +1426,15 @@ class CameraBottomBar: UIView {
     func setMode(_ mode: Mode, animated: Bool) {
         guard _internalMode != mode else { return }
         _internalMode = mode
+        updateUI(animated: animated)
+    }
 
-        let hideBottomButtons = mode != .camera
+    private func updateUI(animated: Bool) {
+        let hideBottomButtons = mode != .camera || layout == .iPad
         photoLibraryButton.setIsHidden(hideBottomButtons, animated: animated)
         switchCameraButton.setIsHidden(hideBottomButtons, animated: animated)
 
-        let hideCameraCaptureControl = mode == .text
+        let hideCameraCaptureControl = mode == .text || layout == .iPad
         captureControl.setIsHidden(hideCameraCaptureControl, animated: animated)
 
         if isContentTypeSelectionControlAvailable {

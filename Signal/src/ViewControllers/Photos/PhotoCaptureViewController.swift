@@ -207,15 +207,17 @@ class PhotoCaptureViewController: OWSViewController {
         guard _internalComposerMode != composerMode else { return }
         _internalComposerMode = composerMode
 
-        topBar.setMode(composerMode == .text ? .closeButton : .cameraControls, animated: animated)
+        updateTopBarAppearance(animated: animated)
+        // No need to update bottom bar's visibility because it's always visible if CAMERA|TEXT switch is accessible.
         bottomBar.setMode(composerMode == .text ? .text : .camera, animated: animated)
-        // TODO: Side bar on iPads
+        updateSideBarVisibility(animated: animated)
 
         let hideZoomControl = composerMode == .text
         let isFrontCamera = photoCapture.desiredPosition == .front
         frontCameraZoomControl?.setIsHidden(hideZoomControl || !isFrontCamera, animated: animated)
         rearCameraZoomControl?.setIsHidden(hideZoomControl || isFrontCamera, animated: animated)
 
+        previewView.setIsHidden(composerMode == .text, animated: animated)
         if textEditorUIInitialized {
             textViewContainerToolbar.setIsHidden(composerMode != .text, animated: animated)
         }
@@ -227,8 +229,8 @@ class PhotoCaptureViewController: OWSViewController {
         guard _internalIsRecordingVideo != isRecordingVideo else { return }
         _internalIsRecordingVideo = isRecordingVideo
 
+        updateTopBarAppearance(animated: animated)
         if isRecordingVideo {
-            topBar.setMode(.videoRecording, animated: animated)
             topBar.recordingTimerView.startCounting()
 
             let captureControlState: CameraCaptureControl.State = UIAccessibility.isVoiceOverRunning ? .recordingUsingVoiceOver : .recording
@@ -238,7 +240,6 @@ class PhotoCaptureViewController: OWSViewController {
                 sideBar.cameraCaptureControl.setState(captureControlState, animationDuration: animationDuration)
             }
         } else {
-            topBar.setMode(isIPadUIInRegularMode ? .closeButton : .cameraControls, animated: animated)
             topBar.recordingTimerView.stopCounting()
 
             let animationDuration: TimeInterval = animated ? 0.2 : 0
@@ -275,11 +276,42 @@ class PhotoCaptureViewController: OWSViewController {
     }
 
     private let topBar = CameraTopBar(frame: .zero)
+    private func updateTopBarAppearance(animated: Bool) {
+        let mode: CameraTopBar.Mode = {
+            if isRecordingVideo {
+                return .videoRecording
+            }
+            if composerMode == .text {
+                return .closeButton
+            }
+            if isIPadUIInRegularMode {
+                return .closeButton
+            }
+            return .cameraControls
+        }()
+        topBar.setMode(mode, animated: animated)
+    }
 
     private lazy var bottomBar = CameraBottomBar(isContentTypeSelectionControlAvailable: delegate?.photoCaptureViewControllerCanShowTextEditor(self) ?? false)
     private var bottomBarControlsLayoutGuideBottom: NSLayoutConstraint?
+    private func updateBottomBarVisibility(animated: Bool) {
+        let isBarHidden: Bool = {
+            if textEditorUIInitialized {
+                return textView.isFirstResponder
+            }
+            if bottomBar.isContentTypeSelectionControlAvailable {
+                return false
+            }
+            return isIPadUIInRegularMode
+        }()
+        bottomBar.setIsHidden(isBarHidden, animated: animated)
+    }
 
     private var sideBar: CameraSideBar? // Optional because most devices are iPhones and will never need this.
+    private func updateSideBarVisibility(animated: Bool) {
+        guard let sideBar = sideBar else { return }
+        sideBar.setIsHidden(composerMode == .text || !isIPadUIInRegularMode, animated: true)
+    }
 
     // MARK: - Camera Controls
 
@@ -309,6 +341,8 @@ class PhotoCaptureViewController: OWSViewController {
     // MARK: - Text Editor
 
     private var textEditorUIInitialized = false
+    private var textEditoriPhoneConstraints = [NSLayoutConstraint]()
+    private var textEditoriPadConstraints = [NSLayoutConstraint]()
     private lazy var textViewContentLayoutGuide = UILayoutGuide()
     private lazy var textViewContainer: UIView = {
         let view = UIView()
@@ -319,12 +353,6 @@ class PhotoCaptureViewController: OWSViewController {
         view.addSubview(textViewContainerBackgroundView)
         textViewContainerBackgroundView.autoPinEdgesToSuperviewEdges()
 
-        // Choose Background and Attach Link buttons.
-        // Vertical position of textViewContainerToolbar isn't defined here because
-        // is depends on views outside of textViewContainer.
-        view.addSubview(textViewContainerToolbar)
-        textViewContainerToolbar.autoPinEdge(toSuperviewMargin: .leading)
-
         // This defines bounds for text content: text view and link preview.
         view.addLayoutGuide(textViewContentLayoutGuide)
         view.addConstraints([
@@ -332,11 +360,6 @@ class PhotoCaptureViewController: OWSViewController {
             textViewContentLayoutGuide.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 8),
             textViewContentLayoutGuide.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor)
         ])
-        view.addConstraint({
-            let constraint = textViewContentLayoutGuide.bottomAnchor.constraint(equalTo: textViewContainerToolbar.topAnchor, constant: -16)
-            constraint.priority = .defaultHigh
-            return constraint
-        }())
 
         // textViewWrapperView contains text view and link preview - these two are grouped together
         // and are centered vertically in text content area.
@@ -367,6 +390,7 @@ class PhotoCaptureViewController: OWSViewController {
         let stackView = UIStackView(arrangedSubviews: [ textBackgroundSelectionButton, textViewAttachLinkButton ])
         stackView.axis = .horizontal
         stackView.spacing = 16
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
     private var textBackgroundIndex = 0
@@ -496,8 +520,8 @@ class PhotoCaptureViewController: OWSViewController {
         }
         bottomBar.autoPinWidthToSuperview()
         if bottomBar.isCompactHeightLayout {
-            // On devices with home button bar is simply pinned to the bottom of the screen
-            // with a fixed margin that defines space under the shutter button.
+            // On devices with home button and iPads bar is simply pinned to the bottom of the screen
+            // with a fixed margin that defines space under the shutter button or CAMERA|TEXT switch.
             bottomBar.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32).isActive = true
         } else {
             // On `notch` devices:
@@ -607,6 +631,10 @@ class PhotoCaptureViewController: OWSViewController {
                                 cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32)]
             cameraZoomControlIPadConstraints?.append(contentsOf: constraints)
         }
+
+        if textEditorUIInitialized {
+            initializeTextEditoriPadUI()
+        }
     }
 
     private func updateIPadInterfaceLayout() {
@@ -643,11 +671,22 @@ class PhotoCaptureViewController: OWSViewController {
             }
         }
 
-        if !isRecordingVideo {
-            topBar.setMode(isIPadUIInRegularMode ? .closeButton : .cameraControls, animated: true)
+        updateTopBarAppearance(animated: true)
+        updateBottomBarVisibility(animated: true)
+        bottomBar.setLayout(isIPadUIInRegularMode ? .iPad : .iPhone, animated: true)
+        updateSideBarVisibility(animated: true)
+
+        if textEditorUIInitialized {
+            textViewContainer.layer.cornerRadius = isIPadUIInRegularMode || UIDevice.current.hasIPhoneXNotch ? 18 : 0
+
+            if isIPadUIInRegularMode {
+                view.removeConstraints(textEditoriPhoneConstraints)
+                view.addConstraints(textEditoriPadConstraints)
+            } else {
+                view.removeConstraints(textEditoriPadConstraints)
+                view.addConstraints(textEditoriPhoneConstraints)
+            }
         }
-        bottomBar.isHidden = isIPadUIInRegularMode
-        sideBar?.isHidden = !isIPadUIInRegularMode
     }
 
     private func updateDoneButtonAppearance() {
@@ -737,22 +776,42 @@ extension PhotoCaptureViewController {
         updateTextViewAttributes(using: textViewAccessoryToolbar)
 
         // Set up text view container.
-        textViewContainer.layer.cornerRadius = previewView.previewLayer.cornerRadius
+        textViewContainer.layer.cornerRadius = isIPadUIInRegularMode || UIDevice.current.hasIPhoneXNotch ? 18 : 0
         view.insertSubview(textViewContainer, aboveSubview: previewView)
-        view.addConstraints([ textViewContainer.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
-                              textViewContainer.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
-                              textViewContainer.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
-                              textViewContainer.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor) ])
+        textEditoriPhoneConstraints.append(contentsOf: [
+            textViewContainer.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            textViewContainer.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            textViewContainer.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            textViewContainer.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
+        ])
 
         // This constraint would allow to resize textView to clear onscreen keyboard.
-        textViewBottomToScreenBottomConstraint = view.bottomAnchor.constraint(greaterThanOrEqualTo: textViewContentLayoutGuide.bottomAnchor)
+        textViewBottomToScreenBottomConstraint = textViewContainer.bottomAnchor.constraint(greaterThanOrEqualTo: textViewContentLayoutGuide.bottomAnchor)
         textViewBottomToScreenBottomConstraint?.isActive = true
 
-        // Vertical position for panel with Background Color and Attach Link buttons.
+        // Choose Background and Attach Link buttons.
+        view.addSubview(textViewContainerToolbar)
+        // Align leading edge of Background button to leading edge of the Close button at the top.
+        view.addConstraint(textViewContainerToolbar.leadingAnchor.constraint(equalTo: topBar.controlsLayoutGuide.leadingAnchor))
+        textEditoriPhoneConstraints.append({
+            // On iPhones text content should not overlap with Background and Attach Link buttons.
+            let constraint = textViewContentLayoutGuide.bottomAnchor.constraint(
+                equalTo: textViewContainerToolbar.topAnchor, constant: -16)
+            constraint.priority = .defaultHigh
+            return constraint
+        }())
         if bottomBar.isCompactHeightLayout {
-            view.addConstraint(textViewContainerToolbar.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor, constant: 0))
+            textEditoriPhoneConstraints.append(
+                textViewContainerToolbar.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor))
         } else {
-            view.addConstraint(textViewContainerToolbar.bottomAnchor.constraint(equalTo: textViewContainer.bottomAnchor, constant: -16))
+            textEditoriPhoneConstraints.append(
+                textViewContainerToolbar.bottomAnchor.constraint(equalTo: textViewContainer.bottomAnchor, constant: -16))
+        }
+
+        if isIPadUIInRegularMode {
+            initializeTextEditoriPadUI()
+        } else {
+            view.addConstraints(textEditoriPhoneConstraints)
         }
 
         updateTextBackground()
@@ -763,6 +822,32 @@ extension PhotoCaptureViewController {
         }
 
         textEditorUIInitialized = true
+    }
+
+    private func initializeTextEditoriPadUI() {
+        owsAssertDebug(textEditoriPadConstraints.isEmpty)
+
+        // Container - 16:9 aspect ratio, constrained vertically, centered on the screen horizontally.
+        textEditoriPadConstraints.append(contentsOf: [
+            textViewContainer.topAnchor.constraint(equalTo: topBar.bottomAnchor, constant: -8),
+            textViewContainer.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor, constant: -24),
+            textViewContainer.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
+            textViewContainer.widthAnchor.constraint(equalTo: textViewContainer.heightAnchor, multiplier: 9/16)
+        ])
+
+        // Allow text view content take entire textViewContainer because all controls are outside of textViewContainer.
+        // This is a non-required constraint because it needs to fail when on-screen keyboard is visible.
+        textEditoriPadConstraints.append({
+            let constraint = textViewContentLayoutGuide.bottomAnchor.constraint(equalTo: textViewContainer.layoutMarginsGuide.bottomAnchor)
+            constraint.priority = .defaultHigh
+            return constraint
+        }())
+
+        // Background and Add Link buttons are vertically centered with CAMERA|TEXT switch and Proceed button.
+        textEditoriPadConstraints.append(
+            textViewContainerToolbar.centerYAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.centerYAnchor))
+
+        view.addConstraints(textEditoriPadConstraints)
     }
 
     private var strippedTextViewText: String { textView.text.stripped }
@@ -862,8 +947,8 @@ extension PhotoCaptureViewController {
         guard let userInfo = notification.userInfo,
               let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
 
-        let convertedEndFrame = view.convert(endFrame, from: nil)
-        let inset = view.bounds.maxY - convertedEndFrame.minY
+        let convertedEndFrame = textViewContainer.convert(endFrame, from: nil)
+        let inset = textViewContainer.bounds.maxY - convertedEndFrame.minY
 
         let layoutUpdateBlock = {
             constraint.constant = inset + 16
@@ -1057,14 +1142,14 @@ extension PhotoCaptureViewController {
 extension PhotoCaptureViewController: UITextViewDelegate {
 
     func textViewDidBeginEditing(_ textView: UITextView) {
-        bottomBar.setIsHidden(true, animated: true)
+        updateBottomBarVisibility(animated: true)
         textViewContainerToolbar.setIsHidden(true, animated: true)
         linkPreviewWrapperView.setIsHidden(true, animated: true)
         updateTextEditorUI(animated: true)
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        bottomBar.setIsHidden(isIPadUIInRegularMode, animated: true)
+        updateBottomBarVisibility(animated: true)
         textViewContainerToolbar.setIsHidden(false, animated: true)
         linkPreviewWrapperView.setIsHidden(false, animated: true)
         updateTextEditorUI(animated: true)
