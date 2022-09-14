@@ -1144,14 +1144,12 @@ extension PhotoCaptureViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         updateBottomBarVisibility(animated: true)
         textViewContainerToolbar.setIsHidden(true, animated: true)
-        linkPreviewWrapperView.setIsHidden(true, animated: true)
         updateTextEditorUI(animated: true)
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
         updateBottomBarVisibility(animated: true)
         textViewContainerToolbar.setIsHidden(false, animated: true)
-        linkPreviewWrapperView.setIsHidden(false, animated: true)
         updateTextEditorUI(animated: true)
     }
 
