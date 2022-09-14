@@ -638,11 +638,14 @@
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Вы уверены, что хотите очистить все запросы сообщений?";
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Очистить";
 "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Вы уверены, что хотите удалить это сообщение?";
-"MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request.";
+"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON" = "Are you sure you want to block this contact?";
+"MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request and reveal your Session ID.";
 "MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
 "MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
 "TXT_HIDE_TITLE" = "Скрыть";
 "TXT_DELETE_ACCEPT" = "Accept";
+"TXT_DECLINE_TITLE" = "Decline";
+"TXT_BLOCK_USER_TITLE" = "Block User";
 "ALERT_ERROR_TITLE" = "Ошибка";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";

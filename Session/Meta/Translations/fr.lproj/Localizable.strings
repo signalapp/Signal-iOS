@@ -638,11 +638,14 @@
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Êtes-vous sûr de vouloir supprimer toutes les demandes de messages ?";
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Effacer";
 "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Êtes-vous sûr de vouloir supprimer cette demande de message ?";
+"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON" = "Are you sure you want to block this contact?";
 "MESSAGE_REQUESTS_INFO" = "Envoyer un message à cet utilisateur acceptera automatiquement sa demande de message.";
 "MESSAGE_REQUESTS_ACCEPTED" = "Votre demande de message a été réceptionnée.";
 "MESSAGE_REQUESTS_NOTIFICATION" = "Vous avez une nouvelle demande de message";
 "TXT_HIDE_TITLE" = "Masquer";
 "TXT_DELETE_ACCEPT" = "Accepter";
+"TXT_DECLINE_TITLE" = "Decline";
+"TXT_BLOCK_USER_TITLE" = "Block User";
 "ALERT_ERROR_TITLE" = "Erreur";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Groupe public";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Message privé";

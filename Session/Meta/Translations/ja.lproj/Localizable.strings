@@ -638,11 +638,14 @@
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "本当に全てのリクエストを消去しますか？";
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "消去";
 "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "本当にこのリクエストを削除しますか？";
+"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON" = "Are you sure you want to block this contact?";
 "MESSAGE_REQUESTS_INFO" = "このユーザーにメッセージを送信すると、自動的にリクエストが承認されます。";
 "MESSAGE_REQUESTS_ACCEPTED" = "リクエストが承認されました";
 "MESSAGE_REQUESTS_NOTIFICATION" = "新しいリクエストがあります";
 "TXT_HIDE_TITLE" = "非表示";
 "TXT_DELETE_ACCEPT" = "許可";
+"TXT_DECLINE_TITLE" = "Decline";
+"TXT_BLOCK_USER_TITLE" = "Block User";
 "ALERT_ERROR_TITLE" = "エラー";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "公開グループ";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "ダイレクトメッセージ";
