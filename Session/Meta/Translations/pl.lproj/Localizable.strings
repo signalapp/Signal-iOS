@@ -684,6 +684,11 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 "INVALID_SESSION_ID_MESSAGE" = "Please check the Session ID and try again.";
 "INVALID_RECOVERY_PHRASE_MESSAGE" = "Please check the Recovery Phrase and try again.";
+"MEDIA_TAB_TITLE" = "Media";
+"DOCUMENT_TAB_TITLE" = "Documents";
+"DOCUMENT_TILES_EMPTY_DOCUMENT" = "You don't have any document in this conversation.";
+"DOCUMENT_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Document…";
+"DOCUMENT_TILES_LOADING_OLDER_LABEL" = "Loading Older Document…";
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
 /* The name for the emoji category 'Animals & Nature' */
