@@ -888,23 +888,16 @@ extension PhotoCaptureViewController {
 
     // MARK: - Background
 
-    private static var textBackgrounds: [TextAttachment.Background] =
-    [ .gradient(.init(startColor: UIColor(rgbHex: 0xF53844), endColor: UIColor(rgbHex: 0x42378F), angle: 191)),
-      .gradient(.init(startColor: UIColor(rgbHex: 0xF04CE6), endColor: UIColor(rgbHex: 0x0E2FDD), angle: 192)),
-      .gradient(.init(startColor: UIColor(rgbHex: 0xFFC044), endColor: UIColor(rgbHex: 0xFE5C38), angle: 175)),
-      .gradient(.init(startColor: UIColor(rgbHex: 0x0093E9), endColor: UIColor(rgbHex: 0x80D0C7), angle: 180)),
-      .gradient(.init(startColor: UIColor(rgbHex: 0x65CDAC), endColor: UIColor(rgbHex: 0x0A995A), angle: 180)),
-      .color(.init(rgbHex: 0xFFC153)),
-      .color(.init(rgbHex: 0xCCBD33)),
-      .color(.init(rgbHex: 0x84712E)),
-      .color(.init(rgbHex: 0x09B37B)),
-      .color(.init(rgbHex: 0x8B8BF9)),
-      .color(.init(rgbHex: 0x5151F6)),
-      .color(.init(rgbHex: 0xF76E6E)),
-      .color(.init(rgbHex: 0xC84641)),
-      .color(.init(rgbHex: 0xC6C4A5)),
-      .color(.init(rgbHex: 0xA49595)),
-      .color(.init(rgbHex: 0x292929)) ]
+    private static var textBackgrounds: [TextAttachment.Background] = [
+        .color(.init(rgbHex: 0x688BD4)),
+        .color(.init(rgbHex: 0x8687C1)),
+        .color(.init(rgbHex: 0xB47F8C)),
+        .color(.init(rgbHex: 0x899188)),
+        .color(.init(rgbHex: 0x539383)),
+        .gradient(.init(colors: [ .init(rgbHex: 0x19A9FA), .init(rgbHex: 0x7097D7), .init(rgbHex: 0xD1998D), .init(rgbHex: 0xFFC369) ])),
+        .gradient(.init(colors: [ .init(rgbHex: 0x4437D8), .init(rgbHex: 0x6B70DE), .init(rgbHex: 0xB774E0), .init(rgbHex: 0xFF8E8E) ])),
+        .gradient(.init(colors: [ .init(rgbHex: 0x004044), .init(rgbHex: 0x2C5F45), .init(rgbHex: 0x648E52), .init(rgbHex: 0x93B864) ]))
+    ]
 
     private class RoundGradientButton: RoundMediaButton {
 
@@ -944,10 +937,12 @@ extension PhotoCaptureViewController {
             textBackgroundSelectionButton.gradientView.colors = [ color, color ]
 
         case .gradient(let gradient):
-            textViewContainerBackgroundView.colors = [ gradient.startColor, gradient.endColor ]
+            textViewContainerBackgroundView.colors = gradient.colors
+            textViewContainerBackgroundView.locations = gradient.locations
             textViewContainerBackgroundView.setAngle(gradient.angle)
 
-            textBackgroundSelectionButton.gradientView.colors = [ gradient.startColor, gradient.endColor ]
+            textBackgroundSelectionButton.gradientView.colors = gradient.colors
+            textBackgroundSelectionButton.gradientView.locations = gradient.locations
             textBackgroundSelectionButton.gradientView.setAngle(gradient.angle)
         }
     }

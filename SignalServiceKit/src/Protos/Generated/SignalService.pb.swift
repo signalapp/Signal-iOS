@@ -502,6 +502,7 @@ struct SignalServiceProtos_TextAttachment {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
+    /// deprecated: this field will be removed in a future release.
     var startColor: UInt32 {
       get {return _startColor ?? 0}
       set {_startColor = newValue}
@@ -511,6 +512,7 @@ struct SignalServiceProtos_TextAttachment {
     /// Clears the value of `startColor`. Subsequent reads from it will return its default value.
     mutating func clearStartColor() {self._startColor = nil}
 
+    /// deprecated: this field will be removed in a future release.
     var endColor: UInt32 {
       get {return _endColor ?? 0}
       set {_endColor = newValue}
@@ -529,6 +531,11 @@ struct SignalServiceProtos_TextAttachment {
     var hasAngle: Bool {return self._angle != nil}
     /// Clears the value of `angle`. Subsequent reads from it will return its default value.
     mutating func clearAngle() {self._angle = nil}
+
+    var colors: [UInt32] = []
+
+    /// percent from 0 to 1
+    var positions: [Float] = []
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -5147,6 +5154,8 @@ extension SignalServiceProtos_TextAttachment.Gradient: SwiftProtobuf.Message, Sw
     1: .same(proto: "startColor"),
     2: .same(proto: "endColor"),
     3: .same(proto: "angle"),
+    4: .same(proto: "colors"),
+    5: .same(proto: "positions"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -5158,6 +5167,8 @@ extension SignalServiceProtos_TextAttachment.Gradient: SwiftProtobuf.Message, Sw
       case 1: try { try decoder.decodeSingularUInt32Field(value: &self._startColor) }()
       case 2: try { try decoder.decodeSingularUInt32Field(value: &self._endColor) }()
       case 3: try { try decoder.decodeSingularUInt32Field(value: &self._angle) }()
+      case 4: try { try decoder.decodeRepeatedUInt32Field(value: &self.colors) }()
+      case 5: try { try decoder.decodeRepeatedFloatField(value: &self.positions) }()
       default: break
       }
     }
@@ -5177,6 +5188,12 @@ extension SignalServiceProtos_TextAttachment.Gradient: SwiftProtobuf.Message, Sw
     try { if let v = self._angle {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
     } }()
+    if !self.colors.isEmpty {
+      try visitor.visitRepeatedUInt32Field(value: self.colors, fieldNumber: 4)
+    }
+    if !self.positions.isEmpty {
+      try visitor.visitRepeatedFloatField(value: self.positions, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -5184,6 +5201,8 @@ extension SignalServiceProtos_TextAttachment.Gradient: SwiftProtobuf.Message, Sw
     if lhs._startColor != rhs._startColor {return false}
     if lhs._endColor != rhs._endColor {return false}
     if lhs._angle != rhs._angle {return false}
+    if lhs.colors != rhs.colors {return false}
+    if lhs.positions != rhs.positions {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

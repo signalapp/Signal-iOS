@@ -668,14 +668,48 @@ public struct TextAttachment: Codable {
         case color(hex: UInt32)
         case gradient(raw: RawGradient)
         struct RawGradient: Codable {
-            let startColorHex: UInt32
-            let endColorHex: UInt32
+            let colors: [UInt32]
+            let positions: [Float]
             let angle: UInt32
+
+            init(colors: [UInt32], positions: [Float], angle: UInt32) {
+                self.colors = colors
+                self.positions = positions
+                self.angle = angle
+            }
+
+            enum CodingKeysV1: String, CodingKey {
+                case startColorHex, endColorHex, angle
+            }
+
+            init(from decoder: Decoder) throws {
+                let containerV1: KeyedDecodingContainer<CodingKeysV1> = try decoder.container(keyedBy: CodingKeysV1.self)
+                if
+                    let startColorHex = try? containerV1.decode(UInt32.self, forKey: .startColorHex),
+                    let endColorHex = try? containerV1.decode(UInt32.self, forKey: .endColorHex),
+                    let angle = try? containerV1.decode(UInt32.self, forKey: .angle)
+                {
+                    self.colors = [ startColorHex, endColorHex ]
+                    self.positions = [ 0, 1 ]
+                    self.angle = angle
+                    return
+                }
+                let containerV2: KeyedDecodingContainer<CodingKeys> = try decoder.container(keyedBy: CodingKeys.self)
+                self.colors = try containerV2.decode([UInt32].self, forKey: .colors)
+                self.positions = try containerV2.decode([Float].self, forKey: .positions)
+                self.angle = try containerV2.decode(UInt32.self, forKey: .angle)
+            }
 
             func buildProto() throws -> SSKProtoTextAttachmentGradient {
                 let builder = SSKProtoTextAttachmentGradient.builder()
-                builder.setStartColor(startColorHex)
-                builder.setEndColor(endColorHex)
+                if let startColor = colors.first {
+                    builder.setStartColor(startColor)
+                }
+                if let endColor = colors.last {
+                    builder.setEndColor(endColor)
+                }
+                builder.setColors(colors)
+                builder.setPositions(positions)
                 builder.setAngle(angle)
                 return try builder.build()
             }
@@ -687,13 +721,19 @@ public struct TextAttachment: Codable {
         case color(UIColor)
         case gradient(Gradient)
         public struct Gradient {
-            public init(startColor: UIColor, endColor: UIColor, angle: UInt32) {
-                self.startColor = startColor
-                self.endColor = endColor
+            public init(colors: [UIColor], locations: [CGFloat], angle: UInt32) {
+                self.colors = colors
+                self.locations = locations
                 self.angle = angle
             }
-            public let startColor: UIColor
-            public let endColor: UIColor
+            public init(colors: [UIColor]) {
+                let locations: [CGFloat] = colors.enumerated().map { element in
+                    return CGFloat(element.offset) / CGFloat(colors.count - 1)
+                }
+                self.init(colors: colors, locations: locations, angle: 180)
+            }
+            public let colors: [UIColor]
+            public let locations: [CGFloat]
             public let angle: UInt32
         }
     }
@@ -703,8 +743,8 @@ public struct TextAttachment: Codable {
             return .color(.init(argbHex: hex))
         case .gradient(let rawGradient):
             return .gradient(.init(
-                startColor: .init(argbHex: rawGradient.startColorHex),
-                endColor: .init(argbHex: rawGradient.endColorHex),
+                colors: rawGradient.colors.map { UIColor(argbHex: $0) },
+                locations: rawGradient.positions.map { CGFloat($0) },
                 angle: rawGradient.angle
             ))
         }
@@ -745,9 +785,18 @@ public struct TextAttachment: Codable {
         }
 
         if let gradient = proto.gradient {
+            let colors: [UInt32]
+            let positions: [Float]
+            if !gradient.colors.isEmpty && !gradient.positions.isEmpty {
+                colors = gradient.colors
+                positions = gradient.positions
+            } else {
+                colors = [ gradient.startColor, gradient.endColor ]
+                positions = [ 0, 1 ]
+            }
             rawBackground = .gradient(raw: .init(
-                startColorHex: gradient.startColor,
-                endColorHex: gradient.endColor,
+                colors: colors,
+                positions: positions,
                 angle: gradient.angle
             ))
         } else if proto.hasColor {
@@ -817,8 +866,8 @@ public struct TextAttachment: Codable {
                 return .color(hex: color.argbHex)
 
             case .gradient(let gradient):
-                return .gradient(raw: .init(startColorHex: gradient.startColor.argbHex,
-                                            endColorHex: gradient.endColor.argbHex,
+                return .gradient(raw: .init(colors: gradient.colors.map { $0.argbHex },
+                                            positions: gradient.locations.map { Float($0) },
                                             angle: gradient.angle))
             }
         }()

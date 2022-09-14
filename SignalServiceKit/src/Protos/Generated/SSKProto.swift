@@ -1245,6 +1245,16 @@ public class SSKProtoTextAttachmentGradient: NSObject, Codable, NSSecureCoding {
         return proto.hasAngle
     }
 
+    @objc
+    public var colors: [UInt32] {
+        return proto.colors
+    }
+
+    @objc
+    public var positions: [Float] {
+        return proto.positions
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1331,6 +1341,8 @@ extension SSKProtoTextAttachmentGradient {
         if hasAngle {
             builder.setAngle(angle)
         }
+        builder.setColors(colors)
+        builder.setPositions(positions)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1359,6 +1371,26 @@ public class SSKProtoTextAttachmentGradientBuilder: NSObject {
     @objc
     public func setAngle(_ valueParam: UInt32) {
         proto.angle = valueParam
+    }
+
+    @objc
+    public func addColors(_ valueParam: UInt32) {
+        proto.colors.append(valueParam)
+    }
+
+    @objc
+    public func setColors(_ wrappedItems: [UInt32]) {
+        proto.colors = wrappedItems
+    }
+
+    @objc
+    public func addPositions(_ valueParam: Float) {
+        proto.positions.append(valueParam)
+    }
+
+    @objc
+    public func setPositions(_ wrappedItems: [Float]) {
+        proto.positions = wrappedItems
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

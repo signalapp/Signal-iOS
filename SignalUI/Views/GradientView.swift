@@ -41,7 +41,7 @@ public class GradientView: UIView {
     }
 
     private func updateGradientLocations() {
-        if let locations = locations {
+        if let locations = locations, !locations.isEmpty {
             gradientLayer.locations = locations.map { NSNumber(value: $0) }
         } else {
             gradientLayer.locations = nil

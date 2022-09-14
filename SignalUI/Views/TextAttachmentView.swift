@@ -156,7 +156,7 @@ public class TextAttachmentView: UIView {
     }
 
     private func addGradientBackground(_ gradient: TextAttachment.Background.Gradient) {
-        let gradientView = GradientView(from: gradient.startColor, to: gradient.endColor)
+        let gradientView = GradientView(colors: gradient.colors, locations: gradient.locations)
         gradientView.setAngle(gradient.angle)
 
         addSubview(gradientView)
