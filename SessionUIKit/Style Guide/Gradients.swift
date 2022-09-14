@@ -16,10 +16,21 @@ public final class Gradient : NSObject {
 
 @objc public extension UIView {
 
-    @objc func setGradient(_ gradient: Gradient, frame: CGRect = UIScreen.main.bounds) {
+    @objc func setGradient(_ gradient: Gradient) {
+        let layer = CAGradientLayer()
+        layer.frame = UIScreen.main.bounds
+        layer.colors = [ gradient.start.cgColor, gradient.end.cgColor ]
+        if let existingSublayer = self.layer.sublayers?[0], existingSublayer is CAGradientLayer {
+            self.layer.replaceSublayer(existingSublayer, with: layer)
+        } else {
+            self.layer.insertSublayer(layer, at: 0)
+        }
+    }
+    
+    func setHalfWayGradient(_ gradient: Gradient, frame: CGRect = UIScreen.main.bounds) {
         let layer = CAGradientLayer()
         layer.frame = frame
-        layer.colors = [ gradient.start.cgColor, gradient.end.cgColor ]
+        layer.colors = [ gradient.start.cgColor, gradient.end.cgColor, gradient.end.cgColor ]
         if let existingSublayer = self.layer.sublayers?[0], existingSublayer is CAGradientLayer {
             self.layer.replaceSublayer(existingSublayer, with: layer)
         } else {

@@ -74,16 +74,17 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     private lazy var fadeView: UIView = {
         let result = UIView()
         let gradient = Gradients.newClosedGroupVCFade
-        result.setGradient(gradient, frame: .init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 40))
+        result.setHalfWayGradient(
+            gradient,
+            frame: .init(
+                x: 0,
+                y: 0,
+                width: UIScreen.main.bounds.width,
+                height: 150
+            )
+        )
         result.isUserInteractionEnabled = false
-        result.set(.height, to: 40)
-        return result
-    }()
-    
-    private lazy var buttonBackgroundView: UIView = {
-        let result = UIView()
-        result.backgroundColor = Colors.cellBackground
-        result.set(.height, to: 60)
+        result.set(.height, to: 150)
         return result
     }()
     
@@ -168,17 +169,29 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         scrollView.set(.width, to: UIScreen.main.bounds.width)
         scrollView.pin(to: view)
         
-        view.addSubview(buttonBackgroundView)
-        buttonBackgroundView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.bottom ], to: view)
-        
         view.addSubview(fadeView)
         fadeView.pin(.leading, to: .leading, of: view)
         fadeView.pin(.trailing, to: .trailing, of: view)
-        fadeView.pin(.bottom, to: .top, of: buttonBackgroundView)
+        fadeView.pin(.bottom, to: .bottom, of: view)
         
         view.addSubview(createGroupButton)
         createGroupButton.center(.horizontal, in: view)
         createGroupButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.veryLargeSpacing)
+    }
+    
+    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
+        super.handleAppModeChangedNotification(notification)
+        
+        let gradient = Gradients.newClosedGroupVCFade
+        fadeView.setHalfWayGradient(
+            gradient,
+            frame: .init(
+                x: 0,
+                y: 0,
+                width: UIScreen.main.bounds.width,
+                height: 150
+            )
+        ) // Re-do the gradient
     }
     
     // MARK: - Table View Data Source
