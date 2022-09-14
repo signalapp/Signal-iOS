@@ -1067,14 +1067,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Приховано від %d людей</string>
-			<key>many</key>
-			<string>Приховано від %d людей</string>
 			<key>one</key>
-			<string>Приховано від 1 людини</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>Приховано від %d людини</string>
+			<string>%d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1087,17 +1083,13 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d людини</string>
-			<key>many</key>
-			<string>%d людей</string>
 			<key>one</key>
-			<string>1 людина</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d людини</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -1107,14 +1099,42 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d переглядачі</string>
-			<key>many</key>
-			<string>%d переглядачів</string>
 			<key>one</key>
-			<string>1 переглядач</string>
+			<string>All Signal Connections · 1 Viewer</string>
 			<key>other</key>
-			<string>%d глядача</string>
+			<string>All Signal Connections · %d Viewers</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>All Signal Connections · 1 Excluded</string>
+			<key>other</key>
+			<string>All Signal Connections · %d Excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Only Share With · 1 Viewer</string>
+			<key>other</key>
+			<string>Only Share With · %d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1387,14 +1407,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d довірені контакти</string>
-			<key>many</key>
-			<string>%d довірених контактів</string>
 			<key>one</key>
-			<string>1 довірений контакт</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d довірених контактів</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1427,10 +1443,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Надсилаємо %d…</string>
+			<key>many</key>
+			<string>Надсилаємо %d…</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Надсилаємо…</string>
 			<key>other</key>
-			<string>Sending %d...</string>
+			<string>Надсилаємо %d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

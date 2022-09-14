@@ -76,10 +76,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d mhír</string>
+			<key>many</key>
+			<string>%d mír</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>1 mhír</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>%d mír</string>
+			<key>two</key>
+			<string>%d mhír</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -423,10 +429,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Glao á chur ar %2$@, %3$@, agus ar %d dhuine eile…</string>
+			<key>many</key>
+			<string>Glao á chur ar %2$@, %3$@, agus ar %d nduine eile…</string>
 			<key>one</key>
-			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<string>Glao á chur ar %2$@, %3$@, agus ar 1 duine eile…</string>
 			<key>other</key>
-			<string>Ringing %2$@, %3$@, and %d others…</string>
+			<string>Glao á chur ar %2$@, %3$@, agus ar %d duine eile…</string>
+			<key>two</key>
+			<string>Glao á chur ar %2$@, %3$@, agus ar %d dhuine eile…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -487,10 +499,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Cuirfear %2$@, %3$@, agus %d dhuine eile ar an eolas</string>
+			<key>many</key>
+			<string>Cuirfear %2$@, %3$@, agus %d nduine eile ar an eolas</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other will be notified</string>
+			<string>Cuirfear %2$@, %3$@, agus 1 duine eile ar an eolas</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d others will be notified</string>
+			<string>Cuirfear %2$@, %3$@, agus%d duine eile ar an eolas</string>
+			<key>two</key>
+			<string>Cuirfear %2$@, %3$@, agus %d dhuine eile ar an eolas</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -503,10 +521,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar%d dhuine eile</string>
+			<key>many</key>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %d nduine eile</string>
 			<key>one</key>
-			<string>Signal will ring %2$@, %3$@, and 1 other</string>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar 1 duine eile</string>
 			<key>other</key>
-			<string>Signal will ring %2$@, %3$@, and %d others</string>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %d duine eile</string>
+			<key>two</key>
+			<string>Cuirfidh Signal glao ar %2$@, %3$@, agus ar %d dhuine eile</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -679,10 +703,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Rinne agus chuir ar ceal%2$@ %d iarratas ar dhul isteach tríd an nasc grúpa.</string>
+			<key>many</key>
+			<string>Rinne agus chuir ar ceal %2$@ %d n-iarratas ar dhul isteach tríd an nasc grúpa.</string>
 			<key>one</key>
-			<string>%2$@ requested and canceled their request to join via the group link.</string>
+			<string>Rinne agus chuir ar ceal %2$@ iarratas ar dhul isteach tríd an nasc grúpa.</string>
 			<key>other</key>
-			<string>%2$@ requested and canceled %d requests to join via the group link.</string>
+			<string>Rinne agus chuir ar ceal %2$@ %d iarratas ar dhul isteach tríd an nasc grúpa. </string>
+			<key>two</key>
+			<string>Rinne agus chuir ar ceal %2$@ %d iarratas ar dhul isteach tríd an nasc grúpa.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -856,9 +886,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person excluded</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>%d people excluded</string>
+			<string>%d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -872,12 +902,12 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d people</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -888,9 +918,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>All Signal Connections · 1 Viewer</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>All Signal Connections · %d Viewers</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>All Signal Connections · 1 Excluded</string>
+			<key>other</key>
+			<string>All Signal Connections · %d Excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Only Share With · 1 Viewer</string>
+			<key>other</key>
+			<string>Only Share With · %d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -919,10 +981,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d Amharcóir</string>
+			<key>many</key>
+			<string>%d nAmharcóir</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 Amharcóir</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d Amharcóir</string>
+			<key>two</key>
+			<string>%d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1095,10 +1163,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; fhreagra</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; bhfreagra</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; fhreagra</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; freagra</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; fhreagra</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1112,9 +1186,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Connection</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d Connections</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1127,10 +1201,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d as an áireamh</string>
+			<key>many</key>
+			<string>%d as an áireamh</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 as an áireamh</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d as an áireamh</string>
+			<key>two</key>
+			<string>%d as an áireamh</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1143,10 +1223,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d cinn á seoladh...</string>
+			<key>many</key>
+			<string>%d gcinn á seoladh...</string>
 			<key>one</key>
 			<string>Sending...</string>
 			<key>other</key>
-			<string>Sending %d...</string>
+			<string>%d ceann á seoladh...</string>
+			<key>two</key>
+			<string>%d cheann á seoladh...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -1175,10 +1261,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; fhreagra</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; bhfreagra</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; fhreagra</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; freagra</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; fhreagra</string>
 		</dict>
 		<key>views</key>
 		<dict>
@@ -1186,10 +1278,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; amharc</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; n-amharc</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; amharc</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; amharc</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; amharc</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1202,10 +1300,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; amharc</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; n-amharc</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; amharc</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; amharc</string>
+			<key>two</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; amharc</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

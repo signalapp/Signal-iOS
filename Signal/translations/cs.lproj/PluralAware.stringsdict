@@ -1067,14 +1067,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d lidi vyloučeni</string>
-			<key>many</key>
-			<string>%d lidí vyloučeno</string>
 			<key>one</key>
-			<string>1 osoba vyloučena</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>%d lidí vyloučeno</string>
+			<string>%d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1087,17 +1083,13 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d lidi</string>
-			<key>many</key>
-			<string>%d lidí</string>
 			<key>one</key>
-			<string>1 osoba</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d lidí</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -1107,14 +1099,42 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d zobrazení</string>
-			<key>many</key>
-			<string>%d zobrazení</string>
 			<key>one</key>
-			<string>1 zobrazení</string>
+			<string>All Signal Connections · 1 Viewer</string>
 			<key>other</key>
-			<string>%d zbrazení</string>
+			<string>All Signal Connections · %d Viewers</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>All Signal Connections · 1 Excluded</string>
+			<key>other</key>
+			<string>All Signal Connections · %d Excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Only Share With · 1 Viewer</string>
+			<key>other</key>
+			<string>Only Share With · %d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1387,14 +1407,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d spojení</string>
-			<key>many</key>
-			<string>%d spojení</string>
 			<key>one</key>
-			<string>1 spojení</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d Spojení</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1427,10 +1443,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Odeslání příběhu %d…</string>
+			<key>many</key>
+			<string>Odeslání příběhu %d…</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Odesílání…</string>
 			<key>other</key>
-			<string>Sending %d...</string>
+			<string>Odeslání příběhu%d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

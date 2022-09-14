@@ -784,6 +784,9 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Cámara";
 
+/* VoiceOver label for -> button in text story composer. */
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "Continuar";
+
 /* VoiceOver label for Flash button in camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "Modo álbum";
 
@@ -1191,9 +1194,6 @@
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Para siempre";
-
-/* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ Nueva historia";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Solo admins pueden enviar mensajes en este grupo.";
@@ -2167,7 +2167,7 @@
 /* Title when trying to redeem a gift that's already expired. */
 "GIFT_NOT_REDEEMED_TITLE" = "Tu regalo ha caducado";
 
-/* Turn on permission view 'go to settings' button */
+/* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Ir a ajustes";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
@@ -2769,6 +2769,18 @@
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ a «%2$@»";
+
+/* Button to delete the story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "¿Estás seguro de que quieres eliminar esta historia?";
+
+/* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+
+/* Section header for the 'viewers' section on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupo actualizado.";
@@ -3697,26 +3709,11 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Actualizaciones de tu historia se mostrarán aquí.";
 
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Oculta tu historia a ciertas personas";
-
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Todas las conexiones de Signal excepto...";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Compartir con todos los contactos";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Todas las conexiones de Signal";
-
-/* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Elige quién puede ver tu historia. Los cambios que hagas no afectarán las historias que ya enviaste.";
-
-/* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Quién puede ver esta historia";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Selecciona los contactos para compartirla";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Solo compartir con...";
@@ -3729,6 +3726,9 @@
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Mi historia";
+
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "Toca para añadir una historia";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Ha cambiado su nombre de %1$@ a %2$@ recientemente.";
@@ -3790,6 +3790,9 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Seleccionar participantes";
 
+/* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Seleccionar grupo";
 
@@ -3823,6 +3826,9 @@
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Quién puede verla";
 
+/* table section header button to add a new story */
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nueva historia";
+
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Compartir con un grupo existente";
 
@@ -3846,12 +3852,6 @@
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "Sin otros grupos en común.";
-
-/* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Selecciona una persona o grupo para empezar a chatear.";
-
-/* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "¡Ya estás en Signal!";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nuevo mensaje a:";
@@ -4673,13 +4673,10 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Eliminar";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Esta persona ya no podrá ver tu historia.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "¿Eliminar a %1$@?";
-
-/* Section header for the 'viewers' section on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "Quién puede ver esta historia";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Continuar";
@@ -5362,9 +5359,6 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Uso de datos";
 
-/* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Desaparición en chats nuevos";
-
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Eliminar cuenta";
 
@@ -5445,9 +5439,6 @@
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Vídeos";
-
-/* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Mensajería";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "Muestra y transmite cuándo se escriben o leen mensajes. Con este ajuste desactivado, no podrás saber cuándo alguien ha leído tus mensajes o si alguien escribe en tus chats.";
@@ -5986,6 +5977,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permite a iOS acceder a tus contactos de Signal para mostrarlos en las notificaciones y sugerencias al compartir adjuntos desde otras aplicaciones.";
 
+/* Explanation for the 'stories' privacy settings. */
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+
+/* Label for the stories section of the settings view */
+"SETTINGS_STORIES_TITLE" = "Historias";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueo de registro";
 
@@ -6009,9 +6006,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versión";
-
-/* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Quién puede …";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Correo";
@@ -6157,20 +6151,26 @@
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Ir al chat";
 
+/* Text indicating you can't reply to a group story because you're not a member of the group */
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+
 /* Header for the hidden stories section of the stories list */
-"STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
+"STORIES_HIDDEN_SECTION_HEADER" = "Historias ocultas";
 
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Ocultar historia";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "New story updates from %@ won't appear at the top of the stories list anymore.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Las actualizaciones de nuevas historias de %@ ya no se mostrarán arriba de todo de tu lista de historias.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Hide Story?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "¿Ocultar historia?";
 
 /* Toast shown when a story is successfuly hidden */
-"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Historia ocultada";
+
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "Detalles";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "No hay nuevas actualizaciones para mostrar en este momento.\nToca + para agregarlo a tu historia.";
@@ -6199,17 +6199,29 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "Guardar";
 
-/* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "Nueva historia privada";
+/* Footer for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Las historias desaparecerán automáticamente después de 24 horas. Elige quién puede ver tu historia o crea nuevas historias con espectadores o grupos específicos.";
 
-/* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Las historias privadas solo son visibles por las personas que has añadido. Solo tú puedes ver el título de la historia.";
-
-/* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Historias privadas";
+/* Header for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "Mis historias";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "Privacidad de la historia";
+
+/* Title for the action sheet confirming you want to turn off stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+
+/* Footer for the 'turn off' section of the stories settings */
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Si decides desactivar las historias, ya no podrás compartir o visualizar historias.";
+
+/* Button to turn off stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+
+/* Footer for the 'turn on' section of the stories settings */
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+
+/* Button to turn on stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Compartir";
@@ -6218,10 +6230,13 @@
 "STORIES_TITLE" = "Historias";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Unhide Story";
+"STORIES_UNHIDE_STORY_ACTION" = "Volver a mostrar historia";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Se ha vuelto a mostrar la historia";
+
+/* Text explaining that you will not see any views for your story because you have read receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Vistas";
@@ -6229,8 +6244,20 @@
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_CAMERA" = "Cámara";
 
+/* Displayed when failed to fetch link preview in Text Story composer. */
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+
+/* Displayed in text story composer when user is about to attach a link with preview */
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Comparte tu historia via enlace con quien tú quieras";
+
+/* Placeholder text in text stories compose UI */
+"STORY_COMPOSER_TAP_ADD_TEXT" = "Toca para escribir";
+
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_TEXT" = "Texto";
+
+/* Placeholder text for URL input field in Text Story composer UI. */
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Escribe o añade una URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visitar enlace";
@@ -6240,6 +6267,15 @@
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Privacidad";
+
+/* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+
+/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+
+/* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Responder";
@@ -6254,13 +6290,13 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Responder en el grupo";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "No se ha podido enviar esta historia. Comprueba tu conexión y vuelve a intentarlo";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Conexiones";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Solo compartir con...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Conexiones excluidas";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Fallo al enviar";
@@ -6269,7 +6305,28 @@
 "STORY_SEND_FAILED_RETRY" = "Toca para reintentar";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Enviando ...";
+"STORY_SENDING" = "Enviando...";
+
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Section header for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_1" = "Toca para avanzar";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_2" = "Desliza arriba para saltar";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_3" = "Desliza a la derecha para salir";
+
+/* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Entendido";
+
+/* Text indicating that the user has views turned off */
+"STORY_VIEWS_OFF" = "Visualizaciones desactivadas";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Id de usuaria copiada al portapapeles";
@@ -6687,6 +6744,12 @@
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Los adjuntos para ver una vez se eliminan automáticamente tras enviar.";
+
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "Ver foto";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Desliza para cancelar";

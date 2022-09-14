@@ -784,6 +784,9 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "કૅમેરા";
 
+/* VoiceOver label for -> button in text story composer. */
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "આગળ વધો";
+
 /* VoiceOver label for Flash button in camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "આલ્બમ મોડ";
 
@@ -1191,9 +1194,6 @@
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "હંમેશાં";
-
-/* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ નવી સ્ટોરી";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "આ ગ્રુપને ફક્ત એડમિન જ મેસેજ મોકલી શકે છે.";
@@ -2167,7 +2167,7 @@
 /* Title when trying to redeem a gift that's already expired. */
 "GIFT_NOT_REDEEMED_TITLE" = "તમારી ગિફ્ટ સમાપ્ત થઈ ગઈ છે";
 
-/* Turn on permission view 'go to settings' button */
+/* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "સેટિંગ્સ પર જાઓ";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
@@ -2769,6 +2769,18 @@
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "  %1$@, %2$@ પર";
+
+/* Button to delete the story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "શું તમે ખરેખર આ સ્ટોરીને ડિલીટ કરવા માંગો છો?";
+
+/* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+
+/* Section header for the 'viewers' section on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ગ્રુપ અપડેટ કર્યું.";
@@ -3697,26 +3709,11 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "તમારી સ્ટોરી પરના અપડેટ્સ અહીં દેખાશે.";
 
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "ચોક્કસ લોકોથી તમારી સ્ટોરી છુપાવો";
-
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "બધા Signal કનેક્શન, સિવાય કે...";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "બધા કનેક્શન સાથે શેર કરો";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "બધા Signal કનેક્શન";
-
-/* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "તમારી સ્ટોરી કોણ જોઈ શકે તે પસંદ કરો. ફેરફારો તમે પહેલાથી મોકલેલ સ્ટોરીને અસર કરશે નહીં.";
-
-/* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "આ સ્ટોરી કોણ જોઈ શકે";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "કોની સાથે શેર કરવું તે લોકોને પસંદ કરો";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "ફક્ત આમની સાથે શેર કરો...";
@@ -3729,6 +3726,9 @@
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "મારી સ્ટોરી";
+
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "સ્ટોરી ઉમેરવા ટૅપ કરો";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "તાજેતરમાં જ તેમનું પ્રોફાઇલ નામ %1$@માંથી %2$@માં બદલ્યું.";
@@ -3790,6 +3790,9 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "સભ્યો પસંદ કરો";
 
+/* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "ગ્રુપ પસંદ કરો";
 
@@ -3823,6 +3826,9 @@
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "દર્શકો";
 
+/* table section header button to add a new story */
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "નવી સ્ટોરી";
+
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "કોઈ વર્તમાન ગ્રુપમાં શેર કરો";
 
@@ -3846,12 +3852,6 @@
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "અન્ય કોઈ ગ્રુપ કોમનમાં નથી.";
-
-/* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "ચેટિંગ શરૂ કરવા માટે સંપર્ક અથવા ગ્રુપ પસંદ કરો.";
-
-/* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Signal પર આપનું સ્વાગત છે";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "આનો નવો મેસેજ:";
@@ -4673,13 +4673,10 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "દૂર કરો";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "આ વ્યક્તિ હવે તમારી સ્ટોરી જોઈ નહીં શકે.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ને દૂર કરવા છે?";
-
-/* Section header for the 'viewers' section on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "આ સ્ટોરી કોણ જોઈ શકે";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "આગળ વધો";
@@ -5362,9 +5359,6 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "ડેટાનો વપરાશ";
 
-/* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "નવી ચેટ માટે ડિફોલ્ટ ટાઇમર";
-
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "એકાઉન્ટ કાઢી નાખો";
 
@@ -5445,9 +5439,6 @@
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "વિડિયો";
-
-/* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "મેસેજ કરી રહ્યા છીએ";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "જ્યારે મેસેજ વાંચવામાં આવે છે અને ટાઇપ કરવામાં આવે છે ત્યારે જુઓ અને શેર કરો. જો અક્ષમ કરેલ હોય, તો અન્ય લોકોએ વાંચી લીધાની રસીદો અથવા ટાઇપિંગ સૂચકો તમને દેખાશે નહીં.";
@@ -5986,6 +5977,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "શેરિંગ સૂચનો અને નોટિફિકેશન જેવી સુવિધાઓ માટે iOSને Signal સંપર્કો અમે ચેટ પર ઍક્સેસ આપો.";
 
+/* Explanation for the 'stories' privacy settings. */
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+
+/* Label for the stories section of the settings view */
+"SETTINGS_STORIES_TITLE" = "સ્ટોરી";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "રજીસ્ટ્રેશન લૉક";
 
@@ -6009,9 +6006,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "વર્ઝન";
-
-/* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "કોણ કરી શકે...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "મેઇલ";
@@ -6157,20 +6151,26 @@
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "ચેટ પર જાઓ";
 
+/* Text indicating you can't reply to a group story because you're not a member of the group */
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+
 /* Header for the hidden stories section of the stories list */
-"STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
+"STORIES_HIDDEN_SECTION_HEADER" = "છુપાવેલી સ્ટોરી";
 
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "સ્ટોરી છુપાવો";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "New story updates from %@ won't appear at the top of the stories list anymore.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%@ ના નવા સ્ટોરી અપડેટ હવેથી સ્ટોરીના લિસ્ટની ટોચ પર દેખાશે નહીં.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Hide Story?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "સ્ટોરી છુપાવવી છે?";
 
 /* Toast shown when a story is successfuly hidden */
-"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "સ્ટોરી છુપાવી દીધી";
+
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "માહિતી";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "હાલમાં દર્શાવી શકાય તેવા કોઈ અપડેટ્સ નથી.\nતમારી સ્ટોરી પર ઉમેરવા માટે + ટૅપ કરો.";
@@ -6199,17 +6199,29 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "સેવ કરો";
 
-/* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "નવી ખાનગી સ્ટોરી";
+/* Footer for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "સ્ટોરી 24 કલાક પછી આપમેળે ગાયબ થઈ જાય છે. તમારી સ્ટોરી કોણ જોઈ શકે તે પસંદ કરો અથવા ચોક્કસ દર્શકો અથવા ગ્રૂપ સાથે જ સ્ટોરી બનાવો.";
 
-/* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "ખાનગી સ્ટોરી એ જ લોકો જોઈ શકે છે જેમને તમે ઉમેરો છો. ફક્ત તમે જ સ્ટોરીનું નામ જોઈ શકો છો.";
-
-/* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "ખાનગી સ્ટોરી";
+/* Header for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "મારી સ્ટોરી";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "સ્ટોરીની પ્રાઇવસી";
+
+/* Title for the action sheet confirming you want to turn off stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+
+/* Footer for the 'turn off' section of the stories settings */
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "જો તમે સ્ટોરીનો વિકલ્પ નાપસંદ કરશો તો તમે સ્ટોરી જોઈ અથવા શેર કરી શકશો નહીં.";
+
+/* Button to turn off stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+
+/* Footer for the 'turn on' section of the stories settings */
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+
+/* Button to turn on stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "શેર કરો";
@@ -6218,10 +6230,13 @@
 "STORIES_TITLE" = "સ્ટોરી";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Unhide Story";
+"STORIES_UNHIDE_STORY_ACTION" = "સ્ટોરીને બતાવો";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "સ્ટોરી બતાવી દીધી";
+
+/* Text explaining that you will not see any views for your story because you have read receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "દ્રશ્યો";
@@ -6229,8 +6244,20 @@
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_CAMERA" = "કૅમેરા";
 
+/* Displayed when failed to fetch link preview in Text Story composer. */
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+
+/* Displayed in text story composer when user is about to attach a link with preview */
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "તમારી સ્ટોરીના દર્શકો સાથે લિંક શેર કરો";
+
+/* Placeholder text in text stories compose UI */
+"STORY_COMPOSER_TAP_ADD_TEXT" = "લખાણ ઉમેરવા ટૅપ કરો";
+
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_TEXT" = "ટેક્સ્ટ";
+
+/* Placeholder text for URL input field in Text Story composer UI. */
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "URL લખો અથવા પેસ્ટ કરો";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "લિંકની મુલાકાત લો";
@@ -6240,6 +6267,15 @@
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "ગોપનીયતા";
+
+/* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+
+/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+
+/* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "જવાબ આપો";
@@ -6254,13 +6290,13 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "ગ્રુપમાં જવાબ આપો";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "આ સ્ટોરી મોકલી શકાય નથી. તમારું કનેક્શન તપાસો અને ફરી પ્રયાસ કરો";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "કનેક્શન";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "ફક્ત આમની સાથે શેર કરો...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "બાકાત કરેલ કનેક્શન";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "મોકલવામાં નિષ્ફળ";
@@ -6269,7 +6305,28 @@
 "STORY_SEND_FAILED_RETRY" = "ફરી પ્રયાસ કરવા ટૅપ કરો";
 
 /* Text indicating that the story is currently sending */
-"STORY_SENDING" = "Sending...";
+"STORY_SENDING" = "મોકલાઈ રહી છે...";
+
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Section header for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_1" = "આગળ વધવા ટૅપ કરો";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_2" = "સ્કિપ કરવા ઉપર સ્વાઇપ કરો";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_3" = "બહાર નીકળવા જમણે સ્વાઇપ કરો";
+
+/* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "ખબર પડી";
+
+/* Text indicating that the user has views turned off */
+"STORY_VIEWS_OFF" = "વ્યૂઝ બંધ છે";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "સબ્સ્ક્રાઇબરનું ID ક્લિપબોર્ડ પર કોપી કર્યું";
@@ -6687,6 +6744,12 @@
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "આઉટગોઇંગ વ્યૂ-એકવાર મીડિયા ફાઇલો મોકલ્યા પછી આપમેળે દૂર થાય છે.";
+
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "ફોટો જુઓ";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "રદ કરવા માટે સ્લાઇડ કરો";

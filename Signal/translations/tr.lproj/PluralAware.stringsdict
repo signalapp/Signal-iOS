@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 kişi hariç tutuldu</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>%d kişi hariç tutuldu</string>
+			<string>%d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -872,12 +872,12 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 kişi</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d kişi</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -888,9 +888,41 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Görüntüleyen</string>
+			<string>All Signal Connections · 1 Viewer</string>
 			<key>other</key>
-			<string>%d Görüntüleyen</string>
+			<string>All Signal Connections · %d Viewers</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>All Signal Connections · 1 Excluded</string>
+			<key>other</key>
+			<string>All Signal Connections · %d Excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Only Share With · 1 Viewer</string>
+			<key>other</key>
+			<string>Only Share With · %d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1112,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Bağlantı</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d Bağlantı</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1144,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Gönderiliyor...</string>
 			<key>other</key>
-			<string>Sending %d...</string>
+			<string>%d gönderiliyor...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

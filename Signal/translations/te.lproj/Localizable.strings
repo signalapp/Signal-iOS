@@ -784,6 +784,9 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "కెమెరా";
 
+/* VoiceOver label for -> button in text story composer. */
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "కొనసాగండి";
+
 /* VoiceOver label for Flash button in camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
 
@@ -1191,9 +1194,6 @@
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "ఎల్లప్పుడూ";
-
-/* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "నిర్వాహకులు మాత్రమే ఈ గుంపుకు సందేశాలను పంపగలరు.";
@@ -2167,7 +2167,7 @@
 /* Title when trying to redeem a gift that's already expired. */
 "GIFT_NOT_REDEEMED_TITLE" = "Your Gift Has Expired";
 
-/* Turn on permission view 'go to settings' button */
+/* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "అమరికలుకు వెళ్లండి";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
@@ -2769,6 +2769,18 @@
 
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
+
+/* Button to delete the story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+
+/* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+
+/* Section header for the 'viewers' section on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "సమూహం నవీకరించబడింది";
@@ -3697,26 +3709,11 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "మీ స్టోరీకి అప్‌డేట్‌లు ఇక్కడ కనిపిస్తాయి.";
 
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "నిర్ధిష్ట వ్యక్తి నుంచి మీ స్టోరీని దాచిపెట్టండి";
-
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Signal Connections Except...";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "అన్ని కనెక్షన్‌లతో పంచుకోవడం";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "All Signal Connections";
-
-/* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Choose who can view your story. Changes won’t affect stories you’ve already sent.";
-
-/* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Who Can See This Story";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Choose people to share with";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Only Share With...";
@@ -3729,6 +3726,9 @@
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "నా స్టోరీ";
+
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "ఒక కథను జోడించేందుకు తట్టండి";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "ఇటీవల వారి ప్రొఫైల్ పేరును %1$@ నుండి %2$@ గా మార్చారు";
@@ -3790,6 +3790,9 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "సభ్యులను ఎంచుకోండి";
 
+/* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
 
@@ -3823,6 +3826,9 @@
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "వీక్షకులు";
 
+/* table section header button to add a new story */
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "కొత్త స్టోరీ";
+
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "ఇప్పటికే ఉన్న గ్రూపుతో పంచుకోండి";
 
@@ -3846,12 +3852,6 @@
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "ఉమ్మడిగా ఇతర సమూహాలు లేవు.";
-
-/* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "చాటింగ్ ప్రారంభించడానికి పరిచయం లేదా సమూహాన్ని ఎంచుకోండి.";
-
-/* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Signal కి స్వాగతం!";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "....కు కొత్త సందేశం";
@@ -4673,13 +4673,10 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "తొలగించు";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "ఈ వ్యక్తి మీ స్టోరీని ఇక ఏమాత్రం చూడలేడు.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
-
-/* Section header for the 'viewers' section on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "Who Can See This Story";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "కొనసాగండి";
@@ -5362,9 +5359,6 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "డేటా వినియోగం";
 
-/* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "క్రొత్త మాటామంతిల కోసం అప్రమేయ టైమర్";
-
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ఖాతాను తొలగించండి";
 
@@ -5445,9 +5439,6 @@
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "వీడియోలు";
-
-/* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "సందేశం";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "సందేశాలు చదివి మరియు టైప్ చేస్తున్నప్పుడు, చూడండి మరియు భాగస్వామ్యం చేయండి. నిలిపివేయబడితే, మీరు ఇతరుల నుండి చదివిన రశీదులు లేదా టైపింగ్ సూచికలను చూడలేరు.";
@@ -5986,6 +5977,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
+/* Explanation for the 'stories' privacy settings. */
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+
+/* Label for the stories section of the settings view */
+"SETTINGS_STORIES_TITLE" = "కథలు";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "నమోదు లాక్";
 
@@ -6009,9 +6006,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "వివరణము";
-
-/* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "ఎవరు చేయగలరు…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Mail";
@@ -6157,6 +6151,9 @@
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
 
+/* Text indicating you can't reply to a group story because you're not a member of the group */
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
 
@@ -6171,6 +6168,9 @@
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
+
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "సమాచారం";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "ప్రస్తుతం చూపించడానికి ఎలాంటి అప్‌డేట్‌లు లేవు.\nమీ స్టోరీని జోడించడానికి +ని తట్టండి.";
@@ -6199,17 +6199,29 @@
 /* Context menu action to save the selected story */
 "STORIES_SAVE_STORY_ACTION" = "సేవ్ చేయండి";
 
-/* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "కొత్త ప్రైవేట్ స్టోరీ";
+/* Footer for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "24 గంటల తరువాత కథలు ఆటోమేటిక్‌గా అదృశ్యమౌతాయి. మీ కథను ఎవరు వీక్షించవచ్చు లేదా నిర్దిష్ట వీక్షకులు లేదా గ్రూప్‌లతో ఎవరు కొత్త కథలను సృష్టించవచ్చు అనేది ఎంచుకోండి.";
 
-/* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "ప్రైవేట్ స్టోరీలను వాటికి మీరు జోడించిన వ్యక్తులు మాత్రమే చూడవచ్చు. కేవలం మీరు స్టోరీ పేరును చూడవచ్చు.";
-
-/* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "ప్రైవేట్ స్టోరీలు";
+/* Header for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "నా స్టోరీలు";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "స్టోరీ గోప్యత";
+
+/* Title for the action sheet confirming you want to turn off stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+
+/* Footer for the 'turn off' section of the stories settings */
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "ఒకవేళ మీరు కథలను నిలిపివేస్తే, మీరు ఇక ఏమాత్రం కథలను పంచుకోలేరు లేదా వీక్షించలేరు.";
+
+/* Button to turn off stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+
+/* Footer for the 'turn on' section of the stories settings */
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+
+/* Button to turn on stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "పంచుకోండి";
@@ -6223,14 +6235,29 @@
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
 
+/* Text explaining that you will not see any views for your story because you have read receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "వీక్షణలు";
 
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_CAMERA" = "కెమెరా";
 
+/* Displayed when failed to fetch link preview in Text Story composer. */
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+
+/* Displayed in text story composer when user is about to attach a link with preview */
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "మీ స్టోరీ వీక్షకులతో లింక్‌ని పంచుకోండి";
+
+/* Placeholder text in text stories compose UI */
+"STORY_COMPOSER_TAP_ADD_TEXT" = "టెక్ట్స్ జోడించడానికి తట్టండి";
+
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_TEXT" = "వచనం";
+
+/* Placeholder text for URL input field in Text Story composer UI. */
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "URLని టైప్ చేయండి లేదా పేస్ట్ చేయండి";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "లింక్‌ని సందర్శించండి";
@@ -6240,6 +6267,15 @@
 
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "గోప్యత";
+
+/* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+
+/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+
+/* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "స్పంధించు";
@@ -6257,10 +6293,10 @@
 "STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Connections";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Only Share With...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Excluded Connections";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "పంపడం విఫలమైంది";
@@ -6270,6 +6306,27 @@
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "పంపుతోంది ...";
+
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Section header for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_1" = "ముందుకు సాగడానికి తట్టండి";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_2" = "దాటవేయడానికి పైకి స్వైప్ చేయండి";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_3" = "నిష్క్రమించడానికి కుడివైపుకు స్వైప్ చేయండి";
+
+/* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "దొరికింది";
+
+/* Text indicating that the user has views turned off */
+"STORY_VIEWS_OFF" = "వీక్షణలు ఆఫ్ చేయబడ్డాయి";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "సబ్‌స్క్రైబర్ IDని క్లిప్‌బోర్డ్‌కు కాపీ చేయండి";
@@ -6687,6 +6744,12 @@
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "అవుట్గోయింగ్ వ్యూ-ఒకసారి మీడియా ఫైల్స్ పంపిన తర్వాత స్వయంచాలకంగా తొలగించబడతాయి.";
+
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "చిత్రాలు వీక్షించండి ";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "రద్దు చేయడానికి స్లయిడ్ చేయండి";
