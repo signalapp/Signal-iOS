@@ -1098,6 +1098,7 @@
 		D925938228B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = D925937F28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m */; };
 		D943F3EF2892F89B008C0C8B /* NSELogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D943F3EE2892F89B008C0C8B /* NSELogger.swift */; };
 		D95DA7ED28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */; };
+		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
@@ -3486,6 +3487,7 @@
 		D925937F28B42B3E00D5D437 /* OWSLocalUserLeaveGroupJobRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLocalUserLeaveGroupJobRecord.m; sourceTree = "<group>"; };
 		D943F3EE2892F89B008C0C8B /* NSELogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSELogger.swift; sourceTree = "<group>"; };
 		D95DA7EC28B560D1003996BA /* ConversationViewController+SystemMessageItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+SystemMessageItems.swift"; sourceTree = "<group>"; };
+		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
 		DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -8221,6 +8223,7 @@
 			isa = PBXGroup;
 			children = (
 				F9C5CBA5289453B200548EEE /* GroupAccess.swift */,
+				D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */,
 				F9A042C7289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift */,
 				D925937928B0497900D5D437 /* GroupManager+LocalUserLeaveGroupJob.swift */,
 				F9C5CBA9289453B200548EEE /* GroupManager.swift */,
@@ -10632,6 +10635,7 @@
 				F9C5CD1F289453B300548EEE /* GRDBDatabaseStorageAdapter.swift in Sources */,
 				F9C5CD26289453B300548EEE /* GRDBSchemaMigrator.swift in Sources */,
 				F9C5CE73289453B400548EEE /* GroupAccess.swift in Sources */,
+				D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */,
 				F9A042C8289C7500007D08B6 /* GroupManager+GroupUpdateInfoMessages.swift in Sources */,
 				D925937A28B0497900D5D437 /* GroupManager+LocalUserLeaveGroupJob.swift in Sources */,
 				F9C5CE77289453B400548EEE /* GroupManager.swift in Sources */,
