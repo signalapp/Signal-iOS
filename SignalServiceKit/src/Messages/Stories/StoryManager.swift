@@ -55,6 +55,15 @@ public class StoryManager: NSObject {
             return
         }
 
+        if let profileKey = storyMessage.profileKey {
+            profileManager.setProfileKeyData(
+                profileKey,
+                for: author,
+                userProfileWriter: .localUser,
+                transaction: transaction
+            )
+        }
+
         guard let message = try StoryMessage.create(
             withIncomingStoryMessage: storyMessage,
             timestamp: timestamp,
