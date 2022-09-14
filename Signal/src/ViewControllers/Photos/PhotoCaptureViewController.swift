@@ -765,7 +765,7 @@ extension PhotoCaptureViewController {
         bottomBar.proceedButton.addTarget(self, action: #selector(didTapTextStoryProceedButton), for: .touchUpInside)
         textBackgroundSelectionButton.addTarget(self, action: #selector(didTapTextBackgroundButton), for: .touchUpInside)
         textViewAttachLinkButton.addTarget(self, action: #selector(didTapAttachLinkPreviewButton), for: .touchUpInside)
-        textViewPlaceholderLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(textViewPlaceholderTapped)))
+        textViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(textViewPlaceholderTapped)))
 
         // Prepare text styling toolbar (only visible when editing text).
         let toolbarSize = textViewAccessoryToolbar.systemLayoutSizeFitting(CGSize(width: view.width, height: .greatestFiniteMagnitude),
