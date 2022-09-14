@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>5.54.0</string>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>9</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -77,7 +77,7 @@
 		<string>com.apple.share-services</string>
 	</dict>
 	<key>OWSBundleVersion4</key>
-	<string>5.54.0.8</string>
+	<string>5.54.0.9</string>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleLightContent</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
