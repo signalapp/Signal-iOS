@@ -29,13 +29,13 @@ final class ReactionListSheet: BaseVC {
     
     private lazy var contentView: UIView = {
         let result: UIView = UIView()
-        result.backgroundColor = Colors.modalBackground
+        result.themeBackgroundColor = .backgroundSecondary
         
         let line: UIView = UIView()
-        line.backgroundColor = Colors.border.withAlphaComponent(0.5)
+        line.themeBackgroundColor = .borderSeparator
         result.addSubview(line)
         
-        line.set(.height, to: 0.5)
+        line.set(.height, to: Values.separatorThickness)
         line.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: result)
         
         return result
@@ -61,7 +61,7 @@ final class ReactionListSheet: BaseVC {
         let result: UICollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         result.register(view: Cell.self)
         result.set(.height, to: 48)
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.isScrollEnabled = true
         result.showsHorizontalScrollIndicator = false
         result.dataSource = self
@@ -73,7 +73,7 @@ final class ReactionListSheet: BaseVC {
     private lazy var detailInfoLabel: UILabel = {
         let result: UILabel = UILabel()
         result.font = .systemFont(ofSize: Values.mediumFontSize)
-        result.textColor = Colors.grey.withAlphaComponent(0.8)
+        result.themeTextColor = .textSecondary
         result.set(.height, to: 32)
         
         return result
@@ -95,7 +95,7 @@ final class ReactionListSheet: BaseVC {
         result.delegate = self
         result.register(view: UserCell.self)
         result.separatorStyle = .none
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         
         return result
@@ -397,7 +397,8 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
             accessory: (cellViewModel.reaction.authorId == self.messageViewModel.currentUserPublicKey ?
                 .x :
                 .none
-            )
+            ),
+            themeBackgroundColor: .backgroundSecondary
         )
         
         return cell
@@ -431,22 +432,25 @@ extension ReactionListSheet {
         
         private lazy var snContentView: UIView = {
             let result = UIView()
-            result.backgroundColor = Colors.receivedMessageBackground
-            result.set(.height, to: Cell.contentViewHeight)
+            result.themeBackgroundColor = .messageBubble_incomingBackground
             result.layer.cornerRadius = Cell.contentViewCornerRadius
+            result.layer.borderWidth = 1 // Intentionally 1pt (instead of 'Values.separatorThickness')
+            result.set(.height, to: Cell.contentViewHeight)
+            
             return result
         }()
         
         private lazy var emojiLabel: UILabel = {
-            let result = UILabel()
+            let result: UILabel = UILabel()
             result.font = .systemFont(ofSize: Values.mediumFontSize)
+            
             return result
         }()
         
         private lazy var numberLabel: UILabel = {
-            let result = UILabel()
-            result.textColor = Colors.text
+            let result: UILabel = UILabel()
             result.font = .systemFont(ofSize: Values.mediumFontSize)
+            result.themeTextColor = .textPrimary
             
             return result
         }()
@@ -488,15 +492,12 @@ extension ReactionListSheet {
             count: Int,
             isCurrentSelection: Bool
         ) {
-            snContentView.addBorder(
-                with: (isCurrentSelection == true ? Colors.accent : .clear)
-            )
-            
             emojiLabel.text = emoji
             numberLabel.text = (count < 1000 ?
                 "\(count)" :
                 String(format: "%.1fk", Float(count) / 1000)
             )
+            snContentView.themeBorderColor = (isCurrentSelection ? .primary : .clear)
         }
     }
 }

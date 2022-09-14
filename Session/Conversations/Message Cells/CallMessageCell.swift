@@ -20,7 +20,8 @@ final class CallMessageCell: MessageCell {
     private lazy var iconImageView: UIImageView = UIImageView()
     private lazy var infoImageView: UIImageView = {
         let result: UIImageView = UIImageView(
-            image: UIImage(named: "ic_info")?.withRenderingMode(.alwaysTemplate)
+            image: UIImage(named: "ic_info")?
+                .withRenderingMode(.alwaysTemplate)
         )
         result.themeTintColor = .textPrimary
         
@@ -144,7 +145,7 @@ final class CallMessageCell: MessageCell {
         infoImageViewHeightConstraint.constant = (shouldShowInfoIcon ? CallMessageCell.iconSize : 0)
         
         label.text = cellViewModel.body
-        timestampLabel.text = cellViewModel.dateForUI?.formattedForDisplay
+        timestampLabel.text = cellViewModel.dateForUI.formattedForDisplay
     }
     
     override func dynamicUpdate(with cellViewModel: MessageViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {

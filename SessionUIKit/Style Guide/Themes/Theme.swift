@@ -144,7 +144,16 @@ public enum ThemeValue {
     // InputButton
     case inputButton_background
     
+    // ContextMenu
+    case contextMenu_background
+    case contextMenu_highlight
+    case contextMenu_textHighlight
+    
     // Call
     case callAccept_background
     case callDecline_background
+    
+    // Reactions
+    case reactions_contextBackground
+    case reactions_contextMoreBackground
 }

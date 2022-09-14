@@ -947,6 +947,10 @@ public extension SessionThreadViewModel {
     }
     
     static func pattern(_ db: Database, searchTerm: String) throws -> FTS5Pattern {
+        return try pattern(db, searchTerm: searchTerm, forTable: Interaction.self)
+    }
+    
+    static func pattern<T>(_ db: Database, searchTerm: String, forTable table: T.Type) throws -> FTS5Pattern where T: TableRecord, T: ColumnExpressible {
         // Note: FTS doesn't support both prefix/suffix wild cards so don't bother trying to
         // add a prefix one
         let rawPattern: String = searchTermParts(searchTerm)
@@ -955,9 +959,9 @@ public extension SessionThreadViewModel {
         
         /// There are cases where creating a pattern can fail, we want to try and recover from those cases
         /// by failling back to simpler patterns if needed
-        let maybePattern: FTS5Pattern? = (try? db.makeFTS5Pattern(rawPattern: rawPattern, forTable: Interaction.self))
+        let maybePattern: FTS5Pattern? = (try? db.makeFTS5Pattern(rawPattern: rawPattern, forTable: table))
             .defaulting(
-                to: (try? db.makeFTS5Pattern(rawPattern: searchTerm, forTable: Interaction.self))
+                to: (try? db.makeFTS5Pattern(rawPattern: searchTerm, forTable: table))
                     .defaulting(to: FTS5Pattern(matchingAnyTokenIn: searchTerm))
             )
         

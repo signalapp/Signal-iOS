@@ -78,16 +78,24 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
 
     private lazy var mentionsViewContainer: UIView = {
         let result: UIView = UIView()
+        result.alpha = 0
+        
         let backgroundView = UIView()
         backgroundView.themeBackgroundColor = .backgroundSecondary
         backgroundView.alpha = Values.lowOpacity
         result.addSubview(backgroundView)
         backgroundView.pin(to: result)
         
-        let blurView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        let blurView: UIVisualEffectView = UIVisualEffectView()
         result.addSubview(blurView)
         blurView.pin(to: result)
-        result.alpha = 0
+        
+        ThemeManager.onThemeChange(observer: blurView) { [weak blurView] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: blurView?.effect = UIBlurEffect(style: .light)
+                default: blurView?.effect = UIBlurEffect(style: .dark)
+            }
+        }
         
         return result
     }()
@@ -144,9 +152,16 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         addSubview(backgroundView)
         backgroundView.pin(to: self)
         
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        let blurView = UIVisualEffectView()
         addSubview(blurView)
         blurView.pin(to: self)
+        
+        ThemeManager.onThemeChange(observer: blurView) { [weak blurView] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: blurView?.effect = UIBlurEffect(style: .light)
+                default: blurView?.effect = UIBlurEffect(style: .dark)
+            }
+        }
         
         // Separator
         let separator = UIView()
@@ -380,15 +395,23 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         showVoiceMessageUI()
     }
 
-    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch) {
-        guard let voiceMessageRecordingView = voiceMessageRecordingView, inputViewButton == voiceMessageButton else { return }
-        let location = touch.location(in: voiceMessageRecordingView)
+    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch?) {
+        guard
+            let voiceMessageRecordingView: VoiceMessageRecordingView = voiceMessageRecordingView,
+            inputViewButton == voiceMessageButton,
+            let location = touch?.location(in: voiceMessageRecordingView)
+        else { return }
+        
         voiceMessageRecordingView.handleLongPressMoved(to: location)
     }
 
-    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch) {
-        guard let voiceMessageRecordingView = voiceMessageRecordingView, inputViewButton == voiceMessageButton else { return }
-        let location = touch.location(in: voiceMessageRecordingView)
+    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch?) {
+        guard
+            let voiceMessageRecordingView: VoiceMessageRecordingView = voiceMessageRecordingView,
+            inputViewButton == voiceMessageButton,
+            let location = touch?.location(in: voiceMessageRecordingView)
+        else { return }
+        
         voiceMessageRecordingView.handleLongPressEnded(at: location)
     }
 
@@ -443,7 +466,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         )
     }
 
-    func showMentionsUI(for candidates: [ConversationViewModel.MentionInfo]) {
+    func showMentionsUI(for candidates: [MentionInfo]) {
         mentionsView.candidates = candidates
         
         let mentionCellHeight = (Values.smallProfilePictureSize + 2 * Values.smallSpacing)
@@ -455,7 +478,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         }
     }
 
-    func handleMentionSelected(_ mentionInfo: ConversationViewModel.MentionInfo, from view: MentionSelectionView) {
+    func handleMentionSelected(_ mentionInfo: MentionInfo, from view: MentionSelectionView) {
         delegate?.handleMentionSelected(mentionInfo, from: view)
     }
     
@@ -482,6 +505,6 @@ protocol InputViewDelegate: ExpandingAttachmentsButtonDelegate, VoiceMessageReco
     func showLinkPreviewSuggestionModal()
     func handleSendButtonTapped()
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView)
-    func handleMentionSelected(_ mentionInfo: ConversationViewModel.MentionInfo, from view: MentionSelectionView)
+    func handleMentionSelected(_ mentionInfo: MentionInfo, from view: MentionSelectionView)
     func didPasteImageFromPasteboard(_ image: UIImage)
 }

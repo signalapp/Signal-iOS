@@ -39,11 +39,11 @@ final class ReactionButton: UIView {
     }
     
     private func setUpViewHierarchy() {
-        let emojiLabel = UILabel()
-        emojiLabel.text = viewModel.emoji.rawValue
+        let emojiLabel: UILabel = UILabel()
         emojiLabel.font = .systemFont(ofSize: fontSize)
+        emojiLabel.text = viewModel.emoji.rawValue
         
-        let stackView = UIStackView(arrangedSubviews: [ emojiLabel ])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [ emojiLabel ])
         stackView.axis = .horizontal
         stackView.spacing = spacing
         stackView.alignment = .center
@@ -52,19 +52,20 @@ final class ReactionButton: UIView {
         addSubview(stackView)
         stackView.pin(to: self)
         
+        themeBorderColor = (viewModel.showBorder ? .primary : .clear)
+        themeBackgroundColor = .messageBubble_incomingBackground
+        layer.cornerRadius = (self.height / 2)
+        layer.borderWidth = 1   // Intentionally 1pt (instead of 'Values.separatorThickness')
         set(.height, to: self.height)
-        backgroundColor = Colors.receivedMessageBackground
-        layer.cornerRadius = self.height / 2
-        
-        if viewModel.showBorder {
-            self.addBorder(with: Colors.accent)
-        }
         
         if showNumber || viewModel.number > 1 {
             let numberLabel = UILabel()
-            numberLabel.text = viewModel.number < 1000 ? "\(viewModel.number)" : String(format: "%.1f", Float(viewModel.number) / 1000) + "k"
             numberLabel.font = .systemFont(ofSize: fontSize)
-            numberLabel.textColor = Colors.text
+            numberLabel.text = (viewModel.number < 1000 ?
+                "\(viewModel.number)" :
+                String(format: "%.1f", Float(viewModel.number) / 1000) + "k"
+            )
+            numberLabel.themeTextColor = .textPrimary
             stackView.addArrangedSubview(numberLabel)
         }
     }
@@ -100,18 +101,17 @@ final class ExpandingReactionButton: UIView {
         var rightMargin: CGFloat = 0
         
         for emoji in self.emojis.reversed() {
-            let container = UIView()
+            let container: UIView = UIView()
             container.set(.width, to: size)
             container.set(.height, to: size)
-            container.backgroundColor = Colors.receivedMessageBackground
+            container.themeBorderColor = .backgroundPrimary
+            container.themeBackgroundColor = .messageBubble_incomingBackground
             container.layer.cornerRadius = size / 2
-            container.layer.borderWidth = 1
-            // FIXME: This is going to have issues when swapping between light/dark mode
-            container.layer.borderColor = (isDarkMode ? UIColor.black.cgColor : UIColor.white.cgColor)
+            container.layer.borderWidth = 1 // Intentionally 1pt (instead of 'Values.separatorThickness')
             
-            let emojiLabel = UILabel()
-            emojiLabel.text = emoji.rawValue
+            let emojiLabel: UILabel = UILabel()
             emojiLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
+            emojiLabel.text = emoji.rawValue
             
             container.addSubview(emojiLabel)
             emojiLabel.center(in: container)

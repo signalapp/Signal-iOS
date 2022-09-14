@@ -93,8 +93,17 @@ internal enum Theme_ClassicLight: ThemeColors {
         // InputButton
         .inputButton_background: .classicDark6,
         
+        // ContextMenu
+        .contextMenu_background: .classicLight6,
+        .contextMenu_highlight: .primary,
+        .contextMenu_textHighlight: .classicLight0,
+        
         // Call
         .callAccept_background: Theme.PrimaryColor.green.color,
-        .callDecline_background: .dangerLight
+        .callDecline_background: .dangerLight,
+        
+        // Reactions
+        .reactions_contextBackground: .classicLight4,
+        .reactions_contextMoreBackground: .classicLight6
     ]
 }

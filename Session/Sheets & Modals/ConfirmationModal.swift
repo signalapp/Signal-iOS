@@ -179,11 +179,11 @@ public class ConfirmationModal: Modal {
     
     init(info: Info) {
         self.internalOnConfirm = { viewController in
+            if info.dismissOnConfirm {
+                viewController.dismiss(animated: true)
+            }
+            
             info.onConfirm?(viewController)
-            
-            guard info.dismissOnConfirm else { return }
-            
-            viewController.dismiss(animated: true)
         }
         
         super.init(afterClosed: info.afterClosed)

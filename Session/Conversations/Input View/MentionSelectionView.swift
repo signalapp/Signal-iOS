@@ -6,7 +6,7 @@ import SessionUtilitiesKit
 import SignalUtilitiesKit
 
 final class MentionSelectionView: UIView, UITableViewDataSource, UITableViewDelegate {
-    var candidates: [ConversationViewModel.MentionInfo] = [] {
+    var candidates: [MentionInfo] = [] {
         didSet {
             tableView.isScrollEnabled = (candidates.count > 4)
             tableView.reloadData()
@@ -27,7 +27,7 @@ final class MentionSelectionView: UIView, UITableViewDataSource, UITableViewDele
         result.dataSource = self
         result.delegate = self
         result.separatorStyle = .none
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.register(view: Cell.self)
         
@@ -55,7 +55,7 @@ final class MentionSelectionView: UIView, UITableViewDataSource, UITableViewDele
         
         // Top separator
         let topSeparator: UIView = UIView()
-        topSeparator.backgroundColor = Colors.separator
+        topSeparator.themeBackgroundColor = .borderSeparator
         topSeparator.set(.height, to: Values.separatorThickness)
         addSubview(topSeparator)
         topSeparator.pin(.leading, to: .leading, of: self)
@@ -64,7 +64,7 @@ final class MentionSelectionView: UIView, UITableViewDataSource, UITableViewDele
         
         // Bottom separator
         let bottomSeparator: UIView = UIView()
-        bottomSeparator.backgroundColor = Colors.separator
+        bottomSeparator.themeBackgroundColor = .borderSeparator
         bottomSeparator.set(.height, to: Values.separatorThickness)
         addSubview(bottomSeparator)
         
@@ -116,8 +116,8 @@ private extension MentionSelectionView {
 
         private lazy var displayNameLabel: UILabel = {
             let result: UILabel = UILabel()
-            result.textColor = Colors.text
             result.font = .systemFont(ofSize: Values.smallFontSize)
+            result.themeTextColor = .textPrimary
             result.lineBreakMode = .byTruncatingTail
             
             return result
@@ -125,7 +125,7 @@ private extension MentionSelectionView {
 
         lazy var separator: UIView = {
             let result: UIView = UIView()
-            result.backgroundColor = Colors.separator
+            result.themeBackgroundColor = .borderSeparator
             result.set(.height, to: Values.separatorThickness)
             
             return result
@@ -147,11 +147,11 @@ private extension MentionSelectionView {
 
         private func setUpViewHierarchy() {
             // Cell background color
-            backgroundColor = .clear
+            themeBackgroundColor = .settings_tabBackground
             
             // Highlight color
             let selectedBackgroundView = UIView()
-            selectedBackgroundView.backgroundColor = .clear
+            selectedBackgroundView.themeBackgroundColor = .settings_tabHighlight
             self.selectedBackgroundView = selectedBackgroundView
             
             // Profile picture image view
@@ -210,5 +210,5 @@ private extension MentionSelectionView {
 // MARK: - Delegate
 
 protocol MentionSelectionViewDelegate: AnyObject {
-    func handleMentionSelected(_ mention: ConversationViewModel.MentionInfo, from view: MentionSelectionView)
+    func handleMentionSelected(_ mention: MentionInfo, from view: MentionSelectionView)
 }

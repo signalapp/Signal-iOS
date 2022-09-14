@@ -375,11 +375,11 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     }
 
     private func populateHeader(for cellViewModel: MessageViewModel, shouldInsetHeader: Bool) {
-        guard let date: Date = cellViewModel.dateForUI else { return }
+        guard cellViewModel.shouldShowDateHeader else { return }
         
         let dateBreakLabel: UILabel = UILabel()
         dateBreakLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        dateBreakLabel.text = date.formattedForDisplay
+        dateBreakLabel.text = cellViewModel.dateForUI.formattedForDisplay
         dateBreakLabel.themeTextColor = .textPrimary
         dateBreakLabel.textAlignment = .center
         headerView.addSubview(dateBreakLabel)

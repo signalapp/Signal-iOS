@@ -321,123 +321,39 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     // MARK: - Mentions
     
-    public struct MentionInfo: FetchableRecord, Decodable {
-        fileprivate static let threadVariantKey = CodingKeys.threadVariant.stringValue
-        fileprivate static let openGroupServerKey = CodingKeys.openGroupServer.stringValue
-        fileprivate static let openGroupRoomTokenKey = CodingKeys.openGroupRoomToken.stringValue
-        
-        let profile: Profile
-        let threadVariant: SessionThread.Variant
-        let openGroupServer: String?
-        let openGroupRoomToken: String?
-    }
-    
     public func mentions(for query: String = "") -> [MentionInfo] {
         let threadData: SessionThreadViewModel = self.threadData
         
-        let results: [MentionInfo] = Storage.shared
+        return Storage.shared
             .read { db -> [MentionInfo] in
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                let pattern: FTS5Pattern? = try? SessionThreadViewModel.pattern(db, searchTerm: query, forTable: Profile.self)
+                let capabilities: Set<Capability.Variant> = (threadData.threadVariant != .openGroup ?
+                    nil :
+                    try? Capability
+                        .select(.variant)
+                        .filter(Capability.Columns.openGroupServer == threadData.openGroupServer)
+                        .asRequest(of: Capability.Variant.self)
+                        .fetchSet(db)
+                )
+                .defaulting(to: [])
+                let targetPrefix: SessionId.Prefix = (capabilities.contains(.blind) ?
+                    .blinded :
+                    .standard
+                )
                 
-                switch threadData.threadVariant {
-                    case .contact:
-                        guard userPublicKey != threadData.threadId else { return [] }
-                        
-                        return [Profile.fetchOrCreate(db, id: threadData.threadId)]
-                            .map { profile in
-                                MentionInfo(
-                                    profile: profile,
-                                    threadVariant: threadData.threadVariant,
-                                    openGroupServer: nil,
-                                    openGroupRoomToken: nil
-                                )
-                            }
-                            .filter {
-                                query.count < 2 ||
-                                $0.profile.displayName(for: $0.threadVariant).contains(query)
-                            }
-                        
-                    case .closedGroup:
-                        let profile: TypedTableAlias<Profile> = TypedTableAlias()
-                        
-                        return try GroupMember
-                            .select(
-                                profile.allColumns(),
-                                SQL("\(threadData.threadVariant)").forKey(MentionInfo.threadVariantKey)
-                            )
-                            .filter(GroupMember.Columns.groupId == threadData.threadId)
-                            .filter(GroupMember.Columns.profileId != userPublicKey)
-                            .filter(GroupMember.Columns.role == GroupMember.Role.standard)
-                            .joining(
-                                required: GroupMember.profile
-                                    .aliased(profile)
-                                    // Note: LIKE is case-insensitive in SQLite
-                                    .filter(
-                                        query.count < 2 || (
-                                            profile[.nickname] != nil &&
-                                            profile[.nickname].like("%\(query)%")
-                                        ) || (
-                                            profile[.nickname] == nil &&
-                                            profile[.name].like("%\(query)%")
-                                        )
-                                    )
-                            )
-                            .asRequest(of: MentionInfo.self)
-                            .fetchAll(db)
-                        
-                    case .openGroup:
-                        let profile: TypedTableAlias<Profile> = TypedTableAlias()
-                        
-                        return try Interaction
-                            .select(
-                                profile.allColumns(),
-                                SQL("\(threadData.threadVariant)").forKey(MentionInfo.threadVariantKey),
-                                SQL("\(threadData.openGroupServer)").forKey(MentionInfo.openGroupServerKey),
-                                SQL("\(threadData.openGroupRoomToken)").forKey(MentionInfo.openGroupRoomTokenKey)
-                            )
-                            .distinct()
-                            .group(Interaction.Columns.authorId)
-                            .filter(Interaction.Columns.threadId == threadData.threadId)
-                            .filter(Interaction.Columns.authorId != userPublicKey)
-                            .joining(
-                                required: Interaction.profile
-                                    .aliased(profile)
-                                    // Note: LIKE is case-insensitive in SQLite
-                                    .filter(
-                                        query.count < 2 || (
-                                            profile[.nickname] != nil &&
-                                            profile[.nickname].like("%\(query)%")
-                                        ) || (
-                                            profile[.nickname] == nil &&
-                                            profile[.name].like("%\(query)%")
-                                        )
-                                    )
-                            )
-                            .order(Interaction.Columns.timestampMs.desc)
-                            .limit(20)
-                            .asRequest(of: MentionInfo.self)
-                            .fetchAll(db)
-                }
+                return (try MentionInfo
+                    .query(
+                        userPublicKey: userPublicKey,
+                        threadId: threadData.threadId,
+                        threadVariant: threadData.threadVariant,
+                        targetPrefix: targetPrefix,
+                        pattern: pattern
+                    )?
+                    .fetchAll(db))
+                    .defaulting(to: [])
             }
             .defaulting(to: [])
-        
-        guard query.count >= 2 else {
-            return results.sorted { lhs, rhs -> Bool in
-                lhs.profile.displayName(for: lhs.threadVariant) < rhs.profile.displayName(for: rhs.threadVariant)
-            }
-        }
-        
-        return results
-            .sorted { lhs, rhs -> Bool in
-                let maybeLhsRange = lhs.profile.displayName(for: lhs.threadVariant).lowercased().range(of: query.lowercased())
-                let maybeRhsRange = rhs.profile.displayName(for: rhs.threadVariant).lowercased().range(of: query.lowercased())
-                
-                guard let lhsRange: Range<String.Index> = maybeLhsRange, let rhsRange: Range<String.Index> = maybeRhsRange else {
-                    return true
-                }
-                
-                return (lhsRange.lowerBound < rhsRange.lowerBound)
-            }
     }
     
     // MARK: - Functions

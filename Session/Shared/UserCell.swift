@@ -75,9 +75,6 @@ final class UserCell: UITableViewCell {
     }
 
     private func setUpViewHierarchy() {
-        // Background color
-        themeBackgroundColor = .conversationButton_background
-        
         // Highlight color
         let selectedBackgroundView = UIView()
         selectedBackgroundView.themeBackgroundColor = .clear // Disabled for now
@@ -127,8 +124,11 @@ final class UserCell: UITableViewCell {
         profile: Profile?,
         isZombie: Bool,
         mediumFont: Bool = false,
-        accessory: Accessory
+        accessory: Accessory,
+        themeBackgroundColor: ThemeValue = .conversationButton_background
     ) {
+        self.themeBackgroundColor = themeBackgroundColor
+        
         profilePictureView.update(
             publicKey: publicKey,
             profile: profile,

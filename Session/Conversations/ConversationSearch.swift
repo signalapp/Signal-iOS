@@ -175,9 +175,17 @@ public final class SearchResultsBar: UIView {
         backgroundView.alpha = Values.lowOpacity
         addSubview(backgroundView)
         backgroundView.pin(to: self)
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        
+        let blurView = UIVisualEffectView()
         addSubview(blurView)
         blurView.pin(to: self)
+        
+        ThemeManager.onThemeChange(observer: blurView) { [weak blurView] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: blurView?.effect = UIBlurEffect(style: .light)
+                default: blurView?.effect = UIBlurEffect(style: .dark)
+            }
+        }
         
         // Separator
         let separator = UIView()

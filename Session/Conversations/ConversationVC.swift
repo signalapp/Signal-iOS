@@ -44,7 +44,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     
     // Mentions
     var currentMentionStartIndex: String.Index?
-    var mentions: [ConversationViewModel.MentionInfo] = []
+    var mentions: [MentionInfo] = []
     
     // Scrolling & paging
     var isUserScrolling = false

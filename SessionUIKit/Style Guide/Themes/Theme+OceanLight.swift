@@ -93,8 +93,17 @@ internal enum Theme_OceanLight: ThemeColors {
         // InputButton
         .inputButton_background: .oceanLight6,
         
+        // ContextMenu
+        .contextMenu_background: .oceanLight6,
+        .contextMenu_highlight: .primary,
+        .contextMenu_textHighlight: .oceanLight0,
+        
         // Call
         .callAccept_background: Theme.PrimaryColor.green.color,
-        .callDecline_background: .dangerLight
+        .callDecline_background: .dangerLight,
+        
+        // Reactions
+        .reactions_contextBackground: .oceanLight6,
+        .reactions_contextMoreBackground: .oceanLight5
     ]
 }

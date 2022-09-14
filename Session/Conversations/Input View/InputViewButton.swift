@@ -56,9 +56,16 @@ final class InputViewButton: UIView {
             addSubview(backgroundView)
             backgroundView.pin(to: self)
             
-            let blurView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+            let blurView: UIVisualEffectView = UIVisualEffectView()
             addSubview(blurView)
             blurView.pin(to: self)
+            
+            ThemeManager.onThemeChange(observer: blurView) { [weak blurView] theme, _ in
+                switch theme.interfaceStyle {
+                    case .light: blurView?.effect = UIBlurEffect(style: .light)
+                    default: blurView?.effect = UIBlurEffect(style: .dark)
+                }
+            }
             
             themeBorderColor = .borderSeparator
             layer.borderWidth = Values.separatorThickness

@@ -358,10 +358,17 @@ extension ConversationVC:
 
         if text.contains(mnemonic) && !viewModel.threadData.threadIsNoteToSelf && !hasPermissionToSendSeed {
             // Warn the user if they're about to send their seed to someone
-            let modal = SendSeedModal()
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            modal.proceed = { [weak self] in self?.sendMessage(hasPermissionToSendSeed: true) }
+            let modal: ConfirmationModal = ConfirmationModal(
+                info: ConfirmationModal.Info(
+                    title: "modal_send_seed_title".localized(),
+                    explanation: "modal_send_seed_explanation".localized(),
+                    confirmTitle: "modal_send_seed_send_button_title".localized(),
+                    confirmStyle: .danger,
+                    cancelStyle: .textPrimary,
+                    onConfirm: { [weak self] _ in self?.sendMessage(hasPermissionToSendSeed: true) }
+                )
+            )
+            
             return present(modal, animated: true, completion: nil)
         }
         
@@ -474,12 +481,19 @@ extension ConversationVC:
         
         if text.contains(mnemonic) && !viewModel.threadData.threadIsNoteToSelf && !hasPermissionToSendSeed {
             // Warn the user if they're about to send their seed to someone
-            let modal = SendSeedModal()
-            modal.modalPresentationStyle = .overFullScreen
-            modal.modalTransitionStyle = .crossDissolve
-            modal.proceed = { [weak self] in
-                self?.sendAttachments(attachments, with: text, hasPermissionToSendSeed: true, onComplete: onComplete)
-            }
+            let modal: ConfirmationModal = ConfirmationModal(
+                info: ConfirmationModal.Info(
+                    title: "modal_send_seed_title".localized(),
+                    explanation: "modal_send_seed_explanation".localized(),
+                    confirmTitle: "modal_send_seed_send_button_title".localized(),
+                    confirmStyle: .danger,
+                    cancelStyle: .textPrimary,
+                    onConfirm: { [weak self] _ in
+                        self?.sendAttachments(attachments, with: text, hasPermissionToSendSeed: true, onComplete: onComplete)
+                    }
+                )
+            )
+            
             return present(modal, animated: true, completion: nil)
         }
         
@@ -635,7 +649,7 @@ extension ConversationVC:
 
     // MARK: --Mentions
     
-    func handleMentionSelected(_ mentionInfo: ConversationViewModel.MentionInfo, from view: MentionSelectionView) {
+    func handleMentionSelected(_ mentionInfo: MentionInfo, from view: MentionSelectionView) {
         guard let currentMentionStartIndex = currentMentionStartIndex else { return }
         
         mentions.append(mentionInfo)
@@ -1010,14 +1024,6 @@ extension ConversationVC:
         reply(cellViewModel)
     }
     
-    func showUserDetails(for profile: Profile) {
-        let userDetailsSheet = UserDetailsSheet(for: profile)
-        userDetailsSheet.modalPresentationStyle = .overFullScreen
-        userDetailsSheet.modalTransitionStyle = .crossDissolve
-        
-        present(userDetailsSheet, animated: true, completion: nil)
-    }
-    
     func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?) {
         guard SessionId.Prefix(from: sessionId) == .blinded else {
             Storage.shared.write { db in
@@ -1354,11 +1360,66 @@ extension ConversationVC:
     
     func joinOpenGroup(name: String?, url: String) {
         // Open groups can be unsafe, so always ask the user whether they want to join one
-        let joinOpenGroupModal: JoinOpenGroupModal = JoinOpenGroupModal(name: name, url: url)
-        joinOpenGroupModal.modalPresentationStyle = .overFullScreen
-        joinOpenGroupModal.modalTransitionStyle = .crossDissolve
+        let finalName: String = (name ?? "Open Group")
+        let message: String = "Are you sure you want to join the \(finalName) open group?";
+        let modal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: "Join \(finalName)?",
+                attributedExplanation: NSMutableAttributedString(string: message)
+                    .adding(
+                        attributes: [ .font: UIFont.boldSystemFont(ofSize: Values.smallFontSize) ],
+                        range: (message as NSString).range(of: finalName)
+                    ),
+                confirmTitle: "Join",
+                onConfirm: { modal in
+                    guard let presentingViewController: UIViewController = modal.presentingViewController else {
+                        return
+                    }
+                    guard let (room, server, publicKey) = OpenGroupManager.parseOpenGroup(from: url) else {
+                        let errorModal: ConfirmationModal = ConfirmationModal(
+                            info: ConfirmationModal.Info(
+                                title: "Couldn't Join",
+                                cancelTitle: "BUTTON_OK".localized(),
+                                cancelStyle: .textPrimary
+                            )
+                        )
+                        
+                        return presentingViewController.present(errorModal, animated: true, completion: nil)
+                    }
+                    
+                    Storage.shared
+                        .writeAsync { db in
+                            OpenGroupManager.shared.add(
+                                db,
+                                roomToken: room,
+                                server: server,
+                                publicKey: publicKey,
+                                isConfigMessage: false
+                            )
+                        }
+                        .done(on: DispatchQueue.main) { _ in
+                            Storage.shared.writeAsync { db in
+                                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
+                            }
+                        }
+                        .catch(on: DispatchQueue.main) { error in
+                            let errorModal: ConfirmationModal = ConfirmationModal(
+                                info: ConfirmationModal.Info(
+                                    title: "Couldn't Join",
+                                    explanation: error.localizedDescription,
+                                    cancelTitle: "BUTTON_OK".localized(),
+                                    cancelStyle: .textPrimary
+                                )
+                            )
+                            
+                            presentingViewController.present(errorModal, animated: true, completion: nil)
+                        }
+                        .retainUntilComplete()
+                }
+            )
+        )
         
-        present(joinOpenGroupModal, animated: true, completion: nil)
+        present(modal, animated: true, completion: nil)
     }
     
     // MARK: - ContextMenuActionDelegate
