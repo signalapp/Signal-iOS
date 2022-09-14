@@ -397,6 +397,8 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
             return
         }
 
+        Logger.info("Removing delivered/pending notifications with identifiers: \(identifiersToCancel)")
+
         Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: identifiersToCancel)
         Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: identifiersToCancel)
     }

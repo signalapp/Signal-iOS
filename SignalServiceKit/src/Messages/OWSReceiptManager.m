@@ -364,6 +364,10 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             OWSFailDebug(@"Error loading interactions: %@", error);
         }
 
+        OWSLogInfo(@"Marking %lu messages as read on linked device. Timestamp: %llu",
+            (unsigned long)messages.count,
+            messageIdTimestamp);
+
         if (messages.count > 0) {
             for (TSMessage *message in messages) {
                 TSThread *_Nullable thread = [message threadWithTransaction:transaction];
