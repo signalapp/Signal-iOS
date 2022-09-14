@@ -1293,10 +1293,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
 
         let distanceSQL = """
-            SELECT count(*) - 1
+            SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .id) >= ?
+            AND \(interactionColumn: .id) > ?
             \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
             \(excludePlaceholders ? filterPlaceholdersClause : "")
         """
