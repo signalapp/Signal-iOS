@@ -264,7 +264,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
         result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        result.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: .normal)
+        result.setTitle(NSLocalizedString("TXT_DECLINE_TITLE", comment: ""), for: .normal)
         result.setTitleColor(Colors.destructive, for: .normal)
         result.setBackgroundImage(
             Colors.destructive
@@ -280,6 +280,18 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             ).cgColor
         result.layer.borderWidth = 1
         result.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
+
+        return result
+    }()
+    
+    private lazy var messageRequestBlockButton: UIButton = {
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        result.setTitle(NSLocalizedString("TXT_BLOCK_USER_TITLE", comment: ""), for: .normal)
+        result.setTitleColor(Colors.destructive, for: .normal)
+        result.addTarget(self, action: #selector(block), for: .touchUpInside)
 
         return result
     }()
@@ -343,6 +355,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         view.addSubview(scrollButton)
         view.addSubview(messageRequestView)
 
+        messageRequestView.addSubview(messageRequestBlockButton)
         messageRequestView.addSubview(messageRequestDescriptionLabel)
         messageRequestView.addSubview(messageRequestAcceptButton)
         messageRequestView.addSubview(messageRequestDeleteButton)
@@ -355,7 +368,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         self.scrollButtonBottomConstraint?.isActive = false // Note: Need to disable this to avoid a conflict with the other bottom constraint
         self.scrollButtonMessageRequestsBottomConstraint = scrollButton.pin(.bottom, to: .top, of: messageRequestView, withInset: -16)
         
-        messageRequestDescriptionLabel.pin(.top, to: .top, of: messageRequestView, withInset: 10)
+        messageRequestBlockButton.pin(.top, to: .top, of: messageRequestView, withInset: 10)
+        messageRequestBlockButton.center(.horizontal, in: messageRequestView)
+        
+        messageRequestDescriptionLabel.pin(.top, to: .bottom, of: messageRequestBlockButton, withInset: 5)
         messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
         messageRequestDescriptionLabel.pin(.right, to: .right, of: messageRequestView, withInset: -40)
 
