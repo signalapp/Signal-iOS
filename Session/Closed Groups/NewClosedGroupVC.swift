@@ -22,7 +22,7 @@ private final class TableView: UITableView {
 final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate, TableViewTouchDelegate, UITextFieldDelegate, UIScrollViewDelegate {
     private let contactProfiles: [Profile] = Profile.fetchAllContactProfiles(excludeCurrentUser: true)
     private var searchResults: [Profile] {
-        return searchText.isEmpty ? contactProfiles : contactProfiles.filter { $0.displayName().contains(searchText) }
+        return searchText.isEmpty ? contactProfiles : contactProfiles.filter { $0.displayName().range(of: searchText, options: [.caseInsensitive]) != nil }
     }
     private var selectedContacts: Set<String> = []
     private var searchText: String = ""
