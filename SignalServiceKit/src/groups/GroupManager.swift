@@ -2046,164 +2046,144 @@ public extension Error {
     }
 }
 
-// MARK: - Update existing groups
+// MARK: - Updating V1 Group Errors
+
+private extension Promise {
+    static var cannotUpdateV1GroupPromise: Promise {
+        Promise(error: OWSAssertionError("V1 groups cannot be updated!"))
+    }
+}
+
+// MARK: - Add/Invite to group
 
 extension GroupManager {
-    public enum GroupUpdate: CustomStringConvertible {
-        case addNormalMembers(uuids: [UUID])
-        case attributes(title: String?, description: String?, avatarData: Data?)
-
-        public var description: String {
-            switch self {
-            case .addNormalMembers:
-                return "Add new members with role .normal"
-            case .attributes(let name, let description, let avatarData):
-                var message = "Update attributes:"
-                message += name != nil ? " name" : ""
-                message += description != nil ? " description" : ""
-                message += avatarData != nil ? " settingAvatarData" : " clearingAvatarData"
-                return message
-            }
-        }
-    }
-
-    public static func updateExistingGroup(
-        existingGroupModel: TSGroupModel,
-        update: GroupUpdate
+    public static func addOrInvite(
+        aciOrPniUuids: [UUID],
+        toExistingGroup existingGroupModel: TSGroupModel
     ) -> Promise<TSGroupThread> {
-        if let existingGroupModelV2 = existingGroupModel as? TSGroupModelV2 {
-            return updateExistingGroupV2(existingGroupModel: existingGroupModelV2, update: update)
-        } else {
-            return updateExistingGroupV1(existingGroupModel: existingGroupModel, update: update)
+        guard let existingGroupModel = existingGroupModel as? TSGroupModelV2 else {
+            return .cannotUpdateV1GroupPromise
         }
-    }
 
-    private static func updateExistingGroupV2(
-        existingGroupModel: TSGroupModelV2,
-        update: GroupUpdate
-    ) -> Promise<TSGroupThread> {
-        firstly { () -> Promise<Void> in
-            // Ensure all eventual members of the group have GV2 enabled
+        guard let localUuid = tsAccountManager.localUuid else {
+            return Promise(error: OWSAssertionError("Missing local UUID"))
+        }
 
-            var allMembers = existingGroupModel.groupMembership.allMemberUuidsOfAnyKind
-            if case .addNormalMembers(let uuids) = update {
-                allMembers.formUnion(uuids)
-            }
+        return firstly { () -> Promise<Void> in
+            // Ensure we have fetched profile key credentials before performing
+            // the add below, since we depend on credential state to decide
+            // whether to add or invite a user.
 
-            return self.tryToEnableGroupsV2(
-                for: allMembers.map { SignalServiceAddress(uuid: $0) },
-                isBlocking: true,
-                ignoreErrors: true
+            self.groupsV2Swift.tryToFetchProfileKeyCredentials(
+                for: aciOrPniUuids,
+                ignoreMissingProfiles: false,
+                forceRefresh: false
             )
-        }.then(on: .global()) { () throws -> Promise<String?> in
-            // Upload new avatar data, if present
-
-            if case .attributes(_, _, let .some(avatarData)) = update {
-                // Skip upload if the new avatar data is the same as the existing
-                if let existingAvatarHash = existingGroupModel.avatarHash,
-                   try existingAvatarHash == TSGroupModel.hash(forAvatarData: avatarData) {
-                    return .value(nil)
-                }
-
-                return self.groupsV2Swift.uploadGroupAvatar(
-                    avatarData: avatarData,
-                    groupSecretParamsData: existingGroupModel.secretParamsData
-                ).map { Optional.some($0) }
-            }
-
-            return .value(nil)
-        }.then(on: .global()) { (avatarUrlPath: String?) in
-            self.updateGroupV2(groupModel: existingGroupModel,
-                               description: update.description) { groupChangeSet in
-                guard let localUuid = tsAccountManager.localUuid else {
-                    owsFailDebug("Missing localUuid")
-                    return
-                }
-
+        }.then(on: .global()) { () -> Promise<TSGroupThread> in
+            updateGroupV2(
+                groupModel: existingGroupModel,
+                description: "Add/Invite new non-admin members"
+            ) { groupChangeSet in
                 self.databaseStorage.read { transaction in
-                    switch update {
-                    case .attributes(let title, let description, let avatarData):
-                        if let title = title?.ows_stripped(),
-                           title != existingGroupModel.groupName {
-                            groupChangeSet.setTitle(title)
+                    for uuid in aciOrPniUuids {
+                        owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(uuid))
+
+                        // Important that at this point we already have the
+                        // profile keys for these users
+                        let isPending = !self.groupsV2Swift.hasProfileKeyCredential(
+                            for: SignalServiceAddress(uuid: uuid),
+                            transaction: transaction
+                        )
+
+                        if isPending || (uuid != localUuid && DebugFlags.groupsV2forceInvites.get()) {
+                            groupChangeSet.addInvitedMember(uuid, role: .normal)
+                        } else {
+                            groupChangeSet.addMember(uuid, role: .normal)
                         }
 
-                        if let description = description?.ows_stripped(),
-                           description != existingGroupModel.descriptionText {
-                            groupChangeSet.setDescriptionText(description)
-                        } else if description == nil, existingGroupModel.descriptionText != nil {
-                            groupChangeSet.setDescriptionText(nil)
-                        }
-
-                        // Having a URL from the previous step means this data
-                        // represents a new avatar, which we have already uploaded.
-                        if let avatarData = avatarData, let avatarUrlPath = avatarUrlPath {
-                            groupChangeSet.setAvatar((data: avatarData, urlPath: avatarUrlPath))
-                        } else if avatarData == nil, existingGroupModel.avatarData != nil {
-                            groupChangeSet.setAvatar(nil)
-                        }
-                    case .addNormalMembers(let newUuids):
-                        for uuid in newUuids {
-                            owsAssertDebug(!existingGroupModel.groupMembership.isMemberOfAnyKind(uuid))
-
-                            // Important that at this point we already have the
-                            // profile keys for these users
-                            let isPending = !self.groupsV2Swift.hasProfileKeyCredential(
-                                for: SignalServiceAddress(uuid: uuid),
-                                transaction: transaction
-                            )
-
-                            if isPending || (uuid != localUuid && DebugFlags.groupsV2forceInvites.get()) {
-                                groupChangeSet.addInvitedMember(uuid, role: .normal)
-                            } else {
-                                groupChangeSet.addMember(uuid, role: .normal)
-                            }
-
-                            if existingGroupModel.groupMembership.isBannedMember(uuid) {
-                                groupChangeSet.removeBannedMember(uuid)
-                            }
+                        if existingGroupModel.groupMembership.isBannedMember(uuid) {
+                            groupChangeSet.removeBannedMember(uuid)
                         }
                     }
                 }
             }
         }
     }
+}
 
-    private static func updateExistingGroupV1(
-        existingGroupModel: TSGroupModel,
-        update: GroupUpdate
+// MARK: - Update attributes
+
+extension GroupManager {
+    public static func updateGroupAttributes(
+        title: String?,
+        description: String?,
+        avatarData: Data?,
+        inExistingGroup existingGroupModel: TSGroupModel
     ) -> Promise<TSGroupThread> {
-        firstly { () throws -> Promise<TSGroupModel> in
-            // Construct new group model based on update
+        guard let existingGroupModel = existingGroupModel as? TSGroupModelV2 else {
+            return .cannotUpdateV1GroupPromise
+        }
 
-            var newGroupModelBuilder = existingGroupModel.asBuilder
+        return firstly(on: .global()) { () -> Promise<String?> in
+            guard let avatarData = avatarData else {
+                return .value(nil)
+            }
 
-            switch update {
-            case .attributes(let title, let description, let avatarData):
-                newGroupModelBuilder.name = title
-                newGroupModelBuilder.descriptionText = description
-                newGroupModelBuilder.avatarData = avatarData
-            case .addNormalMembers(let newUuids):
-                var newGroupMembershipBuilder = existingGroupModel.groupMembership.asBuilder
-                for uuid in newUuids {
-                    newGroupMembershipBuilder.remove(uuid)
-                    newGroupMembershipBuilder.addFullMember(uuid, role: .normal)
+            // Skip upload if the new avatar data is the same as the existing
+            if
+                let existingAvatarHash = existingGroupModel.avatarHash,
+                try existingAvatarHash == TSGroupModel.hash(forAvatarData: avatarData)
+            {
+                return .value(nil)
+            }
+
+            return self.groupsV2Swift.uploadGroupAvatar(
+                avatarData: avatarData,
+                groupSecretParamsData: existingGroupModel.secretParamsData
+            ).map { Optional.some($0) }
+        }.then(on: .global()) { (avatarUrlPath: String?) -> Promise<TSGroupThread> in
+            var message = "Update attributes:"
+            message += title != nil ? " title" : ""
+            message += description != nil ? " description" : ""
+            message += avatarData != nil ? " settingAvatarData" : " clearingAvatarData"
+
+            return self.updateGroupV2(
+                groupModel: existingGroupModel,
+                description: message
+            ) { groupChangeSet in
+                if
+                    let title = title?.ows_stripped(),
+                    title != existingGroupModel.groupName
+                {
+                    groupChangeSet.setTitle(title)
                 }
-                newGroupModelBuilder.groupMembership = newGroupMembershipBuilder.build()
+
+                if
+                    let description = description?.ows_stripped(),
+                    description != existingGroupModel.descriptionText
+                {
+                    groupChangeSet.setDescriptionText(description)
+                } else if
+                    description == nil,
+                    existingGroupModel.descriptionText != nil
+                {
+                    groupChangeSet.setDescriptionText(nil)
+                }
+
+                // Having a URL from the previous step means this data
+                // represents a new avatar, which we have already uploaded.
+                if
+                    let avatarData = avatarData,
+                    let avatarUrlPath = avatarUrlPath
+                {
+                    groupChangeSet.setAvatar((data: avatarData, urlPath: avatarUrlPath))
+                } else if
+                    avatarData == nil,
+                    existingGroupModel.avatarData != nil
+                {
+                    groupChangeSet.setAvatar(nil)
+                }
             }
-
-            let newGroupModel = try newGroupModelBuilder.build()
-
-            return .value(newGroupModel)
-        }.then(on: .global()) { (newGroupModel: TSGroupModel) -> Promise<TSGroupThread> in
-            guard let localAddress = self.tsAccountManager.localAddress else {
-                return Promise(error: OWSAssertionError("Missing local address."))
-            }
-
-            return self.localUpdateExistingGroupV1(
-                groupModel: newGroupModel,
-                groupUpdateSourceAddress: localAddress
-            )
         }
     }
 }

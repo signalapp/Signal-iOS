@@ -277,25 +277,23 @@ class GroupAttributesEditorHelper: NSObject {
             return
         }
 
-        let groupUpdateToPerform = self.buildGroupUpdate()
+        let currentTitle = groupNameCurrent
+        let currentDescription = groupDescriptionCurrent
+        let currentAvatarData = avatarCurrent?.imageData
 
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: fromViewController,
             withGroupModel: oldGroupModel,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
-                                                 update: groupUpdateToPerform)
+                GroupManager.updateGroupAttributes(
+                    title: currentTitle,
+                    description: currentDescription,
+                    avatarData: currentAvatarData,
+                    inExistingGroup: oldGroupModel
+                )
             },
             completion: { _ in completion() }
-        )
-    }
-
-    private func buildGroupUpdate() -> GroupManager.GroupUpdate {
-        .attributes(
-            title: groupNameCurrent,
-            description: groupDescriptionCurrent,
-            avatarData: avatarCurrent?.imageData
         )
     }
 }

@@ -94,26 +94,6 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
 
 private extension AddGroupMembersViewController {
 
-    func buildGroupUpdate() -> GroupManager.GroupUpdate? {
-        let newUuids = newRecipientSet.orderedMembers
-            .compactMap { recipient -> UUID? in
-                if let uuid = recipient.address?.uuid,
-                   !oldGroupModel.groupMembership.isFullMember(uuid) {
-                    return uuid
-                }
-
-                owsFailDebug("Missing UUID, or recipient is already in group!")
-                return nil
-            }
-
-        guard !newUuids.isEmpty else {
-            owsFailDebug("No valid recipients")
-            return nil
-        }
-
-        return .addNormalMembers(uuids: newUuids)
-    }
-
     func updateGroupThreadAndDismiss() {
 
         let dismissAndUpdateDelegate = { [weak self] in
@@ -129,8 +109,19 @@ private extension AddGroupMembersViewController {
             return dismissAndUpdateDelegate()
         }
 
-        guard let groupUpdateToPerform = buildGroupUpdate() else {
-            let error = OWSAssertionError("Couldn't build group update.")
+        let newUuids = newRecipientSet.orderedMembers
+            .compactMap { recipient -> UUID? in
+                if let uuid = recipient.address?.uuid,
+                   !oldGroupModel.groupMembership.isFullMember(uuid) {
+                    return uuid
+                }
+
+                owsFailDebug("Missing UUID, or recipient is already in group!")
+                return nil
+            }
+
+        guard !newUuids.isEmpty else {
+            let error = OWSAssertionError("No valid recipients")
             GroupViewUtils.showUpdateErrorUI(error: error)
             return
         }
@@ -140,8 +131,10 @@ private extension AddGroupMembersViewController {
             withGroupModel: self.oldGroupModel,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.updateExistingGroup(existingGroupModel: self.oldGroupModel,
-                                                 update: groupUpdateToPerform)
+                GroupManager.addOrInvite(
+                    aciOrPniUuids: newUuids,
+                    toExistingGroup: self.oldGroupModel
+                )
             },
             completion: { _ in dismissAndUpdateDelegate() }
         )

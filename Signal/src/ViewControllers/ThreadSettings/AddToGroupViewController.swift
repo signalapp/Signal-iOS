@@ -150,8 +150,14 @@ public class AddToGroupViewController: OWSTableViewController2 {
     private func addToGroupStep2(_ groupThread: TSGroupThread, shortName: String) {
         let oldGroupModel = groupThread.groupModel
 
-        guard let groupUpdateToPerform = buildGroupUpdate(oldGroupModel: oldGroupModel) else {
-            let error = OWSAssertionError("Couldn't build group update.")
+        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(self.address) else {
+            let error = OWSAssertionError("Receipient is already in group")
+            GroupViewUtils.showUpdateErrorUI(error: error)
+            return
+        }
+
+        guard let uuid = self.address.uuid else {
+            let error = OWSAssertionError("Address missing UUID")
             GroupViewUtils.showUpdateErrorUI(error: error)
             return
         }
@@ -161,8 +167,10 @@ public class AddToGroupViewController: OWSTableViewController2 {
             withGroupModel: oldGroupModel,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
-                                                 update: groupUpdateToPerform)
+                GroupManager.addOrInvite(
+                    aciOrPniUuids: [uuid],
+                    toExistingGroup: oldGroupModel
+                )
             },
             completion: { [weak self] _ in
                 self?.notifyOfAddedAndDismiss(groupThread: groupThread, shortName: shortName)
@@ -179,22 +187,6 @@ public class AddToGroupViewController: OWSTableViewController2 {
             let toastText = String(format: toastFormat, shortName, groupThread.groupNameOrDefault)
             presentingViewController?.presentToast(text: toastText)
         }
-    }
-
-    // MARK: -
-
-    private func buildGroupUpdate(oldGroupModel: TSGroupModel) -> GroupManager.GroupUpdate? {
-        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(self.address) else {
-            owsFailDebug("Receipient is already in group")
-            return nil
-        }
-
-        guard let uuid = self.address.uuid else {
-            owsFailDebug("Address missing UUID")
-            return nil
-        }
-
-        return .addNormalMembers(uuids: [uuid])
     }
 
     // MARK: -
