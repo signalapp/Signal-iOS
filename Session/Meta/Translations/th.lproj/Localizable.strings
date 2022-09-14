@@ -714,3 +714,4 @@
 /* New conversation screen*/
 "vc_new_conversation_title" = "New Conversation";
 "CREATE_GROUP_BUTTON_TITLE" = "Create";
+"JOIN_COMMUNITY_BUTTON_TITLE" = "Join";

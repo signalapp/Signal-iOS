@@ -245,18 +245,18 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         view.backgroundColor = .clear
         
         // Next button
-        let nextButton = Button(style: .prominentOutline, size: .large)
-        nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
+        let joinButton = Button(style: .prominentOutline, size: .large)
+        joinButton.setTitle("JOIN_COMMUNITY_BUTTON_TITLE".localized(), for: UIControl.State.normal)
+        joinButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         
-        let nextButtonContainer = UIView(
-            wrapping: nextButton,
+        let joinButtonContainer = UIView(
+            wrapping: joinButton,
             withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80),
             shouldAdaptForIPadWithWidth: Values.iPadButtonWidth
         )
         
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), joinButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)
