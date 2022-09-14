@@ -34,8 +34,12 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return phoneNumber
     }
 
-    // TODO UUID: eventually this can be not optional
-    private var backingUuidUnsynchronized: UUID?
+    /// Optional, since while in *most* cases we can be sure this is present
+    /// we cannot be positive. Some examples:
+    ///
+    /// * A really old recipient, who you may have message history with, may not have re-registered since UUIDs were added.
+    /// * When doing "find by phone number", there will be a window of time where all we know about a recipient is their e164.
+    /// * Syncing from another device via Storage Service could have an e164-only contact record.
     @objc
     public var uuid: UUID? {
         guard let uuid = Self.propertyLock.withLock({backingUuidUnsynchronized}) else {
@@ -54,6 +58,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
 
         return uuid
     }
+    private var backingUuidUnsynchronized: UUID?
 
     @objc
     public var uuidString: String? {
