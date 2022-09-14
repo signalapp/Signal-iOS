@@ -4,6 +4,7 @@ import SessionMessagingKit
 import SessionUIKit
 
 final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    private let itemsPerSection: Int = (UIDevice.current.isIPad ? 4 : 2)
     private let maxWidth: CGFloat
     private var rooms: [OpenGroupAPI.Room] = [] { didSet { update() } }
     private var heightConstraint: NSLayoutConstraint!
@@ -144,35 +145,35 @@ final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UIColle
     // MARK: - Layout
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let cellWidth = UIDevice.current.isIPad ? maxWidth / 4 : maxWidth / 2
+        let cellWidth = maxWidth / CGFloat(itemsPerSection)
         return CGSize(width: cellWidth, height: OpenGroupSuggestionGrid.cellHeight)
     }
     
     // MARK: - Data Source
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return (min(rooms.count, 8) + 1) / 2 // Cap to a maximum of 4 (4 rows of 2)
+        return Int(ceil(Double(min(rooms.count, 8)) / Double(itemsPerSection))) // Cap to a maximum of 4 (4 rows of 2)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if (section + 1) * 2 <= min(rooms.count, 8) {
-            return 2
+        if (section + 1) * itemsPerSection <= min(rooms.count, 8) {
+            return itemsPerSection
         } else {
-            return 1
+            return min(rooms.count, 8) - itemsPerSection * section
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cell.identifier, for: indexPath) as! Cell
-        cell.room = rooms[indexPath.item + indexPath.section * 2]
+        cell.room = rooms[indexPath.item + indexPath.section * itemsPerSection]
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        if (section + 1) * 2 <= min(rooms.count, 8) {
+        if (section + 1) * itemsPerSection <= min(rooms.count, 8) {
             return .zero
         } else {
-            let cellWidth = UIDevice.current.isIPad ? maxWidth / 4 : maxWidth / 2
+            let cellWidth = maxWidth / CGFloat(itemsPerSection)
             let sideInset = (maxWidth - cellWidth) / 2
             return UIEdgeInsets(top: 0, left: sideInset, bottom: 0, right: sideInset)
         }
@@ -181,7 +182,7 @@ final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UIColle
     // MARK: - Interaction
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let room = rooms[indexPath.item]
+        let room = rooms[indexPath.section * itemsPerSection + indexPath.item]
         delegate?.join(room)
     }
 }
