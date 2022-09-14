@@ -258,7 +258,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_missing_error", comment: ""))
         }
-        guard name.count < 64 else {
+        guard name.count < 30 else {
             return showError(title: NSLocalizedString("vc_create_closed_group_group_name_too_long_error", comment: ""))
         }
         guard selectedContacts.count >= 1 else {
