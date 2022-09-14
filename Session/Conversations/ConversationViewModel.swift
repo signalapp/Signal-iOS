@@ -386,6 +386,16 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                         
                     case .openGroup:
                         let profile: TypedTableAlias<Profile> = TypedTableAlias()
+                        let capabilities: Set<Capability.Variant> = (try? Capability
+                            .select(.variant)
+                            .filter(Capability.Columns.openGroupServer == threadData.openGroupServer)
+                            .asRequest(of: Capability.Variant.self)
+                            .fetchSet(db))
+                            .defaulting(to: [])
+                        let targetPrefix: SessionId.Prefix = (capabilities.contains(.blind) ?
+                            .blinded :
+                            .standard
+                        )
                         
                         return try Interaction
                             .select(
@@ -401,6 +411,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                             .joining(
                                 required: Interaction.profile
                                     .aliased(profile)
+                                    .filter(Profile.Columns.id.like("\(targetPrefix.rawValue)%"))
                                     // Note: LIKE is case-insensitive in SQLite
                                     .filter(
                                         query.count < 2 || (
