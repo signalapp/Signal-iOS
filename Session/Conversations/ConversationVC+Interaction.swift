@@ -667,7 +667,7 @@ extension ConversationVC:
                 .elements
                 .firstIndex(of: cellViewModel),
             let cell = tableView.cellForRow(at: IndexPath(row: index, section: sectionIndex)) as? VisibleMessageCell,
-            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
+            let snapshot = cell.snContentView.snapshotView(afterScreenUpdates: false),
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
@@ -686,7 +686,7 @@ extension ConversationVC:
         self.contextMenuWindow = ContextMenuWindow()
         self.contextMenuVC = ContextMenuVC(
             snapshot: snapshot,
-            frame: cell.convert(cell.bubbleView.frame, to: keyWindow),
+            frame: cell.convert(cell.snContentView.frame, to: keyWindow),
             cellViewModel: cellViewModel,
             actions: actions
         ) { [weak self] in
@@ -2118,6 +2118,35 @@ extension ConversationVC {
             preferredStyle: .actionSheet
         )
         alertVC.addAction(UIAlertAction(title: "TXT_DELETE_TITLE".localized(), style: .destructive) { _ in
+            // Delete the request
+            Storage.shared.writeAsync(
+                updates: { db in
+                    _ = try SessionThread
+                        .filter(id: threadId)
+                        .deleteAll(db)
+                },
+                completion: { db, _ in
+                    DispatchQueue.main.async { [weak self] in
+                        self?.navigationController?.popViewController(animated: true)
+                    }
+                }
+            )
+        })
+        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
+        
+        self.present(alertVC, animated: true, completion: nil)
+    }
+    
+    @objc func block() {
+        guard self.viewModel.threadData.threadVariant == .contact else { return }
+        
+        let threadId: String = self.viewModel.threadData.threadId
+        let alertVC: UIAlertController = UIAlertController(
+            title: "MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON".localized(),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction(title: "BLOCK_LIST_BLOCK_BUTTON".localized(), style: .destructive) { _ in
             // Delete the request
             Storage.shared.writeAsync(
                 updates: { db in

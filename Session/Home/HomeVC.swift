@@ -675,7 +675,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
                             .retainUntilComplete()
                     }
                 }
-                block.backgroundColor = Colors.unimportant
+                block.backgroundColor = Colors.blockActionBackground
                 
                 return [ delete, block, pin ]
                 

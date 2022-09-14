@@ -636,11 +636,14 @@
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Are you sure you want to clear all message requests?";
 "MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Clear";
 "MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Are you sure you want to delete this message request?";
-"MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request.";
+"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON" = "Are you sure you want to block this contact?";
+"MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request and reveal your Session ID.";
 "MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
 "MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
 "TXT_HIDE_TITLE" = "Hide";
 "TXT_DELETE_ACCEPT" = "Accept";
+"TXT_DECLINE_TITLE" = "Decline";
+"TXT_BLOCK_USER_TITLE" = "Block User";
 "ALERT_ERROR_TITLE" = "Galat";
 "NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
 "NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
@@ -682,6 +685,11 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
 "INVALID_SESSION_ID_MESSAGE" = "Please check the Session ID and try again.";
 "INVALID_RECOVERY_PHRASE_MESSAGE" = "Please check the Recovery Phrase and try again.";
+"MEDIA_TAB_TITLE" = "Media";
+"DOCUMENT_TAB_TITLE" = "Documents";
+"DOCUMENT_TILES_EMPTY_DOCUMENT" = "You don't have any document in this conversation.";
+"DOCUMENT_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Document…";
+"DOCUMENT_TILES_LOADING_OLDER_LABEL" = "Loading Older Document…";
 /* The name for the emoji category 'Activities' */
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
 /* The name for the emoji category 'Animals & Nature' */

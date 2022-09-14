@@ -58,4 +58,8 @@ public class NotificationStrings: NSObject {
 @objc public class MediaStrings: NSObject {
     @objc
     static public let allMedia = NSLocalizedString("MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON", comment: "nav bar button item")
+    @objc
+    static public let media = NSLocalizedString("MEDIA_TAB_TITLE", comment: "media tab title")
+    @objc
+    static public let document = NSLocalizedString("DOCUMENT_TAB_TITLE", comment: "document tab title")
 }
