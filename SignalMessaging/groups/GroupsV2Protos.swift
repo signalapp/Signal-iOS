@@ -409,10 +409,6 @@ public class GroupsV2Protos {
             }
 
             let bannedAtTimestamp = bannedMemberProto.bannedAtTimestamp
-            guard bannedAtTimestamp > 0 else {
-                throw OWSAssertionError("Group banned member missing timestamp")
-            }
-
             let uuid = try groupV2Params.uuid(forUserId: userId)
 
             groupMembershipBuilder.addBannedMember(uuid, bannedAtTimestamp: bannedAtTimestamp)
