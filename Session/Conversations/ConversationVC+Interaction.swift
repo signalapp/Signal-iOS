@@ -667,7 +667,7 @@ extension ConversationVC:
                 .elements
                 .firstIndex(of: cellViewModel),
             let cell = tableView.cellForRow(at: IndexPath(row: index, section: sectionIndex)) as? VisibleMessageCell,
-            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
+            let snapshot = cell.snContentView.snapshotView(afterScreenUpdates: false),
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
@@ -686,7 +686,7 @@ extension ConversationVC:
         self.contextMenuWindow = ContextMenuWindow()
         self.contextMenuVC = ContextMenuVC(
             snapshot: snapshot,
-            frame: cell.convert(cell.bubbleView.frame, to: keyWindow),
+            frame: cell.convert(cell.snContentView.frame, to: keyWindow),
             cellViewModel: cellViewModel,
             actions: actions
         ) { [weak self] in
