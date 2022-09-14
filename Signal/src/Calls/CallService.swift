@@ -584,11 +584,6 @@ public final class CallService: LightweightCallManager {
         // this method would be called when you're already joined, but it is
         // safe to do so.
         if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
-
-        if call.ringRestrictions.isEmpty && call.groupCallRingState == .shouldRing {
-            call.groupCallRingState = .ringing
-            call.groupCall.ringAll()
-        }
     }
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> SignalCall? {
@@ -765,6 +760,16 @@ extension CallService: CallObserver {
         updateIsVideoEnabled()
         updateGroupMembersForCurrentCallIfNecessary()
         configureBandwidthMode()
+
+        if call.groupCallRingState == .shouldRing &&
+            call.ringRestrictions.isEmpty &&
+            call.groupCall.localDeviceState.joinState == .joined &&
+            call.groupCall.remoteDeviceStates.isEmpty {
+            // Don't start ringing until we join the call successfully.
+            call.groupCallRingState = .ringing
+            call.groupCall.ringAll()
+            audioService.playOutboundRing()
+        }
     }
 
     public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}

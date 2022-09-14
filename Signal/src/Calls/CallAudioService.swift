@@ -96,6 +96,7 @@ class CallAudioService: NSObject, CallObserver {
     }
 
     func groupCallEnded(_ call: SignalCall, reason: GroupCallEndReason) {
+        stopPlayingAnySounds()
         ensureProperAudioSession(call: call)
     }
 
@@ -542,7 +543,12 @@ class CallAudioService: NSObject, CallObserver {
         }
     }
 
-    // MARK: - Join / Leave sound
+    // MARK: - Manual sounds played for group calls
+
+    func playOutboundRing() {
+        play(sound: .callOutboundRinging)
+    }
+
     func playJoinSound() {
         play(sound: .groupCallJoin)
     }
@@ -554,6 +560,11 @@ class CallAudioService: NSObject, CallObserver {
 
 extension CallAudioService: CallServiceObserver {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
+        if currentPlayer?.isLooping == true {
+            stopPlayingAnySounds()
+        } else {
+            // Let non-looping sounds play to completion.
+        }
         oldValue?.removeObserver(self)
         newValue?.addObserverAndSyncState(observer: self)
     }
