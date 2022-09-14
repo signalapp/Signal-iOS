@@ -237,7 +237,7 @@ class CallHeader: UIView {
                 callStatusText = ""
             } else {
                 let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
-                if call.ringRestrictions.isEmpty && call.userWantsToRing {
+                if call.ringRestrictions.isEmpty && call.groupCallRingState == .shouldRing {
                     callStatusText = describeMembers(
                         count: memberCount,
                         names: firstTwoNames,
@@ -276,7 +276,7 @@ class CallHeader: UIView {
                     comment: "Text indicating that the user has lost their connection to the call and we are reconnecting.")
 
             } else if call.groupCall.remoteDeviceStates.isEmpty {
-                if call.ringRestrictions.isEmpty && call.userWantsToRing {
+                if call.groupCallRingState == .ringing {
                     let (memberCount, firstTwoNames) = fetchGroupSizeAndMemberNamesWithSneakyTransaction()
                     callStatusText = describeMembers(
                         count: memberCount,

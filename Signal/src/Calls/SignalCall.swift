@@ -134,12 +134,18 @@ public class SignalCall: NSObject, CallManagerCallReference {
         }
     }
 
-    /// Before joining, indicates that the user wants to send a ring.
-    ///
-    /// After joining, indicates that the ring was sent but no one has responded yet.
-    public var userWantsToRing: Bool = true {
+    internal enum GroupCallRingState {
+        case doNotRing
+        case shouldRing
+        case ringing
+        case ringingEnded
+    }
+
+    internal var groupCallRingState: GroupCallRingState = .shouldRing {
         didSet {
             AssertIsOnMainThread()
+            // If we ever support non-ringing 1:1 calls, we might want to reuse this.
+            owsAssertDebug(isGroupCall)
         }
     }
 
@@ -365,10 +371,13 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onRemoteDeviceStatesChanged groupCall: GroupCall) {
-        if !groupCall.remoteDeviceStates.isEmpty {
-            userWantsToRing = false
-        }
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
+        // Change this after notifying observers so that they can see when the ring has concluded.
+        if groupCallRingState == .ringing && !groupCall.remoteDeviceStates.isEmpty {
+            groupCallRingState = .ringingEnded
+            // Treat the end of ringing as a "local state change" for listeners that normally ignore remote changes.
+            self.groupCall(onLocalDeviceStateChanged: groupCall)
+        }
     }
 
     public func groupCall(onAudioLevels groupCall: GroupCall) {
