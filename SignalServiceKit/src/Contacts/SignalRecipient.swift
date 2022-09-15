@@ -9,6 +9,22 @@ import SignalCoreKit
 extension SignalRecipient {
 
     @objc
+    public var isRegistered: Bool { !devices.set.isEmpty }
+
+    private static let storageServiceUnregisteredThreshold = kMonthInterval
+
+    @objc
+    public var shouldBeRepresentedInStorageService: Bool {
+        guard !isRegistered else { return true }
+
+        guard let unregisteredAtTimestamp = unregisteredAtTimestamp?.uint64Value else {
+            return false
+        }
+
+        return Date().timeIntervalSince(Date(millisecondsSince1970: unregisteredAtTimestamp)) <= Self.storageServiceUnregisteredThreshold
+    }
+
+    @objc
     public static let phoneNumberDidChange = Notification.Name("phoneNumberDidChange")
     @objc
     public static let notificationKeyPhoneNumber = "phoneNumber"

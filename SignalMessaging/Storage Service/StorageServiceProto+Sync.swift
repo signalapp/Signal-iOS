@@ -15,11 +15,18 @@ extension StorageServiceProtoContactRecord: Dependencies {
         unknownFields: SwiftProtobuf.UnknownStorage? = nil,
         transaction: SDSAnyReadTransaction
     ) throws -> StorageServiceProtoContactRecord {
-        guard let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: transaction) else {
+        guard
+            let address = OWSAccountIdFinder.address(forAccountId: accountId, transaction: transaction),
+            let recipient = AnySignalRecipientFinder().signalRecipient(for: address, transaction: transaction)
+        else {
             throw StorageService.StorageError.accountMissing
         }
 
         var builder = StorageServiceProtoContactRecord.builder()
+
+        if !recipient.isRegistered, let unregisteredAtTimestamp = recipient.unregisteredAtTimestamp?.uint64Value {
+            builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
+        }
 
         if let phoneNumber = address.phoneNumber {
             if PhoneNumber.resemblesE164(phoneNumber) {
@@ -111,8 +118,12 @@ extension StorageServiceProtoContactRecord: Dependencies {
         // representing the remote and local last update time for every value we sync.
         // For now, we'd like to avoid that as it adds its own set of problems.
 
-        // Mark the user as registered, only registered contacts should exist in the sync'd data.
-        let recipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
+        let recipient: SignalRecipient
+        if unregisteredAtTimestamp > 0 {
+            recipient = SignalRecipient.markAsUnregistered(fromStorageServiceAndGet: address, unregisteredAtTimestamp: unregisteredAtTimestamp, transaction: transaction)
+        } else {
+            recipient = SignalRecipient.mark(asRegisteredAndGet: address, trustLevel: .high, transaction: transaction)
+        }
 
         var mergeState: MergeState = .resolved(recipient.accountId)
 

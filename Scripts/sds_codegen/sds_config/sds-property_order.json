@@ -219,6 +219,7 @@
     "SignalRecipientRecord.devices": 1,
     "SignalRecipientRecord.recipientPhoneNumber": 2,
     "SignalRecipientRecord.recipientUUID": 3,
+    "SignalRecipientRecord.unregisteredAtTimestamp": 4,
     "StickerPackRecord.author": 1,
     "StickerPackRecord.cover": 2,
     "StickerPackRecord.dateCreated": 3,

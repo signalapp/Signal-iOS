@@ -174,6 +174,7 @@ public class GRDBSchemaMigrator: NSObject {
         case recreateStoryIncomingViewedTimestampIndex
         case addColumnsForLocalUserLeaveGroupDurableJob
         case addStoriesHiddenStateToThreadAssociatedData
+        case addUnregisteredAtTimestampToSignalRecipient
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -224,7 +225,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 43
+    public static let grdbSchemaVersionLatest: UInt = 44
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1947,6 +1948,16 @@ public class GRDBSchemaMigrator: NSObject {
             do {
                 try db.alter(table: "thread_associated_data") { table in
                     table.add(column: "hideStory", .boolean).notNull().defaults(to: false)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addUnregisteredAtTimestampToSignalRecipient) { db in
+            do {
+                try db.alter(table: "model_SignalRecipient") { table in
+                    table.add(column: "unregisteredAtTimestamp", .integer)
                 }
             } catch {
                 owsFail("Error: \(error)")

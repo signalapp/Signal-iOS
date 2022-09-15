@@ -316,6 +316,8 @@ struct StorageServiceProtos_ContactRecord {
 
   var hideStory: Bool = false
 
+  var unregisteredAtTimestamp: UInt64 = 0
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum IdentityState: SwiftProtobuf.Enum {
@@ -1179,6 +1181,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     12: .same(proto: "markedUnread"),
     13: .same(proto: "mutedUntilTimestamp"),
     14: .same(proto: "hideStory"),
+    16: .same(proto: "unregisteredAtTimestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1201,6 +1204,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       case 12: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 13: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
       case 14: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
+      case 16: try { try decoder.decodeSingularUInt64Field(value: &self.unregisteredAtTimestamp) }()
       default: break
       }
     }
@@ -1249,6 +1253,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     if self.hideStory != false {
       try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 14)
     }
+    if self.unregisteredAtTimestamp != 0 {
+      try visitor.visitSingularUInt64Field(value: self.unregisteredAtTimestamp, fieldNumber: 16)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1267,6 +1274,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
     if lhs.hideStory != rhs.hideStory {return false}
+    if lhs.unregisteredAtTimestamp != rhs.unregisteredAtTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

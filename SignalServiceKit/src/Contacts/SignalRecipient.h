@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -27,6 +27,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
 @interface SignalRecipient : BaseModel
 
 @property (nonatomic, readonly) NSOrderedSet<NSNumber *> *devices;
+@property (nonatomic, readonly, nullable) NSNumber *unregisteredAtTimestamp;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -54,7 +55,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, SignalRecipientTrustLevel) {
                          devices:(NSOrderedSet<NSNumber *> *)devices
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPhoneNumber:recipientUUID:));
+         unregisteredAtTimestamp:(nullable NSNumber *)unregisteredAtTimestamp
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPhoneNumber:recipientUUID:unregisteredAtTimestamp:));
 
 // clang-format on
 
@@ -93,6 +95,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPh
                                          transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (void)markRecipientAsUnregistered:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (SignalRecipient *)markRecipientAsUnregisteredFromStorageServiceAndGet:(SignalServiceAddress *)address
+                                                 unregisteredAtTimestamp:(UInt64)unregisteredAtTimestamp
+                                                             transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)removePhoneNumberForDatabaseMigration;
 

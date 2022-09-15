@@ -82,11 +82,13 @@ def swift_type_for_proto_primitive_type(proto_type):
         return 'Data'
     elif proto_type == 'double':
         return 'Double'
+    elif proto_type == 'float':
+        return 'Float'
     else:
         return None
 
 def is_swift_primitive_type(proto_type):
-    return proto_type in ('String', 'UInt64', 'UInt32', 'UInt64', 'Bool', 'Data')
+    return proto_type in ('String', 'UInt64', 'UInt32', 'Int64', 'Int32', 'Bool', 'Data', 'Double', 'Float')
 
 # Provides context for writing an indented block surrounded by braces.
 #

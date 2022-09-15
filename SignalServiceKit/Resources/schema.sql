@@ -350,6 +350,7 @@ CREATE
             ,"devices" BLOB NOT NULL
             ,"recipientPhoneNumber" TEXT
             ,"recipientUUID" TEXT
+            ,"unregisteredAtTimestamp" INTEGER
         )
 ;
 

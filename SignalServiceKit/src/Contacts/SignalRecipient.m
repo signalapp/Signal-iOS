@@ -17,6 +17,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 @property (nonatomic) NSOrderedSet<NSNumber *> *devices;
 @property (nonatomic) NSUInteger recipientSchemaVersion;
+@property (nonatomic, nullable) NSNumber *unregisteredAtTimestamp;
 
 @end
 
@@ -75,6 +76,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     _recipientPhoneNumber = phoneNumber;
     _recipientSchemaVersion = SignalRecipientSchemaVersion;
     _devices = [NSOrderedSet orderedSetWithArray:devices];
+    if (!devices.count) {
+        _unregisteredAtTimestamp = @(NSDate.ows_millisecondTimeStamp);
+    }
 
     return self;
 }
@@ -125,6 +129,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                          devices:(NSOrderedSet<NSNumber *> *)devices
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
+         unregisteredAtTimestamp:(nullable NSNumber *)unregisteredAtTimestamp
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
@@ -136,6 +141,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     _devices = devices;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
+    _unregisteredAtTimestamp = unregisteredAtTimestamp;
 
     return self;
 }
@@ -172,6 +178,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
     [updatedDevices unionSet:devices];
     self.devices = [updatedDevices copy];
+    self.unregisteredAtTimestamp = nil;
+
+    [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
 }
 
 - (void)removeDevices:(NSSet<NSNumber *> *)devices
@@ -181,6 +190,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
     [updatedDevices minusSet:devices];
     self.devices = [updatedDevices copy];
+
+    if (!self.devices.count && !self.unregisteredAtTimestamp) {
+        self.unregisteredAtTimestamp = @(NSDate.ows_millisecondTimeStamp);
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ self.accountId ]];
+    }
 }
 
 + (void)updateWithAddress:(SignalServiceAddress *)address
@@ -515,7 +529,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         // We know they're registered, so make sure they have at least one device.
         // We assume it's the default device. If we're wrong, the service will correct us when we
         // try to send a message to them
-        existingInstance.devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
+        [existingInstance addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)]];
     }
 
     // Record the updated contact in the social graph
@@ -620,12 +634,31 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         OWSLogDebug(@"Marking recipient as not registered: %@", address);
         [recipient anyUpdateWithTransaction:transaction
                                       block:^(SignalRecipient *signalRecipient) {
-                                          signalRecipient.devices = [NSOrderedSet new];
+                                          [signalRecipient removeDevices:signalRecipient.devices.set];
                                       }];
-
-        // Remove the contact from our social graph
-        [self.storageServiceManager recordPendingDeletionsWithDeletedAccountIds:@[ recipient.accountId ]];
     }
+}
+
++ (SignalRecipient *)markRecipientAsUnregisteredFromStorageServiceAndGet:(SignalServiceAddress *)address
+                                                 unregisteredAtTimestamp:(UInt64)unregisteredAtTimestamp
+                                                             transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(unregisteredAtTimestamp > 0);
+    OWSAssertDebug(transaction);
+
+    SignalRecipient *recipient = [self getOrCreateHighTrustRecipientWithAddress:address
+                                                               markAsRegistered:NO
+                                                                    transaction:transaction];
+
+    OWSLogDebug(@"Marking recipient as not registered: %@", address);
+    [recipient anyUpdateWithTransaction:transaction
+                                  block:^(SignalRecipient *signalRecipient) {
+                                      [signalRecipient removeDevices:signalRecipient.devices.set];
+                                      signalRecipient.unregisteredAtTimestamp = @(unregisteredAtTimestamp);
+                                  }];
+
+    return recipient;
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction

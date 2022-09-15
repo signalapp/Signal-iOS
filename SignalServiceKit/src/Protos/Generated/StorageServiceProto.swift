@@ -1376,6 +1376,13 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         return true
     }
 
+    public var unregisteredAtTimestamp: UInt64 {
+        return proto.unregisteredAtTimestamp
+    }
+    public var hasUnregisteredAtTimestamp: Bool {
+        return true
+    }
+
     public var hasValidService: Bool {
         return serviceAddress != nil
     }
@@ -1510,6 +1517,9 @@ extension StorageServiceProtoContactRecord {
         if hasHideStory {
             builder.setHideStory(hideStory)
         }
+        if hasUnregisteredAtTimestamp {
+            builder.setUnregisteredAtTimestamp(unregisteredAtTimestamp)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1627,6 +1637,10 @@ public struct StorageServiceProtoContactRecordBuilder {
 
     public mutating func setHideStory(_ valueParam: Bool) {
         proto.hideStory = valueParam
+    }
+
+    public mutating func setUnregisteredAtTimestamp(_ valueParam: UInt64) {
+        proto.unregisteredAtTimestamp = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {
