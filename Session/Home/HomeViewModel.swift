@@ -134,7 +134,7 @@ public class HomeViewModel {
                     joinToPagedType: {
                         let typingIndicator: TypedTableAlias<ThreadTypingIndicator> = TypedTableAlias()
                         
-                        return SQL("LEFT JOIN \(typingIndicator[.threadId]) = \(thread[.id])")
+                        return SQL("LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])")
                     }()
                 ),
                 PagedData.ObservedChanges(

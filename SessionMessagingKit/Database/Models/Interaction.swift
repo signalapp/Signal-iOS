@@ -348,10 +348,14 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                         ).insert(db)
                         
                     case .closedGroup:
-                        guard
-                            let closedGroup: ClosedGroup = try? thread.closedGroup.fetchOne(db),
-                            let members: [GroupMember] = try? closedGroup.members.fetchAll(db)
-                        else {
+                        let closedGroupMemberIds: Set<String> = (try? GroupMember
+                            .select(.profileId)
+                            .filter(GroupMember.Columns.groupId == thread.id)
+                            .asRequest(of: String.self)
+                            .fetchSet(db))
+                            .defaulting(to: [])
+                        
+                        guard !closedGroupMemberIds.isEmpty else {
                             SNLog("Inserted an interaction but couldn't find it's associated thread members")
                             return
                         }
@@ -359,12 +363,12 @@ public struct Interaction: Codable, Identifiable, Equatable, FetchableRecord, Mu
                         // Exclude the current user when creating recipient states (as they will never
                         // receive the message resulting in the message getting flagged as failed)
                         let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                        try members
-                            .filter { member -> Bool in member.profileId != userPublicKey }
-                            .forEach { member in
+                        try closedGroupMemberIds
+                            .filter { memberId -> Bool in memberId != userPublicKey }
+                            .forEach { memberId in
                                 try RecipientState(
                                     interactionId: interactionId,
-                                    recipientId: member.profileId,
+                                    recipientId: memberId,
                                     state: .sending
                                 ).insert(db)
                             }

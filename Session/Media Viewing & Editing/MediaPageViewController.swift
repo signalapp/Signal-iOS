@@ -458,7 +458,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         // MediaTileViewController then just pop/dismiss the screen
         guard
             let presentingNavController: UINavigationController = (self.presentingViewController as? UINavigationController),
-            !(presentingNavController.viewControllers.last is MediaTileViewController)
+            !(presentingNavController.viewControllers.last is AllMediaViewController)
         else {
             guard self.navigationController?.viewControllers.count == 1 else {
                 self.navigationController?.popViewController(animated: true)
@@ -471,7 +471,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         
         // Otherwise if we came via the conversation screen we need to push a new
         // instance of MediaTileViewController
-        let tileViewController: MediaTileViewController = MediaGalleryViewModel.createTileViewController(
+        let allMediaViewController: AllMediaViewController = MediaGalleryViewModel.createAllMediaViewController(
             threadId: self.viewModel.threadId,
             threadVariant: self.viewModel.threadVariant,
             focusedAttachmentId: currentItem.attachment.id,
@@ -479,9 +479,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         )
         
         let navController: MediaGalleryNavigationController = MediaGalleryNavigationController()
-        navController.viewControllers = [tileViewController]
+        navController.viewControllers = [allMediaViewController]
         navController.modalPresentationStyle = .overFullScreen
-        navController.transitioningDelegate = tileViewController
+        navController.transitioningDelegate = allMediaViewController
         
         self.navigationController?.present(navController, animated: true)
     }

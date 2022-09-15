@@ -74,7 +74,7 @@ final class LandingVC: BaseVC {
         linkButtonContainer.addSubview(linkButton)
         linkButton.center(.horizontal, in: linkButtonContainer)
         
-        let isIPhoneX = (UIApplication.shared.keyWindow!.safeAreaInsets.bottom > 0)
+        let isIPhoneX = ((UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0) > 0)
         linkButton.centerYAnchor.constraint(equalTo: linkButtonContainer.centerYAnchor, constant: isIPhoneX ? -4 : 0).isActive = true
         
         // Button stack view

@@ -353,6 +353,7 @@ public extension Message {
         _ db: Database,
         openGroupId: String,
         message: OpenGroupAPI.Message,
+        associatedPendingChanges: [OpenGroupAPI.PendingChange],
         dependencies: SMKDependencies = SMKDependencies()
     ) -> [Reaction] {
         var results: [Reaction] = []
@@ -364,16 +365,59 @@ public extension Message {
                 threadVariant: .openGroup
             )
         for (encodedEmoji, rawReaction) in reactions {
-            if let emoji = encodedEmoji.removingPercentEncoding,
+            if let decodedEmoji = encodedEmoji.removingPercentEncoding,
                rawReaction.count > 0,
                let reactors = rawReaction.reactors
             {
+                // Decide whether we need to ignore all reactions
+                let pendingChangeRemoveAllReaction: Bool = associatedPendingChanges.contains { pendingChange in
+                    if case .reaction(_, let emoji, let action) = pendingChange.metadata {
+                        return emoji == decodedEmoji && action == .removeAll
+                    }
+                    return false
+                }
+                
+                // Decide whether we need to add an extra reaction from current user
+                let pendingChangeSelfReaction: Bool? = {
+                    // Find the newest 'PendingChange' entry with a matching emoji, if one exists, and
+                    // set the "self reaction" value based on it's action
+                    let maybePendingChange: OpenGroupAPI.PendingChange? = associatedPendingChanges
+                        .sorted(by: { lhs, rhs -> Bool in (lhs.seqNo ?? Int64.max) >= (rhs.seqNo ?? Int64.max) })
+                        .first { pendingChange in
+                            if case .reaction(_, let emoji, _) = pendingChange.metadata {
+                                return emoji == decodedEmoji
+                            }
+                            
+                            return false
+                        }
+                    
+                    // If there is no pending change for this reaction then return nil
+                    guard
+                        let pendingChange: OpenGroupAPI.PendingChange = maybePendingChange,
+                        case .reaction(_, _, let action) = pendingChange.metadata
+                    else { return nil }
+
+                    // Otherwise add/remove accordingly
+                    return action == .add
+                }()
+                let shouldAddSelfReaction: Bool = (
+                    pendingChangeSelfReaction ??
+                    ((rawReaction.you || reactors.contains(userPublicKey)) && !pendingChangeRemoveAllReaction)
+                )
+                
+                let count: Int64 = rawReaction.you ? rawReaction.count - 1 : rawReaction.count
+                
                 let timestampMs: Int64 = Int64(floor((Date().timeIntervalSince1970 * 1000)))
+                let maxLength: Int = shouldAddSelfReaction ? 4 : 5
                 let desiredReactorIds: [String] = reactors
-                    .filter { $0 != blindedUserPublicKey }
+                    .filter { $0 != blindedUserPublicKey && $0 != userPublicKey } // Remove current user for now, will add back if needed
+                    .prefix(maxLength)
+                    .map{ $0 }
 
                 results = results
                     .appending( // Add the first reaction (with the count)
+                        pendingChangeRemoveAllReaction ?
+                        nil :
                         desiredReactorIds.first
                             .map { reactor in
                                 Reaction(
@@ -381,14 +425,14 @@ public extension Message {
                                     serverHash: nil,
                                     timestampMs: timestampMs,
                                     authorId: reactor,
-                                    emoji: emoji,
-                                    count: rawReaction.count,
+                                    emoji: decodedEmoji,
+                                    count: count,
                                     sortId: rawReaction.index
                                 )
                             }
                     )
                     .appending( // Add all other reactions
-                        contentsOf: desiredReactorIds.count <= 1 ?
+                        contentsOf: desiredReactorIds.count <= 1 || pendingChangeRemoveAllReaction ?
                             [] :
                             desiredReactorIds
                                 .suffix(from: 1)
@@ -398,22 +442,22 @@ public extension Message {
                                         serverHash: nil,
                                         timestampMs: timestampMs,
                                         authorId: reactor,
-                                        emoji: emoji,
+                                        emoji: decodedEmoji,
                                         count: 0,   // Only want this on the first reaction
                                         sortId: rawReaction.index
                                     )
                                 }
                     )
                     .appending( // Add the current user reaction (if applicable and not already included)
-                        !rawReaction.you || reactors.contains(userPublicKey) ?
+                        !shouldAddSelfReaction ?
                             nil :
                             Reaction(
                                 interactionId: message.id,
                                 serverHash: nil,
                                 timestampMs: timestampMs,
                                 authorId: userPublicKey,
-                                emoji: emoji,
-                                count: (desiredReactorIds.isEmpty ? rawReaction.count : 0),
+                                emoji: decodedEmoji,
+                                count: 1,
                                 sortId: rawReaction.index
                             )
                     )

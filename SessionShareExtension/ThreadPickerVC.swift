@@ -180,6 +180,8 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         shareVC?.dismiss(animated: true, completion: nil)
         
         ModalActivityIndicatorViewController.present(fromViewController: shareVC!, canCancel: false, message: "vc_share_sending_message".localized()) { activityIndicator in
+            // Resume database
+            NotificationCenter.default.post(name: Database.resumeNotification, object: self)
             Storage.shared
                 .writeAsync { [weak self] db -> Promise<Void> in
                     guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
@@ -231,10 +233,14 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
                     )
                 }
                 .done { [weak self] _ in
+                    // Suspend the database
+                    NotificationCenter.default.post(name: Database.suspendNotification, object: self)
                     activityIndicator.dismiss { }
                     self?.shareVC?.shareViewWasCompleted()
                 }
                 .catch { [weak self] error in
+                    // Suspend the database
+                    NotificationCenter.default.post(name: Database.suspendNotification, object: self)
                     activityIndicator.dismiss { }
                     self?.shareVC?.shareViewFailed(error: error)
                 }

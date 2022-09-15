@@ -230,6 +230,7 @@ class OpenGroupManagerSpec: QuickSpec {
                     try testOpenGroup.insert(db)
                     try Capability(openGroupServer: testOpenGroup.server, variant: .sogs, isMissing: false).insert(db)
                 }
+                mockOGMCache.when { $0.pendingChanges }.thenReturn([])
                 mockGeneralCache.when { $0.encodedPublicKey }.thenReturn("05\(TestConstants.publicKey)")
                 mockGenericHash.when { $0.hash(message: anyArray(), outputLength: any()) }.thenReturn([])
                 mockSodium

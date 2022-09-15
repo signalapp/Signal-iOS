@@ -281,7 +281,7 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                             title: MediaStrings.allMedia,
                             accessibilityIdentifier: "\(ThreadSettingsViewModel.self).all_media",
                             action: .push(showChevron: false) {
-                                return MediaGalleryViewModel.createTileViewController(
+                                return MediaGalleryViewModel.createAllMediaViewController(
                                     threadId: threadId,
                                     threadVariant: threadVariant,
                                     focusedAttachmentId: nil

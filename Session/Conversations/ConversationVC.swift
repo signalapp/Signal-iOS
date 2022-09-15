@@ -245,8 +245,20 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     private lazy var messageRequestDeleteButton: UIButton = {
         let result: OutlineButton = OutlineButton(style: .destructive, size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.setTitle("TXT_DELETE_TITLE".localized(), for: .normal)
+        result.setTitle("TXT_DECLINE_TITLE".localized(), for: .normal)
         result.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
+
+        return result
+    }()
+    
+    private lazy var messageRequestBlockButton: UIButton = {
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        result.setTitle("TXT_BLOCK_USER_TITLE".localized(), for: .normal)
+        result.setTitleColor(Colors.destructive, for: .normal)
+        result.addTarget(self, action: #selector(block), for: .touchUpInside)
 
         return result
     }()
@@ -305,6 +317,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         view.addSubview(scrollButton)
         view.addSubview(messageRequestView)
 
+        messageRequestView.addSubview(messageRequestBlockButton)
         messageRequestView.addSubview(messageRequestDescriptionLabel)
         messageRequestView.addSubview(messageRequestAcceptButton)
         messageRequestView.addSubview(messageRequestDeleteButton)
@@ -317,7 +330,10 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         self.scrollButtonBottomConstraint?.isActive = false // Note: Need to disable this to avoid a conflict with the other bottom constraint
         self.scrollButtonMessageRequestsBottomConstraint = scrollButton.pin(.bottom, to: .top, of: messageRequestView, withInset: -16)
         
-        messageRequestDescriptionLabel.pin(.top, to: .top, of: messageRequestView, withInset: 10)
+        messageRequestBlockButton.pin(.top, to: .top, of: messageRequestView, withInset: 10)
+        messageRequestBlockButton.center(.horizontal, in: messageRequestView)
+        
+        messageRequestDescriptionLabel.pin(.top, to: .bottom, of: messageRequestBlockButton, withInset: 5)
         messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
         messageRequestDescriptionLabel.pin(.right, to: .right, of: messageRequestView, withInset: -40)
 

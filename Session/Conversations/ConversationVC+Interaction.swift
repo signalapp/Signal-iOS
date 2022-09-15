@@ -747,7 +747,7 @@ extension ConversationVC:
                 .elements
                 .firstIndex(of: cellViewModel),
             let cell = tableView.cellForRow(at: IndexPath(row: index, section: sectionIndex)) as? VisibleMessageCell,
-            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
+            let snapshot = cell.snContentView.snapshotView(afterScreenUpdates: false),
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
@@ -769,7 +769,7 @@ extension ConversationVC:
         self.contextMenuWindow = ContextMenuWindow()
         self.contextMenuVC = ContextMenuVC(
             snapshot: snapshot,
-            frame: cell.convert(cell.bubbleView.frame, to: keyWindow),
+            frame: cell.convert(cell.snContentView.frame, to: keyWindow),
             cellViewModel: cellViewModel,
             actions: actions
         ) { [weak self] in
@@ -1145,6 +1145,15 @@ extension ConversationVC:
                     return Promise(error: StorageError.objectNotFound)
                 }
                 
+                let pendingChange = OpenGroupManager
+                    .addPendingReaction(
+                        emoji: emoji,
+                        id: openGroupServerMessageId,
+                        in: openGroup.roomToken,
+                        on: openGroup.server,
+                        type: .removeAll
+                    )
+                
                 return OpenGroupAPI
                     .reactionDeleteAll(
                         db,
@@ -1153,7 +1162,13 @@ extension ConversationVC:
                         in: openGroup.roomToken,
                         on: openGroup.server
                     )
-                    .map { _ in () }
+                    .map { _, response in
+                        OpenGroupManager
+                            .updatePendingChange(
+                                pendingChange,
+                                seqNo: response.seqNo
+                            )
+                    }
             }
             .done { _ in
                 Storage.shared.writeAsync { db in
@@ -1201,29 +1216,42 @@ extension ConversationVC:
                     .filter(id: thread.id)
                     .updateAll(db, SessionThread.Columns.shouldBeVisible.set(to: true))
                 
+                let pendingReaction: Reaction? = {
+                    if remove {
+                        return try? Reaction
+                            .filter(Reaction.Columns.interactionId == cellViewModel.id)
+                            .filter(Reaction.Columns.authorId == cellViewModel.currentUserPublicKey)
+                            .filter(Reaction.Columns.emoji == emoji)
+                            .fetchOne(db)
+                    } else {
+                        let sortId = Reaction.getSortId(
+                            db,
+                            interactionId: cellViewModel.id,
+                            emoji: emoji
+                        )
+                        
+                        return Reaction(
+                            interactionId: cellViewModel.id,
+                            serverHash: nil,
+                            timestampMs: sentTimestamp,
+                            authorId: cellViewModel.currentUserPublicKey,
+                            emoji: emoji,
+                            count: 1,
+                            sortId: sortId
+                        )
+                    }
+                }()
+                
                 // Update the database
                 if remove {
-                    _ = try Reaction
+                    try Reaction
                         .filter(Reaction.Columns.interactionId == cellViewModel.id)
                         .filter(Reaction.Columns.authorId == cellViewModel.currentUserPublicKey)
                         .filter(Reaction.Columns.emoji == emoji)
                         .deleteAll(db)
                 }
                 else {
-                    let sortId = Reaction.getSortId(
-                        db,
-                        interactionId: cellViewModel.id,
-                        emoji: emoji
-                    )
-                    try Reaction(
-                        interactionId: cellViewModel.id,
-                        serverHash: nil,
-                        timestampMs: sentTimestamp,
-                        authorId: cellViewModel.currentUserPublicKey,
-                        emoji: emoji,
-                        count: 1,
-                        sortId: sortId
-                    ).insert(db)
+                    try pendingReaction?.insert(db)
                     
                     // Add it to the recent list
                     Emoji.addRecent(db, emoji: emoji)
@@ -1242,6 +1270,14 @@ extension ConversationVC:
                     else { return }
                     
                     if remove {
+                        let pendingChange = OpenGroupManager
+                            .addPendingReaction(
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server,
+                                type: .remove
+                            )
                         OpenGroupAPI
                             .reactionDelete(
                                 db,
@@ -1250,9 +1286,34 @@ extension ConversationVC:
                                 in: openGroup.roomToken,
                                 on: openGroup.server
                             )
+                            .map { _, response in
+                                OpenGroupManager
+                                    .updatePendingChange(
+                                        pendingChange,
+                                        seqNo: response.seqNo
+                                    )
+                            }
+                            .catch { [weak self] _ in
+                                OpenGroupManager.removePendingChange(pendingChange)
+
+                                self?.handleReactionSentFailure(
+                                    pendingReaction,
+                                    remove: remove
+                                )
+
+                            }
                             .retainUntilComplete()
                     }
                     else {
+                        let pendingChange = OpenGroupManager
+                            .addPendingReaction(
+                                emoji: emoji,
+                                id: openGroupServerMessageId,
+                                in: openGroup.roomToken,
+                                on: openGroup.server,
+                                type: .add
+                            )
+
                         OpenGroupAPI
                             .reactionAdd(
                                 db,
@@ -1261,6 +1322,21 @@ extension ConversationVC:
                                 in: openGroup.roomToken,
                                 on: openGroup.server
                             )
+                            .map { _, response in
+                                OpenGroupManager
+                                    .updatePendingChange(
+                                        pendingChange,
+                                        seqNo: response.seqNo
+                                    )
+                            }
+                            .catch { [weak self] _ in
+                                OpenGroupManager.removePendingChange(pendingChange)
+                                
+                                self?.handleReactionSentFailure(
+                                    pendingReaction,
+                                    remove: remove
+                                )
+                            }
                             .retainUntilComplete()
                     }
                 }
@@ -1290,6 +1366,23 @@ extension ConversationVC:
                 }
             }
         )
+    }
+    
+    func handleReactionSentFailure(_ pendingReaction: Reaction?, remove: Bool) {
+        guard let pendingReaction = pendingReaction else { return }
+        Storage.shared.writeAsync { db in
+            // Reverse the database
+            if remove {
+                try pendingReaction.insert(db)
+            }
+            else {
+                try Reaction
+                    .filter(Reaction.Columns.interactionId == pendingReaction.interactionId)
+                    .filter(Reaction.Columns.authorId == pendingReaction.authorId)
+                    .filter(Reaction.Columns.emoji == pendingReaction.emoji)
+                    .deleteAll(db)
+            }
+        }
     }
     
     func showFullEmojiKeyboard(_ cellViewModel: MessageViewModel) {
@@ -2113,6 +2206,35 @@ extension ConversationVC {
             preferredStyle: .actionSheet
         )
         alertVC.addAction(UIAlertAction(title: "TXT_DELETE_TITLE".localized(), style: .destructive) { _ in
+            // Delete the request
+            Storage.shared.writeAsync(
+                updates: { db in
+                    _ = try SessionThread
+                        .filter(id: threadId)
+                        .deleteAll(db)
+                },
+                completion: { db, _ in
+                    DispatchQueue.main.async { [weak self] in
+                        self?.navigationController?.popViewController(animated: true)
+                    }
+                }
+            )
+        })
+        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
+        
+        self.present(alertVC, animated: true, completion: nil)
+    }
+    
+    @objc func block() {
+        guard self.viewModel.threadData.threadVariant == .contact else { return }
+        
+        let threadId: String = self.viewModel.threadData.threadId
+        let alertVC: UIAlertController = UIAlertController(
+            title: "MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON".localized(),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction(title: "BLOCK_LIST_BLOCK_BUTTON".localized(), style: .destructive) { _ in
             // Delete the request
             Storage.shared.writeAsync(
                 updates: { db in

@@ -157,18 +157,15 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         notificationContent.badge = NSNumber(value: newBadgeNumber)
         CurrentAppContext().appUserDefaults().set(newBadgeNumber, forKey: "currentBadgeNumber")
         
-        notificationContent.title = interaction.previewText(db)
+        notificationContent.title = "Session"
         notificationContent.body = ""
+        
+        let senderName: String = Profile.displayName(db, id: interaction.authorId, threadVariant: thread.variant)
         
         if messageInfo.state == .permissionDenied {
             notificationContent.body = String(
                 format: "modal_call_missed_tips_explanation".localized(),
-                SessionThread.displayName(
-                    threadId: thread.id,
-                    variant: thread.variant,
-                    closedGroupName: nil,       // Not supported
-                    openGroupName: nil          // Not supported
-                )
+                senderName
             )
         }
         
