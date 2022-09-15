@@ -594,8 +594,13 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         owsFail("Not implemented.")
     }
 
+    public var groupV2ContextInfos = [Data: GroupV2ContextInfo]()
+
     public func groupV2ContextInfo(forMasterKeyData masterKeyData: Data?) throws -> GroupV2ContextInfo {
-        owsFail("Not implemented.")
+        guard let masterKeyData = masterKeyData, let info = groupV2ContextInfos[masterKeyData] else {
+            owsFail("No registered GroupV2ContextInfo on mock")
+        }
+        return info
     }
 
     public func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,

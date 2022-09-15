@@ -782,7 +782,6 @@
 		669E8FF028B4185300043D28 /* OWSURLSessionMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FE528B4149200043D28 /* OWSURLSessionMock.swift */; };
 		669E8FF128B41A8500043D28 /* StoryUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668AB0CB28AD610600B31984 /* StoryUtil.swift */; };
 		669E900028B42B7A00043D28 /* SystemStoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */; };
-		669E900528B42CCF00043D28 /* SystemStoryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900428B42CCF00043D28 /* SystemStoryManagerTest.swift */; };
 		669E900728B43F5B00043D28 /* SystemStoryManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */; };
 		669E901028B57D6300043D28 /* SystemStoryManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */; };
 		66A22C0928A18D49007CD4F5 /* RingerSwitch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */; };
@@ -870,6 +869,8 @@
 		8845B0C9264F12F800FA694C /* GroupDescriptionPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */; };
 		8847E6F026A078200063E319 /* AvatarHistoryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */; };
 		8847E6F226A0EFBD0063E319 /* AvatarEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */; };
+		884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884BF73B28D37D5F00D94636 /* SystemStoryManagerTest.swift */; };
+		884BF73E28D37D5F00D94636 /* StoryManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884BF73C28D37D5F00D94636 /* StoryManagerTest.swift */; };
 		884DB94527DD70F700C6A309 /* StoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94427DD70F700C6A309 /* StoryViewModel.swift */; };
 		884DB94727DD754700C6A309 /* StoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94627DD754700C6A309 /* StoryCell.swift */; };
 		884DB94F27DE67BB00C6A309 /* StoryPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */; };
@@ -3053,7 +3054,6 @@
 		669E8FEC28B4177800043D28 /* OWSSignalServiceMock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalServiceMock.swift; sourceTree = "<group>"; };
 		669E8FEE28B417D500043D28 /* OWSSignalService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSSignalService.swift; sourceTree = "<group>"; };
 		669E8FFF28B42B7A00043D28 /* SystemStoryManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemStoryManager.swift; sourceTree = "<group>"; };
-		669E900428B42CCF00043D28 /* SystemStoryManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerTest.swift; sourceTree = "<group>"; };
 		669E900628B43F5B00043D28 /* SystemStoryManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerProtocol.swift; sourceTree = "<group>"; };
 		669E900F28B57D6300043D28 /* SystemStoryManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerMock.swift; sourceTree = "<group>"; };
 		66A22C0828A18D49007CD4F5 /* RingerSwitch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingerSwitch.swift; sourceTree = "<group>"; };
@@ -3163,6 +3163,8 @@
 		8845B0C8264F12F800FA694C /* GroupDescriptionPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupDescriptionPreviewView.swift; sourceTree = "<group>"; };
 		8847E6EF26A078200063E319 /* AvatarHistoryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarHistoryManager.swift; sourceTree = "<group>"; };
 		8847E6F126A0EFBD0063E319 /* AvatarEditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarEditViewController.swift; sourceTree = "<group>"; };
+		884BF73B28D37D5F00D94636 /* SystemStoryManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemStoryManagerTest.swift; sourceTree = "<group>"; };
+		884BF73C28D37D5F00D94636 /* StoryManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryManagerTest.swift; sourceTree = "<group>"; };
 		884DB94427DD70F700C6A309 /* StoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryViewModel.swift; sourceTree = "<group>"; };
 		884DB94627DD754700C6A309 /* StoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCell.swift; sourceTree = "<group>"; };
 		884DB94D27DE67BB00C6A309 /* StoryPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryPageViewController.swift; sourceTree = "<group>"; };
@@ -5922,14 +5924,6 @@
 			path = Discovery;
 			sourceTree = "<group>";
 		};
-		669E900128B42C5F00043D28 /* Stories */ = {
-			isa = PBXGroup;
-			children = (
-				669E900428B42CCF00043D28 /* SystemStoryManagerTest.swift */,
-			);
-			path = Stories;
-			sourceTree = "<group>";
-		};
 		76EB03C118170B33006006FC /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -6099,6 +6093,15 @@
 				88B00D4C28A3346000BC9CA0 /* StoryViewsViewController.swift */,
 			);
 			path = "Replies & Views Sheets";
+			sourceTree = "<group>";
+		};
+		884BF73A28D37D5F00D94636 /* Stories */ = {
+			isa = PBXGroup;
+			children = (
+				884BF73C28D37D5F00D94636 /* StoryManagerTest.swift */,
+				884BF73B28D37D5F00D94636 /* SystemStoryManagerTest.swift */,
+			);
+			path = Stories;
 			sourceTree = "<group>";
 		};
 		884DB94A27DE66E000C6A309 /* Context View */ = {
@@ -7003,7 +7006,6 @@
 				F942621F289B1B5500460798 /* Interactions */,
 				F988DC11289DC8DE003B4B82 /* Reactions */,
 				F9426222289B1B5500460798 /* Stickers */,
-				669E900128B42C5F00043D28 /* Stories */,
 				F9426233289B1B5500460798 /* DeliveryReceiptContextTests.swift */,
 				F942622A289B1B5500460798 /* MessageDecryptionTest.swift */,
 				F942622F289B1B5500460798 /* MessagePipelineSupervisorTest.swift */,
@@ -7167,6 +7169,7 @@
 				F94261CF289B1B5400460798 /* Network */,
 				F94261CB289B1B5300460798 /* Security */,
 				F94261D7289B1B5400460798 /* Storage */,
+				884BF73A28D37D5F00D94636 /* Stories */,
 				F94261E4289B1B5400460798 /* Util */,
 				F94261D6289B1B5400460798 /* SSKBaseTestObjC.h */,
 				F9426203289B1B5500460798 /* SSKBaseTestObjC.m */,
@@ -11178,7 +11181,8 @@
 				F9426270289B1B5500460798 /* SSKSwiftTests.swift in Sources */,
 				F942628D289B1B5600460798 /* StickerManagerTest.swift in Sources */,
 				F942628E289B1B5600460798 /* StickerPackInfoTest.swift in Sources */,
-				669E900528B42CCF00043D28 /* SystemStoryManagerTest.swift in Sources */,
+				884BF73E28D37D5F00D94636 /* StoryManagerTest.swift in Sources */,
+				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
 				F9426281289B1B5600460798 /* TSContactThreadTest.m in Sources */,

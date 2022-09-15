@@ -39,20 +39,36 @@ public class StoryManager: NSObject {
             author: author,
             transaction: transaction
         ) == nil else {
-            owsFailDebug("Dropping story message with duplicate timestamp \(timestamp) from author \(author)")
+            Logger.warn("Dropping story message with duplicate timestamp \(timestamp) from author \(author)")
             return
         }
 
-        guard let thread: TSThread = {
-            if let masterKey = storyMessage.group?.masterKey,
-                let contextInfo = try? groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey) {
-                return TSGroupThread.fetch(groupId: contextInfo.groupId, transaction: transaction)
-            } else {
-                return TSContactThread.getWithContactAddress(author, transaction: transaction)
-            }
-        }(), !thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) else {
-            Logger.warn("Dropping story message with timestamp \(timestamp) from author \(author) with pending message request.")
+        guard !blockingManager.isAddressBlocked(author, transaction: transaction) else {
+            Logger.warn("Dropping story message with timestamp \(timestamp) from blocked author \(author)")
             return
+        }
+
+        if let masterKey = storyMessage.group?.masterKey {
+            let contextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+
+            guard !blockingManager.isGroupIdBlocked(contextInfo.groupId, transaction: transaction) else {
+                Logger.warn("Dropping story message with timestamp \(timestamp) in blocked group")
+                return
+            }
+
+            guard
+                let groupThread = TSGroupThread.fetch(groupId: contextInfo.groupId, transaction: transaction),
+                groupThread.groupMembership.isFullMember(author)
+            else {
+                Logger.warn("Dropping story message with timestamp \(timestamp) from author \(author) not in group")
+                return
+            }
+
+        } else {
+            guard profileManager.isUser(inProfileWhitelist: author, transaction: transaction) else {
+                Logger.warn("Dropping story message with timestamp \(timestamp) from unapproved author \(author).")
+                return
+            }
         }
 
         if let profileKey = storyMessage.profileKey {
