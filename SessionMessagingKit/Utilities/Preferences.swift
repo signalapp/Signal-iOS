@@ -232,7 +232,7 @@ public enum Preferences {
                 
                 // Other
                 case .messageSent: return "message_sent.aiff"
-                case .none: return nil
+                case .none: return "silence.aiff"
             }
         }
         
