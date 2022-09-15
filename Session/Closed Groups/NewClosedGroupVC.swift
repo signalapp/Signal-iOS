@@ -213,10 +213,6 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     }
     
     // MARK: - Interaction
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        crossfadeLabel.text = textField.text!.isEmpty ? NSLocalizedString("vc_create_closed_group_title", comment: "") : textField.text!
-    }
 
     fileprivate func tableViewWasTouched(_ tableView: TableView) {
         if nameTextField.isFirstResponder {
@@ -313,8 +309,12 @@ extension NewClosedGroupVC: UISearchBarDelegate {
         return true
     }
     
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
         searchBar.showsCancelButton = false
+        return true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
 }
