@@ -45,6 +45,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public static let openGroupRoomTokenKey: SQL = SQL(stringLiteral: CodingKeys.openGroupRoomToken.stringValue)
     public static let openGroupProfilePictureDataKey: SQL = SQL(stringLiteral: CodingKeys.openGroupProfilePictureData.stringValue)
     public static let openGroupUserCountKey: SQL = SQL(stringLiteral: CodingKeys.openGroupUserCount.stringValue)
+    public static let openGroupPermissionsKey: SQL = SQL(stringLiteral: CodingKeys.openGroupPermissions.stringValue)
     public static let interactionIdKey: SQL = SQL(stringLiteral: CodingKeys.interactionId.stringValue)
     public static let interactionVariantKey: SQL = SQL(stringLiteral: CodingKeys.interactionVariant.stringValue)
     public static let interactionTimestampMsKey: SQL = SQL(stringLiteral: CodingKeys.interactionTimestampMs.stringValue)
@@ -94,6 +95,14 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public let threadUnreadCount: UInt?
     public let threadUnreadMentionCount: UInt?
     
+    public var canWrite: Bool {
+        switch threadVariant {
+            case .contact: return true
+            case .closedGroup: return currentUserIsClosedGroupMember == true
+            case .openGroup: return openGroupPermissions?.range(of: OpenGroup.Permission.write.rawValue) != nil
+        }
+    }
+    
     // Thread display info
     
     private let contactProfile: Profile?
@@ -109,6 +118,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public let openGroupRoomToken: String?
     public let openGroupProfilePictureData: Data?
     private let openGroupUserCount: Int?
+    private let openGroupPermissions: String?
     
     // Interaction display info
     
@@ -262,6 +272,7 @@ public extension SessionThreadViewModel {
         self.openGroupRoomToken = nil
         self.openGroupProfilePictureData = nil
         self.openGroupUserCount = nil
+        self.openGroupPermissions = nil
         
         // Interaction display info
         
@@ -320,6 +331,7 @@ public extension SessionThreadViewModel {
             openGroupRoomToken: self.openGroupRoomToken,
             openGroupProfilePictureData: self.openGroupProfilePictureData,
             openGroupUserCount: self.openGroupUserCount,
+            openGroupPermissions: self.openGroupPermissions,
             interactionId: self.interactionId,
             interactionVariant: self.interactionVariant,
             interactionTimestampMs: self.interactionTimestampMs,
@@ -371,6 +383,7 @@ public extension SessionThreadViewModel {
             openGroupRoomToken: self.openGroupRoomToken,
             openGroupProfilePictureData: self.openGroupProfilePictureData,
             openGroupUserCount: self.openGroupUserCount,
+            openGroupPermissions: self.openGroupPermissions,
             interactionId: self.interactionId,
             interactionVariant: self.interactionVariant,
             interactionTimestampMs: self.interactionTimestampMs,
@@ -726,6 +739,7 @@ public extension SessionThreadViewModel {
                 \(openGroup[.server]) AS \(ViewModel.openGroupServerKey),
                 \(openGroup[.roomToken]) AS \(ViewModel.openGroupRoomTokenKey),
                 \(openGroup[.userCount]) AS \(ViewModel.openGroupUserCountKey),
+                \(openGroup[.permissions]) AS \(ViewModel.openGroupPermissionsKey),
         
                 \(Interaction.self).\(ViewModel.interactionIdKey),
             

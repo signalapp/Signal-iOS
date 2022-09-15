@@ -920,6 +920,7 @@ extension ConversationVC:
     }
     
     func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?) {
+        guard viewModel.threadData.canWrite else { return }
         guard SessionId.Prefix(from: sessionId) == .blinded else {
             Storage.shared.write { db in
                 try SessionThread.fetchOrCreate(db, id: sessionId, variant: .contact)

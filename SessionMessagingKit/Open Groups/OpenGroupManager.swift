@@ -384,6 +384,11 @@ public final class OpenGroupManager: NSObject {
         
         // Only update the database columns which have changed (this is to prevent the UI from triggering
         // updates due to changing database columns to the existing value)
+        let permissions: String = ""
+            .appending(pollInfo.read == true ? OpenGroup.Permission.read.rawValue : nil)
+            .appending(pollInfo.write == true ? OpenGroup.Permission.write.rawValue : nil)
+            .appending(pollInfo.upload == true ? OpenGroup.Permission.upload.rawValue : nil)
+
         try OpenGroup
             .filter(id: openGroup.id)
             .updateAll(
@@ -411,6 +416,10 @@ public final class OpenGroupManager: NSObject {
                     ),
                     (openGroup.infoUpdates != pollInfo.details?.infoUpdates ?
                         (pollInfo.details?.infoUpdates).map { OpenGroup.Columns.infoUpdates.set(to: $0) } :
+                        nil
+                    ),
+                    (openGroup.permissions != permissions ?
+                        OpenGroup.Columns.permissions.set(to: permissions) :
                         nil
                     )
                 ].compactMap { $0 }

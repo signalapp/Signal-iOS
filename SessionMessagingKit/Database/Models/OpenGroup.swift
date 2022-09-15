@@ -27,6 +27,14 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         case inboxLatestMessageId
         case outboxLatestMessageId
         case pollFailureCount
+        case permissions
+    }
+    
+    public enum Permission: String {
+        case read = "r"
+        case write = "w"
+        case upload = "u"
+        case all = "rwu" // Convenience
     }
     
     public var id: String { threadId }  // Identifiable
@@ -90,6 +98,9 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
     /// The number of times this room has failed to poll since the last successful poll
     public let pollFailureCount: Int64
     
+    /// The permissions this room has for current user
+    public let permissions: String?
+
     // MARK: - Relationships
     
     public var thread: QueryInterfaceRequest<SessionThread> {
@@ -122,7 +133,8 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         sequenceNumber: Int64 = 0,
         inboxLatestMessageId: Int64 = 0,
         outboxLatestMessageId: Int64 = 0,
-        pollFailureCount: Int64 = 0
+        pollFailureCount: Int64 = 0,
+        permissions: String? = nil
     ) {
         self.threadId = OpenGroup.idFor(roomToken: roomToken, server: server)
         self.server = server.lowercased()
@@ -139,6 +151,7 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         self.inboxLatestMessageId = inboxLatestMessageId
         self.outboxLatestMessageId = outboxLatestMessageId
         self.pollFailureCount = pollFailureCount
+        self.permissions = permissions
     }
 }
 
@@ -166,7 +179,8 @@ public extension OpenGroup {
                 sequenceNumber: 0,
                 inboxLatestMessageId: 0,
                 outboxLatestMessageId: 0,
-                pollFailureCount: 0
+                pollFailureCount: 0,
+                permissions: nil
             )
         }
         
@@ -200,7 +214,8 @@ extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
             "sequenceNumber: \(sequenceNumber)",
             "inboxLatestMessageId: \(inboxLatestMessageId)",
             "outboxLatestMessageId: \(outboxLatestMessageId)",
-            "pollFailureCount: \(pollFailureCount))"
+            "pollFailureCount: \(pollFailureCount))",
+            "permissions: \(permissions ?? "null")"
         ].joined(separator: ", ")
     }
 }
