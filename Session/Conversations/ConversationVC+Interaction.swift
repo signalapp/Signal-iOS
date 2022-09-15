@@ -1305,7 +1305,7 @@ extension ConversationVC:
                 self?.showInputAccessoryView()
             }
         )
-        emojiPicker.modalPresentationStyle = .overFullScreen
+        
         present(emojiPicker, animated: true, completion: nil)
     }
     
