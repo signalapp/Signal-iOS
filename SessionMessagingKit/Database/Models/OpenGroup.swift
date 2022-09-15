@@ -30,10 +30,35 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         case permissions
     }
     
-    public enum Permission: String {
-        case read = "r"
-        case write = "w"
-        case upload = "u"
+    public struct Permissions: OptionSet, Codable, DatabaseValueConvertible {
+        public let rawValue: UInt16
+        
+        public init(rawValue: UInt16) {
+            self.rawValue = rawValue
+        }
+        
+        public func toString() -> String {
+            return ""
+                .appending(self.contains(.read) ? "r" : "-")
+                .appending(self.contains(.write) ? "w" : "-")
+                .appending(self.contains(.upload) ? "u" : "-")
+        }
+        
+        public static func getPermissionsfromRoomInfo(_ roomInfo: OpenGroupAPI.RoomPollInfo) -> Permissions {
+            var permissions: Permissions = []
+            
+            if roomInfo.read { permissions.insert(.read) }
+            if roomInfo.write { permissions.insert(.write) }
+            if roomInfo.upload { permissions.insert(.upload) }
+            
+            return permissions
+        }
+
+        static let read: Permissions = Permissions(rawValue: 1 << 0)
+        static let write: Permissions = Permissions(rawValue: 1 << 1)
+        static let upload: Permissions = Permissions(rawValue: 1 << 2)
+        
+        static let all: Permissions = [ .read, .write, .upload ]
     }
     
     public var id: String { threadId }  // Identifiable
@@ -98,7 +123,7 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
     public let pollFailureCount: Int64
     
     /// The permissions this room has for current user
-    public let permissions: String?
+    public let permissions: Permissions?
 
     // MARK: - Relationships
     
@@ -133,7 +158,7 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         inboxLatestMessageId: Int64 = 0,
         outboxLatestMessageId: Int64 = 0,
         pollFailureCount: Int64 = 0,
-        permissions: String? = nil
+        permissions: Permissions? = nil
     ) {
         self.threadId = OpenGroup.idFor(roomToken: roomToken, server: server)
         self.server = server.lowercased()
@@ -214,7 +239,7 @@ extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
             "inboxLatestMessageId: \(inboxLatestMessageId)",
             "outboxLatestMessageId: \(outboxLatestMessageId)",
             "pollFailureCount: \(pollFailureCount))",
-            "permissions: \(permissions ?? "null")"
+            "permissions: \(permissions?.toString() ?? "---")"
         ].joined(separator: ", ")
     }
 }

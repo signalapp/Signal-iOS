@@ -384,10 +384,7 @@ public final class OpenGroupManager: NSObject {
         
         // Only update the database columns which have changed (this is to prevent the UI from triggering
         // updates due to changing database columns to the existing value)
-        let permissions: String = ""
-            .appending(pollInfo.read == true ? OpenGroup.Permission.read.rawValue : nil)
-            .appending(pollInfo.write == true ? OpenGroup.Permission.write.rawValue : nil)
-            .appending(pollInfo.upload == true ? OpenGroup.Permission.upload.rawValue : nil)
+        let permissions = OpenGroup.Permissions.getPermissionsfromRoomInfo(pollInfo)
 
         try OpenGroup
             .filter(id: openGroup.id)

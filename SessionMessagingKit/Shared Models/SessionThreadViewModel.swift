@@ -99,7 +99,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
         switch threadVariant {
             case .contact: return true
             case .closedGroup: return currentUserIsClosedGroupMember == true
-            case .openGroup: return openGroupPermissions?.range(of: OpenGroup.Permission.write.rawValue) != nil
+            case .openGroup: return openGroupPermissions?.contains(.write) ?? false
         }
     }
     
@@ -118,7 +118,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public let openGroupRoomToken: String?
     public let openGroupProfilePictureData: Data?
     private let openGroupUserCount: Int?
-    private let openGroupPermissions: String?
+    private let openGroupPermissions: OpenGroup.Permissions?
     
     // Interaction display info
     

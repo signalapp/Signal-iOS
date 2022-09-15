@@ -12,12 +12,8 @@ enum _009_OpenGroupPermission: Migration {
     
     static func migrate(_ db: GRDB.Database) throws {
         try db.alter(table: OpenGroup.self) { t in
-            t.add(.permissions, .text)
-                .defaults(to: ""
-                    .appending(OpenGroup.Permission.read.rawValue)
-                    .appending(OpenGroup.Permission.write.rawValue)
-                    .appending(OpenGroup.Permission.upload.rawValue)
-                )
+            t.add(.permissions, .integer)
+                .defaults(to: OpenGroup.Permissions.all)
         }
         
         // When modifying OpenGroup behaviours we should always look to reset the `infoUpdates`
