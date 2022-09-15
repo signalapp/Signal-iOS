@@ -64,7 +64,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/NSArray+OWS.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSData+keyVersionByte.h>
-#import <SignalServiceKit/NSData+messagePadding.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>

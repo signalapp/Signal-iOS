@@ -686,7 +686,7 @@ extension MessageSender {
         let distributionId = senderKeyStore.distributionIdForSendingToThread(thread, writeTx: writeTx)
         let ciphertext = try secretCipher.groupEncryptMessage(
             recipients: protocolAddresses,
-            paddedPlaintext: (plaintext as NSData).paddedMessageBody(),
+            paddedPlaintext: plaintext.paddedMessageBody,
             senderCertificate: senderCertificate,
             groupId: groupIdForSending,
             distributionId: distributionId,

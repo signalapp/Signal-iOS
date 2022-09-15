@@ -1185,7 +1185,7 @@ extension MessageSender {
             throw OWSAssertionError("Missing message content")
         }
 
-        let paddedPlaintext = (plainText as NSData).paddedMessageBody()
+        let paddedPlaintext = plainText.paddedMessageBody
 
         let serializedMessage: Data
         let messageType: SSKProtoEnvelopeType

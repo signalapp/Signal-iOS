@@ -612,7 +612,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
                                isRetryable: false)
             }
 
-            let plaintextData = (Data(plaintext) as NSData).removePadding()
+            let plaintextData = Data(plaintext).withoutPadding()
 
             return .success(plaintextData)
         } catch {
@@ -756,7 +756,7 @@ public class OWSMessageDecrypter: OWSMessageHandler {
             return .failure(OWSAssertionError("Invalid UD sender device id."))
         }
 
-        let plaintextData = (decryptResult.paddedPayload as NSData).removePadding()
+        let plaintextData = decryptResult.paddedPayload.withoutPadding()
 
         let identifiedEnvelopeBuilder = envelope.asBuilder()
         if let sourceE164 = sourceAddress.phoneNumber {

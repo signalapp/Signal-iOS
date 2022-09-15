@@ -1121,6 +1121,8 @@
 		F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
 		F9262C46289462F600063502 /* SignalServiceKit-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = F9C985D2289459860029F9AD /* SignalServiceKit-Prefix.pch */; };
+		F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */; };
+		F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93999F728C8204800E34899 /* Data+MessagePadding.swift */; };
 		F927478828CFE9B10056EAFE /* test-png.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478728CFE9B10056EAFE /* test-png.png */; };
 		F927478A28CFE9C60056EAFE /* test-png-with-metadata.png in Resources */ = {isa = PBXBuildFile; fileRef = F927478928CFE9C60056EAFE /* test-png-with-metadata.png */; };
 		F927478B28CFEA680056EAFE /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
@@ -1154,7 +1156,6 @@
 		F9426258289B1B5500460798 /* TSMessageStorageTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F94261EB289B1B5400460798 /* TSMessageStorageTests.m */; };
 		F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */; };
 		F942625B289B1B5500460798 /* OWSFormatTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261EE289B1B5400460798 /* OWSFormatTest.swift */; };
-		F942625C289B1B5500460798 /* MessagePaddingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F94261EF289B1B5400460798 /* MessagePaddingTests.m */; };
 		F942625D289B1B5500460798 /* RefineryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F0289B1B5400460798 /* RefineryTest.swift */; };
 		F942625E289B1B5500460798 /* JobQueueTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F1289B1B5400460798 /* JobQueueTest.swift */; };
 		F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94261F2289B1B5400460798 /* LRUCacheTest.swift */; };
@@ -1825,7 +1826,6 @@
 		F9C5CDED289453B400548EEE /* KeyBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1B289453B200548EEE /* KeyBackupService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDEE289453B400548EEE /* SDS+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1C289453B200548EEE /* SDS+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDEF289453B400548EEE /* PinnedThreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDF0289453B400548EEE /* NSData+messagePadding.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB1E289453B200548EEE /* NSData+messagePadding.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF2289453B400548EEE /* NSString+SSK.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB20289453B200548EEE /* NSString+SSK.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDF3289453B400548EEE /* NSArray+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB21289453B200548EEE /* NSArray+OWS.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1903,7 +1903,6 @@
 		F9C5CE3B289453B400548EEE /* VersionedProfiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE3C289453B400548EEE /* NSArray+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6B289453B200548EEE /* NSArray+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6C289453B200548EEE /* NSString+SSK.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CE3E289453B400548EEE /* NSData+messagePadding.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6D289453B200548EEE /* NSData+messagePadding.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE3F289453B400548EEE /* FunctionalUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB6E289453B200548EEE /* FunctionalUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB6F289453B200548EEE /* AppExpiry.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE41289453B400548EEE /* OWSUserProfile+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB70289453B200548EEE /* OWSUserProfile+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -3521,6 +3520,8 @@
 		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
 		F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSGroupThreadTest.swift; sourceTree = "<group>"; };
 		F92074752888648A00B7F087 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataMessagePaddingTests.swift; sourceTree = "<group>"; };
+		F93999F728C8204800E34899 /* Data+MessagePadding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+MessagePadding.swift"; sourceTree = "<group>"; };
 		F927478728CFE9B10056EAFE /* test-png.png */ = {isa = PBXFileReference; explicitFileType = compiled; path = "test-png.png"; sourceTree = "<group>"; };
 		F927478928CFE9C60056EAFE /* test-png-with-metadata.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-png-with-metadata.png"; sourceTree = "<group>"; };
 		F93999EB28C80A6C00E34899 /* OWSDeviceProvisioningURLParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceProvisioningURLParserTest.swift; sourceTree = "<group>"; };
@@ -3554,7 +3555,6 @@
 		F94261EB289B1B5400460798 /* TSMessageStorageTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSMessageStorageTests.m; sourceTree = "<group>"; };
 		F94261EC289B1B5400460798 /* RemoteConfigManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteConfigManagerTests.swift; sourceTree = "<group>"; };
 		F94261EE289B1B5400460798 /* OWSFormatTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormatTest.swift; sourceTree = "<group>"; };
-		F94261EF289B1B5400460798 /* MessagePaddingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MessagePaddingTests.m; sourceTree = "<group>"; };
 		F94261F0289B1B5400460798 /* RefineryTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RefineryTest.swift; sourceTree = "<group>"; };
 		F94261F1289B1B5400460798 /* JobQueueTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobQueueTest.swift; sourceTree = "<group>"; };
 		F94261F2289B1B5400460798 /* LRUCacheTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LRUCacheTest.swift; sourceTree = "<group>"; };
@@ -4223,7 +4223,6 @@
 		F9C5CB1B289453B200548EEE /* KeyBackupService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyBackupService.swift; sourceTree = "<group>"; };
 		F9C5CB1C289453B200548EEE /* SDS+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDS+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB1D289453B200548EEE /* PinnedThreadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedThreadManager.swift; sourceTree = "<group>"; };
-		F9C5CB1E289453B200548EEE /* NSData+messagePadding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+messagePadding.h"; sourceTree = "<group>"; };
 		F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSRegularExpression+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB20289453B200548EEE /* NSString+SSK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+SSK.m"; sourceTree = "<group>"; };
 		F9C5CB21289453B200548EEE /* NSArray+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+OWS.m"; sourceTree = "<group>"; };
@@ -4301,7 +4300,6 @@
 		F9C5CB6A289453B200548EEE /* VersionedProfiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VersionedProfiles.swift; sourceTree = "<group>"; };
 		F9C5CB6B289453B200548EEE /* NSArray+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+OWS.h"; sourceTree = "<group>"; };
 		F9C5CB6C289453B200548EEE /* NSString+SSK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+SSK.h"; sourceTree = "<group>"; };
-		F9C5CB6D289453B200548EEE /* NSData+messagePadding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+messagePadding.m"; sourceTree = "<group>"; };
 		F9C5CB6E289453B200548EEE /* FunctionalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FunctionalUtil.h; sourceTree = "<group>"; };
 		F9C5CB6F289453B200548EEE /* AppExpiry.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppExpiry.swift; sourceTree = "<group>"; };
 		F9C5CB70289453B200548EEE /* OWSUserProfile+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSUserProfile+SDS.swift"; sourceTree = "<group>"; };
@@ -6937,6 +6935,7 @@
 			children = (
 				F94261F4289B1B5400460798 /* AppVersionTests.swift */,
 				661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */,
+				F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */,
 				F94261F8289B1B5400460798 /* Date+SSKTest.swift */,
 				F94261F6289B1B5400460798 /* DeviceNamesTest.swift */,
 				F94261FA289B1B5400460798 /* DispatchQueue+OWSTest.swift */,
@@ -6948,7 +6947,6 @@
 				F94261EA289B1B5400460798 /* KeyBackupServiceTests.swift */,
 				F94261F2289B1B5400460798 /* LRUCacheTest.swift */,
 				F94261FC289B1B5400460798 /* MathOWSTests.swift */,
-				F94261EF289B1B5400460798 /* MessagePaddingTests.m */,
 				F94261E9289B1B5400460798 /* NSData+ImageTest.swift */,
 				F94261FE289B1B5400460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift */,
 				F94261F7289B1B5400460798 /* OWSAnalyticsTests.swift */,
@@ -8046,6 +8044,7 @@
 				F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */,
 				F9C5CB0E289453B200548EEE /* DarwinNotificationCenter.m */,
 				F9C5CB63289453B200548EEE /* DarwinNotificationName.swift */,
+				F93999F728C8204800E34899 /* Data+MessagePadding.swift */,
 				F9C5CB2D289453B200548EEE /* Data+SSK.swift */,
 				F9C5CB5C289453B200548EEE /* DataSource.h */,
 				F9C5CB07289453B200548EEE /* DataSource.m */,
@@ -8084,8 +8083,6 @@
 				F9C5CB2E289453B200548EEE /* NSData+Image.h */,
 				F9C5CB7E289453B200548EEE /* NSData+Image.m */,
 				F9C5CB37289453B200548EEE /* NSData+Image.swift */,
-				F9C5CB1E289453B200548EEE /* NSData+messagePadding.h */,
-				F9C5CB6D289453B200548EEE /* NSData+messagePadding.m */,
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
 				F9C5CB6C289453B200548EEE /* NSString+SSK.h */,
@@ -8347,7 +8344,6 @@
 				F9C5CE3C289453B400548EEE /* NSArray+OWS.h in Headers */,
 				F9C5CE00289453B400548EEE /* NSData+Image.h in Headers */,
 				F9C5CD31289453B300548EEE /* NSData+keyVersionByte.h in Headers */,
-				F9C5CDF0289453B400548EEE /* NSData+messagePadding.h in Headers */,
 				F9C5CE3D289453B400548EEE /* NSString+SSK.h in Headers */,
 				F9C5CE15289453B400548EEE /* NSTimer+OWS.h in Headers */,
 				F9C5CDE9289453B400548EEE /* NSUserDefaults+OWS.h in Headers */,
@@ -10502,6 +10498,7 @@
 				34635330256EA52A003C5428 /* ConversationViewTest.swift in Sources */,
 				4C2A538C23C5462300D28CD8 /* CVMessageMappingTest.swift in Sources */,
 				88D6E94325535D49003142D9 /* CVTextTest.swift in Sources */,
+				F93999F628C81F2100E34899 /* DataMessagePaddingTests.swift in Sources */,
 				3494BBE026E66FC30079B11B /* DateUtilTest.swift in Sources */,
 				45E7A6A81E71CA7E00D44FB5 /* DisplayableTextFilterTest.swift in Sources */,
 				3485434526BC598800FB9C38 /* EmojiTests.swift in Sources */,
@@ -10593,6 +10590,7 @@
 				F9C5CDF4289453B400548EEE /* Currency.swift in Sources */,
 				F9C5CDE0289453B400548EEE /* DarwinNotificationCenter.m in Sources */,
 				F9C5CE35289453B400548EEE /* DarwinNotificationName.swift in Sources */,
+				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
 				F9C5CD1D289453B300548EEE /* DatabaseChangeObserver.swift in Sources */,
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
@@ -10710,7 +10708,6 @@
 				F9C5CE4F289453B400548EEE /* NSData+Image.m in Sources */,
 				F9C5CE09289453B400548EEE /* NSData+Image.swift in Sources */,
 				F9C5CD3B289453B300548EEE /* NSData+keyVersionByte.m in Sources */,
-				F9C5CE3E289453B400548EEE /* NSData+messagePadding.m in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
 				F9C5CDF1289453B400548EEE /* NSRegularExpression+SSK.swift in Sources */,
 				F9C5CDF2289453B400548EEE /* NSString+SSK.m in Sources */,
@@ -11127,7 +11124,6 @@
 				F942625F289B1B5500460798 /* LRUCacheTest.swift in Sources */,
 				F9426269289B1B5500460798 /* MathOWSTests.swift in Sources */,
 				F9426292289B1B5600460798 /* MessageDecryptionTest.swift in Sources */,
-				F942625C289B1B5500460798 /* MessagePaddingTests.m in Sources */,
 				F9426297289B1B5600460798 /* MessagePipelineSupervisorTest.swift in Sources */,
 				F942629C289B1B5600460798 /* MessageProcessingIntegrationTest.swift in Sources */,
 				F9426241289B1B5500460798 /* MessageSenderJobRecordTest.swift in Sources */,
