@@ -313,21 +313,25 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: thread.id
         ]
         
-        let notificationTitle: String = interaction.previewText(db)
-        let threadName: String = SessionThread.displayName(
-            threadId: thread.id,
-            variant: thread.variant,
-            closedGroupName: nil,       // Not supported
-            openGroupName: nil          // Not supported
-        )
-        var notificationBody: String?
+        let notificationTitle: String = "Session"
+        let senderName: String = Profile.displayName(db, id: interaction.authorId, threadVariant: thread.variant)
+        let notificationBody: String? = {
+            switch messageInfo.state {
+                case .permissionDenied:
+                    return String(
+                        format: "modal_call_missed_tips_explanation".localized(),
+                        senderName
+                    )
+                case .missed:
+                    return String(
+                        format: "call_missed".localized(),
+                        senderName
+                    )
+                default:
+                    return nil
+            }
+        }()
         
-        if messageInfo.state == .permissionDenied {
-            notificationBody = String(
-                format: "modal_call_missed_tips_explanation".localized(),
-                threadName
-            )
-        }
         let fallbackSound: Preferences.Sound = db[.defaultNotificationSound]
             .defaulting(to: Preferences.Sound.defaultNotificationSound)
         
@@ -345,7 +349,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 previewType: previewType,
                 sound: sound,
                 threadVariant: thread.variant,
-                threadName: threadName,
+                threadName: senderName,
                 replacingIdentifier: UUID().uuidString
             )
         }

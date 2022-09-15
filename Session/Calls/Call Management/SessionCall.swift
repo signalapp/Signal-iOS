@@ -71,6 +71,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
     var connectingDate: Date? {
         didSet {
             stateDidChange?()
+            resetTimeoutTimerIfNeeded()
             hasStartedConnectingDidChange?()
         }
     }
@@ -113,12 +114,12 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
         set { connectingDate = newValue ? Date() : nil }
     }
 
-    var hasConnected: Bool {
+    public var hasConnected: Bool {
         get { return connectedDate != nil }
         set { connectedDate = newValue ? Date() : nil }
     }
 
-    var hasEnded: Bool {
+    public var hasEnded: Bool {
         get { return endDate != nil }
         set { endDate = newValue ? Date() : nil }
     }
@@ -277,55 +278,60 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
         let duration: TimeInterval = self.duration
         let hasStartedConnecting: Bool = self.hasStartedConnecting
         
-        Storage.shared.writeAsync { db in
-            guard let interaction: Interaction = try? Interaction.fetchOne(db, id: callInteractionId) else {
-                return
-            }
-            
-            let updateToMissedIfNeeded: () throws -> () = {
-                let missedCallInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(state: .missed)
-                
-                guard
-                    let infoMessageData: Data = (interaction.body ?? "").data(using: .utf8),
-                    let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
-                        CallMessage.MessageInfo.self,
-                        from: infoMessageData
-                    ),
-                    messageInfo.state == .incoming,
-                    let missedCallInfoData: Data = try? JSONEncoder().encode(missedCallInfo)
-                else { return }
-                
-                _ = try interaction
-                    .with(body: String(data: missedCallInfoData, encoding: .utf8))
-                    .saved(db)
-            }
-            let shouldMarkAsRead: Bool = try {
-                if duration > 0 { return true }
-                if hasStartedConnecting { return true }
-                
-                switch mode {
-                    case .local:
-                        try updateToMissedIfNeeded()
-                        return true
-                        
-                    case .remote, .unanswered:
-                        try updateToMissedIfNeeded()
-                        return false
-                        
-                    case .answeredElsewhere: return true
+        Storage.shared.writeAsync(
+            updates: { db in
+                guard let interaction: Interaction = try? Interaction.fetchOne(db, id: callInteractionId) else {
+                    return
                 }
-            }()
-            
-            guard shouldMarkAsRead else { return }
-            
-            try Interaction.markAsRead(
-                db,
-                interactionId: interaction.id,
-                threadId: interaction.threadId,
-                includingOlder: false,
-                trySendReadReceipt: false
-            )
-        }
+                
+                let updateToMissedIfNeeded: () throws -> () = {
+                    let missedCallInfo: CallMessage.MessageInfo = CallMessage.MessageInfo(state: .missed)
+                    
+                    guard
+                        let infoMessageData: Data = (interaction.body ?? "").data(using: .utf8),
+                        let messageInfo: CallMessage.MessageInfo = try? JSONDecoder().decode(
+                            CallMessage.MessageInfo.self,
+                            from: infoMessageData
+                        ),
+                        messageInfo.state == .incoming,
+                        let missedCallInfoData: Data = try? JSONEncoder().encode(missedCallInfo)
+                    else { return }
+                    
+                    _ = try interaction
+                        .with(body: String(data: missedCallInfoData, encoding: .utf8))
+                        .saved(db)
+                }
+                let shouldMarkAsRead: Bool = try {
+                    if duration > 0 { return true }
+                    if hasStartedConnecting { return true }
+                    
+                    switch mode {
+                        case .local:
+                            try updateToMissedIfNeeded()
+                            return true
+                            
+                        case .remote, .unanswered:
+                            try updateToMissedIfNeeded()
+                            return false
+                            
+                        case .answeredElsewhere: return true
+                    }
+                }()
+                
+                guard shouldMarkAsRead else { return }
+                
+                try Interaction.markAsRead(
+                    db,
+                    interactionId: interaction.id,
+                    threadId: interaction.threadId,
+                    includingOlder: false,
+                    trySendReadReceipt: false
+                )
+            },
+            completion: { _, _ in
+                SessionCallManager.suspendDatabaseIfCallEndedInBackground()
+            }
+        )
     }
     
     // MARK: - Renderer
@@ -419,6 +425,11 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
                 self.timeOutTimer = nil
             }
         }
+    }
+    
+    public func resetTimeoutTimerIfNeeded() {
+        if self.timeOutTimer == nil { return }
+        setupTimeoutTimer()
     }
     
     public func invalidateTimeoutTimer() {

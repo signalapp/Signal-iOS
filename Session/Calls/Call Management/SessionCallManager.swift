@@ -73,13 +73,19 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
     // MARK: - Report calls
     
     public static func reportFakeCall(info: String) {
-        SessionCallManager.sharedProvider(useSystemCallLog: false)
-            .reportNewIncomingCall(
-                with: UUID(),
-                update: CXCallUpdate()
-            ) { _ in
-                SNLog("[Calls] Reported fake incoming call to CallKit due to: \(info)")
-            }
+        let callId = UUID()
+        let provider = SessionCallManager.sharedProvider(useSystemCallLog: false)
+        provider.reportNewIncomingCall(
+            with: callId,
+            update: CXCallUpdate()
+        ) { _ in
+            SNLog("[Calls] Reported fake incoming call to CallKit due to: \(info)")
+        }
+        provider.reportCall(
+            with: callId,
+            endedAt: nil,
+            reason: .failed
+        )
     }
     
     public func reportOutgoingCall(_ call: SessionCall) {
@@ -98,30 +104,22 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
     }
     
     public func reportIncomingCall(_ call: SessionCall, callerName: String, completion: @escaping (Error?) -> Void) {
-        AssertIsOnMainThread()
-        
-        if let provider = provider {
-            // Construct a CXCallUpdate describing the incoming call, including the caller.
-            let update = CXCallUpdate()
-            update.localizedCallerName = callerName
-            update.remoteHandle = CXHandle(type: .generic, value: call.callId.uuidString)
-            update.hasVideo = false
+        let provider = provider ?? Self.sharedProvider(useSystemCallLog: false)
+        // Construct a CXCallUpdate describing the incoming call, including the caller.
+        let update = CXCallUpdate()
+        update.localizedCallerName = callerName
+        update.remoteHandle = CXHandle(type: .generic, value: call.callId.uuidString)
+        update.hasVideo = false
 
-            disableUnsupportedFeatures(callUpdate: update)
+        disableUnsupportedFeatures(callUpdate: update)
 
-            // Report the incoming call to the system
-            provider.reportNewIncomingCall(with: call.callId, update: update) { error in
-                guard error == nil else {
-                    self.reportCurrentCallEnded(reason: .failed)
-                    completion(error)
-                    return
-                }
-                UserDefaults.sharedLokiProject?.set(true, forKey: "isCallOngoing")
-                completion(nil)
+        // Report the incoming call to the system
+        provider.reportNewIncomingCall(with: call.callId, update: update) { error in
+            guard error == nil else {
+                self.reportCurrentCallEnded(reason: .failed)
+                completion(error)
+                return
             }
-        }
-        else {
-            SessionCallManager.reportFakeCall(info: "No CXProvider instance")
             UserDefaults.sharedLokiProject?.set(true, forKey: "isCallOngoing")
             completion(nil)
         }
@@ -135,7 +133,16 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
             return
         }
         
-        guard let call = currentCall else { return }
+        func handleCallEnded() {
+            WebRTCSession.current = nil
+            UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
+        }
+        
+        guard let call = currentCall else {
+            handleCallEnded()
+            Self.suspendDatabaseIfCallEndedInBackground()
+            return
+        }
         
         if let reason = reason {
             self.provider?.reportCall(with: call.callId, endedAt: nil, reason: reason)
@@ -153,8 +160,7 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
         
         call.webRTCSession.dropConnection()
         self.currentCall = nil
-        WebRTCSession.current = nil
-        UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
+        handleCallEnded()
     }
     
     // MARK: - Util
@@ -172,15 +178,18 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
         callUpdate.supportsDTMF = false
     }
     
+    public static func suspendDatabaseIfCallEndedInBackground() {
+        if CurrentAppContext().isInBackground() {
+            // Stop all jobs except for message sending and when completed suspend the database
+            JobRunner.stopAndClearPendingJobs(exceptForVariant: .messageSend) {
+                NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            }
+        }
+    }
+    
     // MARK: - UI
     
     public func showCallUIForCall(caller: String, uuid: String, mode: CallMode, interactionId: Int64?) {
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async {
-                self.showCallUIForCall(caller: caller, uuid: uuid, mode: mode, interactionId: interactionId)
-            }
-            return
-        }
         guard let call: SessionCall = Storage.shared.read({ db in SessionCall(db, for: caller, uuid: uuid, mode: mode) }) else {
             return
         }
@@ -193,20 +202,23 @@ public final class SessionCallManager: NSObject, CallManagerProtocol {
             }
             
             guard CurrentAppContext().isMainAppAndActive else { return }
-            guard let presentingVC = CurrentAppContext().frontmostViewController() else {
-                preconditionFailure()   // FIXME: Handle more gracefully
-            }
             
-            if let conversationVC: ConversationVC = presentingVC as? ConversationVC, conversationVC.viewModel.threadData.threadId == call.sessionId {
-                let callVC = CallVC(for: call)
-                callVC.conversationVC = conversationVC
-                conversationVC.inputAccessoryView?.isHidden = true
-                conversationVC.inputAccessoryView?.alpha = 0
-                presentingVC.present(callVC, animated: true, completion: nil)
-            }
-            else if !Preferences.isCallKitSupported {
-                let incomingCallBanner = IncomingCallBanner(for: call)
-                incomingCallBanner.show()
+            DispatchQueue.main.async {
+                guard let presentingVC = CurrentAppContext().frontmostViewController() else {
+                    preconditionFailure()   // FIXME: Handle more gracefully
+                }
+                
+                if let conversationVC: ConversationVC = presentingVC as? ConversationVC, conversationVC.viewModel.threadData.threadId == call.sessionId {
+                    let callVC = CallVC(for: call)
+                    callVC.conversationVC = conversationVC
+                    conversationVC.inputAccessoryView?.isHidden = true
+                    conversationVC.inputAccessoryView?.alpha = 0
+                    presentingVC.present(callVC, animated: true, completion: nil)
+                }
+                else if !Preferences.isCallKitSupported {
+                    let incomingCallBanner = IncomingCallBanner(for: call)
+                    incomingCallBanner.show()
+                }
             }
         }
     }

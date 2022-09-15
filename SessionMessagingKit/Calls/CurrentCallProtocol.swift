@@ -9,6 +9,7 @@ public protocol CurrentCallProtocol {
     var callId: UUID { get }
     var webRTCSession: WebRTCSession { get }
     var hasStartedConnecting: Bool { get set }
+    var hasEnded: Bool { get set }
     
     func updateCallMessage(mode: EndCallMode)
     func didReceiveRemoteSDP(sdp: RTCSessionDescription)
