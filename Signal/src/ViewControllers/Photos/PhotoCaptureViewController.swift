@@ -217,6 +217,8 @@ class PhotoCaptureViewController: OWSViewController {
         frontCameraZoomControl?.setIsHidden(hideZoomControl || !isFrontCamera, animated: animated)
         rearCameraZoomControl?.setIsHidden(hideZoomControl || isFrontCamera, animated: animated)
 
+        doneButton.setIsHidden(shouldHideDoneButton, animated: animated)
+
         previewView.setIsHidden(composerMode == .text, animated: animated)
         if textEditorUIInitialized {
             textViewContainerToolbar.setIsHidden(composerMode != .text, animated: animated)
@@ -254,8 +256,7 @@ class PhotoCaptureViewController: OWSViewController {
             sideBar.isRecordingVideo = isRecordingVideo
         }
 
-        let hideDoneButton = isRecordingVideo || doneButton.badgeNumber == 0
-        doneButton.setIsHidden(hideDoneButton, animated: animated)
+        doneButton.setIsHidden(shouldHideDoneButton, animated: animated)
     }
 
     enum CaptureMode {
@@ -459,6 +460,9 @@ class PhotoCaptureViewController: OWSViewController {
         button.userInterfaceStyleOverride = .dark
         return button
     }()
+    private var shouldHideDoneButton: Bool {
+        isRecordingVideo || composerMode == .text || doneButton.badgeNumber == 0
+    }
     private lazy var doneButtonIPhoneConstraints = [ doneButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
                                                      doneButton.centerYAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerYAnchor) ]
     private var doneButtonIPadConstraints: [NSLayoutConstraint]?
@@ -692,10 +696,8 @@ class PhotoCaptureViewController: OWSViewController {
     private func updateDoneButtonAppearance() {
         if captureMode == .multi, let badgeNumber = dataSource?.numberOfMediaItems, badgeNumber > 0 {
             doneButton.badgeNumber = badgeNumber
-            doneButton.isHidden = false
-        } else {
-            doneButton.isHidden = true
         }
+        doneButton.isHidden = shouldHideDoneButton
         if bottomBar.isCompactHeightLayout {
             bottomBar.switchCameraButton.isHidden = !doneButton.isHidden
         }
