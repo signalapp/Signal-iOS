@@ -224,13 +224,7 @@ public class RemoteConfig: BaseFlags {
         FeatureFlags.shouldUseRemoteConfigForReceivingGiftBadges && isEnabled(.canReceiveGiftBadges, defaultValue: true)
     }
 
-    public static var canSendGiftBadges: Bool {
-        if FeatureFlags.isPrerelease {
-            return isEnabled(.canSendGiftBadgesInPrerelease, defaultValue: true)
-        } else {
-            return isEnabled(.canSendGiftBadgesInProduction, defaultValue: false)
-        }
-    }
+    public static var canSendGiftBadges: Bool { false }
 
     public static var groupRings: Bool {
         DebugFlags.internalSettings || isEnabled(.groupRings)
@@ -441,8 +435,6 @@ private struct Flags {
         case changePhoneNumberUI
         case keepMutedChatsArchivedOption
         case canReceiveGiftBadges
-        case canSendGiftBadgesInPrerelease
-        case canSendGiftBadgesInProduction
         case groupRings
         case stories
     }
