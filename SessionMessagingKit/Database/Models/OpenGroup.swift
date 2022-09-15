@@ -34,7 +34,6 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         case read = "r"
         case write = "w"
         case upload = "u"
-        case all = "rwu" // Convenience
     }
     
     public var id: String { threadId }  // Identifiable
