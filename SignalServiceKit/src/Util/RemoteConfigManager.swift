@@ -224,7 +224,7 @@ public class RemoteConfig: BaseFlags {
         FeatureFlags.shouldUseRemoteConfigForReceivingGiftBadges && isEnabled(.canReceiveGiftBadges, defaultValue: true)
     }
 
-    public static var canSendGiftBadges: Bool { false }
+    public static var canSendGiftBadges: Bool { FeatureFlags.canSendGiftBadges }
 
     public static var groupRings: Bool {
         DebugFlags.internalSettings || isEnabled(.groupRings)
