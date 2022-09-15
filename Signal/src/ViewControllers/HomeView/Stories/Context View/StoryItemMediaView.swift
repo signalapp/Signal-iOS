@@ -266,8 +266,7 @@ class StoryItemMediaView: UIView {
             let privateStoryThread = databaseStorage.read(
                 block: { TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: $0) }
             ),
-            !privateStoryThread.isMyStory
-        {
+            !privateStoryThread.isMyStory {
             // For private stories, other than "My Story", render the name of the story
 
             let contextIcon = UIImageView()

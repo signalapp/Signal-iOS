@@ -50,7 +50,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     @objc
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool,
-                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         present(fromViewController: fromViewController,
                 canCancel: canCancel,
                 presentationDelay: kPresentationDelayDefault,
@@ -62,7 +62,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public class func present(fromViewController: UIViewController,
                               canCancel: Bool,
                               presentationDelay: TimeInterval,
-                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         present(fromViewController: fromViewController,
                 canCancel: canCancel,
                 presentationDelay: presentationDelay,
@@ -72,7 +72,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     @objc
     public class func presentAsInvisible(fromViewController: UIViewController,
-                                         backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                                         backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         present(fromViewController: fromViewController,
                 canCancel: false,
                 presentationDelay: kPresentationDelayDefault,
@@ -85,7 +85,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                               canCancel: Bool,
                               presentationDelay: TimeInterval,
                               isInvisible: Bool,
-                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void) {
         AssertIsOnMainThread()
 
         let view = ModalActivityIndicatorViewController(canCancel: canCancel,

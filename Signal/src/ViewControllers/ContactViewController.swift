@@ -408,7 +408,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
     }
 
     // TODO: Use real assets.
-    private func createCircleActionButton(text: String, imageName: String, actionBlock : @escaping () -> Void) -> UIView {
+    private func createCircleActionButton(text: String, imageName: String, actionBlock: @escaping () -> Void) -> UIView {
         let buttonSize = CGFloat(50)
 
         let button = TappableView(actionBlock: actionBlock)
@@ -445,7 +445,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         return button
     }
 
-    private func createLargePillButton(text: String, actionBlock : @escaping () -> Void) -> UIView {
+    private func createLargePillButton(text: String, actionBlock: @escaping () -> Void) -> UIView {
         let button = TappableView(actionBlock: actionBlock)
         button.backgroundColor = Theme.backgroundColor
         button.layoutMargins = .zero

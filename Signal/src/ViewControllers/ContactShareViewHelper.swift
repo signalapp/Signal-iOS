@@ -112,7 +112,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         fromViewController.presentActionSheet(actionSheet)
     }
 
-    private func showPhoneNumberPicker(phoneNumbers: [String], fromViewController: UIViewController, completion :@escaping ((String) -> Void)) {
+    private func showPhoneNumberPicker(phoneNumbers: [String], fromViewController: UIViewController, completion: @escaping ((String) -> Void)) {
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
 

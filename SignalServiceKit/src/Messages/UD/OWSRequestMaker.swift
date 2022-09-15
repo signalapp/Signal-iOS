@@ -73,9 +73,9 @@ public class RequestMaker: NSObject {
 
     @objc
     public init(label: String,
-                requestFactoryBlock : @escaping RequestFactoryBlock,
-                udAuthFailureBlock : @escaping UDAuthFailureBlock,
-                websocketFailureBlock : @escaping WebsocketFailureBlock,
+                requestFactoryBlock: @escaping RequestFactoryBlock,
+                udAuthFailureBlock: @escaping UDAuthFailureBlock,
+                websocketFailureBlock: @escaping WebsocketFailureBlock,
                 address: SignalServiceAddress,
                 udAccess: OWSUDAccess?,
                 canFailoverUDAuth: Bool) {

@@ -5,7 +5,7 @@
 import Foundation
 
 public class TappableView: UIView {
-    let actionBlock : (() -> Void)
+    let actionBlock: (() -> Void)
 
     // MARK: - Initializers
 
@@ -14,7 +14,7 @@ public class TappableView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public required init(actionBlock : @escaping () -> Void) {
+    public required init(actionBlock: @escaping () -> Void) {
         self.actionBlock = actionBlock
         super.init(frame: CGRect.zero)
 

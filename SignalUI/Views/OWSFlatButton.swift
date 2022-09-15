@@ -10,7 +10,7 @@ public class OWSFlatButton: UIView {
 
     public let button: UIButton
 
-    private var pressedBlock : (() -> Void)?
+    private var pressedBlock: (() -> Void)?
 
     private var upColor: UIColor?
     private var downColor: UIColor?

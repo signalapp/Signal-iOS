@@ -77,7 +77,7 @@ class ChangePhoneNumberController: Dependencies {
     }
 
     public func submitVerification(fromViewController: UIViewController,
-                                   completion : @escaping (VerificationOutcome) -> Void) {
+                                   completion: @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
         guard let newPhoneNumber = self.newPhoneNumber else {
@@ -157,7 +157,7 @@ class ChangePhoneNumberController: Dependencies {
 
     private func verificationFailed(fromViewController: UIViewController,
                                     error: Error,
-                                    completion : @escaping (VerificationOutcome) -> Void) {
+                                    completion: @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
         if let registrationMissing2FAPinError = error as? RegistrationMissing2FAPinError {

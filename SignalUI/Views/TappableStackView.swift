@@ -6,7 +6,7 @@ import Foundation
 
 @objc
 public class TappableStackView: UIStackView {
-    let actionBlock : (() -> Void)
+    let actionBlock: (() -> Void)
 
     // MARK: - Initializers
 
@@ -15,7 +15,7 @@ public class TappableStackView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public required init(actionBlock : @escaping () -> Void) {
+    public required init(actionBlock: @escaping () -> Void) {
         self.actionBlock = actionBlock
         super.init(frame: CGRect.zero)
 

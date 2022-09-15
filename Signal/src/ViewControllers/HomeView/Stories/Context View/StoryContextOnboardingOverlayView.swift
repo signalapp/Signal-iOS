@@ -8,8 +8,8 @@ import SignalServiceKit
 
 protocol StoryContextOnboardingOverlayViewDelegate: AnyObject {
 
-    func storyContextOnboardingOverlayWillDisplay(_ : StoryContextOnboardingOverlayView)
-    func storyContextOnboardingOverlayDidDismiss(_ : StoryContextOnboardingOverlayView)
+    func storyContextOnboardingOverlayWillDisplay(_: StoryContextOnboardingOverlayView)
+    func storyContextOnboardingOverlayDidDismiss(_: StoryContextOnboardingOverlayView)
 }
 
 class StoryContextOnboardingOverlayView: UIView, Dependencies {

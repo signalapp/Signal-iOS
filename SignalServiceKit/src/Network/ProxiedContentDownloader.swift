@@ -174,8 +174,8 @@ public class ProxiedContentAssetRequest: NSObject {
 
     init(assetDescription: ProxiedContentAssetDescription,
          priority: ProxiedContentRequestPriority,
-         success:@escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
-         failure:@escaping ((ProxiedContentAssetRequest) -> Void)) {
+         success: @escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
+         failure: @escaping ((ProxiedContentAssetRequest) -> Void)) {
         self.assetDescription = assetDescription
         self.priority = priority
         self.success = success
@@ -502,8 +502,8 @@ open class ProxiedContentDownloader: NSObject, URLSessionTaskDelegate, URLSessio
     // which case the ProxiedContentAssetRequest parameter will be nil.
     public func requestAsset(assetDescription: ProxiedContentAssetDescription,
                              priority: ProxiedContentRequestPriority,
-                             success:@escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
-                             failure:@escaping ((ProxiedContentAssetRequest) -> Void)) -> ProxiedContentAssetRequest? {
+                             success: @escaping ((ProxiedContentAssetRequest?, ProxiedContentAsset) -> Void),
+                             failure: @escaping ((ProxiedContentAssetRequest) -> Void)) -> ProxiedContentAssetRequest? {
         AssertIsOnMainThread()
 
         if let asset = assetMap.get(key: assetDescription.url) {

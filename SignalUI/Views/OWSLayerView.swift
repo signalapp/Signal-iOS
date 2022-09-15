@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,7 +20,7 @@ open class OWSLayerView: UIView {
     }
 
     @objc
-    public init(frame: CGRect, layoutCallback : @escaping (UIView) -> Void) {
+    public init(frame: CGRect, layoutCallback: @escaping (UIView) -> Void) {
         self.layoutCallback = layoutCallback
         super.init(frame: frame)
     }

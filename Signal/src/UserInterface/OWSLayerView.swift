@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,7 +9,7 @@ class OWSLayerView: UIView {
     let layoutCallback: ((UIView) -> Void)
 
     @objc
-    public required init(frame: CGRect, layoutCallback : @escaping (UIView) -> Void) {
+    public required init(frame: CGRect, layoutCallback: @escaping (UIView) -> Void) {
         self.layoutCallback = layoutCallback
         super.init(frame: frame)
     }

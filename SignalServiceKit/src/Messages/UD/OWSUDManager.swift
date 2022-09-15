@@ -159,8 +159,8 @@ public protocol OWSUDManager: AnyObject {
     // logic can access the strongly typed certificate data.
     @objc
     func ensureSenderCertificates(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
-                                  success:@escaping (SenderCertificates) -> Void,
-                                  failure:@escaping (Error) -> Void)
+                                  success: @escaping (SenderCertificates) -> Void,
+                                  failure: @escaping (Error) -> Void)
 
     @objc
     func removeSenderCertificates(transaction: SDSAnyWriteTransaction)

@@ -583,7 +583,7 @@ public class OnboardingController: NSObject {
     public func submitVerification(fromViewController: UIViewController,
                                    checkForAvailableTransfer: Bool = true,
                                    showModal: Bool = true,
-                                   completion : @escaping (VerificationOutcome) -> Void) {
+                                   completion: @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
         // If we have credentials for KBS auth or we're trying to verify
@@ -713,7 +713,7 @@ public class OnboardingController: NSObject {
 
     private func verificationFailed(fromViewController: UIViewController,
                                     error: NSError,
-                                    completion : @escaping (VerificationOutcome) -> Void) {
+                                    completion: @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
         if let registrationMissing2FAPinError = (error as Error) as? RegistrationMissing2FAPinError {

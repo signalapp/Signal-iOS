@@ -159,7 +159,7 @@ class ContactShareFieldView: UIStackView {
 
     let field: ContactShareField
 
-    let previewViewBlock : (() -> UIView)
+    let previewViewBlock: (() -> UIView)
 
     private var checkbox: UIButton!
 
@@ -170,7 +170,7 @@ class ContactShareFieldView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    required init(field: ContactShareField, previewViewBlock : @escaping (() -> UIView), delegate: ContactShareFieldViewDelegate) {
+    required init(field: ContactShareField, previewViewBlock: @escaping (() -> UIView), delegate: ContactShareFieldViewDelegate) {
         self.field = field
         self.previewViewBlock = previewViewBlock
         self.delegate = delegate

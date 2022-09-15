@@ -49,7 +49,7 @@ extension OWSRecipientIdentity {
         let groupMember_uuidString = TSGroupMember.columnName(.uuidString, fullyQualified: true)
 
         let recipient_id = "\(signalRecipientColumnFullyQualified: .id)"
-        let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified:  .recipientPhoneNumber)"
+        let recipient_recipientPhoneNumber = "\(signalRecipientColumnFullyQualified: .recipientPhoneNumber)"
         let recipient_recipientUUID = "\(signalRecipientColumnFullyQualified: .recipientUUID)"
         let recipient_uniqueID = "\(signalRecipientColumnFullyQualified: .uniqueId)"
 

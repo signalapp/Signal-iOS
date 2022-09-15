@@ -61,7 +61,7 @@ public class ContactFieldView: UIView {
         lastRow?.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
     }
 
-    public class func contactFieldView(forAvatarImage avatarImage: UIImage, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+    public class func contactFieldView(forAvatarImage avatarImage: UIImage, layoutMargins: UIEdgeInsets, actionBlock: (() -> Void)?) -> UIView {
         var stackView: UIStackView
         if let actionBlock = actionBlock {
             stackView = TappableStackView(actionBlock: actionBlock)
@@ -93,16 +93,16 @@ public class ContactFieldView: UIView {
                                layoutMargins: layoutMargins, actionBlock: nil)
     }
 
-    public class func contactFieldView(forPhoneNumber phoneNumber: OWSContactPhoneNumber, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+    public class func contactFieldView(forPhoneNumber phoneNumber: OWSContactPhoneNumber, layoutMargins: UIEdgeInsets, actionBlock: (() -> Void)?) -> UIView {
         let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber.phoneNumber)
         return simpleFieldView(name: phoneNumber.localizedLabel(), value: formattedPhoneNumber, layoutMargins: layoutMargins, actionBlock: actionBlock)
     }
 
-    public class func contactFieldView(forEmail email: OWSContactEmail, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+    public class func contactFieldView(forEmail email: OWSContactEmail, layoutMargins: UIEdgeInsets, actionBlock: (() -> Void)?) -> UIView {
         return simpleFieldView(name: email.localizedLabel(), value: email.email, layoutMargins: layoutMargins, actionBlock: actionBlock)
     }
 
-    private class func simpleFieldView(name: String, value: String?, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+    private class func simpleFieldView(name: String, value: String?, layoutMargins: UIEdgeInsets, actionBlock: (() -> Void)?) -> UIView {
         var stackView: UIStackView
         if let actionBlock = actionBlock {
             stackView = TappableStackView(actionBlock: actionBlock)
@@ -132,7 +132,7 @@ public class ContactFieldView: UIView {
         return stackView
     }
 
-    public class func contactFieldView(forAddress address: OWSContactAddress, layoutMargins: UIEdgeInsets, actionBlock : (() -> Void)?) -> UIView {
+    public class func contactFieldView(forAddress address: OWSContactAddress, layoutMargins: UIEdgeInsets, actionBlock: (() -> Void)?) -> UIView {
         var stackView: UIStackView
         if let actionBlock = actionBlock {
              stackView = TappableStackView(actionBlock: actionBlock)
