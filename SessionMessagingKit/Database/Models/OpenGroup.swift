@@ -30,7 +30,7 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
         case permissions
     }
     
-    public struct Permissions: OptionSet, Codable, DatabaseValueConvertible {
+    public struct Permissions: OptionSet, Codable, DatabaseValueConvertible, Hashable {
         public let rawValue: UInt16
         
         public init(rawValue: UInt16) {
