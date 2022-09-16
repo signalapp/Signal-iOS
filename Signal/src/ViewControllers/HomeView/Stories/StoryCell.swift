@@ -119,7 +119,9 @@ class StoryCell: UITableViewCell {
             subtitleLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
             failedIconView.isHiddenInStackView = true
         case .failed:
-            subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+            subtitleLabel.text = model.latestMessage.hasSentToAnyRecipients
+                ? NSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
+                : NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
             failedIconView.image = Theme.iconImage(.error16)
             failedIconView.isHiddenInStackView = false
         case .sent_OBSOLETE, .delivered_OBSOLETE:

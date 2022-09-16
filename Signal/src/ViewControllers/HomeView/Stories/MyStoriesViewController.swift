@@ -437,7 +437,9 @@ class SentStoryCell: UITableViewCell {
         case .failed:
             failedIconView.image = Theme.iconImage(.error16)
             failedIconContainer.isHiddenInStackView = false
-            titleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+            titleLabel.text = item.message.hasSentToAnyRecipients
+                ? NSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
+                : NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
             subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED_RETRY", comment: "Text indicating that you can tap to retry sending")
         case .sent:
             if receiptManager.areReadReceiptsEnabled() {

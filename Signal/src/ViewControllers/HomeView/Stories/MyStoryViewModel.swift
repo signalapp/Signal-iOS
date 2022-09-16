@@ -11,7 +11,13 @@ struct MyStoryViewModel: Dependencies {
     let latestMessageAttachment: StoryThumbnailView.Attachment?
     let latestMessageTimestamp: UInt64?
     let sendingCount: UInt64
-    let hasFailedSends: Bool
+
+    enum FailureState {
+        case none
+        case partial
+        case complete
+    }
+    let failureState: FailureState
 
     let secondLatestMessageAttachment: StoryThumbnailView.Attachment?
 
@@ -19,10 +25,15 @@ struct MyStoryViewModel: Dependencies {
         sendingCount = messages.reduce(0) {
             $0 + ([.sending, .pending].contains($1.sendingState) ? 1 : 0)
         }
-        hasFailedSends = messages.contains { $0.sendingState == .failed }
 
         let sortedFilteredMessages = messages.sorted { $0.timestamp < $1.timestamp }.suffix(2)
         self.messages = Array(sortedFilteredMessages)
+
+        if let latestFailedMessage = sortedFilteredMessages.last(where: { $0.sendingState == .failed }) {
+            failureState = latestFailedMessage.hasSentToAnyRecipients ? .partial : .complete
+        } else {
+            failureState = .none
+        }
 
         if let latestMessage = sortedFilteredMessages.last {
             latestMessageAttachment = .from(latestMessage.attachment, transaction: transaction)

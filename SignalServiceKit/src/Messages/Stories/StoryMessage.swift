@@ -58,6 +58,14 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    public var hasSentToAnyRecipients: Bool {
+        switch manifest {
+        case .incoming: return true
+        case .outgoing(let recipientStates):
+            return recipientStates.values.contains { $0.sendingState == .sent }
+        }
+    }
+
     public var localUserViewedTimestamp: UInt64? {
         switch manifest {
         case .incoming(let receivedState):

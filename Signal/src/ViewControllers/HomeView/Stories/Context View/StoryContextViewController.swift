@@ -7,6 +7,7 @@ import SignalServiceKit
 import UIKit
 import SignalUI
 import BonMot
+import Lottie
 
 protocol StoryContextViewControllerDelegate: AnyObject {
     func storyContextViewControllerWantsTransitionToNextContext(
@@ -168,6 +169,8 @@ class StoryContextViewController: OWSViewController {
 
     private lazy var onboardingOverlay = StoryContextOnboardingOverlayView(delegate: self)
 
+    private lazy var sendingIndicatorStackView = UIStackView()
+
     private lazy var repliesAndViewsButton = OWSButton()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -199,6 +202,12 @@ class StoryContextViewController: OWSViewController {
         view.addSubview(repliesAndViewsButton)
         repliesAndViewsButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
         repliesAndViewsButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
+
+        sendingIndicatorStackView.axis = .horizontal
+        sendingIndicatorStackView.spacing = 13
+        sendingIndicatorStackView.alignment = .center
+        view.addSubview(sendingIndicatorStackView)
+        sendingIndicatorStackView.autoPinEdges(toEdgesOf: repliesAndViewsButton)
 
         view.addSubview(playbackProgressView)
         playbackProgressView.autoPinEdge(.leading, to: .leading, of: mediaViewContainer, withOffset: OWSTableViewController2.defaultHOuterMargin)
@@ -321,97 +330,193 @@ class StoryContextViewController: OWSViewController {
             mediaViewContainer.addSubview(itemView)
             itemView.autoPinEdgesToSuperviewEdges()
 
-            if currentItem.message.localUserAllowedToReply {
-                repliesAndViewsButton.isHidden = false
+            if currentItem.message.sendingState != .sent {
+                updateSendingIndicator(currentItem)
+            } else {
+                updateRepliesAndViewsButton(currentItem)
+            }
+        } else {
+            repliesAndViewsButton.isHidden = true
+            sendingIndicatorStackView.isHidden = true
+        }
 
-                let repliesAndViewsButtonText: String
+        if messageDidChange {
+            ensureSubsequentItemsDownloaded()
+            updateProgressState()
+        }
+    }
 
-                var leadingIcon: UIImage?
-                var trailingIcon: UIImage?
+    private func updateSendingIndicator(_ currentItem: StoryItem) {
+        repliesAndViewsButton.isHidden = true
+        sendingIndicatorStackView.gestureRecognizers?.removeAll()
+        sendingIndicatorStackView.removeAllSubviews()
 
-                switch currentItem.message.direction {
-                case .incoming:
-                    if case .groupId = context {
-                        if currentItem.numberOfReplies == 0 {
-                            leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
-                            repliesAndViewsButtonText = NSLocalizedString(
-                                "STORY_REPLY_TO_GROUP_BUTTON",
-                                comment: "Button for replying to a group story with no existing replies.")
-                        } else {
-                            trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
-                            let format = NSLocalizedString(
-                                "STORY_REPLIES_COUNT_%d",
-                                tableName: "PluralAware",
-                                comment: "Button for replying to a story with N existing replies.")
-                            repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
-                        }
-                    } else {
+        switch currentItem.message.sendingState {
+        case .pending, .sending:
+            sendingIndicatorStackView.isHidden = false
+
+            let sendingSpinner = AnimationView(name: "indeterminate_spinner_20")
+            sendingSpinner.contentMode = .scaleAspectFit
+            sendingSpinner.loopMode = .loop
+            sendingSpinner.backgroundBehavior = .pauseAndRestore
+            sendingSpinner.autoSetDimension(.width, toSize: 20)
+            sendingSpinner.play()
+
+            let sendingLabel = UILabel()
+            sendingLabel.font = .ows_dynamicTypeBody
+            sendingLabel.textColor = Theme.darkThemePrimaryColor
+            sendingLabel.textAlignment = .center
+            sendingLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
+            sendingLabel.setContentHuggingHigh()
+
+            let leadingSpacer = UIView.hStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
+
+            sendingIndicatorStackView.addArrangedSubviews([
+                leadingSpacer,
+                sendingSpinner,
+                sendingLabel,
+                trailingSpacer
+            ])
+
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        case .failed:
+            sendingIndicatorStackView.isHidden = false
+
+            sendingIndicatorStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(askToResendFailedMessage)))
+
+            let failedIcon = UIImageView()
+            failedIcon.contentMode = .scaleAspectFit
+            failedIcon.setTemplateImageName("error-20", tintColor: .ows_accentRed)
+            failedIcon.autoSetDimension(.width, toSize: 20)
+            sendingIndicatorStackView.addArrangedSubview(failedIcon)
+
+            let failedLabel = UILabel()
+            failedLabel.font = .ows_dynamicTypeBody
+            failedLabel.textColor = Theme.darkThemePrimaryColor
+            failedLabel.textAlignment = .center
+            failedLabel.text = currentItem.message.hasSentToAnyRecipients
+                ? NSLocalizedString("STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS", comment: "Text indicating that the story send has partially failed")
+                : NSLocalizedString("STORY_SEND_FAILED_TAP_FOR_DETAILS", comment: "Text indicating that the story send has failed")
+            failedLabel.setContentHuggingHigh()
+            sendingIndicatorStackView.addArrangedSubview(failedLabel)
+
+            let leadingSpacer = UIView.hStretchingSpacer()
+            let trailingSpacer = UIView.hStretchingSpacer()
+
+            sendingIndicatorStackView.addArrangedSubviews([
+                leadingSpacer,
+                failedIcon,
+                failedLabel,
+                trailingSpacer
+            ])
+
+            leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+        case .sent:
+            sendingIndicatorStackView.isHidden = true
+        case .sent_OBSOLETE, .delivered_OBSOLETE:
+            owsFailDebug("Unexpected legacy sending state")
+        }
+    }
+
+    @objc
+    private func askToResendFailedMessage() {
+        guard
+            let message = currentItem?.message,
+            let thread = databaseStorage.read(block: { context.thread(transaction: $0) })
+        else { return }
+        pause()
+        StoryUtil.askToResend(message, in: thread, from: self) { [weak self] in
+            self?.play()
+        }
+    }
+
+    private func updateRepliesAndViewsButton(_ currentItem: StoryItem) {
+        sendingIndicatorStackView.isHidden = true
+
+        if currentItem.message.localUserAllowedToReply {
+            repliesAndViewsButton.isHidden = false
+
+            let repliesAndViewsButtonText: String
+
+            var leadingIcon: UIImage?
+            var trailingIcon: UIImage?
+
+            switch currentItem.message.direction {
+            case .incoming:
+                if case .groupId = context {
+                    if currentItem.numberOfReplies == 0 {
                         leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
                         repliesAndViewsButtonText = NSLocalizedString(
-                            "STORY_REPLY_BUTTON",
-                            comment: "Button for replying to a story with no existing replies.")
-                    }
-                case .outgoing:
-                    if receiptManager.areReadReceiptsEnabled() {
-                        trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
-                        if case .groupId = context {
-                            let format = NSLocalizedString(
-                                "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
-                                tableName: "PluralAware",
-                                comment: "Button for viewing the replies and views for a story sent to a group")
-                            repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount, currentItem.numberOfReplies)
-                        } else {
-                            let format = NSLocalizedString(
-                                "STORY_VIEWS_COUNT_%d",
-                                tableName: "PluralAware",
-                                comment: "Button for viewing the views for a story sent to a private list")
-                            repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount)
-                        }
-                    } else if case .groupId = context, currentItem.numberOfReplies > 0 {
+                            "STORY_REPLY_TO_GROUP_BUTTON",
+                            comment: "Button for replying to a group story with no existing replies.")
+                    } else {
                         trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
                         let format = NSLocalizedString(
                             "STORY_REPLIES_COUNT_%d",
                             tableName: "PluralAware",
                             comment: "Button for replying to a story with N existing replies.")
                         repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
-                    } else {
-                        repliesAndViewsButtonText = NSLocalizedString(
-                            "STORY_VIEWS_OFF",
-                            comment: "Text indicating that the user has views turned off"
-                        )
                     }
-                }
-
-                repliesAndViewsButton.semanticContentAttribute = .unspecified
-
-                if let leadingIcon = leadingIcon {
-                    repliesAndViewsButton.setImage(leadingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
-                    repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 2, leading: 0, bottom: 0, trailing: 16)
-                } else if let trailingIcon = trailingIcon {
-                    repliesAndViewsButton.setImage(trailingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
-                    repliesAndViewsButton.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
-                    repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 3, leading: 0, bottom: 0, trailing: 0)
                 } else {
-                    repliesAndViewsButton.setImage(nil, for: .normal)
-                    repliesAndViewsButton.contentHorizontalAlignment = .center
+                    leadingIcon = #imageLiteral(resourceName: "reply-outline-20")
+                    repliesAndViewsButtonText = NSLocalizedString(
+                        "STORY_REPLY_BUTTON",
+                        comment: "Button for replying to a story with no existing replies.")
                 }
-
-                let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
-                repliesAndViewsButton.setAttributedTitle(
-                    repliesAndViewsButtonText.styled(
-                        with: .font(.systemFont(ofSize: 17)),
-                        .xmlRules([.style("bold", semiboldStyle)])),
-                    for: .normal)
-            } else {
-                repliesAndViewsButton.isHidden = true
+            case .outgoing:
+                if receiptManager.areReadReceiptsEnabled() {
+                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                    if case .groupId = context {
+                        let format = NSLocalizedString(
+                            "STORY_VIEWS_AND_REPLIES_COUNT_%d_%d",
+                            tableName: "PluralAware",
+                            comment: "Button for viewing the replies and views for a story sent to a group")
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount, currentItem.numberOfReplies)
+                    } else {
+                        let format = NSLocalizedString(
+                            "STORY_VIEWS_COUNT_%d",
+                            tableName: "PluralAware",
+                            comment: "Button for viewing the views for a story sent to a private list")
+                        repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.message.remoteViewCount)
+                    }
+                } else if case .groupId = context, currentItem.numberOfReplies > 0 {
+                    trailingIcon = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "chevron-left-20") : #imageLiteral(resourceName: "chevron-right-20")
+                    let format = NSLocalizedString(
+                        "STORY_REPLIES_COUNT_%d",
+                        tableName: "PluralAware",
+                        comment: "Button for replying to a story with N existing replies.")
+                    repliesAndViewsButtonText = String.localizedStringWithFormat(format, currentItem.numberOfReplies)
+                } else {
+                    repliesAndViewsButtonText = NSLocalizedString(
+                        "STORY_VIEWS_OFF",
+                        comment: "Text indicating that the user has views turned off"
+                    )
+                }
             }
+
+            repliesAndViewsButton.semanticContentAttribute = .unspecified
+
+            if let leadingIcon = leadingIcon {
+                repliesAndViewsButton.setImage(leadingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
+                repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 2, leading: 0, bottom: 0, trailing: 16)
+            } else if let trailingIcon = trailingIcon {
+                repliesAndViewsButton.setImage(trailingIcon.asTintedImage(color: Theme.darkThemePrimaryColor), for: .normal)
+                repliesAndViewsButton.semanticContentAttribute = CurrentAppContext().isRTL ? .forceLeftToRight : .forceRightToLeft
+                repliesAndViewsButton.imageEdgeInsets = UIEdgeInsets(top: 3, leading: 0, bottom: 0, trailing: 0)
+            } else {
+                repliesAndViewsButton.setImage(nil, for: .normal)
+                repliesAndViewsButton.contentHorizontalAlignment = .center
+            }
+
+            let semiboldStyle = StringStyle(.font(.systemFont(ofSize: 17, weight: .semibold)))
+            repliesAndViewsButton.setAttributedTitle(
+                repliesAndViewsButtonText.styled(
+                    with: .font(.systemFont(ofSize: 17)),
+                    .xmlRules([.style("bold", semiboldStyle)])),
+                for: .normal)
         } else {
             repliesAndViewsButton.isHidden = true
-        }
-
-        if messageDidChange {
-            ensureSubsequentItemsDownloaded()
-            updateProgressState()
         }
     }
 

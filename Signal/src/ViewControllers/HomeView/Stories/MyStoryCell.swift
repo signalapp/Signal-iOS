@@ -144,10 +144,17 @@ class MyStoryCell: UITableViewCell {
         if model.sendingCount > 0 {
             let format = NSLocalizedString("STORY_SENDING_%d", tableName: "PluralAware", comment: "Indicates that N stories are currently sending")
             subtitleLabel.text = .localizedStringWithFormat(format, model.sendingCount)
-            failedIconView.isHiddenInStackView = !model.hasFailedSends
-        } else if model.hasFailedSends {
+            failedIconView.isHiddenInStackView = model.failureState == .none
+        } else if model.failureState != .none {
+            switch model.failureState {
+            case .complete:
+                subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+            case .partial:
+                subtitleLabel.text = NSLocalizedString("STORY_SEND_PARTIALLY_FAILED", comment: "Text indicating that the story send has partially failed")
+            case .none:
+                owsFailDebug("Unexpected")
+            }
             failedIconView.isHiddenInStackView = false
-            subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
         } else if let latestMessageTimestamp = model.latestMessageTimestamp {
             subtitleLabel.text = DateUtil.formatTimestampRelatively(latestMessageTimestamp)
             failedIconView.isHiddenInStackView = true
