@@ -416,7 +416,7 @@ public final class SessionCall: CurrentCallProtocol, WebRTCSessionDelegate {
     public func setupTimeoutTimer() {
         invalidateTimeoutTimer()
         
-        let timeInterval: TimeInterval = (hasConnected ? 60 : 30)
+        let timeInterval: TimeInterval = 60
         
         timeOutTimer = Timer.scheduledTimerOnMainThread(withTimeInterval: timeInterval, repeats: false) { _ in
             self.didTimeout = true
