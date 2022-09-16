@@ -6,6 +6,7 @@ import Foundation
 
 protocol ContextMenuControllerDelegate: AnyObject {
     func contextMenuControllerRequestsDismissal(_ contextMenuController: ContextMenuController)
+    func contextMenuControllerAccessoryFrameOffset(_ contextMenuController: ContextMenuController) -> CGPoint?
 }
 
 private protocol ContextMenuViewDelegate: AnyObject {
@@ -13,6 +14,7 @@ private protocol ContextMenuViewDelegate: AnyObject {
     func contextMenuViewAuxPreviewSourceFrame(_ contextMenuView: ContextMenuHostView) -> CGRect
     func contextMenuViewAnimationState(_ contextMenuView: ContextMenuHostView) -> ContextMenuAnimationState
     func contextMenuViewPreviewFrameForAccessoryLayout(_ contextMenuView: ContextMenuHostView) -> CGRect
+    func contextMenuViewAccessoryFrameOffset(_ contextMenuView: ContextMenuHostView) -> CGPoint?
 }
 
 private enum ContextMenuAnimationState {
@@ -285,6 +287,10 @@ private class ContextMenuHostView: UIView {
         let defaultOffset = accessory.accessoryAlignment.alignmentOffset
         let offset = isLandscape ? accessory.landscapeAccessoryAlignment?.alignmentOffset ?? defaultOffset : defaultOffset
         accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, offset)
+
+        if let accessoryFrameOffset = delegate?.contextMenuViewAccessoryFrameOffset(self) {
+            accessoryFrame.origin = CGPointAdd(accessoryFrame.origin, accessoryFrameOffset)
+        }
 
         return accessoryFrame
     }
@@ -753,6 +759,10 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
         }
 
         return previewView?.frame ?? CGRect.zero
+    }
+
+    fileprivate func contextMenuViewAccessoryFrameOffset(_ contextMenuView: ContextMenuHostView) -> CGPoint? {
+        delegate?.contextMenuControllerAccessoryFrameOffset(self)
     }
 
     // MARK: Private

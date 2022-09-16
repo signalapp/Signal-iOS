@@ -248,6 +248,10 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
         dismissMenu(animated: true, completion: { })
     }
 
+    func contextMenuControllerAccessoryFrameOffset(_ contextMenuController: ContextMenuController) -> CGPoint? {
+        nil
+    }
+
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
         _ accessory: ContextMenuTargetedPreviewAccessory,
         completion: @escaping (String) -> Void

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, ContextMenuActionsViewDelegate {
 
@@ -146,34 +147,30 @@ protocol ContextMenuActionsViewDelegate: AnyObject {
 
 private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScrollViewDelegate {
 
-    private class ContextMenuActionRow: UIView {
+    private class ContextMenuActionRow: UIVisualEffectView {
         let attributes: ContextMenuAction.Attributes
         let hostEffect: UIBlurEffect
         let forceDarkTheme: Bool
         let titleLabel: UILabel
         let iconView: UIImageView
-        let separatorView: UIVisualEffectView
+        let separatorView: UIView
         var highlightedView: UIView?
         var isHighlighted: Bool {
             didSet {
                 if oldValue != isHighlighted {
                     if isHighlighted {
                         if highlightedView == nil {
-                            let vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostEffect))
-                            vibrancyView.frame = bounds
-                            let view = UIView(frame: bounds)
+                            let view = UIView()
+                            view.frame = bounds
+                            view.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled
+                                ? UIColor(rgbHex: 0x787880).withAlphaComponent(0.32)
+                                : UIColor(rgbHex: 0x787880).withAlphaComponent(0.16)
                             view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                            view.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray12
-                            if forceDarkTheme || Theme.isDarkThemeEnabled {
-                                vibrancyView.backgroundColor = UIColor.ows_whiteAlpha20
-                            }
-                            view.alpha = 0.3
-                            vibrancyView.contentView.addSubview(view)
-                            highlightedView = vibrancyView
+                            highlightedView = view
                         }
 
                         if let view = highlightedView {
-                            addSubview(view)
+                            contentView.insertSubview(view, at: 0)
                         }
                     } else {
                         highlightedView?.removeFromSuperview()
@@ -215,22 +212,22 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             iconView.contentMode = .scaleAspectFit
             iconView.tintColor = titleLabel.textColor
 
-            separatorView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
-            if forceDarkTheme || Theme.isDarkThemeEnabled {
-                separatorView.backgroundColor = UIColor.ows_whiteAlpha20
-            }
-
-            let separator = UIView(frame: separatorView.bounds)
-            separator.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled ? .ows_gray75 : .ows_gray22
-            separator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            separatorView.contentView.addSubview(separator)
+            separatorView = UIView()
+            separatorView.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled
+                ? UIColor(rgbHex: 0x545458).withAlphaComponent(0.6)
+                : UIColor(rgbHex: 0x3c3c43).withAlphaComponent(0.3)
+            separatorView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             isHighlighted = false
 
-            super.init(frame: CGRect.zero)
+            if #available(iOS 13, *) {
+                super.init(effect: UIVibrancyEffect(blurEffect: hostBlurEffect, style: .label))
+            } else {
+                super.init(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
+            }
 
-            addSubview(titleLabel)
-            addSubview(iconView)
-            addSubview(separatorView)
+            contentView.addSubview(titleLabel)
+            contentView.addSubview(iconView)
+            contentView.addSubview(separatorView)
 
             isAccessibilityElement = true
             accessibilityLabel = titleLabel.text
@@ -310,8 +307,16 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         self.forceDarkTheme = forceDarkTheme
 
         scrollView = UIScrollView(frame: CGRect.zero)
-        let effect = UIBlurEffect(style: .regular)
+        let effect: UIBlurEffect
+        if #available(iOS 13, *) {
+            effect = .init(style: .systemThinMaterial)
+        } else {
+            effect = .init(style: .extraLight)
+        }
         backdropView = UIVisualEffectView(effect: effect)
+        backdropView.backgroundColor = Theme.isDarkThemeEnabled || forceDarkTheme
+            ? .ows_blackAlpha80
+            : UIColor(rgbHex: 0x787880).withAlphaComponent(0.2)
 
         var actionViews: [ContextMenuActionRow] = []
         for action in menu.children {
@@ -339,10 +344,10 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         }
 
         layer.cornerRadius = cornerRadius
-        layer.shadowRadius = 40
-        layer.shadowOffset = CGSize(width: 8, height: 20)
+        layer.shadowRadius = 64
+        layer.shadowOffset = CGSize(width: 0, height: 32)
         layer.shadowColor = UIColor.ows_black.cgColor
-        layer.shadowOpacity = 0.3
+        layer.shadowOpacity = 0.2
 
         backdropView.layer.cornerRadius = cornerRadius
         backdropView.layer.masksToBounds = true
