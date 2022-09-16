@@ -47,6 +47,7 @@ open class TooltipView: UIView {
     }
 
     open var bubbleHSpacing: CGFloat { 20 }
+    open var stretchesBubbleHorizontally: Bool { false }
 
     public enum TailDirection { case up, down }
     open var tailDirection: TailDirection { .down }
@@ -142,8 +143,13 @@ open class TooltipView: UIView {
         }
 
         // Insist on the tooltip fitting within the margins of the widthReferenceView.
-        autoPinEdge(.left, to: .left, of: widthReferenceView, withOffset: +bubbleHSpacing, relation: .greaterThanOrEqual)
-        autoPinEdge(.right, to: .right, of: widthReferenceView, withOffset: -bubbleHSpacing, relation: .lessThanOrEqual)
+        if stretchesBubbleHorizontally {
+            autoPinEdge(.left, to: .left, of: widthReferenceView, withOffset: +bubbleHSpacing, relation: .equal)
+            autoPinEdge(.right, to: .right, of: widthReferenceView, withOffset: -bubbleHSpacing, relation: .equal)
+        } else {
+            autoPinEdge(.left, to: .left, of: widthReferenceView, withOffset: +bubbleHSpacing, relation: .greaterThanOrEqual)
+            autoPinEdge(.right, to: .right, of: widthReferenceView, withOffset: -bubbleHSpacing, relation: .lessThanOrEqual)
+        }
         NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {
             // Prefer that the tooltip's tail is as far as possible.
             // It should point at the center of the "tail reference view".

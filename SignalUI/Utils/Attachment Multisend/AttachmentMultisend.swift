@@ -13,17 +13,20 @@ public class AttachmentMultisend: Dependencies {
         approvalMessageBody: MessageBody?,
         approvedAttachments: [SignalAttachment]
     ) -> Promise<[TSThread]> {
-        return firstly(on: ThreadUtil.enqueueSendQueue) {
-            let preparedSend = try self.prepareForSending(
+        return firstly(on: .sharedUserInitiated) { () -> Promise<PreparedMediaMultisend> in
+            return self.prepareForSending(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
-                approvedAttachments: approvedAttachments)
-
+                approvedAttachments: approvedAttachments,
+                on: .sharedUserInitiated
+            )
+        }.map(on: ThreadUtil.enqueueSendQueue) { (preparedSend: PreparedMediaMultisend) -> [TSThread] in
             self.databaseStorage.write { transaction in
                 self.broadcastMediaMessageJobQueue.add(
                     attachmentIdMap: preparedSend.attachmentIdMap,
                     unsavedMessagesToSend: preparedSend.unsavedMessages,
-                    transaction: transaction)
+                    transaction: transaction
+                )
             }
 
             return preparedSend.threads
@@ -36,11 +39,15 @@ public class AttachmentMultisend: Dependencies {
         approvedAttachments: [SignalAttachment],
         messagesReadyToSend: (([TSOutgoingMessage]) -> Void)? = nil
     ) -> Promise<[TSThread]> {
-        return firstly(on: .sharedUserInitiated) { () -> (Promise<[TSThread]>) in
-            let preparedSend = try self.prepareForSending(
+        return firstly(on: .sharedUserInitiated) { () -> Promise<PreparedMediaMultisend> in
+            return self.prepareForSending(
                 conversations: conversations,
                 approvalMessageBody: approvalMessageBody,
-                approvedAttachments: approvedAttachments)
+                approvedAttachments: approvedAttachments,
+                on: .sharedUserInitiated
+            )
+        }
+        .then(on: .sharedUserInitiated) { (preparedSend: PreparedMediaMultisend) -> Promise<[TSThread]> in
 
             messagesReadyToSend?(preparedSend.messages)
 
@@ -84,21 +91,74 @@ public class AttachmentMultisend: Dependencies {
     private class func prepareForSending(
         conversations: [ConversationItem],
         approvalMessageBody: MessageBody?,
-        approvedAttachments: [SignalAttachment]
-    ) throws -> PreparedMediaMultisend {
-        var attachmentsByMessageType = [TypeWrapper: [(ConversationItem, [SignalAttachment])]]()
-
-        // If we're sending to any stories, limit all attachments to the standard quality level.
-        var approvedAttachments = approvedAttachments
-        if conversations.contains(where: { $0 is StoryConversationItem }) {
-            approvedAttachments = approvedAttachments.map {
+        approvedAttachments: [SignalAttachment],
+        on queue: DispatchQueue
+    ) -> Promise<PreparedMediaMultisend> {
+        if let segmentDuration = conversations.lazy.compactMap(\.videoAttachmentDurationLimit).min() {
+            let attachmentPromises = approvedAttachments.map {
                 $0.preparedForOutput(qualityLevel: .standard)
+                    .segmentedIfNecessary(on: queue, segmentDuration: segmentDuration)
+            }
+            return Promise.when(fulfilled: attachmentPromises).map(on: queue) { segmentedResults in
+                return try prepareForSending(
+                    conversations: conversations,
+                    approvalMessageBody: approvalMessageBody,
+                    approvedAttachments: segmentedResults
+                )
+            }
+        } else {
+            do {
+                let preparedMedia = try prepareForSending(
+                    conversations: conversations,
+                    approvalMessageBody: approvalMessageBody,
+                    approvedAttachments: approvedAttachments.map { .init($0) }
+                )
+                return .value(preparedMedia)
+            } catch {
+                return .init(error: error)
             }
         }
 
+    }
+
+    private class func prepareForSending(
+        conversations: [ConversationItem],
+        approvalMessageBody: MessageBody?,
+        approvedAttachments: [SignalAttachment.SegmentAttachmentResult]
+    ) throws -> PreparedMediaMultisend {
+        struct IdentifiedSegmentedResult {
+            let original: Identified<SignalAttachment>
+            let segmented: [Identified<SignalAttachment>]?
+        }
+        let identifiedAttachments: [IdentifiedSegmentedResult] = approvedAttachments.map {
+            return IdentifiedSegmentedResult(
+                original: .init($0.original),
+                segmented: $0.segmented?.map { .init($0) }
+            )
+        }
+
+        var attachmentsByMessageType = [TypeWrapper: [(ConversationItem, [Identified<SignalAttachment>])]]()
+
+        var hasConversationRequiringSegments = false
+        var hasConversationRequiringOriginals = false
         for conversation in conversations {
-            // Duplicate attachments per conversation
-            let clonedAttachments = try approvedAttachments.map { try $0.cloneAttachment() }
+            hasConversationRequiringSegments = hasConversationRequiringSegments || conversation.limitsVideoAttachmentLengthForStories
+            hasConversationRequiringOriginals = hasConversationRequiringOriginals || !conversation.limitsVideoAttachmentLengthForStories
+            let clonedAttachments: [Identified<SignalAttachment>] = try identifiedAttachments
+                .lazy
+                .flatMap { attachment -> [Identified<SignalAttachment>] in
+                    guard
+                        conversation.limitsVideoAttachmentLengthForStories,
+                        let segmented = attachment.segmented
+                    else {
+                        return [attachment.original]
+                    }
+                    return segmented
+                }
+                .map {
+                    // Duplicate the segmented attachments per conversation
+                    try $0.mapValue { return try $0.cloneAttachment() }
+                }
 
             let wrappedType = TypeWrapper(type: conversation.outgoingMessageClass)
             var messageTypeArray = attachmentsByMessageType[wrappedType] ?? []
@@ -108,15 +168,31 @@ public class AttachmentMultisend: Dependencies {
 
         // We only upload one set of attachments, and then copy the upload details into
         // each conversation before sending.
-        let attachmentsToUpload: [OutgoingAttachmentInfo] = approvedAttachments.map { attachment in
-            return OutgoingAttachmentInfo(dataSource: attachment.dataSource,
-                                          contentType: attachment.mimeType,
-                                          sourceFilename: attachment.filenameOrDefault,
-                                          caption: attachment.captionText,
-                                          albumMessageId: nil,
-                                          isBorderless: attachment.isBorderless,
-                                          isLoopingVideo: attachment.isLoopingVideo)
-        }
+        let attachmentsToUpload: [Identified<OutgoingAttachmentInfo>] = identifiedAttachments
+            .lazy
+            .flatMap { segmentedAttachment -> [Identified<SignalAttachment>] in
+                var attachmentsToUpload = [Identified<SignalAttachment>]()
+                if hasConversationRequiringOriginals || (segmentedAttachment.segmented?.isEmpty ?? true) {
+                    attachmentsToUpload.append(segmentedAttachment.original)
+                }
+                if hasConversationRequiringSegments, let segmented = segmentedAttachment.segmented {
+                    attachmentsToUpload.append(contentsOf: segmented)
+                }
+                return attachmentsToUpload
+            }
+            .map { identifiedAttachment in
+                identifiedAttachment.mapValue { attachment in
+                    return OutgoingAttachmentInfo(
+                        dataSource: attachment.dataSource,
+                        contentType: attachment.mimeType,
+                        sourceFilename: attachment.filenameOrDefault,
+                        caption: attachment.captionText,
+                        albumMessageId: nil,
+                        isBorderless: attachment.isBorderless,
+                        isLoopingVideo: attachment.isLoopingVideo
+                    )
+                }
+            }
 
         let state = MultisendState(approvalMessageBody: approvalMessageBody)
 
@@ -132,19 +208,16 @@ public class AttachmentMultisend: Dependencies {
                 try wrapper.type.prepareForMultisending(destinations: destinations, state: state, transaction: transaction)
             }
 
-            // Let N be the number of attachments, and M be the number of conversations each attachment
-            // is being sent to. We should now have an array of N sub-arrays of size M, where each sub-array
-            // represents a given attachment and contains the IDs of that attachment for each conversation
-            // it is being sent to.
-            owsAssertDebug(state.correspondingAttachmentIds.count == attachmentsToUpload.count)
-            owsAssertDebug(state.correspondingAttachmentIds.allSatisfy({ attachmentIds in attachmentIds.count == conversations.count }))
+            // Every attachment we plan to upload should be accounted for, since at least one destination
+            // should be using it and have added its UUID to correspondingAttachmentIds.
+            owsAssertDebug(state.correspondingAttachmentIds.values.count == attachmentsToUpload.count)
 
-            for (index, attachmentInfo) in attachmentsToUpload.enumerated() {
+            for attachmentInfo in attachmentsToUpload {
                 do {
-                    let attachmentToUpload = try attachmentInfo.asStreamConsumingDataSource(withIsVoiceMessage: false)
+                    let attachmentToUpload = try attachmentInfo.value.asStreamConsumingDataSource(withIsVoiceMessage: false)
                     attachmentToUpload.anyInsert(transaction: transaction)
 
-                    state.attachmentIdMap[attachmentToUpload.uniqueId] = state.correspondingAttachmentIds[index]
+                    state.attachmentIdMap[attachmentToUpload.uniqueId] = state.correspondingAttachmentIds[attachmentInfo.id]
                 } catch {
                     owsFailDebug("error: \(error)")
                 }
@@ -207,8 +280,26 @@ public extension AttachmentMultisend {
     }
 }
 
+class Identified<T> {
+    let id: UUID
+    let value: T
+
+    init(_ value: T, id: UUID = UUID()) {
+        self.id = id
+        self.value = value
+    }
+
+    func mapValue<V>(_ mapFn: (T) -> V) -> Identified<V> {
+        return .init(mapFn(value), id: id)
+    }
+
+    func mapValue<V>(_ mapFn: (T) throws -> V) throws -> Identified<V> {
+        return .init(try mapFn(value), id: id)
+    }
+}
+
 enum MultisendContent {
-    case media([SignalAttachment])
+    case media([Identified<SignalAttachment>])
     case text(TextAttachment)
 }
 
@@ -227,7 +318,7 @@ class MultisendState: NSObject {
     var messages: [TSOutgoingMessage] = []
     var unsavedMessages: [TSOutgoingMessage] = []
     var threads: [TSThread] = []
-    var correspondingAttachmentIds: [[String]] = []
+    var correspondingAttachmentIds: [UUID: [String]] = [:]
     var attachmentIdMap: [String: [String]] = [:]
 
     init(approvalMessageBody: MessageBody?) {

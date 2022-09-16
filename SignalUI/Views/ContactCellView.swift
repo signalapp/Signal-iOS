@@ -114,6 +114,8 @@ public class ContactCellView: ManualStackView {
         localUserDisplayMode: .asUser,
         useAutolayout: false)
 
+    public var tooltipTailReferenceView: UIView { return avatarView }
+
     @objc
     public static let avatarTextHSpacing: CGFloat = 12
 

@@ -69,7 +69,23 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         self.approvedAttachments = attachments
         self.approvalMessageBody = messageBody
 
-        let pickerVC = ConversationPickerViewController(selection: selection)
+        let maxVideoAttachmentDuration: TimeInterval? = attachments
+            .lazy
+            .compactMap { attachment in
+                guard
+                    attachment.isVideo,
+                    let url = attachment.dataUrl
+                else {
+                    return nil
+                }
+                return AVURLAsset(url: url).duration.seconds
+            }
+            .max()
+
+        let pickerVC = ConversationPickerViewController(
+            selection: selection,
+            maxVideoAttachmentDuration: maxVideoAttachmentDuration
+        )
         pickerVC.pickerDelegate = self
         pickerVC.shouldBatchUpdateIdentityKeys = true
         if storiesOnly {

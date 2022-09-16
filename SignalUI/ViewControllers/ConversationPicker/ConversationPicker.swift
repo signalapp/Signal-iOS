@@ -30,6 +30,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public weak var pickerDelegate: ConversationPickerDelegate?
 
     private let kMaxPickerSelection = 5
+    private let maxVideoAttachmentDuration: TimeInterval?
 
     public let selection: ConversationPickerSelection
 
@@ -64,8 +65,14 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         set { footerView.approvalTextMode = newValue }
     }
 
-    public init(selection: ConversationPickerSelection) {
+    /// If selecting a destination to send a video attachment, set `maxVideoAttachmentDuration` to the longest video duration,
+    /// in order to warn the user if the video is too long and will be automatically segmented.
+    public init(
+        selection: ConversationPickerSelection,
+        maxVideoAttachmentDuration: TimeInterval? = nil
+    ) {
         self.selection = selection
+        self.maxVideoAttachmentDuration = maxVideoAttachmentDuration
 
         super.init()
 
@@ -589,6 +596,16 @@ open class ConversationPickerViewController: OWSTableViewController2 {
             return nil
         }
 
+        if
+            let maxVideoAttachmentDuration = maxVideoAttachmentDuration,
+            let durationLimit = conversation.videoAttachmentDurationLimit,
+            durationLimit < maxVideoAttachmentDuration
+        {
+            // Show a tooltip the first time this happens, but still let the
+            // user select.
+            showVideoSegmentingTooltip(on: indexPath)
+        }
+
         return indexPath
     }
 
@@ -680,7 +697,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     }
 
     private func showTooManySelectedToast() {
-        Logger.info("")
+        Logger.info("Showing toast for too many chats selected")
 
         let toastFormat = OWSLocalizedString("CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d", tableName: "PluralAware",
                                             comment: "Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected.")
@@ -694,10 +711,97 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         let toastController = ToastController(text: message)
 
-        let bottomInset = (view.bounds.height - tableView.frame.height)
+        let bottomInset = (view.bounds.height - tableView.frame.maxY)
         let kToastInset: CGFloat = bottomInset + 10
         toastController.presentToastView(from: .bottom, of: view, inset: kToastInset)
     }
+
+    private var shownTooltipTypes = Set<ObjectIdentifier>()
+    private var currentTooltip: VideoSegmentingTooltipView? {
+        didSet {
+            oldValue?.removeFromSuperview()
+        }
+    }
+
+    private func showVideoSegmentingTooltip(on indexPath: IndexPath) {
+        guard
+            let conversation = self.conversation(for: indexPath),
+            let cell = tableView.cellForRow(at: indexPath) as? ConversationPickerCell
+        else {
+            owsFailDebug("Showing a video trimming tooltop for an invalid index path")
+            return
+        }
+
+        guard let text = conversation.videoAttachmentStoryLengthTooltipString else {
+            return
+        }
+
+        let typeIdentifier = ObjectIdentifier(conversation.outgoingMessageClass)
+        guard !shownTooltipTypes.contains(typeIdentifier) else {
+            // We've already shown the tooltip for this type.
+            return
+        }
+        shownTooltipTypes.insert(typeIdentifier)
+
+        self.currentTooltip = VideoSegmentingTooltipView(
+            fromView: tableView,
+            widthReferenceView: cell,
+            tailReferenceView: cell.tooltipTailReferenceView,
+            text: text
+        )
+    }
+
+    public override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // dismiss the tooltip when scrolling.
+        currentTooltip = nil
+    }
+}
+
+private class VideoSegmentingTooltipView: TooltipView {
+
+    let text: String
+
+    init(
+        fromView: UIView,
+        widthReferenceView: UIView,
+        tailReferenceView: UIView,
+        text: String
+    ) {
+        self.text = text
+        super.init(
+            fromView: fromView,
+            widthReferenceView: widthReferenceView,
+            tailReferenceView: tailReferenceView,
+            wasTappedBlock: nil
+        )
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    public override func bubbleContentView() -> UIView {
+        let label = UILabel()
+        label.text = text
+        label.font = .ows_dynamicTypeFootnoteClamped
+        label.textColor = .ows_white
+        label.numberOfLines = 0
+
+        let containerView = UIView()
+
+        containerView.addSubview(label)
+        label.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 12, vMargin: 8))
+
+        return containerView
+    }
+
+    public override var bubbleColor: UIColor { .ows_accentBlue }
+    public override var bubbleHSpacing: CGFloat { 28 }
+    public override var bubbleInsets: UIEdgeInsets { .zero }
+    public override var stretchesBubbleHorizontally: Bool { true }
+
+    public override var tailDirection: TooltipView.TailDirection { .up }
+    public override var dismissOnTap: Bool { true }
 }
 
 // MARK: -

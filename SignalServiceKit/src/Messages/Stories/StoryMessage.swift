@@ -897,3 +897,20 @@ extension SignalServiceAddress {
         return self.uuid == StoryMessage.systemStoryAuthorUUID
     }
 }
+
+// MARK: - Video Duration Limiting
+
+extension StoryMessage {
+
+    public static let videoAttachmentDurationLimit: TimeInterval = 30
+
+    public static var videoSegmentationTooltip: String {
+        return String(
+            format: OWSLocalizedString(
+                "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT",
+                comment: "Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }}"
+            ),
+            Int(videoAttachmentDurationLimit)
+        )
+    }
+}

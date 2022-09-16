@@ -10,26 +10,25 @@ extension OutgoingStoryMessage {
         state: MultisendState,
         transaction: SDSAnyWriteTransaction
     ) throws {
-        var privateStoryMessageIds: [String] = []
+        var privateStoryMessageIds: [UUID: String] = [:]
 
         for destination in destinations {
             switch destination.content {
             case .media(let attachments):
-                for (idx, attachment) in attachments.enumerated() {
+                for identifiedAttachment in attachments {
+                    let attachment = identifiedAttachment.value
                     attachment.captionText = state.approvalMessageBody?.plaintextBody(transaction: transaction.unwrapGrdbRead)
                     let attachmentStream = try attachment
                         .buildOutgoingAttachmentInfo()
                         .asStreamConsumingDataSource(withIsVoiceMessage: attachment.isVoiceMessage)
                     attachmentStream.anyInsert(transaction: transaction)
 
-                    if state.correspondingAttachmentIds.count > idx {
-                        state.correspondingAttachmentIds[idx] += [attachmentStream.uniqueId]
-                    } else {
-                        state.correspondingAttachmentIds.append([attachmentStream.uniqueId])
-                    }
+                    var correspondingIdsForAttachment = state.correspondingAttachmentIds[identifiedAttachment.id] ?? []
+                    correspondingIdsForAttachment += [attachmentStream.uniqueId]
+                    state.correspondingAttachmentIds[identifiedAttachment.id] = correspondingIdsForAttachment
 
                     let message: OutgoingStoryMessage
-                    if destination.thread is TSPrivateStoryThread, let privateStoryMessageId = privateStoryMessageIds[safe: idx] {
+                    if destination.thread is TSPrivateStoryThread, let privateStoryMessageId = privateStoryMessageIds[identifiedAttachment.id] {
                         message = try OutgoingStoryMessage.createUnsentMessage(
                             thread: destination.thread,
                             storyMessageId: privateStoryMessageId,
@@ -42,7 +41,7 @@ extension OutgoingStoryMessage {
                             transaction: transaction
                         )
                         if destination.thread is TSPrivateStoryThread {
-                            privateStoryMessageIds.append(message.storyMessageId)
+                            privateStoryMessageIds[identifiedAttachment.id] = message.storyMessageId
                         }
                     }
 

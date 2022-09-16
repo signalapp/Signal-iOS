@@ -26,10 +26,30 @@ public protocol ConversationItem {
 
     func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread?
     func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread?
+
+    /// If true, attachments will be segmented into chunks shorter than
+    /// `StoryMessage.videoAttachmentDurationLimit` and limited in quality.
+    var limitsVideoAttachmentLengthForStories: Bool { get }
+
+    /// If non-nill, tooltip text that will be shown when attempting to send a video to this
+    /// conversation that exceeds the story video attachment duration.
+    /// Should be set if `limitsVideoAttachmentLengthForStories` is true.
+    var videoAttachmentStoryLengthTooltipString: String? { get }
 }
 
 extension ConversationItem {
     public var titleWithSneakyTransaction: String { SDSDatabaseStorage.shared.read { title(transaction: $0) } }
+
+    public var videoAttachmentDurationLimit: TimeInterval? {
+        return limitsVideoAttachmentLengthForStories ? StoryMessage.videoAttachmentDurationLimit : nil
+    }
+
+    public var videoAttachmentStoryLengthTooltipString: String? {
+        if limitsVideoAttachmentLengthForStories {
+            owsFailDebug("Should set if limitsVideoAttachmentLengthForStories is true.")
+        }
+        return nil
+    }
 }
 
 // MARK: -
@@ -55,6 +75,8 @@ struct RecentConversationItem {
 
 extension RecentConversationItem: ConversationItem {
     var outgoingMessageClass: TSOutgoingMessage.Type { unwrapped.outgoingMessageClass }
+
+    var limitsVideoAttachmentLengthForStories: Bool { return unwrapped.limitsVideoAttachmentLengthForStories }
 
     var messageRecipient: MessageRecipient {
         return unwrapped.messageRecipient
@@ -107,6 +129,8 @@ extension ContactConversationItem: Comparable {
 
 extension ContactConversationItem: ConversationItem {
     var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+
+    var limitsVideoAttachmentLengthForStories: Bool { return false }
 
     var messageRecipient: MessageRecipient {
         .contact(address)
@@ -161,6 +185,8 @@ public struct GroupConversationItem: Dependencies {
 
 extension GroupConversationItem: ConversationItem {
     public var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+
+    public var limitsVideoAttachmentLengthForStories: Bool { return false }
 
     public var messageRecipient: MessageRecipient {
         .group(groupThreadId)
@@ -242,6 +268,12 @@ public struct StoryConversationItem {
 
 extension StoryConversationItem: ConversationItem {
     public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
+
+    public var limitsVideoAttachmentLengthForStories: Bool { return true }
+
+    public var videoAttachmentStoryLengthTooltipString: String? {
+        return StoryMessage.videoSegmentationTooltip
+    }
 
     public var messageRecipient: MessageRecipient {
         unwrapped.messageRecipient
@@ -344,6 +376,12 @@ public struct PrivateStoryConversationItem: Dependencies {
 
 extension PrivateStoryConversationItem: ConversationItem {
     public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
+
+    public var limitsVideoAttachmentLengthForStories: Bool { return true }
+
+    public var videoAttachmentStoryLengthTooltipString: String? {
+        return StoryMessage.videoSegmentationTooltip
+    }
 
     public var isBlocked: Bool { false }
 

@@ -13,6 +13,8 @@ open class ContactTableViewCell: UITableViewCell {
 
     private let cellView = ContactCellView()
 
+    public var tooltipTailReferenceView: UIView { return cellView.tooltipTailReferenceView }
+
     @objc
     public override var accessoryView: UIView? {
         didSet {
