@@ -67,6 +67,11 @@ class GroupCallMemberView: UIView {
         muteIndicatorImage.setTemplateImage(#imageLiteral(resourceName: "mic-off-solid-28"), tintColor: .ows_white)
         addSubview(muteIndicatorImage)
         muteIndicatorImage.autoMatch(.width, to: .height, of: muteIndicatorImage)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateOrientationForPhone),
+                                               name: CallService.phoneOrientationDidChange,
+                                               object: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -77,13 +82,29 @@ class GroupCallMemberView: UIView {
         case blocked(SignalServiceAddress)
         case noMediaKeys(SignalServiceAddress)
     }
+
+    @objc
+    private func updateOrientationForPhone(_ notification: Notification) {
+        let rotationAngle = notification.object as! CGFloat
+
+        if window == nil {
+            rotateForPhoneOrientation(rotationAngle)
+        } else {
+            UIView.animate(withDuration: 0.3) {
+                self.rotateForPhoneOrientation(rotationAngle)
+            }
+        }
+    }
+
+    fileprivate func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
+        self.muteIndicatorImage.transform = CGAffineTransform(rotationAngle: rotationAngle)
+    }
 }
 
 class GroupCallLocalMemberView: GroupCallMemberView {
     let videoView = LocalVideoView()
 
     let videoOffIndicatorImage = UIImageView()
-    let videoOffLabel = UILabel()
 
     var videoOffIndicatorWidth: CGFloat {
         if width > 102 {
@@ -113,41 +134,6 @@ class GroupCallLocalMemberView: GroupCallMemberView {
 
     lazy var videoOffIndicatorWidthConstraint = videoOffIndicatorImage.autoSetDimension(.width, toSize: videoOffIndicatorWidth)
 
-    lazy var callFullLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-        label.font = .ows_dynamicTypeSubheadline
-        label.textAlignment = .center
-        label.textColor = Theme.darkThemePrimaryColor
-        return label
-    }()
-
-    lazy var callFullStack: UIStackView = {
-        let callFullStack = UIStackView()
-        callFullStack.axis = .vertical
-        callFullStack.spacing = 8
-
-        let imageView = UIImageView(image: #imageLiteral(resourceName: "sad-cat"))
-        imageView.contentMode = .scaleAspectFit
-        imageView.autoSetDimensions(to: CGSize(square: 200))
-        callFullStack.addArrangedSubview(imageView)
-
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString(
-            "GROUP_CALL_IS_FULL",
-            comment: "Text explaining the group call is full"
-        )
-        titleLabel.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
-        titleLabel.textAlignment = .center
-        titleLabel.textColor = Theme.darkThemePrimaryColor
-        callFullStack.addArrangedSubview(titleLabel)
-
-        callFullStack.addArrangedSubview(callFullLabel)
-
-        return callFullStack
-    }()
-
     override init() {
         super.init()
 
@@ -157,22 +143,9 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoOffIndicatorImage.autoMatch(.height, to: .width, of: videoOffIndicatorImage)
         videoOffIndicatorImage.autoCenterInSuperview()
 
-        videoOffLabel.font = .ows_dynamicTypeSubheadline
-        videoOffLabel.text = NSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
-                                               comment: "Indicates to the user that their camera is currently off.")
-        videoOffLabel.textAlignment = .center
-        videoOffLabel.textColor = Theme.darkThemePrimaryColor
-        noVideoView.addSubview(videoOffLabel)
-        videoOffLabel.autoPinWidthToSuperview()
-        videoOffLabel.autoPinEdge(.top, to: .bottom, of: videoOffIndicatorImage, withOffset: 10)
-
         videoView.contentMode = .scaleAspectFill
         insertSubview(videoView, belowSubview: muteIndicatorImage)
         videoView.frame = bounds
-
-        addSubview(callFullStack)
-        callFullStack.autoAlignAxis(.horizontal, toSameAxisOf: self, withOffset: -30)
-        callFullStack.autoPinWidthToSuperview(withMargin: 16)
 
         layer.shadowOffset = .zero
         layer.shadowOpacity = 0.25
@@ -191,32 +164,8 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         videoView.captureSession = call.videoCaptureController.captureSession
         noVideoView.isHidden = !videoView.isHidden
 
-        if isFullScreen,
-           call.groupCall.isFull,
-           case .notJoined = call.groupCall.localDeviceState.joinState {
-
-            let text: String
-            if let maxDevices = call.groupCall.maxDevices {
-                let formatString = NSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
-                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
-                )
-                text = String.localizedStringWithFormat(formatString, maxDevices)
-            } else {
-                text = NSLocalizedString(
-                    "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
-                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
-                )
-            }
-
-            callFullLabel.text = text
-            callFullStack.isHidden = false
-            videoOffLabel.isHidden = true
-            videoOffIndicatorImage.isHidden = true
-        } else {
-            callFullStack.isHidden = true
-            videoOffLabel.isHidden = !videoView.isHidden || !isFullScreen
-            videoOffIndicatorImage.isHidden = !videoView.isHidden
-        }
+        // In full-screen mode the image is shown as part of the "Your camera is off" message.
+        videoOffIndicatorImage.isHidden = noVideoView.isHidden || isFullScreen
 
         guard let localAddress = tsAccountManager.localAddress else {
             return owsFailDebug("missing local address")
@@ -244,6 +193,11 @@ class GroupCallLocalMemberView: GroupCallMemberView {
         muteBottomConstraint.constant = -muteInsets
         muteHeightConstraint.constant = muteHeight
         videoOffIndicatorWidthConstraint.constant = videoOffIndicatorWidth
+    }
+
+    fileprivate override func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
+        super.rotateForPhoneOrientation(rotationAngle)
+        self.videoOffIndicatorImage.transform = CGAffineTransform(rotationAngle: rotationAngle)
     }
 }
 
@@ -463,6 +417,11 @@ class GroupCallRemoteMemberView: GroupCallMemberView {
                 self.delegate?.memberView(self, userRequestedInfoAboutError: .noMediaKeys(address))
             }
         }
+    }
+
+    fileprivate override func rotateForPhoneOrientation(_ rotationAngle: CGFloat) {
+        super.rotateForPhoneOrientation(rotationAngle)
+        self.avatarView.transform = CGAffineTransform(rotationAngle: rotationAngle)
     }
 }
 

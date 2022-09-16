@@ -157,39 +157,12 @@ public class GroupSearchResult: NSObject, Comparable {
             return nil
         }
 
-        let members: [(
-            address: SignalServiceAddress,
-            displayName: String,
-            comparableName: String,
-            isMatched: Bool
-        )] = groupThread.groupMembership.fullMembers.map { address in
-            var displayName = contactsManager.displayName(for: address, transaction: transaction)
-            var isMatched = false
-            if let matchRange = displayName.range(of: searchText, options: [.caseInsensitive, .diacriticInsensitive]) {
-                isMatched = true
-                displayName = displayName.replacingCharacters(
-                    in: matchRange,
-                    with: "<\(FullTextSearchFinder.matchTag)>\(displayName[matchRange])</\(FullTextSearchFinder.matchTag)>"
-                )
-            }
-            return (
-                address: address,
-                displayName: displayName,
-                comparableName: contactsManager.comparableName(for: address, transaction: transaction),
-                isMatched: isMatched
-            )
+        let matchedMembers = groupThread.sortedMemberNames(searchText: searchText,
+                                                           includingBlocked: true,
+                                                           transaction: transaction) {
+            contactsManager.displayName(for: $0, transaction: transaction)
         }
-
-        let matchedMembersSnippet = members.sorted { lhs, rhs in
-            // Bubble matched members to the top
-            if rhs.isMatched != lhs.isMatched { return lhs.isMatched }
-            // Sort numbers to the end of the list
-            if lhs.comparableName.hasPrefix("+") != rhs.comparableName.hasPrefix("+") {
-                return !lhs.comparableName.hasPrefix("+")
-            }
-            // Otherwise, sort by comparable name
-            return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
-        }.map { $0.displayName }.joined(separator: ", ")
+        let matchedMembersSnippet = matchedMembers.joined(separator: ", ")
 
         return GroupSearchResult(thread: thread, sortKey: sortKey, matchedMembersSnippet: matchedMembersSnippet)
     }

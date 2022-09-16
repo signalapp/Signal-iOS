@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -422,8 +422,8 @@ private class ChangePhoneNumberValueViews: NSObject {
             return .noNumber
         }
 
-        let phoneNumberWithCallingCode = "\(callingCode)\(phoneNumberWithoutCallingCode)"
-        guard let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumberWithCallingCode),
+        guard let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumberWithoutCallingCode,
+                                                                callingCode: callingCode),
               let e164 = phoneNumber.toE164().strippedOrNil,
               PhoneNumberValidator().isValidForRegistration(phoneNumber: phoneNumber) else {
                   self.phoneNumber = nil

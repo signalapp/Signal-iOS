@@ -606,7 +606,12 @@ class DebugUIGroupsV2: DebugUIPage {
                                                        uuid: otherUserUuid,
                                                        role: .administrator)
             }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
-                GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
+                self.databaseStorage.write { transaction in
+                    GroupManager.localLeaveGroupOrDeclineInvite(
+                        groupThread: groupThread,
+                        transaction: transaction
+                    )
+                }
             }.map(on: .global()) { (groupThread: TSGroupThread) in
                 guard let missingLocalUserGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid groupModel.")

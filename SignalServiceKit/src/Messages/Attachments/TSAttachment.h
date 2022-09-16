@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -107,6 +107,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
@@ -118,12 +119,13 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
+- (void)upgradeAttachmentSchemaVersionIfNecessary;
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
 
 @property (nonatomic, readonly) BOOL isAnimated;

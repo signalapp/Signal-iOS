@@ -11,12 +11,16 @@ class StoryCell: UITableViewCell {
     static let reuseIdentifier = "StoryCell"
 
     let nameLabel = UILabel()
-    let timestampLabel = UILabel()
+    let nameIconView = UIImageView()
+    let subtitleLabel = UILabel()
     let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
     let attachmentThumbnail = UIView()
     let replyImageView = UIImageView()
 
+    let failedIconView = UIImageView()
+
     let contentHStackView = UIStackView()
+    let subtitleStack = UIStackView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -26,7 +30,21 @@ class StoryCell: UITableViewCell {
         replyImageView.autoSetDimensions(to: CGSize(square: 20))
         replyImageView.contentMode = .scaleAspectFit
 
-        let vStack = UIStackView(arrangedSubviews: [nameLabel, timestampLabel, replyImageView])
+        let nameStack = UIStackView(arrangedSubviews: [nameLabel, nameIconView])
+        nameStack.axis = .horizontal
+        nameStack.alignment = .center
+        nameStack.spacing = 3
+
+        failedIconView.autoSetDimension(.width, toSize: 16)
+        failedIconView.contentMode = .scaleAspectFit
+        failedIconView.tintColor = .ows_accentRed
+
+        subtitleStack.addArrangedSubviews([failedIconView, subtitleLabel])
+        subtitleStack.axis = .horizontal
+        subtitleStack.alignment = .center
+        subtitleStack.spacing = 6
+
+        let vStack = UIStackView(arrangedSubviews: [nameStack, subtitleStack, replyImageView])
         vStack.axis = .vertical
         vStack.alignment = .leading
 
@@ -48,13 +66,15 @@ class StoryCell: UITableViewCell {
     }
 
     func configure(with model: StoryViewModel) {
-        configureTimestamp(with: model)
+        configureSubtitle(with: model)
 
         switch model.context {
         case .authorUuid:
             replyImageView.image = #imageLiteral(resourceName: "reply-solid-20").withRenderingMode(.alwaysTemplate)
         case .groupId:
             replyImageView.image = #imageLiteral(resourceName: "messages-solid-20").withRenderingMode(.alwaysTemplate)
+        case .privateStory:
+            owsFailDebug("Unexpectedly had private story on stories list")
         case .none:
             owsFailDebug("Unexpected context")
         }
@@ -65,6 +85,10 @@ class StoryCell: UITableViewCell {
         nameLabel.font = .ows_dynamicTypeHeadline
         nameLabel.textColor = Theme.primaryTextColor
         nameLabel.text = model.latestMessageName
+
+        nameIconView.contentMode = .center
+        nameIconView.image = UIImage(named: "official-checkmark-20")
+        nameIconView.isHiddenInStackView = !model.isSystemStory
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = model.latestMessageAvatarDataSource
@@ -78,11 +102,28 @@ class StoryCell: UITableViewCell {
         let storyThumbnailView = StoryThumbnailView(attachment: model.latestMessageAttachment)
         attachmentThumbnail.addSubview(storyThumbnailView)
         storyThumbnailView.autoPinEdgesToSuperviewEdges()
+
+        contentView.alpha = model.isHidden ? 0.27 : 1
     }
 
-    func configureTimestamp(with model: StoryViewModel) {
-        timestampLabel.font = .ows_dynamicTypeSubheadline
-        timestampLabel.textColor = Theme.secondaryTextAndIconColor
-        timestampLabel.text = DateUtil.formatTimestampRelatively(model.latestMessageTimestamp)
+    func configureSubtitle(with model: StoryViewModel) {
+        subtitleStack.isHidden = model.isSystemStory
+        subtitleLabel.font = .ows_dynamicTypeSubheadline
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+
+        switch model.latestMessageSendingState {
+        case .sent:
+            subtitleLabel.text = DateUtil.formatTimestampRelatively(model.latestMessageTimestamp)
+            failedIconView.isHiddenInStackView = true
+        case .sending, .pending:
+            subtitleLabel.text = NSLocalizedString("STORY_SENDING", comment: "Text indicating that the story is currently sending")
+            failedIconView.isHiddenInStackView = true
+        case .failed:
+            subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+            failedIconView.image = Theme.iconImage(.error16)
+            failedIconView.isHiddenInStackView = false
+        case .sent_OBSOLETE, .delivered_OBSOLETE:
+            owsFailDebug("Unexpected legacy sending state")
+        }
     }
 }

@@ -216,6 +216,41 @@ public class OWSLinkPreview: MTLModel, Codable {
         return linkPreview
     }
 
+    public func buildProto(transaction: SDSAnyReadTransaction) throws -> SSKProtoPreview {
+        guard isValid() else {
+            Logger.error("Preview has neither title nor image.")
+            throw LinkPreviewError.invalidPreview
+        }
+
+        guard let urlString = urlString else {
+            Logger.error("Preview does not have url.")
+            throw LinkPreviewError.invalidPreview
+        }
+
+        let builder = SSKProtoPreview.builder(url: urlString)
+
+        if let title = title {
+            builder.setTitle(title)
+        }
+
+        if let previewDescription = previewDescription {
+            builder.setPreviewDescription(previewDescription)
+        }
+
+        if
+            let imageAttachmentId = imageAttachmentId,
+            let attachmentProto = TSAttachmentStream.buildProto(forAttachmentId: imageAttachmentId, transaction: transaction)
+        {
+            builder.setImage(attachmentProto)
+        }
+
+        if let date = date {
+            builder.setDate(date.ows_millisecondsSince1970)
+        }
+
+        return try builder.build()
+    }
+
     private class func saveAttachmentIfPossible(imageData: Data?,
                                                 imageMimeType: String?,
                                                 transaction: SDSAnyWriteTransaction) -> String? {
@@ -425,7 +460,7 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
 
     // MARK: - Private, Networking
 
-    private func buildOWSURLSession() -> OWSURLSession {
+    private func buildOWSURLSession() -> OWSURLSessionProtocol {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.urlCache = nil
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
@@ -436,11 +471,13 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
         let userAgentString = "WhatsApp/2"
         let extraHeaders: [String: String] = [OWSHttpHeaders.userAgentHeaderKey: userAgentString]
 
-        let urlSession = OWSURLSession(baseUrl: nil,
-                                       securityPolicy: OWSURLSession.defaultSecurityPolicy,
-                                       configuration: sessionConfig,
-                                       extraHeaders: extraHeaders,
-                                       maxResponseSize: Self.maxFetchedContentSize)
+        let urlSession = OWSURLSession(
+            baseUrl: nil,
+            securityPolicy: OWSURLSession.defaultSecurityPolicy,
+            configuration: sessionConfig,
+            extraHeaders: extraHeaders,
+            maxResponseSize: Self.maxFetchedContentSize
+        )
         urlSession.allowRedirects = true
         urlSession.customRedirectHandler = { request in
             guard request.url?.isPermittedLinkPreviewUrl() == true else {

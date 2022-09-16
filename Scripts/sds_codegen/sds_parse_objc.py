@@ -717,7 +717,7 @@ def get_pch_include(file_path):
     print('s_path', s_path)
     print('sae_path', sae_path)
     if file_path.startswith(ssk_path):
-        return os.path.join(git_repo_path, "Pods/Target Support Files/SignalServiceKit/SignalServiceKit-prefix.pch")
+        return os.path.join(git_repo_path, "SignalServiceKit/SignalServiceKit-prefix.pch")
     elif file_path.startswith(sm_path):
         return os.path.join(git_repo_path, "SignalMessaging/SignalMessaging-Prefix.pch")
     elif file_path.startswith(s_path):

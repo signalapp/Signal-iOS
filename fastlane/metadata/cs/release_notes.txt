@@ -1,2 +1,3 @@
-• Vylepšili jsme editor médií, takže je teď ještě snazší fotky a videa před odesláním upravit.
-• Spousta vylepšení, díky kterým aplikace poběží hladce. A na obzoru jsou další vzrušující změny!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

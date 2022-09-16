@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachment.h"
@@ -12,11 +12,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSUInteger const TSAttachmentSchemaVersion = 5;
+NSUInteger const TSAttachmentSchemaVersion = 1;
 
 @interface TSAttachment ()
 
-@property (nonatomic, readonly) NSUInteger attachmentSchemaVersion;
+@property (nonatomic) NSUInteger attachmentSchemaVersion;
 
 @property (nonatomic, nullable) NSString *sourceFilename;
 
@@ -229,6 +229,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
@@ -249,6 +250,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     }
 
     _albumMessageId = albumMessageId;
+    _attachmentSchemaVersion = attachmentSchemaVersion;
     _attachmentType = attachmentType;
     _blurHash = blurHash;
     _byteCount = byteCount;
@@ -276,6 +278,27 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
         OWSLogWarn(@"legacy attachment has invalid content type");
 
         _contentType = OWSMimeTypeApplicationOctetStream;
+    }
+}
+
+- (void)upgradeAttachmentSchemaVersionIfNecessary
+{
+    if (self.attachmentSchemaVersion < TSAttachmentSchemaVersion) {
+        // Apply the schema update to the local copy
+        [self upgradeFromAttachmentSchemaVersion:self.attachmentSchemaVersion];
+        self.attachmentSchemaVersion = TSAttachmentSchemaVersion;
+
+        // Async save the schema update in the database
+        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            TSAttachment *_Nullable latestInstance = [TSAttachment anyFetchWithUniqueId:self.uniqueId
+                                                                            transaction:transaction];
+            if (latestInstance == nil) {
+                return;
+            }
+            [latestInstance upgradeFromAttachmentSchemaVersion:latestInstance.attachmentSchemaVersion];
+            latestInstance.attachmentSchemaVersion = TSAttachmentSchemaVersion;
+            [latestInstance anyUpsertWithTransaction:transaction];
+        });
     }
 }
 
@@ -457,13 +480,6 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     [super anyDidInsertWithTransaction:transaction];
 
     [self.modelReadCaches.attachmentReadCache didInsertOrUpdateAttachment:self transaction:transaction];
-}
-
-- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [SDSDatabaseStorage.shared updateIdMappingWithAttachment:self transaction:transaction];
-
-    [super anyWillRemoveWithTransaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction

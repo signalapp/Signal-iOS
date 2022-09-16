@@ -17,7 +17,6 @@ public protocol SyncManagerProtocolObjc {
 
     func syncLocalContact() -> AnyPromise
     func syncAllContacts() -> AnyPromise
-    func syncContacts(forSignalAccounts signalAccounts: [SignalAccount]) -> AnyPromise
     func syncGroups(transaction: SDSAnyWriteTransaction, completion: @escaping Completion)
 
     func processIncomingConfigurationSyncMessage(_ syncMessage: SSKProtoSyncMessageConfiguration, transaction: SDSAnyWriteTransaction)

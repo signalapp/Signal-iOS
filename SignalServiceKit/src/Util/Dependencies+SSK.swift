@@ -290,12 +290,12 @@ public extension NSObject {
         SSKEnvironment.shared.appExpiryRef
     }
 
-    final var signalService: OWSSignalService {
-        .shared()
+    final var signalService: OWSSignalServiceProtocol {
+        SSKEnvironment.shared.signalServiceRef
     }
 
-    static var signalService: OWSSignalService {
-        .shared()
+    static var signalService: OWSSignalServiceProtocol {
+        SSKEnvironment.shared.signalServiceRef
     }
 
     final var accountServiceClient: AccountServiceClient {
@@ -498,6 +498,16 @@ public extension NSObject {
 
     static var subscriptionManager: SubscriptionManagerProtocol {
         SSKEnvironment.shared.subscriptionManagerRef
+    }
+
+    @nonobjc
+    var systemStoryManager: SystemStoryManagerProtocol {
+        SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
+    }
+
+    @nonobjc
+    static var systemStoryManager: SystemStoryManagerProtocol {
+        SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
     }
 }
 
@@ -779,12 +789,12 @@ public extension Dependencies {
         SSKEnvironment.shared.appExpiryRef
     }
 
-    var signalService: OWSSignalService {
-        .shared()
+    var signalService: OWSSignalServiceProtocol {
+        SSKEnvironment.shared.signalServiceRef
     }
 
-    static var signalService: OWSSignalService {
-        .shared()
+    static var signalService: OWSSignalServiceProtocol {
+        SSKEnvironment.shared.signalServiceRef
     }
 
     var accountServiceClient: AccountServiceClient {
@@ -987,6 +997,14 @@ public extension Dependencies {
 
     static var subscriptionManager: SubscriptionManagerProtocol {
         SSKEnvironment.shared.subscriptionManagerRef
+    }
+
+    var systemStoryManager: SystemStoryManagerProtocol {
+        SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
+    }
+
+    static var systemStoryManager: SystemStoryManagerProtocol {
+        SSKEnvironment.shared.systemStoryManagerRef as! SystemStoryManagerProtocol
     }
 }
 

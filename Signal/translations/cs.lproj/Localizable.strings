@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Média";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "Vy";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Nálepka";
 
@@ -75,9 +72,6 @@
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ je už členem %@";
-
-/* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Poslední chaty";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ přidán do %@";
@@ -132,9 +126,6 @@
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Chyba";
-
-/* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Spustit kontrolu integrity databáze";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "Otevřít Signál znovu";
@@ -368,10 +359,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Dejte Signalu Boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Platnost vašeho odznaku Boost vypršela a již  není možné jej zobrazovat na vašem profilu.\nSignal můžete používat i nadále, pokud však chcete podpořit technologii, která je vytvořena pro vás, zvažte možnost stát se podporovatelem a přispívat měsíčně.";
+"BADGE_EXPIRED_BOOST_BODY" = "Platnost vašeho odznaku Boost vypršela a na vašem profilu ho již nelze zobrazit.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Platnost vašeho odznaku Boost vypršela a již není možné jej zobrazovat na vašem profilu.\n\nJednorázovým příspěvkem si můžete odznak Boost znovu aktivovat na dalších 30 dní.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Platnost vašeho odznaku Boost vypršela a již není možné jej zobrazovat na vašem profilu.\n\nJednorázovým příspěvkem si můžete odznak Boost znovu aktivovat na dalších 30 dní.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Staňte se podporovatelem";
@@ -382,8 +373,20 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Platnost odznaku vypršela";
 
+/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_BODY" = "Platnost vašeho dárkového odznaku vypršela a na vašem profilu ho již nelze zobrazit.";
+
+/* Title for gift on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_TITLE" = "Platnost vašeho dárkového odznaku vypršela";
+
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Zjistit více.";
+
+/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Signál můžete používat i nadále, ale abyste podpořili technologii, která je vytvořena pro vás, zvažte možnost stát se podporovatelem měsíčním příspěvkem.";
+
+/* Button title to donate monthly on the badge expiration sheet. */
+"BADGE_EXPIRED_RENEWAL_MONTHLY" = "Poskytnout měsíční příspěvek";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Obnovit předplatné";
@@ -412,7 +415,7 @@
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Vypršel";
 
-/* Shown on a gift badge message to indicate that the message contains a gift. */
+/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "Dárkový odznak";
 
 /* Short paragraph on the screen where you choose a gift badge */
@@ -465,6 +468,12 @@
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Uplatnit";
+
+/* Shown as the body of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Váš dárek nemohl být uplatněn. Zkontrolujte své připojení a zkuste to znovu.";
+
+/* Shown as the title of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Dárek se nepodařilo uplatnit";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "Odznak můžete uplatnit později";
@@ -775,8 +784,11 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
 
+/* VoiceOver label for -> button in text story composer. */
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "Pokračovat";
+
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "Režim alba";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "Vyp.";
@@ -785,25 +797,28 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "Zap.";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+"CAMERA_VO_CAMERA_BACK_FACING" = "Zadní kamera";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Výběr kamery";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Přepíná mezi kamerami";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Přední kamera";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "Zavřít";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Režim psaní zpráv";
+
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_AUTO" = "Automatic";
+"CAMERA_VO_FLASH_AUTO" = "Automaticky";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_FLASH_BUTTON" = "Flash";
+"CAMERA_VO_FLASH_BUTTON" = "Blesk";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_OFF" = "Vyp.";
@@ -812,22 +827,22 @@
 "CAMERA_VO_FLASH_ON" = "Zap.";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
-"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Prohlížeč fotek a videí";
 
 /* VoiceOver label for the round capture button in in-app camera during video recording. */
-"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+"CAMERA_VO_STOP_VIDEO_REC" = "Přestat nahrávat video";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+"CAMERA_VO_TAKE_PICTURE" = "Fotit";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
-"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+"CAMERA_VO_TAKE_VIDEO" = "Nahrát video";
 
 /* VoiceOver label for camera zoom control. */
 "CAMERA_VO_ZOOM" = "Lupa";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@times";
+"CAMERA_VO_ZOOM_LEVEL" = "%@krát";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Tento uživatel nemůže být ověřen, dokud neodešlete zprávu.";
@@ -1150,6 +1165,12 @@
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "Sdílet";
 
+/* Context menu button title */
+"CONTEXT_MENU_SPEAK_MESSAGE" = "Přečíst";
+
+/* Context menu button title */
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Zastavit";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Tento chat bude odstraněn z tohoto zařízení.";
 
@@ -1173,9 +1194,6 @@
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Vždy";
-
-/* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Této skupině mohou poslat zprávu jen správci.";
@@ -1442,16 +1460,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Spustit";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "To může chvíli trvat (několik minut nebo déle) v závislosti na tom, jak moc jste používali Signal. Pokud to trvá příliš dlouho, je bezpečné aplikaci Signal zavřít.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Tohle nám pomůže vyřešit váš problém a může to trvat několik minut. Během kontroly můžete Signal zavřít, ale pak se prosím vraťte, aby se odeslaly vaše záznamy.";
 
-/* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Přidat do Debug Logu";
-
-/* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Výsledky kontroly integrity";
+/* Button to skip database integrity check step */
+"DATABASE_INTEGRITY_CHECK_SKIP" = "Přeskočit";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Spustit kontrolu integrity databáze?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Spustit diagnostiku databáze?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Toto může pár minut trvat.";
@@ -1480,9 +1495,6 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Nelze najít žádné logy.";
 
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Otevřít hlášení chyb";
-
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Zkopírovat odkaz";
 
@@ -1492,20 +1504,11 @@
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Exportovat logy";
 
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Odeslat sobě";
-
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Sdílet";
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Další krok";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Odkaz gist byl zkopírován do schránky. Budete přesměrováni do seznamu chyb na GitHub.";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Přesměrování na GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Informace o debug logu";
@@ -2158,7 +2161,13 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Zadejte vyhledávání";
 
-/* Turn on permission view 'go to settings' button */
+/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Platnost vašeho dárku od %@ vypršela a již ho nelze uplatnit.";
+
+/* Title when trying to redeem a gift that's already expired. */
+"GIFT_NOT_REDEEMED_TITLE" = "Platnost vašeho dárku vypršela";
+
+/* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Nastavení";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
@@ -2227,14 +2236,17 @@
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Hovor je plný";
 
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Volám uživateli %@…";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Volám uživatelům %1$@ a %2$@…";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Připojit se k hovoru";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Opustit hovor";
-
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ a %3$@ dalších se účastní tohoto hovoru";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Nemohu přijmout audio ani video od %@";
@@ -2296,8 +2308,8 @@
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ zahájil skupinový hovor";
 
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ a 1 další se účastní tohoto hovoru";
+/* Text displayed when trying to turn on ringing when calling a large group. */
+"GROUP_CALL_TOO_LARGE_TO_RING" = "Skupina je pro volání příliš velká";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ a %2$@ se účastní tohoto hovoru";
@@ -2305,8 +2317,17 @@
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Byli jste odpojeni od hovoru. Zkotrolujte své připojení k síti a zkuste to znova.";
 
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "Vy";
+/* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ dostane oznámení";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ a %2$@ dostanou oznámení";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal zavolá uživateli %@";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal zavolá uživatelům %1$@ a %2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Účastníte se skupinového hovoru";
@@ -2626,9 +2647,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Správce";
 
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "Vy";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Po založení této skupiny můžete přidat nebo pozvat přátele.";
 
@@ -2752,6 +2770,18 @@
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ do %2$@";
 
+/* Button to delete the story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Opravdu chcete smazat tento příběh?";
+
+/* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+
+/* Section header for the 'viewers' section on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Skupina aktualizována.";
 
@@ -2835,6 +2865,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Poslat zprávu správci";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Zablokovat žádost";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Zablokovat žádost";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ se nebude moci připojit nebo požádat o připojení k této skupině přes odkaz skupiny. Může ho ale přidat správce.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Zablokovat žádost?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Než opustíte skupinu, vyberte nového administrátora.";
@@ -3307,9 +3349,6 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "Vy";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Tento měsíc";
 
@@ -3385,6 +3424,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Sdílet média";
 
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "Přečíst zprávu";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Zastavit čtení zprávy";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Skupinová pozvánka";
 
@@ -3408,6 +3453,9 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME typ";
+
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Zmizí";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Doručeno";
@@ -3435,6 +3483,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Zobrazil(a)";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "Nikdy";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Přijato";
@@ -3619,6 +3670,12 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "Zmeškaný hovor";
 
+/* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
+"MISSED_CALL_DO_NOT_DISTURB" = "Zmeškaný hovor při zapnutém režimu Nerušit";
+
+/* info message text in conversation view (use Apple's name for 'Focus') */
+"MISSED_CALL_FOCUS_MODE" = "Zmeškaný hovor při zapnutém režimu Soustředění";
+
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Pro videohovory v Signalu povolte přístup k fotoaparátu v nastavení iOS.";
 
@@ -3652,26 +3709,11 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Aktualizace vašeho příběhu se zobrazí zde.";
 
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Skryjte svůj příběh před konkrétními lidmi";
-
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Všechna spojení Signal kromě...";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Sdílet se všemi spojeními";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Všechna spojení Signal";
-
-/* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Vyberte, kdo si může váš příběh prohlédnout. Změny se nedotknou příběhů, které jste už sdíleli.";
-
-/* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Kdo si může zobrazit tento příběh";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Vyberte lidi, se kterými chcete sdílet";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Sdílet pouze s...";
@@ -3684,6 +3726,9 @@
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Můj příběh";
+
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "Klepnutím přidáte příběh";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Nedávno změnili své jméno z %1$@ na %2$@.";
@@ -3745,8 +3790,11 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Vyberte členy";
 
+/* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+
 /* Title for the 'new group story' view */
-"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Vybrat skupinu";
 
 /* No comment provided by engineer. */
 "new_message" = "Nová zpráva";
@@ -3758,31 +3806,34 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Najít uživatele";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Název příběhu";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Vytvořit";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Název příběhu je povinný.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Chybí název příběhu";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Název příběhu (povinné)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Vybrat sledující";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Zobrazení";
+
+/* table section header button to add a new story */
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nový příběh";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Sdílet existující skupině";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Nový skupinový příběh";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Viditelný pouze vybraným lidem";
@@ -3791,7 +3842,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Nový soukromý příběh";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
+"NEW_STORY_SHEET_TITLE" = "Vybrat typ příběhu";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Najít kontakty pomocí telefonního čísla";
@@ -3801,12 +3852,6 @@
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "Žádné další společné skupiny.";
-
-/* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Vyberte si kontakt nebo skupinu a začněte si povídat.";
-
-/* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Vítejte v Signalu";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Nová zpráva pro:";
@@ -4265,7 +4310,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Zamítnout požadavek";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Zamítnout žádost od \"%@\"? Nebudou moci znovu požádat o připojení prostřednictvím odkazu na skupinu.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Neexistují žádné nevyřízené žádosti o členství.";
@@ -4616,25 +4661,22 @@
 "PRIVACY_VERIFY_BUTTON" = "Označit jako ověřený";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Přidat sledující";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Smazat soukromý příběh";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Opravdu chcete smazat tento příběh?";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Odebrat";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Tato osoba nadále neuvidí váš příběh.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
-
-/* Section header for the 'viewers' section on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "Kdo si může zobrazit tento příběh";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Odstranit %1$@?";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Pokračovat";
@@ -4732,9 +4774,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Vy";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Původní zpráva nebyla nalezena.";
 
@@ -4809,9 +4848,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagoval(a) %@ na vaši hlasovou zprávu";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "Vy";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Přečteno";
@@ -5323,9 +5359,6 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Využití dat";
 
-/* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Výchozí časovač pro nové konverzace";
-
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Smazat účet";
 
@@ -5406,9 +5439,6 @@
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videa";
-
-/* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Odesílání zpráv";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "Zobrazte a sdílejte informaci, když jsou zprávy přečteny nebo psány. Pokud tuto možnost zakážete, neuvidíte informace o přečtení zpráv ani indikátory psaní ani u ostatních lidí.";
@@ -5616,9 +5646,6 @@
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ na %2$@";
-
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Vy";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Odesláno";
@@ -5950,6 +5977,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Povolit iOS přístup ke kontaktům a konverzacím Signal pro zpřístupnění funkcí jako doporučení ke sdílení a upozornění.";
 
+/* Explanation for the 'stories' privacy settings. */
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+
+/* Label for the stories section of the settings view */
+"SETTINGS_STORIES_TITLE" = "Příběhy";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Zámek registrace";
 
@@ -5973,9 +6006,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Verze";
-
-/* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Kdo může…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "E-mail";
@@ -6106,20 +6136,50 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "Smazat";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "Smazat";
+
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Smazat tento příběh? Smaže se také všem, kteří jej obdrželi.";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Příběh uložen";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Přeposlat";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Jít do konverzace";
 
+/* Text indicating you can't reply to a group story because you're not a member of the group */
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "Skryté příběhy";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Schovat příběh";
+
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nové aktualizace příběhu od uživatele %@ se již nebudou zobrazovat v horní části seznamu příběhů.";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Skrýt příběh?";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Příběh je skrytý";
+
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "Info";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "V tuto chvíli nejsou žádné aktualizace k zobrazení. Klepnutím na + přidáte do svého příběhu.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Zatím žádné odpovědi";
+
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "Zatím žádná zobrazení";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Umožněte lidem, kteří si mohou váš příběh zobrazit, reagovat a odpovědět.";
@@ -6130,23 +6190,74 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Povolit odpovědi a reakce";
 
-/* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "Nový soukromý příběh";
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "Odpovědi";
 
-/* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Soukromé příběhy si mohou prohlížet pouze lidé, které do nich přidáte. Název příběhu můžete vidět pouze vy.";
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Příběh se nepodařilo uložit";
 
-/* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Soukromé příběhy";
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "Uložit";
+
+/* Footer for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Příběhy automaticky zmizí po 24 hodinách. Vyberte, kdo si může váš příběh prohlédnout, nebo vytvořte nové příběhy pro konkrétní diváky nebo skupiny.";
+
+/* Header for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "Moje příběhy";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "Soukromí příběhu";
+
+/* Title for the action sheet confirming you want to turn off stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+
+/* Footer for the 'turn off' section of the stories settings */
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Pokud příběhy vypnete, nebudete již moci příběhy sdílet ani zobrazovat.";
+
+/* Button to turn off stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+
+/* Footer for the 'turn on' section of the stories settings */
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+
+/* Button to turn on stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Sdílet";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Příběhy";
+
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "Zrušit skrytí příběhu";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Skrytí příběhu zrušeno";
+
+/* Text explaining that you will not see any views for your story because you have read receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "Zobrazení";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "Kamera";
+
+/* Displayed when failed to fetch link preview in Text Story composer. */
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+
+/* Displayed in text story composer when user is about to attach a link with preview */
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Sdílejte odkaz s těmi, kdo si zobrazili váš příběh";
+
+/* Placeholder text in text stories compose UI */
+"STORY_COMPOSER_TAP_ADD_TEXT" = "Klepněte pro přidání textu";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "Text";
+
+/* Placeholder text for URL input field in Text Story composer UI. */
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Zadejte nebo vložte adresu URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Navštívit odkaz";
@@ -6157,14 +6268,17 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Soukromí";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> odpověď";
+/* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
 
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> odpovědi/í";
+/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+
+/* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Odpověď";
+"STORY_REPLY_BUTTON" = "Odpovědět";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reagoval(a) na příběh";
@@ -6172,26 +6286,47 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Odpověď";
 
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "Vy";
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "Odpovědět skupině";
+
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "Příběh se nepodařilo odeslat. Zkontrolujte své připojení a zkuste to znovu";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Spojení";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Sdílet pouze s...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Vyloučená spojení";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Sponzorujte";
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "Odeslání se nezdařilo";
 
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal je aplikace, za kterou stojí lidé jako vy. Prokažte jim dnes svoji podporu!";
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "Klepnutím pokus zopakujete";
 
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Nyní ne";
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "Odesílání…";
 
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Staňte se podporovatelem";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Section header for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_1" = "Klepnutím budete pokračovat";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_2" = "Přejetím nahoru přeskočíte";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_3" = "Pro ukončení přejeďte doprava";
+
+/* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Rozumím";
+
+/* Text indicating that the user has views turned off */
+"STORY_VIEWS_OFF" = "Zobrazení vypnuta";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Číslo předplatitele zkopírováno do schránky";
@@ -6351,6 +6486,9 @@
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "Zap.";
+
+/* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
+"SYSTEM_ADDRESS_NAME" = "Signal";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Ověřit";
@@ -6607,6 +6745,12 @@
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Odchozí soubory médií pro jednorázové zobrazení jsou po odeslání automaticky odstraněny.";
 
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "Zobrazit fotku";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
+
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Pro zrušení přejeďte";
 
@@ -6702,6 +6846,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Nastavit tapetu";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "Vy";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Smazali jste tuto zprávu.";

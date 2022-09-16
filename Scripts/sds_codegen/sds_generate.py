@@ -1383,16 +1383,14 @@ extension %sSerializer {
         swift_body += '''
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static var table: SDSTableMetadata { 
+    public static var table: SDSTableMetadata {
         SDSTableMetadata(collection: %s.collection(),
                          tableName: "%s",
                          columns: [
 ''' % ( str(clazz.name), database_table_name, )
-
-        for column_property_name in column_property_names:
-            swift_body += '''        %sColumn,
-''' % ( str(column_property_name) )
-        swift_body += '''        ]) 
+        swift_body += ',\n'.join(['        %sColumn' % str(column_property_name) for column_property_name in column_property_names])
+        swift_body += '''
+        ])
     }
 }
 '''
@@ -1772,8 +1770,10 @@ public extension %(class_name)s {
         }
     }
 
-    class func anyExists(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> Bool {
+    class func anyExists(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -1852,8 +1852,10 @@ public extension %(class_name)s {
 @objc
 public extension %s {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetch%s(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> %s? {
+    class func anyFetch%s(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> %s? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

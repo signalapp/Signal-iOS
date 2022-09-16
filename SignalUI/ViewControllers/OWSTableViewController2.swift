@@ -48,12 +48,6 @@ open class OWSTableViewController2: OWSViewController {
     @objc
     open var bottomFooter: UIView?
 
-    // TODO: Remove.
-    @objc
-    public var tableViewStyle: UITableView.Style {
-        tableView.style
-    }
-
     @objc
     public var useThemeBackgroundColors = false {
         didSet {
@@ -63,6 +57,13 @@ open class OWSTableViewController2: OWSViewController {
 
     @objc
     public var useNewStyle = true {
+        didSet {
+            applyTheme()
+        }
+    }
+
+    @objc
+    public var forceDarkMode = false {
         didSet {
             applyTheme()
         }
@@ -639,17 +640,19 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         func buildTextView() -> UITextView {
             let textView = buildHeaderOrFooterTextView()
-            textView.textColor = (Theme.isDarkThemeEnabled
-                                    ? UIColor.ows_gray05
-                                    : UIColor.ows_gray90)
+            textView.textColor = (Theme.isDarkThemeEnabled || forceDarkMode) ? UIColor.ows_gray05 : UIColor.ows_gray90
             textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
 
             var textContainerInset = cellOuterInsetsWithMargin(
                 top: (defaultSpacingBetweenSections ?? 0) + 12,
-                left: Self.cellHInnerMargin * 0.5,
-                bottom: 10,
-                right: Self.cellHInnerMargin * 0.5
+                bottom: 10
             )
+
+            if section.hasBackground {
+                textContainerInset.left += Self.cellHInnerMargin * 0.5
+                textContainerInset.right += Self.cellHInnerMargin * 0.5
+            }
+
             textContainerInset.left += tableView.safeAreaInsets.left
             textContainerInset.right += tableView.safeAreaInsets.right
             textView.textContainerInset = textContainerInset
@@ -698,22 +701,23 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
         func buildTextView() -> UITextView {
             let textView = buildHeaderOrFooterTextView()
-            textView.textColor = Theme.secondaryTextAndIconColor
+            textView.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
             textView.font = UIFont.ows_dynamicTypeCaption1Clamped
 
             let linkTextAttributes: [NSAttributedString.Key: Any] = [
-                NSAttributedString.Key.foregroundColor: Theme.primaryTextColor,
+                NSAttributedString.Key.foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor,
                 NSAttributedString.Key.font: UIFont.ows_dynamicTypeCaption1Clamped,
                 NSAttributedString.Key.underlineStyle: 0
             ]
             textView.linkTextAttributes = linkTextAttributes
 
-            var textContainerInset = cellOuterInsetsWithMargin(
-                top: 12,
-                left: Self.cellHInnerMargin,
-                bottom: 0,
-                right: Self.cellHInnerMargin
-            )
+            var textContainerInset = cellOuterInsetsWithMargin(top: 12)
+
+            if section.hasBackground {
+                textContainerInset.left += Self.cellHInnerMargin
+                textContainerInset.right += Self.cellHInnerMargin
+            }
+
             textContainerInset.left += tableView.safeAreaInsets.left
             textContainerInset.right += tableView.safeAreaInsets.right
             textView.textContainerInset = textContainerInset
@@ -890,22 +894,28 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
     open var tableBackgroundColor: UIColor {
         AssertIsOnMainThread()
 
-        return Self.tableBackgroundColor(useNewStyle: useNewStyle,
-                                         isUsingPresentedStyle: isUsingPresentedStyle,
-                                         useThemeBackgroundColors: useThemeBackgroundColors)
+        return Self.tableBackgroundColor(
+            useNewStyle: useNewStyle,
+            isUsingPresentedStyle: isUsingPresentedStyle,
+            useThemeBackgroundColors: useThemeBackgroundColors,
+            forceDarkMode: forceDarkMode
+        )
     }
 
     @objc
-    public static func tableBackgroundColor(useNewStyle: Bool = true,
-                                            isUsingPresentedStyle: Bool,
-                                            useThemeBackgroundColors: Bool = false) -> UIColor {
+    public static func tableBackgroundColor(
+        useNewStyle: Bool = true,
+        isUsingPresentedStyle: Bool,
+        useThemeBackgroundColors: Bool = false,
+        forceDarkMode: Bool = false
+    ) -> UIColor {
         AssertIsOnMainThread()
 
         if useNewStyle {
             if isUsingPresentedStyle {
-                return Theme.tableView2PresentedBackgroundColor
+                return forceDarkMode ? Theme.darkThemeTableView2PresentedBackgroundColor : Theme.tableView2PresentedBackgroundColor
             } else {
-                return Theme.tableView2BackgroundColor
+                return forceDarkMode ? Theme.darkThemeTableView2BackgroundColor : Theme.tableView2BackgroundColor
             }
         } else {
             return (useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.backgroundColor)
@@ -914,19 +924,25 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     @objc
     public var cellBackgroundColor: UIColor {
-        Self.cellBackgroundColor(useNewStyle: useNewStyle,
-                                 isUsingPresentedStyle: isUsingPresentedStyle,
-                                 useThemeBackgroundColors: useThemeBackgroundColors)
+        Self.cellBackgroundColor(
+            useNewStyle: useNewStyle,
+            isUsingPresentedStyle: isUsingPresentedStyle,
+            useThemeBackgroundColors: useThemeBackgroundColors,
+            forceDarkMode: forceDarkMode
+        )
     }
 
-    public static func cellBackgroundColor(useNewStyle: Bool = true,
-                                           isUsingPresentedStyle: Bool,
-                                           useThemeBackgroundColors: Bool = false) -> UIColor {
+    public static func cellBackgroundColor(
+        useNewStyle: Bool = true,
+        isUsingPresentedStyle: Bool,
+        useThemeBackgroundColors: Bool = false,
+        forceDarkMode: Bool = false
+    ) -> UIColor {
         if useNewStyle {
             if isUsingPresentedStyle {
-                return Theme.tableCell2PresentedBackgroundColor
+                return forceDarkMode ? Theme.darkThemeTableCell2PresentedBackgroundColor : Theme.tableCell2PresentedBackgroundColor
             } else {
-                return Theme.tableCell2BackgroundColor
+                return forceDarkMode ? Theme.darkThemeTableCell2BackgroundColor : Theme.tableCell2BackgroundColor
             }
         } else {
             return (useThemeBackgroundColors ? Theme.tableCellBackgroundColor : Theme.backgroundColor)
@@ -935,17 +951,17 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public var cellSelectedBackgroundColor: UIColor {
         if isUsingPresentedStyle {
-            return Theme.tableCell2PresentedSelectedBackgroundColor
+            return forceDarkMode ? Theme.darkThemeTableCell2PresentedSelectedBackgroundColor : Theme.tableCell2PresentedSelectedBackgroundColor
         } else {
-            return Theme.tableCell2SelectedBackgroundColor
+            return forceDarkMode ? Theme.darkThemeTableCell2SelectedBackgroundColor : Theme.tableCell2SelectedBackgroundColor
         }
     }
 
     public var separatorColor: UIColor {
         if isUsingPresentedStyle {
-            return Theme.tableView2PresentedSeparatorColor
+            return forceDarkMode ? Theme.darkThemeTableView2PresentedSeparatorColor : Theme.tableView2PresentedSeparatorColor
         } else {
-            return Theme.tableView2SeparatorColor
+            return forceDarkMode ? Theme.darkThemeTableView2SeparatorColor : Theme.tableView2SeparatorColor
         }
     }
 

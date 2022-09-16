@@ -67,6 +67,18 @@ public extension DebugUIMisc {
             ReactionManager.setCustomEmojiSet(nil, transaction: transaction)
         }
     }
+
+    static func showFlagDatabaseAsCorruptedUi() {
+        OWSActionSheets.showConfirmationAlert(
+            title: "Are you sure?",
+            message: "This will flag your database as corrupted, which may mean all your data is lost. Are you sure you want to continue?",
+            proceedTitle: "Corrupt my database",
+            proceedStyle: .destructive
+        ) { _ in
+            SSKPreferences.setHasGrdbDatabaseCorruption(true)
+            owsFail("Crashing due to (intentional) database corruption")
+        }
+    }
 }
 
 #endif

@@ -18,7 +18,7 @@ class DefaultStickerPack {
         self.shouldAutoInstall = shouldAutoInstall
     }
 
-    private class func parseAll() -> [StickerPackInfo: DefaultStickerPack] {
+    private class func parseAll() -> [Data: DefaultStickerPack] {
         guard TSConstants.isUsingProductionService else {
             return [:]
         }
@@ -49,9 +49,9 @@ class DefaultStickerPack {
                                shouldAutoInstall: true)!
         ]
 
-        var result = [StickerPackInfo: DefaultStickerPack]()
+        var result = [Data: DefaultStickerPack]()
         for pack in packs {
-            result[pack.info] = pack
+            result[pack.info.packId] = pack
         }
 
         return result
@@ -62,24 +62,20 @@ class DefaultStickerPack {
     static var packsToAutoInstall: [StickerPackInfo] {
         all.values.filter {
             $0.shouldAutoInstall
-            }.map {
-                $0.info
+        }.map {
+            $0.info
         }
     }
 
     static var packsToNotAutoInstall: [StickerPackInfo] {
         all.values.filter {
             !$0.shouldAutoInstall
-            }.map {
-                $0.info
+        }.map {
+            $0.info
         }
     }
 
-    class func isDefaultStickerPack(stickerPackInfo: StickerPackInfo) -> Bool {
-        all[stickerPackInfo] != nil
-    }
-
-    class func getDefaultStickerPack(stickerPackInfo: StickerPackInfo) -> DefaultStickerPack? {
-        all[stickerPackInfo]
+    class func isDefaultStickerPack(packId: Data) -> Bool {
+        all[packId] != nil
     }
 }

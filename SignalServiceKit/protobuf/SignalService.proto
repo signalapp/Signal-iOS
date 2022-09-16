@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-2016 Open Whisper Systems
+ * Copyright (C) 2014-2022 Open Whisper Systems
  *
  * Licensed according to the LICENSE file in this repository.
  */
@@ -30,7 +30,7 @@ message Envelope {
   optional string sourceE164      = 2;
   optional uint32 sourceDevice    = 7;
   optional string destinationUuid = 13;
-  optional string relay           = 3;
+  // 3 is reserved (formerly `relay`)
   // @required
   optional uint64 timestamp       = 5;
   optional bytes  legacyMessage   = 6; // Contains an encrypted DataMessage
@@ -85,9 +85,11 @@ message TextAttachment {
   }
 
   message Gradient {
-    optional uint32 startColor = 1;
-    optional uint32 endColor = 2;
+    optional uint32 startColor = 1; // deprecated: this field will be removed in a future release.
+    optional uint32 endColor = 2; // deprecated: this field will be removed in a future release.
     optional uint32 angle = 3; // degrees
+    repeated uint32 colors = 4;
+    repeated float positions = 5; // percent from 0 to 1
   }
 
   optional string text = 1;

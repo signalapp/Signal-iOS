@@ -1,2 +1,3 @@
-• Medya düzenleyiciyi iyileştirdik. Fotoğrafları ve videoları göndermeden önce düzenlemek şimdi her zamankinden daha kolay.
-• Uygulamanın sorunsuz çalışmasını sağlamak için birkaç hata düzeltmesi yaptık. Daha heyecan verici gelişmeler çok yakında!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

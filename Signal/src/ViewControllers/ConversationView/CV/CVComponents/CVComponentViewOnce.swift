@@ -90,7 +90,7 @@ public class CVComponentViewOnce: CVComponentBase, CVComponent {
         switch viewOnceState {
         case .incomingDownloading(let attachmentPointer):
             let progressView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                        style: .withoutCircle(diameter: iconSize),
+                                                        diameter: iconSize,
                                                         isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                                         mediaCache: mediaCache)
             subviews.append(progressView)

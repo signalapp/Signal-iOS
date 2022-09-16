@@ -390,8 +390,18 @@ public extension TSAccountManager {
 
     @objc
     func postRegistrationStateDidChangeNotification() {
-        NotificationCenter.default.postNotificationNameAsync(.registrationStateDidChange,
-                                                             object: nil)
+        NotificationCenter.default.postNotificationNameAsync(
+            .registrationStateDidChange,
+            object: nil
+        )
+    }
+
+    @objc
+    func postOnboardingStateDidChangeNotification() {
+        NotificationCenter.default.postNotificationNameAsync(
+            .onboardingStateDidChange,
+            object: nil
+        )
     }
 }
 

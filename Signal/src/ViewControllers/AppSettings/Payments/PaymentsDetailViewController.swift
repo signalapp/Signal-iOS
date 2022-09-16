@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalMessaging
 
 class PaymentsDetailViewController: OWSTableViewController2 {
 
@@ -262,8 +263,7 @@ class PaymentsDetailViewController: OWSTableViewController2 {
         do {
             let sender = { () -> String in
                 if paymentItem.isOutgoing {
-                    return NSLocalizedString("SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU",
-                                             comment: "Indicates that you send the payment in the payment details view in the app settings.")
+                    return CommonStrings.you
                 }
                 if let address = paymentModel.address {
                     return Self.contactsManager.displayName(for: address)

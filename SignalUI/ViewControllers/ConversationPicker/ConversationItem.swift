@@ -18,6 +18,8 @@ public protocol ConversationItem {
 
     func title(transaction: SDSAnyReadTransaction) -> String
 
+    var outgoingMessageClass: TSOutgoingMessage.Type { get }
+
     var image: UIImage? { get }
     var isBlocked: Bool { get }
     var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { get }
@@ -52,6 +54,8 @@ struct RecentConversationItem {
 // MARK: -
 
 extension RecentConversationItem: ConversationItem {
+    var outgoingMessageClass: TSOutgoingMessage.Type { unwrapped.outgoingMessageClass }
+
     var messageRecipient: MessageRecipient {
         return unwrapped.messageRecipient
     }
@@ -102,6 +106,7 @@ extension ContactConversationItem: Comparable {
 // MARK: -
 
 extension ContactConversationItem: ConversationItem {
+    var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
 
     var messageRecipient: MessageRecipient {
         .contact(address)
@@ -134,20 +139,20 @@ extension ContactConversationItem: ConversationItem {
 
 // MARK: -
 
-struct GroupConversationItem: Dependencies {
-    let groupThreadId: String
-    let isBlocked: Bool
-    let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
+public struct GroupConversationItem: Dependencies {
+    public let groupThreadId: String
+    public let isBlocked: Bool
+    public let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
 
     // We don't want to keep this in memory, because the group model
     // can be very large.
-    var groupThread: TSGroupThread? {
+    public var groupThread: TSGroupThread? {
         databaseStorage.read { transaction in
             return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
         }
     }
 
-    var groupModel: TSGroupModel? {
+    public var groupModel: TSGroupModel? {
         groupThread?.groupModel
     }
 }
@@ -155,18 +160,20 @@ struct GroupConversationItem: Dependencies {
 // MARK: -
 
 extension GroupConversationItem: ConversationItem {
-    var messageRecipient: MessageRecipient {
+    public var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+
+    public var messageRecipient: MessageRecipient {
         .group(groupThreadId)
     }
 
-    func title(transaction: SDSAnyReadTransaction) -> String {
+    public func title(transaction: SDSAnyReadTransaction) -> String {
         guard let groupThread = getExistingThread(transaction: transaction) as? TSGroupThread else {
             return TSGroupThread.defaultGroupName
         }
         return groupThread.groupNameOrDefault
     }
 
-    var image: UIImage? {
+    public var image: UIImage? {
         guard let groupThread = groupThread else { return nil }
         return databaseStorage.read { transaction in
             Self.avatarBuilder.avatarImage(forGroupThread: groupThread,
@@ -175,11 +182,11 @@ extension GroupConversationItem: ConversationItem {
         }
     }
 
-    func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
+    public func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
         return TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId, transaction: transaction)
     }
 
-    func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
+    public func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
         return getExistingThread(transaction: transaction)
     }
 }
@@ -187,23 +194,55 @@ extension GroupConversationItem: ConversationItem {
 // MARK: -
 
 public struct StoryConversationItem {
-    enum ItemType {
+    public enum ItemType {
         case groupStory(_ item: GroupConversationItem)
         case privateStory(_ item: PrivateStoryConversationItem)
     }
 
-    let backingItem: ItemType
+    public let backingItem: ItemType
     var unwrapped: ConversationItem {
         switch backingItem {
         case .groupStory(let item): return item
         case .privateStory(let item): return item
         }
     }
+
+    public static func allItems(transaction: SDSAnyReadTransaction) -> [StoryConversationItem] {
+        AnyThreadFinder().storyThreads(transaction: transaction)
+            .lazy
+            .sorted { lhs, rhs in
+                if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
+                if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
+                return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
+            }
+            .compactMap { thread -> StoryConversationItem.ItemType? in
+                if let groupThread = thread as? TSGroupThread {
+                    guard groupThread.isLocalUserFullMember else {
+                        return nil
+                    }
+                    return .groupStory(GroupConversationItem(
+                        groupThreadId: groupThread.uniqueId,
+                        isBlocked: false,
+                        disappearingMessagesConfig: nil
+                    ))
+                } else if let privateStoryThread = thread as? TSPrivateStoryThread {
+                    return .privateStory(PrivateStoryConversationItem(
+                        storyThreadId: privateStoryThread.uniqueId,
+                        isMyStory: privateStoryThread.isMyStory
+                    ))
+                } else {
+                    owsFailDebug("Unexpected story thread type \(type(of: thread))")
+                    return nil
+                }
+            }.map { .init(backingItem: $0) }
+    }
 }
 
 // MARK: -
 
 extension StoryConversationItem: ConversationItem {
+    public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
+
     public var messageRecipient: MessageRecipient {
         unwrapped.messageRecipient
     }
@@ -222,11 +261,35 @@ extension StoryConversationItem: ConversationItem {
         switch backingItem {
         case .privateStory(let item):
             if item.isMyStory {
-                let format = OWSLocalizedString(
-                    "MY_STORY_VIEWERS_%d",
-                    tableName: "PluralAware",
-                    comment: "Format string representing the viewer count for 'My Story'. Embeds {{ number of viewers }}.")
-                return String.localizedStringWithFormat(format, recipientCount)
+                switch thread.storyViewMode {
+                case .blockList:
+                    guard let thread = thread as? TSPrivateStoryThread else {
+                        owsFailDebug("Unexpected thread type")
+                        return ""
+                    }
+                    if thread.addresses.isEmpty {
+                        let format = OWSLocalizedString(
+                            "MY_STORY_VIEWERS_ALL_CONNECTIONS_%d",
+                            tableName: "PluralAware",
+                            comment: "Format string representing the viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of viewers }}.")
+                        return String.localizedStringWithFormat(format, recipientCount)
+                    } else {
+                        let format = OWSLocalizedString(
+                            "MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d",
+                            tableName: "PluralAware",
+                            comment: "Format string representing the excluded viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of excluded viewers }}.")
+                        return String.localizedStringWithFormat(format, recipientCount)
+                    }
+                case .explicit:
+                    let format = OWSLocalizedString(
+                        "MY_STORY_VIEWERS_ONLY_%d",
+                        tableName: "PluralAware",
+                        comment: "Format string representing the viewer count for 'My Story' when accessible to only an explicit list of viewers. Embeds {{ number of viewers }}.")
+                    return String.localizedStringWithFormat(format, recipientCount)
+                case .none:
+                    owsFailDebug("Unexpected view mode for my story")
+                    return ""
+                }
             } else {
                 let format = OWSLocalizedString(
                     "PRIVATE_STORY_VIEWERS_%d",
@@ -266,11 +329,11 @@ extension StoryConversationItem: ConversationItem {
 
 // MARK: -
 
-struct PrivateStoryConversationItem: Dependencies {
+public struct PrivateStoryConversationItem: Dependencies {
     let storyThreadId: String
-    let isMyStory: Bool
+    public let isMyStory: Bool
 
-    var storyThread: TSPrivateStoryThread? {
+    public var storyThread: TSPrivateStoryThread? {
         databaseStorage.read { transaction in
             return TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: storyThreadId, transaction: transaction)
         }
@@ -280,13 +343,15 @@ struct PrivateStoryConversationItem: Dependencies {
 // MARK: -
 
 extension PrivateStoryConversationItem: ConversationItem {
-    var isBlocked: Bool { false }
+    public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
 
-    var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { nil }
+    public var isBlocked: Bool { false }
 
-    var messageRecipient: MessageRecipient { .privateStory(storyThreadId, isMyStory: isMyStory) }
+    public var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { nil }
 
-    func title(transaction: SDSAnyReadTransaction) -> String {
+    public var messageRecipient: MessageRecipient { .privateStory(storyThreadId, isMyStory: isMyStory) }
+
+    public func title(transaction: SDSAnyReadTransaction) -> String {
         guard let storyThread = getExistingThread(transaction: transaction) as? TSPrivateStoryThread else {
             owsFailDebug("Missing story thread")
             return ""
@@ -294,15 +359,15 @@ extension PrivateStoryConversationItem: ConversationItem {
         return storyThread.name
     }
 
-    var image: UIImage? {
+    public var image: UIImage? {
         UIImage(named: "private-story-\(Theme.isDarkThemeEnabled ? "dark" : "light")-36")
     }
 
-    func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
+    public func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread? {
         TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: storyThreadId, transaction: transaction)
     }
 
-    func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
+    public func getOrCreateThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
         getExistingThread(transaction: transaction)
     }
 }

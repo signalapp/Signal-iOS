@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import GRDB
 
 @objc
 public class SSKPreferences: NSObject {
@@ -276,7 +277,15 @@ public class SSKPreferences: NSObject {
         return preference.boolValue
     }
 
-    @objc
+    /// If the error is a `SQLITE_CORRUPT` error, set the "has database corruption" flag, log, and crash.
+    /// We do this so we can attempt to perform diagnostics/recovery on relaunch.
+    public static func flagDatabaseCorruptionIfNecessary(error: Error) {
+        if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
+            setHasGrdbDatabaseCorruption(true)
+            owsFail("Crashing due to database corruption. Extended result code: \(error.extendedResultCode)")
+        }
+    }
+
     public static func setHasGrdbDatabaseCorruption(_ value: Bool) {
         if value { Logger.warn("Flagging GRDB database as corrupted.") }
 

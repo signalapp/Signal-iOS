@@ -12,7 +12,10 @@ class NewGroupStoryViewController: ConversationPickerViewController {
         super.init(selection: ConversationPickerSelection())
         pickerDelegate = self
         sectionOptions = .groups
-        threadFilter = { $0.storyViewMode == .none }
+        threadFilter = { thread in
+            guard let groupThread = thread as? TSGroupThread else { return false }
+            return !groupThread.isStorySendEnabled
+        }
     }
 
     override func viewDidLoad() {
@@ -32,7 +35,8 @@ extension NewGroupStoryViewController: ConversationPickerDelegate {
 
         databaseStorage.asyncWrite { transaction in
             for conversation in selectedConversations {
-                conversation.getExistingThread(transaction: transaction)?.updateWithStoryViewMode(.explicit, transaction: transaction)
+                guard let groupThread = conversation.getExistingThread(transaction: transaction) as? TSGroupThread else { continue }
+                groupThread.updateWithStorySendEnabled(true, transaction: transaction)
             }
         } completion: {
             self.dismiss(animated: true)

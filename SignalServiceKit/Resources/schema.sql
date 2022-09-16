@@ -40,6 +40,7 @@ CREATE
             ,"name" TEXT
             ,"addresses" BLOB
             ,"storyViewMode" INTEGER DEFAULT 0
+            ,"lastViewedStoryTimestamp" INTEGER
         )
 ;
 
@@ -228,6 +229,7 @@ CREATE
             ,"cdnKey" TEXT NOT NULL DEFAULT ''
             ,"cdnNumber" INTEGER NOT NULL DEFAULT 0
             ,"isAnimatedCached" INTEGER
+            ,"attachmentSchemaVersion" INTEGER DEFAULT 0
         )
 ;
 
@@ -267,6 +269,8 @@ CREATE
             ,"messageText" TEXT
             ,"paymentIntentClientSecret" TEXT
             ,"paymentMethodId" TEXT
+            ,"replacementAdminUuid" TEXT
+            ,"waitForMessageProcessing" BOOLEAN
         )
 ;
 
@@ -1103,6 +1107,8 @@ CREATE
             ,"isArchived" BOOLEAN NOT NULL DEFAULT 0
             ,"isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0
             ,"mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
+            ,"audioPlaybackRate" DOUBLE NOT NULL DEFAULT 1
+            ,"hideStory" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 
@@ -1270,16 +1276,6 @@ CREATE
 ;
 
 CREATE
-    INDEX index_model_StoryMessage_on_incoming_viewedTimestamp
-        ON model_StoryMessage (
-        json_extract (
-            manifest
-            ,'$.incoming.viewedTimestamp'
-        )
-    )
-;
-
-CREATE
     INDEX index_model_TSInteraction_ConversationLoadInteractionCount
         ON model_TSInteraction (
         uniqueThreadId
@@ -1331,7 +1327,7 @@ CREATE
             ,"subscriptionLevel" INTEGER
             ,"amount" NUMERIC NOT NULL
             ,"currencyCode" TEXT NOT NULL
-            ,"receiptType" INTEGER
+            ,"receiptType" NUMERIC
         )
 ;
 
@@ -1355,4 +1351,14 @@ CREATE
     ,"lastSentStoryTimestamp"
     ,"allowsReplies"
 )
+;
+
+CREATE
+    INDEX index_model_StoryMessage_on_incoming_receivedState_viewedTimestamp
+        ON model_StoryMessage (
+        json_extract (
+            manifest
+            ,'$.incoming.receivedState.viewedTimestamp'
+        )
+    )
 ;

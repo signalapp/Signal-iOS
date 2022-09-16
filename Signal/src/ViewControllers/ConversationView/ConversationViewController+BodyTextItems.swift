@@ -4,6 +4,7 @@
 
 import Foundation
 import MessageUI
+import SignalCoreKit
 
 // This extension reproduces some of the UITextView link interaction behavior.
 // This is how UITextView behaves:
@@ -25,14 +26,14 @@ import MessageUI
 //   * long press - show email address + new email message / facetime audio / facetime video / send message / add to contacts / copy email.
 extension ConversationViewController {
 
-    public func didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+    public func didTapBodyTextItem(_ item: CVTextLabel.Item) {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 
-        switch item.item {
+        switch item {
         case .dataItem(let dataItem):
             switch dataItem.dataType {
             case .link:
@@ -64,17 +65,20 @@ extension ConversationViewController {
             }
         case .mention(let mentionItem):
             didTapOrLongPressMention(mentionItem.mention)
+        case .referencedUser(let referencedUserItem):
+            owsFailDebug("Should never have a referenced user item in body text, but tapped \(referencedUserItem)")
+            break
         }
     }
 
-    public func didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+    public func didLongPressBodyTextItem(_ item: CVTextLabel.Item) {
         AssertIsOnMainThread()
 
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 
-        switch item.item {
+        switch item {
         case .dataItem(let dataItem):
             switch dataItem.dataType {
             case .link:
@@ -105,13 +109,16 @@ extension ConversationViewController {
             }
         case .mention(let mentionItem):
             didTapOrLongPressMention(mentionItem.mention)
+        case .referencedUser(let referencedUserItem):
+            owsFailDebug("Should never have a referenced user item in body text, but long pressed \(referencedUserItem)")
+            break
         }
     }
 
     // * URL
     //   * tap - open URL in safari
     //   * long press - preview + open link in safari / add to reading list / copy link / share
-    private func didLongPressLink(dataItem: CVBodyTextLabel.DataItem) {
+    private func didLongPressLink(dataItem: CVTextLabel.DataItem) {
         AssertIsOnMainThread()
 
         var title: String? = dataItem.snippet.strippedOrNil
@@ -171,7 +178,7 @@ extension ConversationViewController {
     // * phone number
     //   * tap - action sheet with call.
     //   * long press - show phone number + call PSTN / facetime audio / facetime video / send messages / add to contacts / copy
-    private func didLongPressPhoneNumber(dataItem: CVBodyTextLabel.DataItem) {
+    private func didLongPressPhoneNumber(dataItem: CVTextLabel.DataItem) {
         guard let snippet = dataItem.snippet.strippedOrNil,
               let phoneNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: snippet),
               let e164 = phoneNumber.toE164().strippedOrNil else {
@@ -183,16 +190,7 @@ extension ConversationViewController {
 
         if address.isLocalAddress ||
            Self.contactsManagerImpl.isKnownRegisteredUserWithSneakyTransaction(address: address) {
-            let groupViewHelper: GroupViewHelper? = {
-                guard threadViewModel.isGroupThread else {
-                    return nil
-                }
-                let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
-                groupViewHelper.delegate = self
-                return groupViewHelper
-            }()
-            let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
-            actionSheet.present(from: self)
+            showMemberActionSheet(forAddress: address, withHapticFeedback: false)
             return
         }
 
@@ -274,7 +272,7 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    private func didLongPressEmail(dataItem: CVBodyTextLabel.DataItem) {
+    private func didLongPressEmail(dataItem: CVTextLabel.DataItem) {
         let actionSheet = ActionSheetController(title: dataItem.snippet.strippedOrNil)
 
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_EMAIL_NEW_MAIL_MESSAGE",
@@ -304,13 +302,13 @@ extension ConversationViewController {
         presentActionSheet(actionSheet)
     }
 
-    private func didTapLink(dataItem: CVBodyTextLabel.DataItem) {
+    private func didTapLink(dataItem: CVTextLabel.DataItem) {
         AssertIsOnMainThread()
 
         openLink(dataItem: dataItem)
     }
 
-    private func openLink(dataItem: CVBodyTextLabel.DataItem) {
+    private func openLink(dataItem: CVTextLabel.DataItem) {
         AssertIsOnMainThread()
 
         if StickerPackInfo.isStickerPackShare(dataItem.url) {
@@ -335,11 +333,11 @@ extension ConversationViewController {
         url.absoluteString.lowercased().hasPrefix("mailto:")
     }
 
-    private func didTapEmail(dataItem: CVBodyTextLabel.DataItem) {
+    private func didTapEmail(dataItem: CVTextLabel.DataItem) {
         composeEmail(dataItem: dataItem)
     }
 
-    private func composeEmail(dataItem: CVBodyTextLabel.DataItem) {
+    private func composeEmail(dataItem: CVTextLabel.DataItem) {
         AssertIsOnMainThread()
         owsAssertDebug(isMailtoUrl(dataItem.url))
 
@@ -356,10 +354,6 @@ extension ConversationViewController {
     private func didTapOrLongPressMention(_ mention: Mention) {
         AssertIsOnMainThread()
 
-        ImpactHapticFeedback.impactOccured(style: .light)
-        let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
-        groupViewHelper.delegate = self
-        let actionSheet = MemberActionSheet(address: mention.address, groupViewHelper: groupViewHelper)
-        actionSheet.present(from: self)
+        showMemberActionSheet(forAddress: mention.address, withHapticFeedback: true)
     }
 }

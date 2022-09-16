@@ -4,7 +4,7 @@ set -x
 set -e
 
 # https://docs.fastlane.tools/actions/deliver/#available-language-codes
-APP_STORE_LANGUAGES='ar,ca,cs,da,de,el,en_AU,en_CA,en_GB,en_US,es_ES,es_MX,fi,fr,he,hi,hr,hu,id,it,ja,ko,ms,nl,nb,pl,pt_BR,pt_PT,ro,ru,sk,sv,th,tr,uk,vi,zh_CN,zh_TW'
+APP_STORE_LANGUAGES='ar,ca,cs,da,de,el,en_AU,en_CA,en_GB,en_US,es,fi,fr,he,hi,hr,hu,id,it,ja,ko,ms,nl,nb,pl,pt_BR,pt_PT,ro,ru,sk,sv,th,tr,uk,vi,zh_CN,zh_TW'
 
 echo "Pulling metadata translations..."
 
@@ -18,3 +18,4 @@ cd $METADATA_ROOT
 tx pull --force -l $APP_STORE_LANGUAGES
 
 cp -R fr-FR/ fr-CA
+cp -R es-ES/ es-MX

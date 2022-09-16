@@ -6,51 +6,59 @@ import Foundation
 import Photos
 import SignalUI
 
-@objc
 protocol SendMediaNavDelegate: AnyObject {
+
     func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
+
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], messageBody: MessageBody?)
 
-    func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody?
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: TextAttachment)
+
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?)
+}
+
+protocol SendMediaNavDataSource: AnyObject {
+
+    func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody?
+
     var sendMediaNavTextInputContextIdentifier: String? { get }
+
     var sendMediaNavRecipientNames: [String] { get }
+
     var sendMediaNavMentionableAddresses: [SignalServiceAddress] { get }
 }
 
-@objc
 class CameraFirstCaptureNavigationController: SendMediaNavigationController {
 
     override var requiresContactPickerToProceed: Bool {
         true
     }
 
-    @objc
-    private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
+    override var canSendToStories: Bool { StoryManager.areStoriesEnabled }
+
+    private var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
 
     @objc
-    public class func cameraFirstModal(storiesOnly: Bool = false) -> CameraFirstCaptureNavigationController {
+    class func cameraFirstModal(storiesOnly: Bool = false, delegate: CameraFirstCaptureDelegate?) -> CameraFirstCaptureNavigationController {
         let navController = CameraFirstCaptureNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
 
-        let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow(storiesOnly: storiesOnly)
+        let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow(storiesOnly: storiesOnly, delegate: delegate)
         navController.cameraFirstCaptureSendFlow = cameraFirstCaptureSendFlow
         navController.sendMediaNavDelegate = cameraFirstCaptureSendFlow
+        navController.sendMediaNavDataSource = cameraFirstCaptureSendFlow
 
         return navController
     }
 }
 
-@objc
 class SendMediaNavigationController: OWSNavigationController {
 
-    var attachmentCount: Int {
-        return attachmentDraftCollection.count
-    }
-
-    var requiresContactPickerToProceed: Bool {
+    fileprivate var requiresContactPickerToProceed: Bool {
         false
     }
+
+    fileprivate var canSendToStories: Bool { false }
 
     // MARK: - Overrides
 
@@ -81,29 +89,28 @@ class SendMediaNavigationController: OWSNavigationController {
 
     // MARK: -
 
-    @objc
-    public weak var sendMediaNavDelegate: SendMediaNavDelegate?
+    weak var sendMediaNavDelegate: SendMediaNavDelegate?
+    weak var sendMediaNavDataSource: SendMediaNavDataSource?
 
-    @objc
-    public class func showingCameraFirst() -> SendMediaNavigationController {
+    class func showingCameraFirst() -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
         return navController
     }
 
-    @objc
-    public class func showingMediaLibraryFirst() -> SendMediaNavigationController {
+    class func showingMediaLibraryFirst() -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
         return navController
     }
 
-    @objc(showingApprovalWithPickedLibraryMediaAsset:attachment:delegate:)
-    public class func showingApprovalWithPickedLibraryMedia(asset: PHAsset,
-                                                            attachment: SignalAttachment,
-                                                            delegate: SendMediaNavDelegate) -> SendMediaNavigationController {
+    class func showingApprovalWithPickedLibraryMedia(asset: PHAsset,
+                                                     attachment: SignalAttachment,
+                                                     delegate: SendMediaNavDelegate,
+                                                     dataSource: SendMediaNavDataSource) -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.sendMediaNavDelegate = delegate
+        navController.sendMediaNavDataSource = dataSource
 
         let approvalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
         let libraryMedia = MediaLibraryAttachment(asset: asset,
@@ -123,7 +130,7 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
-    func fadeTo(viewControllers: [UIViewController], duration: CFTimeInterval) {
+    private func fadeTo(viewControllers: [UIViewController], duration: CFTimeInterval) {
         AssertIsOnMainThread()
 
         let transition: CATransition = CATransition()
@@ -133,7 +140,11 @@ class SendMediaNavigationController: OWSNavigationController {
         setViewControllers(viewControllers, animated: false)
     }
 
-    // MARK: State
+    // MARK: - Attachments
+
+    private var attachmentCount: Int {
+        return attachmentDraftCollection.count
+    }
 
     private var attachmentDraftCollection: AttachmentDraftCollection = .empty
 
@@ -141,7 +152,7 @@ class SendMediaNavigationController: OWSNavigationController {
         return attachmentDraftCollection.attachmentApprovalItemPromises
     }
 
-    // MARK: Child VC's
+    // MARK: - Child View Controllers
 
     fileprivate lazy var captureViewController: PhotoCaptureViewController = {
         let viewController = PhotoCaptureViewController()
@@ -160,8 +171,8 @@ class SendMediaNavigationController: OWSNavigationController {
     private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem],
                                             options: AttachmentApprovalViewControllerOptions = .canAddMore,
                                             animated: Bool) {
-        guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
-            owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
+        guard let sendMediaNavDataSource = sendMediaNavDataSource else {
+            owsFailDebug("sendMediaNavDataSource was unexpectedly nil")
             return
         }
 
@@ -172,7 +183,7 @@ class SendMediaNavigationController: OWSNavigationController {
         let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.approvalDataSource = self
-        approvalViewController.messageBody = sendMediaNavDelegate.sendMediaNavInitialMessageBody(self)
+        approvalViewController.messageBody = sendMediaNavDataSource.sendMediaNavInitialMessageBody(self)
 
         if animated {
             fadeTo(viewControllers: viewControllers + [approvalViewController], duration: 0.3)
@@ -204,7 +215,6 @@ class SendMediaNavigationController: OWSNavigationController {
             self.presentActionSheet(alert)
         }
     }
-
 }
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
@@ -263,7 +273,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
         let toastText = String.localizedStringWithFormat(toastFormat, SignalAttachment.maxAttachmentsAllowed)
         let toastController = ToastController(text: toastText)
-        toastController.presentToastView(fromBottomOfView: view, inset: view.layoutMargins.bottom + 10)
+        toastController.presentToastView(from: .bottom, of: view, inset: view.layoutMargins.bottom + 10)
     }
 }
 
@@ -275,6 +285,11 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             return
         }
         showApprovalAfterProcessingAnyMediaLibrarySelections()
+    }
+
+    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
+                                    didFinishWithTextAttachment textAttachment: TextAttachment) {
+        sendMediaNavDelegate?.sendMediaNav(self, didFinishWithTextAttachment: textAttachment)
     }
 
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController) {
@@ -306,7 +321,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
     }
 
     func photoCaptureViewControllerDidRequestPresentPhotoLibrary(_ photoCaptureViewController: PhotoCaptureViewController) {
-        self.ows_askForMediaLibraryPermissions { isGranted in
+        ows_askForMediaLibraryPermissions { isGranted in
             guard isGranted else { return }
 
             BenchEventStart(title: "Show-Media-Library", eventId: "Show-Media-Library")
@@ -348,6 +363,10 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             completion(false)
         })
         presentActionSheet(actionSheet)
+    }
+
+    func photoCaptureViewControllerCanShowTextEditor(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool {
+        return canSendToStories
     }
 }
 
@@ -455,7 +474,6 @@ extension SendMediaNavigationController: ImagePickerGridControllerDataSource {
     func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
         return attachmentCount < SignalAttachment.maxAttachmentsAllowed
     }
-
 }
 
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
@@ -496,24 +514,27 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDataSource {
 
     var attachmentApprovalTextInputContextIdentifier: String? {
-        return sendMediaNavDelegate?.sendMediaNavTextInputContextIdentifier
+        sendMediaNavDataSource?.sendMediaNavTextInputContextIdentifier
     }
 
     var attachmentApprovalRecipientNames: [String] {
-        sendMediaNavDelegate?.sendMediaNavRecipientNames ?? []
+        sendMediaNavDataSource?.sendMediaNavRecipientNames ?? []
     }
 
     var attachmentApprovalMentionableAddresses: [SignalServiceAddress] {
-        return sendMediaNavDelegate?.sendMediaNavMentionableAddresses ?? []
+        sendMediaNavDataSource?.sendMediaNavMentionableAddresses ?? []
     }
 }
 
-private enum AttachmentDraft {
+private enum AttachmentDraft: Equatable {
+
     case camera(attachment: CameraCaptureAttachment)
+
     case picker(attachment: MediaLibraryAttachment)
 }
 
 private extension AttachmentDraft {
+
     var attachmentApprovalItemPromise: Promise<AttachmentApprovalItem> {
         switch self {
         case .camera(let cameraAttachment):
@@ -522,15 +543,10 @@ private extension AttachmentDraft {
             return pickerAttachment.attachmentApprovalItemPromise
         }
     }
-
-    var source: AttachmentDraft {
-        return self
-    }
 }
 
-extension AttachmentDraft: Equatable { }
-
 private struct AttachmentDraftCollection {
+
     private(set) var attachmentDrafts: [AttachmentDraft]
 
     static var empty: AttachmentDraftCollection {
@@ -549,7 +565,7 @@ private struct AttachmentDraftCollection {
 
     var pickerAttachments: [MediaLibraryAttachment] {
         return attachmentDrafts.compactMap { attachmentDraft in
-            switch attachmentDraft.source {
+            switch attachmentDraft {
             case .picker(let pickerAttachment):
                 return pickerAttachment
             case .camera:
@@ -560,7 +576,7 @@ private struct AttachmentDraftCollection {
 
     var cameraAttachments: [CameraCaptureAttachment] {
         return attachmentDrafts.compactMap { attachmentDraft in
-            switch attachmentDraft.source {
+            switch attachmentDraft {
             case .picker:
                 return nil
             case .camera(let cameraAttachment):
@@ -605,6 +621,7 @@ private struct AttachmentDraftCollection {
 }
 
 private struct CameraCaptureAttachment: Hashable, Equatable {
+
     let signalAttachment: SignalAttachment
     let attachmentApprovalItem: AttachmentApprovalItem
     let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
@@ -625,6 +642,7 @@ private struct CameraCaptureAttachment: Hashable, Equatable {
 }
 
 private struct MediaLibraryAttachment: Hashable, Equatable {
+
     let asset: PHAsset
     let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
 

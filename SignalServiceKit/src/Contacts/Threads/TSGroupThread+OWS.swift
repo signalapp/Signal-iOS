@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -142,6 +142,13 @@ public extension TSGroupThread {
         setGroupIdMapping(threadUniqueId, forGroupId: groupId, transaction: transaction)
     }
 
+    /// Posted when the group associated with this thread adds or removes members.
+    ///
+    /// The object is the group's unique ID as a string. Note that NotificationCenter dispatches by
+    /// object identity rather than equality, so any observer should register for *all* membership
+    /// changes and then filter the notifications they receive as needed.
+    static let membershipDidChange = Notification.Name("TSGroupThread.membershipDidChange")
+
     func updateGroupMemberRecords(transaction: SDSAnyWriteTransaction) {
         let memberAddresses = Set(groupMembership.fullMembers)
         let previousMembers = TSGroupMember.groupMembers(in: uniqueId, transaction: transaction)
@@ -169,6 +176,76 @@ public extension TSGroupThread {
                 groupThreadId: uniqueId,
                 lastInteractionTimestamp: lastInteraction?.timestamp ?? 0
             ).anyInsert(transaction: transaction)
+        }
+
+        transaction.addAsyncCompletionOnMain { [uniqueId = self.uniqueId] in
+            NotificationCenter.default.post(name: Self.membershipDidChange, object: uniqueId)
+        }
+    }
+
+    /// Returns a list of up to `limit` names of group members.
+    ///
+    /// The list will not contain the local user. If `includingBlocked` is `false`, it will also not contain
+    /// any users that have been blocked by the local user.
+    ///
+    /// The name returned is computed by `getDisplayName`, but sorting is always done using
+    /// `ContactsManager.comparableName(for:transaction:)`. Phone numbers are sorted to the end of the list.
+    ///
+    /// If `searchText` is provided, members will be sorted to the front of the list if their display names
+    /// (as returned by `getDisplayName`) contain the string. The names will also have the matching substring
+    /// bracketed as `<match>substring</match>`, similar to the results of FullTextSearchFinder.
+    func sortedMemberNames(searchText: String? = nil,
+                           includingBlocked: Bool,
+                           limit: Int = .max,
+                           transaction: SDSAnyReadTransaction,
+                           getDisplayName: (SignalServiceAddress) -> String) -> [String] {
+        let members: [(
+            address: SignalServiceAddress,
+            displayName: String?,
+            comparableName: String,
+            isMatched: Bool
+        )] = groupMembership.fullMembers.compactMap { address in
+            guard !address.isLocalAddress else {
+                return nil
+            }
+            guard includingBlocked || !blockingManager.isAddressBlocked(address, transaction: transaction) else {
+                return nil
+            }
+
+            var maybeDisplayName: String?
+            var isMatched = false
+            if let searchText = searchText {
+                var displayName = getDisplayName(address)
+                if let matchRange = displayName.range(of: searchText,
+                                                      options: [.caseInsensitive, .diacriticInsensitive]) {
+                    isMatched = true
+                    displayName = displayName.replacingCharacters(
+                        in: matchRange,
+                        with: "<\(FullTextSearchFinder.matchTag)>\(displayName[matchRange])</\(FullTextSearchFinder.matchTag)>")
+                }
+                maybeDisplayName = displayName
+            }
+            return (
+                address: address,
+                displayName: maybeDisplayName,
+                comparableName: contactsManager.comparableName(for: address, transaction: transaction),
+                isMatched: isMatched
+            )
+        }
+
+        let sortedMembers = members.sorted { lhs, rhs in
+            // Bubble matched members to the top
+            if rhs.isMatched != lhs.isMatched { return lhs.isMatched }
+            // Sort numbers to the end of the list
+            if lhs.comparableName.hasPrefix("+") != rhs.comparableName.hasPrefix("+") {
+                return !lhs.comparableName.hasPrefix("+")
+            }
+            // Otherwise, sort by comparable name
+            return lhs.comparableName.caseInsensitiveCompare(rhs.comparableName) == .orderedAscending
+        }
+
+        return sortedMembers.prefix(limit).map {
+            $0.displayName ?? getDisplayName($0.address)
         }
     }
 }

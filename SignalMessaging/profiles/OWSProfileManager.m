@@ -17,7 +17,6 @@
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
-#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/OWSUpload.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SSKEnvironment.h>
@@ -130,11 +129,6 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     [self observeNotifications];
 
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)observeNotifications
@@ -1270,7 +1264,7 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
 
     // Whenever a user's profile key changes, we need to fetch a new
     // profile key credential for them.
-    [self.versionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
+    [self.versionedProfiles clearProfileKeyCredentialForAddress:addressParam transaction:transaction];
 
     [userProfile updateWithProfileKey:profileKey
                     userProfileWriter:userProfileWriter
@@ -1428,8 +1422,8 @@ static NSString *const kLastGroupProfileKeyCheckTimestampKey = @"lastGroupProfil
     return userProfile.familyName;
 }
 
-- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
-                                                  transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSPersonNameComponents *)nameComponentsForProfileWithAddress:(SignalServiceAddress *)address
+                                                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 

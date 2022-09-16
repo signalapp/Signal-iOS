@@ -1177,7 +1177,7 @@ class StorageServiceOperation: OWSOperation {
         // of any items we don't know about locally. Since a new
         // id is always generated after a change, this should always
         // reflect the only items we need to fetch from the service.
-        let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.map { .init(data: $0.data, type: $0.type) })
+        let allManifestItems: Set<StorageService.StorageIdentifier> = Set(manifest.keys.lazy.map { .init(data: $0.data, type: $0.type) })
 
         var newOrUpdatedItems = Array(allManifestItems.subtracting(state.allIdentifiers))
 
@@ -1737,8 +1737,10 @@ class StorageServiceOperation: OWSOperation {
             // update the mapping
             state.groupV2MasterKeyToIdentifierMap[groupMasterKey] = identifier
 
-            self.groupsV2.restoreGroupFromStorageServiceIfNecessary(masterKeyData: groupMasterKey,
-                                                                    transaction: transaction)
+            groupsV2Swift.restoreGroupFromStorageServiceIfNecessary(
+                groupRecord: groupV2Record,
+                transaction: transaction
+            )
 
         case .needsRefreshFromService(let groupMasterKey):
             // If the record has unknown fields, we need to hold on to it, so that
@@ -1752,8 +1754,11 @@ class StorageServiceOperation: OWSOperation {
             // update the mapping
             state.groupV2MasterKeyToIdentifierMap[groupMasterKey] = identifier
 
-            self.groupsV2.restoreGroupFromStorageServiceIfNecessary(masterKeyData: groupMasterKey,
-                                                                    transaction: transaction)
+            groupsV2Swift.restoreGroupFromStorageServiceIfNecessary(
+                groupRecord: groupV2Record,
+                transaction: transaction
+            )
+
         case .resolved(let groupMasterKey):
             // If the record has unknown fields, we need to hold on to it, so that
             // when we later update this record, we can preserve the unknown fields

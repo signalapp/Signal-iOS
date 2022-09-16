@@ -1,2 +1,3 @@
-• Nous avons amélioré l'éditeur de médias pour faciliter la personnalisation de vos photos et vidéos avant leur envoi.
-• Des correctifs apportés pour un bon fonctionnement de votre application, et de nombreuses surprises à venir !
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

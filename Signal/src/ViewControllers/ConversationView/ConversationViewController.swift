@@ -485,9 +485,9 @@ public class ConversationViewController: OWSViewController {
         }
         self.isDarkThemeEnabled = Theme.isDarkThemeEnabled
 
-        self.applyTheme()
-
         self.updateConversationStyle()
+
+        self.applyTheme()
     }
 
     public override func applyTheme() {
@@ -512,10 +512,6 @@ public class ConversationViewController: OWSViewController {
         self.updateInputToolbarLayout()
         self.updateBarButtonItems()
         self.ensureBannerState()
-
-        // Re-styling the message actions is tricky,
-        // since this happens rarely just dismiss
-        dismissMessageContextMenu(animated: false)
 
         dismissReactionsDetailSheet(animated: false)
     }
@@ -561,8 +557,6 @@ public class ConversationViewController: OWSViewController {
         AssertIsOnMainThread()
 
         super.viewWillTransition(to: size, with: coordinator)
-
-        dismissMessageContextMenu(animated: false)
 
         dismissReactionsDetailSheet(animated: false)
 

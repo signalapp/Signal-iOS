@@ -1,2 +1,3 @@
-• Chúng tôi đã nâng cấp công cụ chỉnh sửa đa phương tiện, giúp việc chỉnh sửa ảnh và video trước khi gửi dễ dàng hơn với bạn.
-• Nhiều lỗi được sửa để ứng dụng của bạn có thể chạy một cách trơn tru. Các thay đổi thú vị hơn nữa sắp xuất hiện!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

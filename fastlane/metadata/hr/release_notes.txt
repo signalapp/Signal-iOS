@@ -1,2 +1,3 @@
-• Poboljšali smo uređivač medija tako da možete lakše prilagoditi fotografije i videozapise prije slanja.
-• Ispravili smo bugove za nesmetano korištenje aplikacije, a na horizontu ima još uzbudljivih promjena!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

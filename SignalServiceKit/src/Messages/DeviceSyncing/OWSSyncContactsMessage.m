@@ -24,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                 signalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+                    isFullSync:(BOOL)isFullSync
                    transaction:(SDSAnyReadTransaction *)transaction
 {
     self = [super initWithThread:thread transaction:transaction];
@@ -32,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _signalAccounts = signalAccounts;
+    _isFullSync = isFullSync;
 
     return self;
 }
@@ -56,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     SSKProtoSyncMessageContactsBuilder *contactsBuilder = [SSKProtoSyncMessageContacts builderWithBlob:attachmentProto];
-    [contactsBuilder setIsComplete:YES];
+    [contactsBuilder setIsComplete:self.isFullSync];
 
     NSError *error;
     SSKProtoSyncMessageContacts *_Nullable contactsProto = [contactsBuilder buildAndReturnError:&error];
@@ -67,6 +69,11 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     [syncMessageBuilder setContacts:contactsProto];
     return syncMessageBuilder;
+}
+
+- (BOOL)isUrgent
+{
+    return NO;
 }
 
 @end

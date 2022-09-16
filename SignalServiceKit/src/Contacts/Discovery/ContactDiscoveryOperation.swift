@@ -122,7 +122,7 @@ extension ContactDiscoveryError: IsRetryableProvider {
 
 extension ContactDiscovering {
 
-    func encodeE164(_ e164: String) throws -> UInt64 {
+    private static func encodeE164(_ e164: String) throws -> UInt64 {
         guard e164.first == "+" else {
             throw ContactDiscoveryError.assertionError(description: "unexpected e164 format")
         }
@@ -135,7 +135,7 @@ extension ContactDiscovering {
         return numericIdentifier.bigEndian
     }
 
-    func encodeE164s<T>(_ phoneNumbers: T) throws -> Data where T: Collection, T.Element == String {
+    static func encodeE164s<T>(_ phoneNumbers: T) throws -> Data where T: Collection, T.Element == String {
         guard phoneNumbers.allSatisfy({ $0.first == "+" }) else {
             throw ContactDiscoveryError.assertionError(description: "unexpected e164 format")
         }

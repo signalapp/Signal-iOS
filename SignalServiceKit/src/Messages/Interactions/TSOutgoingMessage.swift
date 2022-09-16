@@ -20,6 +20,8 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
     public var changeActionsProtoData: Data?
     @objc
     public var additionalRecipients: [SignalServiceAddress]?
+    @objc
+    public var skippedRecipients: Set<SignalServiceAddress>?
 
     public required init(thread: TSThread,
                          timestamp: UInt64? = nil,
@@ -37,6 +39,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                          isViewOnceMessage: Bool = false,
                          changeActionsProtoData: Data? = nil,
                          additionalRecipients: [SignalServiceAddress]? = nil,
+                         skippedRecipients: Set<SignalServiceAddress>? = nil,
                          storyAuthorAddress: SignalServiceAddress? = nil,
                          storyTimestamp: UInt64? = nil,
                          storyReactionEmoji: String? = nil,
@@ -64,6 +67,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         self.groupMetaMessage = groupMetaMessage
         self.changeActionsProtoData = changeActionsProtoData
         self.additionalRecipients = additionalRecipients
+        self.skippedRecipients = skippedRecipients
     }
 
     @objc
@@ -98,6 +102,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                               isViewOnceMessage: Bool,
                               changeActionsProtoData: Data?,
                               additionalRecipients: [SignalServiceAddress]?,
+                              skippedRecipients: Set<SignalServiceAddress>?,
                               storyAuthorAddress: SignalServiceAddress?,
                               storyTimestamp: NSNumber?,
                               storyReactionEmoji: String?,
@@ -118,6 +123,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
                                         isViewOnceMessage: isViewOnceMessage,
                                         changeActionsProtoData: changeActionsProtoData,
                                         additionalRecipients: additionalRecipients,
+                                        skippedRecipients: skippedRecipients,
                                         storyAuthorAddress: storyAuthorAddress,
                                         storyTimestamp: storyTimestamp?.uint64Value,
                                         storyReactionEmoji: storyReactionEmoji,
@@ -310,4 +316,55 @@ extension TSOutgoingMessage {
     /// Currently only overridden by OWSOutgoingResendRequest (this is asserted in the MessageSender implementation)
     @objc
     var encryptionStyle: EncryptionStyle { .whisper }
+}
+
+// MARK: - Transcripts
+
+public extension TSOutgoingMessage {
+    @objc
+    @available(swift, obsoleted: 1.0)
+    func sendSyncTranscript() -> AnyPromise {
+        AnyPromise(sendSyncTranscript())
+    }
+
+    func sendSyncTranscript() -> Promise<Void> {
+        guard shouldSyncTranscript() else {
+            return Promise(error: OWSAssertionError("Unexpectedly attempted to send sync transcript for message"))
+        }
+
+        return databaseStorage.write(.promise) { transaction in
+            guard let localThread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+                throw OWSAssertionError("Missing local thread")
+            }
+
+            guard let transcript = self.buildTranscriptSyncMessage(
+                localThread: localThread,
+                transaction: transaction
+            ) else {
+                throw OWSAssertionError("Failed to build transcript")
+            }
+
+            guard let plaintext = transcript.buildPlainTextData(localThread, transaction: transaction) else {
+                throw OWSAssertionError("Missing proto")
+            }
+
+            let payloadId = MessageSendLog.recordPayload(plaintext, forMessageBeingSent: transcript, transaction: transaction)
+
+            return OWSMessageSend(
+                message: transcript,
+                plaintextContent: plaintext,
+                plaintextPayloadId: payloadId,
+                thread: localThread,
+                address: Self.tsAccountManager.localAddress!,
+                udSendingAccess: nil,
+                localAddress: Self.tsAccountManager.localAddress!,
+                sendErrorBlock: nil
+            )
+        }.then { messageSend in
+            return MessageSender.ensureSessions(forMessageSends: [messageSend], ignoreErrors: true).map { messageSend }
+        }.then { messageSend -> Promise<Void> in
+            Self.messageSender.sendMessage(toRecipient: messageSend)
+            return messageSend.promise
+        }
+    }
 }

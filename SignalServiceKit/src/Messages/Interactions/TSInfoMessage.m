@@ -10,6 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const InfoMessageUserInfoKey InfoMessageUserInfoKeyUpdateMessages = @"InfoMessageUserInfoKeyUpdateMessages";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyOldGroupModel = @"InfoMessageUserInfoKeyOldGroupModel";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyNewGroupModel = @"InfoMessageUserInfoKeyNewGroupModel";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyOldDisappearingMessageToken
@@ -248,7 +249,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         case TSInfoMessageTypeGroupQuit:
             return OWSLocalizedString(@"GROUP_YOU_LEFT", nil);
         case TSInfoMessageTypeGroupUpdate:
-            return [self groupUpdateDescriptionWithTransaction:transaction];
+            return [self groupUpdateDescriptionWithTransaction:transaction].string;
         case TSInfoMessageAddToContactsOffer:
             return OWSLocalizedString(@"ADD_TO_CONTACTS_OFFER",
                 @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.");

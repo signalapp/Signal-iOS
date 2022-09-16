@@ -119,6 +119,11 @@ NS_ASSUME_NONNULL_BEGIN
     return verifiedData.length;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

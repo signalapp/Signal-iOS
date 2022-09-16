@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "StickerInfo.h"
@@ -118,16 +118,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)isStickerPackShareUrl:(NSURL *)url
 {
-    if (![url.scheme isEqualToString:@"https"]) {
-        return NO;
-    }
-    if (![url.host isEqualToString:@"signal.art"]) {
-        return NO;
-    }
-    if (![url.path isEqualToString:@"/addstickers"]) {
-        return NO;
-    }
-    return YES;
+    return ([url.scheme isEqualToString:@"https"] && (url.user == NULL) && (url.password == NULL) &&
+        [url.host isEqualToString:@"signal.art"] && (url.port == NULL) && [url.path isEqualToString:@"/addstickers"]);
 }
 
 + (nullable StickerPackInfo *)parseStickerPackShareUrl:(NSURL *)url

@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSNotificationName const NSNotificationNameRegistrationStateDidChange;
+extern NSNotificationName const NSNotificationNameOnboardingStateDidChange;
 extern NSString *const TSRemoteAttestationAuthErrorKey;
 extern NSNotificationName const NSNotificationNameLocalNumberDidChange;
 

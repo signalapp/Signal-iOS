@@ -206,7 +206,7 @@ public class StickerManager: NSObject {
 
         Logger.verbose("Uninstalling sticker pack: \(stickerPackInfo).")
 
-        let isDefaultStickerPack = DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: stickerPackInfo)
+        let isDefaultStickerPack = DefaultStickerPack.isDefaultStickerPack(packId: stickerPackInfo.packId)
         let shouldRemove = uninstallEverything || !isDefaultStickerPack
 
         if shouldRemove {
@@ -484,8 +484,8 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func isDefaultStickerPack(_ packInfo: StickerPackInfo) -> Bool {
-        return DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: packInfo)
+    public class func isDefaultStickerPack(packId: Data) -> Bool {
+        return DefaultStickerPack.isDefaultStickerPack(packId: packId)
     }
 
     @objc
@@ -1141,7 +1141,7 @@ public class StickerManager: NSObject {
                 // Cull any orphan packs.
                 let savedStickerPacks = Array(stickerPackMap.values)
                 for stickerPack in savedStickerPacks {
-                    let isDefaultStickerPack = self.isDefaultStickerPack(stickerPack.info)
+                    let isDefaultStickerPack = self.isDefaultStickerPack(packId: stickerPack.info.packId)
                     let isInstalled = stickerPack.isInstalled
                     if !isDefaultStickerPack && !isInstalled {
                         owsFailDebug("Removing orphan pack")

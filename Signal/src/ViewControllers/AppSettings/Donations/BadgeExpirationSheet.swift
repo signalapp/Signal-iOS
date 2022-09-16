@@ -22,6 +22,8 @@ public class BadgeExpirationSheetState {
         case subscriptionExpiredBecauseOfChargeFailure(chargeFailure: Subscription.ChargeFailure)
         case subscriptionExpiredBecauseNotRenewed
         case boostExpired(hasCurrentSubscription: Bool)
+        case giftBadgeExpired(hasCurrentSubscription: Bool)
+        case giftNotRedeemed(fullName: String)
     }
 
     public struct Body {
@@ -62,14 +64,25 @@ public class BadgeExpirationSheetState {
         case .boostExpired:
             return NSLocalizedString("BADGE_EXPIRED_BOOST_TITLE",
                                      comment: "Title for boost on the badge expiration sheet.")
+        case .giftBadgeExpired:
+            return NSLocalizedString("BADGE_EXPIRED_GIFT_TITLE",
+                                     value: "Your Gift Badge Has Expired",
+                                     comment: "Title for gift on the badge expiration sheet.")
+        case .giftNotRedeemed:
+            return NSLocalizedString("GIFT_NOT_REDEEMED_TITLE",
+                                     value: "Your Gift Has Expired",
+                                     comment: "Title when trying to redeem a gift that's already expired.")
         }
     }()
 
-    public lazy var body: Body = {
-        func format(_ formatText: String) -> String {
-            String(format: formatText, badge.localizedName)
-        }
+    private var monthlyDonationCallToAction: String {
+        NSLocalizedString(
+            "BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION",
+            comment: "Shown when a non-monthly badge expires to suggest starting a recurring donation."
+        )
+    }
 
+    public lazy var body: Body = {
         switch mode {
         case let .subscriptionExpiredBecauseOfChargeFailure(chargeFailure):
             let failureSpecificText = Self.getChargeFailureSpecificText(chargeFailure: chargeFailure)
@@ -79,17 +92,40 @@ public class BadgeExpirationSheetState {
         case .subscriptionExpiredBecauseNotRenewed:
             let formatText = NSLocalizedString("BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT",
                                                comment: "Body of the sheet shown when your subscription is canceled due to inactivity")
-            return Body(format(formatText), hasLearnMoreLink: true)
+            return Body(String(format: formatText, badge.localizedName), hasLearnMoreLink: true)
         case let .boostExpired(hasCurrentSubscription):
-            let formatText: String
+            var bodyText = [String]()
             if hasCurrentSubscription {
-                formatText = NSLocalizedString("BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
-                                               comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet.")
+                bodyText.append(NSLocalizedString(
+                    "BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY",
+                    comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet."
+                ))
             } else {
-                formatText = NSLocalizedString("BADGE_EXIPRED_BOOST_BODY_FORMAT",
-                                               comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet.")
+                bodyText.append(NSLocalizedString(
+                    "BADGE_EXPIRED_BOOST_BODY",
+                    comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet."
+                ))
+                bodyText.append(self.monthlyDonationCallToAction)
             }
-            return Body(format(formatText))
+            return Body(bodyText.joined(separator: "\n\n"))
+        case let .giftBadgeExpired(hasCurrentSubscription):
+            var bodyText = [String]()
+            bodyText.append(NSLocalizedString(
+                "BADGE_EXPIRED_GIFT_BODY",
+                value: "Your gift badge has expired and is no longer available to be displayed on your profile.",
+                comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
+            ))
+            if !hasCurrentSubscription {
+                bodyText.append(self.monthlyDonationCallToAction)
+            }
+            return Body(bodyText.joined(separator: "\n\n"))
+        case let .giftNotRedeemed(fullName):
+            let formatText = NSLocalizedString(
+                "GIFT_NOT_REDEEMED_BODY_FORMAT",
+                value: "Your gift from %@ has expired and can no longer be redeemed.",
+                comment: "Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}."
+            )
+            return Body(String(format: formatText, fullName))
         }
     }()
 
@@ -159,17 +195,25 @@ public class BadgeExpirationSheetState {
                                          comment: "Button title for boost on the badge expiration sheet, used if the user is not already a sustainer.")
             }
             return ActionButton(action: action, text: text, hasNotNow: true)
+        case let .giftBadgeExpired(hasCurrentSubscription):
+            if hasCurrentSubscription {
+                return ActionButton(action: .dismiss, text: CommonStrings.okButton)
+            } else {
+                let text = NSLocalizedString(
+                    "BADGE_EXPIRED_RENEWAL_MONTHLY",
+                    value: "Make a Monthly Donation",
+                    comment: "Button title to donate monthly on the badge expiration sheet."
+                )
+                return ActionButton(action: .openSubscriptionsView, text: text, hasNotNow: true)
+            }
+        case .giftNotRedeemed:
+            return ActionButton(action: .dismiss, text: CommonStrings.okButton)
         }
     }()
 }
 
 class BadgeExpirationSheet: OWSTableSheetViewController {
     private let state: BadgeExpirationSheetState
-
-    public override var contentSizeHeight: CGFloat {
-        tableViewController.tableView.layoutIfNeeded()
-        return tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.top
-    }
 
     public weak var delegate: BadgeExpirationSheetDelegate?
 

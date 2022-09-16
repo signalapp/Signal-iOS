@@ -140,6 +140,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                                 isViewOnceMessage: isViewOnceMessageBuilder(),
                                                 changeActionsProtoData: changeActionsProtoDataBuilder(),
                                                 additionalRecipients: additionalRecipientsBuilder(),
+                                                skippedRecipients: skippedRecipientsBuilder(),
                                                 storyAuthorAddress: storyAuthorAddressBuilder(),
                                                 storyTimestamp: storyTimestampBuilder(),
                                                 storyReactionEmoji: storyReactionEmojiBuilder(),
@@ -235,6 +236,11 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     @objc
     public var additionalRecipientsBuilder: () -> [SignalServiceAddress]? = {
+        return nil
+    }
+
+    @objc
+    public var skippedRecipientsBuilder: () -> Set<SignalServiceAddress>? = {
         return nil
     }
 

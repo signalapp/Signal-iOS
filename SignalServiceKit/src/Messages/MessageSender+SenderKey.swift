@@ -97,20 +97,20 @@ extension MessageSender {
 
         @objc
         var fanoutParticipants: [SignalServiceAddress] {
-            Array(participants.filter { $0.value == .FanoutOnly }.keys)
+            Array(participants.lazy.filter { $0.value == .FanoutOnly }.map { $0.key })
         }
 
         @objc
         var allSenderKeyParticipants: [SignalServiceAddress] {
-            Array(participants.filter { $0.value != .FanoutOnly }.keys)
+            Array(participants.lazy.filter { $0.value != .FanoutOnly }.map { $0.key })
         }
 
         var participantsNeedingSKDM: [SignalServiceAddress] {
-            Array(participants.filter { $0.value == .NeedsSKDM }.keys)
+            Array(participants.lazy.filter { $0.value == .NeedsSKDM }.map { $0.key })
         }
 
         var readyParticipants: [SignalServiceAddress] {
-            Array(participants.filter { $0.value == .SenderKeyReady }.keys)
+            Array(participants.lazy.filter { $0.value == .SenderKeyReady }.map { $0.key })
         }
     }
 
@@ -522,6 +522,7 @@ extension MessageSender {
                 encryptedMessageBody: ciphertext,
                 timestamp: message.timestamp,
                 isOnline: message.isOnline,
+                isUrgent: message.isUrgent,
                 thread: thread,
                 recipients: recipients,
                 udAccessMap: udAccessMap,
@@ -535,6 +536,7 @@ extension MessageSender {
         encryptedMessageBody: Data,
         timestamp: UInt64,
         isOnline: Bool,
+        isUrgent: Bool,
         thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
@@ -546,6 +548,7 @@ extension MessageSender {
                 ciphertext: encryptedMessageBody,
                 timestamp: timestamp,
                 isOnline: isOnline,
+                isUrgent: isUrgent,
                 thread: thread,
                 recipients: recipients,
                 udAccessMap: udAccessMap)
@@ -572,6 +575,7 @@ extension MessageSender {
                         encryptedMessageBody: encryptedMessageBody,
                         timestamp: timestamp,
                         isOnline: isOnline,
+                        isUrgent: isUrgent,
                         thread: thread,
                         recipients: recipients,
                         udAccessMap: udAccessMap,
@@ -700,6 +704,7 @@ extension MessageSender {
         ciphertext: Data,
         timestamp: UInt64,
         isOnline: Bool,
+        isUrgent: Bool,
         thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
@@ -720,7 +725,8 @@ extension MessageSender {
             ciphertext: ciphertext,
             compositeUDAccessKey: compositeKey,
             timestamp: timestamp,
-            isOnline: isOnline)
+            isOnline: isOnline,
+            isUrgent: isUrgent)
 
         // If we can use the websocket, try that and fail over to REST.
         // If not, go straight to REST.

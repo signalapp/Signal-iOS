@@ -1,2 +1,3 @@
-• Ми покращили редактор одноразових медіафайлів. Тепер змінювати фото і відео стало ще простіше.
-• Виправили кілька помилок, щоб застосунок працював належним чином. Попереду ще більше цікавих змін!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

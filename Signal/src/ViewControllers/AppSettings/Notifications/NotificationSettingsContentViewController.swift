@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -29,7 +29,7 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
                     self?.preferences.setNotificationPreviewType(type)
 
                     // rebuild callUIAdapter since notification configuration changed.
-                    Self.callService.individualCallService.createCallUIAdapter()
+                    Self.callService.createCallUIAdapter()
 
                     self?.updateTableContents()
                 },

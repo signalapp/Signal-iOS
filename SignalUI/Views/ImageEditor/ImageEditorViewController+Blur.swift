@@ -71,7 +71,7 @@ extension ImageEditorViewController {
                     comment: "A toast indicating that you can blur more faces after detection"
                 ))
                 let bottomInset = self.view.safeAreaInsets.bottom + 90
-                toastController.presentToastView(fromBottomOfView: self.view, inset: bottomInset)
+                toastController.presentToastView(from: .bottom, of: self.view, inset: bottomInset)
             }
 
             func faceDetectionFailed() {

@@ -238,6 +238,17 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
 
         showConversationSettings()
     }
+
+    public func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView) {
+        AssertIsOnMainThread()
+
+        if threadViewModel.storyState != .none && StoryManager.areStoriesEnabled {
+            let vc = StoryPageViewController(context: thread.storyContext)
+            present(vc, animated: true)
+        } else {
+            showConversationSettings()
+        }
+    }
 }
 
 // MARK: -

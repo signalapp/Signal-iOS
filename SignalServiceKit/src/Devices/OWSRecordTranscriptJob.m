@@ -118,6 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    isViewOnceMessage:transcript.isViewOnceMessage
                               changeActionsProtoData:nil
                                 additionalRecipients:nil
+                                   skippedRecipients:nil
                                   storyAuthorAddress:transcript.storyAuthorAddress
                                       storyTimestamp:transcript.storyTimestamp
                                   storyReactionEmoji:nil

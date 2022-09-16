@@ -1,2 +1,3 @@
-• 향상된 미디어 편집기를 사용하여 사진과 동영상을 보내기 전 간편하게 사용자 지정할 수 있습니다.
-• 앱의 원활한 사용을 위해 몇 가지 버그를 수정했습니다. 앞으로 있을 더 많은 업데이트 소식을 기대해 주세요!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

@@ -5,6 +5,7 @@
 import Foundation
 import SignalRingRTC
 import SignalServiceKit
+import SignalMessaging
 
 // All Observer methods will be invoked from the main thread.
 public protocol CallObserver: AnyObject {
@@ -90,6 +91,15 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
+    public var isTerminatedIndividualCall: Bool {
+        switch mode {
+        case .group:
+            return false
+        case .individual(let call):
+            return call.hasTerminated
+        }
+    }
+
     private(set) lazy var videoCaptureController = VideoCaptureController()
 
     // Should be used only on the main thread
@@ -97,8 +107,41 @@ public class SignalCall: NSObject, CallManagerCallReference {
         didSet { AssertIsOnMainThread() }
     }
 
+    // Distinguishes between calls locally, e.g. in CallKit
+    public let localId: UUID = UUID()
+
     @objc
     public let thread: TSThread
+
+    internal struct RingRestrictions: OptionSet {
+        var rawValue: UInt8
+
+        /// The user does not get to choose whether this kind of call rings.
+        static let notApplicable = Self(rawValue: 1 << 0)
+        /// The user cannot ring because there is already a call in progress.
+        static let callInProgress = Self(rawValue: 1 << 1)
+        /// This group is too large to allow ringing.
+        static let groupTooLarge = Self(rawValue: 1 << 2)
+    }
+
+    internal var ringRestrictions: RingRestrictions {
+        didSet {
+            AssertIsOnMainThread()
+            if ringRestrictions != oldValue && groupCall.localDeviceState.joinState == .notJoined {
+                // Use a fake local state change to refresh the call controls.
+                self.groupCall(onLocalDeviceStateChanged: groupCall)
+            }
+        }
+    }
+
+    /// Before joining, indicates that the user wants to send a ring.
+    ///
+    /// After joining, indicates that the ring was sent but no one has responded yet.
+    public var userWantsToRing: Bool = true {
+        didSet {
+            AssertIsOnMainThread()
+        }
+    }
 
     public var error: CallError?
     public enum CallError: Error {
@@ -136,8 +179,35 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = groupThread
+        if !RemoteConfig.groupRings {
+            ringRestrictions = .notApplicable
+        } else {
+            ringRestrictions = []
+            if groupThread.groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize {
+                ringRestrictions.insert(.groupTooLarge)
+            }
+        }
+
+        // Track the callInProgress restriction regardless; we use that for purposes other than rings.
+        let hasActiveCallMessage = Self.databaseStorage.read { transaction -> Bool in
+            !GRDBInteractionFinder.unendedCallsForGroupThread(groupThread, transaction: transaction).isEmpty
+        }
+        if hasActiveCallMessage {
+            // This info may be out of date, but the first peek will update it.
+            ringRestrictions.insert(.callInProgress)
+        }
+
         super.init()
+
         groupCall.delegate = self
+        // Watch group membership changes.
+        // The object is the group thread ID, which is a string.
+        // NotificationCenter dispatches by object identity rather than equality,
+        // so we watch all changes and filter later.
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(groupMembershipDidChange),
+                                               name: TSGroupThread.membershipDidChange,
+                                               object: nil)
     }
 
     init(individualCall: IndividualCall) {
@@ -147,6 +217,7 @@ public class SignalCall: NSObject, CallManagerCallReference {
             behavior: .call
         )
         thread = individualCall.thread
+        ringRestrictions = .notApplicable
         super.init()
         individualCall.delegate = self
     }
@@ -173,10 +244,9 @@ public class SignalCall: NSObject, CallManagerCallReference {
         return call
     }
 
-    public class func outgoingIndividualCall(localId: UUID, thread: TSContactThread) -> SignalCall {
+    public class func outgoingIndividualCall(thread: TSContactThread) -> SignalCall {
         let individualCall = IndividualCall(
             direction: .outgoing,
-            localId: localId,
             state: .dialing,
             thread: thread,
             sentAtTimestamp: Date.ows_millisecondTimestamp(),
@@ -186,7 +256,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
     }
 
     public class func incomingIndividualCall(
-        localId: UUID,
         thread: TSContactThread,
         sentAtTimestamp: UInt64,
         offerMediaType: TSRecentCallOfferType
@@ -206,7 +275,6 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
         let individualCall = IndividualCall(
             direction: .incoming,
-            localId: localId,
             state: .answering,
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,
@@ -214,6 +282,26 @@ public class SignalCall: NSObject, CallManagerCallReference {
         )
         individualCall.offerMediaType = offerMediaType
         return SignalCall(individualCall: individualCall)
+    }
+
+    @objc
+    private func groupMembershipDidChange(_ notification: Notification) {
+        // NotificationCenter dispatches by object identity rather than equality,
+        // so we filter based on the thread ID here.
+        guard !ringRestrictions.contains(.notApplicable),
+              self.thread.uniqueId == notification.object as? String else {
+            return
+        }
+        databaseStorage.read { transaction in
+            self.thread.anyReload(transaction: transaction)
+        }
+        guard let groupModel = self.thread.groupModelIfGroupThread else {
+            owsFailDebug("should not observe membership for a non-group thread")
+            return
+        }
+
+        let isGroupTooLarge = groupModel.groupMembers.count > RemoteConfig.maxGroupCallRingSize
+        ringRestrictions.update(.groupTooLarge, present: isGroupTooLarge)
     }
 
     // MARK: -
@@ -277,6 +365,9 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onRemoteDeviceStatesChanged groupCall: GroupCall) {
+        if !groupCall.remoteDeviceStates.isEmpty {
+            userWantsToRing = false
+        }
         observers.elements.forEach { $0.groupCallRemoteDeviceStatesChanged(self) }
     }
 
@@ -285,6 +376,11 @@ extension SignalCall: GroupCallDelegate {
     }
 
     public func groupCall(onPeekChanged groupCall: GroupCall) {
+        if let peekInfo = groupCall.peekInfo {
+            // Note that we track this regardless of whether ringing is available.
+            // There are other places that use this.
+            ringRestrictions.update(.callInProgress, present: peekInfo.deviceCount > 0)
+        }
         observers.elements.forEach { $0.groupCallPeekChanged(self) }
     }
 
@@ -328,6 +424,15 @@ extension SignalCall: IndividualCallDelegate {
 
     public func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool) {
         observers.elements.forEach { $0.individualCallRemoteSharingScreenDidChange(self, isRemoteSharingScreen: isRemoteSharingScreen) }
+    }
+}
+
+extension SignalCall: CallNotificationInfo {
+    public var offerMediaType: TSRecentCallOfferType {
+        switch mode {
+        case .individual(let call): return call.offerMediaType
+        case .group: return .video
+        }
     }
 }
 

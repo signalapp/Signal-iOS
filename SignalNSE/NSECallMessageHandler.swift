@@ -29,17 +29,17 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         let serverReceivedTimestamp = envelope.serverTimestamp > 0 ? envelope.serverTimestamp : envelope.timestamp
         let approxMessageAge = (serverDeliveryTimestamp - serverReceivedTimestamp)
         guard approxMessageAge < 5 * kMinuteInMs else {
-            Logger.info("Discarding very old call message \(envelope.timestamp). No longer relevant. Sever delivery: \(serverDeliveryTimestamp). Server received: \(serverReceivedTimestamp)")
+            NSELogger.uncorrelated.info(
+                "Discarding very old call message \(envelope.timestamp). No longer relevant. Server delivery: \(serverDeliveryTimestamp). Server received: \(serverReceivedTimestamp)"
+            )
             return .ignore
         }
 
-        // Only offer messages and urgent opaque messages will trigger a ring.
+        // Only offer messages (TODO: and urgent opaque messages) will trigger a ring.
         if callMessage.offer != nil {
             return .handoff
-        } else if let opaqueMessage = callMessage.opaque, opaqueMessage.urgency == .handleImmediately, FeatureFlags.groupRings {
-            return .handoff
         } else {
-            Logger.info("Ignoring call message. Not an offer or urgent opaque message.")
+            NSELogger.uncorrelated.info("Ignoring call message. Not an offer.")
             return .ignore
         }
     }
@@ -67,12 +67,12 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
                 suspension.invalidate()
             }
 
-            Logger.info("Notifying primary app of incoming call with push payload: \(payload)")
+            NSELogger.uncorrelated.info("Notifying primary app of incoming call with push payload: \(payload)")
             CXProvider.reportNewIncomingVoIPPushPayload(payload.payloadDict) { error in
                 if let error = error {
                     owsFailDebug("Failed to notify main app of call message: \(error)")
                 } else {
-                    Logger.info("Successfully notified main app of call message.")
+                    NSELogger.uncorrelated.info("Successfully notified main app of call message.")
                 }
             }
         } catch {
@@ -126,7 +126,7 @@ public class NSECallMessageHandler: NSObject, OWSCallMessageHandler {
         serverReceivedTimestamp: UInt64,
         completion: @escaping () -> Void
     ) {
-        Logger.info("Received group call update for thread \(groupThread.uniqueId)")
+        NSELogger.uncorrelated.info("Received group call update for thread \(groupThread.uniqueId)")
         lightweightCallManager?.peekCallAndUpdateThread(
             groupThread,
             expectedEraId: updateMessage.eraID,

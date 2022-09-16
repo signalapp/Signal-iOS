@@ -15,7 +15,8 @@
 		"TestModel.nsNumberValueUsingUInt64": "UInt64",
 		"SSKJobRecord.exclusiveProcessIdentifier": "Int32",
 		"TSMessage.storyTimestamp": "UInt64",
-		"TSThread.lastSentStoryTimestamp": "UInt64"
+		"TSThread.lastSentStoryTimestamp": "UInt64",
+		"TSThread.lastViewedStoryTimestamp": "UInt64"
 	},
 	"properties_to_ignore": [
 		"TSYapDatabaseObject.grdbId",
@@ -23,7 +24,6 @@
 		"OWSDynamicOutgoingMessage.block",
 		"OWSDisappearingMessagesConfiguration.originalDictionaryValue",
 		"OWSDisappearingMessagesConfiguration.newRecord",
-		"TSAttachment.attachmentSchemaVersion",
 		"TSAttachmentStream.cachedAudioWaveform",
 		"TSThread.isArchivedByLegacyTimestampForSorting",
 		"TSContactThread.contactThreadSchemaVersion",

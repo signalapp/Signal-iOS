@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "Medieninhalte";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "Du";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Sticker";
 
@@ -75,9 +72,6 @@
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ ist bereits Mitglied von %@";
-
-/* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Letzte Unterhaltungen";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ wurde zu »%@« hinzugefügt";
@@ -132,9 +126,6 @@
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fehler";
-
-/* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "Integritätsprüfung für Datenbank starten";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "Stattdessen Signal öffnen";
@@ -368,10 +359,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Gib Signal einen Boost";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "Dein Boost-Abzeichen ist abgelaufen und kann nicht mehr in deinem Profil angezeigt werden.\n\nDu kannst Signal weiterhin nutzen, aber um eine Technologie zu unterstützen, die für dich entwickelt wird, überlege dir, ob du durch eine monatliche Spende ein Unterstützer werden willst.";
+"BADGE_EXPIRED_BOOST_BODY" = "Dein Boost-Abzeichen ist abgelaufen und kann nicht mehr auf deinem Profil angezeigt werden.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "Dein Boost-Abzeichen ist abgelaufen und kann nicht mehr in deinem Profil angezeigt werden.\n\nDu kannst dein Boost-Abzeichen für weitere 30 Tage mit einem einmaligen Beitrag reaktivieren.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "Dein Boost-Abzeichen ist abgelaufen und kann nicht mehr in deinem Profil angezeigt werden.\n\nDu kannst dein Boost-Abzeichen für weitere 30 Tage mit einem einmaligen Beitrag reaktivieren.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "Unterstützer werden";
@@ -382,8 +373,20 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "Abzeichen abgelaufen";
 
+/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_BODY" = "Dein Geschenk-Abzeichen ist abgelaufen und kann nicht mehr auf deinem Profil angezeigt werden.";
+
+/* Title for gift on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_TITLE" = "Dein Geschenk-Abzeichen ist abgelaufen";
+
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Mehr erfahren.";
+
+/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Du kannst Signal weiterhin nutzen, aber um eine Technologie zu unterstützen, die für dich entwickelt wird, überlege dir, ob du mit einer monatlichen Spende Unterstützer:in werden möchtest.";
+
+/* Button title to donate monthly on the badge expiration sheet. */
+"BADGE_EXPIRED_RENEWAL_MONTHLY" = "Monatlich spenden";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "Regelmäßige Spende verlängern";
@@ -412,8 +415,8 @@
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "Abgelaufen";
 
-/* Shown on a gift badge message to indicate that the message contains a gift. */
-"BADGE_GIFTING_CHAT_TITLE" = "Geschenkabzeichen";
+/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
+"BADGE_GIFTING_CHAT_TITLE" = "Geschenk-Abzeichen";
 
 /* Short paragraph on the screen where you choose a gift badge */
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Schenke jemandem ein Abzeichen, indem du an Signal spendest. Die Person erhält ein Abzeichen, das sie in ihrem Profil anzeigen kann.";
@@ -465,6 +468,12 @@
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "Einlösen";
+
+/* Shown as the body of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "Dein Geschenk konnte nicht eingelöst werden. Überprüfe deine Verbindung und versuche es erneut.";
+
+/* Shown as the title of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "Geschenk konnte nicht eingelöst werden";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "Du kannst dein Abzeichen später einlösen";
@@ -775,8 +784,11 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
 
+/* VoiceOver label for -> button in text story composer. */
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "Fortfahren";
+
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album-Modus";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "Aus";
@@ -785,25 +797,28 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "Ein";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+"CAMERA_VO_CAMERA_BACK_FACING" = "Rückseitige Kamera";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Kamera-Auswahl";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Wechselt zwischen Kameras";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "Frontkamera";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "Schließen";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "Composer-Modus";
+
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_AUTO" = "Automatic";
+"CAMERA_VO_FLASH_AUTO" = "Automatisch";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_FLASH_BUTTON" = "Flash";
+"CAMERA_VO_FLASH_BUTTON" = "Blitz";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_OFF" = "Aus";
@@ -812,22 +827,22 @@
 "CAMERA_VO_FLASH_ON" = "Ein";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
-"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Foto- und Video-Viewer";
 
 /* VoiceOver label for the round capture button in in-app camera during video recording. */
-"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+"CAMERA_VO_STOP_VIDEO_REC" = "Videoaufnahme stoppen";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+"CAMERA_VO_TAKE_PICTURE" = "Foto aufnehmen";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
-"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+"CAMERA_VO_TAKE_VIDEO" = "Video aufnehmen";
 
 /* VoiceOver label for camera zoom control. */
 "CAMERA_VO_ZOOM" = "Zoom";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@times";
+"CAMERA_VO_ZOOM_LEVEL" = "%@-fach";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Dieser Nutzer kann nicht verifiziert werden, bevor ihr Nachrichten ausgetauscht habt.";
@@ -1150,6 +1165,12 @@
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "Teilen";
 
+/* Context menu button title */
+"CONTEXT_MENU_SPEAK_MESSAGE" = "Sprechen";
+
+/* Context menu button title */
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "Stopp";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Diese Unterhaltung wird von diesem Gerät gelöscht.";
 
@@ -1173,9 +1194,6 @@
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Immer";
-
-/* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Nur Admins können in dieser Gruppe Nachrichten senden.";
@@ -1442,16 +1460,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "Starten";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Dies kann eine Weile dauern (mehrere Minuten oder mehr), je nachdem, wie oft du Signal verwendet hast. Es ist ungefährlich, Signal zu schließen, falls es zu lange dauert.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Das hilft uns, dein Problem zu lösen und kann einige Minuten dauern. Du kannst Signal schließen, während die Prüfung läuft, aber bitte vergiss nicht, anschließend deine Logs zu senden.";
 
-/* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "Zu Diagnoseprotokoll hinzufügen";
-
-/* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "Ergebnisse der Integritätsprüfung";
+/* Button to skip database integrity check step */
+"DATABASE_INTEGRITY_CHECK_SKIP" = "Überspringen";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "Integritätsprüfung für Datenbank starten?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "Datenbankdiagnose durchführen?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dies kann einige Minuten dauern.";
@@ -1480,9 +1495,6 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "Es konnten keine Protokolle gefunden werden.";
 
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Fehlerbericht eröffnen";
-
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Link kopieren";
 
@@ -1492,20 +1504,11 @@
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "Protokolle exportieren";
 
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "An mich senden";
-
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Teilen";
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "Ein letzter Schritt";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Der Gist-Link wurde in deine Zwischenablage kopiert. Du wirst nun zur Problemliste auf GitHub weitergeleitet.";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub-Weiterleitung";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "Info zu Diagnoseprotokollen";
@@ -2158,7 +2161,13 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Suchbegriff eingeben";
 
-/* Turn on permission view 'go to settings' button */
+/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "Dein Geschenk von %@ ist abgelaufen und kann nicht mehr eingelöst werden.";
+
+/* Title when trying to redeem a gift that's already expired. */
+"GIFT_NOT_REDEEMED_TITLE" = "Dein Geschenk ist abgelaufen";
+
+/* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "Einstellungen öffnen";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
@@ -2227,14 +2236,17 @@
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "Anruf ist voll";
 
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "Ruft %@ an ...";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "Ruft %1$@ und %2$@ an ...";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "Anruf beitreten";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "Anruf verlassen";
-
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ und %3$@ Weitere nehmen an diesem Anruf teil";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "Audio- & Videodaten von %@ können nicht empfangen werden";
@@ -2296,8 +2308,8 @@
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ hat einen Gruppenanruf gestartet";
 
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ und 1 Weiterer nehmen an diesem Anruf teil";
+/* Text displayed when trying to turn on ringing when calling a large group. */
+"GROUP_CALL_TOO_LARGE_TO_RING" = "Gruppe ist zu groß, um bei den Teilnehmern zu klingeln.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ und %2$@ nehmen an diesem Anruf teil";
@@ -2305,8 +2317,17 @@
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "Du wurdest vom Anruf getrennt. Überprüfe deine Internetverbindung und versuche es erneut.";
 
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "Du";
+/* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ wird benachrichtigt";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ und %2$@ werden benachrichtigt";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal ruft %@ an";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal ruft %1$@ und %2$@ an";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "Du nimmst am Gruppenanruf teil";
@@ -2626,9 +2647,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
 
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "Du";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nachdem diese Gruppe erstellt wurde, kannst du Freunde hinzufügen oder einladen.";
 
@@ -2752,6 +2770,18 @@
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ in %2$@";
 
+/* Button to delete the story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Möchtest du diese Story wirklich löschen?";
+
+/* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+
+/* Section header for the 'viewers' section on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Gruppe aktualisiert.";
 
@@ -2835,6 +2865,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Schreib einem Admin";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "Anfrage blockieren";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "Anfrage blockieren";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ kann dieser Gruppe nicht über den Gruppenlink beitreten oder einen Antrag auf Beitritt stellen. Ein Administrator kann ihn trotzdem hinzufügen.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "Anfrage blockieren?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Wähle einen neuen Admin für diese Gruppe, bevor du sie verlässt.";
@@ -3307,9 +3349,6 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "Du";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Diesen Monat";
 
@@ -3385,6 +3424,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Medieninhalte teilen";
 
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "Nachricht sprechen";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "Sprechen der Nachricht stoppen";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "Gruppeneinladung";
 
@@ -3408,6 +3453,9 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME-Typ";
+
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "Verschwindet in";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Zugestellt an";
@@ -3435,6 +3483,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "Angesehen von";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "Nie";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Empfangen";
@@ -3619,6 +3670,12 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "Entgangener Anruf";
 
+/* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
+"MISSED_CALL_DO_NOT_DISTURB" = "Entgangener Anruf bei aktiviertem Ruhemodus";
+
+/* info message text in conversation view (use Apple's name for 'Focus') */
+"MISSED_CALL_FOCUS_MODE" = "Entgangener Anruf während der Verwendung von Focus";
+
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Du kannst den Zugriff auf die Kamera in der iOS-App »Einstellungen« aktivieren, um mit Signal Videoanrufe zu machen.";
 
@@ -3652,26 +3709,11 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "Hier erscheinen Aktualisierungen deiner Story.";
 
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "Deine Story vor bestimmten Personen verbergen";
-
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Alle Signal-Verbindungen außer …";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "Mit allen Verbindungen teilen.";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Alle Signal-Verbindungen";
-
-/* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "Wähle aus, wer deine Story sehen kann. Änderungen wirken sich nicht auf bereits gesendete Storys aus.";
-
-/* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "Diese Story kann sehen";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "Wähle Personen zum Teilen aus";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Nur teilen mit …";
@@ -3684,6 +3726,9 @@
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Meine Story";
+
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "Antippen, um eine Story hinzuzufügen";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Profilname wurde kürzlich von %1$@ zu %2$@ geändert.";
@@ -3745,8 +3790,11 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Mitglieder auswählen";
 
+/* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+
 /* Title for the 'new group story' view */
-"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Gruppe wählen";
 
 /* No comment provided by engineer. */
 "new_message" = "Neue Nachricht";
@@ -3758,31 +3806,34 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Nutzer suchen";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Story benennen";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "Erstellen";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "Ein Storyname ist erforderlich";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Fehlender Storyname";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Storyname (Erforderlich)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "Betrachter auswählen";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Betrachter";
+
+/* table section header button to add a new story */
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Neue Story";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Mit einer bestehenden Gruppe teilen";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "Neue Gruppen-Story";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "Nur für bestimmte Personen sichtbar";
@@ -3791,7 +3842,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "Neue private Story";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
+"NEW_STORY_SHEET_TITLE" = "Story-Typ wählen";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kontakte über Rufnummer suchen";
@@ -3801,12 +3852,6 @@
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "Keine anderen gemeinsamen Gruppen.";
-
-/* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "Wähle einen Kontakt oder eine Gruppe aus, um eine Unterhaltung zu beginnen.";
-
-/* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Willkommen bei Signal";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Neue Nachricht an:";
@@ -4265,7 +4310,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "Anfrage ablehnen";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Beitrittsanfrage von „%@“ ablehnen? Eine erneute Beitrittsanfrage über den Gruppen-Link ist dann nicht mehr möglich.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "Keine ausstehenden Beitrittsanfragen.";
@@ -4616,25 +4661,22 @@
 "PRIVACY_VERIFY_BUTTON" = "Als verifiziert markieren";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Betrachter hinzufügen";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Private Story löschen";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Möchtest du diese Story wirklich löschen?";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Entfernen";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Diese Person wird deine Story nicht mehr sehen. ";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
-
-/* Section header for the 'viewers' section on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "Diese Story kann sehen";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ entfernen?";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Fortfahren";
@@ -4732,9 +4774,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Du";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Originalnachricht nicht gefunden.";
 
@@ -4809,9 +4848,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Hat mit %@ auf deine Sprachnachricht reagiert";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "Du";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "Gelesen";
@@ -5323,9 +5359,6 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "Datennutzung";
 
-/* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "Standardablaufzeit für neue Unterhaltungen";
-
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Nutzerkonto löschen";
 
@@ -5406,9 +5439,6 @@
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "Videos";
-
-/* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "Nachrichtenübermittlung";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "Sieh und teile, wann Nachrichten gelesen und eingetippt werden. Falls deaktiviert, wirst du von anderen keine Lesebestätigungen oder Tipp-Indikatoren sehen.";
@@ -5616,9 +5646,6 @@
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ am %2$@";
-
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "Du";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "Versendet";
@@ -5950,6 +5977,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "iOS Zugriff auf Signal-Kontakte und -Unterhaltungen erlauben für Funktionen wie Vorschläge zum Teilen und Mitteilungen.";
 
+/* Explanation for the 'stories' privacy settings. */
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+
+/* Label for the stories section of the settings view */
+"SETTINGS_STORIES_TITLE" = "Storys";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Registrierungssperre";
 
@@ -5973,9 +6006,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Version";
-
-/* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "Wer kann …";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "E-Mail";
@@ -6106,14 +6136,41 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "Löschen";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "Löschen";
+
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "Diese Story löschen? Sie wird auch für jeden gelöscht, der sie erhalten hat.";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "Story gespeichert";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "Weiter­leiten";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "Zur Unterhaltung";
 
+/* Text indicating you can't reply to a group story because you're not a member of the group */
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "Ausgeblendete Storys";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Story ausblenden";
+
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Neue Story-Updates von %@ werden nicht mehr oben in der Storys-Liste angezeigt.";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Story ausblenden?";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story ausgeblendet";
+
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "Info";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "Im Moment gibt es keine Aktualisierung zu vermelden.\nTippe + an, um etwas zu deiner Story hinzuzufügen.";
@@ -6121,8 +6178,11 @@
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "Bisher keine Antworten";
 
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "Bisher keine Aufrufe";
+
 /* Section footer for the 'replies & reactions' section in stories settings */
-"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Erlaube Personen, die deine Story sehen können, auf sie zu antworten und zu reagieren.";
+"STORIES_REPLIES_AND_REACTIONS_FOOTER" = "Erlaube Personen, die deine Story sehen können, darauf zu reagieren und zu antworten.";
 
 /* Section header for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_HEADER" = "Antworten und Reaktionen";
@@ -6130,23 +6190,74 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "Antworten und Reaktionen erlauben";
 
-/* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "Neue private Story";
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "Antworten";
 
-/* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "Private Storys können nur von Personen gesehen werden, die du als Betrachter hinzugefügt hast. Nur du kannst den Namen der Story sehen.";
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "Speichern der Story fehlgeschlagen";
 
-/* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "Private Storys";
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "Speichern";
+
+/* Footer for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Storys verschwinden automatisch nach 24 Stunden. Lege fest, wer deine Story sehen kann, oder erstelle neue Storys mit bestimmten Betrachtern oder Gruppen.";
+
+/* Header for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "Meine Storys";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "Story-Datenschutz";
+
+/* Title for the action sheet confirming you want to turn off stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+
+/* Footer for the 'turn off' section of the stories settings */
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Wenn du dich von Storys abmeldest, kannst du keine Storys mehr teilen oder ansehen.";
+
+/* Button to turn off stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+
+/* Footer for the 'turn on' section of the stories settings */
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+
+/* Button to turn on stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Teilen";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "Stories";
+
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "Story einblenden";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story eingeblendet";
+
+/* Text explaining that you will not see any views for your story because you have read receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "Aufrufe";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "Kamera";
+
+/* Displayed when failed to fetch link preview in Text Story composer. */
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+
+/* Displayed in text story composer when user is about to attach a link with preview */
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Teile einen Link mit Betrachtern deiner Story";
+
+/* Placeholder text in text stories compose UI */
+"STORY_COMPOSER_TAP_ADD_TEXT" = "Antippen, um Text hinzuzufügen";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "Text";
+
+/* Placeholder text for URL input field in Text Story composer UI. */
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "URL eingeben oder einfügen";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Link aufrufen";
@@ -6157,14 +6268,17 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "Datenschutz";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> Antwort";
+/* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
 
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> Antworten";
+/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+
+/* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "Antworten";
+"STORY_REPLY_BUTTON" = "Antworten";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Auf Story reagiert";
@@ -6172,26 +6286,47 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Antworten";
 
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "Du";
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "Gruppe antworten";
+
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "Diese Story konnte nicht gesendet werden. Überprüfe deine Verbindung und versuche es erneut.";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Verbindungen";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Nur teilen mit …";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Ausgeschlossene Verbindungen";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "Spenden";
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "Senden gescheitert";
 
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal existiert dank Menschen wie dir. Spende und erhalte ein Abzeichen.";
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "Für erneuten Versuch antippen";
 
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "Jetzt nicht";
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "Wird gesendet …";
 
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "Werde Unterstützer";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Section header for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_1" = "Antippen, um fortzufahren";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_2" = "Zum Überspringen nach oben wischen";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_3" = "Zum Beenden nach rechts wischen";
+
+/* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Verstanden";
+
+/* Text indicating that the user has views turned off */
+"STORY_VIEWS_OFF" = "Anzeigen aus";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Abonnentenkennung in Zwischenablage kopiert";
@@ -6351,6 +6486,9 @@
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "Ein";
+
+/* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
+"SYSTEM_ADDRESS_NAME" = "Signal";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifizieren";
@@ -6607,6 +6745,12 @@
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Ausgehende, einmalig anzeigbare Mediendateien werden nach dem Senden automatisch entfernt.";
 
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "Foto anzeigen";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
+
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Zum Abbrechen wischen";
 
@@ -6702,6 +6846,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "Hintergrund festlegen";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "Du";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "Du hast diese Nachricht gelöscht.";

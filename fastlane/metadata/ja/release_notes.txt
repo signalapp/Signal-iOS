@@ -1,2 +1,3 @@
-・メディアエディターを改良し、写真や動画を送信する前に、これまで以上に簡単にカスタマイズできるようになりました。
-・アプリをスムーズに実行し続けるためのいくつかのバグ修正。 今後も改良のため様々な変更を予定しています！
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

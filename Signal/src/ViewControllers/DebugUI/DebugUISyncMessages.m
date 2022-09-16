@@ -48,13 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{ [self.syncManager sendPniIdentitySyncRequestMessage]; }],
     ] mutableCopy];
 
-    if (thread != nil) {
-        [items addObject:[OWSTableItem itemWithTitle:@"Send Conversation Settings Sync Message"
-                                         actionBlock:^{
-                                             [DebugUISyncMessages syncConversationSettingsWithThread:thread];
-                                         }]];
-    }
-
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
@@ -119,15 +112,6 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSIdentityManager.shared tryToSyncQueuedVerificationStates];
 }
 
-+ (void)syncConversationSettingsWithThread:(TSThread *)thread
-{
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        ConversationConfigurationSyncOperation *operation =
-            [[ConversationConfigurationSyncOperation alloc] initWithThread:thread];
-        OWSAssertDebug(operation.isReady);
-        [operation start];
-    });
-}
 @end
 
 NS_ASSUME_NONNULL_END

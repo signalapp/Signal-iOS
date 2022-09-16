@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSAddToProfileWhitelistOfferMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchAddToProfileWhitelistOfferMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSAddToProfileWhitelistOfferMessage? {
+    class func anyFetchAddToProfileWhitelistOfferMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSAddToProfileWhitelistOfferMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

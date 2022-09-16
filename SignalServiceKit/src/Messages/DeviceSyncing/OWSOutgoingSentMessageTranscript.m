@@ -81,6 +81,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
@@ -89,14 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setDestinationUuid:self.sentRecipientAddress.uuidString];
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
-    if ([self.message isKindOfClass:[OutgoingStoryMessage class]]) {
-        if (![self prepareStorySyncMessageContentWithSentBuilder:sentBuilder transaction:transaction]) {
-            return nil;
-        }
-    } else {
-        if (![self prepareDataSyncMessageContentWithSentBuilder:sentBuilder transaction:transaction]) {
-            return nil;
-        }
+    if (![self prepareDataSyncMessageContentWithSentBuilder:sentBuilder transaction:transaction]) {
+        return nil;
     }
 
     for (SignalServiceAddress *recipientAddress in self.message.sentRecipientAddresses) {

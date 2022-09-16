@@ -15,7 +15,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let hasTapForMore: Bool
         let shouldUseAttributedText: Bool
         let hasPendingMessageRequest: Bool
-        fileprivate let items: [CVBodyTextLabel.Item]
+        fileprivate let items: [CVTextLabel.Item]
 
         public var canUseDedicatedCell: Bool {
             if hasTapForMore || searchText != nil {
@@ -120,7 +120,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                     attributedString: NSAttributedString?,
                                     hasPendingMessageRequest: Bool,
                                     shouldAllowLinkification: Bool,
-                                    textWasTruncated: Bool) -> [CVBodyTextLabel.Item] {
+                                    textWasTruncated: Bool) -> [CVTextLabel.Item] {
 
         // Use a lock to ensure that measurement on and off the main thread
         // don't conflict.
@@ -134,9 +134,9 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 owsAssertDebug(text.hasSuffix(DisplayableText.truncatedTextSuffix))
             }
 
-            var items = [CVBodyTextLabel.Item]()
+            var items = [CVTextLabel.Item]()
             // Detect and discard overlapping items, preferring mentions to data items.
-            func hasItemOverlap(_ newItem: CVBodyTextLabel.Item) -> Bool {
+            func hasItemOverlap(_ newItem: CVTextLabel.Item) -> Bool {
                 for oldItem in items {
                     if let overlap = oldItem.range.intersection(newItem.range),
                        overlap.length > 0 {
@@ -150,8 +150,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             if let attributedString = attributedString {
                 attributedString.enumerateMentions { mention, range, _ in
                     guard let mention = mention else { return }
-                    let mentionItem = CVBodyTextLabel.MentionItem(mention: mention, range: range)
-                    let item: CVBodyTextLabel.Item = .mention(mentionItem: mentionItem)
+                    let mentionItem = CVTextLabel.MentionItem(mention: mention, range: range)
+                    let item: CVTextLabel.Item = .mention(mentionItem: mentionItem)
                     guard !hasItemOverlap(item) else {
                         owsFailDebug("Item overlap.")
                         return
@@ -190,7 +190,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
                 let matchUrl = match.url
 
-                let dataType: CVBodyTextLabel.DataItem.DataType
+                let dataType: CVTextLabel.DataItem.DataType
                 var customUrl: URL?
                 let resultType: NSTextCheckingResult.CheckingType = match.resultType
                 if resultType.contains(.orthography) {
@@ -330,11 +330,11 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     continue
                 }
 
-                let dataItem = CVBodyTextLabel.DataItem(dataType: dataType,
-                                                        range: match.range,
-                                                        snippet: snippet,
-                                                        url: url)
-                let item: CVBodyTextLabel.Item = .dataItem(dataItem: dataItem)
+                let dataItem = CVTextLabel.DataItem(dataType: dataType,
+                                                    range: match.range,
+                                                    snippet: snippet,
+                                                    url: url)
+                let item: CVTextLabel.Item = .dataItem(dataItem: dataItem)
                 guard !hasItemOverlap(item) else {
                     owsFailDebug("Item overlap.")
                     continue
@@ -354,7 +354,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
 
-        let items: [CVBodyTextLabel.Item]
+        let items: [CVTextLabel.Item]
         var shouldUseAttributedText = false
         if let displayableText = bodyText.displayableText,
            let textValue = bodyText.textValue(isTextExpanded: isTextExpanded) {
@@ -475,27 +475,33 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return conversationStyle.bubbleTextColor(message: message)
     }
 
-    private var textSelectionColor: UIColor {
-        guard let message = interaction as? TSMessage else {
-            return .black
+    private var textSelectionStyling: [NSAttributedString.Key: Any] {
+        var foregroundColor: UIColor = .black
+        if let message = interaction as? TSMessage {
+            foregroundColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: message.isIncoming)
         }
-        return conversationStyle.bubbleSecondaryTextColor(isIncoming: message.isIncoming)
+
+        return [
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
+            .underlineColor: foregroundColor,
+            .foregroundColor: foregroundColor
+        ]
     }
 
-    public func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVBodyTextLabel.Config {
-        CVBodyTextLabel.Config(attributedString: textViewConfig.text.attributedString,
-                               font: textViewConfig.font,
-                               textColor: textViewConfig.textColor,
-                               selectionColor: textSelectionColor,
-                               textAlignment: textViewConfig.textAlignment ?? .natural,
-                               lineBreakMode: .byWordWrapping,
-                               numberOfLines: 0,
-                               cacheKey: textViewConfig.cacheKey,
-                               items: bodyTextState.items)
+    public func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVTextLabel.Config {
+        CVTextLabel.Config(attributedString: textViewConfig.text.attributedString,
+                           font: textViewConfig.font,
+                           textColor: textViewConfig.textColor,
+                           selectionStyling: textSelectionStyling,
+                           textAlignment: textViewConfig.textAlignment ?? .natural,
+                           lineBreakMode: .byWordWrapping,
+                           numberOfLines: 0,
+                           cacheKey: textViewConfig.cacheKey,
+                           items: bodyTextState.items)
     }
 
-    public func bodyTextLabelConfig(labelConfig: CVLabelConfig) -> CVBodyTextLabel.Config {
-        // CVBodyTextLabel requires that attributedString has
+    public func bodyTextLabelConfig(labelConfig: CVLabelConfig) -> CVTextLabel.Config {
+        // CVTextLabel requires that attributedString has
         // default attributes applied to the entire string's range.
         let textAlignment: NSTextAlignment = labelConfig.textAlignment ?? .natural
         let paragraphStyle = NSMutableParagraphStyle()
@@ -510,15 +516,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             range: attributedText.entireRange
         )
 
-        return CVBodyTextLabel.Config(attributedString: attributedText,
-                                      font: labelConfig.font,
-                                      textColor: labelConfig.textColor,
-                                      selectionColor: textSelectionColor,
-                                      textAlignment: textAlignment,
-                                      lineBreakMode: .byWordWrapping,
-                                      numberOfLines: 0,
-                                      cacheKey: labelConfig.cacheKey,
-                                      items: bodyTextState.items)
+        return CVTextLabel.Config(attributedString: attributedText,
+                                  font: labelConfig.font,
+                                  textColor: labelConfig.textColor,
+                                  selectionStyling: textSelectionStyling,
+                                  textAlignment: textAlignment,
+                                  lineBreakMode: .byWordWrapping,
+                                  numberOfLines: 0,
+                                  cacheKey: labelConfig.cacheKey,
+                                  items: bodyTextState.items)
     }
 
     public func configureForRendering(componentView: CVComponentView,
@@ -537,7 +543,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private func configureForBodyTextLabel(componentView: CVComponentViewBodyText,
-                                           bodyTextLabelConfig: CVBodyTextLabel.Config,
+                                           bodyTextLabelConfig: CVTextLabel.Config,
                                            cellMeasurement: CVCellMeasurement) {
         AssertIsOnMainThread()
 
@@ -554,7 +560,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
-    public func buildBodyTextLabelConfig() -> CVBodyTextLabel.Config {
+    public func buildBodyTextLabelConfig() -> CVTextLabel.Config {
         switch bodyText {
         case .bodyText(let displayableText):
             return bodyTextLabelConfig(textViewConfig: textConfig(displayableText: displayableText))
@@ -650,7 +656,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private static func linkifyData(attributedText: NSMutableAttributedString,
                                     linkifyStyle: LinkifyStyle,
-                                    items: [CVBodyTextLabel.Item]) {
+                                    items: [CVTextLabel.Item]) {
 
         // Sort so that we can detect overlap.
         let items = items.sorted {
@@ -666,8 +672,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 continue
             }
             switch item {
-            case .mention:
-                // Do nothing; mentions are already styled.
+            case .mention, .referencedUser:
+                // Do nothing; mentions and referenced users are already styled.
                 continue
             case .dataItem(let dataItem):
                 guard let link = dataItem.url.absoluteString.nilIfEmpty else {
@@ -757,8 +763,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     // Extract the overall measurement for this component.
-    public static func bodyTextMeasurement(measurementBuilder: CVCellMeasurement.Builder) -> CVBodyTextLabel.Measurement? {
-        measurementBuilder.getObject(key: measurementKey_textMeasurement) as? CVBodyTextLabel.Measurement
+    public static func bodyTextMeasurement(measurementBuilder: CVCellMeasurement.Builder) -> CVTextLabel.Measurement? {
+        measurementBuilder.getObject(key: measurementKey_textMeasurement) as? CVTextLabel.Measurement
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
@@ -797,8 +803,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         let bodyTextLabel = componentView.bodyTextLabel
         if let item = bodyTextLabel.itemForGesture(sender: sender) {
-            bodyTextLabel.animate(selectedItem: item)
-            componentDelegate.cvc_didTapBodyTextItem(.init(item: item))
+            componentDelegate.cvc_didTapBodyTextItem(item)
             return true
         }
 
@@ -829,7 +834,6 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         guard let item = bodyTextLabel.itemForGesture(sender: sender) else {
             return nil
         }
-        bodyTextLabel.animate(selectedItem: item)
         return CVLongPressHandler(delegate: componentDelegate,
                                   renderItem: renderItem,
                                   gestureLocation: .bodyText(item: item))
@@ -861,7 +865,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
         fileprivate let stackView = BodyTextRootView(name: "bodyText")
 
-        public let bodyTextLabel = CVBodyTextLabel()
+        public let bodyTextLabel = CVTextLabel()
 
         public var isDedicatedCellView = false
 

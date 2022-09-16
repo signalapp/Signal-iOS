@@ -1,11 +1,55 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 import SignalServiceKit
 
 class PhoneNumberTestSwift: SSKBaseTestSwift {
+    func testTryParsePhoneNumberTextOnly() {
+        let testCases: [String: String?] = [
+            // Phone numbers with explicit region codes
+            "+1 (902) 555-0123": "+19025550123",
+            "1 (902) 555-0123": "+19025550123",
+            "1-902-555-0123": "+19025550123",
+            "1 902 555 0123": "+19025550123",
+            "1.902.555.0123": "+19025550123",
+            "+33 1 70 39 38 00": "+33170393800",
+            // Phone numbers missing a calling code. Assumes local region
+            "9025550123": "+19025550123",
+            "902-555-0123": "+19025550123",
+            "902.555.0123": "+19025550123",
+            "902 555 0123": "+19025550123",
+            "(902) 555-0123": "+19025550123",
+            // Phone numbers outside your region without a plus.
+            // You must include a plus when dialing outside of your locale.
+            // This might not be desired, but documents existing behavior.
+            "33 1 70 39 38 00": nil,
+            // Phone numbers with a calling code but without a plus
+            "19025550123": "+19025550123",
+            // Empty input
+            "": nil
+        ]
+        for (input, expected) in testCases {
+            let actual = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: input)?.toE164()
+            XCTAssertEqual(actual, expected, input)
+        }
+    }
+
+    func testTryParsePhoneNumberWithCallingCode() {
+        XCTAssertEqual(
+            PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: "18085550101", callingCode: "1")?.toE164(),
+            "+18085550101"
+        )
+        XCTAssertEqual(
+            PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: "61255504321", callingCode: "61")?.toE164(),
+            "+61255504321"
+        )
+        XCTAssertEqual(
+            PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: "493083050", callingCode: "49")?.toE164(),
+            "+493083050"
+        )
+    }
 
     func test_mx_transition() {
         // MX recently removed the mobile 1. So 521xxx numbers can now be dialed on PTSN as 52xxx

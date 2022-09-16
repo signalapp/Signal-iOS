@@ -73,7 +73,7 @@ extension ImageEditorViewController {
             self.currentStrokeSamples.append(newSample)
         }
 
-        var strokeColor = drawToolbar.paletteView.selectedValue.color
+        var strokeColor = drawToolbar.colorPickerView.selectedValue.color
         if currentStrokeType == .highlighter {
             strokeColor = strokeColor.withAlphaComponent(Self.highligherStrokeOpacity)
         }
@@ -133,12 +133,12 @@ extension ImageEditorViewController {
 
     class DrawToolbar: UIView {
 
-        let paletteView: ImageEditorPaletteView
+        let colorPickerView: ColorPickerBarView
 
         let strokeTypeButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-draw-pen"), backgroundStyle: .blur)
 
-        init(currentColor: ImageEditorColor) {
-            self.paletteView = ImageEditorPaletteView(currentColor: currentColor)
+        init(currentColor: ColorPickerBarColor) {
+            self.colorPickerView = ColorPickerBarView(currentColor: currentColor)
             super.init(frame: .zero)
 
             layoutMargins.top = 0
@@ -163,7 +163,7 @@ extension ImageEditorViewController {
 
             // I had to use a custom layout guide because stack view isn't centered
             // but instead has slight offset towards the trailing edge.
-            let stackView = UIStackView(arrangedSubviews: [ paletteView, strokeTypeButton ])
+            let stackView = UIStackView(arrangedSubviews: [ colorPickerView, strokeTypeButton ])
             stackView.translatesAutoresizingMaskIntoConstraints = false
             stackView.alignment = .center
             stackView.spacing = 8

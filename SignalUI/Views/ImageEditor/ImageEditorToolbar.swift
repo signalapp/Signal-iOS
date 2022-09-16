@@ -25,8 +25,7 @@ class ImageEditorTopBar: MediaTopBar {
         OWSLocalizedString("MEDIA_EDITOR_CLEAR_ALL",
                            comment: "Title for the button that discards all edits in media editor.")
         clearAllButton.setTitle(clearAllButtonTitle, for: .normal)
-        clearAllButton.contentEdgeInsets = UIEdgeInsets(hMargin: 18, vMargin: 7)
-        clearAllButton.layoutMargins = .zero
+        clearAllButton.contentEdgeInsets = UIEdgeInsets(hMargin: 26, vMargin: 15)
 
         let stackView = UIStackView(arrangedSubviews: [ undoButton, UIView.hStretchingSpacer(), clearAllButton ])
         for button in stackView.arrangedSubviews {
@@ -83,6 +82,7 @@ class ImageEditorBottomBar: UIView {
         super.init(frame: .zero)
 
         preservesSuperviewLayoutMargins = true
+        setContentHuggingVerticalHigh()
 
         // Constrain bottom edge to bottom safe area.
         if UIDevice.current.hasIPhoneXNotch {

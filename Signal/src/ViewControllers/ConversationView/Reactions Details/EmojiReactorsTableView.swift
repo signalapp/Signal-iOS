@@ -108,7 +108,7 @@ private class EmojiReactorCell: UITableViewCell {
         emojiLabel.text = item.emoji
 
         if item.address.isLocalAddress {
-            nameLabel.text = NSLocalizedString("REACTIONS_DETAIL_YOU", comment: "Text describing the local user in the reaction details pane.")
+            nameLabel.text = CommonStrings.you
         } else {
             nameLabel.text = item.displayName
         }

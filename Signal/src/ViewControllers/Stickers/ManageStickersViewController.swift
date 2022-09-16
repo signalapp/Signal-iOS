@@ -60,10 +60,6 @@ public class ManageStickersViewController: OWSTableViewController2 {
         super.init()
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     // MARK: - View Lifecycle
 
     override public func loadView() {
@@ -160,7 +156,9 @@ public class ManageStickersViewController: OWSTableViewController2 {
             // Sort sticker packs by "date saved, descending" so that we feature
             // packs that the user has just learned about.
             installedStickerPacks = packsWithCovers.filter { $0.isInstalled }
-            availableBuiltInStickerPacks = packsWithCovers.filter { !$0.isInstalled && StickerManager.isDefaultStickerPack($0.info) }
+            availableBuiltInStickerPacks = packsWithCovers.filter {
+                !$0.isInstalled && StickerManager.isDefaultStickerPack(packId: $0.info.packId)
+            }
             let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
             availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }
         }
@@ -397,7 +395,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
         // TODO: Should we show a default author name?
 
-        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(packInfo)
+        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(packId: packInfo.packId)
 
         var authorViews = [UIView]()
         if isDefaultStickerPack {

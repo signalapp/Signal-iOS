@@ -89,9 +89,9 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
     }
 
     private func setMenuLayerAnchorPoint() {
-        let alignment = delegate?.contextMenuTargetedPreviewAccessoryPreviewAlignment(self)
+        let previewAlignment = delegate?.contextMenuTargetedPreviewAccessoryPreviewAlignment(self)
         let xAnchor: CGFloat
-        switch alignment {
+        switch previewAlignment {
         case .center:
             xAnchor = 0.5
         case .left:
@@ -102,8 +102,22 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
             xAnchor = 0
         }
 
+        var yAnchor: CGFloat = 0
+        alignments: for accessoryAlignment in accessoryAlignment.alignments {
+            switch accessoryAlignment {
+            case (.top, .exterior):
+                yAnchor = 1
+                break alignments
+            case (.bottom, .exterior):
+                yAnchor = 0
+                break alignments
+            default:
+                break
+            }
+        }
+
         let frame = menuView.frame
-        menuView.layer.anchorPoint = CGPoint(x: xAnchor, y: 0)
+        menuView.layer.anchorPoint = CGPoint(x: xAnchor, y: yAnchor)
         menuView.frame = frame
     }
 
@@ -130,7 +144,7 @@ protocol ContextMenuActionsViewDelegate: AnyObject {
     func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction)
 }
 
-public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScrollViewDelegate {
+private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScrollViewDelegate {
 
     private class ContextMenuActionRow: UIView {
         let attributes: ContextMenuAction.Attributes
@@ -296,7 +310,7 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
         self.forceDarkTheme = forceDarkTheme
 
         scrollView = UIScrollView(frame: CGRect.zero)
-        let effect = UIBlurEffect(style: UIBlurEffect.Style.prominent)
+        let effect = UIBlurEffect(style: .regular)
         backdropView = UIVisualEffectView(effect: effect)
 
         var actionViews: [ContextMenuActionRow] = []
@@ -325,7 +339,13 @@ public class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScro
         }
 
         layer.cornerRadius = cornerRadius
-        layer.masksToBounds = true
+        layer.shadowRadius = 40
+        layer.shadowOffset = CGSize(width: 8, height: 20)
+        layer.shadowColor = UIColor.ows_black.cgColor
+        layer.shadowOpacity = 0.3
+
+        backdropView.layer.cornerRadius = cornerRadius
+        backdropView.layer.masksToBounds = true
         addSubview(backdropView)
         backdropView.contentView.addSubview(scrollView)
 

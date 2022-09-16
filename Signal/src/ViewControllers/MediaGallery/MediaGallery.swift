@@ -27,7 +27,7 @@ class MediaGalleryAlbum {
     }
 }
 
-public class MediaGalleryItem: Equatable, Hashable {
+public class MediaGalleryItem: Equatable, Hashable, MediaGallerySectionItem {
     let message: TSMessage
     let attachmentStream: TSAttachmentStream
     let galleryDate: GalleryDate
@@ -60,6 +60,8 @@ public class MediaGalleryItem: Equatable, Hashable {
     var imageSize: CGSize {
         attachmentStream.imageSizePoints
     }
+
+    var uniqueId: String { attachmentStream.uniqueId }
 
     public typealias AsyncThumbnailBlock = (UIImage) -> Void
     func thumbnailImage(async: @escaping AsyncThumbnailBlock) -> UIImage? {
@@ -195,6 +197,7 @@ class MediaGallery: Dependencies {
     }
 
     private let mediaGalleryFinder: MediaGalleryFinder
+    private var sections: MediaGallerySections<Loader>!
 
     deinit {
         Logger.debug("")
@@ -203,36 +206,16 @@ class MediaGallery: Dependencies {
     @objc
     init(thread: TSThread) {
         self.mediaGalleryFinder = MediaGalleryFinder(thread: thread)
+        self.sections = MediaGallerySections(loader: Loader(mediaGallery: self))
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(Self.newAttachmentsAvailable(_:)),
+                                               name: MediaGalleryManager.newAttachmentsAvailableNotification,
+                                               object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(Self.didRemoveAttachments(_:)),
                                                name: MediaGalleryManager.didRemoveAttachmentsNotification,
                                                object: nil)
         databaseStorage.appendDatabaseChangeDelegate(self)
-    }
-
-    private func reset(transaction: SDSAnyReadTransaction) {
-        let oldestLoadedSection = sections.orderedKeys.first
-        let newestLoadedSection = sections.orderedKeys.last
-
-        sections = OrderedDictionary()
-        hasFetchedOldest = false
-        hasFetchedMostRecent = false
-
-        if let oldestLoadedSection = oldestLoadedSection, let newestLoadedSection = newestLoadedSection {
-            let count = numberOfItemsInSection(for: oldestLoadedSection, transaction: transaction)
-            if count > 0 {
-                let items: [MediaGalleryItem?] = Array(repeating: nil, count: count)
-                sections.append(key: oldestLoadedSection, value: items)
-
-                while !hasFetchedMostRecent, sections.orderedKeys.last! < newestLoadedSection {
-                    _ = self.loadLaterSections(batchSize: 40, transaction: transaction)
-                }
-            } else {
-                // The previous oldest section is gone, so we just have to guess what to load.
-                // Try the newest section(s).
-                _ = self.loadEarlierSections(batchSize: 40, transaction: transaction)
-            }
-        }
     }
 
     // MARK: -
@@ -245,7 +228,7 @@ class MediaGallery: Dependencies {
         // In some cases this may result in deleting sections entirely; we do this as a follow-up step so that
         // delegates don't get confused.
         AssertIsOnMainThread()
-        let incomingDeletedAttachments = notification.object as! [MediaGalleryManager.RemovedAttachment]
+        let incomingDeletedAttachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
 
         var sectionsNeedingUpdate = Set<GalleryDate>()
         for incomingDeletedAttachment in incomingDeletedAttachments {
@@ -272,13 +255,12 @@ class MediaGallery: Dependencies {
             for sectionDate in sectionsNeedingUpdate {
                 // Scan backwards; newer items are more likely to be modified.
                 // (We could use a binary search here as well.)
-                guard let sectionIndex = sections.orderedKeys.lastIndex(of: sectionDate) else {
+                guard let sectionIndex = sections.sectionDates.lastIndex(of: sectionDate) else {
                     continue
                 }
 
                 // Refresh the section.
-                let newCount = self.numberOfItemsInSection(for: sectionDate, transaction: transaction)
-                sections.replace(key: sectionDate, value: Array(repeating: nil, count: newCount))
+                let newCount = sections.reloadSection(for: sectionDate, transaction: transaction)
 
                 sectionIndexesNeedingUpdate.insert(sectionIndex)
                 if newCount == 0 {
@@ -295,59 +277,47 @@ class MediaGallery: Dependencies {
         }
 
         // Delete in reverse order so indexes are preserved as we go.
-        for index in sectionsToDelete.reversed() {
-            sections.remove(at: index)
-        }
+        sections.removeEmptySections(atIndexes: sectionsToDelete)
         delegates.forEach {
             $0.mediaGallery(self, deletedSections: sectionsToDelete, deletedItems: [])
         }
     }
 
-    func process(updatedAttachmentIds: Set<String>) {
+    @objc
+    private func newAttachmentsAvailable(_ notification: Notification) {
         AssertIsOnMainThread()
+        let incomingNewAttachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
+        let relevantAttachments = incomingNewAttachments.filter { $0.threadGrdbId == mediaGalleryFinder.threadId }
 
-        guard !updatedAttachmentIds.isEmpty else {
+        guard !relevantAttachments.isEmpty else {
             return
         }
         Logger.debug("")
-
-        // Conservatively assume that every updated attachment is an added attachment,
-        // and deal with this by reloading the affected sections.
 
         var sectionsNeedingUpdate = IndexSet()
         var didAddSectionAtEnd = false
         var didReset = false
 
         databaseStorage.read { transaction in
-            for attachmentId in updatedAttachmentIds {
-                let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
-                guard let attachmentStream = attachment as? TSAttachmentStream else {
-                    // not downloaded yet
-                    return
-                }
-                guard let message = attachmentStream.fetchAlbumMessage(transaction: transaction) else {
-                    Logger.warn("message was unexpectedly nil")
-                    return
-                }
-
-                let sectionDate = GalleryDate(message: message)
+            for attachmentInfo in relevantAttachments {
+                let sectionDate = GalleryDate(date: Date(millisecondsSince1970: attachmentInfo.timestamp))
                 // Do a backwards search assuming new messages usually arrive at the end.
                 // Still, this is kept sorted, so we ought to be able to do a binary search instead.
-                if let lastSectionDate = sections.orderedKeys.last, sectionDate > lastSectionDate {
+                if let lastSectionDate = sections.sectionDates.last, sectionDate > lastSectionDate {
                     // Only let clients know about the new section if they thought they were at the end;
                     // otherwise they'll fetch more if they need to.
-                    if hasFetchedMostRecent {
-                        hasFetchedMostRecent = false
+                    if sections.hasFetchedMostRecent {
+                        sections.resetHasFetchedMostRecent()
                         didAddSectionAtEnd = true
                     }
-                } else if let sectionIndex = sections.orderedKeys.lastIndex(of: sectionDate) {
+                } else if let sectionIndex = sections.sectionDates.lastIndex(of: sectionDate) {
                     sectionsNeedingUpdate.insert(sectionIndex)
                 } else {
                     // We've loaded the first attachment in a new section that's not at the end. That can't be done
                     // transparently in MediaGallery's model, so let all our delegates know to refresh *everything*.
                     // This should be rare, but can happen if someone has automatic attachment downloading off and then
                     // goes back and downloads an attachment that crosses the month boundary.
-                    reset(transaction: transaction)
+                    sections.reset(transaction: transaction)
                     didReset = true
                     return
                 }
@@ -355,16 +325,17 @@ class MediaGallery: Dependencies {
 
             for sectionIndex in sectionsNeedingUpdate {
                 // Throw out everything in that section.
-                let sectionDate = sections.orderedKeys[sectionIndex]
-                let newCount = numberOfItemsInSection(for: sectionDate, transaction: transaction)
-                sections.replace(key: sectionDate, value: Array(repeating: nil, count: newCount))
+                let sectionDate = sections.sectionDates[sectionIndex]
+                sections.reloadSection(for: sectionDate, transaction: transaction)
             }
         }
 
         if didReset {
             delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
         } else {
-            delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: sectionsNeedingUpdate) }
+            if !sectionsNeedingUpdate.isEmpty {
+                delegates.forEach { $0.mediaGallery(self, didReloadItemsInSections: sectionsNeedingUpdate) }
+            }
             if didAddSectionAtEnd {
                 delegates.forEach { $0.didAddSectionInMediaGallery(self) }
             }
@@ -373,14 +344,9 @@ class MediaGallery: Dependencies {
 
     // MARK: -
 
-    /// All sections we know about.
-    ///
-    /// Each section contains an array of possibly-fetched items.
-    /// The length of the array is always the correct number of items in the section.
-    /// The keys are kept in sorted order.
-    private(set) var sections: OrderedDictionary<GalleryDate, [MediaGalleryItem?]> = OrderedDictionary()
-    private(set) var hasFetchedOldest = false
-    private(set) var hasFetchedMostRecent = false
+    internal var hasFetchedOldest: Bool { sections.hasFetchedOldest }
+    internal var hasFetchedMostRecent: Bool { sections.hasFetchedMostRecent }
+    internal var galleryDates: [GalleryDate] { sections.sectionDates }
 
     private func buildGalleryItem(attachment: TSAttachment, transaction: SDSAnyReadTransaction) -> MediaGalleryItem? {
         guard let attachmentStream = attachment as? TSAttachmentStream else {
@@ -409,7 +375,7 @@ class MediaGallery: Dependencies {
             return MediaGalleryAlbum(items: [item], mediaGallery: self)
         }
 
-        let section = sections[itemPath.section].value
+        let section = sections.itemsBySection[itemPath.section].value
         let startOfAlbum = section[..<itemPath.item].suffix { $0?.message.uniqueId == item.message.uniqueId }.startIndex
         let endOfAlbum = section[itemPath.item...].prefix { $0?.message.uniqueId == item.message.uniqueId }.endIndex
         let items = section[startOfAlbum..<endOfAlbum].map { $0! }
@@ -428,7 +394,7 @@ class MediaGallery: Dependencies {
                                            amount: Int,
                                            shouldLoadAlbumRemainder: Bool,
                                            completion: ((_ newSections: IndexSet) -> Void)? = nil) {
-        let anchorItem: MediaGalleryItem? = sections[sectionIndex].value[safe: itemIndex] ?? nil
+        let anchorItem: MediaGalleryItem? = sections.loadedItem(at: IndexPath(item: itemIndex, section: sectionIndex))
 
         // May include a negative start location.
         let naiveRequestRange: Range<Int> = {
@@ -463,183 +429,8 @@ class MediaGallery: Dependencies {
             return range
         }()
 
-        func isSubstantialRequest() -> Bool {
-            // If we have not loaded the item at the given path yet, it's substantial.
-            guard let item = anchorItem else {
-                return true
-            }
-
-            let sectionItems = sections[sectionIndex].value
-
-            // If we're loading the remainder of an album, check to see if any items in the album are not loaded yet.
-            if shouldLoadAlbumRemainder {
-                let albumStart = (itemIndex - item.albumIndex)
-                    .clamp(sectionItems.startIndex, sectionItems.endIndex)
-                let albumEnd = (albumStart + item.message.attachmentIds.count)
-                    .clamp(sectionItems.startIndex, sectionItems.endIndex)
-                if sectionItems[albumStart..<albumEnd].contains(nil) { return true }
-            }
-
-            // Count unfetched items forward and backward.
-            func countUnfetched(in slice: ArraySlice<MediaGalleryItem?>) -> Int {
-                return slice.lazy.filter { $0 == nil }.count
-            }
-
-            owsAssertDebug(naiveRequestRange.lowerBound < sectionItems.count)
-            let sectionSliceStart = naiveRequestRange.lowerBound
-                .clamp(sectionItems.startIndex, sectionItems.endIndex)
-            let sectionSliceEnd = naiveRequestRange.upperBound
-                .clamp(sectionItems.startIndex, sectionItems.endIndex)
-            let sectionSlice = sectionItems[sectionSliceStart..<sectionSliceEnd]
-            var unfetchedCount = countUnfetched(in: sectionSlice)
-
-            if naiveRequestRange.upperBound > sectionItems.count {
-                var currentSectionIndex = sectionIndex + 1
-                var remainingForward = naiveRequestRange.upperBound - sectionItems.count
-                repeat {
-                    guard let currentSectionItems = sections[safe: currentSectionIndex]?.value else {
-                        // We've reached the end of the fetched sections. If there are more sections, or the last item
-                        // isn't fetched yet, assume it's substantial.
-                        if !hasFetchedMostRecent || (sections.last?.value.last ?? nil) == nil {
-                            return true
-                        }
-                        break
-                    }
-                    unfetchedCount += countUnfetched(in: currentSectionItems.prefix(remainingForward))
-                    if remainingForward <= currentSectionItems.count {
-                        break
-                    }
-                    remainingForward -= currentSectionItems.count
-                    currentSectionIndex += 1
-                } while true
-            }
-
-            if naiveRequestRange.lowerBound < 0 {
-                var currentSectionIndex = sectionIndex - 1
-                var remainingBackward = -naiveRequestRange.lowerBound
-                repeat {
-                    guard let currentSectionItems = sections[safe: currentSectionIndex]?.value else {
-                        // We've reached the start of the fetched sections. If there are more sections, or the first
-                        // item isn't fetched yet, assume it's substantial.
-                        if !hasFetchedOldest || (sections.first?.value.first ?? nil) == nil {
-                            return true
-                        }
-                        break
-                    }
-                    unfetchedCount += countUnfetched(in: currentSectionItems.suffix(remainingBackward))
-                    if remainingBackward <= currentSectionItems.count {
-                        break
-                    }
-                    remainingBackward -= currentSectionItems.count
-                    currentSectionIndex -= 1
-                } while true
-            }
-
-            // If we haven't hit the start or end, and more than half the items are unfetched, it's substantial.
-            return unfetchedCount > (naiveRequestRange.count / 2)
-        }
-
-        guard isSubstantialRequest() else {
-            return
-        }
-
-        var numNewlyLoadedEarlierSections: Int = 0
-        var numNewlyLoadedLaterSections: Int = 0
-
-        Bench(title: "fetching gallery items") {
-            self.databaseStorage.read { transaction in
-                // Figure out the earliest section this request will cross.
-                var currentSectionIndex = sectionIndex
-                var requestRange = NSRange(naiveRequestRange)
-                while requestRange.location < 0 {
-                    if currentSectionIndex == 0 {
-                        let newlyLoadedCount = loadEarlierSections(batchSize: amount, transaction: transaction)
-                        currentSectionIndex = newlyLoadedCount
-                        numNewlyLoadedEarlierSections += newlyLoadedCount
-
-                        if currentSectionIndex == 0 {
-                            owsAssertDebug(hasFetchedOldest)
-                            requestRange.location = 0
-                            break
-                        }
-                    }
-
-                    currentSectionIndex -= 1
-                    let items = sections[currentSectionIndex].value
-                    requestRange.location += items.count
-                }
-
-                let interval = DateInterval(start: sections.orderedKeys[currentSectionIndex].interval.start,
-                                            end: .distantFutureForMillisecondTimestamp)
-
-                var offset = 0
-                mediaGalleryFinder.enumerateMediaAttachments(in: interval,
-                                                             excluding: deletedAttachmentIds,
-                                                             range: requestRange,
-                                                             transaction: transaction.unwrapGrdbRead) { i, attachment in
-                    owsAssertDebug(i >= offset, "does not support reverse traversal")
-
-                    func tryAddNewItem() {
-                        if currentSectionIndex >= sections.count {
-                            if hasFetchedMostRecent {
-                                // Ignore later attachments.
-                                owsAssertDebug(sections.count == 1, "should only be used in single-album page view")
-                                return
-                            }
-                            numNewlyLoadedLaterSections += loadLaterSections(batchSize: amount,
-                                                                             transaction: transaction)
-                            if currentSectionIndex >= sections.count {
-                                owsFailDebug("attachment \(attachment) is beyond the last section")
-                                return
-                            }
-                        }
-
-                        let itemIndex = i - offset
-
-                        var (date, items) = sections[currentSectionIndex]
-                        guard itemIndex < items.count else {
-                            offset += items.count
-                            currentSectionIndex += 1
-                            // Start over in the next section.
-                            return tryAddNewItem()
-                        }
-
-                        guard !self.deletedAttachmentIds.contains(attachment.uniqueId) else {
-                            owsFailDebug("\(attachment) has already been deleted; should not have been fetched.")
-                            return
-                        }
-
-                        if let loadedItem = items[itemIndex] {
-                            owsAssert(loadedItem.attachmentStream.uniqueId == attachment.uniqueId)
-                            return
-                        }
-
-                        guard let item: MediaGalleryItem = self.buildGalleryItem(attachment: attachment,
-                                                                                 transaction: transaction) else {
-                            owsFailDebug("unexpectedly failed to buildGalleryItem")
-                            return
-                        }
-
-                        owsAssertDebug(item.galleryDate == date,
-                                       "item from \(item.galleryDate) put into section for \(date)")
-                        // Performance hack: clear out the current 'items' array in 'sections' to avoid copy-on-write.
-                        sections.replace(key: date, value: [])
-                        items[itemIndex] = item
-                        sections.replace(key: date, value: items)
-                    }
-
-                    tryAddNewItem()
-                }
-            }
-        }
-
-        if let completionBlock = completion {
-            let firstNewLaterSectionIndex = sections.count - numNewlyLoadedLaterSections
-            var newlyLoadedSections = IndexSet()
-            newlyLoadedSections.insert(integersIn: 0..<numNewlyLoadedEarlierSections)
-            newlyLoadedSections.insert(integersIn: firstNewLaterSectionIndex..<sections.count)
-            completionBlock(newlyLoadedSections)
-        }
+        let newlyLoadedSections = sections.ensureItemsLoaded(in: naiveRequestRange, relativeToSection: sectionIndex)
+        completion?(newlyLoadedSections)
     }
 
     private func ensureGalleryItemsLoaded(_ direction: GalleryDirection,
@@ -675,28 +466,10 @@ class MediaGallery: Dependencies {
 
             if sections.isEmpty {
                 // Set up the current section only.
-                let count = numberOfItemsInSection(for: focusedItem.galleryDate, transaction: transaction)
-                var items: [MediaGalleryItem?] = Array(repeating: nil, count: count)
-                items[offsetInSection] = focusedItem
-                sections.append(key: focusedItem.galleryDate, value: items)
-                return focusedItem
+                sections.loadInitialSection(for: focusedItem.galleryDate, transaction: transaction)
             }
 
-            // Assume we've set up this section, but may or may not have initialized the item.
-            guard var items = sections[focusedItem.galleryDate] else {
-                owsFailDebug("section for focused item not found")
-                return nil
-            }
-
-            if let existingItem = items[safe: offsetInSection] ?? nil {
-                return existingItem
-            }
-
-            // Swap out the section items to avoid copy-on-write.
-            sections.replace(key: focusedItem.galleryDate, value: [])
-            items[offsetInSection] = focusedItem
-            sections.replace(key: focusedItem.galleryDate, value: items)
-            return focusedItem
+            return sections.getOrReplaceItem(focusedItem, offsetInSection: offsetInSection)
         }
 
         guard let focusedItem = newItem else {
@@ -715,10 +488,8 @@ class MediaGallery: Dependencies {
 
     // MARK: - Section-based API
 
-    private func numberOfItemsInSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
-        return Int(mediaGalleryFinder.mediaCount(in: date.interval,
-                                                 excluding: deletedAttachmentIds,
-                                                 transaction: transaction.unwrapGrdbRead))
+    internal func numberOfItemsInSection(_ sectionIndex: Int) -> Int {
+        return sections.itemsBySection[sectionIndex].value.count
     }
 
     /// Loads at least one section before the oldest section, though not any of the items in it.
@@ -727,43 +498,7 @@ class MediaGallery: Dependencies {
     ///
     /// Returns the number of new sections loaded, which can be used to update section indexes.
     internal func loadEarlierSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        guard !hasFetchedOldest else {
-            return 0
-        }
-
-        var newSectionCounts: [GalleryDate: Int] = [:]
-        let earliestDate = sections.orderedKeys.first?.interval.start ?? .distantFutureForMillisecondTimestamp
-
-        var newEarliestDate: GalleryDate?
-        let result = mediaGalleryFinder.enumerateTimestamps(before: earliestDate,
-                                                            excluding: deletedAttachmentIds,
-                                                            count: batchSize,
-                                                            transaction: transaction.unwrapGrdbRead) { timestamp in
-            let galleryDate = GalleryDate(date: timestamp)
-            newSectionCounts[galleryDate, default: 0] += 1
-            owsAssertDebug(newEarliestDate == nil || galleryDate <= newEarliestDate!,
-                           "expects timestamps to be fetched in descending order")
-            newEarliestDate = galleryDate
-        }
-
-        if result == .reachedEnd {
-            hasFetchedOldest = true
-        } else {
-            // Make sure we have the full count for the earliest loaded section.
-            newSectionCounts[newEarliestDate!] = numberOfItemsInSection(for: newEarliestDate!,
-                                                                        transaction: transaction)
-        }
-
-        if sections.isEmpty {
-            hasFetchedMostRecent = true
-        }
-
-        let sortedDates = newSectionCounts.keys.sorted()
-        owsAssertDebug(sections.isEmpty || sortedDates.isEmpty || sortedDates.last! < sections.orderedKeys.first!)
-        for date in sortedDates.reversed() {
-            sections.prepend(key: date, value: Array(repeating: nil, count: newSectionCounts[date]!))
-        }
-        return sortedDates.count
+        return sections.loadEarlierSections(batchSize: batchSize, transaction: transaction)
     }
 
     /// Loads at least one section after the latest section, though not any of the items in it.
@@ -772,43 +507,7 @@ class MediaGallery: Dependencies {
     ///
     /// Returns the number of new sections loaded.
     internal func loadLaterSections(batchSize: Int, transaction: SDSAnyReadTransaction) -> Int {
-        guard !hasFetchedMostRecent else {
-            return 0
-        }
-
-        var newSectionCounts: [GalleryDate: Int] = [:]
-        let latestDate = sections.orderedKeys.last?.interval.end ?? Date(millisecondsSince1970: 0)
-
-        var newLatestDate: GalleryDate?
-        let result = mediaGalleryFinder.enumerateTimestamps(after: latestDate,
-                                                            excluding: deletedAttachmentIds,
-                                                            count: batchSize,
-                                                            transaction: transaction.unwrapGrdbRead) { timestamp in
-            let galleryDate = GalleryDate(date: timestamp)
-            newSectionCounts[galleryDate, default: 0] += 1
-            owsAssertDebug(newLatestDate == nil || newLatestDate! <= galleryDate,
-                           "expects timestamps to be fetched in ascending order")
-            newLatestDate = galleryDate
-        }
-
-        if result == .reachedEnd {
-            hasFetchedMostRecent = true
-        } else {
-            // Make sure we have the full count for the latest loaded section.
-            newSectionCounts[newLatestDate!] = numberOfItemsInSection(for: newLatestDate!,
-                                                                      transaction: transaction)
-        }
-
-        if sections.isEmpty {
-            hasFetchedOldest = true
-        }
-
-        let sortedDates = newSectionCounts.keys.sorted()
-        owsAssertDebug(sections.isEmpty || sortedDates.isEmpty || sections.orderedKeys.last! < sortedDates.first!)
-        for date in sortedDates {
-            sections.append(key: date, value: Array(repeating: nil, count: newSectionCounts[date]!))
-        }
-        return sortedDates.count
+        return sections.loadLaterSections(batchSize: batchSize, transaction: transaction)
     }
 
     // MARK: -
@@ -870,35 +569,19 @@ class MediaGallery: Dependencies {
 
         var deletedIndexPaths: [IndexPath]
         if let indexPaths = givenIndexPaths {
+            if OWSIsDebugBuild() {
+                for (item, path) in zip(items, indexPaths) {
+                    owsAssertDebug(item == sections.loadedItem(at: path), "paths not in sync with items")
+                }
+            }
             deletedIndexPaths = indexPaths
         } else {
-            deletedIndexPaths = items.compactMap { indexPath(for: $0) }
+            deletedIndexPaths = items.compactMap { sections.indexPath(for: $0) }
             owsAssertDebug(deletedIndexPaths.count == items.count, "removing an item that wasn't loaded")
         }
         deletedIndexPaths.sort()
 
-        var deletedSections: IndexSet = IndexSet()
-        let deletedItemsForChecking = Set(items)
-
-        // Iterate in reverse so the index paths don't get disrupted.
-        for path in deletedIndexPaths.reversed() {
-            let sectionKey = self.sections.orderedKeys[path.section]
-            // Swap out / swap in to avoid copy-on-write.
-            var section = self.sections.replace(key: sectionKey, value: [])
-
-            if let removedItem = section.remove(at: path.item) {
-                owsAssertDebug(deletedItemsForChecking.contains(removedItem), "removed the wrong item")
-            } else {
-                owsFailDebug("removed an item that wasn't loaded, which can't be correct")
-            }
-
-            if section.isEmpty {
-                self.sections.remove(at: path.section)
-                deletedSections.insert(path.section)
-            } else {
-                self.sections.replace(key: sectionKey, value: section)
-            }
-        }
+        let deletedSections = sections.removeLoadedItems(atIndexPaths: deletedIndexPaths)
 
         delegates.forEach { $0.mediaGallery(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
     }
@@ -906,78 +589,17 @@ class MediaGallery: Dependencies {
     // MARK: -
 
     /// Searches the appropriate section for this item.
+    ///
+    /// Will return nil if the item was not loaded through the gallery.
     internal func indexPath(for item: MediaGalleryItem) -> IndexPath? {
-        // Search backwards because people view recent items.
-        // Note: we could use binary search because orderedKeys is sorted.
-        guard let sectionIndex = sections.orderedKeys.lastIndex(of: item.galleryDate),
-              let itemIndex = sections[sectionIndex].value.lastIndex(of: item) else {
-            return nil
-        }
-
-        return IndexPath(item: itemIndex, section: sectionIndex)
-    }
-
-    /// Returns the path to the next item after `path` (ignoring sections).
-    ///
-    /// If `path` refers to the last item in the gallery, returns `nil`.
-    private func indexPath(after path: IndexPath) -> IndexPath? {
-        owsAssert(path.count == 2)
-        var result = path
-
-        // Next item?
-        result.item += 1
-        if result.item < sections[result.section].value.count {
-            return result
-        }
-
-        // Next section?
-        result.item = 0
-        result.section += 1
-        if result.section < sections.count {
-            owsAssertDebug(!sections[result.section].value.isEmpty, "no empty sections")
-            return result
-        }
-
-        // Reached the end.
-        return nil
-    }
-
-    /// Returns the path to the item just before `path` (ignoring sections).
-    ///
-    /// If `path` refers to the first item in the gallery, returns `nil`.
-    private func indexPath(before path: IndexPath) -> IndexPath? {
-        owsAssert(path.count == 2)
-        var result = path
-
-        // Previous item?
-        if result.item > 0 {
-            result.item -= 1
-            return result
-        }
-
-        // Previous section?
-        if result.section > 0 {
-            result.section -= 1
-            owsAssertDebug(!sections[result.section].value.isEmpty, "no empty sections")
-            result.item = sections[result.section].value.count - 1
-            return result
-        }
-
-        // Reached the start.
-        return nil
+        return sections.indexPath(for: item)
     }
 
     /// Returns the item at `path`, which will be `nil` if not yet loaded.
     ///
     /// `path` must be a valid path for the items currently loaded.
     internal func galleryItem(at path: IndexPath) -> MediaGalleryItem? {
-        owsAssert(path.count == 2)
-        guard let validItem: MediaGalleryItem? = sections[safe: path.section]?.value[safe: path.item] else {
-            owsFailDebug("invalid path")
-            return nil
-        }
-        // The result might still be nil if the item hasn't been loaded.
-        return validItem
+        return sections.loadedItem(at: path)
     }
 
     private let kGallerySwipeLoadBatchSize: Int = 5
@@ -999,9 +621,9 @@ class MediaGallery: Dependencies {
             owsFailDebug("should not use this function with .around")
             return currentItem
         case .before:
-            advance = { self.indexPath(before: $0) }
+            advance = { self.sections.indexPath(before: $0) }
         case .after:
-            advance = { self.indexPath(after: $0) }
+            advance = { self.sections.indexPath(after: $0) }
         }
 
         self.ensureGalleryItemsLoaded(direction,
@@ -1043,18 +665,75 @@ class MediaGallery: Dependencies {
 extension MediaGallery: DatabaseChangeDelegate {
 
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        process(updatedAttachmentIds: databaseChanges.attachmentUniqueIds.subtracting(deletedAttachmentIds))
+        // Ignore: we get local changes from notifications instead.
     }
 
     func databaseChangesDidUpdateExternally() {
         // Conservatively assume anything could have happened.
         databaseStorage.read { transaction in
-            reset(transaction: transaction)
+            sections.reset(transaction: transaction)
         }
         delegates.forEach { $0.didReloadAllSectionsInMediaGallery(self) }
     }
 
     func databaseChangesDidReset() {
         // no-op
+    }
+}
+
+extension MediaGallery {
+    internal struct Loader: MediaGallerySectionLoader {
+        typealias EnumerationCompletion = MediaGalleryFinder.EnumerationCompletion
+        typealias Item = MediaGalleryItem
+
+        fileprivate unowned var mediaGallery: MediaGallery
+
+        func numberOfItemsInSection(for date: GalleryDate, transaction: SDSAnyReadTransaction) -> Int {
+            Int(mediaGallery.mediaGalleryFinder.mediaCount(in: date.interval,
+                                                            excluding: mediaGallery.deletedAttachmentIds,
+                                                            transaction: transaction.unwrapGrdbRead))
+        }
+
+        func enumerateTimestamps(before date: Date,
+                                 count: Int,
+                                 transaction: SDSAnyReadTransaction,
+                                 block: (Date) -> Void) -> EnumerationCompletion {
+            mediaGallery.mediaGalleryFinder.enumerateTimestamps(before: date,
+                                                                excluding: mediaGallery.deletedAttachmentIds,
+                                                                count: count,
+                                                                transaction: transaction.unwrapGrdbRead,
+                                                                block: block)
+        }
+
+        func enumerateTimestamps(after date: Date,
+                                 count: Int,
+                                 transaction: SDSAnyReadTransaction,
+                                 block: (Date) -> Void) -> EnumerationCompletion {
+            mediaGallery.mediaGalleryFinder.enumerateTimestamps(after: date,
+                                                                excluding: mediaGallery.deletedAttachmentIds,
+                                                                count: count,
+                                                                transaction: transaction.unwrapGrdbRead,
+                                                                block: block)
+        }
+
+        func enumerateItems(in interval: DateInterval,
+                            range: Range<Int>,
+                            transaction: SDSAnyReadTransaction,
+                            block: (_ offset: Int, _ uniqueId: String, _ buildItem: () -> MediaGalleryItem) -> Void) {
+            mediaGallery.mediaGalleryFinder.enumerateMediaAttachments(in: interval,
+                                                                      excluding: mediaGallery.deletedAttachmentIds,
+                                                                      range: NSRange(range),
+                                                                      transaction: transaction.unwrapGrdbRead) {
+                offset, attachment in
+
+                block(offset, attachment.uniqueId) {
+                    guard let item: MediaGalleryItem = mediaGallery.buildGalleryItem(attachment: attachment,
+                                                                                     transaction: transaction) else {
+                        owsFail("unexpectedly failed to buildGalleryItem for attachment #\(offset) \(attachment)")
+                    }
+                    return item
+                }
+            }
+        }
     }
 }

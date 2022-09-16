@@ -1,2 +1,3 @@
-• Kami telah menyempurnakan editor media, memudahkan Anda untuk mengedit foto dan video sebelum dikirim.
-• Beberapa perbaikan bug untuk memastikan aplikasi berjalan lancar. Perubahan menarik lain akan segera diterapkan!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

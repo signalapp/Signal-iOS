@@ -186,19 +186,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
               updatedContacts:(NSArray<Contact *> *)contacts
               isUserRequested:(BOOL)isUserRequested
 {
-    BOOL shouldClearStaleCache;
-    // On iOS 11.2, only clear the contacts cache if the fetch was initiated by the user.
-    // iOS 11.2 rarely returns partial fetches and we use the cache to prevent contacts from
-    // periodically disappearing from the UI.
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 2) && !SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 3)) {
-        shouldClearStaleCache = isUserRequested;
-    } else {
-        shouldClearStaleCache = YES;
-    }
-    [self updateWithContacts:contacts
-                     didLoad:YES
-             isUserRequested:isUserRequested
-       shouldClearStaleCache:shouldClearStaleCache];
+    [self updateWithContacts:contacts didLoad:YES isUserRequested:isUserRequested];
 }
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemContactsFetcher
@@ -207,7 +195,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (authorizationStatus == ContactStoreAuthorizationStatusRestricted
         || authorizationStatus == ContactStoreAuthorizationStatusDenied) {
         // Clear the contacts cache if access to the system contacts is revoked.
-        [self updateWithContacts:@[] didLoad:NO isUserRequested:NO shouldClearStaleCache:YES];
+        [self updateWithContacts:@[] didLoad:NO isUserRequested:NO];
     }
 }
 
@@ -440,10 +428,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                         failure:failure];
 }
 
-- (void)updateWithContacts:(NSArray<Contact *> *)contacts
-                   didLoad:(BOOL)didLoad
-           isUserRequested:(BOOL)isUserRequested
-     shouldClearStaleCache:(BOOL)shouldClearStaleCache
+- (void)updateWithContacts:(NSArray<Contact *> *)contacts didLoad:(BOOL)didLoad isUserRequested:(BOOL)isUserRequested
 {
     dispatch_async(self.intersectionQueue, ^{
         __block ContactsMaps *contactsMaps;
@@ -472,11 +457,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 return;
             }
             [OWSContactsManager buildSignalAccountsForContacts:contactsMaps.allContacts
-                                         shouldClearStaleCache:shouldClearStaleCache
                                                     completion:^(NSArray<SignalAccount *> *signalAccounts) {
-                [self updateSignalAccountsForSystemContactsFetch:signalAccounts
-                                shouldSetHasLoadedSystemContacts:didLoad];
-            }];
+                                                        [self updateSignalAccountsForSystemContactsFetch:signalAccounts
+                                                                        shouldSetHasLoadedSystemContacts:didLoad];
+                                                    }];
         }];
     });
 }
@@ -795,8 +779,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (savedContactNameComponents) {
         return savedContactNameComponents;
     }
-    
-    return [self.profileManagerImpl nameComponentsForAddress:address transaction:transaction];
+
+    return [self.profileManager nameComponentsForProfileWithAddress:address transaction:transaction];
 }
 
 // TODO: Remove?

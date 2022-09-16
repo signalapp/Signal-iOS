@@ -536,8 +536,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     NSString *quotedAuthorText;
     if (self.quotedMessage.authorAddress.isLocalAddress) {
-        quotedAuthorText = NSLocalizedString(
-            @"QUOTED_REPLY_AUTHOR_INDICATOR_YOU", @"message header label when someone else is quoting you");
+        quotedAuthorText = CommonStrings.you;
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;
         NSString *quotedAuthor = [contactsManager displayNameForAddress:self.quotedMessage.authorAddress];

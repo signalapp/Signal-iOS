@@ -10,7 +10,21 @@ public class TSConstants: NSObject {
     private enum Environment {
         case production, staging
     }
-    private static var environment: Environment = .production
+    private static var environment: Environment {
+        // You can set "USE_STAGING=1" in your Xcode Scheme. This allows you to
+        // prepare a series of commits without accidentally committing the change
+        // to the environment.
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["USE_STAGING"] == "1" {
+            return .staging
+        }
+        #endif
+
+        // If you do want to make a build that will always connect to staging,
+        // change this value. (Scheme environment variables are only set when
+        // launching via Xcode, so this approach is still quite useful.)
+        return .production
+    }
 
     @objc
     public static var isUsingProductionService: Bool {
@@ -73,9 +87,8 @@ public class TSConstants: NSObject {
     public static var storageServiceCensorshipPrefix: String { shared.storageServiceCensorshipPrefix }
 
     @objc
-    public static var contactDiscoveryEnclaveName: String { shared.contactDiscoveryEnclaveName }
-    @objc
-    public static var contactDiscoveryMrEnclave: String { shared.contactDiscoveryMrEnclave }
+    public static var contactDiscoveryEnclaveName: String { shared.contactDiscoveryMrEnclave.stringValue }
+    public static var contactDiscoveryMrEnclave: MrEnclave { shared.contactDiscoveryMrEnclave }
     @objc
     public static var contactDiscoveryPublicKey: String { shared.contactDiscoveryPublicKey }
     @objc
@@ -130,8 +143,7 @@ private protocol TSConstantsProtocol: AnyObject {
     var storageServiceCensorshipPrefix: String { get }
 
     // SGX Backed Contact Discovery
-    var contactDiscoveryEnclaveName: String { get }
-    var contactDiscoveryMrEnclave: String { get }
+    var contactDiscoveryMrEnclave: MrEnclave { get }
 
     // HSM Backed Contact Discovery
     var contactDiscoveryPublicKey: String { get }
@@ -147,8 +159,25 @@ private protocol TSConstantsProtocol: AnyObject {
 
 public struct KeyBackupEnclave: Equatable {
     let name: String
-    let mrenclave: String
+    let mrenclave: MrEnclave
     let serviceId: String
+}
+
+public struct MrEnclave: Equatable {
+    public let dataValue: Data
+    public let stringValue: String
+
+    init(_ stringValue: StaticString) {
+        self.stringValue = stringValue.withUTF8Buffer { String(decoding: $0, as: UTF8.self) }
+        // This is a constant -- it should never fail to parse.
+        self.dataValue = Data.data(fromHex: self.stringValue)!
+        // All of our MrEnclave values are currently 32 bytes.
+        owsAssert(self.dataValue.count == 32)
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        return lhs.dataValue == rhs.dataValue
+    }
 }
 
 // MARK: - Production
@@ -181,10 +210,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     public let keyBackupCensorshipPrefix = "backup"
     public let storageServiceCensorshipPrefix = "storage"
 
-    public let contactDiscoveryEnclaveName = "c98e00a4e3ff977a56afefe7362a27e4961e4f19e211febfbb19b897e6b80b15"
-    public var contactDiscoveryMrEnclave: String {
-        return contactDiscoveryEnclaveName
-    }
+    public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
 
     public var contactDiscoveryPublicKey: String {
         owsFailDebug("CDSH unsupported in production")
@@ -196,20 +222,21 @@ private class TSConstantsProduction: TSConstantsProtocol {
     }
 
     public let keyBackupEnclave = KeyBackupEnclave(
-        name: "0cedba03535b41b67729ce9924185f831d7767928a1d1689acb689bc079c375f",
-        mrenclave: "ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba",
-        serviceId: "187d2739d22be65e74b65f0055e74d31310e4267e5fac2b1246cc8beba81af39"
+        name: "e18376436159cda3ad7a45d9320e382e4a497f26b0dca34d8eab0bd0139483b5",
+        mrenclave: MrEnclave("45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c"),
+        serviceId: "3a485adb56e2058ef7737764c738c4069dd62bc457637eafb6bbce1ce29ddb89"
     )
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let keyBackupPreviousEnclaves = [
+    public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
+        // Add the current `keyBackupEnclave` value here when replacing it.
         KeyBackupEnclave(
-            name: "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe",
-            mrenclave: "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87",
-            serviceId: "fe7c1bfae98f9b073d220366ea31163ee82f6d04bead774f71ca8e5c40847bfe"
+            name: "0cedba03535b41b67729ce9924185f831d7767928a1d1689acb689bc079c375f",
+            mrenclave: MrEnclave("ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba"),
+            serviceId: "187d2739d22be65e74b65f0055e74d31310e4267e5fac2b1246cc8beba81af39"
         )
     ]
 
@@ -217,7 +244,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
     // We need to discard all profile key credentials if these values ever change.
     // See: GroupsV2Impl.verifyServerPublicParams(...)
-    public let serverPublicParamsBase64 = "AMhf5ywVwITZMsff/eCyudZx9JDmkkkbV6PInzG4p8x3VqVJSFiMvnvlEKWuRob/1eaIetR31IYeAbm0NdOuHH8Qi+Rexi1wLlpzIo1gstHWBfZzy1+qHRV5A4TqPp15YzBPm0WSggW6PbSn+F4lf57VCnHF7p8SvzAA2ZZJPYJURt8X7bbg+H3i+PEjH9DXItNEqs2sNcug37xZQDLm7X36nOoGPs54XsEGzPdEV+itQNGUFEjY6X9Uv+Acuks7NpyGvCoKxGwgKgE5XyJ+nNKlyHHOLb6N1NuHyBrZrgtY/JYJHRooo5CEqYKBqdFnmbTVGEkCvJKxLnjwKWf+fEPoWeQFj5ObDjcKMZf2Jm2Ae69x+ikU5gBXsRmoF94GXQ=="
+    public let serverPublicParamsBase64 = "AMhf5ywVwITZMsff/eCyudZx9JDmkkkbV6PInzG4p8x3VqVJSFiMvnvlEKWuRob/1eaIetR31IYeAbm0NdOuHH8Qi+Rexi1wLlpzIo1gstHWBfZzy1+qHRV5A4TqPp15YzBPm0WSggW6PbSn+F4lf57VCnHF7p8SvzAA2ZZJPYJURt8X7bbg+H3i+PEjH9DXItNEqs2sNcug37xZQDLm7X36nOoGPs54XsEGzPdEV+itQNGUFEjY6X9Uv+Acuks7NpyGvCoKxGwgKgE5XyJ+nNKlyHHOLb6N1NuHyBrZrgtY/JYJHRooo5CEqYKBqdFnmbTVGEkCvJKxLnjwKWf+fEPoWeQFj5ObDjcKMZf2Jm2Ae69x+ikU5gBXsRmoF94GXTLfN0/vLt98KDPnxwAQL9j5V1jGOY8jQl6MLxEs56cwXN0dqCnImzVH3TZT1cJ8SW1BRX6qIVxEzjsSGx3yxF3suAilPMqGRp4ffyopjMD1JXiKR2RwLKzizUe5e8XyGOy9fplzhw3jVzTRyUZTRSZKkMLWcQ/gv0E4aONNqs4P"
 }
 
 // MARK: - Staging
@@ -253,10 +280,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let storageServiceCensorshipPrefix = "storage-staging"
 
     // CDS uses the same EnclaveName and MrEnclave
-    public let contactDiscoveryEnclaveName = "c98e00a4e3ff977a56afefe7362a27e4961e4f19e211febfbb19b897e6b80b15"
-    public var contactDiscoveryMrEnclave: String {
-        return contactDiscoveryEnclaveName
-    }
+    public var contactDiscoveryMrEnclave = MrEnclave("74778bb0f93ae1f78c26e67152bab0bbeb693cd56d1bb9b4e9244157acc58081")
 
     public let contactDiscoveryPublicKey = "2fe57da347cd62431528daac5fbb290730fff684afc4cfc2ed90995f58cb3b74"
     public let contactDiscoveryCodeHashes = [
@@ -264,25 +288,21 @@ private class TSConstantsStaging: TSConstantsProtocol {
     ]
 
     public let keyBackupEnclave = KeyBackupEnclave(
-        name: "dd6f66d397d9e8cf6ec6db238e59a7be078dd50e9715427b9c89b409ffe53f99",
-        mrenclave: "ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba",
-        serviceId: "4200003414528c151e2dccafbc87aa6d3d66a5eb8f8c05979a6e97cb33cd493a"
+        name: "39963b736823d5780be96ab174869a9499d56d66497aa8f9b2244f777ebc366b",
+        mrenclave: MrEnclave("45627094b2ea4a66f4cf0b182858a8dcf4b8479122c3820fe7fd0551a6d4cf5c"),
+        serviceId: "9dbc6855c198e04f21b5cc35df839fdcd51b53658454dfa3f817afefaffc95ef"
     )
 
     // An array of previously used enclaves that we should try and restore
     // key material from during registration. These must be ordered from
     // newest to oldest, so we check the latest enclaves for backups before
     // checking earlier enclaves.
-    public let keyBackupPreviousEnclaves = [
+    public let keyBackupPreviousEnclaves: [KeyBackupEnclave] = [
+        // Add the current `keyBackupEnclave` value here when replacing it.
         KeyBackupEnclave(
-            name: "dcd2f0b7b581068569f19e9ccb6a7ab1a96912d09dde12ed1464e832c63fa948",
-            mrenclave: "9db0568656c53ad65bb1c4e1b54ee09198828699419ec0f63cf326e79827ab23",
-            serviceId: "446a6e51956e0eed502c6d9626476cea5b7278829098c34ca0cdce329753a8ee"
-        ),
-        KeyBackupEnclave(
-            name: "823a3b2c037ff0cbe305cc48928cfcc97c9ed4a8ca6d49af6f7d6981fb60a4e9",
-            mrenclave: "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87",
-            serviceId: "16b94ac6d2b7f7b9d72928f36d798dbb35ed32e7bb14c42b4301ad0344b46f29"
+            name: "dd6f66d397d9e8cf6ec6db238e59a7be078dd50e9715427b9c89b409ffe53f99",
+            mrenclave: MrEnclave("ee19f1965b1eefa3dc4204eb70c04f397755f771b8c1909d080c04dad2a6a9ba"),
+            serviceId: "4200003414528c151e2dccafbc87aa6d3d66a5eb8f8c05979a6e97cb33cd493a"
         )
     ]
 
@@ -290,5 +310,5 @@ private class TSConstantsStaging: TSConstantsProtocol {
 
     // We need to discard all profile key credentials if these values ever change.
     // See: GroupsV2Impl.verifyServerPublicParams(...)
-    public let serverPublicParamsBase64 = "ABSY21VckQcbSXVNCGRYJcfWHiAMZmpTtTELcDmxgdFbtp/bWsSxZdMKzfCp8rvIs8ocCU3B37fT3r4Mi5qAemeGeR2X+/YmOGR5ofui7tD5mDQfstAI9i+4WpMtIe8KC3wU5w3Inq3uNWVmoGtpKndsNfwJrCg0Hd9zmObhypUnSkfYn2ooMOOnBpfdanRtrvetZUayDMSC5iSRcXKpdlukrpzzsCIvEwjwQlJYVPOQPj4V0F4UXXBdHSLK05uoPBCQG8G9rYIGedYsClJXnbrgGYG3eMTG5hnx4X4ntARBgELuMWWUEEfSK0mjXg+/2lPmWcTZWR9nkqgQQP0tbzuiPm74H2wMO4u1Wafe+UwyIlIT9L7KLS19Aw8r4sPrXQ=="
+    public let serverPublicParamsBase64 = "ABSY21VckQcbSXVNCGRYJcfWHiAMZmpTtTELcDmxgdFbtp/bWsSxZdMKzfCp8rvIs8ocCU3B37fT3r4Mi5qAemeGeR2X+/YmOGR5ofui7tD5mDQfstAI9i+4WpMtIe8KC3wU5w3Inq3uNWVmoGtpKndsNfwJrCg0Hd9zmObhypUnSkfYn2ooMOOnBpfdanRtrvetZUayDMSC5iSRcXKpdlukrpzzsCIvEwjwQlJYVPOQPj4V0F4UXXBdHSLK05uoPBCQG8G9rYIGedYsClJXnbrgGYG3eMTG5hnx4X4ntARBgELuMWWUEEfSK0mjXg+/2lPmWcTZWR9nkqgQQP0tbzuiPm74H2wMO4u1Wafe+UwyIlIT9L7KLS19Aw8r4sPrXZSSsOZ6s7M1+rTJN0bI5CKY2PX29y5Ok3jSWufIKcgKOnWoP67d5b2du2ZVJjpjfibNIHbT/cegy/sBLoFwtHogVYUewANUAXIaMPyCLRArsKhfJ5wBtTminG/PAvuBdJ70Z/bXVPf8TVsR292zQ65xwvWTejROW6AZX6aqucUj"
 }

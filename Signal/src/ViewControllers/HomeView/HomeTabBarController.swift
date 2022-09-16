@@ -34,6 +34,14 @@ class HomeTabBarController: UITabBarController {
         set { selectedIndex = newValue.rawValue }
     }
 
+    var tabBarHidden: Bool {
+        get { tabBar.isHidden }
+        set {
+            tabBar.isHidden = newValue
+            chatListViewController.extendedLayoutIncludesOpaqueBars = newValue
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -42,14 +50,14 @@ class HomeTabBarController: UITabBarController {
 
         delegate = self
 
-        // Don't render the tab bar if stories isn't enabled.
-        // TODO: Eventually there will be a setting for hiding stories.
-        guard FeatureFlags.stories else {
+        // Don't render the tab bar at all if stories isn't enabled.
+        guard RemoteConfig.stories else {
             viewControllers = [chatListNavController]
             tabBar.isHidden = true
             return
         }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applyTheme), name: .ThemeDidChange, object: nil)
         applyTheme()
 
@@ -61,11 +69,26 @@ class HomeTabBarController: UITabBarController {
         storiesNavController.tabBarItem = storiesTabBarItem
 
         updateAllBadges()
+
+        // We read directly from the database here, as the cache may not have been warmed by the time
+        // this view is loaded (since it's the very first thing to load). Otherwise, there can be a
+        // small window where the tab bar is in the wrong state at app launch.
+        tabBarHidden = !databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
     }
 
     @objc
     func applyTheme() {
         tabBar.tintColor = Theme.primaryTextColor
+    }
+
+    @objc
+    func storiesEnabledStateDidChange() {
+        if StoryManager.areStoriesEnabled {
+            tabBarHidden = false
+        } else {
+            tabBarHidden = true
+            selectedTab = .chatList
+        }
     }
 
     func updateAllBadges() {
@@ -74,7 +97,7 @@ class HomeTabBarController: UITabBarController {
     }
 
     func updateStoriesBadge() {
-        guard FeatureFlags.stories else { return }
+        guard RemoteConfig.stories else { return }
         let unviewedStoriesCount = databaseStorage.read { transaction in
             StoryFinder.unviewedSenderCount(transaction: transaction)
         }
@@ -82,7 +105,7 @@ class HomeTabBarController: UITabBarController {
     }
 
     func updateChatListBadge() {
-        guard FeatureFlags.stories else { return }
+        guard RemoteConfig.stories else { return }
         let unreadMessageCount = databaseStorage.read { transaction in
             InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
         }
@@ -158,10 +181,7 @@ public class OWSTabBar: UITabBar {
     // MARK: Theme
 
     var tabBarBackgroundColor: UIColor {
-        switch currentStyle {
-        case .secondaryBar: return Theme.secondaryBackgroundColor
-        default: return Theme.navbarBackgroundColor
-        }
+        Theme.navbarBackgroundColor
     }
 
     private func applyTheme() {
@@ -169,10 +189,7 @@ public class OWSTabBar: UITabBar {
             return
         }
 
-        if currentStyle == .secondaryBar {
-            barTintColor = tabBarBackgroundColor
-            self.backgroundImage = UIImage(color: tabBarBackgroundColor)
-        } else if UIAccessibility.isReduceTransparencyEnabled {
+        if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             self.backgroundImage = UIImage(color: tabBarBackgroundColor)
         } else {
@@ -236,7 +253,7 @@ public class OWSTabBar: UITabBar {
 
     @objc
     public enum TabBarStyle: Int {
-        case `default`, secondaryBar
+        case `default`
     }
 
     private var currentStyle: TabBarStyle?
@@ -257,26 +274,11 @@ public class OWSTabBar: UITabBar {
             layer.removeAnimation(forKey: "ows_fade")
         }
 
-        func applySecondaryBarOverride() {
-            self.blurEffectView?.isHidden = true
-            self.shadowImage = UIImage()
-        }
-
-        func removeSecondaryBarOverride() {
-            self.blurEffectView?.isHidden = false
-            self.shadowImage = nil
-        }
-
         currentStyle = style
 
         switch style {
         case .default:
             respectsTheme = true
-            removeSecondaryBarOverride()
-            applyTheme()
-        case .secondaryBar:
-            respectsTheme = true
-            applySecondaryBarOverride()
             applyTheme()
         }
     }

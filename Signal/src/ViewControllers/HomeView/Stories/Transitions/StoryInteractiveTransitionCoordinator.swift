@@ -23,7 +23,7 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
         }
     }
 
-    var interactionInProgress: Bool { interactiveEdge != .none }
+    private(set) var interactionInProgress: Bool = false
 
     enum Edge {
         case leading
@@ -45,23 +45,28 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
     func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         switch gestureRecognizer.state {
         case .began:
+            interactionInProgress = true
             gestureRecognizer.setTranslation(.zero, in: pageViewController.view)
 
             pageViewController.currentContextViewController.pause(hideChrome: true)
 
             switch interactiveEdge {
             case .none:
-                owsFailDebug("began gesture from unexpected state")
+                pageViewController.currentContextViewController.play()
+                cancel()
+                return
             case .leading, .top, .bottom:
                 pageViewController.dismiss(animated: true)
             case .trailing:
-                pageViewController.currentContextViewController.presentReplySheet(interactiveTransitionCoordinator: self)
+                pageViewController.currentContextViewController.presentRepliesAndViewsSheet(interactiveTransitionCoordinator: self)
             }
         case .changed:
+            interactionInProgress = true
             update(calculateProgress(gestureRecognizer))
         case .cancelled:
             pageViewController.currentContextViewController.play()
             cancel()
+            interactionInProgress = false
             interactiveEdge = .none
         case .ended:
             let progress = calculateProgress(gestureRecognizer)
@@ -73,9 +78,11 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
                 cancel()
             }
 
+            interactionInProgress = false
             interactiveEdge = .none
         default:
             cancel()
+            interactionInProgress = false
             interactiveEdge = .none
         }
     }
@@ -127,25 +134,9 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard gestureRecognizer == panGestureRecognizer else { return false }
-        let translation = panGestureRecognizer.translation(in: pageViewController.view)
-        let normalizedTranslationX = (CurrentAppContext().isRTL ? -1 : 1) * translation.x
-
-        if normalizedTranslationX > 0 {
-            interactiveEdge = .leading
-            return true
-        } else if normalizedTranslationX < 0, pageViewController.currentContextViewController.allowsReplies {
-            interactiveEdge = .trailing
-            return true
-        } else if pageViewController.previousStoryContext == nil, translation.y > 0 {
-            interactiveEdge = .top
-            return true
-        } else if pageViewController.nextStoryContext == nil, translation.y < 0 {
-            interactiveEdge = .bottom
-            return true
-        } else {
-            interactiveEdge = .none
-            return false
-        }
+        guard gestureRecognizer.numberOfTouches == 1 else { return false }
+        self.interactiveEdge = interactiveEdgeForCurrentGesture()
+        return interactiveEdge != .none
     }
 
     func gestureRecognizer(
@@ -153,5 +144,22 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
         shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
     ) -> Bool {
         gestureRecognizer == panGestureRecognizer
+    }
+
+    private func interactiveEdgeForCurrentGesture() -> Edge {
+        let translation = panGestureRecognizer.translation(in: pageViewController.view)
+        let normalizedTranslationX = (CurrentAppContext().isRTL ? -1 : 1) * translation.x
+
+        if normalizedTranslationX > 0 {
+            return .leading
+        } else if normalizedTranslationX < 0, pageViewController.currentContextViewController.allowsReplies {
+            return .trailing
+        } else if pageViewController.previousStoryContext == nil, translation.y > 0 {
+            return .top
+        } else if pageViewController.nextStoryContext == nil, translation.y < 0 {
+            return .bottom
+        } else {
+            return .none
+        }
     }
 }

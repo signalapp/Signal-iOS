@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "미디어";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "나";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "스티커";
 
@@ -75,9 +72,6 @@
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ 님은 이미 %@ 그룹의 멤버입니다";
-
-/* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "최근 대화";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ 님을 %@ 그룹에 추가함";
@@ -132,9 +126,6 @@
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "오류";
-
-/* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "데이터베이스 무결성 검사 실행";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "대신 Signal 열기";
@@ -368,10 +359,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal에 부스트 주기";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "부스트 배지가 만료되어 더는 프로필에 표시되지 않습니다.\n\nSignal을 계속 사용할 수 있지만 월간 기부를 통해 기여자가 되어 사용자를 위해 설계된 Signal의 기술을 지원하는 걸 고려해 주세요.";
+"BADGE_EXPIRED_BOOST_BODY" = "부스트 배지가 만료되어 더 이상 프로필에 표시되지 않습니다.";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "부스트 배지가 만료되어 더는 프로필에 표시되지 않습니다.\n\n일회성 기부를 통해 다음 30일 동안 부스트 배지를 재활성화할 수 있습니다.";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "부스트 배지가 만료되어 더는 프로필에 표시되지 않습니다.\n\n일회성 기부를 통해 다음 30일 동안 부스트 배지를 재활성화할 수 있습니다.";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "후원자가 되세요";
@@ -382,8 +373,20 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "배지 만료됨";
 
+/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_BODY" = "선물 배지가 만료되어 더 이상 프로필에 표시되지 않습니다.";
+
+/* Title for gift on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_TITLE" = "선물 배지가 만료되었습니다";
+
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "더 알아보세요.";
+
+/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Signal을 계속 사용할 수는 있지만 사용자를 위해 설계된 Signal의 기술을 지지하고 싶다면 월간 기부를 통해 기여자가 되어주세요.";
+
+/* Button title to donate monthly on the badge expiration sheet. */
+"BADGE_EXPIRED_RENEWAL_MONTHLY" = "월간 기부하기";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "구독 갱신";
@@ -412,7 +415,7 @@
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "만료됨";
 
-/* Shown on a gift badge message to indicate that the message contains a gift. */
+/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "선물 배지";
 
 /* Short paragraph on the screen where you choose a gift badge */
@@ -465,6 +468,12 @@
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "사용";
+
+/* Shown as the body of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "선물을 사용하지 못했습니다. 연결을 확인하고 다시 시도하세요.";
+
+/* Shown as the title of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "선물을 사용하지 못했습니다";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "배지를 나중에 사용할 수 있습니다.";
@@ -775,8 +784,11 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "카메라";
 
+/* VoiceOver label for -> button in text story composer. */
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "진행";
+
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "앨범 모드";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "꺼짐";
@@ -785,25 +797,28 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "켜짐";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+"CAMERA_VO_CAMERA_BACK_FACING" = "후면 카메라";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "카메라 선택기";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "전면 또는 후면 카메라로 전환합니다.";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "전면 카메라";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "닫기";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "작성자 모드";
+
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_AUTO" = "Automatic";
+"CAMERA_VO_FLASH_AUTO" = "자동";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_FLASH_BUTTON" = "Flash";
+"CAMERA_VO_FLASH_BUTTON" = "플래시";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_OFF" = "꺼짐";
@@ -812,22 +827,22 @@
 "CAMERA_VO_FLASH_ON" = "켜짐";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
-"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "사진 및 동영상을 볼 수 있는 사람";
 
 /* VoiceOver label for the round capture button in in-app camera during video recording. */
-"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+"CAMERA_VO_STOP_VIDEO_REC" = "동영상 촬영 중지";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+"CAMERA_VO_TAKE_PICTURE" = "사진 촬영";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
-"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+"CAMERA_VO_TAKE_VIDEO" = "동영상 촬영";
 
 /* VoiceOver label for camera zoom control. */
 "CAMERA_VO_ZOOM" = "확대";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@times";
+"CAMERA_VO_ZOOM_LEVEL" = "%@배";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "이 사용자를 인증하려면 먼저 메시지를 주고받아야 합니다.";
@@ -1150,6 +1165,12 @@
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "공유";
 
+/* Context menu button title */
+"CONTEXT_MENU_SPEAK_MESSAGE" = "음성 재생";
+
+/* Context menu button title */
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "중지";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "이 기기에서 대화가 삭제됩니다.";
 
@@ -1173,9 +1194,6 @@
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "항상";
-
-/* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "관리자만 그룹에 메시지를 전송할 수 있습니다.";
@@ -1442,16 +1460,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "실행";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "Signal 사용량에 따라 시간이 다소 걸릴 수 있습니다(몇 분 이상). 시간이 너무 오래 걸리면 Signal을 닫아도 괜찮습니다.";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "이 검사는 문제 해결에 도움이 되며, 완료 시까지 몇 분 정도가 소요될 수 있습니다. 검사가 진행되는 동안에는 Signal을 닫아도 괜찮지만, 나중에 로그를 제출하러 다시 돌아와 주세요.";
 
-/* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "디버그 로그 추가";
-
-/* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "무결성 검사 결과";
+/* Button to skip database integrity check step */
+"DATABASE_INTEGRITY_CHECK_SKIP" = "건너뛰기";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "데이터베이스 무결성 검사를 실행할까요?";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "데이터베이스 진단 검사를 실행할까요?";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "몇 분 정도 소요됩니다.";
@@ -1480,9 +1495,6 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "로그를 찾을 수 없습니다.";
 
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "버그 리포트 열기";
-
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "링크 복사";
 
@@ -1492,20 +1504,11 @@
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "로그 내보내기";
 
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "나에게 보내기";
-
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "공유";
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "하나만 더";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Gist 링크가 클립보드로 복사되었습니다. 곧 GitHub 이슈 목록으로 이동합니다.";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub 리디렉션";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "디버그 로그에 대한 정보";
@@ -2158,7 +2161,13 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "검색어 입력";
 
-/* Turn on permission view 'go to settings' button */
+/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%@ 님이 보낸 선물이 만료되어 더 이상 사용할 수 없습니다.";
+
+/* Title when trying to redeem a gift that's already expired. */
+"GIFT_NOT_REDEEMED_TITLE" = "선물이 만료되었습니다.";
+
+/* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "설정으로 이동";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
@@ -2227,14 +2236,17 @@
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "통화 참가자 수 최대";
 
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%@ 님에게 전화를 거는 중…";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ 님과 %2$@ 님에게 전화를 거는 중…";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "전화 참여하기";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "전화 나가기";
-
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ 및 %3$@명의 다른 사람이 통화 중입니다.";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ 님의 음성 및 영상 통화를 수신할 수 없습니다.";
@@ -2296,8 +2308,8 @@
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ 님이 그룹 통화를 시작했습니다.";
 
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@, %2$@ 및 1명이 통화 중입니다.";
+/* Text displayed when trying to turn on ringing when calling a large group. */
+"GROUP_CALL_TOO_LARGE_TO_RING" = "단체 참여자가 너무 많아 통화를 진행할 수 없습니다.";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ 및 %2$@ 님이 통화 중입니다.";
@@ -2305,8 +2317,17 @@
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "통화 연결이 끊어졌습니다. 연결을 확인하고 다시 시도하세요.";
 
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "나";
+/* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ 님에게 알림이 갑니다.";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ 님과 %2$@ 님에게 알림이 갑니다.";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal에서 %@ 님에게 전화를 겁니다.";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal에서 %1$@ 님과 %2$@ 님에게 전화를 겁니다.";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "그룹 통화 중입니다.";
@@ -2626,9 +2647,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "관리자";
 
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "나";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "그룹을 만든 후에 친구들을 추가하거나 초대할 수 있습니다.";
 
@@ -2752,6 +2770,18 @@
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "보낸 사람: %1$@, 받는 그룹: %2$@";
 
+/* Button to delete the story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "이 스토리를 삭제할까요?";
+
+/* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+
+/* Section header for the 'viewers' section on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "그룹 업데이트됨.";
 
@@ -2835,6 +2865,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "관리자에게 메시지 보내기";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "요청 차단";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "요청 차단";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ 님이 그룹 링크를 통해 이 그룹에 참가하거나 참가를 요청할 수 없게 됩니다. 하지만 관리자는 계속 추가할 수 있습니다.";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "요청을 차단하시겠어요?";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "그룹에서 나가기 전에 새 관리자를 선택하세요.";
@@ -3307,9 +3349,6 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "나";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "이번 달";
 
@@ -3385,6 +3424,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "미디어 공유";
 
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "메시지 음성 재생";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "메시지 음성 재생 중지";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "그룹 초대";
 
@@ -3408,6 +3453,9 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME 유형";
+
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "사라짐";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "전달됨";
@@ -3435,6 +3483,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "조회자";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "없음";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "받은 시간";
@@ -3619,6 +3670,12 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "부재중 전화";
 
+/* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
+"MISSED_CALL_DO_NOT_DISTURB" = "방해 금지 모드 중 부재중 전화";
+
+/* info message text in conversation view (use Apple's name for 'Focus') */
+"MISSED_CALL_FOCUS_MODE" = "집중 모드 중 부재중 전화";
+
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "iOS 설정 앱에서 카메라 접근을 허용하여 Signal 영상 통화를 할 수 있습니다.";
 
@@ -3652,26 +3709,11 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "내 스토리에 대한 업데이트가 여기 표시됩니다.";
 
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "특정 사용자에게서 스토리 숨기기";
-
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "다음을 제외한 모든 Signal 커넥션...";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "모든 커넥션과 공유";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "모든 Signal 커넥션";
-
-/* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "내 스토리를 볼 수 있는 사람을 선택하세요. 이미 전송한 스토리에는 변경 내용이 적용되지 않습니다.";
-
-/* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "이 스토리를 볼 수 있는 사람";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "이 스토리를 공유할 사람을 선택하세요.";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "다음 사용자와만 공유...";
@@ -3684,6 +3726,9 @@
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "내 스토리";
+
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "탭하여 스토리를 추가하세요.";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "최근에 프로필 이름을 %1$@에서 %2$@(으)로 변경했습니다.";
@@ -3745,8 +3790,11 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "멤버 선택";
 
+/* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+
 /* Title for the 'new group story' view */
-"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "그룹 선택";
 
 /* No comment provided by engineer. */
 "new_message" = "새 메시지";
@@ -3758,31 +3806,34 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "사용자 찾기";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "스토리 이름 지정";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "만들기";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "스토리 이름을 입력해 주세요.";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "스토리 이름 없음";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "스토리 이름(필수)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "볼 수 있는 사람 선택";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "볼 수 있는 사람";
+
+/* table section header button to add a new story */
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "새 스토리";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "기존 그룹과 공유";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "새 그룹 스토리";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "특정 사용자만 볼 수 있음";
@@ -3791,7 +3842,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "새 비공개 스토리";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
+"NEW_STORY_SHEET_TITLE" = "스토리 유형 선택";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "전화번호로 연락처 찾기";
@@ -3801,12 +3852,6 @@
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "공통된 다른 그룹이 없습니다.";
-
-/* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "연락처 또는 그룹을 선택해 대화를 시작하세요.";
-
-/* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Signal에 오신 것을 환영합니다";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "새 메시지 보내기:";
@@ -4265,7 +4310,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "요청 거절";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "“%@” 님의 요청을 거부할까요? 더 이상 그룹 링크를 통한 참가를 요청할 수 없게 됩니다.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "대기 중인 멤버 요청이 없습니다.";
@@ -4616,25 +4661,22 @@
 "PRIVACY_VERIFY_BUTTON" = "검증으로 표시";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "볼 수 있는 사람 추가";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "비공개 스토리 삭제";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "이 스토리를 삭제할까요?";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "삭제";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "이 사용자는 더 이상 내 스토리를 볼 수 없게 됩니다.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
-
-/* Section header for the 'viewers' section on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "이 스토리를 볼 수 있는 사람";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ 님을 제거할까요?";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "진행";
@@ -4732,9 +4774,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "나";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "메시지 원본을 찾을 수 없습니다.";
 
@@ -4809,9 +4848,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "음성 메시지에 %@ 이모지로 반응함";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "나";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "읽음";
@@ -5323,9 +5359,6 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "데이터 사용량";
 
-/* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "새 채팅을 위한 기본 타이머";
-
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "계정 삭제";
 
@@ -5406,9 +5439,6 @@
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "동영상";
-
-/* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "메시징";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "메시지를 읽고 입력할 때 확인하고 공유하세요. 비활성화하면 다른 사용자의 읽음 확인 또는 입력 표시기가 표시되지 않습니다.";
@@ -5616,9 +5646,6 @@
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%2$@의 %1$@";
-
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "나";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "보낸 시간";
@@ -5950,6 +5977,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "추천 공유, 알림 등 기능을 위해 iOS에서 Signal 연락처와 채팅에 액세스하도록 허용합니다.";
 
+/* Explanation for the 'stories' privacy settings. */
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+
+/* Label for the stories section of the settings view */
+"SETTINGS_STORIES_TITLE" = "스토리";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "등록 잠금";
 
@@ -5973,9 +6006,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "버전";
-
-/* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "누가...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "메일";
@@ -6106,20 +6136,50 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "삭제";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "삭제";
+
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "이 스토리를 삭제할까요? 스토리를 받은 모든 사람에게서 해당 스토리가 삭제됩니다.";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "스토리 저장 완료";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "전달";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "채팅으로 이동";
 
+/* Text indicating you can't reply to a group story because you're not a member of the group */
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "숨긴 스토리";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "스토리 숨기기";
+
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%@ 님의 새 스토리 업데이트가 더는 스토리 목록 상단에 표시되지 않습니다.";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "스토리를 숨길까요?";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "스토리 숨김";
+
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "정보";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "표시할 업데이트가 없습니다.\n+ 아이콘을 탭하여 스토리를 추가하세요.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "회신 없음";
+
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "아직 아무도 조회 안 함";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "내 스토리를 볼 수 있는 사람들에게 반응과 답장을 받아보세요.";
@@ -6130,23 +6190,74 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "답장 및 반응 허용";
 
-/* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "새 비공개 스토리";
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "답장";
 
-/* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "비공개 스토리는 본인이 직접 추가하는 사용자만 볼 수 있습니다. 사용자 본인만 스토리 이름을 볼 수 있습니다.";
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "스토리 저장 실패";
 
-/* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "비공개 스토리";
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "저장";
+
+/* Footer for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "스토리는 24시간이 지나면 자동으로 사라집니다. 스토리를 볼 수 있는 사람을 선택하거나, 스토리룰 볼 수 있는 사람이나 그룹을 지정하여 새 스토리를 만드세요.";
+
+/* Header for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "내 스토리";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "스토리 개인정보";
+
+/* Title for the action sheet confirming you want to turn off stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+
+/* Footer for the 'turn off' section of the stories settings */
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "스토리 기능을 끄면 더 이상 스토리를 보거나 공유할 수 없게 됩니다.";
+
+/* Button to turn off stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+
+/* Footer for the 'turn on' section of the stories settings */
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+
+/* Button to turn on stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "공유";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "스토리";
+
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "스토리 숨김 취소";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "스토리를 숨김 취소함";
+
+/* Text explaining that you will not see any views for your story because you have read receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "조회";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "카메라";
+
+/* Displayed when failed to fetch link preview in Text Story composer. */
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+
+/* Displayed in text story composer when user is about to attach a link with preview */
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "스토리를 볼 수 있도록 링크 공유";
+
+/* Placeholder text in text stories compose UI */
+"STORY_COMPOSER_TAP_ADD_TEXT" = "탭하여 텍스트 추가";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "텍스트";
+
+/* Placeholder text for URL input field in Text Story composer UI. */
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "URL 입력 또는 붙여넣기";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "링크 방문";
@@ -6157,14 +6268,17 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "개인정보";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "답장 <bold>1</bold>개";
+/* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
 
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "답장 <bold>%@</bold>개";
+/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+
+/* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "답장";
+"STORY_REPLY_BUTTON" = "답장";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "스토리에 반응함";
@@ -6172,26 +6286,47 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "답장";
 
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "나";
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "그룹에 답장";
+
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "이 스토리를 보낼 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "커넥션";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "다음 사용자와만 공유...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "제외된 커넥션";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "기부";
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "보내기 실패";
 
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal은 여러분과 같은 사용자의 기여로 운영됩니다. 기부하고 배지를 받으세요.";
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "탭하여 다시 시도";
 
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "나중에";
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "보내는 중…";
 
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "후원자가 되세요";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Section header for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_1" = "탭하여 계속하기";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_2" = "위로 스와이프하여 건너뛰기";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_3" = "오른쪽으로 스와이프하여 종료하기";
+
+/* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "확인";
+
+/* Text indicating that the user has views turned off */
+"STORY_VIEWS_OFF" = "수신 확인 꺼짐";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "구독자 ID를 클립보드에 복사함";
@@ -6351,6 +6486,9 @@
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "켜짐";
+
+/* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
+"SYSTEM_ADDRESS_NAME" = "Signal";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "검증";
@@ -6607,6 +6745,12 @@
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "한 번만 볼 수 있는 미디어 파일은 보낸 후 자동으로 제거됩니다.";
 
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "사진 보기";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
+
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "쓸어넘겨 취소";
 
@@ -6702,6 +6846,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "배경 설정";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "나";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "내가 이 메시지를 삭제했습니다.";

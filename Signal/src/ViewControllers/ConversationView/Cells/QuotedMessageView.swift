@@ -4,6 +4,7 @@
 
 import Foundation
 import UIKit
+import SignalMessaging
 
 @objc
 public protocol QuotedMessageViewDelegate {
@@ -218,8 +219,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var quotedAuthorLabelConfig: CVLabelConfig {
             let authorName: String
             if quotedReplyModel.authorAddress.isLocalAddress {
-                authorName = NSLocalizedString("QUOTED_REPLY_AUTHOR_INDICATOR_YOU",
-                                         comment: "message header label when someone else is quoting you")
+                authorName = CommonStrings.you
             } else {
                 authorName = quotedAuthorName
             }

@@ -62,11 +62,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 // Schedules a processing pass, unless one is already scheduled.
 - (void)scheduleProcessing
 {
@@ -196,17 +191,9 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
             [self enqueueLinkedDeviceViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             [transaction addAsyncCompletionOffMain:^{ [self scheduleProcessing]; }];
 
-            if (storyMessage.authorAddress.isLocalAddress) {
-                OWSFailDebug(@"We don't support incoming messages from self.");
-                return;
-            }
-
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing viewed receipt for sender.");
-                [self.outgoingReceiptManager enqueueViewedReceiptForAddress:storyMessage.authorAddress
-                                                                  timestamp:storyMessage.timestamp
-                                                            messageUniqueId:storyMessage.uniqueId
-                                                                transaction:transaction];
+                [self enqueueSenderViewedReceiptForStoryMessage:storyMessage transaction:transaction];
             }
             break;
         }
@@ -376,6 +363,10 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
         if (error != nil) {
             OWSFailDebug(@"Error loading interactions: %@", error);
         }
+
+        OWSLogInfo(@"Marking %lu messages as read on linked device. Timestamp: %llu",
+            (unsigned long)messages.count,
+            messageIdTimestamp);
 
         if (messages.count > 0) {
             for (TSMessage *message in messages) {

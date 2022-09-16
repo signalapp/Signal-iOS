@@ -1,2 +1,3 @@
-• Vylepšili sme media editor, vďaka čomu bude prispôsobenie fotografií a videí pred ich odoslaním jednoduchšie než kedykoľvek predtým.
-• Zaviedli sme niekoľko opráv chýb, aby vaša aplikácia fungovala lepšie. Ďalšie prevratné zmeny sú už na obzore!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

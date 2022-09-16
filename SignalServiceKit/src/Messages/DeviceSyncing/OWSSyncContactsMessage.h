@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSSyncContactsMessage : OWSOutgoingSyncMessage
 
 @property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
+@property (nonatomic, readonly) BOOL isFullSync;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -22,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                 signalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+                    isFullSync:(BOOL)isFullSync
                    transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

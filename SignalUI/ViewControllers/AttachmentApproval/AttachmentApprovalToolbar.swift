@@ -364,22 +364,10 @@ private class MediaToolbar: UIView {
     }
 
     func set(availableButtons: AvailableButtons, animated: Bool) {
-        guard animated else {
-            penToolButton.isHidden = !availableButtons.contains(.pen)
-            cropToolButton.isHidden = !availableButtons.contains(.crop)
-            saveMediaButton.isHidden = !availableButtons.contains(.save)
-            mediaQualityButton.isHidden = !availableButtons.contains(.mediaQuality)
-            return
-        }
-        let updateButtonBlock: ((UIButton, Bool) -> Void) = { button, isHidden in
-            button.isHiddenInStackView = isHidden
-        }
-        UIView.animate(withDuration: 0.2) {
-            updateButtonBlock(self.penToolButton, !availableButtons.contains(.pen))
-            updateButtonBlock(self.cropToolButton, !availableButtons.contains(.crop))
-            updateButtonBlock(self.saveMediaButton, !availableButtons.contains(.save))
-            updateButtonBlock(self.mediaQualityButton, !availableButtons.contains(.mediaQuality))
-        }
+        penToolButton.setIsHidden(!availableButtons.contains(.pen), animated: animated)
+        cropToolButton.setIsHidden(!availableButtons.contains(.crop), animated: animated)
+        saveMediaButton.setIsHidden(!availableButtons.contains(.save), animated: animated)
+        mediaQualityButton.setIsHidden(!availableButtons.contains(.mediaQuality), animated: animated)
     }
 
     override init(frame: CGRect) {

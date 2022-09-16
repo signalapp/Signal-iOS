@@ -291,10 +291,7 @@ public class OnboardingProfileCreationViewController: OnboardingBaseViewControll
             self.footerTextView.attributedText = self.footerText
 
             self.saveButtonBackdrop.backgroundColor = Theme.backgroundColor
-            self.saveButtonGradient.colors = [
-                (Theme.backgroundColor.withAlphaComponent(0), 0.0),
-                (Theme.backgroundColor, 1.0)
-            ]
+            self.saveButtonGradient.colors = [ Theme.backgroundColor.withAlphaComponent(0), Theme.backgroundColor ]
         }
     }
 

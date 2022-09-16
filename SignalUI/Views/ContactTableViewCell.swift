@@ -64,8 +64,10 @@ open class ContactTableViewCell: UITableViewCell {
     }
 
     @objc
-    open func configure(configuration: ContactCellConfiguration,
-                          transaction: SDSAnyReadTransaction) {
+    open func configure(
+        configuration: ContactCellConfiguration,
+        transaction: SDSAnyReadTransaction
+    ) {
         OWSTableItem.configureCell(self)
         cellView.configure(configuration: configuration, transaction: transaction)
     }

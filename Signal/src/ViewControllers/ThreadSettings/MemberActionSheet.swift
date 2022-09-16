@@ -274,11 +274,21 @@ class MemberActionSheet: OWSTableSheetViewController {
 extension MemberActionSheet: ConversationHeaderDelegate {
     var isBlockedByMigration: Bool { groupViewHelper?.isBlockedByMigration == true }
     func didTapAvatar() {
-        if threadViewModel.storyState == .none {
+        if threadViewModel.storyState == .none || !StoryManager.areStoriesEnabled {
             presentAvatarViewController()
         } else {
-            let vc = StoryPageViewController(context: thread.storyContext)
-            presentFullScreen(vc, animated: true)
+
+        }
+    }
+
+    var canPresentStories: Bool {
+        threadViewModel.storyState != .none && StoryManager.areStoriesEnabled
+    }
+
+    func presentStoryViewController() {
+        dismiss(animated: true) {
+            let vc = StoryPageViewController(context: self.thread.storyContext)
+            self.fromViewController?.present(vc, animated: true)
         }
     }
 

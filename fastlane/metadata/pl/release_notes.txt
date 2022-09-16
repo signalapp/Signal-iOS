@@ -1,2 +1,3 @@
-• Poprawiliśmy funkcjonalność edytora multimediów, dzięki czemu łatwiej niż dotąd dostosujesz zdjęcia i filmy przed ich wysłaniem.
-• Naprawiliśmy kilka błędów, aby aplikacja działała jeszcze płynniej. Kolejne ekscytujące zmiany już wkrótce!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

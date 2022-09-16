@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "میڈیا";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "آپ";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "اسٹیکر";
 
@@ -75,9 +72,6 @@
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ پہلے ہی %@ کا ممبر ہے";
-
-/* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "حالیہ باتیں";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ میں %@ شامل کیا گیا تھا";
@@ -132,9 +126,6 @@
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "غلطی";
-
-/* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "ڈیٹا بیس کی سالمیت کا چیک چلائیں";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "اس کے بجائے Signal کھولیں";
@@ -368,10 +359,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "Signal کو بوسٹ دیں";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "آپ کا بوسٹ بیج زائد المیعاد ہو گیا ہے اور آپ کی پروفائل پر ڈسپلے کیے جانے کے لیے مزید دستیاب نہیں ہے۔\n\nآپ Signal استعمال کرنا جاری رکھ سکتے ہیں لیکن اپنے لیے بنائی گئی ٹیکنالوجی کی معاونت کے لیے، ماہانہ عطیہ کرنے کے ذریعے عطیہ گزار بننے کو زیر غور لائیں۔";
+"BADGE_EXPIRED_BOOST_BODY" = "آپ کے بوسٹ بیج کی مدت ختم ہو گئی ہے اور پروفائل پر ڈسپلے کیے جانے کے لیے مزید دستیاب نہیں۔";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "آپ کا بوسٹ بیج زائد المیعاد ہو گیا ہے اور آپ کی پروفائل پر ڈسپلے کیے جانے کے لیے مزید دستیاب نہیں ہے۔\n\nآپ ایک وقتی تعاون کے ساتھ مزید 30 دنوں کے لیے اپنا بوسٹ بیج دوبارہ فعال کر سکتے ہیں۔";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "آپ کا بوسٹ بیج زائد المیعاد ہو گیا ہے اور آپ کی پروفائل پر ڈسپلے کیے جانے کے لیے مزید دستیاب نہیں ہے۔\n\nآپ ایک وقتی تعاون کے ساتھ مزید 30 دنوں کے لیے اپنا بوسٹ بیج دوبارہ فعال کر سکتے ہیں۔";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "عطیہ گزار بنیں";
@@ -382,8 +373,20 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "بیج زائد المیعاد ہو گیا";
 
+/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_BODY" = "آپ کے گفٹ بیج کی مدت ختم ہو گئی ہے اور پروفائل پر ڈسپلے کرنے کے لیے مزید دستیاب نہیں۔";
+
+/* Title for gift on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_TITLE" = "آپ کے گفٹ بیج کی مدت ختم ہو گئی ہے۔";
+
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "اورجانیے.";
+
+/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "آپ Signal استعمال کرنا جاری رکھ سکتے ہیں لیکن اپنے لیے بنائی گئی ٹیکنالوجی کی معاونت کے لیے، ماہانہ عطیہ دینے کے ذریعے عطیہ گزار بننے کو زیر غور لائیں۔";
+
+/* Button title to donate monthly on the badge expiration sheet. */
+"BADGE_EXPIRED_RENEWAL_MONTHLY" = "ماہانہ عطیہ کریں";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "سبسکرپشن کی تجدید کریں";
@@ -412,7 +415,7 @@
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "زائد المیعاد";
 
-/* Shown on a gift badge message to indicate that the message contains a gift. */
+/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "گفٹ بیج";
 
 /* Short paragraph on the screen where you choose a gift badge */
@@ -465,6 +468,12 @@
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "ریڈیم کرنا";
+
+/* Shown as the body of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "آپ کا گفٹ ریڈیم نہیں کیا جا سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
+
+/* Shown as the title of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "گفٹ ریڈیم نہیں کر سکے";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "آپ بعد میں اپنا بیج ریڈیم کر سکتے ہیں";
@@ -775,8 +784,11 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "کیمره";
 
+/* VoiceOver label for -> button in text story composer. */
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "آگے بڑھو";
+
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "البم موڈ";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "بند کریں";
@@ -785,25 +797,28 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "چلائیں";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+"CAMERA_VO_CAMERA_BACK_FACING" = "بیک فیسنگ";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "کیمرے کا انتخاب کار";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "کیمروں کے درمیان سوئچ کرتا ہے";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "فرنٹ فیسنگ";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "بند کریں";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "کمپوزر موڈ";
+
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_AUTO" = "Automatic";
+"CAMERA_VO_FLASH_AUTO" = "آٹومیٹک";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_FLASH_BUTTON" = "Flash";
+"CAMERA_VO_FLASH_BUTTON" = "فلیش";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_OFF" = "بند کریں";
@@ -812,22 +827,22 @@
 "CAMERA_VO_FLASH_ON" = "چلائیں";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
-"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "تصویر اور ویڈیو ویور";
 
 /* VoiceOver label for the round capture button in in-app camera during video recording. */
-"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+"CAMERA_VO_STOP_VIDEO_REC" = "ویڈیو ریکارڈ کرنا بند کریں";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+"CAMERA_VO_TAKE_PICTURE" = "تصویر لیں";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
-"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+"CAMERA_VO_TAKE_VIDEO" = "ویڈیو بنائیں";
 
 /* VoiceOver label for camera zoom control. */
 "CAMERA_VO_ZOOM" = "زوم";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@times";
+"CAMERA_VO_ZOOM_LEVEL" = "%@مرتبہ";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "جب تک آپ اس صارف سے پیغامات کا تبادلہ نہیں کرتے اس صارف کی تصدیق نہیں ہو سکتی۔";
@@ -1150,6 +1165,12 @@
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "اشتراک کریں";
 
+/* Context menu button title */
+"CONTEXT_MENU_SPEAK_MESSAGE" = "سنائیں";
+
+/* Context menu button title */
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "رکیں";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "اس چیٹ کو اس آلہ سے حذف کردیا جائے گا۔";
 
@@ -1173,9 +1194,6 @@
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "ہمیشہ";
-
-/* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "صرف منتظمین ہی اس گروپ کو پیغامات بھیج سکتے ہیں۔";
@@ -1442,16 +1460,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "چلائیں";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "اس میں کچھ دیر (کئی منٹس یا مزید دیر) لگ سکتی ہے جو اس بات پر منحصر ہے کہ آپ نے Signal کتنی استعمال کی ہے۔ اگر اس میں بہت زیادہ دیر لگ رہی ہو تو Signal بند کرنا محفوظ ہے۔";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "یہ آپ کا مسئلہ حل کرنے میں ہماری مدد ہو گی اور اسے مکمل ہونے میں کئی منٹ لگ سکتے ہیں۔ اس دوران آپ Signal بند کر سکتے ہیں، لیکن براہ کرم اپنے لاگز جمع کروانے کے لیے واپس ضرور آئیں۔";
 
-/* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "ڈی بگ لاگ میں شامل کریں";
-
-/* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "سالمیت کے چیک کے نتائج";
+/* Button to skip database integrity check step */
+"DATABASE_INTEGRITY_CHECK_SKIP" = "چھوڑ دو";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "ڈیٹا بیس کی سالمیت کا چیک چلائیں؟";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "ڈیٹا بیس ڈائگناسٹک چلائیں؟";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "اس میں چند منٹ لگ سکتے ہیں";
@@ -1480,9 +1495,6 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "کوئی لاگز نہیں ملے۔";
 
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "ایک بگ رپورٹ کھولیں";
-
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "لنک کاپی کریں";
 
@@ -1492,20 +1504,11 @@
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "لاگز برآمد کریں";
 
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "خود کو بھیجیں";
-
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "اشتراک کریں";
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "ایک مزید قدم";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "gist لنک آپ کے کلپ بورڈ میں کاپی تھا۔آپ GitHubمسلئہ فہرست کے بارے میں ری ڈائریکٹ ہیں۔";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub ری ڈائریکشن";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "ڈیبگ لاگ کے بارے میں معلومات";
@@ -2158,7 +2161,13 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "اپنی سرچ داخل کریں";
 
-/* Turn on permission view 'go to settings' button */
+/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%@ کی طرف سے آپ کے گفٹ کی مدت ختم ہو گئی ہے اور مزید ریڈیم نہیں کیا جا سکتا۔";
+
+/* Title when trying to redeem a gift that's already expired. */
+"GIFT_NOT_REDEEMED_TITLE" = "آپ کے گفٹ کی مدت ختم ہو گئی ہے۔";
+
+/* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "ترتیبات پر جائیں";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
@@ -2227,14 +2236,17 @@
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "کال پوری ہے";
 
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%@ کو کال کی جا رہی ہے...";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ اور %2$@ کو کال کی جا رہی ہے...";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "کال میں شامل ہوں";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "کال چھوڑو";
-
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@،%2$@ ، اور %3$@ دیگر اس کال میں ہیں";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ سے آڈیو اور ویڈیو موصول نہیں ہوسکتی ہے";
@@ -2296,8 +2308,8 @@
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ نے ایک گروپ کال شروع کی";
 
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@،%2$@ ، اور 1 دوسرا اس کال میں ہے";
+/* Text displayed when trying to turn on ringing when calling a large group. */
+"GROUP_CALL_TOO_LARGE_TO_RING" = "شرکاء کو کال کرنے کے لیے گروپ بہت بڑا ہے۔";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ اور %2$@ اس کال میں ہیں";
@@ -2305,8 +2317,17 @@
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "آپ کال سے منقطع ہوگئے تھے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
 
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "آپ";
+/* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ کو مطلع کر دیا جائے گا";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ اور %2$@ کو مطلع کر دیا جائے گا";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal %@ کو کال کرے گا";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal %1$@ اور %2$@ کو کال کرے گا";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "آپ گروپ کال میں ہیں";
@@ -2459,7 +2480,7 @@
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "آپ گروپ لنک کے ذریعے اس گروپ میں شامل نہیں ہو سکتے کیونکہ ایک ایڈمن نے آپ کو ہٹا دیا تھا۔";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "گروپ میں شامل نہیں ہوسکتے ہیں";
+"GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "گروپ میں شامل نہیں ہو سکتے";
 
 /* Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE" = "اب یہ گروپ لنک درست نہیں ہے۔";
@@ -2626,9 +2647,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "ایڈمن";
 
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "آپ";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "آپ اس گروپ کو بنانے کے بعد دوستوں کو شامل یا مدعو کرسکتے ہیں۔";
 
@@ -2752,6 +2770,18 @@
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@تا %2$@";
 
+/* Button to delete the story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "کیا آپ واقعی یہ سٹوری ڈیلیٹ کرنا چاہتے ہیں؟";
+
+/* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+
+/* Section header for the 'viewers' section on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "گروپ کی تجدید ہوئی۔";
 
@@ -2835,6 +2865,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "کسی منتظم کو میسج کریں";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "درخواست بلاک کریں";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "درخواست بلاک کریں";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ شامل ہونے یا گروپ لنک کے ذریعے اس گروپ میں شامل ہونے کی درخواست کرنے سے قاصر ہو گا۔ ایک ایڈمن پھر بھی انہیں شامل کر سکتا ہے۔";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "بلاک کی درخواست؟";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "جانے سے پہلے اس گروپ کے لئے ایک نیا ایڈمن منتخب کریں۔";
@@ -3307,9 +3349,6 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "ۤۤۤۤۤۤۤۤۤ+%@";
 
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "آپ";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "اس مہینے";
 
@@ -3385,6 +3424,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "میڈیا کو شیئر کریں";
 
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "زبانی میسج";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "زبانی میسج روکیں";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "گروپ دعوت دیں";
 
@@ -3408,6 +3453,9 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME کی قسم";
+
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "غائب ہونا";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "کو پہنچایا گیا";
@@ -3435,6 +3483,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "کے ذریعہ دیکھا گیا";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "کبھی نہیں";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "وصول ہو گیا ہے";
@@ -3619,6 +3670,12 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "کال مس ہو گئی";
 
+/* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
+"MISSED_CALL_DO_NOT_DISTURB" = "تنگ نہ کریں پر ہوتے ہوئے مس کال";
+
+/* info message text in conversation view (use Apple's name for 'Focus') */
+"MISSED_CALL_FOCUS_MODE" = "Focus استعمال کرتے ہوئے مس کال";
+
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "آپ کو Signal میں ویڈیو کال کرنے کیلئے iOS ایپ ترتیبات رسائی کرکے کیمرہ فعال کر سکتے ہیں۔";
 
@@ -3652,26 +3709,11 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "آپ کی اسٹوری کی اپ ڈیٹس یہاں دکھائی جائیں گی۔";
 
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "مخصوص لوگوں سے اپنی اسٹوری مخفی کریں";
-
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "تمام Signal کنکشنز ماسوائے...";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "تمام کنکشنز کے ساتھ شیئر کریں";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام Signal کنکشنز";
-
-/* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "انتخاب کریں کہ آپ کی اسٹوری کون دیکھ سکتا ہے. تبدیلیاں ان اسٹوریز کو متاثر نہیں کریں گی جو آپ پہلے ہی بھیج چکے ہیں۔";
-
-/* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "یہ اسٹوری کون دیکھ سکتا ہے";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "ان لوگوں کا انتخاب کریں جن کے ساتھ شیئر کرنا ہے";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "صرف ان کے ساتھ شیئر کریں...";
@@ -3684,6 +3726,9 @@
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "میری اسٹوری";
+
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "سٹوری شامل کرنے کے لیے ٹیپ کریں";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "حال ہی میں ان کے پروفائل کا نام %1$@ سے %2$@ رکھ دیا گیا۔";
@@ -3745,8 +3790,11 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "ممبران کو منتخب کریں";
 
+/* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+
 /* Title for the 'new group story' view */
-"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "گروپ منتخب کریں";
 
 /* No comment provided by engineer. */
 "new_message" = "نیا پیغام";
@@ -3758,40 +3806,43 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "صارف تلاش کریں";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "اسٹوری کو نام دیں";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "بنائیں";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "اسٹوری کا نام لازمی ہے۔";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "اسٹوری کا نام موجود نہیں";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "اسٹوری کا نام (لازمی ہے)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "ناظرین منتخب کریں";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "ناظرین";
+
+/* table section header button to add a new story */
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "نئی اسٹوری";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "موجودہ گروپ پر شیئر کریں";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "نئی گروپ سٹوری";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "صرف مخصوص لوگوں کو دکھائی دیتی ہے";
 
 /* Title for create private story row on the 'new story sheet' */
-"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "نئی نجی اسٹوری";
+"NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "نئی پرائیویٹ اسٹوری";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
+"NEW_STORY_SHEET_TITLE" = "سٹوری کی قسم منتخب کریں";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "فون نمبر کے ذریعے رابطہ تلاش کریں";
@@ -3801,12 +3852,6 @@
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "کوئی دوسرا گروہ مشترکہ نہیں۔";
-
-/* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "گفتگو کی ابتداء کیلئے رابطے یا گروپ کا انتخاب کریں۔";
-
-/* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Signal میں خوش آمدید";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "کو نیا پیغام:";
@@ -4265,7 +4310,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "درخواست کو مسترد کریں";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\" کی طرف سے درخواست رد کرنی ہے؟ وہ گروپ لنک کے ذریعے دوباہ شامل ہونے کی درخواست نہیں دے سکیں گے۔";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "کوئی رکن کی درخواستیں زیر التواء نہیں ہیں۔";
@@ -4616,25 +4661,22 @@
 "PRIVACY_VERIFY_BUTTON" = "تصدیق کے طور پر نشان لگائیں";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "ناظرین شامل کریں";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "پرائیویٹ سٹوری ڈیلیٹ کریں";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "کیا آپ واقعی یہ سٹوری ڈیلیٹ کرنا چاہتے ہیں؟";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ہٹا دیں";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "یہ فرد مزید آپ کی اسٹوری نہیں دیکھے گا۔";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
-
-/* Section header for the 'viewers' section on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "یہ اسٹوری کون دیکھ سکتا ہے";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ کو ہٹانا ہے؟";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "آگے بڑھو";
@@ -4732,9 +4774,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "آپ";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "اصل میسج نہیں ملا۔";
 
@@ -4809,9 +4848,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "آپ کے آڈیو پیغام پر %@ ردعمل ظاہر کیا";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "آپ";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "پڑھ لیا";
@@ -5323,9 +5359,6 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "ڈیٹا کا استعمال";
 
-/* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "نیا چیٹس کیلئے ڈیفالٹ ٹائمر";
-
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "اکاؤنٹ حذف کریں";
 
@@ -5406,9 +5439,6 @@
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "ویڈیوز";
-
-/* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "پیغام رسانی";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "جب پیغامات کو پڑھ اور ٹائپ کیا جا رہا ہو تو دیکھیں اور شئیر کریں۔ اگر غیر فعال ہے تو ، آپ کو پڑھنے کی رسیدیں یا دوسروں کی طرف سے ٹائپنگ کے اشارے نظر نہیں آئیں گے۔";
@@ -5616,9 +5646,6 @@
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@پر%2$@";
-
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "آپ";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "بھیجا گیا";
@@ -5950,6 +5977,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "iOS کو تجاویز کے اشتراک اور اطلاعات جیسی خصوصیات کے لیے Signal روابط اور چیٹس تک رسائی کی اجازت دیں۔";
 
+/* Explanation for the 'stories' privacy settings. */
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+
+/* Label for the stories section of the settings view */
+"SETTINGS_STORIES_TITLE" = "اسٹوریز";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "رجسٹریشن لاک";
 
@@ -5973,9 +6006,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "ورژن";
-
-/* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "کون یہ کر سکتے ہیں…";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "میل";
@@ -6106,20 +6136,50 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "حذف کریں";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "حذف کریں";
+
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "یہ سٹوری حذف کریں؟ اسے اس کو وصول کرنے والے ہر فرد کے لیے بھی حذف کر دیا جائے گا۔";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "اسٹوری محفوظ ہو گئی";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "آگے";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "چیٹ پر جائیں";
 
+/* Text indicating you can't reply to a group story because you're not a member of the group */
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "مخفی سٹوریز";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "اسٹوری مخفی کریں";
+
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%@ کی جانب سے نئے سٹوری اپڈیٹس، سٹوریز کی فہرست کے بالائی حصے میں مزید ظاہر نہیں ہوں گی۔";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "سٹوری مخفی کریں؟";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "سٹوری مخفی کر دی گئی";
+
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "معلومات";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "فی الوقت دکھانے کے لیے کوئی اپ ڈیٹس نہیں ہیں۔\nاپنی اسٹوری میں شامل کرنے کے لیے + پر کلک کریں۔";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "ابھی تک کوئی جوابات نہیں";
+
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "ابھی تک کوئی ویوز نہیں";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "جو لوگ آپ کی سٹوری دیکھ سکتے ہیں انہیں اس پر ردعمل دینے اور جواب دینے کی اجازت دیں۔";
@@ -6130,23 +6190,74 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "جوابات اور ردعمل کی اجازت دیں";
 
-/* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "نئی نجی اسٹوری";
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "جوابات";
 
-/* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "نجی اسٹوریز کو صرف آپ کی جانب سے ان میں شامل کردہ افراد کی طرف سے ہی دیکھا جا سکتا ہے۔ صرف آپ اسٹوری کا نام دیکھ سکتے ہیں۔";
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "اسٹوری محفوظ نہیں ہو سکی";
 
-/* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "نجی اسٹوریز";
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "محفوظ کریں";
+
+/* Footer for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "سٹوریز خود کار طور پر 24 گھنٹوں کے بعد غائب ہو جائیں گی۔ انتخاب کریں کہ کون آپ کی سٹوریز دیکھ سکتا یا مخصوص ناظرین یا گروپس کے ساتھ ئنی سٹوریز تخلیق کر سکتا ہے۔";
+
+/* Header for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "میری اسٹوریز";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "اسٹوری کی رازداری";
+
+/* Title for the action sheet confirming you want to turn off stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+
+/* Footer for the 'turn off' section of the stories settings */
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "اگر آپ سٹوریز غیر منتخب کرتے ہیں تو آپ سٹوریز مزید شیئر کرنے یا دیکھنے سے قاصر ہوں گے۔";
+
+/* Button to turn off stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+
+/* Footer for the 'turn on' section of the stories settings */
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+
+/* Button to turn on stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "اشتراک کریں";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "اسٹوریز";
+
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "سٹوری غیر مخفی کریں";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "سٹوری غیر مخفی کر دی گئی";
+
+/* Text explaining that you will not see any views for your story because you have read receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "ویوز";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "کیمرہ";
+
+/* Displayed when failed to fetch link preview in Text Story composer. */
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+
+/* Displayed in text story composer when user is about to attach a link with preview */
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "ناظرین کے ساتھ اپنی اسٹوری کا لنک شیئر کریں";
+
+/* Placeholder text in text stories compose UI */
+"STORY_COMPOSER_TAP_ADD_TEXT" = "متن شامل کرنے کے لیے ٹیپ کریں";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "متن";
+
+/* Placeholder text for URL input field in Text Story composer UI. */
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "URL ٹائپ یا پیسٹ کریں";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "لنک ملاحظہ کریں";
@@ -6157,14 +6268,17 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "رازداری";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "<bold>1</bold> جواب";
+/* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
 
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "<bold>%@</bold> جوابات";
+/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+
+/* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "جواب دیں";
+"STORY_REPLY_BUTTON" = "جواب دیں";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "اسٹوری پر ردعمل دیا";
@@ -6172,26 +6286,47 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "جواب دیں";
 
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "آپ";
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "گروپ کو جواب دیں";
+
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "یہ سٹوری بھیجی نہیں جا سکتی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "کنکشنز";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "صرف ان کے ساتھ شیئر کریں...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "خارج کردہ کنکشنز";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "عطیہ کریں";
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "بھیجنے میں ناکام";
 
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal آپ جیسے لوگوں کی جانب سے تقویت یافتہ ہے۔ عطیہ دیں اور بیج حاصل کریں۔";
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "دوبارہ کوشش کے لیے ٹیپ کریں";
 
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "ابھی نہیں";
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "بھیج رہا ہے ...";
 
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "عطیہ گزار بنیں";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Section header for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_1" = "آگے بڑھنے کے لیے ٹیپ کریں";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_2" = "چھوڑنے کے لیے سوائپ اپ کریں";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_3" = "اخراج کے لیے دائیں سوائپ کریں";
+
+/* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "یہ مل گیا";
+
+/* Text indicating that the user has views turned off */
+"STORY_VIEWS_OFF" = "ویوز آف ہیں";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "کلپ بورڈ پر سبسکرائبر کی id کاپی کریں";
@@ -6351,6 +6486,9 @@
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "چلائیں";
+
+/* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
+"SYSTEM_ADDRESS_NAME" = "Signal";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "تصدیق کریں";
@@ -6607,6 +6745,12 @@
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "باہر جانے والے ملاحظہ ایک بار میڈیا فائلیں بھیجے جانے کے بعد خود بخود حذف ہوجاتی ہیں۔";
 
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "تصویر دیکھیں";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
+
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "منسوخ کرنے کیلئے سلائیڈ کریں";
 
@@ -6702,6 +6846,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "وال پیپر سیٹ کریں";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "آپ";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "آپ نے یہ پیغام حذف کردیا۔";

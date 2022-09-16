@@ -264,7 +264,7 @@ fileprivate extension SDSCodableModel {
             recordCopy.id = grdbId
             try recordCopy.update(transaction.database)
         } catch {
-            flagDatabaseCorruptionIfNecessary(error: error)
+            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
             owsFail("Update failed: \(error.grdbErrorForLogging)")
         }
     }
@@ -273,7 +273,7 @@ fileprivate extension SDSCodableModel {
         do {
             try self.insert(transaction.database)
         } catch {
-            flagDatabaseCorruptionIfNecessary(error: error)
+            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
             owsFail("Insert failed: \(error.grdbErrorForLogging)")
         }
     }
@@ -293,17 +293,8 @@ fileprivate extension SDSCodableModel {
             statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
-            flagDatabaseCorruptionIfNecessary(error: error)
+            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
             owsFail("Write failed: \(error.grdbErrorForLogging)")
-        }
-    }
-
-    func flagDatabaseCorruptionIfNecessary<T: Error>(error: T) {
-        // If the attempt to write to GRDB flagged that the database was
-        // corrupt, in addition to crashing we flag this so that we can
-        // attempt to perform recovery.
-        if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
-            SSKPreferences.setHasGrdbDatabaseCorruption(true)
         }
     }
 }

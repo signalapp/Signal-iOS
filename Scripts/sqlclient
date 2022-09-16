@@ -166,11 +166,11 @@ parser = argparse.ArgumentParser(
                     open the databse. Note that this file is in plaintext, and *ONLY USE* with databases containing
                     test data.
                 '''),
-        usage="%(prog)s [--simulator simID [--staging] | --path dbPath] [--passphrase passphrase] [--quiet] [--use-gui [--gui-auto-decrypt-with-plaintext-key] [--gui-app-path guiAppPath]]")
+        usage="%(prog)s [--simulator simID [--staging] | --path dbPath] [--passphrase passphrase] [--quiet] [--use-gui [--gui-auto-decrypt-with-plaintext-key]]")
 
 group = parser.add_mutually_exclusive_group()
 group.add_argument("--simulator", metavar="SIM", help="A string identifiying a simulator instance. (default: %(default)s).", default="booted")
-group.add_argument("--path", help="An sqlcipher path")
+group.add_argument("--path", help="Path to a sqlcipher DB")
 parser.add_argument("--passphrase", metavar="PASS", help="The passphrase encrypting the database")
 parser.add_argument("--staging", action='store_true', help="If a simulator is being targeted, specifies that the staging database should be used")
 parser.add_argument("remainder", nargs=argparse.REMAINDER, metavar="--", help="All subsequent args will be interpreted as SQL. You probably want quotes here. Be careful with \"*\" since your shell will probably replace it. Ignored if using GUI")

@@ -36,6 +36,8 @@ class CallAudioService: NSObject, CallObserver {
     // `pulseDuration` is the small pause between the two vibrations in the pair.
     private let pulseDuration = 0.2
 
+    private var observerToken: NSObjectProtocol?
+
     var avAudioSession: AVAudioSession {
         return AVAudioSession.sharedInstance()
     }
@@ -50,16 +52,18 @@ class CallAudioService: NSObject, CallObserver {
         // Configure audio session so we don't prompt user with Record permission until call is connected.
 
         audioSession.configureRTCAudio()
-        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: OperationQueue()) { _ in
+        observerToken = NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: OperationQueue()) { [weak self] _ in
             assert(!Thread.isMainThread)
-            self.audioRouteDidChange()
+            self?.audioRouteDidChange()
         }
 
         Self.callService.addObserverAndSyncState(observer: self)
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        if let observerToken = observerToken {
+            NotificationCenter.default.removeObserver(observerToken)
+        }
     }
 
     // MARK: - CallObserver
@@ -173,7 +177,7 @@ class CallAudioService: NSObject, CallObserver {
     /// Set the AudioSession based on the state of the call. If video is captured locally,
     /// it is assumed that the speaker should be used. Otherwise audio will be routed
     /// through the receiver, or speaker if enabled.
-    private func ensureProperAudioSession(call: IndividualCall) {
+    fileprivate func ensureProperAudioSession(call: IndividualCall) {
         AssertIsOnMainThread()
 
         guard !call.isEnded, call.state != .answering else {
@@ -376,6 +380,8 @@ class CallAudioService: NSObject, CallObserver {
 
     // MARK: - Ringing
 
+    private var ringerSwitchObserver: CallRingerSwitchObserver?
+
     private func startRinging(call: IndividualCall) {
         guard handleRinging else {
             Logger.debug("ignoring \(#function) since CallKit handles it's own ringing state")
@@ -394,20 +400,8 @@ class CallAudioService: NSObject, CallObserver {
             return owsFailDebug("Failed to prepare player for ringing")
         }
 
-        startObservingRingerState { [weak self] isDeviceSilenced in
-            AssertIsOnMainThread()
-
-            // We must ensure the proper audio session before
-            // each time we play / pause, otherwise the category
-            // may have changed and no playback would occur.
-            self?.ensureProperAudioSession(call: call)
-
-            if isDeviceSilenced {
-                player.pause()
-            } else {
-                player.play()
-            }
-        }
+        // Start observing (observes on init)
+        ringerSwitchObserver = CallRingerSwitchObserver(callService: self, player: player, call: call)
     }
 
     private func stopRinging() {
@@ -421,7 +415,8 @@ class CallAudioService: NSObject, CallObserver {
         vibrateTimer?.invalidate()
         vibrateTimer = nil
 
-        stopObservingRingerState()
+        // Stops observing on deinit.
+        ringerSwitchObserver = nil
 
         currentPlayer?.stop()
     }
@@ -547,32 +542,6 @@ class CallAudioService: NSObject, CallObserver {
         }
     }
 
-    // MARK: - Ringer State
-
-    // let encodedDarwinNotificationName = "com.apple.springboard.ringerstate".encodedForSelector
-    private static let ringerStateNotificationName = DarwinNotificationName("dAF+P3ICAn12PwUCBHoAeHMBcgR1PwR6AHh2BAUGcgZ2".decodedForSelector!)
-
-    private var ringerStateToken: Int32?
-    private func startObservingRingerState(stateChanged: @escaping (_ isDeviceSilenced: Bool) -> Void) {
-
-        func isRingerStateSilenced(token: Int32) -> Bool {
-            return DarwinNotificationCenter.getStateForObserver(token) > 0 ? false : true
-        }
-
-        let token = DarwinNotificationCenter.addObserver(
-            for: Self.ringerStateNotificationName,
-            queue: .main
-        ) { stateChanged(isRingerStateSilenced(token: $0)) }
-        ringerStateToken = token
-        stateChanged(isRingerStateSilenced(token: token))
-    }
-
-    private func stopObservingRingerState() {
-        guard let ringerStateToken = ringerStateToken else { return }
-        DarwinNotificationCenter.removeObserver(ringerStateToken)
-        self.ringerStateToken = nil
-    }
-
     // MARK: - Join / Leave sound
     func playJoinSound() {
         play(sound: .groupCallJoin)
@@ -587,5 +556,40 @@ extension CallAudioService: CallServiceObserver {
     func didUpdateCall(from oldValue: SignalCall?, to newValue: SignalCall?) {
         oldValue?.removeObserver(self)
         newValue?.addObserverAndSyncState(observer: self)
+    }
+}
+
+private class CallRingerSwitchObserver: RingerSwitchObserver {
+
+    private let player: OWSAudioPlayer
+    private let call: IndividualCall
+    private weak var callService: CallAudioService?
+
+    init(callService: CallAudioService, player: OWSAudioPlayer, call: IndividualCall) {
+        self.callService = callService
+        self.player = player
+        self.call = call
+
+        // Immediately callback to maintain old behavior.
+        didToggleRingerSwitch(RingerSwitch.shared.addObserver(observer: self))
+    }
+
+    deinit {
+        RingerSwitch.shared.removeObserver(self)
+    }
+
+    func didToggleRingerSwitch(_ isSilenced: Bool) {
+        AssertIsOnMainThread()
+
+        // We must ensure the proper audio session before
+        // each time we play / pause, otherwise the category
+        // may have changed and no playback would occur.
+        callService?.ensureProperAudioSession(call: call)
+
+        if isSilenced {
+            player.pause()
+        } else {
+            player.play()
+        }
     }
 }

@@ -80,11 +80,6 @@ void AssertIsOnDisappearingMessagesQueue()
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 + (dispatch_queue_t)serialQueue
 {
     static dispatch_queue_t queue = nil;

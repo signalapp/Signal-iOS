@@ -74,6 +74,7 @@ extension StorageServiceProtoContactRecord: Dependencies {
             builder.setArchived(threadAssociatedData.isArchived)
             builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
             builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
+            builder.setHideStory(threadAssociatedData.hideStory)
         }
 
         // Unknown
@@ -213,6 +214,10 @@ extension StorageServiceProtoContactRecord: Dependencies {
 
         if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+        }
+
+        if hideStory != localThreadAssociatedData.hideStory {
+            localThreadAssociatedData.updateWith(hideStory: hideStory, updateStorageService: false, transaction: transaction)
         }
 
         return mergeState
@@ -381,6 +386,19 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         builder.setArchived(threadAssociatedData.isArchived)
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
         builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
+        builder.setHideStory(threadAssociatedData.hideStory)
+
+        if let thread = TSGroupThread.anyFetchGroupThread(uniqueId: threadId, transaction: transaction) {
+            builder.setStorySendEnabled(thread.isStorySendEnabled)
+        } else if let enqueuedRecord = groupsV2Swift.groupRecordPendingStorageServiceRestore(
+            masterKeyData: masterKeyData,
+            transaction: transaction
+        ) {
+            // We have a record pending restoration from storage service,
+            // preserve any of the data that we weren't able to restore
+            // yet because the thread record doesn't exist.
+            builder.setStorySendEnabled(enqueuedRecord.storySendEnabled)
+        }
 
         if let unknownFields = unknownFields {
             builder.setUnknownFields(unknownFields)
@@ -447,8 +465,12 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
 
         var mergeState: MergeState = .resolved(masterKey)
 
-        let isGroupInDatabase = TSGroupThread.fetch(groupId: groupId, transaction: transaction) != nil
-        if !isGroupInDatabase {
+        if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+            let localStorySendEnabled = localThread.isStorySendEnabled
+            if localStorySendEnabled != storySendEnabled {
+                localThread.updateWithStorySendEnabled(storySendEnabled, shouldUpdateStorageService: false, transaction: transaction)
+            }
+        } else {
             mergeState = .needsRefreshFromService(masterKey)
         }
 
@@ -493,6 +515,10 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
 
         if mutedUntilTimestamp != localThreadAssociatedData.mutedUntilTimestamp {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
+        }
+
+        if hideStory != localThreadAssociatedData.hideStory {
+            localThreadAssociatedData.updateWith(hideStory: hideStory, updateStorageService: false, transaction: transaction)
         }
 
         return mergeState
@@ -596,10 +622,14 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             builder.setSubscriberCurrencyCode(subscriberCurrencyCode)
         }
 
+        builder.setViewedOnboardingStory(Self.systemStoryManager.isOnboardingStoryViewed(transaction: transaction))
+
         builder.setDisplayBadgesOnProfile(subscriptionManager.displayBadgesOnProfile(transaction: transaction))
         builder.setSubscriptionManuallyCancelled(subscriptionManager.userManuallyCancelledSubscription(transaction: transaction))
 
         builder.setKeepMutedChatsArchived(SSKPreferences.shouldKeepMutedChatsArchived(transaction: transaction))
+
+        builder.setStoriesDisabled(!StoryManager.areStoriesEnabled)
 
         return try builder.build()
     }
@@ -801,6 +831,11 @@ extension StorageServiceProtoAccountRecord: Dependencies {
             SSKPreferences.setShouldKeepMutedChatsArchived(keepMutedChatsArchived, transaction: transaction)
         }
 
+        let localHasViewedOnboardingStory = systemStoryManager.isOnboardingStoryViewed(transaction: transaction)
+        if !localHasViewedOnboardingStory && viewedOnboardingStory {
+            systemStoryManager.setHasViewedOnboardingStoryOnAnotherDevice(transaction: transaction)
+        }
+
         if let serviceLocalE164 = self.e164?.strippedOrNil,
            PhoneNumber.resemblesE164(serviceLocalE164) {
             // If the local phone number doesn't match the "local phone number" in the storage service...
@@ -834,6 +869,11 @@ extension StorageServiceProtoAccountRecord: Dependencies {
         } else {
             // If no "local phone number" has been written to the storage service yet, do so now.
             mergeState = .needsUpdate
+        }
+
+        let localStoriesDisabled = !StoryManager.areStoriesEnabled
+        if localStoriesDisabled != storiesDisabled {
+            StoryManager.setAreStoriesEnabled(!storiesDisabled, shouldUpdateStorageService: false, transaction: transaction)
         }
 
         return mergeState

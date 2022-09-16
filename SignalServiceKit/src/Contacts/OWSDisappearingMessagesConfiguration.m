@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesConfiguration.h"
@@ -72,6 +72,11 @@ static NSString *const kUniversalTimerThreadId = @"kUniversalTimerThreadId";
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (BOOL)isUrgent
+{
+    return NO;
+}
 
 + (nullable instancetype)fetchWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {

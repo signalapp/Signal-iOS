@@ -9,6 +9,7 @@ import SignalUI
 @objc
 public protocol ConversationHeaderViewDelegate {
     func didTapConversationHeaderView(_ conversationHeaderView: ConversationHeaderView)
+    func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView)
 }
 
 public class ConversationHeaderView: UIStackView {
@@ -120,7 +121,7 @@ public class ConversationHeaderView: UIStackView {
     public func configure(threadViewModel: ThreadViewModel) {
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .thread(threadViewModel.threadRecord)
-            config.storyState = threadViewModel.storyState
+            config.storyState = StoryManager.areStoriesEnabled ? threadViewModel.storyState : .none
             config.applyConfigurationSynchronously()
         }
     }
@@ -155,6 +156,10 @@ public class ConversationHeaderView: UIStackView {
             return
         }
 
-        self.delegate?.didTapConversationHeaderView(self)
+        if avatarView.bounds.contains(tapGesture.location(in: avatarView)) {
+            self.delegate?.didTapConversationHeaderViewAvatar(self)
+        } else {
+            self.delegate?.didTapConversationHeaderView(self)
+        }
     }
 }

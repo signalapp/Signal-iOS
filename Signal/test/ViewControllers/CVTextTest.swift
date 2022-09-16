@@ -124,7 +124,7 @@ class CVTextTest: SignalBaseTest {
             for possibleWidth: CGFloat in stride(from: 100, to: 2000, by: 50) {
                 let bodyTextLabelConfig = Self.bodyTextLabelConfig(textViewConfig: config)
                 let measuredSize = CVText.measureBodyTextLabel(config: bodyTextLabelConfig, maxWidth: possibleWidth)
-                // CVBodyTextLabel only has a single measurement mechanism; there isn't
+                // CVTextLabel only has a single measurement mechanism; there isn't
                 // an independent way to verify the correctness of measurements.
                 XCTAssertTrue(measuredSize.size.width > 0)
                 XCTAssertTrue(measuredSize.size.width > 0)
@@ -132,18 +132,16 @@ class CVTextTest: SignalBaseTest {
         }
     }
 
-    static func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVBodyTextLabel.Config {
-        let selectionColor = UIColor.orange
-        let items: [CVBodyTextLabel.Item] = []
-        return CVBodyTextLabel.Config(attributedString: textViewConfig.text.attributedString,
-                                      font: textViewConfig.font,
-                                      textColor: textViewConfig.textColor,
-                                      selectionColor: selectionColor,
-                                      textAlignment: textViewConfig.textAlignment ?? .natural,
-                                      lineBreakMode: .byWordWrapping,
-                                      numberOfLines: 0,
-                                      cacheKey: textViewConfig.cacheKey,
-                                      items: items)
+    static func bodyTextLabelConfig(textViewConfig: CVTextViewConfig) -> CVTextLabel.Config {
+        return CVTextLabel.Config(attributedString: textViewConfig.text.attributedString,
+                                  font: textViewConfig.font,
+                                  textColor: textViewConfig.textColor,
+                                  selectionStyling: [.foregroundColor: UIColor.orange],
+                                  textAlignment: textViewConfig.textAlignment ?? .natural,
+                                  lineBreakMode: .byWordWrapping,
+                                  numberOfLines: 0,
+                                  cacheKey: textViewConfig.cacheKey,
+                                  items: [])
     }
 
     func testLabelMeasurement() {

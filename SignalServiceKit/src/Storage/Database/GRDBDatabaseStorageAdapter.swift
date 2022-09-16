@@ -1054,7 +1054,7 @@ extension GRDBDatabaseStorageAdapter {
             .map { containerDirectory.appendingPathComponent($0) }
     }
 
-    public static func runIntegrityCheck() -> Promise<String> {
+    public static func logIntegrityChecks() -> Promise<Void> {
         return firstly(on: .global(qos: .userInitiated)) {
             let storageCoordinator: StorageCoordinator
             if SSKEnvironment.hasShared() {
@@ -1064,16 +1064,45 @@ extension GRDBDatabaseStorageAdapter {
             }
             // Workaround to disambiguate between NSObject.databaseStorage and StorageCoordinator.databaseStorage.
             let databaseStorage = storageCoordinator.value(forKey: "databaseStorage") as! SDSDatabaseStorage
-            // Use quick_check (O(N)) instead of integrity_check (O(NlogN)).
-            let sql = "PRAGMA quick_check"
-            let results: String = databaseStorage.read { transaction in
-                do {
-                    return try String.fetchAll(transaction.unwrapGrdbRead.database, sql: sql).joined(separator: "\n")
-                } catch {
-                    return "error"
+
+            let unfilteredSqls = [
+                "PRAGMA cipher_provider",
+                "PRAGMA cipher_integrity_check"
+            ]
+            for sql in unfilteredSqls {
+                Logger.info(sql)
+                databaseStorage.read { transaction in
+                    do {
+                        let cursor = try String.fetchCursor(transaction.unwrapGrdbRead.database, sql: sql)
+                        while let line = try cursor.next() { Logger.info(line) }
+                    } catch {
+                        Logger.error("\(sql) failed to run")
+                    }
                 }
             }
-            return "\(sql)\n\(results)"
+
+            // Use quick_check (O(N)) instead of integrity_check (O(NlogN)).
+            // This *could* include sensitive data if there's very bad
+            // corruption, so we only log whether it succeeds.
+            let quickCheckSql = "PRAGMA quick_check"
+            Logger.info(quickCheckSql)
+            let firstQuickCheckLine = databaseStorage.read { transaction -> String? in
+                do {
+                    return try String.fetchOne(transaction.unwrapGrdbRead.database, sql: quickCheckSql)
+                } catch {
+                    Logger.error("PRAGMA quick_check failed to run")
+                    return nil
+                }
+            }
+            if let firstQuickCheckLine = firstQuickCheckLine {
+                if firstQuickCheckLine.starts(with: "ok") {
+                    Logger.info("ok")
+                } else {
+                    Logger.error("failed (failure redacted)")
+                }
+            } else {
+                Logger.error("PRAGMA quick_check returned no lines")
+            }
         }
     }
 }

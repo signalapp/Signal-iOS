@@ -90,11 +90,6 @@ class ImageEditorView: AttachmentPrepContentView {
         canvasView.gestureReferenceView
     }
 
-    var roundCorners: Bool {
-        get { canvasView.roundCorners }
-        set { canvasView.roundCorners = newValue }
-    }
-
     // MARK: - Navigation Bar
 
     private func updateControls() {
@@ -134,7 +129,7 @@ class ImageEditorView: AttachmentPrepContentView {
         }
     }
 
-    func updateSelectedTextItem(withColor color: ImageEditorColor) {
+    func updateSelectedTextItem(withColor color: ColorPickerBarColor) {
         if let selectedTextItemId = selectedTextItemId,
            let textItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
             let newTextItem = textItem.copy(color: color)
@@ -142,8 +137,9 @@ class ImageEditorView: AttachmentPrepContentView {
         }
     }
 
-    func createNewTextItem(withColor color: ImageEditorColor? = nil,
-                           textStyle: ImageEditorTextItem.Style = .regular) -> ImageEditorTextItem {
+    func createNewTextItem(withColor color: ColorPickerBarColor? = nil,
+                           textStyle: MediaTextView.TextStyle = .regular,
+                           decorationStyle: MediaTextView.DecorationStyle = .none) -> ImageEditorTextItem {
         Logger.verbose("")
 
         let viewSize = canvasView.gestureReferenceView.bounds.size
@@ -161,7 +157,8 @@ class ImageEditorView: AttachmentPrepContentView {
         let scaling = 1 / model.currentTransform().scaling
 
         let textItem = ImageEditorTextItem.empty(withColor: color ?? model.color,
-                                                 style: textStyle,
+                                                 textStyle: textStyle,
+                                                 decorationStyle: decorationStyle,
                                                  unitWidth: textWidthUnit,
                                                  fontReferenceImageWidth: imageFrame.size.width,
                                                  scaling: scaling,
@@ -390,6 +387,18 @@ class ImageEditorView: AttachmentPrepContentView {
         default:
             movingTextItem = nil
         }
+    }
+}
+
+// MARK: - Corner Radius
+
+extension ImageEditorView {
+
+    static let defaultCornerRadius: CGFloat = 18
+
+    func setHasRoundCorners(_ roundCorners: Bool, animationDuration: TimeInterval = 0) {
+        canvasView.setCornerRadius(roundCorners ? ImageEditorView.defaultCornerRadius : 0,
+                                   animationDuration: animationDuration)
     }
 }
 

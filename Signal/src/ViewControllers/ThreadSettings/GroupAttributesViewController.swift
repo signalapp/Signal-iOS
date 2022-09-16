@@ -184,9 +184,11 @@ extension GroupAttributesViewController: OWSNavigationView {
     }
 
     @objc
-    public static func showUnsavedGroupChangesActionSheet(from fromViewController: UIViewController,
-                                                     saveBlock: @escaping () -> Void,
-                                                     discardBlock: @escaping () -> Void) {
+    public static func showUnsavedGroupChangesActionSheet(
+        from fromViewController: UIViewController,
+        saveBlock: @escaping () -> Void,
+        discardBlock: @escaping () -> Void
+    ) {
         let actionSheet = ActionSheetController(title: NSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
                                                                          comment: "The alert title if user tries to exit update group view without saving changes."),
                                                 message: NSLocalizedString("EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",

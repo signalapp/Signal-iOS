@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGroupCallMessage.h"
@@ -167,12 +167,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)systemTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *moreThanThreeFormat = OWSLocalizedString(@"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT",
-        @"Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ "
-        @"participant2, %3$@ participantCount-2 }}");
-    NSString *threeFormat = OWSLocalizedString(@"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT",
-        @"Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ "
-        @"participant2 }}");
+    NSString *threeOrMoreFormat = NSLocalizedStringFromTableInBundle(@"GROUP_CALL_MANY_PEOPLE_HERE_%d",
+        @"PluralAware",
+        NSBundle.mainBundle.appBundle,
+        @"Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, "
+        @"%2$@ participant1, %3$@ participant2 }}");
     NSString *twoFormat = OWSLocalizedString(@"GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
         @"Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 "
         @"}}");
@@ -209,16 +208,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.hasEnded) {
         return endedString;
 
-    } else if (sortedAddresses.count >= 4) {
+    } else if (sortedAddresses.count >= 3) {
         NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
         NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
-        NSString *remainingCount = [OWSFormat formatInt:(sortedAddresses.count - 2)];
-        return [NSString stringWithFormat:moreThanThreeFormat, firstName, secondName, remainingCount];
-
-    } else if (sortedAddresses.count == 3) {
-        NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
-        NSString *secondName = [self participantNameForAddress:sortedAddresses[1] transaction:transaction];
-        return [NSString stringWithFormat:threeFormat, firstName, secondName];
+        return [NSString localizedStringWithFormat:threeOrMoreFormat, sortedAddresses.count - 2, firstName, secondName];
 
     } else if (sortedAddresses.count == 2) {
         NSString *firstName = [self participantNameForAddress:sortedAddresses[0] transaction:transaction];
@@ -272,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)participantNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     if (address.isLocalAddress) {
-        return OWSLocalizedString(@"GROUP_CALL_YOU", "Text describing the local user as a participant in a group call.");
+        return OWSLocalizedString(@"YOU", "Second person pronoun to represent the local user.");
     } else {
         return [self.contactsManager displayNameForAddress:address transaction:transaction];
     }

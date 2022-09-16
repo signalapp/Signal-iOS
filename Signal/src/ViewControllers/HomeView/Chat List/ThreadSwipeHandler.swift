@@ -206,10 +206,10 @@ extension ThreadSwipeHandler where Self: UIViewController {
         AssertIsOnMainThread()
 
         databaseStorage.write { transaction in
-            let timeStamp = seconds < 0
+            let timestamp = seconds < 0
             ? ThreadAssociatedData.alwaysMutedTimestamp
             : (seconds == 0 ? 0 : Date.ows_millisecondTimestamp() + UInt64(seconds * 1000))
-            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: timeStamp, updateStorageService: true, transaction: transaction)
+            threadViewModel.associatedData.updateWith(mutedUntilTimestamp: timestamp, updateStorageService: true, transaction: transaction)
         }
     }
 

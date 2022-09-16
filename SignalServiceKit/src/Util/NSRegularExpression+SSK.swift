@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,9 +11,11 @@ public extension NSRegularExpression {
         return self.firstMatch(in: input, options: [], range: input.entireRange) != nil
     }
 
-    class func parseFirstMatch(pattern: String,
-                                      text: String,
-                                      options: NSRegularExpression.Options = []) -> String? {
+    class func parseFirstMatch(
+        pattern: String,
+        text: String,
+        options: NSRegularExpression.Options = []
+    ) -> String? {
         do {
             let regex = try NSRegularExpression(pattern: pattern, options: options)
             guard let match = regex.firstMatch(in: text,
@@ -34,8 +36,7 @@ public extension NSRegularExpression {
         }
     }
 
-    func parseFirstMatch(inText text: String,
-                                options: NSRegularExpression.Options = []) -> String? {
+    func parseFirstMatch(inText text: String, options: NSRegularExpression.Options = []) -> String? {
         guard let match = self.firstMatch(in: text,
                                           options: [],
                                           range: text.entireRange) else {

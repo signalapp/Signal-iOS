@@ -139,8 +139,8 @@ open class BaseMemberViewController: OWSViewController {
         }
 
         memberCountWrapper.isHidden = false
-        let format = NSLocalizedString("GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d", tableName: "PluralAware",
-                                       comment: "Format string for the group member count indicator. Embeds {{ the number of members in the group }}.")
+        let format = OWSLocalizedString("GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d", tableName: "PluralAware",
+                                        comment: "Format string for the group member count indicator. Embeds {{ the number of members in the group }}.")
         let memberCount = memberViewDelegate.memberViewMemberCountForDisplay()
 
         memberCountLabel.text = String.localizedStringWithFormat(format, memberCount)
@@ -285,8 +285,10 @@ open class BaseMemberViewController: OWSViewController {
 
 extension BaseMemberViewController: RecipientPickerDelegate {
 
-    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         getRecipientState recipient: PickedRecipient) -> RecipientPickerRecipientState {
+    public func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        getRecipientState recipient: PickedRecipient
+    ) -> RecipientPickerRecipientState {
         guard let memberViewDelegate = memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return .unknownError
@@ -303,8 +305,10 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
     }
 
-    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         didSelectRecipient recipient: PickedRecipient) {
+    public func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        didSelectRecipient recipient: PickedRecipient
+    ) {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
             return
@@ -355,8 +359,8 @@ extension BaseMemberViewController: RecipientPickerDelegate {
                 }
             }
         } else {
-            let confirmationText = NSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION",
-                                                     comment: "button title to confirm adding a recipient when their safety number has recently changed")
+            let confirmationText = OWSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION",
+                                                      comment: "button title to confirm adding a recipient when their safety number has recently changed")
             let didShowSNAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
                 address: address,
                 confirmationText: confirmationText
@@ -373,8 +377,10 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
     }
 
-    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         willRenderRecipient recipient: PickedRecipient) {
+    public func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        willRenderRecipient recipient: PickedRecipient
+    ) {
 
         guard let memberViewDelegate = memberViewDelegate else {
             owsFailDebug("Missing delegate.")
@@ -384,8 +390,10 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         memberViewDelegate.memberViewWillRenderRecipient(recipient)
     }
 
-    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
+    public func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        prepareToSelectRecipient recipient: PickedRecipient
+    ) -> AnyPromise {
 
         guard let memberViewDelegate = memberViewDelegate else {
             owsFailDebug("Missing delegate.")
@@ -395,8 +403,10 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         return memberViewDelegate.memberViewPrepareToSelectRecipient(recipient)
     }
 
-    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient) {
+    public func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        showInvalidRecipientAlert recipient: PickedRecipient
+    ) {
         AssertIsOnMainThread()
 
         guard let memberViewDelegate = memberViewDelegate else {
@@ -407,33 +417,17 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         memberViewDelegate.memberViewShowInvalidRecipientAlert(recipient)
     }
 
-    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         accessoryMessageForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> String? {
-        guard let address = recipient.address else {
-            owsFailDebug("Missing address.")
-            return nil
-        }
-        guard address.isValid else {
-            owsFailDebug("Invalid address.")
-            return nil
-        }
+    public func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryMessageForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> String? { nil }
 
-        let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
-
-        if isCurrentMember {
-            return nil
-        } else if isBlocked {
-            return MessageStrings.conversationIsBlocked
-        } else {
-            return nil
-        }
-    }
-
-    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         accessoryViewForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> ContactCellAccessoryView? {
+    public func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        accessoryViewForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> ContactCellAccessoryView? {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
             return nil
@@ -448,7 +442,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isBlocked = blockingManager.isAddressBlocked(address, transaction: transaction)
         let isPreExistingMember = memberViewDelegate.memberViewIsPreExistingMember(recipient,
                                                                                    transaction: transaction)
 
@@ -457,18 +450,17 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.washColor)
         } else if isCurrentMember {
             imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.accentBlueColor)
-        } else if isBlocked {
-            // Use accessoryMessageForRecipient: to show blocked indicator.
-            return nil
         } else {
             imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
         }
         return ContactCellAccessoryView(accessoryView: imageView, size: .square(24))
     }
 
-    public func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         attributedSubtitleForRecipient recipient: PickedRecipient,
-                         transaction: SDSAnyReadTransaction) -> NSAttributedString? {
+    public func recipientPicker(
+        _ recipientPickerViewController: RecipientPickerViewController,
+        attributedSubtitleForRecipient recipient: PickedRecipient,
+        transaction: SDSAnyReadTransaction
+    ) -> NSAttributedString? {
 
         guard let address = recipient.address else {
             owsFailDebug("Recipient missing address.")

@@ -25,7 +25,76 @@ public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
 @objc
 public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedProfiles {
 
-    public static let credentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
+    private enum CredentialStore {
+        private static let credentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
+
+        private static func storeKey(forAddress address: SignalServiceAddress) throws -> String {
+            guard
+                address.isValid,
+                let uuid = address.uuid
+            else {
+                throw OWSAssertionError("Address invalid or missing UUID: \(address)")
+            }
+
+            return uuid.uuidString
+        }
+
+        static func hasCredential(
+            forAddress address: SignalServiceAddress,
+            transaction: SDSAnyReadTransaction
+        ) throws -> Bool {
+            credentialStore.hasValue(
+                forKey: try storeKey(forAddress: address),
+                transaction: transaction
+            )
+        }
+
+        static func getCredential(
+            forAddress address: SignalServiceAddress,
+            transaction: SDSAnyReadTransaction
+        ) throws -> ProfileKeyCredential? {
+            guard let credentialData = credentialStore.getData(
+                try storeKey(forAddress: address),
+                transaction: transaction
+            ) else {
+                return nil
+            }
+
+            return try ProfileKeyCredential(contents: [UInt8](credentialData))
+        }
+
+        static func setCredential(
+            _ credential: ProfileKeyCredential,
+            forAddress address: SignalServiceAddress,
+            transaction: SDSAnyWriteTransaction
+        ) throws {
+            let credentialData = credential.serialize().asData
+
+            guard !credentialData.isEmpty else {
+                throw OWSAssertionError("Invalid credential data")
+            }
+
+            credentialStore.setData(
+                credentialData,
+                key: try storeKey(forAddress: address),
+                transaction: transaction
+            )
+        }
+
+        static func removeValue(
+            forAddress address: SignalServiceAddress,
+            transaction: SDSAnyWriteTransaction
+        ) throws {
+            credentialStore.removeValue(
+                forKey: try storeKey(forAddress: address),
+                transaction: transaction
+            )
+        }
+
+        static func removeAll(transaction: SDSAnyWriteTransaction) {
+            credentialStore.removeAll(transaction: transaction)
+        }
+    }
 
     // MARK: -
 
@@ -186,9 +255,11 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     public func versionedProfileRequest(address: SignalServiceAddress,
                                         udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
-        guard address.isValid,
-              let uuid: UUID = address.uuid else {
-            throw OWSAssertionError("Invalid address: \(address)")
+        guard
+            address.isValid,
+            let uuid: UUID = address.uuid
+        else {
+            throw OWSAssertionError("Address invalid or missing UUID: \(address)")
         }
 
         var requestContext: ProfileKeyCredentialRequestContext?
@@ -207,8 +278,7 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
             profileKeyVersionArg = try profileKeyVersion.asHexadecimalString()
 
             // We need to request a credential if we don't have one already.
-            let credential = try self.profileKeyCredentialData(for: address, transaction: transaction)
-            if credential == nil {
+            if !(try CredentialStore.hasCredential(forAddress: address, transaction: transaction)) {
                 let clientZkProfileOperations = try self.clientZkProfileOperations()
                 let context = try clientZkProfileOperations.createProfileKeyCredentialRequestContext(uuid: uuid,
                                                                                                      profileKey: profileKey)
@@ -244,37 +314,30 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                 return
             }
             guard credentialResponseData.count > 0 else {
-                owsFailDebug("Invalid credential response.")
-                return
-            }
-            let address = profile.address
-            guard let uuid = address.uuid else {
-                owsFailDebug("Missing uuid.")
-                return
+                throw OWSAssertionError("Invalid credential response.")
             }
             guard let requestContext = profileRequest.requestContext else {
-                owsFailDebug("Missing request context.")
-                return
+                throw OWSAssertionError("Missing request context.")
             }
+
             let credentialResponse = try ProfileKeyCredentialResponse(contents: [UInt8](credentialResponseData))
             let clientZkProfileOperations = try self.clientZkProfileOperations()
-            let profileKeyCredential = try clientZkProfileOperations.receiveProfileKeyCredential(profileKeyCredentialRequestContext: requestContext, profileKeyCredentialResponse: credentialResponse)
-            let credentialData = profileKeyCredential.serialize().asData
-            guard credentialData.count > 0 else {
-                owsFailDebug("Invalid credential data.")
-                return
-            }
+            let profileKeyCredential = try clientZkProfileOperations.receiveProfileKeyCredential(
+                profileKeyCredentialRequestContext: requestContext,
+                profileKeyCredentialResponse: credentialResponse
+            )
 
             guard let requestProfileKey = profileRequest.profileKey else {
-                owsFailDebug("Missing profile key for credential from versioned profile fetch.")
-                return
+                throw OWSAssertionError("Missing profile key for credential from versioned profile fetch.")
             }
 
-            databaseStorage.write { transaction in
+            let address = profile.address
+
+            try databaseStorage.write { transaction throws in
                 guard let currentProfileKey = profileManager.profileKey(for: address, transaction: transaction) else {
-                    owsFailDebug("Missing profile key in database.")
-                    return
+                    throw OWSAssertionError("Missing profile key in database.")
                 }
+
                 guard requestProfileKey.keyData == currentProfileKey.keyData else {
                     if DebugFlags.internalLogging {
                         Logger.info("requestProfileKey: \(requestProfileKey.keyData.hexadecimalString) != currentProfileKey: \(currentProfileKey.keyData.hexadecimalString)")
@@ -283,9 +346,11 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
                     return
                 }
 
-                Logger.verbose("Updating credential for: \(uuid)")
-
-                Self.credentialStore.setData(credentialData, key: uuid.uuidString, transaction: transaction)
+                try CredentialStore.setCredential(
+                    profileKeyCredential,
+                    forAddress: address,
+                    transaction: transaction
+                )
             }
         } catch {
             owsFailDebug("Invalid credential: \(error).")
@@ -295,40 +360,29 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift, VersionedP
 
     // MARK: - Credentials
 
-    public func profileKeyCredentialData(for address: SignalServiceAddress,
-                                         transaction: SDSAnyReadTransaction) throws -> Data? {
-        guard address.isValid,
-              let uuid = address.uuid else {
-            throw OWSAssertionError("Invalid address: \(address)")
-        }
-
-        return Self.credentialStore.getData(uuid.uuidString, transaction: transaction)
-    }
-
-    public func profileKeyCredential(for address: SignalServiceAddress,
-                                     transaction: SDSAnyReadTransaction) throws -> ProfileKeyCredential? {
-        guard let data = try profileKeyCredentialData(for: address, transaction: transaction) else {
-            return nil
-        }
-        let bytes = [UInt8](data)
-        let credential = try ProfileKeyCredential(contents: bytes)
-        return credential
+    public func profileKeyCredential(
+        for address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) throws -> ProfileKeyCredential? {
+        try CredentialStore.getCredential(
+            forAddress: address,
+            transaction: transaction
+        )
     }
 
     @objc(clearProfileKeyCredentialForAddress:transaction:)
-    public func clearProfileKeyCredential(for address: SignalServiceAddress,
-                                          transaction: SDSAnyWriteTransaction) {
-        guard address.isValid else {
-            owsFailDebug("Invalid address: \(address)")
-            return
+    public func clearProfileKeyCredential(
+        for address: SignalServiceAddress,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        do {
+            try CredentialStore.removeValue(forAddress: address, transaction: transaction)
+        } catch let error {
+            owsFailDebug("Failed to clear credential for address \(address): \(error)")
         }
-        guard let uuid = address.uuid else {
-            return
-        }
-        Self.credentialStore.removeValue(forKey: uuid.uuidString, transaction: transaction)
     }
 
     public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {
-        Self.credentialStore.removeAll(transaction: transaction)
+        CredentialStore.removeAll(transaction: transaction)
     }
 }

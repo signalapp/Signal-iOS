@@ -211,7 +211,7 @@ public class OWSMediaUtils: NSObject {
     public static let kMaxAttachmentUploadSizeBytes = UInt(100 * 1000 * 1000)
 
     @objc
-    public static let kMaxVideoDimensions: CGFloat = 3 * 1024
+    public static let kMaxVideoDimensions: CGFloat = 4096 // 4k video width
     @objc
     public static let kMaxAnimatedImageDimensions: UInt = 1 * 1024
     @objc

@@ -8,6 +8,26 @@ import Foundation
 import SignalCoreKit
 import UIKit
 
+enum PhotoCaptureError: Error {
+    case assertionError(description: String)
+    case initializationFailed
+    case captureFailed
+    case invalidVideo
+}
+
+extension PhotoCaptureError: LocalizedError, UserErrorDescriptionProvider {
+    var localizedDescription: String {
+        switch self {
+        case .initializationFailed:
+            return NSLocalizedString("PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA", comment: "alert title")
+        case .captureFailed:
+            return NSLocalizedString("PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE", comment: "alert title")
+        case .assertionError, .invalidVideo:
+            return NSLocalizedString("PHOTO_CAPTURE_GENERIC_ERROR", comment: "alert title, generic error preventing user from capturing a photo")
+        }
+    }
+}
+
 protocol PhotoCaptureDelegate: AnyObject {
 
     // MARK: Still Photo
@@ -35,7 +55,6 @@ protocol PhotoCaptureDelegate: AnyObject {
     func endCaptureButtonAnimation(_ duration: TimeInterval)
 
     func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusing focusPoint: CGPoint)
-
 }
 
 // MARK: -
@@ -72,9 +91,18 @@ class PhotoCapture: NSObject {
     private let recordingAudioActivity = AudioActivity(audioDescription: "PhotoCapture", behavior: .playAndRecord)
 
     var focusObservation: NSKeyValueObservation?
+    var deviceOrientationObserver: AnyObject?
+
     override init() {
         self.session = AVCaptureSession()
         self.captureOutput = CaptureOutput(session: session)
+    }
+
+    deinit {
+        if let deviceOrientationObserver = deviceOrientationObserver {
+            NotificationCenter.default.removeObserver(deviceOrientationObserver)
+            UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        }
     }
 
     func didCompleteFocusing() {
@@ -94,13 +122,13 @@ class PhotoCapture: NSObject {
 
     // MARK: - Public
 
-    public var flashMode: AVCaptureDevice.FlashMode {
+    var flashMode: AVCaptureDevice.FlashMode {
         return captureOutput.flashMode
     }
 
-    public let session: AVCaptureSession
+    let session: AVCaptureSession
 
-    public func startAudioCapture() throws {
+    func startAudioCapture() throws {
         assertIsOnSessionQueue()
 
         guard audioSession.startAudioActivity(recordingAudioActivity) else {
@@ -118,7 +146,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    public func stopAudioCapture() {
+    func stopAudioCapture() {
         assertIsOnSessionQueue()
 
         self.session.beginConfiguration()
@@ -133,25 +161,6 @@ class PhotoCapture: NSObject {
         audioSession.endAudioActivity(recordingAudioActivity)
     }
 
-    @objc
-    public func orientationDidChange(notification: Notification) {
-        AssertIsOnMainThread()
-        guard let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
-            return
-        }
-
-        sessionQueue.async {
-            guard captureOrientation != self.captureOrientation else {
-                return
-            }
-            self.captureOrientation = captureOrientation
-
-            DispatchQueue.main.async {
-                self.delegate?.photoCapture(self, didChangeOrientation: captureOrientation)
-            }
-        }
-    }
-
     func updateVideoPreviewConnection(toOrientation orientation: AVCaptureVideoOrientation) {
         guard let videoConnection = previewView.previewLayer.connection else {
             Logger.info("previewView hasn't completed setup yet.")
@@ -160,7 +169,7 @@ class PhotoCapture: NSObject {
         videoConnection.videoOrientation = orientation
     }
 
-    public func prepareVideoCapture() -> Promise<Void> {
+    func prepareVideoCapture() -> Promise<Void> {
         AssertIsOnMainThread()
         guard !Platform.isSimulator else {
             // Trying to actually set up the capture session will fail on a simulator
@@ -172,11 +181,29 @@ class PhotoCapture: NSObject {
         // If the session is already running, no need to do anything.
         guard !self.session.isRunning else { return Promise.value(()) }
 
+        owsAssertDebug(deviceOrientationObserver == nil)
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(orientationDidChange),
-                                               name: UIDevice.orientationDidChangeNotification,
-                                               object: UIDevice.current)
+
+        deviceOrientationObserver = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
+                                                                           object: UIDevice.current,
+                                                                           queue: nil) { [weak self] _ in
+            guard let self = self,
+                  let captureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) else {
+                return
+            }
+
+            self.sessionQueue.async {
+                guard captureOrientation != self.captureOrientation else {
+                    return
+                }
+                self.captureOrientation = captureOrientation
+
+                DispatchQueue.main.async {
+                    self.delegate?.photoCapture(self, didChangeOrientation: captureOrientation)
+                }
+            }
+        }
+
         let initialCaptureOrientation = AVCaptureVideoOrientation(deviceOrientation: UIDevice.current.orientation) ?? .portrait
 
         return sessionQueue.async(.promise) { [weak self] in
@@ -231,24 +258,24 @@ class PhotoCapture: NSObject {
     }
 
     @discardableResult
-    public func stopCapture() -> Guarantee<Void> {
+    func stopCapture() -> Guarantee<Void> {
         sessionQueue.async(.promise) { [session] in
             session.stopRunning()
         }
     }
 
     @discardableResult
-    public func resumeCapture() -> Guarantee<Void> {
+    func resumeCapture() -> Guarantee<Void> {
         sessionQueue.async(.promise) { [session] in
             session.startRunning()
         }
     }
 
-    public func assertIsOnSessionQueue() {
+    func assertIsOnSessionQueue() {
         assertOnQueue(sessionQueue)
     }
 
-    public func switchCameraPosition() -> Promise<Void> {
+    func switchCameraPosition() -> Promise<Void> {
         AssertIsOnMainThread()
         let newPosition: AVCaptureDevice.Position
         switch desiredPosition {
@@ -322,7 +349,7 @@ class PhotoCapture: NSObject {
         resetFocusAndExposure()
     }
 
-    public func switchFlashMode() -> Guarantee<Void> {
+    func switchFlashMode() -> Guarantee<Void> {
         return sessionQueue.async(.promise) {
             switch self.captureOutput.flashMode {
             case .auto:
@@ -341,10 +368,10 @@ class PhotoCapture: NSObject {
         }
     }
 
-    public func focus(with focusMode: AVCaptureDevice.FocusMode,
-                      exposureMode: AVCaptureDevice.ExposureMode,
-                      at devicePoint: CGPoint,
-                      monitorSubjectAreaChange: Bool) {
+    func focus(with focusMode: AVCaptureDevice.FocusMode,
+               exposureMode: AVCaptureDevice.ExposureMode,
+               at devicePoint: CGPoint,
+               monitorSubjectAreaChange: Bool) {
         sessionQueue.async {
             Logger.debug("focusMode: \(focusMode), exposureMode: \(exposureMode), devicePoint: \(devicePoint), monitorSubjectAreaChange:\(monitorSubjectAreaChange)")
             guard let device = self.captureDevice else {
@@ -376,7 +403,7 @@ class PhotoCapture: NSObject {
         }
     }
 
-    public func resetFocusAndExposure() {
+    func resetFocusAndExposure() {
         let devicePoint = CGPoint(x: 0.5, y: 0.5)
         focus(with: .continuousAutoFocus, exposureMode: .continuousAutoExposure, at: devicePoint, monitorSubjectAreaChange: false)
     }
@@ -848,7 +875,72 @@ class PhotoCapture: NSObject {
 
 // MARK: -
 
+class CapturePreviewView: UIView {
+
+    let previewLayer: AVCaptureVideoPreviewLayer
+
+    override var bounds: CGRect {
+        didSet {
+            previewLayer.frame = bounds
+        }
+    }
+
+    override var frame: CGRect {
+        didSet {
+            previewLayer.frame = bounds
+        }
+    }
+
+    override var contentMode: UIView.ContentMode {
+        get {
+            switch previewLayer.videoGravity {
+            case .resizeAspectFill:
+                return .scaleAspectFill
+            case .resizeAspect:
+                return .scaleAspectFit
+            case .resize:
+                return .scaleToFill
+            default:
+                owsFailDebug("Unexpected contentMode")
+                return .scaleToFill
+            }
+        }
+        set {
+            switch newValue {
+            case .scaleAspectFill:
+                previewLayer.videoGravity = .resizeAspectFill
+            case .scaleAspectFit:
+                previewLayer.videoGravity = .resizeAspect
+            case .scaleToFill:
+                previewLayer.videoGravity = .resize
+            default:
+                owsFailDebug("Unexpected contentMode")
+            }
+        }
+    }
+
+    init(session: AVCaptureSession) {
+        previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        if Platform.isSimulator {
+            // helpful for debugging layout on simulator which has no real capture device
+            previewLayer.backgroundColor = UIColor.green.withAlphaComponent(0.4).cgColor
+        }
+        super.init(frame: .zero)
+        self.contentMode = .scaleAspectFill
+        previewLayer.frame = bounds
+        layer.addSublayer(previewLayer)
+    }
+
+    @available(*, unavailable, message: "Use init(session:) instead")
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: -
+
 extension PhotoCapture: VolumeButtonObserver {
+
     func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
         delegate?.beginCaptureButtonAnimation(0.5)
     }
@@ -1224,6 +1316,7 @@ class CaptureOutput: NSObject {
 // MARK: -
 
 class MovieRecording {
+
     let assetWriter: AVAssetWriter
     let videoInput: AVAssetWriterInput
     let audioInput: AVAssetWriterInput
@@ -1285,6 +1378,7 @@ class MovieRecording {
 // MARK: -
 
 extension CaptureOutput: AVCaptureVideoDataOutputSampleBufferDelegate, AVCaptureAudioDataOutputSampleBufferDelegate {
+
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         assertOnQueue(movieRecordingQueue)
 
@@ -1354,10 +1448,10 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
     func availableDeviceTypes(forPosition position: AVCaptureDevice.Position) -> [AVCaptureDevice.DeviceType] {
         switch position {
         case .front, .unspecified:
-            return availableFrontDeviceMap.keys.map { $0 }
+            return Array(availableFrontDeviceMap.keys)
 
         case .back:
-            return availableRearDeviceMap.keys.map { $0 }
+            return Array(availableRearDeviceMap.keys)
 
         @unknown default:
             owsFailDebug("Unknown AVCaptureDevice.Position: [\(position)]")

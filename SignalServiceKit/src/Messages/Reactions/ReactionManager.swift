@@ -129,6 +129,7 @@ public class ReactionManager: NSObject {
         timestamp: UInt64,
         serverTimestamp: UInt64,
         expiresInSeconds: UInt32,
+        sentTranscript: OWSIncomingSentMessageTranscript?,
         transaction: SDSAnyWriteTransaction
     ) -> ReactionProcessingResult {
         guard let emoji = reaction.emoji.strippedOrNil else {
@@ -192,6 +193,11 @@ public class ReactionManager: NSObject {
                 builder.timestamp = timestamp
                 builder.storyReactionEmoji = reaction.emoji
                 builder.storyTimestamp = NSNumber(value: storyMessage.timestamp)
+
+                if storyMessage.authorAddress.isSystemStoryAddress {
+                    owsFailDebug("Should not be possible to show a reaction message for system story")
+                }
+
                 builder.storyAuthorAddress = storyMessage.authorAddress
 
                 // Group story replies do not follow the thread DM timer, instead they
@@ -214,6 +220,17 @@ public class ReactionManager: NSObject {
             }
 
             message.anyInsert(transaction: transaction)
+
+            if let incomingMessage = message as? TSIncomingMessage {
+                notificationsManager?.notifyUser(forIncomingMessage: incomingMessage, thread: thread, transaction: transaction)
+            } else if let outgoingMessage = message as? TSOutgoingMessage {
+                outgoingMessage.updateWithWasSentFromLinkedDevice(
+                    withUDRecipientAddresses: sentTranscript?.udRecipientAddresses,
+                    nonUdRecipientAddresses: sentTranscript?.nonUdRecipientAddresses,
+                    isSentUpdate: false,
+                    transaction: transaction
+                )
+            }
 
             return .success
         } else {

@@ -22,20 +22,6 @@
          </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "11319FE11E0F163FEF714A606CCC265F"
-               BuildableName = "SignalServiceKit.framework"
-               BlueprintName = "SignalServiceKit"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
             buildForRunning = "NO"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
@@ -86,21 +72,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B772E882F193AA2F25932C514BBF0805"
-               BuildableName = "SignalServiceKit-Unit-Tests.xctest"
-               BlueprintName = "SignalServiceKit-Unit-Tests"
-               ReferencedContainer = "container:Pods/Pods.xcodeproj">
-            </BuildableReference>
-            <SkippedTests>
-               <Test
-                  Identifier = "MessageSendLogTests/testPlaintextMismatchFails()">
-               </Test>
-            </SkippedTests>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "5C9F6BA9ADC4724B2612C9F20FBE2076"
                BuildableName = "SignalCoreKit-Unit-Tests.xctest"
                BlueprintName = "SignalCoreKit-Unit-Tests"
@@ -136,6 +107,21 @@
                BlueprintName = "SignalUITests"
                ReferencedContainer = "container:Signal.xcodeproj">
             </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F9C5C89D289451B900548EEE"
+               BuildableName = "SignalServiceKitTests.xctest"
+               BlueprintName = "SignalServiceKitTests"
+               ReferencedContainer = "container:Signal.xcodeproj">
+            </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "MessageSendLogTests/testPlaintextMismatchFails()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

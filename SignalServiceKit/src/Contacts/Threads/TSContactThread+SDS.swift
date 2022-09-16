@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSContactThread {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchContactThread(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSContactThread? {
+    class func anyFetchContactThread(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSContactThread? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
@@ -83,7 +85,8 @@ class TSContactThreadSerializer: SDSSerializer {
         let name: String? = nil
         let addresses: Data? = nil
         let storyViewMode: UInt = model.storyViewMode.rawValue
+        let lastViewedStoryTimestamp: UInt64? = archiveOptionalNSNumber(model.lastViewedStoryTimestamp, conversion: { $0.uint64Value })
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp, allowsReplies: allowsReplies, lastSentStoryTimestamp: lastSentStoryTimestamp, name: name, addresses: addresses, storyViewMode: storyViewMode)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp, allowsReplies: allowsReplies, lastSentStoryTimestamp: lastSentStoryTimestamp, name: name, addresses: addresses, storyViewMode: storyViewMode, lastViewedStoryTimestamp: lastViewedStoryTimestamp)
     }
 }

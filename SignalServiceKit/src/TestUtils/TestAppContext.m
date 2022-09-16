@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize appForegroundTime = _appForegroundTime;
 @synthesize buildTime = _buildTime;
 
 - (instancetype)init
@@ -51,7 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.mockAppDocumentDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
     self.mockAppSharedDataDirectoryPath = [temporaryDirectory stringByAppendingPathComponent:NSUUID.UUID.UUIDString];
     self.appUserDefaults = [[NSUserDefaults alloc] init];
-    _appLaunchTime = [NSDate new];
+    NSDate *launchDate = [NSDate new];
+    _appLaunchTime = launchDate;
+    _appForegroundTime = launchDate;
 
     return self;
 }

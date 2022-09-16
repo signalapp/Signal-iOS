@@ -1,2 +1,3 @@
-• 我们优化了视频编辑器，让您在发送之前可以更加轻松地自定义照片和视频。
-• 多个漏洞修复让您的应用可以顺畅运行。更多惊喜更新即将上线！
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

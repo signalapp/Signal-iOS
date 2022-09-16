@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,7 +59,7 @@ public class DisappearingMessageToken: MTLModel {
     @objc
     public var durationString: String {
         // This might be zero if DMs are not enabled.
-        NSString.formatDurationLossless(durationSeconds: durationSeconds)
+        String.formatDurationLossless(durationSeconds: durationSeconds)
     }
 }
 

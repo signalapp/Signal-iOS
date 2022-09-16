@@ -12,8 +12,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplicationStateDidChangeNotification";
-
 @interface MainAppContext ()
 
 @property (nonatomic, nullable) NSMutableArray<AppActiveBlock> *appActiveBlocks;
@@ -28,6 +26,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize appForegroundTime = _appForegroundTime;
 @synthesize buildTime = _buildTime;
 @synthesize reportedApplicationState = _reportedApplicationState;
 
@@ -41,7 +40,9 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
     self.reportedApplicationState = UIApplicationStateInactive;
 
-    _appLaunchTime = [NSDate new];
+    NSDate *launchDate = [NSDate new];
+    _appLaunchTime = launchDate;
+    _appForegroundTime = launchDate;
     _mainApplicationStateOnLaunch = [UIApplication sharedApplication].applicationState;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -72,11 +73,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - Notifications
 
 - (UIApplicationState)reportedApplicationState
@@ -96,10 +92,6 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
         }
         _reportedApplicationState = reportedApplicationState;
     }
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:ReportedApplicationStateDidChangeNotification
-                                                        object:nil
-                                                      userInfo:nil];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -107,6 +99,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     OWSAssertIsOnMainThread();
 
     self.reportedApplicationState = UIApplicationStateInactive;
+    _appForegroundTime = [NSDate new];
 
     OWSLogInfo(@"");
 

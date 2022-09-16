@@ -377,13 +377,14 @@ public extension UIView {
         return view
     }
 
-    func setIsHidden(_ isHidden: Bool, animated: Bool) {
-        setIsHidden(isHidden, withAnimationDuration: animated ? 0.2 : 0)
+    func setIsHidden(_ isHidden: Bool, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        setIsHidden(isHidden, withAnimationDuration: animated ? 0.2 : 0, completion: completion)
     }
 
-    func setIsHidden(_ isHidden: Bool, withAnimationDuration duration: TimeInterval) {
+    func setIsHidden(_ isHidden: Bool, withAnimationDuration duration: TimeInterval, completion: ((Bool) -> Void)? = nil) {
         guard duration > 0, isHidden != self.isHidden else {
             self.isHidden = isHidden
+            completion?(true)
             return
         }
 
@@ -400,9 +401,13 @@ public extension UIView {
             self.alpha = isHidden ? 0 : initialAlpha
         },
                        completion: { finished in
-            guard finished else { return }
+            guard finished else {
+                completion?(false)
+                return
+            }
             self.isHidden = isHidden
             self.alpha = initialAlpha
+            completion?(true)
         })
     }
 }
@@ -442,10 +447,6 @@ public extension UIViewController {
             viewControllerToPresent.modalPresentationStyle = .formSheet
         }
         present(viewControllerToPresent, animated: animated, completion: completion)
-    }
-
-    var hasExpandedSplitViewController: Bool {
-        splitViewController != nil && !splitViewController!.isCollapsed
     }
 }
 
@@ -787,6 +788,36 @@ extension UIImage {
         imageView.tintColor = color
 
         return imageView.renderAsImage(opaque: imageView.isOpaque, scale: UIScreen.main.scale)
+    }
+
+    /// Redraw the image into a new image, with an added background color, and inset the
+    /// original image by the provided insets.
+    public func withBackgroundColor(
+        _ color: UIColor,
+        insets: UIEdgeInsets = .zero
+    ) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(size, true, scale)
+        defer {
+            UIGraphicsEndImageContext()
+        }
+
+        guard let ctx = UIGraphicsGetCurrentContext(), let image = cgImage else {
+            owsFailDebug("Failed to create image context when setting image background")
+            return nil
+        }
+
+        let rect = CGRect(origin: .zero, size: size)
+        ctx.setFillColor(color.cgColor)
+        ctx.fill(rect)
+        // draw the background behind
+        ctx.concatenate(CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height))
+        ctx.draw(image, in: rect.inset(by: insets))
+
+        guard let newImage = UIGraphicsGetImageFromCurrentImageContext() else {
+            owsFailDebug("Failed to create background-colored image from context")
+            return nil
+        }
+        return newImage
     }
 }
 

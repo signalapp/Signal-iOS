@@ -261,6 +261,7 @@ public class CVLoader: NSObject {
     @objc
     public static func buildStandaloneRenderItem(interaction: TSInteraction,
                                                  thread: TSThread,
+                                                 threadAssociatedData: ThreadAssociatedData,
                                                  containerView: UIView,
                                                  transaction: SDSAnyReadTransaction) -> CVRenderItem? {
         let chatColor = ChatColors.chatColorForRendering(thread: thread, transaction: transaction)
@@ -274,6 +275,7 @@ public class CVLoader: NSObject {
                                     mediaCache: CVMediaCache())
         return CVLoader.buildStandaloneRenderItem(interaction: interaction,
                                                   thread: thread,
+                                                  threadAssociatedData: threadAssociatedData,
                                                   coreState: coreState,
                                                   transaction: transaction)
     }
@@ -281,18 +283,21 @@ public class CVLoader: NSObject {
     @objc
     public static func buildStandaloneRenderItem(interaction: TSInteraction,
                                                  thread: TSThread,
+                                                 threadAssociatedData: ThreadAssociatedData,
                                                  conversationStyle: ConversationStyle,
                                                  transaction: SDSAnyReadTransaction) -> CVRenderItem? {
         let coreState = CVCoreState(conversationStyle: conversationStyle,
                                     mediaCache: CVMediaCache())
         return CVLoader.buildStandaloneRenderItem(interaction: interaction,
                                                   thread: thread,
+                                                  threadAssociatedData: threadAssociatedData,
                                                   coreState: coreState,
                                                   transaction: transaction)
     }
 
     private static func buildStandaloneRenderItem(interaction: TSInteraction,
                                                   thread: TSThread,
+                                                  threadAssociatedData: ThreadAssociatedData,
                                                   coreState: CVCoreState,
                                                   transaction: SDSAnyReadTransaction) -> CVRenderItem? {
         AssertIsOnMainThread()
@@ -308,6 +313,7 @@ public class CVLoader: NSObject {
                                                             avatarBuilder: avatarBuilder)
         guard let itemModel = CVItemModelBuilder.buildStandaloneItem(interaction: interaction,
                                                                      thread: thread,
+                                                                     threadAssociatedData: threadAssociatedData,
                                                                      threadViewModel: threadViewModel,
                                                                      itemBuildingContext: itemBuildingContext,
                                                                      transaction: transaction) else {

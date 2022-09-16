@@ -64,6 +64,8 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     var isShowingAllGroupMembers = false
     var isShowingAllMutualGroups = false
 
+    var shouldRefreshAttachmentsOnReappear = false
+
     @objc
     public required init(threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel
@@ -102,6 +104,14 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(updateTableContents),
                                                name: UIContentSizeCategory.didChangeNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(attachmentsAddedOrRemoved(notification:)),
+                                               name: MediaGalleryManager.newAttachmentsAvailableNotification,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(attachmentsAddedOrRemoved(notification:)),
+                                               name: MediaGalleryManager.didRemoveAttachmentsNotification,
                                                object: nil)
     }
 
@@ -211,6 +221,9 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
             tableView.deselectRow(at: selectedPath, animated: animated)
         }
 
+        if shouldRefreshAttachmentsOnReappear {
+            updateRecentAttachments()
+        }
         updateTableContents()
     }
 
@@ -341,15 +354,13 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
     // MARK: - Actions
 
-    func didTapAvatar() {
-        guard avatarView != nil else { return }
+    var canPresentStories: Bool {
+        threadViewModel.storyState != .none && StoryManager.areStoriesEnabled
+    }
 
-        if threadViewModel.storyState == .none {
-            presentAvatarViewController()
-        } else {
-            let vc = StoryPageViewController(context: thread.storyContext)
-            presentFullScreen(vc, animated: true)
-        }
+    func presentStoryViewController() {
+        let vc = StoryPageViewController(context: thread.storyContext)
+        present(vc, animated: true)
     }
 
     func didTapBadge() {
@@ -858,6 +869,7 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
 
             result.append(key: attachmentStream.uniqueId, value: (attachmentStream, imageView))
         })
+        shouldRefreshAttachmentsOnReappear = false
     }
 
     private(set) var mutualGroupThreads = [TSGroupThread]() {
@@ -939,6 +951,24 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
         if let groupId = notification.userInfo?[kNSNotificationKey_ProfileGroupId] as? Data,
             let groupThread = thread as? TSGroupThread,
             groupThread.groupModel.groupId == groupId {
+            updateTableContents()
+        }
+    }
+
+    @objc
+    private func attachmentsAddedOrRemoved(notification: Notification) {
+        AssertIsOnMainThread()
+
+        let attachments = notification.object as! [MediaGalleryManager.ChangedAttachmentInfo]
+        guard attachments.contains(where: { $0.threadGrdbId == thread.grdbId?.int64Value }) else {
+            return
+        }
+
+        if view.window == nil {
+            // If we're currently hidden (in particular, behind the All Media view), defer this update.
+            shouldRefreshAttachmentsOnReappear = true
+        } else {
+            updateRecentAttachments()
             updateTableContents()
         }
     }
@@ -1062,19 +1092,8 @@ extension ConversationSettingsViewController: DatabaseChangeDelegate {
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         AssertIsOnMainThread()
 
-        var didUpdate = false
-
-        if databaseChanges.didUpdateModel(collection: TSAttachment.collection()) {
-            updateRecentAttachments()
-            didUpdate = true
-        }
-
         if databaseChanges.didUpdateModel(collection: TSGroupMember.collection()) {
             updateMutualGroupThreads()
-            didUpdate = true
-        }
-
-        if didUpdate {
             updateTableContents()
         }
     }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -161,10 +161,12 @@ public class GroupInviteLinkViewModel: NSObject {
         groupInviteLinkPreview != nil
     }
 
-    public init(url: URL,
-                     groupInviteLinkPreview: GroupInviteLinkPreview?,
-                     avatar: GroupInviteLinkCachedAvatar?,
-                     isExpired: Bool) {
+    public init(
+        url: URL,
+        groupInviteLinkPreview: GroupInviteLinkPreview?,
+        avatar: GroupInviteLinkCachedAvatar?,
+        isExpired: Bool
+    ) {
         self.url = url
         self.groupInviteLinkPreview = groupInviteLinkPreview
         self.avatar = avatar
@@ -190,9 +192,11 @@ public class GroupInviteLinkCachedAvatar: NSObject {
     public let imageSizePixels: CGSize
     public let isValid: Bool
 
-    public init(cacheFileUrl: URL,
-                     imageSizePixels: CGSize,
-                     isValid: Bool) {
+    public init(
+        cacheFileUrl: URL,
+        imageSizePixels: CGSize,
+        isValid: Bool
+    ) {
         self.cacheFileUrl = cacheFileUrl
         self.imageSizePixels = imageSizePixels
         self.isValid = isValid

@@ -136,7 +136,9 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 owsFailDebug("Missing thread.")
                 return
             }
-            thread.update(withDraft: nil, transaction: transaction)
+            thread.update(withDraft: nil,
+                          replyInfo: nil,
+                          transaction: transaction)
         }
 
         if didAddToProfileWhitelist {
@@ -245,6 +247,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
         if !inputToolbar.isHidden {
             let thread = self.thread
             let currentDraft = inputToolbar.messageBody()
+            let quotedReply = inputToolbar.quotedReply
             Self.databaseStorage.asyncWrite { transaction in
                 // Reload a fresh instance of the thread model; our models are not
                 // thread-safe, so it wouldn't be safe to update the model in an
@@ -255,15 +258,49 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
                 }
 
                 // Persist the draft only if its changed. This avoids unnecessary model changes.
-                let currentText = currentDraft?.text ?? ""
-                let persistedText = thread.messageDraft ?? ""
-                let currentRanges = currentDraft?.ranges.mentions ?? [:]
-                let persistedRanges = thread.messageDraftBodyRanges?.mentions ?? [:]
-                if currentText != persistedText || currentRanges != persistedRanges {
-                    thread.update(withDraft: currentDraft, transaction: transaction)
+                if Self.draftHasChanged(currentDraft: currentDraft,
+                                        quotedReply: quotedReply,
+                                        thread: thread,
+                                        transaction: transaction) {
+                    let replyInfo: ThreadReplyInfo?
+                    if let quotedReply = quotedReply {
+                        replyInfo = ThreadReplyInfo(timestamp: quotedReply.timestamp,
+                                                    authorAddress: quotedReply.authorAddress)
+                    } else {
+                        replyInfo = nil
+                    }
+                    thread.update(withDraft: currentDraft,
+                                  replyInfo: replyInfo,
+                                  transaction: transaction)
                 }
             }
         }
+    }
+
+    private static func draftHasChanged(currentDraft: MessageBody?,
+                                        quotedReply: OWSQuotedReplyModel?,
+                                        thread: TSThread,
+                                        transaction: SDSAnyReadTransaction) -> Bool {
+        let currentText = currentDraft?.text ?? ""
+        let persistedText = thread.messageDraft ?? ""
+        if currentText != persistedText {
+            return true
+        }
+
+        let currentRanges = currentDraft?.ranges.mentions ?? [:]
+        let persistedRanges = thread.messageDraftBodyRanges?.mentions ?? [:]
+        if currentRanges != persistedRanges {
+            return true
+        }
+
+        let persistedQuotedReply = ThreadReplyInfo(threadUniqueID: thread.uniqueId, transaction: transaction)
+        if quotedReply?.timestamp != persistedQuotedReply?.timestamp {
+            return true
+        }
+        if quotedReply?.authorAddress != persistedQuotedReply?.author {
+            return true
+        }
+        return false
     }
 
     public func tryToSendAttachments(_ attachments: [SignalAttachment],
@@ -410,7 +447,8 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         let pickerModal = SendMediaNavigationController.showingApprovalWithPickedLibraryMedia(asset: asset,
                                                                                               attachment: attachment,
-                                                                                              delegate: self)
+                                                                                              delegate: self,
+                                                                                              dataSource: self)
         presentFullScreen(pickerModal, animated: true)
     }
 }
@@ -525,6 +563,7 @@ fileprivate extension ConversationViewController {
 
                 let pickerModal = SendMediaNavigationController.showingCameraFirst()
                 pickerModal.sendMediaNavDelegate = self
+                pickerModal.sendMediaNavDataSource = self
                 pickerModal.modalPresentationStyle = .overFullScreen
                 // Defer hiding status bar until modal is fully onscreen
                 // to prevent unwanted shifting upwards of the entire presenter VC's view.
@@ -557,6 +596,7 @@ fileprivate extension ConversationViewController {
 
             let pickerModal = SendMediaNavigationController.showingMediaLibraryFirst()
             pickerModal.sendMediaNavDelegate = self
+            pickerModal.sendMediaNavDataSource = self
 
             self.dismissKeyBoard()
             self.presentFullScreen(pickerModal, animated: true)
@@ -781,8 +821,9 @@ extension ConversationViewController: SendMediaNavDelegate {
         self.dismiss(animated: true, completion: nil)
     }
 
-    func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
-        inputToolbar?.messageBody()
+    func sendMediaNav(_ sendMediaNavifationController: SendMediaNavigationController,
+                      didFinishWithTextAttachment textAttachment: TextAttachment) {
+        owsFailDebug("Can not post text stories to chat.")
     }
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController,
@@ -797,6 +838,15 @@ extension ConversationViewController: SendMediaNavDelegate {
         }
 
         inputToolbar.setMessageBody(newMessageBody, animated: false)
+    }
+}
+
+// MARK: -
+
+extension ConversationViewController: SendMediaNavDataSource {
+
+    func sendMediaNavInitialMessageBody(_ sendMediaNavigationController: SendMediaNavigationController) -> MessageBody? {
+        inputToolbar?.messageBody()
     }
 
     var sendMediaNavTextInputContextIdentifier: String? { textInputContextIdentifier }

@@ -12,11 +12,14 @@ class MyStoryCell: UITableViewCell {
 
     let titleLabel = UILabel()
     let titleChevron = UIImageView()
-    let timestampLabel = UILabel()
-    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, useAutolayout: true)
+    let subtitleLabel = UILabel()
+    let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, badged: false, useAutolayout: true)
     let attachmentThumbnail = UIView()
 
+    let failedIconView = UIImageView()
+
     let addStoryButton = OWSButton()
+    let plusIcon = UIImageView()
 
     let contentHStackView = UIStackView()
 
@@ -36,16 +39,41 @@ class MyStoryCell: UITableViewCell {
 
         titleChevron.image = chevronImage.withRenderingMode(.alwaysTemplate)
 
-        let hStack = UIStackView(arrangedSubviews: [titleLabel, titleChevron])
-        hStack.axis = .horizontal
-        hStack.alignment = .center
-        hStack.spacing = 6
+        let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleChevron])
+        titleStack.axis = .horizontal
+        titleStack.alignment = .center
+        titleStack.spacing = 6
 
-        let vStack = UIStackView(arrangedSubviews: [hStack, timestampLabel])
+        failedIconView.autoSetDimension(.width, toSize: 16)
+        failedIconView.contentMode = .scaleAspectFit
+        failedIconView.tintColor = .ows_accentRed
+
+        let subtitleStack = UIStackView(arrangedSubviews: [failedIconView, subtitleLabel])
+        subtitleStack.axis = .horizontal
+        subtitleStack.alignment = .center
+        subtitleStack.spacing = 6
+
+        let vStack = UIStackView(arrangedSubviews: [titleStack, subtitleStack])
         vStack.axis = .vertical
         vStack.alignment = .leading
 
-        contentHStackView.addArrangedSubviews([avatarView, vStack, .hStretchingSpacer(), attachmentThumbnail])
+        addStoryButton.addSubview(avatarView)
+        avatarView.autoPinEdgesToSuperviewEdges()
+
+        plusIcon.image = #imageLiteral(resourceName: "plus-12").withRenderingMode(.alwaysTemplate)
+        plusIcon.tintColor = .white
+        plusIcon.contentMode = .center
+        plusIcon.autoSetDimensions(to: .square(26))
+        plusIcon.layer.cornerRadius = 13
+        plusIcon.layer.borderWidth = 3
+        plusIcon.backgroundColor = .ows_accentBlue
+        plusIcon.isUserInteractionEnabled = false
+
+        addStoryButton.addSubview(plusIcon)
+        plusIcon.autoPinEdge(toSuperviewEdge: .trailing, withInset: -3)
+        plusIcon.autoPinEdge(toSuperviewEdge: .bottom, withInset: -3)
+
+        contentHStackView.addArrangedSubviews([addStoryButton, vStack, .hStretchingSpacer(), attachmentThumbnail])
         contentHStackView.axis = .horizontal
         contentHStackView.alignment = .center
         contentHStackView.spacing = 16
@@ -54,11 +82,6 @@ class MyStoryCell: UITableViewCell {
         contentHStackView.autoPinEdgesToSuperviewMargins()
 
         attachmentThumbnail.autoSetDimensions(to: CGSize(width: 64, height: 84))
-
-        addStoryButton.setImage(imageName: "plus-24")
-        addStoryButton.layer.cornerRadius = 12
-        addStoryButton.clipsToBounds = true
-        addStoryButton.autoSetDimensions(to: CGSize(width: 56, height: 84))
     }
 
     required init?(coder: NSCoder) {
@@ -66,15 +89,21 @@ class MyStoryCell: UITableViewCell {
     }
 
     func configure(with model: MyStoryViewModel, addStoryAction: @escaping () -> Void) {
-        configureTimestamp(with: model)
+        configureSubtitle(with: model)
 
         titleLabel.font = .ows_dynamicTypeHeadline
         titleLabel.textColor = Theme.primaryTextColor
+
         titleChevron.tintColor = Theme.primaryTextColor
+        titleChevron.isHiddenInStackView = model.messages.isEmpty
+
+        plusIcon.layer.borderColor = Theme.backgroundColor.cgColor
+
+        addStoryButton.block = addStoryAction
 
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(Self.tsAccountManager.localAddress!)
-            config.storyState = .viewed
+            config.storyState = model.messages.isEmpty ? .none : .viewed
             config.usePlaceholderImages()
         }
 
@@ -104,23 +133,27 @@ class MyStoryCell: UITableViewCell {
                 dividerView.autoPinEdge(toSuperviewEdge: .trailing, withInset: -2)
                 dividerView.autoPinEdge(toSuperviewEdge: .top, withInset: -2)
             }
-        } else {
-            addStoryButton.block = addStoryAction
-            addStoryButton.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray10
-            addStoryButton.tintColor = Theme.primaryTextColor
-            attachmentThumbnail.addSubview(addStoryButton)
-            addStoryButton.autoPinHeightToSuperview()
-            addStoryButton.autoPinEdge(toSuperviewEdge: .trailing)
         }
     }
 
-    func configureTimestamp(with model: MyStoryViewModel) {
-        timestampLabel.font = .ows_dynamicTypeSubheadline
-        timestampLabel.textColor = Theme.secondaryTextAndIconColor
-        if let latestMessageTimestamp = model.latestMessageTimestamp {
-            timestampLabel.text = DateUtil.formatTimestampRelatively(latestMessageTimestamp)
+    func configureSubtitle(with model: MyStoryViewModel) {
+        subtitleLabel.font = .ows_dynamicTypeSubheadline
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        failedIconView.image = Theme.iconImage(.error16)
+
+        if model.sendingCount > 0 {
+            let format = NSLocalizedString("STORY_SENDING_%d", tableName: "PluralAware", comment: "Indicates that N stories are currently sending")
+            subtitleLabel.text = .localizedStringWithFormat(format, model.sendingCount)
+            failedIconView.isHiddenInStackView = !model.hasFailedSends
+        } else if model.hasFailedSends {
+            failedIconView.isHiddenInStackView = false
+            subtitleLabel.text = NSLocalizedString("STORY_SEND_FAILED", comment: "Text indicating that the story send has failed")
+        } else if let latestMessageTimestamp = model.latestMessageTimestamp {
+            subtitleLabel.text = DateUtil.formatTimestampRelatively(latestMessageTimestamp)
+            failedIconView.isHiddenInStackView = true
         } else {
-            timestampLabel.text = nil
+            subtitleLabel.text = NSLocalizedString("MY_STORY_TAP_TO_ADD", comment: "Prompt to add to your story")
+            failedIconView.isHiddenInStackView = true
         }
     }
 }

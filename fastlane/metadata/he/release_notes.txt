@@ -1,2 +1,3 @@
-שיפרנו את עורך המדיה והפכנו אותו לקל יותר לשימוש מאי פעם, כדי שתהיה לך את האפשרות להתאים אישית תמונות וסרטונים לפני השליחה.
-מלא תיקוני באגים כדי לוודא שהאפליקציה שלך תמשיך לרוץ חלק. ויש עוד שדרוגים מרגשים באופק!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

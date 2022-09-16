@@ -210,29 +210,24 @@ class EmojiPickerCollectionView: UICollectionView {
     // MARK: - Search
 
     func searchWithText(_ searchText: String?) {
-        if let searchText = searchText {
-            if let emojiSearchIndex = emojiSearchIndex {
-                emojiSearchResults = allSendableEmoji.filter { emoji in
-                    let rawEmoji = emoji.baseEmoji.rawValue
-                    if let terms = emojiSearchIndex[rawEmoji] {
-                        for term in terms {
-                            if term.range(of: searchText, options: [.caseInsensitive, .anchored]) != nil {
-                                return true
-                            }
-                        }
-                    }
-                    return false
-                }
-            } else { // Search on raw emoji name if no index is available
-                emojiSearchResults = allSendableEmoji.filter { emoji in
-                    return emoji.baseEmoji.name.range(of: searchText, options: [.caseInsensitive, .anchored]) != nil
-                }
-            }
-        } else {
-            emojiSearchResults = []
+        emojiSearchResults = searchResults(searchText)
+        reloadData()
+    }
+
+    private func searchResults(_ searchText: String?) -> [EmojiWithSkinTones] {
+        guard let searchText = searchText else {
+            return []
         }
 
-        reloadData()
+        return allSendableEmoji.filter { emoji in
+            let terms = emojiSearchIndex?[emoji.baseEmoji.rawValue] ?? [emoji.baseEmoji.name]
+            for term in terms {
+                if term.range(of: searchText, options: [.caseInsensitive]) != nil {
+                    return true
+                }
+            }
+            return false
+        }
     }
 
     @objc
@@ -376,8 +371,8 @@ extension EmojiPickerCollectionView: UICollectionViewDataSource {
 
 extension EmojiPickerCollectionView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
-                          layout collectionViewLayout: UICollectionViewLayout,
-                          referenceSizeForHeaderInSection section: Int) -> CGSize {
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        referenceSizeForHeaderInSection section: Int) -> CGSize {
         guard !isSearching else {
             return CGSize.zero
         }

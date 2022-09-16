@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import PassKit
+import SignalServiceKit
 
 class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
     // MARK: - View state
@@ -134,6 +135,11 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     @objc
     private func checkRecipientAndRequestApplePay() {
+        // We want to resign this SOMETIME before this VC dismisses and switches to the chat.
+        // In addition to offering slightly better UX, resigning first responder status prevents it
+        // from eating events after the VC is dismissed.
+        messageTextView.resignFirstResponder()
+
         guard !isRecipientBlockedWithSneakyTransaction() else {
             Logger.warn("[Gifting] Not requesting Apple Pay because recipient is blocked")
             Self.showRecipientIsBlockedError()
@@ -478,7 +484,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
 
     private func prepareToPay(authorizedPayment: PKPayment) -> Promise<PreparedPayment> {
         firstly {
-            Stripe.createBoostPaymentIntent(for: NSDecimalNumber(value: self.price), in: self.currencyCode, level: .giftBadge)
+            Stripe.createBoostPaymentIntent(for: NSDecimalNumber(value: self.price), in: self.currencyCode, level: .giftBadge(.signalGift))
         }.then { paymentIntent in
             Stripe.createPaymentMethod(with: authorizedPayment).map { paymentMethodId in
                 PreparedPayment(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
@@ -665,7 +671,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
             SignalApp.shared().presentConversation(for: self.thread, action: .none, animated: false)
             self.dismiss(animated: true) {
                 SignalApp.shared().conversationSplitViewControllerForSwift?.present(
-                    BadgeGiftThanksSheet(thread: self.thread, badge: self.badge),
+                    BadgeGiftingThanksSheet(thread: self.thread, badge: self.badge),
                     animated: true
                 )
             }

@@ -272,30 +272,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return [builder buildWithSneakyTransaction];
 }
 
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-                            transaction:(SDSAnyReadTransaction *)transaction
-{
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    builder.groupMetaMessage = groupMetaMessage;
-    builder.expiresInSeconds = expiresInSeconds;
-    return [builder buildWithTransaction:transaction];
-}
-
-+ (instancetype)outgoingMessageInThread:(TSThread *)thread
-                       groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                       expiresInSeconds:(uint32_t)expiresInSeconds
-                 changeActionsProtoData:(nullable NSData *)changeActionsProtoData
-                            transaction:(SDSAnyReadTransaction *)transaction
-{
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    builder.groupMetaMessage = groupMetaMessage;
-    builder.expiresInSeconds = expiresInSeconds;
-    builder.changeActionsProtoData = changeActionsProtoData;
-    return [builder buildWithTransaction:transaction];
-}
-
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                                    transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -349,7 +325,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             continue;
         }
         TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
-        recipientState.state = OWSOutgoingMessageRecipientStateSending;
+        recipientState.state = [outgoingMessageBuilder.skippedRecipients containsObject:recipientAddress]
+            ? OWSOutgoingMessageRecipientStateSkipped
+            : OWSOutgoingMessageRecipientStateSending;
         recipientAddressStates[recipientAddress] = recipientState;
     }
     self.recipientAddressStates = [recipientAddressStates copy];
@@ -521,6 +499,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 - (BOOL)isOnline
 {
     return NO;
+}
+
+- (BOOL)isUrgent
+{
+    return YES;
 }
 
 - (OWSInteractionType)interactionType
@@ -1563,6 +1546,18 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 - (BOOL)shouldSyncTranscript
 {
     return YES;
+}
+
+- (nullable OWSOutgoingSyncMessage *)buildTranscriptSyncMessageWithLocalThread:(TSThread *)localThread
+                                                                   transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(self.shouldSyncTranscript);
+
+    return [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread
+                                                           messageThread:[self threadWithTransaction:transaction]
+                                                         outgoingMessage:self
+                                                       isRecipientUpdate:self.hasSyncedTranscript
+                                                             transaction:transaction];
 }
 
 - (NSString *)statusDescription

@@ -26,7 +26,7 @@ public extension StorageService {
 
     static func buildNewGroupRequest(groupProto: GroupsProtoGroup,
                                      groupV2Params: GroupV2Params,
-                                     authCredential: AuthCredential) throws -> GroupsV2Request {
+                                     authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
 
         let protoData = try groupProto.serializedData()
         return try buildGroupV2Request(protoData: protoData,
@@ -38,7 +38,7 @@ public extension StorageService {
 
     static func buildUpdateGroupRequest(groupChangeProto: GroupsProtoGroupChangeActions,
                                         groupV2Params: GroupV2Params,
-                                        authCredential: AuthCredential,
+                                        authCredential: AuthCredentialWithPni,
                                         groupInviteLinkPassword: Data?) throws -> GroupsV2Request {
 
         var urlString = "/v1/groups/"
@@ -54,31 +54,50 @@ public extension StorageService {
                                        authCredential: authCredential)
     }
 
-    static func buildFetchCurrentGroupV2SnapshotRequest(groupV2Params: GroupV2Params,
-                                                        authCredential: AuthCredential) throws -> GroupsV2Request {
-
-        return try buildGroupV2Request(protoData: nil,
-                                       urlString: "/v1/groups/",
-                                       method: .get,
-                                       groupV2Params: groupV2Params,
-                                       authCredential: authCredential)
+    static func buildFetchCurrentGroupV2SnapshotRequest(
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredentialWithPni
+    ) throws -> GroupsV2Request {
+        return try buildGroupV2Request(
+            protoData: nil,
+            urlString: "/v1/groups/",
+            method: .get,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
     }
 
-    static func buildFetchGroupChangeActionsRequest(groupV2Params: GroupV2Params,
-                                                    fromRevision: UInt32,
-                                                    requireSnapshotForFirstChange: Bool,
-                                                    authCredential: AuthCredential) throws -> GroupsV2Request {
-
+    static func buildFetchGroupChangeActionsRequest(
+        groupV2Params: GroupV2Params,
+        fromRevision: UInt32,
+        requireSnapshotForFirstChange: Bool,
+        authCredential: AuthCredentialWithPni
+    ) throws -> GroupsV2Request {
         let urlPath = "/v1/groups/logs/\(fromRevision)?includeFirstState=\(requireSnapshotForFirstChange)&maxSupportedChangeEpoch=\(GroupManager.changeProtoEpoch)"
-        return try buildGroupV2Request(protoData: nil,
-                                       urlString: urlPath,
-                                       method: .get,
-                                       groupV2Params: groupV2Params,
-                                       authCredential: authCredential)
+        return try buildGroupV2Request(
+            protoData: nil,
+            urlString: urlPath,
+            method: .get,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
+    }
+
+    static func buildGetJoinedAtRevisionRequest(
+        groupV2Params: GroupV2Params,
+        authCredential: AuthCredentialWithPni
+    ) throws -> GroupsV2Request {
+        return try buildGroupV2Request(
+            protoData: nil,
+            urlString: "/v1/groups/joined_at_version/",
+            method: .get,
+            groupV2Params: groupV2Params,
+            authCredential: authCredential
+        )
     }
 
     static func buildGroupAvatarUploadFormRequest(groupV2Params: GroupV2Params,
-                                                  authCredential: AuthCredential) throws -> GroupsV2Request {
+                                                  authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
 
         let urlPath = "/v1/groups/avatar/form"
         return try buildGroupV2Request(protoData: nil,
@@ -91,7 +110,7 @@ public extension StorageService {
     // inviteLinkPassword is not necessary if we're already a member or have a pending request.
     static func buildFetchGroupInviteLinkPreviewRequest(inviteLinkPassword: Data?,
                                                         groupV2Params: GroupV2Params,
-                                                        authCredential: AuthCredential) throws -> GroupsV2Request {
+                                                        authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
 
         var urlPath = "/v1/groups/join/"
         if let inviteLinkPassword = inviteLinkPassword {
@@ -106,7 +125,7 @@ public extension StorageService {
     }
 
     static func buildFetchGroupExternalCredentials(groupV2Params: GroupV2Params,
-                                                   authCredential: AuthCredential) throws -> GroupsV2Request {
+                                                   authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
 
         return try buildGroupV2Request(protoData: nil,
                                        urlString: "/v1/groups/token",
@@ -119,7 +138,7 @@ public extension StorageService {
                                             urlString: String,
                                             method: HTTPMethod,
                                             groupV2Params: GroupV2Params,
-                                            authCredential: AuthCredential) throws -> GroupsV2Request {
+                                            authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {
 
         let request = GroupsV2Request(urlString: urlString, method: method, bodyData: protoData)
 
@@ -138,7 +157,7 @@ public extension StorageService {
 
     private static func addAuthorizationHeader(to request: GroupsV2Request,
                                                groupV2Params: GroupV2Params,
-                                               authCredential: AuthCredential) throws {
+                                               authCredential: AuthCredentialWithPni) throws {
 
         let serverPublicParams = try GroupsV2Protos.serverPublicParams()
         let clientZkAuthOperations = ClientZkAuthOperations(serverPublicParams: serverPublicParams)

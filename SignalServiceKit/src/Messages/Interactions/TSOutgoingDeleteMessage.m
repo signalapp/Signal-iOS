@@ -37,6 +37,24 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (instancetype)initWithThread:(TSThread *)thread
+                  storyMessage:(StoryMessage *)storyMessage
+             skippedRecipients:(nullable NSSet<SignalServiceAddress *> *)skippedRecipients
+                   transaction:(SDSAnyReadTransaction *)transaction
+{
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    messageBuilder.skippedRecipients = skippedRecipients;
+    self = [super initOutgoingMessageWithBuilder:messageBuilder transaction:transaction];
+    if (!self) {
+        return self;
+    }
+
+    _messageTimestamp = storyMessage.timestamp;
+    _messageUniqueId = storyMessage.uniqueId;
+
+    return self;
+}
+
 - (BOOL)shouldBeSaved
 {
     return NO;

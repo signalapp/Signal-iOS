@@ -36,36 +36,41 @@ public final class MediaGalleryManager: NSObject {
         return try MediaGalleryRecord.fetchOne(transaction.database, sql: sql, arguments: [attachmentId.int64Value])
     }
 
-    public class func insertGalleryRecord(attachmentStream: TSAttachmentStream, transaction: GRDBWriteTransaction) throws {
+    public class func insertGalleryRecord(attachmentStream: TSAttachmentStream,
+                                          transaction: GRDBWriteTransaction) throws {
+        _ = try insertGalleryRecordPrivate(attachmentStream: attachmentStream, transaction: transaction)
+    }
+
+    private class func insertGalleryRecordPrivate(attachmentStream: TSAttachmentStream,
+                                                  transaction: GRDBWriteTransaction) throws -> MediaGalleryRecord? {
         guard let attachmentRowId = attachmentStream.grdbId else {
-            owsFailDebug("attachmentRowId was unexpectedly nil")
-            return
+            throw OWSAssertionError("attachmentRowId was unexpectedly nil")
         }
 
         guard let messageUniqueId = attachmentStream.albumMessageId else {
             Logger.verbose("not a gallery attachment")
-            return
+            return nil
         }
 
         guard let message = TSMessage.anyFetchMessage(uniqueId: messageUniqueId, transaction: transaction.asAnyRead) else {
             owsFailDebug("message was unexpectedly nil")
-            return
+            return nil
         }
 
         guard let messageRowId = message.grdbId else {
             owsFailDebug("message was unexpectedly nil")
-            return
+            return nil
         }
 
         let thread = message.thread(transaction: transaction.asAnyRead)
         guard let threadId = thread.grdbId else {
             owsFailDebug("threadId was unexpectedly nil")
-            return
+            return nil
         }
 
         guard let originalAlbumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) else {
             owsFailDebug("originalAlbumIndex was unexpectedly nil")
-            return
+            return nil
         }
 
         let galleryRecord = MediaGalleryRecord(attachmentId: attachmentRowId.int64Value,
@@ -74,36 +79,102 @@ public final class MediaGalleryManager: NSObject {
                                                originalAlbumOrder: originalAlbumIndex)
 
         try galleryRecord.insert(transaction.database)
+
+        return galleryRecord
     }
 
     public class func removeAllGalleryRecords(transaction: GRDBWriteTransaction) throws {
         try MediaGalleryRecord.deleteAll(transaction.database)
     }
 
-    @objc(didInsertAttachmentStream:transaction:)
-    public class func didInsert(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .grdbWrite(let grdbWrite):
-            do {
-                try insertGalleryRecord(attachmentStream: attachmentStream, transaction: grdbWrite)
-            } catch {
-                owsFailDebug("error: \(error)")
-            }
-        }
-    }
-
-    public struct RemovedAttachment {
+    public struct ChangedAttachmentInfo {
         public var uniqueId: String
         public var threadGrdbId: Int64
         public var timestamp: UInt64
     }
 
-    private static let recentlyRemovedMessageTimestampsByRowId = AtomicDictionary<Int64, UInt64>()
-    private static let recentlyRemovedAttachments = AtomicArray<RemovedAttachment>()
+    /// A notification for when an attachment stream becomes available (incoming attachment downloaded, or outgoing
+    /// attachment loaded).
+    ///
+    /// The object of the notification is an array of ChangedAttachmentInfo values.
+    /// When registering an observer for this notification, set the observed object to `nil`, meaning no filter.
+    public static let newAttachmentsAvailableNotification =
+        Notification.Name(rawValue: "SSKMediaGalleryFinderNewAttachmentsAvailable")
+
+    private static let recentlyChangedMessageTimestampsByRowId = AtomicDictionary<Int64, UInt64>()
+    private static let recentlyInsertedAttachments = AtomicArray<ChangedAttachmentInfo>()
+    private static let recentlyRemovedAttachments = AtomicArray<ChangedAttachmentInfo>()
+
+    @objc(didInsertAttachmentStream:transaction:)
+    public class func didInsert(attachmentStream: TSAttachmentStream, transaction: SDSAnyWriteTransaction) {
+        let insertedRecord: MediaGalleryRecord?
+
+        switch transaction.writeTransaction {
+        case .grdbWrite(let grdbWrite):
+            do {
+                insertedRecord = try insertGalleryRecordPrivate(attachmentStream: attachmentStream,
+                                                                transaction: grdbWrite)
+            } catch {
+                owsFailDebug("error: \(error)")
+                insertedRecord = nil
+            }
+        }
+
+        guard let insertedRecord = insertedRecord else {
+            return
+        }
+
+        do {
+            let attachment = try changedAttachmentInfo(for: insertedRecord,
+                                                       attachmentUniqueId: attachmentStream.uniqueId,
+                                                       transaction: transaction.unwrapGrdbRead)
+            recentlyInsertedAttachments.append(attachment)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return
+        }
+
+        transaction.addSyncCompletion {
+            // Clear the "recentlyRemoved" fields synchronously, so we don't mess with a later transaction.
+            Self.recentlyChangedMessageTimestampsByRowId.removeAllValues()
+            let recentlyInsertedAttachments = Self.recentlyInsertedAttachments.removeAll()
+            if !recentlyInsertedAttachments.isEmpty {
+                NotificationCenter.default.postNotificationNameAsync(Self.newAttachmentsAvailableNotification,
+                                                                     object: recentlyInsertedAttachments)
+            }
+        }
+    }
+
+    private static func changedAttachmentInfo(for record: MediaGalleryRecord,
+                                              attachmentUniqueId: String,
+                                              transaction: GRDBReadTransaction) throws -> ChangedAttachmentInfo {
+        let timestamp: UInt64
+        if let maybeTimestamp = recentlyChangedMessageTimestampsByRowId[record.albumMessageId] {
+            timestamp = maybeTimestamp
+        } else {
+            let timestampQuery = """
+                SELECT \(interactionColumn: .receivedAtTimestamp)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE id = ?
+            """
+            guard let maybeTimestamp = try UInt64.fetchOne(transaction.database,
+                                                           sql: timestampQuery,
+                                                           arguments: [record.albumMessageId]) else {
+                throw OWSGenericError("interaction already removed")
+            }
+            timestamp = maybeTimestamp
+            recentlyChangedMessageTimestampsByRowId[record.albumMessageId] = timestamp
+        }
+
+        return ChangedAttachmentInfo(uniqueId: attachmentUniqueId,
+                                     threadGrdbId: record.threadId,
+                                     timestamp: timestamp)
+
+    }
 
     /// A notification for when a downloaded attachment is removed.
     ///
-    /// The object of the notification is an array of RemovedAttachment values.
+    /// The object of the notification is an array of ChangedAttachmentInfo values.
     /// When registering an observer for this notification, set the observed object to `nil`, meaning no filter.
     public static let didRemoveAttachmentsNotification =
         Notification.Name(rawValue: "SSKMediaGalleryFinderDidRemoveAttachments")
@@ -125,35 +196,19 @@ public final class MediaGalleryManager: NSObject {
             return
         }
 
-        let timestamp: UInt64
-        if let maybeTimestamp = recentlyRemovedMessageTimestampsByRowId[removedRecord.albumMessageId] {
-            timestamp = maybeTimestamp
-        } else {
-            do {
-                let timestampQuery = """
-                    SELECT \(interactionColumn: .receivedAtTimestamp)
-                    FROM \(InteractionRecord.databaseTableName)
-                    WHERE id = ?
-                """
-                guard let maybeTimestamp = try UInt64.fetchOne(transaction.unwrapGrdbWrite.database,
-                                                               sql: timestampQuery,
-                                                               arguments: [removedRecord.albumMessageId]) else {
-                    throw OWSGenericError("interaction already removed")
-                }
-                timestamp = maybeTimestamp
-
-            } catch {
-                owsFailDebug("error: \(error)")
-                return
-            }
+        do {
+            let attachment = try changedAttachmentInfo(for: removedRecord,
+                                                       attachmentUniqueId: attachmentStream.uniqueId,
+                                                       transaction: transaction.unwrapGrdbRead)
+            recentlyRemovedAttachments.append(attachment)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return
         }
 
-        recentlyRemovedAttachments.append(RemovedAttachment(uniqueId: attachmentStream.uniqueId,
-                                                            threadGrdbId: removedRecord.threadId,
-                                                            timestamp: timestamp))
         transaction.addSyncCompletion {
             // Clear the "recentlyRemoved" fields synchronously, so we don't mess with a later transaction.
-            Self.recentlyRemovedMessageTimestampsByRowId.removeAllValues()
+            Self.recentlyChangedMessageTimestampsByRowId.removeAllValues()
             let recentlyRemovedAttachments = Self.recentlyRemovedAttachments.removeAll()
             if !recentlyRemovedAttachments.isEmpty {
                 NotificationCenter.default.postNotificationNameAsync(Self.didRemoveAttachmentsNotification,
@@ -167,7 +222,7 @@ public final class MediaGalleryManager: NSObject {
         guard let messageRowId = message.grdbId?.int64Value else {
             return
         }
-        Self.recentlyRemovedMessageTimestampsByRowId[messageRowId] = message.receivedAtTimestamp
+        Self.recentlyChangedMessageTimestampsByRowId[messageRowId] = message.receivedAtTimestamp
     }
 
     @objc

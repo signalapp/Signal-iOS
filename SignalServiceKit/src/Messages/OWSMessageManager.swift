@@ -7,20 +7,24 @@ import LibSignalClient
 /// An ObjC wrapper around UnidentifiedSenderMessageContent.ContentHint
 @objc
 public enum SealedSenderContentHint: Int, CustomStringConvertible {
-    /// Indicates that the content of a message is user-visible and will not be resent.
+    /// Indicates that the content of a message requires rendering user-visible errors immediately
+    /// upon decryption failure. It is not expected that it will be resent, and we make no attempt
+    /// to preserve ordering if it is.
     /// Insert a placeholder: No
     /// Show error to user: Yes, immediately
-    /// Send DecryptionErrorMessage: Yes (to request a session reset)
     case `default` = 0
-    /// Indicates that the content of a message is user-visible and likely to be resent.
+    /// Indicates that the content of a message requires rendering user-visible errors upon
+    /// decryption failure, but errors will be delayed in case the message is resent before
+    /// the user attempts to view it. In order to facilitate insertion of resent messages in situ, a
+    /// placeholder is inserted into the interaction table to reserve its positioning.
     /// Insert a placeholder: Yes
     /// Show error to user: Yes, after some deferral period
-    /// Send DecryptionErrorMessage: Yes (for resend if possible, session reset otherwise)
     case resendable
-    /// Indicates that the content of a message is not user-visible and will not be resent.
+    /// Indicates that the content of a message does not require rendering any user-visible
+    /// errors upon decryption failure. These messages may be resent, but we don't insert
+    /// a placeholder for them so their ordering is not preserved.
     /// Insert a placeholder: No
     /// Show error to user: No
-    /// Send DecryptionErrorMessage: Yes (to request session reset)
     case implicit
 
     init(_ signalClientHint: UnidentifiedSenderMessageContent.ContentHint) {

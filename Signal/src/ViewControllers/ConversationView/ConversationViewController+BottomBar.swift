@@ -160,10 +160,12 @@ public extension ConversationViewController {
         }
 
         var messageDraft: MessageBody?
+        var replyDraft: ThreadReplyInfo?
         var voiceMemoDraft: VoiceMessageModel?
         if let oldInputToolbar = self.inputToolbar {
             // Maintain draft continuity.
             messageDraft = oldInputToolbar.messageBody()
+            replyDraft = oldInputToolbar.draftReply()
             voiceMemoDraft = oldInputToolbar.voiceMemoDraft
         } else {
             Self.databaseStorage.read { transaction in
@@ -171,11 +173,15 @@ public extension ConversationViewController {
                 if VoiceMessageModels.hasDraft(for: self.thread, transaction: transaction) {
                     voiceMemoDraft = VoiceMessageModel(thread: self.thread)
                 }
+                if messageDraft != nil || voiceMemoDraft != nil {
+                    replyDraft = ThreadReplyInfo(threadUniqueID: self.thread.uniqueId, transaction: transaction)
+                }
             }
         }
 
         let newInputToolbar = buildInputToolbar(conversationStyle: conversationStyle,
                                                 messageDraft: messageDraft,
+                                                draftReply: replyDraft,
                                                 voiceMemoDraft: voiceMemoDraft)
 
         let hadFocus = self.inputToolbar?.isInputViewFirstResponder() ?? false

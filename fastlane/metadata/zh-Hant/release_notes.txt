@@ -1,2 +1,3 @@
-• 我們改善了多媒體編輯器效能，方便你在傳送照片和影片之前輕鬆進行編輯。
-• 我們修復了多項問題，好讓各位的 App 運作更順暢。未來還有許多精彩的更新內容待你挖掘！
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

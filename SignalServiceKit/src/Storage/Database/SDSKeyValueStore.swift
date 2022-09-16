@@ -31,13 +31,15 @@ public class SDSKeyValueStore: NSObject {
     static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
     static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
     // TODO: For now, store all key-value in a single table.
-    public static let table = SDSTableMetadata(collection: SDSKeyValueStore.dataStoreCollection,
+    public static let table = SDSTableMetadata(
+        collection: SDSKeyValueStore.dataStoreCollection,
         tableName: SDSKeyValueStore.tableName,
         columns: [
-        collectionColumn,
-        keyColumn,
-        valueColumn
-        ])
+            collectionColumn,
+            keyColumn,
+            valueColumn
+        ]
+    )
 
     @objc
     public init(collection: String) {
@@ -680,9 +682,11 @@ public class SDSKeyValueStore: NSObject {
         }
     }
 
-    private class func update(transaction: GRDBWriteTransaction,
-                        sql: String,
-                        arguments: [DatabaseValueConvertible]) throws {
+    private class func update(
+        transaction: GRDBWriteTransaction,
+        sql: String,
+        arguments: [DatabaseValueConvertible]
+    ) throws {
 
         let statement = try transaction.database.cachedStatement(sql: sql)
         guard let statementArguments = StatementArguments(arguments) else {
@@ -695,15 +699,8 @@ public class SDSKeyValueStore: NSObject {
         do {
             try statement.execute()
         } catch {
-            // If the attempt to write to GRDB flagged that the database was
-            // corrupt, in addition to crashing we flag this so that we can
-            // attempt to perform recovery.
-            if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
-                SSKPreferences.setHasGrdbDatabaseCorruption(true)
-                owsFail("Error: \(error)")
-            } else {
-                throw error
-            }
+            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            throw error
         }
     }
 

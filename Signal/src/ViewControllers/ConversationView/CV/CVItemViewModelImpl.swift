@@ -4,26 +4,74 @@
 
 import Foundation
 
-// This class should only be accessed on the main thread.
-public class CVItemViewModelImpl: NSObject, CVItemViewModel {
+@objc
+public class CVComponentStateWrapper: NSObject, CVItemViewModel {
+    public var interaction: TSInteraction
+    public var componentState: CVComponentState
 
+    init(interaction: TSInteraction, componentState: CVComponentState) {
+        self.interaction = interaction
+        self.componentState = componentState
+    }
+
+    public var contactShare: ContactShareViewModel? {
+        AssertIsOnMainThread()
+
+        return componentState.contactShareModel
+    }
+
+    public var isGiftBadge: Bool {
+        AssertIsOnMainThread()
+
+        return componentState.giftBadge != nil
+    }
+
+    public var stickerMetadata: StickerMetadata? {
+        AssertIsOnMainThread()
+
+        return componentState.stickerMetadata
+    }
+
+    public var stickerAttachment: TSAttachmentStream? {
+        AssertIsOnMainThread()
+
+        return componentState.stickerAttachment
+    }
+
+    public var stickerInfo: StickerInfo? {
+        AssertIsOnMainThread()
+
+        return componentState.stickerInfo
+    }
+
+    public var linkPreview: OWSLinkPreview? {
+        AssertIsOnMainThread()
+
+        return componentState.linkPreviewModel
+    }
+
+    public var linkPreviewAttachment: TSAttachment? {
+        AssertIsOnMainThread()
+
+        return componentState.linkPreview?.linkPreviewAttachment
+    }
+
+}
+
+// This class should only be accessed on the main thread.
+public class CVItemViewModelImpl: CVComponentStateWrapper {
     public let renderItem: CVRenderItem
-    public var componentState: CVComponentState { renderItem.componentState }
 
     @objc
     public required init(renderItem: CVRenderItem) {
         AssertIsOnMainThread()
 
         self.renderItem = renderItem
+
+        super.init(interaction: renderItem.interaction, componentState: renderItem.componentState)
     }
 
     // MARK: -
-
-    public var interaction: TSInteraction {
-        AssertIsOnMainThread()
-
-        return renderItem.interaction
-    }
 
     public var thread: TSThread {
         AssertIsOnMainThread()
@@ -82,42 +130,6 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
         return componentState.bodyMediaAttachmentStreams
     }
 
-    public var contactShare: ContactShareViewModel? {
-        AssertIsOnMainThread()
-
-        return componentState.contactShareModel
-    }
-
-    public var stickerMetadata: StickerMetadata? {
-        AssertIsOnMainThread()
-
-        return componentState.stickerMetadata
-    }
-
-    public var stickerAttachment: TSAttachmentStream? {
-        AssertIsOnMainThread()
-
-        return componentState.stickerAttachment
-    }
-
-    public var stickerInfo: StickerInfo? {
-        AssertIsOnMainThread()
-
-        return componentState.stickerInfo
-    }
-
-    public var linkPreview: OWSLinkPreview? {
-        AssertIsOnMainThread()
-
-        return componentState.linkPreviewModel
-    }
-
-    public var linkPreviewAttachment: TSAttachment? {
-        AssertIsOnMainThread()
-
-        return componentState.linkPreview?.linkPreviewAttachment
-    }
-
     public var hasUnloadedAttachments: Bool {
 
         if componentState.bodyText == .oversizeTextDownloading {
@@ -137,19 +149,13 @@ public class CVItemViewModelImpl: NSObject, CVItemViewModel {
         }
         return !bodyMedia.items.compactMap { $0.attachment as? TSAttachmentPointer }.isEmpty
     }
-
-    public var isGiftBadge: Bool {
-        AssertIsOnMainThread()
-
-        return componentState.giftBadge != nil
-    }
 }
 
 // MARK: - Actions
 
 extension CVItemViewModelImpl {
 
-    var canCopyOrShareText: Bool {
+    var canCopyOrShareOrSpeakText: Bool {
         guard !isViewOnce else {
             return false
         }

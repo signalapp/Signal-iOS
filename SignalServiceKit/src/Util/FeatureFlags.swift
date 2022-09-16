@@ -86,18 +86,12 @@ public class FeatureFlags: BaseFlags {
     public static let deprecateREST = false
 
     @objc
-    public static let groupRings = false
-
-    @objc
-    public static let stories = build.includes(.qa)
-
-    @objc
     public static let canUseNativeWebsocket = true
 
     @objc
     public static let hsmContactDiscovery = false
 
-    public static let shouldUseRemoteConfigForReceivingGiftBadges = build.includes(.qa)
+    public static let shouldUseRemoteConfigForReceivingGiftBadges = true
 
     public static let isPrerelease = build.includes(.beta)
 
@@ -121,7 +115,7 @@ public class FeatureFlags: BaseFlags {
         }
 
         let flagMap = allFlags()
-        for key in Array(flagMap.keys).sorted() {
+        for key in flagMap.keys.sorted() {
             let value = flagMap[key]
             logFlag("FeatureFlag", key, value)
         }
@@ -346,6 +340,9 @@ public class DebugFlags: BaseFlags {
     public static let forceGroupCalling = build.includes(.beta)
 
     @objc
+    public static let forceStories = build.includes(.qa)
+
+    @objc
     public static let disableMessageProcessing = TestableFlag(false,
                                                               title: LocalizationNotNeeded("Disable message processing"),
                                                               details: LocalizationNotNeeded("Client will store but not process incoming messages."))
@@ -488,9 +485,6 @@ public class DebugFlags: BaseFlags {
     public static let deviceTransferThrowAway = false
 
     @objc
-    public static let databaseIntegrityCheck = DebugFlags.internalSettings
-
-    @objc
     public static func logFlags() {
         let logFlag = { (prefix: String, key: String, value: Any?) in
             if let flag = value as? TestableFlag {
@@ -566,6 +560,8 @@ public class TestableFlag: NSObject {
 
         super.init()
 
+        // Normally we'd store the observer here and remove it in deinit.
+        // But TestableFlags are always static; they don't *get* deinitialized except in testing.
         NotificationCenter.default.addObserver(forName: Self.ResetAllTestableFlagsNotification,
                                                object: nil, queue: nil) { [weak self] _ in
             guard let self = self else { return }

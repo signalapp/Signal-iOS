@@ -158,9 +158,6 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 }
 
                 switch error {
-                case GroupsV2Error.unexpectedRevision:
-                    // Race with another client; retry later.
-                    return self.didFail(groupId: groupId, retryDelay: retryDelay)
                 case GroupsV2Error.shouldDiscard:
                     // If a non-recoverable error occurs (e.g. we've
                     // delete the thread from the database), give up.
@@ -229,7 +226,7 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
         return firstly {
             self.messageProcessor.fetchingAndProcessingCompletePromise()
         }.map(on: .global()) { () throws -> TSGroupThread in
-            try self.databaseStorage.read { transaction in
+            try self.databaseStorage.read { transaction throws in
                 guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     throw GroupsV2Error.shouldDiscard
                 }
@@ -266,16 +263,17 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 Logger.info("Updating profile key for group.")
             }
 
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                owsFailDebug("Invalid group model.")
+                throw GroupsV2Error.shouldDiscard
+            }
+
             return firstly {
                 GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
             }.then(on: .global()) { () throws -> Promise<Void> in
                 // Before we can update the group state on the service,
                 // we need to ensure that the group state in the local
                 // database reflects the latest group state on the service.
-                guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                    owsFailDebug("Invalid group model.")
-                    throw GroupsV2Error.shouldDiscard
-                }
                 let dbRevision = groupModel.revision
                 guard dbRevision != checkedRevision else {
                     // Revisions match, so we can proceed immediately with
@@ -287,25 +285,14 @@ class GroupsV2ProfileKeyUpdater: Dependencies {
                 // safe to do so until we've finished message processing,
                 // but we've already blocked on fetchingAndProcessingCompletePromise
                 // above.
-                let groupId = groupThread.groupModel.groupId
+                let groupId = groupModel.groupId
                 let groupSecretParamsData = groupModel.secretParamsData
                 return Self.groupV2Updates.tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: groupId,
                                                                                              groupSecretParamsData: groupSecretParamsData).asVoid()
-            }.map(on: .global()) { () throws -> GroupsV2OutgoingChanges in
-                let groupId = groupThread.groupModel.groupId
-
-                guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                    owsFailDebug("Invalid group model.")
-                    throw GroupsV2Error.shouldDiscard
-                }
-                let groupSecretParamsData = groupModel.secretParamsData
-                let changes = GroupsV2OutgoingChangesImpl(groupId: groupId,
-                                                          groupSecretParamsData: groupSecretParamsData)
-                changes.setShouldUpdateLocalProfileKey()
-                return changes
-            }.then(on: DispatchQueue.global()) { (changes: GroupsV2OutgoingChanges) -> Promise<TSGroupThread> in
-                self.groupsV2Impl.updateExistingGroupOnService(changes: changes,
-                                                               requiredRevision: checkedRevision)
+            }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+                return GroupManager.updateLocalProfileKey(
+                    groupModel: groupModel
+                )
             }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
                 // Confirm that the updated snapshot has the new profile key.
                 firstly(on: .global()) { () -> Promise<GroupV2Snapshot> in

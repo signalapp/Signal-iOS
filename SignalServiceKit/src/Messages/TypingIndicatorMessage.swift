@@ -48,6 +48,9 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
         return true
     }
 
+    @objc
+    public override var isUrgent: Bool { false }
+
     private func protoAction(forAction action: TypingIndicatorAction) -> SSKProtoTypingMessageAction {
         switch action {
         case .started:

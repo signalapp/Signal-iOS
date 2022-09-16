@@ -22,7 +22,6 @@ pod 'Curve25519Kit', git: 'ssh://git@github.com/signalapp/Curve25519Kit', testsp
 pod 'blurhash', git: 'https://github.com/signalapp/blurhash', branch: 'signal-master'
 # pod 'blurhash', path: '../blurhash'
 
-pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 pod 'SignalRingRTC', path: 'ThirdParty/SignalRingRTC.podspec', inhibit_warnings: true
 
 pod 'SignalArgon2', git: 'https://github.com/signalapp/Argon2.git', submodules: true, testspecs: ["Tests"]
@@ -51,6 +50,7 @@ pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS'
 
 pod 'YYImage', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
 pod 'YYImage/libwebp', git: 'https://github.com/signalapp/YYImage', :inhibit_warnings => true
+pod 'libwebp'
 # pod 'YYImage', path: '../YYImage'
 # pod 'YYImage/libwebp', path:'../YYImage'
 
@@ -68,8 +68,8 @@ def ui_pods
   pod 'Starscream', git: 'https://github.com/signalapp/Starscream.git', branch: 'signal-release'
   # pod 'Starscream', path: '../Starscream'
 
-  pod 'LibMobileCoin/CoreHTTP', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.2.0-pre10'
-  pod 'MobileCoin/CoreHTTP', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.2.0-pre10'
+  pod 'LibMobileCoin/CoreHTTP', git: 'https://github.com/signalapp/libmobilecoin-ios-artifacts.git', branch: 'signal/1.2.2'
+  pod 'MobileCoin/CoreHTTP', git: 'https://github.com/mobilecoinofficial/MobileCoin-Swift.git', :tag => 'v1.2.2'
 end
 
 target 'Signal' do
@@ -103,6 +103,15 @@ target 'SignalUI' do
   ui_pods
 
   target 'SignalUITests' do
+    inherit! :search_paths
+  end
+end
+
+target 'SignalServiceKit' do
+  pod 'CocoaLumberjack'
+  pod 'SAMKeychain'
+
+  target 'SignalServiceKitTests' do
     inherit! :search_paths
   end
 end
@@ -269,7 +278,57 @@ def disable_non_development_pod_warnings(installer)
 end
 
 def copy_acknowledgements
-  raw_acknowledgements = File.read('Pods/Target Support Files/Pods-Signal/Pods-Signal-Acknowledgements.plist')
-  formatted_acknowledgements = raw_acknowledgements.gsub(/(?<!>)(?<!\n)\n( *)(?![ \*])(?![ -])(?!\n)(?!<)/, ' ')
-  File.open('Signal/Settings.bundle/Acknowledgements.plist', "w") { |file| file.puts formatted_acknowledgements }
+  targets = [
+    'Signal',
+    'SignalMessaging',
+    'SignalNSE',
+    'SignalPerformanceTests',
+    'SignalServiceKit',
+    'SignalServiceKitTests',
+    'SignalShareExtension',
+    'SignalTests',
+    'SignalUI',
+    'SignalUITests'
+  ]
+  acknowledgements_files = targets.map do |target|
+    "Pods/Target Support Files/Pods-#{target}/Pods-#{target}-Acknowledgements.plist"
+  end
+
+  def get_specifier_groups(acknowledgements_files)
+    acknowledgements_files.map do |file|
+      extract_cmd = ['plutil', '-extract', 'PreferenceSpecifiers', 'json', '-o', '-', file]
+
+      io = IO.popen(extract_cmd, unsetenv_others: true, exception: true)
+      result = JSON.parse(io.read)
+      io.close
+      status = $?
+      raise status unless status.exitstatus == 0
+
+      result
+    end
+  end
+
+  def get_acknowledgements_specifiers(group)
+    group[1...-1]
+  end
+
+  def write_output_file(specifiers)
+    output_file = 'Signal/Settings.bundle/Acknowledgements.plist'
+    output_json = JSON.dump(specifiers)
+    system('plutil', '-create', 'xml1', output_file, exception: true)
+    system('plutil', '-insert', 'PreferenceSpecifiers', '-json', output_json, '-append', output_file, exception: true)
+  end
+
+  specifier_groups = get_specifier_groups(acknowledgements_files)
+
+  header_specifier = specifier_groups.first.first
+  footer_specifier = specifier_groups.first.last
+  all_acknowledgements_specifiers = specifier_groups.flat_map {|g| get_acknowledgements_specifiers(g)}
+
+  cleaned_acknowledgements_specifiers = all_acknowledgements_specifiers
+    .uniq {|s| s["Title"]}
+    .sort_by {|s| s["Title"].downcase}
+  final_specifiers = [header_specifier] + cleaned_acknowledgements_specifiers + [footer_specifier]
+
+  write_output_file(final_specifiers)
 end

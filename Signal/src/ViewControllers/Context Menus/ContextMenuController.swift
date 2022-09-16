@@ -27,12 +27,11 @@ private class ContextMenuHostView: UIView {
     var previewViewAlignment: ContextMenuTargetedPreview.Alignment = .center
 
     private var contentAreaInsets: UIEdgeInsets {
-        let constPadding: CGFloat = 22
-        let minHorizPadding: CGFloat = 8
-        return UIEdgeInsets(top: safeAreaInsets.top + constPadding,
-                     leading: max(safeAreaInsets.leading, minHorizPadding),
-                     bottom: safeAreaInsets.bottom + constPadding,
-                     trailing: max(safeAreaInsets.trailing, minHorizPadding))
+        let minPadding: CGFloat = 8
+        return UIEdgeInsets(top: max(safeAreaInsets.top, minPadding),
+                     leading: max(safeAreaInsets.leading, minPadding),
+                     bottom: max(safeAreaInsets.bottom, minPadding),
+                     trailing: max(safeAreaInsets.trailing, minPadding))
     }
 
     var blurView: UIView? {
@@ -313,7 +312,7 @@ private class ContextMenuHostView: UIView {
     }
 }
 
-class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestureRecognizerDelegate {
+class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestureRecognizerDelegate {
     weak var delegate: ContextMenuControllerDelegate?
 
     let contextMenuPreview: ContextMenuTargetedPreview
@@ -340,6 +339,13 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
     var localPanGestureRecoginzer: UIPanGestureRecognizer?
 
     private let presentImmediately: Bool
+    private let renderBackgroundBlur: Bool
+
+    enum PreviewRenderMode {
+        case shadow
+        case fade
+    }
+    private let previewRenderMode: PreviewRenderMode
 
     private var gestureExitedDeadZone: Bool = false
     private let deadZoneRadius: CGFloat = 40
@@ -378,19 +384,19 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         preview: ContextMenuTargetedPreview,
         initiatingGestureRecognizer: UIGestureRecognizer?,
         menuAccessory: ContextMenuActionsAccessory?,
-        presentImmediately: Bool
+        presentImmediately: Bool = true,
+        renderBackgroundBlur: Bool = true,
+        previewRenderMode: PreviewRenderMode = .shadow
     ) {
         self.contextMenuConfiguration = configuration
         self.contextMenuPreview = preview
         self.gestureRecognizer = initiatingGestureRecognizer
         self.menuAccessory = menuAccessory
         self.presentImmediately = presentImmediately
-        super.init(nibName: nil, bundle: nil)
+        self.renderBackgroundBlur = renderBackgroundBlur
+        self.previewRenderMode = previewRenderMode
+        super.init()
         if #available(iOS 13, *), configuration.forceDarkTheme { overrideUserInterfaceStyle = .dark }
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: UIViewController
@@ -421,6 +427,7 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         self.previewView?.layer.shadowRadius = 12
         self.previewView?.layer.shadowOffset = CGSize(width: 0, height: 4)
         self.previewView?.layer.shadowColor = UIColor.ows_black.cgColor
+        self.previewView?.layer.shadowOpacity = 0
 
         self.auxiliaryPreviewView?.isHidden = true
 
@@ -436,6 +443,25 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         delegate?.contextMenuControllerRequestsDismissal(self)
     }
 
+    private lazy var presentedSize = view.bounds.size
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        guard let superview = view.superview, presentedSize != superview.bounds.size else { return }
+
+        delegate?.contextMenuControllerRequestsDismissal(self)
+
+        // TODO: Support orientation changes.
+        // We can't use `viewWillTransition(to:with:)` here because we're added directly to the window
+    }
+
+    override func applyTheme() {
+        super.applyTheme()
+        delegate?.contextMenuControllerRequestsDismissal(self)
+
+        // TODO: Support theme changes
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -447,13 +473,21 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
         animationState = .animateIn
 
         UIView.animate(withDuration: animationDuration / 2.0) {
-            if !UIDevice.current.isIPad {
-                self.blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
-                self.blurView.backgroundColor = self.contextMenuConfiguration.forceDarkTheme || Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_blackAlpha20
-            } else {
-                self.blurView.backgroundColor = UIColor.ows_blackAlpha40
+            if self.renderBackgroundBlur {
+                if !UIDevice.current.isIPad {
+                    self.blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
+                    self.blurView.backgroundColor = self.contextMenuConfiguration.forceDarkTheme || Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_blackAlpha20
+                } else {
+                    self.blurView.backgroundColor = UIColor.ows_blackAlpha40
+                }
             }
-            self.previewShadowVisible = true
+
+            switch self.previewRenderMode {
+            case .shadow:
+                self.previewShadowVisible = true
+            case .fade:
+                self.previewView?.alpha = 0.5
+            }
         }
 
         let finalFrame = previewView.frame
@@ -541,11 +575,20 @@ class ContextMenuController: UIViewController, ContextMenuViewDelegate, UIGestur
 
         let dispatchGroup = DispatchGroup()
         animationState = .animateOut
+
         dispatchGroup.enter()
         UIView.animate(withDuration: animationDuration) {
-            self.blurView.effect = nil
-            self.blurView.backgroundColor = nil
-            self.previewShadowVisible = false
+            if self.renderBackgroundBlur {
+                self.blurView.effect = nil
+                self.blurView.backgroundColor = nil
+            }
+
+            switch self.previewRenderMode {
+            case .shadow:
+                self.previewShadowVisible = false
+            case .fade:
+                self.previewView?.alpha = 1
+            }
         } completion: { _ in
             dispatchGroup.leave()
         }

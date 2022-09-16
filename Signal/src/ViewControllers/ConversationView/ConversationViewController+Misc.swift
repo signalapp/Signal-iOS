@@ -176,7 +176,7 @@ public extension ConversationViewController {
         let toastController = ToastController(text: toastText)
         let kToastInset: CGFloat = 10
         let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
-        toastController.presentToastView(fromBottomOfView: self.view, inset: bottomInset)
+        toastController.presentToastView(from: .bottom, of: self.view, inset: bottomInset)
     }
 
     func presentMissingQuotedReplyToast() {
@@ -274,6 +274,25 @@ public extension ConversationViewController {
         }
 
         return Array(viewControllers.prefix(upTo: index + 1))
+    }
+
+    // MARK: - Member Action Sheet
+
+    func showMemberActionSheet(forAddress address: SignalServiceAddress, withHapticFeedback: Bool) {
+        AssertIsOnMainThread()
+
+        if withHapticFeedback {
+            ImpactHapticFeedback.impactOccured(style: .light)
+        }
+
+        var groupViewHelper: GroupViewHelper?
+        if threadViewModel.isGroupThread {
+            groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
+            groupViewHelper!.delegate = self
+        }
+
+        let actionSheet = MemberActionSheet(address: address, groupViewHelper: groupViewHelper)
+        actionSheet.present(from: self)
     }
 }
 

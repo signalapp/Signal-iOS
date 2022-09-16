@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Curve25519Kit
 import LibSignalClient
 
 @objc

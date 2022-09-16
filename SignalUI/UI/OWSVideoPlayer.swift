@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,6 +18,12 @@ public class OWSVideoPlayer: NSObject {
     let audioActivity: AudioActivity
     let shouldLoop: Bool
 
+    public var isMuted = false {
+        didSet {
+            avPlayer.volume = isMuted ? 0 : 1
+        }
+    }
+
     @objc
     weak public var delegate: OWSVideoPlayerDelegate?
 
@@ -27,9 +33,12 @@ public class OWSVideoPlayer: NSObject {
     }
 
     @objc
-    public init(url: URL, shouldLoop: Bool) {
+    public init(url: URL, shouldLoop: Bool, shouldMixAudioWithOthers: Bool = false) {
         self.avPlayer = AVPlayer(url: url)
-        self.audioActivity = AudioActivity(audioDescription: "[OWSVideoPlayer] url:\(url)", behavior: .playback)
+        self.audioActivity = AudioActivity(
+            audioDescription: "[OWSVideoPlayer] url:\(url)",
+            behavior: shouldMixAudioWithOthers ? .playbackMixWithOthers : .playback
+        )
         self.shouldLoop = shouldLoop
 
         super.init()

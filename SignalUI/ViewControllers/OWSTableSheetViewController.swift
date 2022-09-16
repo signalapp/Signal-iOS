@@ -9,12 +9,18 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
     public let tableViewController = OWSTableViewController2()
     public override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
 
-    public override var sheetBackgroundColor: UIColor {
+    open override var sheetBackgroundColor: UIColor {
         OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
     }
 
-    open var contentSizeHeight: CGFloat {
-        tableViewController.tableView.contentSize.height + tableViewController.tableView.adjustedContentInset.totalHeight
+    private var contentSizeHeight: CGFloat {
+        let tableView = tableViewController.tableView
+        // The `adjustedContentInset` property diverges from its stable value during
+        // interactive dismiss operations. This causes weird drag/height jump behavior.
+        // Instead, compute the height using `view.safeAreaInsets`, which remains stable
+        // during animations. (Note that `.top` isn't considered here since
+        // `maximumHeight` prevents the view's height from extending into top safe area.)
+        return tableView.contentSize.height + tableView.contentInset.totalHeight + view.safeAreaInsets.bottom
     }
     public override var minimizedHeight: CGFloat {
         return min(contentSizeHeight, maximizedHeight)
@@ -52,6 +58,9 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
             updateTableContents()
             previousSafeAreaInsets = tableViewController.view.safeAreaInsets
         }
+        // The table view might not have its final size when this method is called.
+        // Run a layout pass so that we compute the correct height constraints.
+        self.tableViewController.tableView.layoutIfNeeded()
         // This comparison isn't redundant: assigning same value to `heightConstraint.constant`
         // triggers a layout cycle and therefore this method, where height being reset to a previous value,
         // killing interactive dismiss.

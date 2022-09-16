@@ -178,7 +178,20 @@ extension TSThread {
             recipients = nil
         }
 
-        let threadName = contactsManager.displayName(for: self, transaction: transaction)
+        var conversationIdentifier = uniqueId
+        var threadName = contactsManager.displayName(for: self, transaction: transaction)
+        if isGroupThread && message?.isGroupStoryReply == true {
+            threadName = String(
+                format: OWSLocalizedString(
+                    "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
+                    comment: "Message header when you are quoting a story. Embeds {{ story author name }}"
+                ),
+                threadName
+            )
+
+            // Uniquely namespace the notifications for group stories.
+            conversationIdentifier += "_groupStory"
+        }
         let inSender = inPersonForRecipient(senderAddress, transaction: transaction)
 
         let sendMessageIntent = INSendMessageIntent(
@@ -186,7 +199,7 @@ extension TSThread {
             outgoingMessageType: .outgoingMessageText,
             content: nil,
             speakableGroupName: isGroupThread ? INSpeakableString(spokenPhrase: threadName) : nil,
-            conversationIdentifier: uniqueId,
+            conversationIdentifier: conversationIdentifier,
             serviceName: nil,
             sender: inSender,
             attachments: nil

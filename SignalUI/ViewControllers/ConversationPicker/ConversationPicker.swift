@@ -117,6 +117,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
     public var maxStoryConversationsToRender = 2
     public var isStorySectionExpanded = false
 
+    /// When `true`, each time the user selects an item for sending to we will fetch the identity keys for those recipients
+    /// and determine if there have been any safety number changes. When you continue from this screen, we will notify of
+    /// any safety number changes that have been identified during the batch updates. We don't do this all the time, as we
+    /// don't necessarily want to inject safety number changes into every flow where you select conversations (such as
+    /// picking members for a group).
+    public var shouldBatchUpdateIdentityKeys = false
+
     public var shouldHideRecentConversationsTitle: Bool = false {
         didSet {
             if isViewLoaded {
@@ -163,6 +170,13 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                                                selector: #selector(blockListDidChange),
                                                name: BlockingManager.blockListDidChange,
                                                object: nil)
+    }
+
+    var presentationTime: Date?
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        presentationTime = presentationTime ?? Date()
     }
 
     open override func applyTheme() {
@@ -319,29 +333,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 return lhsIndex < rhsIndex
             }.map { $0.value }
 
-            let storyItems = AnyThreadFinder().storyThreads(transaction: transaction)
-                .sorted { lhs, rhs in
-                    if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
-                    if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
-                    return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
-                }
-                .compactMap { thread -> StoryConversationItem.ItemType? in
-                    if let groupThread = thread as? TSGroupThread {
-                        return .groupStory(GroupConversationItem(
-                            groupThreadId: groupThread.uniqueId,
-                            isBlocked: false,
-                            disappearingMessagesConfig: nil
-                        ))
-                    } else if let privateStoryThread = thread as? TSPrivateStoryThread {
-                        return .privateStory(PrivateStoryConversationItem(
-                            storyThreadId: privateStoryThread.uniqueId,
-                            isMyStory: privateStoryThread.isMyStory
-                        ))
-                    } else {
-                        owsFailDebug("Unexpected story thread type \(type(of: thread))")
-                        return nil
-                    }
-                }.map { StoryConversationItem(backingItem: $0) }
+            let storyItems = StoryConversationItem.allItems(transaction: transaction)
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: pinnedItems + recentItems,
@@ -414,40 +406,8 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         // Stories Section
         do {
             let section = OWSTableSection()
-            if FeatureFlags.stories && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
-                let storiesHeaderView = UIStackView()
-                storiesHeaderView.addBackgroundView(withBackgroundColor: tableBackgroundColor)
-                storiesHeaderView.axis = .horizontal
-                storiesHeaderView.isLayoutMarginsRelativeArrangement = true
-                storiesHeaderView.layoutMargins = cellOuterInsetsWithMargin(
-                    top: (defaultSpacingBetweenSections ?? 0) + 12,
-                    left: Self.cellHInnerMargin * 0.5,
-                    bottom: 10,
-                    right: Self.cellHInnerMargin * 0.5
-                )
-                storiesHeaderView.layoutMargins.left += tableView.safeAreaInsets.left
-                storiesHeaderView.layoutMargins.right += tableView.safeAreaInsets.right
-
-                let textView = LinkingTextView()
-                textView.textColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
-                textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
-                textView.text = Strings.storiesSection
-
-                storiesHeaderView.addArrangedSubview(textView)
-                storiesHeaderView.addArrangedSubview(.hStretchingSpacer())
-
-                let newStoryButton = OWSFlatButton.button(
-                    title: Strings.addNewStoryButton,
-                    font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold,
-                    titleColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90,
-                    backgroundColor: .clear,
-                    target: self,
-                    selector: #selector(didTapNewStory)
-                )
-
-                storiesHeaderView.addArrangedSubview(newStoryButton)
-
-                section.customHeaderView = storiesHeaderView
+            if StoryManager.areStoriesEnabled && sectionOptions.contains(.stories) && !conversationCollection.storyConversations.isEmpty {
+                section.customHeaderView = NewStoryHeaderView(title: Strings.storiesSection, delegate: self)
 
                 addExpandableConversations(
                     to: section,
@@ -512,18 +472,6 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         setContents(contents, shouldReload: shouldReload)
         restoreSelection()
-    }
-
-    @objc
-    func didTapNewStory() {
-        let vc = NewStorySheet { [weak self] items in
-            guard let self = self else { return }
-            self.isStorySectionExpanded = true
-            self.conversationCollection = self.buildConversationCollection()
-            items.forEach { self.selection.add($0) }
-            self.restoreSelection()
-        }
-        present(vc, animated: true)
     }
 
     private func addConversations(to section: OWSTableSection, conversations: [ConversationItem]) {
@@ -748,7 +696,18 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
         let bottomInset = (view.bounds.height - tableView.frame.height)
         let kToastInset: CGFloat = bottomInset + 10
-        toastController.presentToastView(fromBottomOfView: view, inset: kToastInset)
+        toastController.presentToastView(from: .bottom, of: view, inset: kToastInset)
+    }
+}
+
+// MARK: -
+
+extension ConversationPickerViewController: NewStoryHeaderDelegate {
+    public func newStoryHeaderView(_ newStoryHeaderView: NewStoryHeaderView, didCreateNewStoryItems items: [StoryConversationItem]) {
+        isStorySectionExpanded = true
+        conversationCollection = buildConversationCollection()
+        items.forEach { selection.add($0) }
+        restoreSelection()
     }
 }
 
@@ -825,6 +784,33 @@ extension ConversationPickerViewController: ApprovalFooterDelegate {
             Logger.warn("No conversations selected.")
             return
         }
+
+        if shouldBatchUpdateIdentityKeys {
+            guard let presentationTime = presentationTime else {
+                owsFailDebug("Unexpectedly missing presentation time")
+                return
+            }
+
+            let selectedRecipients = databaseStorage.read { transaction in
+                conversations.flatMap { conversation in
+                    conversation.getExistingThread(transaction: transaction)?.recipientAddresses(with: transaction) ?? []
+                }
+            }
+
+            // Before continuing, prompt for any safety number changes that
+            // we have learned about since the view was presented.
+            let didHaveSafetyNumberChanges = SafetyNumberConfirmationSheet.presentIfNecessary(
+                addresses: selectedRecipients,
+                confirmationText: SafetyNumberStrings.confirmSendButton,
+                untrustedThreshold: abs(presentationTime.timeIntervalSinceNow) + OWSIdentityManager.minimumUntrustedThreshold
+            ) { didConfirmSafetyNumberChange in
+                guard didConfirmSafetyNumberChange else { return }
+                pickerDelegate.conversationPickerDidCompleteSelection(self)
+            }
+
+            guard !didHaveSafetyNumberChanges else { return }
+        }
+
         pickerDelegate.conversationPickerDidCompleteSelection(self)
     }
 
@@ -849,7 +835,6 @@ extension ConversationPickerViewController {
         static let signalContactsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS", comment: "table section header for section containing contacts")
         static let groupsSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_GROUPS", comment: "table section header for section containing groups")
         static let storiesSection = OWSLocalizedString("CONVERSATION_PICKER_SECTION_STORIES", comment: "table section header for section containing stories")
-        static let addNewStoryButton = OWSLocalizedString("CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON", comment: "table section header button to add a new story")
     }
 }
 
@@ -1004,11 +989,13 @@ extension ConversationPickerViewController: ConversationPickerSelectionDelegate 
 protocol ConversationPickerSelectionDelegate: AnyObject {
     func conversationPickerSelectionDidAdd()
     func conversationPickerSelectionDidRemove()
+
+    var shouldBatchUpdateIdentityKeys: Bool { get }
 }
 
 // MARK: -
 
-public class ConversationPickerSelection {
+public class ConversationPickerSelection: Dependencies {
     fileprivate weak var delegate: ConversationPickerSelectionDelegate?
 
     public private(set) var conversations: [ConversationItem] = []
@@ -1018,6 +1005,20 @@ public class ConversationPickerSelection {
     public func add(_ conversation: ConversationItem) {
         conversations.append(conversation)
         delegate?.conversationPickerSelectionDidAdd()
+
+        guard delegate?.shouldBatchUpdateIdentityKeys == true else { return }
+
+        let recipients: [SignalServiceAddress] = databaseStorage.read { transaction in
+            guard let thread = conversation.getExistingThread(transaction: transaction) else { return [] }
+            return thread.recipientAddresses(with: transaction)
+        }
+
+        Logger.info("Batch updating identity keys for \(recipients.count) selected recipients.")
+        identityManager.batchUpdateIdentityKeys(addresses: recipients).done {
+            Logger.info("Successfully batch updated identity keys.")
+        }.catch { error in
+            owsFailDebug("Failed to batch update identity keys: \(error)")
+        }
     }
 
     public func remove(_ conversation: ConversationItem) {

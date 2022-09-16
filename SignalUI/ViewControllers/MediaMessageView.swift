@@ -29,10 +29,6 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
     // MARK: - Create Views
 
     private func createViews() {
@@ -284,7 +280,7 @@ class MediaMessageView: AttachmentPrepContentView, OWSAudioPlayerDelegate {
         }
     }
 
-    func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval) { }
+    func setAudioProgress(_ progress: TimeInterval, duration: TimeInterval, playbackRate: Float) { }
 
     private func ensureButtonState() {
         if audioPlaybackState == .playing {

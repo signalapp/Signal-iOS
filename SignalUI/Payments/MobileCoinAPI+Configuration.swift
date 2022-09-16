@@ -22,7 +22,7 @@ extension MobileCoinAPI {
             if TSConstants.isUsingProductionService {
                 return .signalMainNet
             } else {
-                return .mobileCoinAlphaNet
+                return .signalTestNet
             }
         }
 
@@ -128,7 +128,7 @@ extension MobileCoinAPI {
         static let FOG_REPORT_PRODUCT_ID: UInt16 = 4
         static let FOG_REPORT_SECURITY_VERSION: UInt16 = 1
 
-        static var allowedHardeningAdvisories: [String] { ["INTEL-SA-00334"] }
+        static var allowedHardeningAdvisories: [String] { ["INTEL-SA-00334", "INTEL-SA-00615"] }
 
         init(productId: UInt16,
              minimumSecurityVersion: UInt16,
@@ -206,8 +206,10 @@ extension MobileCoinAPI {
             }
         }
 
-        private static func buildMrEnclave(mrEnclaveData: Data,
-                                          attestationInfo: AttestationInfo) throws -> MobileCoin.Attestation.MrEnclave {
+        private static func buildMrEnclave(
+            mrEnclaveData: Data,
+            attestationInfo: AttestationInfo
+        ) throws -> MobileCoin.Attestation.MrEnclave {
             let result = MobileCoin.Attestation.MrEnclave.make(mrEnclave: mrEnclaveData,
                                                               allowedConfigAdvisories: attestationInfo.allowedConfigAdvisories,
                                                               allowedHardeningAdvisories: attestationInfo.allowedHardeningAdvisories)
@@ -297,36 +299,40 @@ extension MobileCoinAPI {
             signalMainNet
         }
 
-        // consensus-enclave.css
-        // MRSIGNER: 0x2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e,
-        // MRENCLAVE: 0x653228afd2b02a6c28f1dc3b108b1dfa457d170b32ae8ec2978f941bd1655c83,
-        // ingest-enclave.css
-        // MRSIGNER: 0x2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e,
-        // MRENCLAVE: 0xf3f7e9a674c55fb2af543513527b6a7872de305bac171783f6716a0bf6919499,
-        // ledger-enclave.css
-        // MRSIGNER: 0x2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e,
-        // MRENCLAVE: 0x89db0d1684fcc98258295c39f4ab68f7de5917ef30f0004d9a86f29930cebbbd,
-        // view-enclave.css
-        // MRSIGNER: 0x2c1a561c4ab64cbc04bfa445cdf7bed9b2ad6f6b04d38d3137f3622b29fdb30e,
-        // MRENCLAVE: 0xdd84abda7f05116e21fcd1ee6361b0ec29445fff0472131eaf37bf06255b567a,
         static var signalMainNet: OWSAttestationConfig {
             // We need the old and new enclave values here.
             let mrEnclaveConsensus = [
                 // ~June 23, 2021
-                Data.data(fromHex: "653228afd2b02a6c28f1dc3b108b1dfa457d170b32ae8ec2978f941bd1655c83")!
+                Data.data(fromHex: "653228afd2b02a6c28f1dc3b108b1dfa457d170b32ae8ec2978f941bd1655c83")!,
+                // ~July 8th, 2022
+                Data.data(fromHex: "733080d6ece4504f66ba606fa8163dae0a5220f3dbf6ca55fbafbac12c6f1897")!,
+                // ~August 10th, 2022
+                Data.data(fromHex: "d6e54e43c368f0fa2c5f13361afd303ee8f890424e99bd6c367f6164b5fff1b5")!
             ]
             let mrEnclaveFogView = [
                 // ~June 23, 2021
-                Data.data(fromHex: "dd84abda7f05116e21fcd1ee6361b0ec29445fff0472131eaf37bf06255b567a")!
+                Data.data(fromHex: "dd84abda7f05116e21fcd1ee6361b0ec29445fff0472131eaf37bf06255b567a")!,
+                // ~July 8th, 2022
+                Data.data(fromHex: "c64a3b04348b10596442868758875f312dc3a755b450805149774a091d2822d3")!,
+                // ~August 10th, 2022
+                Data.data(fromHex: "3d6e528ee0574ae3299915ea608b71ddd17cbe855d4f5e1c46df9b0d22b04cdb")!
             ]
             // Report aka Ingest.
             let mrEnclaveFogReport = [
                 // ~June 23, 2021
-                Data.data(fromHex: "f3f7e9a674c55fb2af543513527b6a7872de305bac171783f6716a0bf6919499")!
+                Data.data(fromHex: "f3f7e9a674c55fb2af543513527b6a7872de305bac171783f6716a0bf6919499")!,
+                // ~July 8th, 2022
+                Data.data(fromHex: "660103d766cde0fd1e1cfb443b99e52da2ce0617d0dee42f8b875f7104942c6b")!,
+                // ~August 10th, 2022
+                Data.data(fromHex: "3e9bf61f3191add7b054f0e591b62f832854606f6594fd63faef1e2aedec4021")!
             ]
             let mrEnclaveFogLedger = [
                 // ~June 23, 2021
-                Data.data(fromHex: "89db0d1684fcc98258295c39f4ab68f7de5917ef30f0004d9a86f29930cebbbd")!
+                Data.data(fromHex: "89db0d1684fcc98258295c39f4ab68f7de5917ef30f0004d9a86f29930cebbbd")!,
+                // ~July 8th, 2022
+                Data.data(fromHex: "ed8ed6e1b4b6827e5543b25c1c13b9c06b478d819f8df912eb11fa140780fc51")!,
+                // ~August 10th, 2022
+                Data.data(fromHex: "92fb35d0f603ceb5eaf2988b24a41d4a4a83f8fb9cd72e67c3bc37960d864ad6")!
             ]
             return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
                                           mrEnclaveFogView: mrEnclaveFogView,
@@ -335,18 +341,6 @@ extension MobileCoinAPI {
                                           mrEnclaveFogReport: mrEnclaveFogReport)
         }
 
-        // consensus
-        // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
-        // MRENCLAVE: 0x9659ea738275b3999bf1700398b60281be03af5cb399738a89b49ea2496595af,
-        // ingest
-        // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
-        // MRENCLAVE: 0xa4764346f91979b4906d4ce26102228efe3aba39216dec1e7d22e6b06f919f11,
-        // ledger
-        // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
-        // MRENCLAVE: 0x768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3,
-        // view
-        // MRSIGNER: 0xbf7fa957a6a94acb588851bc8767e0ca57706c79f4fc2aa6bcb993012c3c386c,
-        // MRENCLAVE: 0xe154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e,
         static var mobileCoinTestNet: OWSAttestationConfig {
             // These networks currently share the same attestation config.
             signalTestNet
@@ -356,26 +350,43 @@ extension MobileCoinAPI {
             // We need the old and new enclave values here.
             let mrEnclaveConsensus = [
                 // ~June 2, 2021
-                Data.data(fromHex: "9659ea738275b3999bf1700398b60281be03af5cb399738a89b49ea2496595af")!
+                Data.data(fromHex: "9659ea738275b3999bf1700398b60281be03af5cb399738a89b49ea2496595af")!,
+                // ~July 13, 2022
+                Data.data(fromHex: "4f134dcfd9c0885956f2f9af0f05c2050d8bdee2dc63b468a640670d7adeb7f8")!,
+                // ~Aug 16, 2022
+                Data.data(fromHex: "01746f4dd25f8623d603534425ed45833687eca2b3ba25bdd87180b9471dac28")!
             ]
             let mrEnclaveFogView = [
                 // ~June 2, 2021
-                Data.data(fromHex: "e154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e")!
+                Data.data(fromHex: "e154f108c7758b5aa7161c3824c176f0c20f63012463bf3cc5651e678f02fb9e")!,
+                // ~July 13, 2022
+                Data.data(fromHex: "719ca43abbe02f507bb91ea11ff8bc900aa86363a7d7e77b8130426fc53d8684")!,
+                // ~Aug 16, 2022
+                Data.data(fromHex: "3d6e528ee0574ae3299915ea608b71ddd17cbe855d4f5e1c46df9b0d22b04cdb")!
             ]
             // Report aka Ingest.
             let mrEnclaveFogReport = [
                 // ~June 2, 2021
-                Data.data(fromHex: "a4764346f91979b4906d4ce26102228efe3aba39216dec1e7d22e6b06f919f11")!
+                Data.data(fromHex: "a4764346f91979b4906d4ce26102228efe3aba39216dec1e7d22e6b06f919f11")!,
+                // ~July 13, 2022
+                Data.data(fromHex: "8f2f3bf81f24bf493fa6d76e29e0f081815022592b1e854f95bda750aece7452")!,
+                // ~Aug 16, 2022
+                Data.data(fromHex: "3e9bf61f3191add7b054f0e591b62f832854606f6594fd63faef1e2aedec4021")!
             ]
             let mrEnclaveFogLedger = [
                 // ~June 2, 2021
-                Data.data(fromHex: "768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3")!
+                Data.data(fromHex: "768f7bea6171fb83d775ee8485e4b5fcebf5f664ca7e8b9ceef9c7c21e9d9bf3")!,
+                // ~July 13, 2022
+                Data.data(fromHex: "685481b33f2846585f33506ab65649c98a4a6d1244989651fd0fcde904ebd82f")!,
+                // ~Aug 16, 2022
+                Data.data(fromHex: "92fb35d0f603ceb5eaf2988b24a41d4a4a83f8fb9cd72e67c3bc37960d864ad6")!
             ]
             return buildAttestationConfig(mrEnclaveConsensus: mrEnclaveConsensus,
                                           mrEnclaveFogView: mrEnclaveFogView,
                                           mrEnclaveFogKeyImage: mrEnclaveFogLedger,
                                           mrEnclaveFogMerkleProof: mrEnclaveFogLedger,
                                           mrEnclaveFogReport: mrEnclaveFogReport)
+
         }
 
         static var mobileCoinAlphaNet: OWSAttestationConfig {
@@ -418,8 +429,8 @@ extension MobileCoinAPI {
         let username: String
         let password: String
 
-        private static let testAuthUsername = "user1"
-        private static let testAuthPassword = "user1:1602029157:9bdcd071b4d7b276a4a6"
+        private static let testAuthUsername = "user20220713"
+        private static let testAuthPassword = "user20220713:1657845591:298d68fd6b1438082b15"
 
         static var mobileCoinAlpha: OWSAuthorization {
             OWSAuthorization(username: testAuthUsername,
@@ -583,20 +594,35 @@ extension MobileCoinAPI {
              .mobileCoinMobileDev:
             return Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAyFOockvCEc9TcO1NvsiUfFVzvtDsR64UIRRUl3tBM2Bh8KBA932/Up86RtgJVnbslxuUCrTJZCV4dgd5hAo/mzuJOy9lAGxUTpwWWG0zZJdpt8HJRVLX76CBpWrWEt7JMoEmduvsCR8q7WkSNgT0iIoSXgT/hfWnJ8KGZkN4WBzzTH7hPrAcxPrzMI7TwHqUFfmOX7/gc+bDV5ZyRORrpuu+OR2BVObkocgFJLGmcz7KRuN7/dYtdYFpiKearGvbYqBrEjeo/15chI0Bu/9oQkjPBtkvMBYjyJPrD7oPP67i0ZfqV6xCj4nWwAD3bVjVqsw9cCBHgaykW8ArFFa0VCMdLy7UymYU5SQsfXrw/mHpr27Pp2Z0/7wpuFgJHL+0ARU48OiUzkXSHX+sBLov9X6f9tsh4q/ZRorXhcJi7FnUoagBxewvlfwQfcnLX3hp1wqoRFC4w1DC+ki93vIHUqHkNnayRsf1n48fSu5DwaFfNvejap7HCDIOpCCJmRVR8mVuxi6jgjOUa4Vhb/GCzxfNIn5ZYym1RuoE0TsFO+TPMzjed3tQvG7KemGFz3pQIryb43SbG7Q+EOzIigxYDytzcxOO5Jx7r9i+amQEiIcjBICwyFoEUlVJTgSpqBZGNpznoQ4I2m+uJzM+wMFsinTZN3mp4FU5UHjQsHKG+ZMCAwEAAQ==")!
         case .mobileCoinTestNet:
-            return Certificates.certificateData(forService: "authority-mobilecoin-testnet", type: "pem", certificateBundle: .ssk)
+            return Data(base64Encoded:
+                """
+                MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAvnB9wTbTOT5uoizRYaYbw7XIEkInl8E7MGOA\
+                Qj+xnC+F1rIXiCnc/t1+5IIWjbRGhWzo7RAwI5sRajn2sT4rRn9NXbOzZMvIqE4hmhmEzy1YQNDnfALA\
+                WNQ+WBbYGW+Vqm3IlQvAFFjVN1YYIdYhbLjAPdkgeVsWfcLDforHn6rR3QBZYZIlSBQSKRMY/tywTxeT\
+                CvK2zWcS0kbbFPtBcVth7VFFVPAZXhPi9yy1AvnldO6n7KLiupVmojlEMtv4FQkk604nal+j/dOplTAT\
+                V8a9AJBbPRBZ/yQg57EG2Y2MRiHOQifJx0S5VbNyMm9bkS8TD7Goi59aCW6OT1gyeotWwLg60JRZTfyJ\
+                7lYWBSOzh0OnaCytRpSWtNZ6barPUeOnftbnJtE8rFhF7M4F66et0LI/cuvXYecwVwykovEVBKRF4HOK\
+                9GgSm17mQMtzrD7c558TbaucOWabYR04uhdAc3s10MkuONWG0wIQhgIChYVAGnFLvSpp2/aQEq3xrRSE\
+                TxsixUIjsZyWWROkuA0IFnc8d7AmcnUBvRW7FT/5thWyk5agdYUGZ+7C1o69ihR1YxmoGh69fLMPIEOh\
+                Yh572+3ckgl2SaV4uo9Gvkz8MMGRBcMIMlRirSwhCfozV2RyT5Wn1NgPpyc8zJL7QdOhL7Qxb+5WjnCV\
+                rQYHI2cCAwEAAQ==
+                """
+            )!
         case .signalTestNet:
-            return Data(base64Encoded: "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoCMq8nnjTq5EEQ4EI7yr" +
-                            "ABL9P4y4h1P/h0DepWgXx+w/fywcfRSZINxbaMpvcV3uSJayExrpV1KmaS2wfASe" +
-                            "YhSj+rEzAm0XUOw3Q94NOx5A/dOQag/d1SS6/QpF3PQYZTULnRFetmM4yzEnXsXc" +
-                            "WtzEu0hh02wYJbLeAq4CCcPTPe2qckrbUP9sD18/KOzzNeypF4p5dQ2m/ezfxtga" +
-                            "LvdUMVDVIAs2v9a5iu6ce4bIcwTIUXgX0w3+UKRx8zqowc3HIqo9yeaGn4ZOwQHv" +
-                            "AJZecPmb2pH1nK+BtDUvHpvf+Y3/NJxwh+IPp6Ef8aoUxs2g5oIBZ3Q31fjS2Bh2" +
-                            "gmwoVooyytEysPAHvRPVBxXxLi36WpKfk1Vq8K7cgYh3IraOkH2/l2Pyi8EYYFkW" +
-                            "sLYofYogaiPzVoq2ZdcizfoJWIYei5mgq+8m0ZKZYLebK1i2GdseBJNIbSt3wCNX" +
-                            "ZxyN6uqFHOCB29gmA5cbKvs/j9mDz64PJe9LCanqcDQV1U5l9dt9UdmUt7Ab1PjB" +
-                            "toIFaP+u473Z0hmZdCgAivuiBMMYMqt2V2EIw4IXLASE3roLOYp0p7h0IQHb+lVI" +
-                            "uEl0ZmwAI30ZmzgcWc7RBeWD1/zNt55zzhfPRLx/DfDY5Kdp6oFHWMvI2r1/oZkd" +
-                            "hjFp7pV6qrl7vOyR5QqmuRkCAwEAAQ==")!
+            return Data(base64Encoded:
+                """
+                MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAoCMq8nnjTq5EEQ4EI7yrABL9P4y4h1P/h0De\
+                pWgXx+w/fywcfRSZINxbaMpvcV3uSJayExrpV1KmaS2wfASeYhSj+rEzAm0XUOw3Q94NOx5A/dOQag/d\
+                1SS6/QpF3PQYZTULnRFetmM4yzEnXsXcWtzEu0hh02wYJbLeAq4CCcPTPe2qckrbUP9sD18/KOzzNeyp\
+                F4p5dQ2m/ezfxtgaLvdUMVDVIAs2v9a5iu6ce4bIcwTIUXgX0w3+UKRx8zqowc3HIqo9yeaGn4ZOwQHv\
+                AJZecPmb2pH1nK+BtDUvHpvf+Y3/NJxwh+IPp6Ef8aoUxs2g5oIBZ3Q31fjS2Bh2gmwoVooyytEysPAH\
+                vRPVBxXxLi36WpKfk1Vq8K7cgYh3IraOkH2/l2Pyi8EYYFkWsLYofYogaiPzVoq2ZdcizfoJWIYei5mg\
+                q+8m0ZKZYLebK1i2GdseBJNIbSt3wCNXZxyN6uqFHOCB29gmA5cbKvs/j9mDz64PJe9LCanqcDQV1U5l\
+                9dt9UdmUt7Ab1PjBtoIFaP+u473Z0hmZdCgAivuiBMMYMqt2V2EIw4IXLASE3roLOYp0p7h0IQHb+lVI\
+                uEl0ZmwAI30ZmzgcWc7RBeWD1/zNt55zzhfPRLx/DfDY5Kdp6oFHWMvI2r1/oZkdhjFp7pV6qrl7vOyR\
+                5QqmuRkCAwEAAQ==
+                """
+            )!
         case .mobileCoinMainNet:
             owsFail("TODO: Set this value.")
         case .signalMainNet:
@@ -685,7 +711,7 @@ final class MobileCoinHttpRequester: NSObject, HttpRequester {
             if let statusCode = error.httpStatusCode {
                 completion(.success(MobileCoin.HTTPResponse(statusCode: statusCode, url: nil, allHeaderFields: [:], responseData: nil)))
             } else {
-                owsFailDebug("MobileCoin http request failed \(error)")
+                Logger.warn("MobileCoin http request failed \(error)")
                 completion(.failure(ConnectionError.invalidServerResponse("No Response")))
             }
         }

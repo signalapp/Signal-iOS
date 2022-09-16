@@ -37,6 +37,20 @@ class BadgeExpirationSheetStateTest: XCTestCase {
         return result
     }
 
+    private func getGiftBadge(populateAssets: Bool = true) -> ProfileBadge {
+        let result = try! ProfileBadge(jsonDictionary: [
+            "id": "GIFT",
+            "category": "donor",
+            "name": "A Gift",
+            "description": "A gift badge!",
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+        ])
+        if populateAssets {
+            result._testingOnly_populateAssets()
+        }
+        return result
+    }
+
     func testBadge() throws {
         let badge = getSubscriptionBadge()
         let state = State(badge: badge, mode: .subscriptionExpiredBecauseNotRenewed)
@@ -60,6 +74,18 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                 State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: true)),
                 NSLocalizedString("BADGE_EXPIRED_BOOST_TITLE",
                                   comment: "Title for boost on the badge expiration sheet.")
+            ),
+            (
+                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: true)),
+                NSLocalizedString("BADGE_EXPIRED_GIFT_TITLE",
+                                  value: "Your Gift Badge Has Expired",
+                                  comment: "Title for gift on the badge expiration sheet.")
+            ),
+            (
+                State(badge: getGiftBadge(), mode: .giftNotRedeemed(fullName: "")),
+                NSLocalizedString("GIFT_NOT_REDEEMED_TITLE",
+                                  value: "Your Gift Has Expired",
+                                  comment: "Title when trying to redeem a gift that's already expired.")
             )
         ]
 
@@ -138,14 +164,49 @@ class BadgeExpirationSheetStateTest: XCTestCase {
             ),
             (
                 State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: false)),
-                NSLocalizedString("BADGE_EXIPRED_BOOST_BODY_FORMAT",
-                                  comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet."),
+                NSLocalizedString("BADGE_EXPIRED_BOOST_BODY",
+                                  comment: "String explaining to the user that their boost badge has expired on the badge expiry sheet.")
+                + "\n\n"
+                + NSLocalizedString("BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION",
+                                    comment: "Shown when a non-monthly badge expires to suggest starting a recurring donation."),
                 false
             ),
             (
                 State(badge: getSubscriptionBadge(), mode: .boostExpired(hasCurrentSubscription: true)),
-                NSLocalizedString("BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT",
+                NSLocalizedString("BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY",
                                   comment: "String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet."),
+                false
+            ),
+            (
+                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: false)),
+                NSLocalizedString(
+                    "BADGE_EXPIRED_GIFT_BODY",
+                    value: "Your gift badge has expired and is no longer available to be displayed on your profile.",
+                    comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
+                )
+                + "\n\n"
+                + NSLocalizedString(
+                    "BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION",
+                    comment: "Shown when a non-monthly badge expires to suggest starting a recurring donation."
+                ),
+                false
+            ),
+            (
+                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: true)),
+                NSLocalizedString(
+                    "BADGE_EXPIRED_GIFT_BODY",
+                    value: "Your gift badge has expired and is no longer available to be displayed on your profile.",
+                    comment: "String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet."
+                ),
+                false
+            ),
+            (
+                State(badge: getGiftBadge(), mode: .giftNotRedeemed(fullName: "John Doe")),
+                NSLocalizedString(
+                    "GIFT_NOT_REDEEMED_BODY_FORMAT",
+                    value: "Your gift from %@ has expired and can no longer be redeemed.",
+                    comment: "Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}."
+                ).replacingOccurrences(of: "%@", with: "John Doe"),
                 false
             )
         ]
@@ -183,6 +244,22 @@ class BadgeExpirationSheetStateTest: XCTestCase {
                                    text: NSLocalizedString("BADGE_EXPIRED_BOOST_RENEWAL_BUTTON_SUSTAINER",
                                                            comment: "Button title for boost on the badge expiration sheet, used if the user is already a sustainer."),
                                    hasNotNow: true)
+            ),
+            (
+                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: false)),
+                State.ActionButton(action: .openSubscriptionsView,
+                                   text: NSLocalizedString("BADGE_EXPIRED_RENEWAL_MONTHLY",
+                                                           value: "Make a Monthly Donation",
+                                                           comment: "Button title to donate monthly on the badge expiration sheet."),
+                                   hasNotNow: true)
+            ),
+            (
+                State(badge: getGiftBadge(), mode: .giftBadgeExpired(hasCurrentSubscription: true)),
+                State.ActionButton(action: .dismiss, text: CommonStrings.okButton, hasNotNow: false)
+            ),
+            (
+                State(badge: getGiftBadge(), mode: .giftNotRedeemed(fullName: "")),
+                State.ActionButton(action: .dismiss, text: CommonStrings.okButton, hasNotNow: false)
             )
         ]
 

@@ -8,14 +8,6 @@ import Foundation
 public class AddToGroupViewController: OWSTableViewController2 {
 
     private let address: SignalServiceAddress
-    private let collation = UILocalizedIndexedCollation.current()
-    private let maxRecentGroups = 7
-
-    private lazy var threadViewHelper: ThreadViewHelper = {
-        let threadViewHelper = ThreadViewHelper()
-        threadViewHelper.delegate = self
-        return threadViewHelper
-    }()
 
     init(address: SignalServiceAddress) {
         self.address = address
@@ -47,79 +39,48 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     private var groupThreads = [TSGroupThread]() {
         didSet {
-            AssertIsOnMainThread()
-            updateTableContents()
+            DispatchQueue.main.async { [weak self] in
+                self?.updateTableContents()
+            }
         }
     }
+
     private func updateGroupThreadsAsync() {
-        // make sure threadViewHelper is prepared on the main thread
-        _ = threadViewHelper
-        DispatchQueue.sharedUserInitiated.async { self.updateGroupThreads() }
-    }
-    private func updateGroupThreads() {
-        owsAssertDebug(!Thread.isMainThread)
-
-        let groupThreads = databaseStorage.read { transaction in
-            return self.threadViewHelper.threads.filter { thread -> Bool in
-                guard let groupThread = thread as? TSGroupThread else { return false }
-                let threadViewModel = ThreadViewModel(thread: groupThread,
-                                                      forChatList: false,
-                                                      transaction: transaction)
-                let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
-                return groupViewHelper.canEditConversationMembership
-            } as? [TSGroupThread] ?? []
+        DispatchQueue.sharedUserInitiated.async { [weak self] in
+            self?.groupThreads = Self.fetchGroupThreads()
         }
+    }
 
-        DispatchQueue.main.async {
-            self.groupThreads = groupThreads
+    private class func fetchGroupThreads() -> [TSGroupThread] {
+        databaseStorage.read { transaction in
+            var result = [TSGroupThread]()
+
+            do {
+                try AnyThreadFinder().enumerateGroupThreads(transaction: transaction) { thread in
+                    guard thread.groupModel.groupsVersion == .V2 else { return }
+
+                    let threadViewModel = ThreadViewModel(
+                        thread: thread,
+                        forChatList: false,
+                        transaction: transaction
+                    )
+                    let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
+                    guard groupViewHelper.canEditConversationMembership else { return }
+
+                    result.append(thread)
+                }
+            } catch {
+                owsFailDebug("Failed to fetch group threads: \(error). Returning an empty array")
+            }
+
+            return result
         }
     }
 
     private func updateTableContents() {
         AssertIsOnMainThread()
-
-        let contents = OWSTableContents()
-
-        let recentGroups = groupThreads.count > maxRecentGroups ? Array(groupThreads[0..<maxRecentGroups]) : groupThreads
-
-        let recentsSection = OWSTableSection()
-        recentsSection.headerTitle = NSLocalizedString("ADD_TO_GROUP_RECENTS_TITLE",
-                                                       comment: "The title for the 'add to group' view's recents section")
-        recentsSection.add(items: recentGroups.map(item(forGroupThread:)))
-        contents.addSection(recentsSection)
-
-        if let additionalGroups = groupThreads.count > maxRecentGroups ? Array(groupThreads[maxRecentGroups..<groupThreads.count]) : nil {
-            let collatedGroups = additionalGroups.reduce(into: [Int: [TSGroupThread]]()) { result, group in
-                let section = collation.section(for: group, collationStringSelector: #selector(getter: TSGroupThread.groupNameOrDefault))
-                var sectionGroups = result[section] ?? []
-                sectionGroups.append(group)
-                result[section] = sectionGroups
-            }
-
-            for (section, title) in collation.sectionTitles.enumerated() {
-                guard let sectionGroups = collatedGroups[section] else { continue }
-
-                let section = OWSTableSection()
-                section.headerTitle = title
-                section.add(items: sectionGroups
-                        .sorted { $0.groupNameOrDefault.localizedCaseInsensitiveCompare($1.groupNameOrDefault) == .orderedAscending }
-                        .map(item(forGroupThread:))
-                )
-
-                contents.addSection(section)
-            }
-
-            let visibleTitles: [String] = collation.sectionTitles.enumerated().compactMap { (index, title) in
-                guard collatedGroups[index] != nil else { return nil }
-                return title
-            }
-
-            contents.sectionForSectionIndexTitleBlock = { $1 + 1 }
-            contents.sectionIndexTitlesForTableViewBlock = { visibleTitles }
-
-        }
-
-        self.contents = contents
+        let groupsSection = OWSTableSection(items: groupThreads.map(item(forGroupThread:)))
+        self.contents = OWSTableContents(sections: [groupsSection])
     }
 
     // MARK: Helpers
@@ -189,8 +150,14 @@ public class AddToGroupViewController: OWSTableViewController2 {
     private func addToGroupStep2(_ groupThread: TSGroupThread, shortName: String) {
         let oldGroupModel = groupThread.groupModel
 
-        guard let groupUpdateToPerform = buildGroupUpdate(oldGroupModel: oldGroupModel) else {
-            let error = OWSAssertionError("Couldn't build group update.")
+        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(self.address) else {
+            let error = OWSAssertionError("Receipient is already in group")
+            GroupViewUtils.showUpdateErrorUI(error: error)
+            return
+        }
+
+        guard let uuid = self.address.uuid else {
+            let error = OWSAssertionError("Address missing UUID")
             GroupViewUtils.showUpdateErrorUI(error: error)
             return
         }
@@ -200,8 +167,10 @@ public class AddToGroupViewController: OWSTableViewController2 {
             withGroupModel: oldGroupModel,
             updateDescription: self.logTag,
             updateBlock: {
-                GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
-                                                 update: groupUpdateToPerform)
+                GroupManager.addOrInvite(
+                    aciOrPniUuids: [uuid],
+                    toExistingGroup: oldGroupModel
+                )
             },
             completion: { [weak self] _ in
                 self?.notifyOfAddedAndDismiss(groupThread: groupThread, shortName: shortName)
@@ -218,22 +187,6 @@ public class AddToGroupViewController: OWSTableViewController2 {
             let toastText = String(format: toastFormat, shortName, groupThread.groupNameOrDefault)
             presentingViewController?.presentToast(text: toastText)
         }
-    }
-
-    // MARK: -
-
-    private func buildGroupUpdate(oldGroupModel: TSGroupModel) -> GroupManager.GroupUpdate? {
-        guard !oldGroupModel.groupMembership.isMemberOfAnyKind(self.address) else {
-            owsFailDebug("Receipient is already in group")
-            return nil
-        }
-
-        guard let uuid = self.address.uuid else {
-            owsFailDebug("Address missing UUID")
-            return nil
-        }
-
-        return .addNormalMembers(uuids: [uuid])
     }
 
     // MARK: -
@@ -260,13 +213,5 @@ public class AddToGroupViewController: OWSTableViewController2 {
                 self?.didSelectGroup(groupThread)
             }
         )
-    }
-}
-
-// MARK: -
-
-extension AddToGroupViewController: ThreadViewHelperDelegate {
-    public func threadListDidChange() {
-        updateGroupThreadsAsync()
     }
 }

@@ -547,8 +547,9 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
             return
         }
 
-        let phoneNumber = "\(callingCode)\(phoneNumberText)"
-        guard let localNumber = PhoneNumber.tryParsePhoneNumber(fromUserSpecifiedText: phoneNumber),
+        guard let localNumber = PhoneNumber.tryParsePhoneNumber(
+            fromUserSpecifiedText: phoneNumberText,
+            callingCode: callingCode),
               localNumber.toE164().count > 0,
               PhoneNumberValidator().isValidForRegistration(phoneNumber: localNumber) else {
 

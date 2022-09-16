@@ -36,13 +36,15 @@ public class DebugLogUploader: NSObject {
         }
     }
 
-    private func buildOWSURLSession() -> OWSURLSession {
+    private func buildOWSURLSession() -> OWSURLSessionProtocol {
         let sessionConfig = URLSessionConfiguration.ephemeral
         sessionConfig.urlCache = nil
         sessionConfig.requestCachePolicy = .reloadIgnoringLocalCacheData
-        let urlSession = OWSURLSession(baseUrl: nil,
-                                       securityPolicy: OWSURLSession.defaultSecurityPolicy,
-                                       configuration: sessionConfig)
+        let urlSession = OWSURLSession(
+            baseUrl: nil,
+            securityPolicy: OWSURLSession.defaultSecurityPolicy,
+            configuration: sessionConfig
+        )
         return urlSession
     }
 
@@ -131,5 +133,102 @@ public class DebugLogUploader: NSObject {
             }
             return url
         }
+    }
+}
+
+extension Pastelog {
+    /// The result of the `collectLogs` method. Here because Objective-C can't represent `Result`s.
+    /// If we migrate its callers to Swift, we should be able to remove this class.
+    @objc
+    public class CollectedLogsResult: NSObject {
+        @objc
+        public let errorString: String?
+
+        @objc
+        public let logsDirPath: String?
+
+        @objc
+        public var succeeded: Bool { errorString == nil }
+
+        init(errorString: String) {
+            self.errorString = errorString
+            self.logsDirPath = nil
+            super.init()
+        }
+
+        init(logsDirPath: String) {
+            self.errorString = nil
+            self.logsDirPath = logsDirPath
+            super.init()
+        }
+    }
+
+    @objc
+    func collectLogs() -> CollectedLogsResult {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy.MM.dd hh.mm.ss"
+        let dateString = dateFormatter.string(from: Date())
+        let logsName = "\(dateString) \(UUID().uuidString)"
+
+        let zipDirUrl = URL(fileURLWithPath: OWSTemporaryDirectory()).appendingPathComponent(logsName)
+        let zipDirPath = zipDirUrl.path
+        OWSFileSystem.ensureDirectoryExists(zipDirPath)
+
+        let logFilePaths = DebugLogger.shared().allLogFilePaths()
+        if logFilePaths.isEmpty {
+            let errorString = NSLocalizedString(
+                "DEBUG_LOG_ALERT_NO_LOGS",
+                comment: "Error indicating that no debug logs could be found."
+            )
+            return CollectedLogsResult(errorString: errorString)
+        }
+
+        for logFilePath in logFilePaths {
+            let lastLogFilePathComponent = URL(fileURLWithPath: logFilePath).lastPathComponent
+            let copyFilePath = zipDirUrl.appendingPathComponent(lastLogFilePathComponent).path
+            do {
+                try FileManager.default.copyItem(atPath: logFilePath, toPath: copyFilePath)
+            } catch {
+                Logger.error("could not copy log file at \(logFilePath): \(error)")
+                // Write the error to the file that would have been copied.
+                try? error.localizedDescription.write(toFile: copyFilePath, atomically: true, encoding: .utf8)
+            }
+            OWSFileSystem.protectFileOrFolder(atPath: copyFilePath)
+        }
+
+        return CollectedLogsResult(logsDirPath: zipDirPath)
+    }
+
+    @objc(showFailureAlertWithMessage:logArchiveOrDirectoryPath:)
+    static func showFailureAlert(with message: String, logArchiveOrDirectoryPath: String?) {
+        func deleteArchive() {
+            guard let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath else { return }
+            OWSFileSystem.deleteFile(logArchiveOrDirectoryPath)
+        }
+
+        let alert = ActionSheetController(title: nil, message: message)
+
+        if let logArchiveOrDirectoryPath = logArchiveOrDirectoryPath {
+            alert.addAction(.init(
+                title: NSLocalizedString(
+                    "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
+                    comment: "Label for the 'Export Logs' fallback option for the alert when debug log uploading fails."
+                ),
+                accessibilityIdentifier: "export_log_archive"
+            ) { _ in
+                AttachmentSharing.showShareUI(
+                    for: URL(fileURLWithPath: logArchiveOrDirectoryPath),
+                    sender: nil,
+                    completion: deleteArchive
+                )
+            })
+        }
+
+        alert.addAction(.init(title: CommonStrings.okButton, accessibilityIdentifier: "ok") { _ in
+            deleteArchive()
+        })
+
+        let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
+        presentingViewController?.presentActionSheet(alert)
     }
 }

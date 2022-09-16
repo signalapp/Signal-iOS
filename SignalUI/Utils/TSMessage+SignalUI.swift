@@ -22,7 +22,7 @@ public extension TSMessage {
 
         if canBeRemotelyDeleted, let outgoingMessage = self as? TSOutgoingMessage {
             let deleteForEveryoneAction = ActionSheetAction(
-                title: NSLocalizedString(
+                title: OWSLocalizedString(
                     "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
                     comment: "The title for the action that deletes a message for all users in the conversation."
                 ),
@@ -59,11 +59,11 @@ public extension TSMessage {
         guard !Self.preferences.wasDeleteForEveryoneConfirmationShown() else { return completion() }
 
         OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString(
+            title: OWSLocalizedString(
                 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION",
                 comment: "A one-time confirmation that you want to delete for everyone"
             ),
-            proceedTitle: NSLocalizedString(
+            proceedTitle: OWSLocalizedString(
                 "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
                 comment: "The title for the action that deletes a message for all users in the conversation."
             ),

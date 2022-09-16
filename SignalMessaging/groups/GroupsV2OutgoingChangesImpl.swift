@@ -195,11 +195,6 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         self.newDisappearingMessageToken = newDisappearingMessageToken
     }
 
-    public func setShouldUpdateLocalProfileKey() {
-        owsAssertDebug(!shouldUpdateLocalProfileKey)
-        shouldUpdateLocalProfileKey = true
-    }
-
     public func revokeInvalidInvites() {
         owsAssertDebug(!shouldRevokeInvalidInvites)
         shouldRevokeInvalidInvites = true
@@ -233,22 +228,24 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         self.isAnnouncementsOnly = isAnnouncementsOnly
     }
 
-    // MARK: - Change Protos
+    public func setShouldUpdateLocalProfileKey() {
+        owsAssertDebug(!shouldUpdateLocalProfileKey)
+        shouldUpdateLocalProfileKey = true
+    }
 
-    private typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
+    // MARK: - Change Protos
 
     // Given the "current" group state, build a change proto that
     // reflects the elements of the "original intent" that are still
     // necessary to perform.
     //
     // See comments on buildGroupChangeProto() below.
-    public func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
-                                      currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions> {
+    public func buildGroupChangeProto(
+        currentGroupModel: TSGroupModelV2,
+        currentDisappearingMessageToken: DisappearingMessageToken
+    ) -> Promise<GroupsProtoGroupChangeActions> {
         guard groupId == currentGroupModel.groupId else {
             return Promise(error: OWSAssertionError("Mismatched groupId."))
-        }
-        guard let groupsV2Impl = groupsV2 as? GroupsV2Impl else {
-            return Promise(error: OWSAssertionError("Invalid groupsV2: \(type(of: groupsV2))"))
         }
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
@@ -260,29 +257,24 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         // credentials that we'll actually need to build the change proto.
         //
         // NOTE: We don't (and can't) gather profile key credentials for pending members.
-        var newUserUUIDs = Set<UUID>()
-        newUserUUIDs.formUnion(membersToAdd.keys)
-        newUserUUIDs.formUnion(invitedMembersToPromote)
-        // This should be redundant, but we'll also double-check that we have
-        // the local profile key credential.
-        newUserUUIDs.insert(localUuid)
-        let newAddresses = newUserUUIDs.map { SignalServiceAddress(uuid: $0) }
-        let addressesForProfileKeyCredentials = newAddresses
+        var newUserUuids: Set<UUID> = Set(membersToAdd.keys).union(invitedMembersToPromote)
+        newUserUuids.insert(localUuid)
 
-        if isMissingAnnouncementOnlyCapability(currentGroupModel: currentGroupModel,
-                                                         newAddresses: newAddresses) {
+        if isMissingAnnouncementOnlyCapability(
+            currentGroupModel: currentGroupModel,
+            newAddresses: newUserUuids.map { SignalServiceAddress(uuid: $0) }
+        ) {
             return Promise(error: GroupsV2Error.newMemberMissingAnnouncementOnlyCapability)
         }
 
-        return firstly {
-            groupsV2Impl.tryToEnsureProfileKeyCredentials(for: addressesForProfileKeyCredentials,
-                                                          ignoreMissingProfiles: false)
-        }.then(on: .global()) { (_) -> Promise<ProfileKeyCredentialMap> in
-            groupsV2Impl.loadProfileKeyCredentialData(for: Array(newUserUUIDs))
-        }.map(on: .global()) { (profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
-            try self.buildGroupChangeProto(currentGroupModel: currentGroupModel,
-                                           currentDisappearingMessageToken: currentDisappearingMessageToken,
-                                           profileKeyCredentialMap: profileKeyCredentialMap)
+        return firstly(on: .global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
+            self.groupsV2Swift.loadProfileKeyCredentials(for: Array(newUserUuids), forceRefresh: false)
+        }.map(on: .global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
+            try self.buildGroupChangeProto(
+                currentGroupModel: currentGroupModel,
+                currentDisappearingMessageToken: currentDisappearingMessageToken,
+                profileKeyCredentialMap: profileKeyCredentialMap
+            )
         }
     }
 
@@ -348,7 +340,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     // GroupsV2Error.redundantChange.
     private func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                        currentDisappearingMessageToken: DisappearingMessageToken,
-                                       profileKeyCredentialMap: ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions {
+                                       profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions {
         let groupV2Params = try currentGroupModel.groupV2Params()
 
         var actionsBuilder = GroupsProtoGroupChangeActions.builder()
@@ -582,7 +574,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
             }
 
             guard remainingMemberOfAnyKindUuids.count <= GroupManager.groupsV2MaxGroupSizeHardLimit else {
-                throw GroupsV2Error.tooManyMembers
+                throw GroupsV2Error.cannotBuildGroupChangeProto_tooManyMembers
             }
 
             var actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
@@ -629,7 +621,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         for (uuid, newRole) in self.membersToChangeRole {
             guard currentGroupMembership.isFullMember(uuid) else {
                 // User is no longer a member.
-                throw GroupsV2Error.conflictingChange
+                throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
             }
             let currentRole = currentGroupMembership.role(for: uuid)
             guard currentRole != newRole else {
@@ -696,7 +688,11 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         for uuid in invitedMembersToPromote {
             // Check that pending member is still invited.
             guard currentGroupMembership.isInvitedMember(uuid) else {
-                throw GroupsV2Error.redundantChange
+                if currentGroupMembership.isFullMember(uuid) {
+                    throw GroupsV2Error.redundantChange
+                } else {
+                    throw GroupsV2Error.cannotBuildGroupChangeProto_conflictingChange
+                }
             }
             guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
                 throw OWSAssertionError("Missing profile key credential: \(uuid)")
@@ -718,7 +714,7 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
             guard canLeaveGroup else {
                 // This could happen if the last two admins leave at the same time
                 // and race.
-                throw GroupsV2Error.lastAdminCantLeaveGroup
+                throw GroupsV2Error.cannotBuildGroupChangeProto_lastAdminCantLeaveGroup
             }
 
             // Check that we are still invited or in group.

@@ -59,7 +59,7 @@ class ImageEditorViewController: OWSViewController {
     lazy var drawToolbar: DrawToolbar = {
         let toolbar = DrawToolbar(currentColor: model.color)
         toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.paletteView.delegate = self
+        toolbar.colorPickerView.delegate = self
         toolbar.strokeTypeButton.addTarget(self, action: #selector(strokeTypeButtonTapped(sender:)), for: .touchUpInside)
         return toolbar
     }()
@@ -171,7 +171,7 @@ class ImageEditorViewController: OWSViewController {
     }
     var currentStroke: ImageEditorStrokeItem? {
         didSet {
-            updateControlsVisibility(animated: true, slideButtonsInOut: false)
+            updateControlsVisibility()
             updateTopBar()
         }
     }
@@ -186,41 +186,32 @@ class ImageEditorViewController: OWSViewController {
     var textUIInitialized = false
     var startEditingTextOnViewAppear = false
     var currentTextItem: (textItem: ImageEditorTextItem, isNewItem: Bool)?
-    var pinchFontStart: UIFont?
+    var pinchFontSizeStart: CGFloat = ImageEditorTextItem.defaultFontSize
     lazy var textViewContainer: UIView = {
         let view = UIView(frame: view.bounds)
         view.preservesSuperviewLayoutMargins = true
         view.alpha = 0
         return view
     }()
-    lazy var textView: VAlignTextView = {
-        let textView = VAlignTextView()
+    lazy var textView: MediaTextView = {
+        let textView = MediaTextView()
         textView.delegate = self
-        textView.isEditable = true
-        textView.backgroundColor = .clear
-        textView.isOpaque = false
-        textView.tintColor = .white
-        textView.isScrollEnabled = false
-        textView.scrollsToTop = false
-        textView.isUserInteractionEnabled = true
-        textView.textAlignment = .center
-        textView.textContainerInset = .zero
-        textView.textContainer.lineFragmentPadding = 0
-        textView.contentInset = .zero
         return textView
     }()
-    lazy var textToolbar: TextToolbar = {
-        let toolbar = TextToolbar(currentColor: currentTextItem?.textItem.color ?? model.color)
+    lazy var textToolbar: TextStylingToolbar = {
+        let toolbar = TextStylingToolbar(layout: .photoOverlay, currentColor: currentTextItem?.textItem.color ?? model.color)
         toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.paletteView.delegate = self
+        toolbar.colorPickerView.delegate = self
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
+        toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton(sender:)), for: .touchUpInside)
         return toolbar
     }()
-    lazy var textViewAccessoryToolbar: TextToolbar = {
-        let toolbar = TextToolbar(currentColor: currentTextItem?.textItem.color ?? model.color)
+    lazy var textViewAccessoryToolbar: TextStylingToolbar = {
+        let toolbar = TextStylingToolbar(layout: .photoOverlay, currentColor: currentTextItem?.textItem.color ?? model.color)
         toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.paletteView.delegate = self
+        toolbar.colorPickerView.delegate = self
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton(sender:)), for: .touchUpInside)
+        toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton(sender:)), for: .touchUpInside)
         return toolbar
     }()
 
@@ -234,10 +225,8 @@ class ImageEditorViewController: OWSViewController {
         model.add(observer: self)
     }
 
-    override func loadView() {
-        view = UIView()
+    override func viewDidLoad() {
         view.backgroundColor = .black
-        view.isOpaque = true
 
         imageEditorView.configureSubviews()
         view.addSubview(imageEditorView)
@@ -268,10 +257,6 @@ class ImageEditorViewController: OWSViewController {
         strokeWidthSliderPosition = strokeWidthSliderContainer.centerXAnchor.constraint(equalTo: view.leadingAnchor)
         strokeWidthSliderPosition?.autoInstall()
         strokeWidthSliderContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleSliderContainerTap(_:))))
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
         updateUIForCurrentMode()
     }
@@ -280,14 +265,14 @@ class ImageEditorViewController: OWSViewController {
         super.viewWillAppear(animated)
 
         UIView.performWithoutAnimation {
-            setControls(hidden: true, slideButtonsInOut: true)
+            transitionUI(toState: .initial, animated: false)
         }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        updateControlsVisibility(animated: true) { finished in
+        transitionUI(toState: .final, animated: true) { finished in
             guard finished else { return }
             if self.startEditingTextOnViewAppear && self.canBeginTextEditingOnViewAppear {
                 self.beginTextEditing()
@@ -368,8 +353,8 @@ class ImageEditorViewController: OWSViewController {
         model.canUndo() && firstUndoOperationId != model.currentUndoOperationId()
     }
 
-    func updateControlsVisibility(animated: Bool, slideButtonsInOut: Bool = true, completion: ((Bool) -> Void)? = nil) {
-        setControls(hidden: shouldHideControls, animated: animated, slideButtonsInOut: slideButtonsInOut, completion: completion)
+    func updateControlsVisibility() {
+        setControls(hidden: shouldHideControls, animated: true, slideButtonsInOut: false)
     }
 
     private func setControls(hidden: Bool, animated: Bool, slideButtonsInOut: Bool, completion: ((Bool) -> Void)? = nil) {
@@ -387,9 +372,7 @@ class ImageEditorViewController: OWSViewController {
                            completion: completion)
         } else {
             setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
-            if let completion = completion {
-                completion(true)
-            }
+            completion?(true)
         }
     }
 
@@ -442,19 +425,24 @@ class ImageEditorViewController: OWSViewController {
             model.undo()
         }
     }
+}
+
+// MARK: - Presenting / Dismissing {
+
+extension ImageEditorViewController {
 
     private func prepareToDismiss(completion: ((Bool) -> Void)?) {
         if mode == .text {
             finishTextEditing(applyEdits: false)
         }
-        setControls(hidden: true, animated: true, slideButtonsInOut: true, completion: completion)
+        transitionUI(toState: .initial, animated: true, completion: completion)
     }
 
     private func prepareToFinish(completion: ((Bool) -> Void)?) {
         if mode == .text {
             finishTextEditing(applyEdits: true)
         }
-        setControls(hidden: true, animated: true, slideButtonsInOut: true, completion: completion)
+        transitionUI(toState: .initial, animated: true, completion: completion)
     }
 
     private func discardAndDismiss() {
@@ -496,6 +484,16 @@ class ImageEditorViewController: OWSViewController {
         }))
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel, handler: nil))
         presentActionSheet(actionSheet)
+    }
+
+    private enum UIState {
+        case initial
+        case final
+    }
+
+    private func transitionUI(toState state: UIState, animated: Bool, completion: ((Bool) -> Void)? = nil) {
+        setControls(hidden: state == .initial, animated: animated, slideButtonsInOut: true, completion: completion)
+        imageEditorView.setHasRoundCorners(state == .initial, animationDuration: animated ? 0.15 : 0)
     }
 }
 
@@ -539,9 +537,9 @@ extension ImageEditorViewController {
     private func didTapAddText(sender: UIButton) {
         Logger.verbose("")
 
-        let textStyle = textToolbar.textStyle
-        let textColor = textToolbar.paletteView.selectedValue
-        let textItem = imageEditorView.createNewTextItem(withColor: textColor, textStyle: textStyle)
+        let decorationStyle = textToolbar.decorationStyle
+        let textColor = textToolbar.colorPickerView.selectedValue
+        let textItem = imageEditorView.createNewTextItem(withColor: textColor, decorationStyle: decorationStyle)
         selectTextItem(textItem, isNewItem: true, startEditing: true)
     }
 
@@ -635,9 +633,9 @@ extension ImageEditorViewController: ImageEditorModelObserver {
 
 // MARK: - ImageEditorPaletteViewDelegate
 
-extension ImageEditorViewController: ImageEditorPaletteViewDelegate {
+extension ImageEditorViewController: ColorPickerBarViewDelegate {
 
-    func imageEditorPaletteView(_ paletteView: ImageEditorPaletteView, didSelectColor color: ImageEditorColor) {
+    func colorPickerBarView(_ pickerView: ColorPickerBarView, didSelectColor color: ColorPickerBarColor) {
         switch mode {
         case .draw:
             model.color = color
@@ -645,13 +643,13 @@ extension ImageEditorViewController: ImageEditorPaletteViewDelegate {
 
         case .text:
             imageEditorView.updateSelectedTextItem(withColor: color)
-            if paletteView == textToolbar.paletteView {
-                textViewAccessoryToolbar.paletteView.selectedValue = color
-            } else if paletteView == textViewAccessoryToolbar.paletteView {
-                textToolbar.paletteView.selectedValue = color
+            if pickerView == textToolbar.colorPickerView {
+                textViewAccessoryToolbar.colorPickerView.selectedValue = color
+            } else if pickerView == textViewAccessoryToolbar.colorPickerView {
+                textToolbar.colorPickerView.selectedValue = color
             }
             if textView.isFirstResponder {
-                updateTextViewAttributes(withColor: color.color)
+                updateTextViewAttributes(using: textToolbar)
             }
 
         default:

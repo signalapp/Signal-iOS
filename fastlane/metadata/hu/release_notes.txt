@@ -1,2 +1,3 @@
-• Továbbfejlesztettük a médiaszerkesztőt, így minden eddiginél egyszerűbben személyre szabhatod a fényképeket és videókat, mielőtt elküldenéd azokat.
-• Számos hibajavítás az alkalmazás zökkenőmentes működéséhez. További izgalmas változások a láthatáron!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

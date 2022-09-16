@@ -18,6 +18,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSNotificationName const NSNotificationNameRegistrationStateDidChange = @"NSNotificationNameRegistrationStateDidChange";
+NSNotificationName const NSNotificationNameOnboardingStateDidChange = @"NSNotificationNameOnboardingStateDidChange";
 NSString *const TSRemoteAttestationAuthErrorKey = @"TSRemoteAttestationAuth";
 NSNotificationName const NSNotificationNameLocalNumberDidChange = @"NSNotificationNameLocalNumberDidChange";
 
@@ -246,11 +247,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
                                                object:nil];
 
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark -
@@ -696,6 +692,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
         [self.keyValueStore setBool:isOnboarded key:TSAccountManager_IsOnboardedKey transaction:transaction];
         [self loadAccountStateWithTransaction:transaction];
     }
+    [self postOnboardingStateDidChangeNotification];
 }
 
 - (BOOL)isDiscoverableByPhoneNumber
@@ -876,6 +873,7 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value)
     });
 
     [self postRegistrationStateDidChangeNotification];
+    [self postOnboardingStateDidChangeNotification];
 
     return YES;
 }

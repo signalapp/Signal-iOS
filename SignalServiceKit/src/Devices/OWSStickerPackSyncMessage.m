@@ -71,6 +71,11 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 - (SealedSenderContentHint)contentHint
 {
     return SealedSenderContentHintImplicit;

@@ -109,7 +109,17 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
             var contextMenuActions: [ContextMenuAction] = []
             if let actions = self.collectionViewActiveContextMenuInteraction?.messageActions {
 
-                let actionOrder: [MessageAction.MessageActionType] = [.reply, .forward, .copy, .share, .select, .info, .delete]
+                let actionOrder: [MessageAction.MessageActionType] = [
+                    .reply,
+                    .forward,
+                    .copy,
+                    .share,
+                    .select,
+                    .speak,
+                    .stopSpeaking,
+                    .info,
+                    .delete
+                ]
 
                 for type in actionOrder {
                     let actionWithType = actions.first { $0.actionType == type }

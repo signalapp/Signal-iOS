@@ -13,6 +13,18 @@ class TSOutgoingMessageTest: SSKBaseTestSwift {
         _ = identityManager.generateNewIdentityKey(for: .pni)
     }
 
+    func testIsUrgent() {
+        write { transaction in
+            let otherAddress = SignalServiceAddress(phoneNumber: "+12223334444")
+            let thread = TSContactThread.getOrCreateThread(withContactAddress: otherAddress, transaction: transaction)
+            let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
+            messageBuilder.timestamp = 100
+            let message = messageBuilder.build(transaction: transaction)
+
+            XCTAssertTrue(message.isUrgent)
+        }
+    }
+
     func testShouldNotStartExpireTimerWithMessageThatDoesNotExpire() {
         write { transaction in
             let otherAddress = SignalServiceAddress(phoneNumber: "+12223334444")

@@ -20,6 +20,8 @@ public class MessageAction: NSObject {
         case share
         case forward
         case select
+        case speak
+        case stopSpeaking
     }
 
     let actionType: MessageActionType
@@ -55,6 +57,10 @@ public class MessageAction: NSObject {
             return Theme.iconImage(.messageActionForward)
         case .select:
             return Theme.iconImage(.contextMenuSelect)
+        case .speak:
+            return Theme.iconImage(.messageActionSpeak)
+        case .stopSpeaking:
+            return Theme.iconImage(.messageActionStopSpeaking)
         }
     }
 }

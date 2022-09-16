@@ -55,6 +55,8 @@ public enum ThemeIcon: UInt {
     case stickerButton
     case cameraButton
     case micButton
+    case messageActionSpeak
+    case messageActionStopSpeaking
 
     case attachmentCamera
     case attachmentContact
@@ -94,6 +96,7 @@ public enum ThemeIcon: UInt {
     case cancel24
     case xCircle24
     case open24
+    case more24
 
     case checkCircle
     case message
@@ -314,6 +317,10 @@ public extension Theme {
         case .messageActionShare:
             // There is no separate dark theme version of this icon, by design.
             return "share-ios-24"
+        case .messageActionSpeak:
+            return "speaker-solid-28"
+        case .messageActionStopSpeaking:
+            return "pause-filled-24"
         case .messageActionDelete:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
         case .messageActionSave:
@@ -351,6 +358,8 @@ public extension Theme {
             return isDarkThemeEnabled ? "x-circle-solid-24" : "x-circle-outline-24"
         case .open24:
             return "open-24"
+        case .more24:
+            return "more-horiz-24"
 
         case .trash24:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"

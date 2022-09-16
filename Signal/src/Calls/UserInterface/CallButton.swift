@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 class CallButton: UIButton {
     var iconName: String { didSet { updateAppearance() } }
@@ -30,6 +31,8 @@ class CallButton: UIButton {
 
     override var isSelected: Bool { didSet { updateAppearance() } }
     override var isHighlighted: Bool { didSet { updateAppearance() } }
+
+    var shouldDrawAsDisabled = false { didSet { updateAppearance() } }
 
     var showDropdownArrow = false { didSet { updateDropdownArrow() } }
 
@@ -98,6 +101,11 @@ class CallButton: UIButton {
 
         updateAppearance()
         updateSizing()
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateOrientationForPhone),
+                                               name: CallService.phoneOrientationDidChange,
+                                               object: nil)
     }
 
     private func updateAppearance() {
@@ -112,7 +120,7 @@ class CallButton: UIButton {
             label.isHidden = true
         }
 
-        alpha = isHighlighted ? 0.6 : 1
+        alpha = (isHighlighted || !isEnabled || shouldDrawAsDisabled) ? 0.6 : 1
     }
 
     private func updateSizing() {
@@ -144,6 +152,19 @@ class CallButton: UIButton {
         } else {
             dropdownIconView?.removeFromSuperview()
             dropdownIconView = nil
+        }
+    }
+
+    @objc
+    private func updateOrientationForPhone(_ notification: Notification) {
+        let rotationAngle = notification.object as! CGFloat
+
+        if window == nil {
+            self.circleView.transform = CGAffineTransform(rotationAngle: rotationAngle)
+        } else {
+            UIView.animate(withDuration: 0.3, delay: 0, options: .allowUserInteraction) {
+                self.circleView.transform = CGAffineTransform(rotationAngle: rotationAngle)
+            }
         }
     }
 

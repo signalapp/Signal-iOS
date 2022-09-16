@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSThreadStoryViewMode storyViewMode;
 @property (nonatomic, nullable) NSNumber *lastSentStoryTimestamp;
+@property (nonatomic, nullable) NSNumber *lastViewedStoryTimestamp;
 
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) BOOL isArchivedObsolete;
@@ -96,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
+        lastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -119,6 +121,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     _isMarkedUnreadObsolete = isMarkedUnreadObsolete;
     _lastInteractionRowId = lastInteractionRowId;
     _lastSentStoryTimestamp = lastSentStoryTimestamp;
+    _lastViewedStoryTimestamp = lastViewedStoryTimestamp;
     _lastVisibleSortIdObsolete = lastVisibleSortIdObsolete;
     _lastVisibleSortIdOnScreenPercentageObsolete = lastVisibleSortIdOnScreenPercentageObsolete;
     _mentionNotificationMode = mentionNotificationMode;
@@ -540,6 +543,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                              block:^(TSThread *thread) {
                                  thread.messageDraft = nil;
                                  thread.shouldThreadBeVisible = NO;
+                                 [TSThreadReplyInfo deleteWithThreadUniqueID:thread.uniqueId transaction:transaction];
                              }];
 
     // Delete any intents we previously donated for this thread.
@@ -587,13 +591,20 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     return [archivalDate compare:lastMessageDate] != NSOrderedAscending;
 }
 
-- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithDraft:(nullable MessageBody *)draftMessageBody
+              replyInfo:(nullable TSThreadReplyInfo *)replyInfo
+            transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  thread.messageDraft = draftMessageBody.text;
                                  thread.messageDraftBodyRanges = draftMessageBody.ranges;
                              }];
+    if (replyInfo != nil) {
+        [replyInfo saveWithThreadUniqueID:self.uniqueId transaction:transaction error:nil];
+    } else {
+        [TSThreadReplyInfo deleteWithThreadUniqueID:self.uniqueId transaction:transaction];
+    }
 }
 
 - (void)updateWithMentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -616,6 +627,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 {
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) { thread.lastSentStoryTimestamp = lastSentStoryTimestamp; }];
+}
+
+- (void)updateWithLastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
+                               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) { thread.lastViewedStoryTimestamp = lastViewedStoryTimestamp; }];
 }
 
 - (void)updateWithStoryViewMode:(TSThreadStoryViewMode)storyViewMode transaction:(SDSAnyWriteTransaction *)transaction

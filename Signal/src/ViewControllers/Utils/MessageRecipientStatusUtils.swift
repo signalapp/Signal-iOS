@@ -29,8 +29,10 @@ public class MessageRecipientStatusUtils: NSObject {
 
     // This method is per-recipient.
     @objc
-    public class func recipientStatus(outgoingMessage: TSOutgoingMessage,
-            recipientState: TSOutgoingMessageRecipientState) -> MessageReceiptStatus {
+    public class func recipientStatus(
+        outgoingMessage: TSOutgoingMessage,
+        recipientState: TSOutgoingMessageRecipientState
+    ) -> MessageReceiptStatus {
         let (messageReceiptStatus, _, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
                                                                              recipientState: recipientState)
         return messageReceiptStatus
@@ -38,8 +40,10 @@ public class MessageRecipientStatusUtils: NSObject {
 
     // This method is per-recipient.
     @objc
-    public class func shortStatusMessage(outgoingMessage: TSOutgoingMessage,
-        recipientState: TSOutgoingMessageRecipientState) -> String {
+    public class func shortStatusMessage(
+        outgoingMessage: TSOutgoingMessage,
+        recipientState: TSOutgoingMessageRecipientState
+    ) -> String {
         let (_, shortStatusMessage, _) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
                                                                          recipientState: recipientState)
         return shortStatusMessage
@@ -47,16 +51,20 @@ public class MessageRecipientStatusUtils: NSObject {
 
     // This method is per-recipient.
     @objc
-    public class func longStatusMessage(outgoingMessage: TSOutgoingMessage,
-        recipientState: TSOutgoingMessageRecipientState) -> String {
+    public class func longStatusMessage(
+        outgoingMessage: TSOutgoingMessage,
+        recipientState: TSOutgoingMessageRecipientState
+    ) -> String {
         let (_, _, longStatusMessage) = recipientStatusAndStatusMessage(outgoingMessage: outgoingMessage,
                                                                         recipientState: recipientState)
         return longStatusMessage
     }
 
     // This method is per-recipient.
-    class func recipientStatusAndStatusMessage(outgoingMessage: TSOutgoingMessage,
-        recipientState: TSOutgoingMessageRecipientState) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
+    class func recipientStatusAndStatusMessage(
+        outgoingMessage: TSOutgoingMessage,
+        recipientState: TSOutgoingMessageRecipientState
+    ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
 
         switch recipientState.state {
         case .failed:

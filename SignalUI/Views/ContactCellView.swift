@@ -266,8 +266,7 @@ public class ContactCellView: ManualStackView {
                     case .noteToSelf:
                         name = MessageStrings.noteToSelf
                     case .asLocalUser:
-                        name = OWSLocalizedString("GROUP_MEMBER_LOCAL_USER",
-                                                 comment: "Label indicating the local user.")
+                        name = CommonStrings.you
                     case .asUser:
                         name = contactsManager.displayName(for: address,
                                                            transaction: transaction)

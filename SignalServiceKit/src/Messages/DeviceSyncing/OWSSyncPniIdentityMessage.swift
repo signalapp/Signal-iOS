@@ -29,6 +29,8 @@ public class OWSSyncPniIdentityMessage: OWSOutgoingSyncMessage {
         }
     }
 
+    public override var isUrgent: Bool { false }
+
     // MARK: - MTLModel
 
     public required init?(coder: NSCoder) {

@@ -11,9 +11,11 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
     private let failure: (Error) -> Void
 
     @objc
-    public required init(stickerPackInfo: StickerPackInfo,
-                               success : @escaping (StickerPack) -> Void,
-                               failure : @escaping (Error) -> Void) {
+    public required init(
+        stickerPackInfo: StickerPackInfo,
+        success: @escaping (StickerPack) -> Void,
+        failure: @escaping (Error) -> Void
+    ) {
         owsAssertDebug(stickerPackInfo.packId.count > 0)
         owsAssertDebug(stickerPackInfo.packKey.count > 0)
 

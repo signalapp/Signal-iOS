@@ -38,6 +38,7 @@ protocol InteractionFinderAdapter {
     static func interactions(withInteractionIds interactionIds: Set<String>, transaction: ReadTransaction) -> Set<TSInteraction>
 
     static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
+    static func hasLocalUserReplied(storyTimestamp: UInt64, storyAuthorUuidString: String, transaction: ReadTransaction) -> Bool
     static func countReplies(for storyMessage: StoryMessage, transaction: ReadTransaction) -> UInt
     static func hasReplies(for stories: [StoryMessage], transaction: ReadTransaction) -> Bool
     static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: ReadTransaction) -> [String]
@@ -53,7 +54,7 @@ protocol InteractionFinderAdapter {
     func distanceFromLatest(interactionUniqueId: String, excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction) throws -> UInt?
     func count(excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction) -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
-    func enumerateRecentInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+    func enumerateRecentInteractions(excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func enumerateInteractions(range: NSRange, excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func interactionIds(inRange range: NSRange, excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: ReadTransaction) throws -> [String]
     func existsOutgoingMessage(transaction: ReadTransaction) -> Bool
@@ -226,6 +227,13 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    public static func hasLocalUserReplied(storyTimestamp: UInt64, storyAuthorUuidString: String, transaction: SDSAnyReadTransaction) -> Bool {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinder.hasLocalUserReplied(storyTimestamp: storyTimestamp, storyAuthorUuidString: storyAuthorUuidString, transaction: grdbRead)
+        }
+    }
+
     public static func countReplies(for storyMessage: StoryMessage, transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
@@ -388,9 +396,13 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
     @objc
     public func enumerateRecentInteractions(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        try enumerateRecentInteractions(excludingPlaceholders: true, storyReplyQueryMode: .excludeGroupReplies, transaction: transaction, block: block)
+    }
+
+    public func enumerateRecentInteractions(excludingPlaceholders excludePlaceholders: Bool, storyReplyQueryMode: StoryReplyQueryMode, transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.enumerateRecentInteractions(transaction: grdbRead, block: block)
+            return try grdbAdapter.enumerateRecentInteractions(excludingPlaceholders: excludePlaceholders, storyReplyQueryMode: storyReplyQueryMode, transaction: grdbRead, block: block)
         }
     }
 
@@ -914,7 +926,11 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         return interactions
     }
 
-    static func enumerateGroupReplies(for storyMessage: StoryMessage, transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    static func enumerateGroupReplies(
+        for storyMessage: StoryMessage,
+        transaction: ReadTransaction,
+        block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
@@ -944,7 +960,41 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    static func hasLocalUserReplied(
+        storyTimestamp: UInt64,
+        storyAuthorUuidString: String,
+        transaction: ReadTransaction
+    ) -> Bool {
+        let sql = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .storyTimestamp) = ?
+                AND \(interactionColumn: .storyAuthorUuidString) = ?
+                AND \(interactionColumn: .recordType) = \(SDSRecordType.outgoingMessage.rawValue)
+                AND \(interactionColumn: .isGroupStoryReply) = 1
+                LIMIT 1
+            )
+        """
+        do {
+            return try Bool.fetchOne(
+                transaction.database,
+                sql: sql,
+                arguments: [
+                    storyTimestamp,
+                    storyAuthorUuidString
+                ]
+            ) ?? false
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
     static func countReplies(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> UInt {
+        guard !storyMessage.authorAddress.isSystemStoryAddress else {
+            // No replies on system stories.
+            return 0
+        }
         do {
             guard let threadUniqueId = storyMessage.context.threadUniqueId(transaction: transaction.asAnyRead) else {
                 owsFailDebug("Unexpected context for StoryMessage")
@@ -972,8 +1022,16 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     static func hasReplies(for stories: [StoryMessage], transaction: GRDBReadTransaction) -> Bool {
+        // Return early so we don't end up with an empty query string when they're all system stories.
+        guard stories.contains(where: \.authorAddress.isSystemStoryAddress.negated) else {
+            return false
+        }
         var storyFilters = ""
         for story in stories {
+            guard !story.authorAddress.isSystemStoryAddress else {
+                // No replies on system stories.
+                continue
+            }
             guard let threadUniqueId = story.context.threadUniqueId(transaction: transaction.asAnyRead) else {
                 owsFailDebug("Unexpected context for StoryMessage")
                 continue
@@ -1005,6 +1063,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     static func groupReplyUniqueIds(for storyMessage: StoryMessage, transaction: GRDBReadTransaction) -> [String] {
+        guard !storyMessage.authorAddress.isSystemStoryAddress else {
+            // No replies on system stories.
+            return []
+        }
         do {
             let sql: String = """
                 SELECT \(interactionColumn: .uniqueId)
@@ -1193,7 +1255,7 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
     fileprivate static func filterStoryRepliesClause(for queryMode: StoryReplyQueryMode, interactionsAlias: String? = nil) -> String {
         // Until stories are supported, and all the requisite indices have been built,
         // keep using the old story-free query which works with both the old and new indices.
-        guard FeatureFlags.stories else { return "" }
+        guard RemoteConfig.stories else { return "" }
 
         let columnPrefix: String
         if let interactionsAlias = interactionsAlias {
@@ -1231,10 +1293,10 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
 
         let distanceSQL = """
-            SELECT count(*) - 1
+            SELECT COUNT(*)
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .id) >= ?
+            AND \(interactionColumn: .id) > ?
             \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
             \(excludePlaceholders ? filterPlaceholdersClause : "")
         """
@@ -1289,11 +1351,18 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    func enumerateRecentInteractions(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+    func enumerateRecentInteractions(
+        excludingPlaceholders excludePlaceholders: Bool,
+        storyReplyQueryMode: StoryReplyQueryMode,
+        transaction: GRDBReadTransaction,
+        block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void
+    ) throws {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
+        \(Self.filterStoryRepliesClause(for: storyReplyQueryMode))
+        \(excludePlaceholders ? filterPlaceholdersClause : "")
         ORDER BY \(interactionColumn: .id) DESC
         """
         let arguments: StatementArguments = [threadUniqueId]

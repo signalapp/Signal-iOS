@@ -51,6 +51,11 @@ NS_ASSUME_NONNULL_BEGIN
     return EncryptionStylePlaintext;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 - (BOOL)shouldRecordSendLog
 {
     /// We have to return NO since our preferred style is Plaintext. If we returned YES, a future resend response would

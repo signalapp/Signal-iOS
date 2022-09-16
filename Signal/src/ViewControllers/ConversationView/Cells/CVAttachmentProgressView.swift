@@ -22,30 +22,8 @@ public class CVAttachmentProgressView: ManualLayoutView {
         }
     }
 
-    private static let overlayCircleSize: CGFloat = 44
-
-    // The progress views have two styles:
-    //
-    // * Light on dark circle, overlaid over media.
-    //   This style has a fixed size.
-    // * Theme colors.
-    //   This style can be embedded with other content within a message bubble.
-    public enum Style {
-        case withCircle
-        case withoutCircle(diameter: CGFloat)
-
-        var outerDiameter: CGFloat {
-            switch self {
-            case .withCircle:
-                return CVAttachmentProgressView.overlayCircleSize
-            case .withoutCircle(let diameter):
-                return diameter
-            }
-        }
-    }
-
     private let direction: Direction
-    private let style: Style
+    private let diameter: CGFloat
     private let isDarkThemeEnabled: Bool
 
     private let stateView: StateView
@@ -53,15 +31,14 @@ public class CVAttachmentProgressView: ManualLayoutView {
     private var attachmentId: String { direction.attachmentId }
 
     public required init(direction: Direction,
-                         style: Style,
+                         diameter: CGFloat = 44,
                          isDarkThemeEnabled: Bool,
                          mediaCache: CVMediaCache) {
         self.direction = direction
-        self.style = style
+        self.diameter = diameter
         self.isDarkThemeEnabled = isDarkThemeEnabled
-        self.stateView = StateView(diameter: Self.innerDiameter(style: style),
+        self.stateView = StateView(diameter: diameter,
                                    direction: direction,
-                                   style: style,
                                    isDarkThemeEnabled: isDarkThemeEnabled,
                                    mediaCache: mediaCache)
 
@@ -75,28 +52,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
     @available(*, unavailable, message: "use other constructor instead.")
     public required init(name: String) {
         fatalError("init(name:) has not been implemented")
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
-    private static func outerDiameter(style: Style) -> CGFloat {
-        switch style {
-        case .withCircle:
-            return 44
-        case .withoutCircle(let diameter):
-            return diameter
-        }
-    }
-
-    private static func innerDiameter(style: Style) -> CGFloat {
-        switch style {
-        case .withCircle:
-            return 32
-        case .withoutCircle(let diameter):
-            return diameter
-        }
     }
 
     private enum State: Equatable {
@@ -131,12 +86,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
     private class StateView: ManualLayoutView {
         private let diameter: CGFloat
         private let direction: Direction
-        private let style: Style
         private let isDarkThemeEnabled: Bool
         private lazy var imageView = CVImageView()
         private var unknownProgressView: Lottie.AnimationView?
         private var progressView: Lottie.AnimationView?
-        private lazy var outerCircleView = CVImageView()
         private let mediaCache: CVMediaCache
 
         var state: State = .none {
@@ -158,12 +111,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
         required init(diameter: CGFloat,
                       direction: Direction,
-                      style: Style,
                       isDarkThemeEnabled: Bool,
                       mediaCache: CVMediaCache) {
             self.diameter = diameter
             self.direction = direction
-            self.style = style
             self.isDarkThemeEnabled = isDarkThemeEnabled
             self.mediaCache = mediaCache
 
@@ -185,16 +136,12 @@ public class CVAttachmentProgressView: ManualLayoutView {
             case .tapToDownload:
                 if oldState != newState {
                     presentIcon(templateName: "arrow-down-24",
-                                sizeInsideCircle: 16,
-                                isInsideProgress: false,
-                                showOuterCircleIfNecessary: true)
+                                isInsideProgress: false)
                 }
             case .downloadFailed:
                 if oldState != newState {
                     presentIcon(templateName: "retry-alt-24",
-                                sizeInsideCircle: 18,
-                                isInsideProgress: false,
-                                showOuterCircleIfNecessary: true)
+                                isInsideProgress: false)
                 }
             case .downloadProgress(let progress):
                 switch oldState {
@@ -202,8 +149,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
                     updateProgress(progress: progress)
                 default:
                     presentProgress(progress: progress)
-                    presentIcon(templateName: "stop-20",
-                                sizeInsideCircle: 16,
+                    presentIcon(templateName: "x-24",
                                 isInsideProgress: true)
                 }
             case .uploadProgress(let progress):
@@ -215,8 +161,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 }
             case .downloadUnknownProgress:
                 presentUnknownProgress()
-                presentIcon(templateName: "stop-20",
-                            sizeInsideCircle: 10,
+                presentIcon(templateName: "x-24",
                             isInsideProgress: true)
             case .uploadUnknownProgress:
                 presentUnknownProgress()
@@ -224,58 +169,23 @@ public class CVAttachmentProgressView: ManualLayoutView {
         }
 
         private func presentIcon(templateName: String,
-                                 sizeInsideCircle: CGFloat,
-                                 isInsideProgress: Bool,
-                                 showOuterCircleIfNecessary: Bool = false) {
+                                 isInsideProgress: Bool) {
             if !isInsideProgress {
                 reset()
             }
 
-            let iconSize: CGFloat
-            let tintColor: UIColor
-            let hasOuterCircle: Bool
-            switch style {
-            case .withCircle:
-                hasOuterCircle = false
-                tintColor = .ows_white
-                owsAssertDebug(sizeInsideCircle < diameter)
-                iconSize = sizeInsideCircle
-            case .withoutCircle:
-                hasOuterCircle = showOuterCircleIfNecessary
-                tintColor = Theme.primaryTextColor
-                // The icon size hint (sizeInsideCircle) is the size
-                // in the "circle" style.  We can determine the size
-                // in the "no-circle" style by multiplying by the
-                // ratio between the "no-circle" diameter and the
-                // "circle" diameter.
-                iconSize = sizeInsideCircle * diameter / CVAttachmentProgressView.outerDiameter(style: style)
-            }
-            imageView.setTemplateImageName(templateName, tintColor: tintColor)
-            addSubviewToCenterOnSuperview(imageView, size: .square(iconSize))
-
-            if hasOuterCircle {
-                let imageName: String
-                if isDarkThemeEnabled || !isIncoming {
-                    imageName = "circle_outgoing_white_40"
-                } else {
-                    imageName = "circle_incoming_grey_40"
-                }
-                outerCircleView.setImage(imageName: imageName)
-                addSubviewToFillSuperviewEdges(outerCircleView)
-            }
+            imageView.setTemplateImageName(templateName, tintColor: .ows_white)
+            addSubviewToCenterOnSuperview(imageView, size: .square(floor(0.44 * diameter)))
         }
 
         private func presentProgress(progress: CGFloat) {
             reset()
 
             let animationName: String
-            switch style {
-            case .withCircle:
-                animationName = "determinate_spinner_white"
-            case .withoutCircle:
-                animationName = (isIncoming && !isDarkThemeEnabled
-                                    ? "determinate_spinner_blue"
-                                    : "determinate_spinner_white")
+            if diameter <= 44 {
+                animationName = "determinate_spinner_44"
+            } else {
+                animationName = "determinate_spinner_56"
             }
             let animationView = ensureAnimationView(progressView, animationName: animationName)
             owsAssertDebug(animationView.animation != nil)
@@ -293,13 +203,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
             reset()
 
             let animationName: String
-            switch style {
-            case .withCircle:
-                animationName = "indeterminate_spinner_white"
-            case .withoutCircle:
-                animationName = (isIncoming && !isDarkThemeEnabled
-                                    ? "indeterminate_spinner_blue"
-                                    : "indeterminate_spinner_white")
+            if diameter <= 44 {
+                animationName = "indeterminate_spinner_44"
+            } else {
+                animationName = "indeterminate_spinner_56"
             }
             let animationView = ensureAnimationView(unknownProgressView, animationName: animationName)
             owsAssertDebug(animationView.animation != nil)
@@ -342,7 +249,6 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
             progressView?.stop()
             unknownProgressView?.stop()
-            outerCircleView.image = nil
             imageView.image = nil
         }
     }
@@ -350,25 +256,14 @@ public class CVAttachmentProgressView: ManualLayoutView {
     private func createViews() {
         let innerContentView = self.stateView
 
-        switch style {
-        case .withCircle:
-            let circleView = ManualLayoutView.circleView(name: "circleView")
-            circleView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.7)
-            circleView.addSubviewToCenterOnSuperview(innerContentView,
-                                                     size: .square(Self.outerDiameter(style: style)))
-            addSubviewToFillSuperviewEdges(circleView)
-        case .withoutCircle:
-            addSubviewToFillSuperviewEdges(innerContentView)
-        }
+        let circleView = ManualLayoutView.circleView(name: "circleView")
+        circleView.backgroundColor = .ows_blackAlpha50
+        circleView.addSubviewToCenterOnSuperview(innerContentView, size: .square(diameter))
+        addSubviewToFillSuperviewEdges(circleView)
     }
 
     public var layoutSize: CGSize {
-        switch style {
-        case .withCircle:
-            return .square(Self.outerDiameter(style: style))
-        case .withoutCircle:
-            return .square(Self.innerDiameter(style: style))
-        }
+        .square(diameter)
     }
 
     private func configureState() {

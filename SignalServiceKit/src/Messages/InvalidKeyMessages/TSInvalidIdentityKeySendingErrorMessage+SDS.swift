@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSInvalidIdentityKeySendingErrorMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchInvalidIdentityKeySendingErrorMessage(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSInvalidIdentityKeySendingErrorMessage? {
+    class func anyFetchInvalidIdentityKeySendingErrorMessage(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSInvalidIdentityKeySendingErrorMessage? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

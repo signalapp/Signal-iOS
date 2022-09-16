@@ -255,7 +255,9 @@ extension SendMessageFlow {
                     throw OWSAssertionError("Unexpected thread state.")
             }
             return self.databaseStorage.write { transaction -> TSThread in
-                thread.update(withDraft: messageBody, transaction: transaction)
+                thread.update(withDraft: messageBody,
+                              replyInfo: nil,
+                              transaction: transaction)
                 return thread
             }
         }.done { (thread: TSThread) in

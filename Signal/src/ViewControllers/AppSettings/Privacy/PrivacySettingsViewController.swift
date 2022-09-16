@@ -45,7 +45,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         contents.addSection(blockedSection)
 
         let whoCanSection = OWSTableSection()
-        whoCanSection.headerTitle = NSLocalizedString("SETTINGS_WHO_CAN", comment: "Label for the 'who can' privacy settings.")
 
         if FeatureFlags.phoneNumberSharing {
             whoCanSection.add(.disclosureItem(
@@ -80,10 +79,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         }
 
         let messagingSection = OWSTableSection()
-        messagingSection.headerTitle = NSLocalizedString(
-            "SETTINGS_MESSAGING",
-            comment: "Label for the 'messaging' privacy settings."
-        )
         messagingSection.footerTitle = NSLocalizedString(
             "SETTINGS_MESSAGING_FOOTER",
             comment: "Explanation for the 'messaging' privacy settings."
@@ -109,10 +104,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         contents.addSection(messagingSection)
 
         let disappearingMessagesSection = OWSTableSection()
-        disappearingMessagesSection.headerTitle = NSLocalizedString(
-            "SETTINGS_DISAPPEARING_MESSAGES",
-            comment: "Label for the 'disappearing messages' privacy settings."
-        )
         disappearingMessagesSection.footerTitle = NSLocalizedString(
             "SETTINGS_DISAPPEARING_MESSAGES_FOOTER",
             comment: "Explanation for the 'disappearing messages' privacy settings."
@@ -125,8 +116,8 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 guard let self = self else { return UITableViewCell() }
                 let cell = OWSTableItem.buildIconNameCell(
                     itemName: NSLocalizedString(
-                        "SETTINGS_DEFAULT_DISAPPEARING_MESSAGES",
-                        comment: "table cell label in conversation settings"
+                        "SETTINGS_DISAPPEARING_MESSAGES",
+                        comment: "Label for the 'disappearing messages' privacy settings."
                     ),
                     accessoryText: disappearingMessagesConfiguration.isEnabled
                     ? NSString.formatDurationSeconds(disappearingMessagesConfiguration.durationSeconds, useShortFormat: true)
@@ -148,6 +139,25 @@ class PrivacySettingsViewController: OWSTableViewController2 {
             }
         ))
         contents.addSection(disappearingMessagesSection)
+
+        if RemoteConfig.stories {
+            let storiesSection = OWSTableSection()
+            storiesSection.footerTitle = NSLocalizedString(
+                "SETTINGS_STORIES_FOOTER",
+                comment: "Explanation for the 'stories' privacy settings."
+            )
+            storiesSection.add(.disclosureItem(
+                withText: NSLocalizedString(
+                    "SETTINGS_STORIES_TITLE",
+                    comment: "Label for the stories section of the settings view"
+                ),
+                actionBlock: { [weak self] in
+                    let vc = StoryPrivacySettingsViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+            contents.addSection(storiesSection)
+        }
 
         let appSecuritySection = OWSTableSection()
         appSecuritySection.headerTitle = NSLocalizedString("SETTINGS_SECURITY_TITLE", comment: "Section header")
@@ -291,6 +301,6 @@ class PrivacySettingsViewController: OWSTableViewController2 {
         preferences.setIsSystemCallLogEnabled(sender.isOn)
 
         // rebuild callUIAdapter since CallKit configuration changed.
-        Self.callService.individualCallService.createCallUIAdapter()
+        Self.callService.createCallUIAdapter()
     }
 }

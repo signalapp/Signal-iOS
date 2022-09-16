@@ -7,33 +7,6 @@ import UIKit
 @objc
 extension ChatListViewController {
 
-    // MARK: - context menu
-
-    func showOrHideMenu(_ sender: UIButton) {
-        AssertIsOnMainThread()
-
-        if viewState.multiSelectState.parentButton == nil {
-            showMenu(from: sender, animated: true)
-        } else {
-            hideMenu()
-        }
-    }
-
-    func adjustContextMenuPosition() {
-        guard let menu = viewState.multiSelectState.contextMenuView?.menuContainer else {
-            return
-        }
-
-        var safeAreaInsets = view.safeAreaInsets
-        // if the safeAreaInsets are 0 (eg. on iPads) they can not be used for
-        // calculating the correct position of the context menu
-        Logger.info("safeAreaInsets are \(safeAreaInsets)")
-        if safeAreaInsets.top == 0 {
-            safeAreaInsets.top = (navigationController?.toolbar.height ?? 0) + UIApplication.shared.statusBarFrame.height
-        }
-        menu.frame.origin = CGPoint(x: safeAreaInsets.left, y: safeAreaInsets.top) + ContextMenuActionsViewContainer.offset
-    }
-
     // MARK: - multi select mode
 
     func willEnterMultiselectMode() {
@@ -117,80 +90,9 @@ extension ChatListViewController {
 
     func applyThemeToContextMenuAndToolbar() {
         viewState.multiSelectState.toolbar?.themeChanged()
-        // if the context menu is shown
-        if let btn = viewState.multiSelectState.parentButton, viewState.multiSelectState.contextMenuView != nil {
-            // we have to create it again (changed colors, icons etc.)
-            hideMenuAndExecuteWhenVanished(animated: false) {
-                self.showMenu(from: btn, animated: false)
-            }
-        }
     }
 
     // MARK: private helper
-
-    private func showMenu(from button: UIButton, animated: Bool) {
-        AssertIsOnMainThread()
-
-        guard viewState.multiSelectState.contextMenuView == nil else {
-            return
-        }
-        guard let window = button.window else {
-            return
-        }
-
-        var contextMenuActions: [ContextMenuAction] = []
-        if renderState.inboxCount > 0 {
-            contextMenuActions.append(
-                ContextMenuAction(
-                    title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the ChatList."),
-                    image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"),
-                    attributes: [],
-                    handler: { [weak self] (_) in
-                        self?.hideMenuAndExecuteWhenVanished {
-                            self?.willEnterMultiselectMode()
-                        }
-                    }))
-        }
-        contextMenuActions.append(
-            ContextMenuAction(
-                title: CommonStrings.openSettingsButton,
-                image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"),
-                attributes: [],
-                handler: { [weak self] (_) in
-                    self?.hideMenuAndExecuteWhenVanished {
-                        self?.showAppSettings(mode: .none)
-                    }
-            }))
-        if renderState.archiveCount > 0 {
-            contextMenuActions.append(
-                ContextMenuAction(
-                    title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."),
-                    image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"),
-                    attributes: [],
-                    handler: { [weak self] (_) in
-                        self?.hideMenuAndExecuteWhenVanished {
-                            self?.showArchivedConversations(offerMultiSelectMode: true)
-                        }
-                }))
-        }
-
-        viewState.multiSelectState.parentButton = button
-
-        let v = ContextMenuActionsView(menu: ContextMenu(contextMenuActions))
-        let size = v.sizeThatFitsMaxSize
-        v.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-        v.delegate = self
-
-        viewState.multiSelectState.contextMenuView = ContextMenuActionsViewContainer(v)
-        viewState.multiSelectState.contextMenuView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(hideMenu)))
-        window.addSubview(viewState.multiSelectState.contextMenuView!)
-        viewState.multiSelectState.contextMenuView!.frame = window.bounds
-        adjustContextMenuPosition()
-
-        if animated, let menuContainer = viewState.multiSelectState.contextMenuView?.menuContainer {
-            animateIn(menu: menuContainer, from: button)
-        }
-    }
 
     private func done() {
         leaveMultiselectMode()
@@ -198,89 +100,6 @@ extension ChatListViewController {
         if self.chatListMode == .archive {
             navigationItem.rightBarButtonItem?.title = CommonStrings.selectButton
         }
-    }
-
-    private func hideMenu() {
-        hideMenuAndExecuteWhenVanished(animated: true)
-    }
-
-    private func hideMenuAndExecuteWhenVanished(animated: Bool = true, completion handler: (() -> Void)? = nil) {
-        AssertIsOnMainThread()
-
-        let completion = { [weak self] (_: Bool) in
-            self?.viewState.multiSelectState.contextMenuView?.removeFromSuperview()
-            self?.viewState.multiSelectState.parentButton?.alpha = 1
-            self?.viewState.multiSelectState.parentButton = nil
-            self?.viewState.multiSelectState.contextMenuView = nil
-            handler?()
-        }
-        if animated {
-            animateOut(menu: viewState.multiSelectState.contextMenuView?.menuContainer, from: viewState.multiSelectState.parentButton, completion: completion)
-        } else {
-            completion(true)
-        }
-    }
-
-    private func animateIn(menu: UIView, from: UIView?, completion: ((Bool) -> Void)? = nil) {
-        let oldAnchor = menu.layer.anchorPoint
-        let frame = menu.frame
-        menu.layer.anchorPoint = .zero
-        menu.frame = frame
-        menu.alpha = 0
-        menu.transform = .scale(0.01)
-        from?.isUserInteractionEnabled = false
-        animate({
-            menu.alpha = 1
-            from?.alpha = 0.4
-        })
-        animateWithSpring({
-            menu.transform = .identity
-        }) { (result) in
-            menu.layer.anchorPoint = oldAnchor
-            menu.frame = frame
-            from?.isUserInteractionEnabled = true
-            completion?(result)
-        }
-    }
-
-    private func animateOut(menu: UIView?, from: UIView?, completion: ((Bool) -> Void)? = nil) {
-        guard let menu = menu else {
-            completion?(false)
-            return
-        }
-
-        let frame = menu.frame
-        menu.layer.anchorPoint = .zero
-        menu.frame = frame
-        from?.isUserInteractionEnabled = false
-        animate({
-            from?.alpha = 1
-            menu.alpha = 0
-            menu.transform = .scale(0.01)
-            menu.frame.origin = frame.origin + ContextMenuActionsViewContainer.offset
-        }) { (result) in
-            menu.removeFromSuperview()
-            from?.isUserInteractionEnabled = true
-            completion?(result)
-        }
-    }
-
-    private func animate(_ animations: @escaping (() -> Void), completion: ((Bool) -> Void)? = nil, duration: TimeInterval = 0.25, delay: TimeInterval = 0) {
-        UIView.animate(withDuration: duration,
-                       delay: delay,
-                       options: [.curveEaseInOut, .beginFromCurrentState],
-                       animations: animations,
-                       completion: completion)
-    }
-
-    private func animateWithSpring(_ animations: @escaping (() -> Void), completion: ((Bool) -> Void)? = nil, duration: TimeInterval = 0.4, delay: TimeInterval = 0) {
-        UIView.animate(withDuration: duration,
-                       delay: delay,
-                       usingSpringWithDamping: 0.8,
-                       initialSpringVelocity: 1,
-                       options: [.curveEaseInOut, .beginFromCurrentState],
-                       animations: animations,
-                       completion: completion)
     }
 
     private func adjustToolbarButtons(_ toolbar: UIToolbar?) {
@@ -451,53 +270,13 @@ extension ChatListViewController {
     }
 }
 
-// MARK: - implementation of ContextMenuActionsViewDelegate
-extension ChatListViewController: ContextMenuActionsViewDelegate {
-    func contextMenuActionViewDidSelectAction(contextMenuAction: ContextMenuAction) {
-        contextMenuAction.handler(contextMenuAction)
-    }
-}
-
-// MARK: - view helper class (providing a rounded view *with* a shadow)
-private class ContextMenuActionsViewContainer: UIView {
-    static let offset = CGPoint(x: 8, y: 0)
-    fileprivate let menuContainer: UIView
-
-    required init(_ target: UIView) {
-        let container = UIView(frame: target.bounds)
-        container.autoresizingMask = [.flexibleRightMargin, .flexibleBottomMargin]
-        self.menuContainer = container
-
-        super.init(frame: .zero)
-
-        let radius = target.layer.cornerRadius
-        let shadowView = UIView(frame: CGRect(x: radius,
-                                              y: radius,
-                                              width: target.bounds.width - 2 * radius,
-                                              height: target.bounds.height - 2 * radius))
-        shadowView.backgroundColor = Theme.isDarkThemeEnabled ? .black : .white
-        shadowView.setShadow(radius: 40, opacity: 0.3, offset: CGSize(width: 8, height: 20))
-        target.frame = target.bounds
-        container.addSubview(shadowView)
-        container.addSubview(target)
-        self.addSubview(container)
-        self.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-}
-
 // MARK: - object encapsulating the complete state of the MultiSelect process
 @objc
 public class MultiSelectState: NSObject {
     @objc
     public static let multiSelectionModeDidChange = Notification.Name("multiSelectionModeDidChange")
 
-    fileprivate var parentButton: UIButton?
     fileprivate var title: String?
-    fileprivate var contextMenuView: ContextMenuActionsViewContainer?
     fileprivate var toolbar: BlurredToolbarContainer?
     private var _isActive = false
     var actionPerformed = false

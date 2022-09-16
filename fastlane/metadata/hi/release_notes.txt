@@ -1,2 +1,3 @@
-• हमने मीडिया एडिटर को बेहतर बना दिया है जिससे आपके लिए फ़ोटो और वीडियो भेजने से पहले उन्हें कस्टमाइज़ करना अब पहले से भी आसान हो जाएगा।
-• कुछ बग फ़िक्स किए गए हैं ताकि आपका ऐप आराम से चलता रहे। आगे और भी दिलचस्प बदलाव होने हैं।
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

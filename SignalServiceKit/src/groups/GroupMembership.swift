@@ -326,15 +326,51 @@ public class GroupMembership: MTLModel {
         guard let other = object as? GroupMembership else {
             return false
         }
-        guard self.memberStates == other.memberStates else {
+
+        guard Self.memberStates(
+            self.memberStates,
+            areEqualTo: other.memberStates
+        ) else {
             return false
         }
+
         guard self.bannedMembers == other.bannedMembers else {
             return false
         }
+
         let invalidInvitesSet = Set(invalidInvites.map { $0.userId })
         let otherInvalidInvitesSet = Set(other.invalidInvites.map { $0.userId })
         return invalidInvitesSet == otherInvalidInvitesSet
+    }
+
+    /// When comparing member states, ignore the `didJoinFromInviteLink` field.
+    /// This field is not stored as part of memberships in group snapshots from
+    /// the service, and is only computed when a member joins a group and we add
+    /// them locally. If our local membership differs from a group snapshot's
+    /// only in the `didJoinFromInviteLink` field, we want to consider them
+    /// equal to avoid clobbering our local state.
+    private static func memberStates(
+        _ memberStates: MemberStateMap,
+        areEqualTo otherMemberStates: MemberStateMap
+    ) -> Bool {
+
+        func hardcodeDidJoinViaInviteLink(for groupMemberState: GroupMemberState) -> GroupMemberState {
+            switch groupMemberState {
+            case .fullMember(let role, _):
+                return .fullMember(role: role, didJoinFromInviteLink: false)
+            default:
+                return groupMemberState
+            }
+        }
+
+        guard memberStates.count == otherMemberStates.count else {
+            return false
+        }
+
+        return memberStates.allSatisfy { (key, value) -> Bool in
+            guard let otherValue = otherMemberStates[key] else { return false }
+            return hardcodeDidJoinViaInviteLink(for: value) == hardcodeDidJoinViaInviteLink(for: otherValue)
+        }
     }
 
     // MARK: -
@@ -423,31 +459,31 @@ public class GroupMembership: MTLModel {
 public extension GroupMembership {
 
     var fullMemberAdministrators: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isAdministrator && $0.value.isFullMember }.keys)
+        return Set(memberStates.lazy.filter { $0.value.isAdministrator && $0.value.isFullMember }.map { $0.key })
     }
 
     var fullMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isFullMember }.keys)
+        return Set(memberStates.lazy.filter { $0.value.isFullMember }.map { $0.key })
     }
 
     var invitedMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isInvited }.keys)
+        return Set(memberStates.lazy.filter { $0.value.isInvited }.map { $0.key })
     }
 
     var requestingMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter { $0.value.isRequesting }.keys)
+        return Set(memberStates.lazy.filter { $0.value.isRequesting }.map { $0.key })
     }
 
     var fullOrInvitedMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter {
+        return Set(memberStates.lazy.filter {
             $0.value.isFullMember || $0.value.isInvited
-        }.keys)
+        }.map { $0.key })
     }
 
     var invitedOrRequestMembers: Set<SignalServiceAddress> {
-        return Set(memberStates.filter {
+        return Set(memberStates.lazy.filter {
             $0.value.isInvited || $0.value.isRequesting
-        }.keys)
+        }.map { $0.key })
     }
 
     // allMembersOfAnyKind includes _all_ members:
@@ -463,7 +499,11 @@ public extension GroupMembership {
     // * Normal and administrator.
     // * Normal, pending profile key, requesting.
     var allMemberUuidsOfAnyKind: Set<UUID> {
-        return Set(memberStates.keys.compactMap { $0.uuid })
+        return Set(memberStates.keys.lazy.compactMap { $0.uuid })
+    }
+
+    var bannedMemberAddresses: Set<SignalServiceAddress> {
+        return Set(bannedMembers.keys.lazy.map { SignalServiceAddress(uuid: $0) })
     }
 }
 
@@ -765,7 +805,7 @@ public extension GroupMembership {
         // MARK: Build
 
         public func build() -> GroupMembership {
-            owsAssertDebug(Set(bannedMembers.keys.map { SignalServiceAddress(uuid: $0) })
+            owsAssertDebug(Set(bannedMembers.keys.lazy.map { SignalServiceAddress(uuid: $0) })
                 .isDisjoint(with: Set(memberStates.keys)))
 
             var memberStates = self.memberStates

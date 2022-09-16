@@ -84,10 +84,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d elementi</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>1 elemento</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>%d elementi</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -463,6 +465,24 @@
 			<string>In questa chiamata · %d persone</string>
 		</dict>
 	</dict>
+	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>many</key>
+			<string>Chiamando %2$@, %3$@, e %d altre persone…</string>
+			<key>one</key>
+			<string>Chiamando %2$@, %3$@, e 1 altra persona…</string>
+			<key>other</key>
+			<string>Stiamo chiamando %2$@, %3$@ e altre %d persone…</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -515,6 +535,42 @@
 			<string>%2$@, %3$@, e 1 altro hanno lasciato la chiamata</string>
 			<key>other</key>
 			<string>%2$@, %3$@, e altri %d hanno lasciato la chiamata</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>many</key>
+			<string>%2$@, %3$@, e %d altre persone riceveranno una notifica</string>
+			<key>one</key>
+			<string>%2$@, %3$@, e 1 altra persona riceveranno una notifica</string>
+			<key>other</key>
+			<string>%2$@, %3$@ e altre %d persone riceveranno una notifica</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>many</key>
+			<string>Signal chiamerà %2$@, %3$@, e %d altre persone</string>
+			<key>one</key>
+			<string>Signal chiamerà %2$@, %3$@, e 1 altra persona</string>
+			<key>other</key>
+			<string>Signal chiamerà %2$@, %3$@ e altre %d persone</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -695,6 +751,24 @@
 			<string>%2$@ ha revocato un invito al gruppo per 1 persona.</string>
 			<key>other</key>
 			<string>%2$@ ha annullato un invito al gruppo per %d persone.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>many</key>
+			<string>%2$@ ha richiesto e annullato %d richieste di unirsi al gruppo tramite link diretto.</string>
+			<key>one</key>
+			<string>%2$@ ha richiesto e annullato la propria richiesta di unirsi al gruppo tramite link diretto.</string>
+			<key>other</key>
+			<string>%2$@ ha richiesto e annullato %d richieste di unirsi al gruppo tramite link diretto.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -887,12 +961,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>many</key>
-			<string>%d persone escluse</string>
 			<key>one</key>
-			<string>1 persona esclusa</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>%d persone escluse</string>
+			<string>%d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -905,15 +977,13 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>many</key>
-			<string>%d persone</string>
 			<key>one</key>
-			<string>1 persona</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d persone</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -923,12 +993,42 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>many</key>
-			<string>%d persone</string>
 			<key>one</key>
-			<string>1 persona</string>
+			<string>All Signal Connections · 1 Viewer</string>
 			<key>other</key>
-			<string>%d persone hanno visto la Storia</string>
+			<string>All Signal Connections · %d Viewers</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>All Signal Connections · 1 Excluded</string>
+			<key>other</key>
+			<string>All Signal Connections · %d Excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Only Share With · 1 Viewer</string>
+			<key>other</key>
+			<string>Only Share With · %d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -959,10 +1059,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>many</key>
+			<string>%d persone</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 persona</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d persone hanno visto la Storia</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1145,7 +1247,7 @@
 			<string>Hai %d tentativi rimanenti. Se esaurisci i tentativi il tuo account verrà bloccato. Dopo 7 giorni di inattività, potrai registrarti di nuovo senza il tuo PIN. Il tuo account sarà cancellato e tutti i contenuti eliminati.</string>
 		</dict>
 	</dict>
-	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@caption@</string>
@@ -1156,11 +1258,27 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>many</key>
-			<string>%d Amicizie di Signal</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; risposte</string>
 			<key>one</key>
-			<string>1 Amicizia di Signal</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; risposta</string>
 			<key>other</key>
-			<string>%d Amicizie di Signal</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; risposte</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1181,6 +1299,24 @@
 			<string>%d Escluse</string>
 		</dict>
 	</dict>
+	<key>STORY_SENDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>many</key>
+			<string>Invio di %d in corso...</string>
+			<key>one</key>
+			<string>Invio in corso...</string>
+			<key>other</key>
+			<string>Invio di %d in corso...</string>
+		</dict>
+	</dict>
 	<key>STORY_VIEWS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1197,6 +1333,55 @@
 			<string>1 visualizzazione</string>
 			<key>other</key>
 			<string>%d visualizzazioni</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@views@  %2$#@replies@</string>
+		<key>replies</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; risposte</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; risposta</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; risposte</string>
+		</dict>
+		<key>views</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; visualizzazioni</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; visualizzazione</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; visualizzazioni</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; visualizzazioni</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; visualizzazione</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; visualizzazioni</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

@@ -5,50 +5,27 @@
 import Foundation
 import SignalMessaging
 
-@objc
 public class ThreadViewModel: NSObject {
-    @objc
     public let hasUnreadMessages: Bool
-    @objc
     public let isGroupThread: Bool
-    @objc
     public let threadRecord: TSThread
-    @objc
     public let unreadCount: UInt
-    @objc
     public let contactAddress: SignalServiceAddress?
-    @objc
     public let name: String
-    @objc
     public let associatedData: ThreadAssociatedData
-    @objc
     public let hasPendingMessageRequest: Bool
-    @objc
     public let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration
-    @objc
     public let groupCallInProgress: Bool
-    @objc
     public let hasWallpaper: Bool
-    @objc
     public let isWallpaperPhoto: Bool
-    @objc
     public let isBlocked: Bool
 
     public let storyState: ConversationAvatarView.Configuration.StoryState
 
-    @objc
     public var isArchived: Bool { associatedData.isArchived }
-
-    @objc
     public var isMuted: Bool { associatedData.isMuted }
-
-    @objc
     public var mutedUntilTimestamp: UInt64 { associatedData.mutedUntilTimestamp }
-
-    @objc
     public var mutedUntilDate: Date? { associatedData.mutedUntilDate }
-
-    @objc
     public var isMarkedUnread: Bool { associatedData.isMarkedUnread }
 
     public let chatColor: ChatColor
@@ -57,18 +34,15 @@ public class ThreadViewModel: NSObject {
         return !isGroupThread
     }
 
-    @objc
     public var isLocalUserFullMemberOfThread: Bool {
         threadRecord.isLocalUserFullMemberOfThread
     }
 
-    @objc
     public let lastMessageForInbox: TSInteraction?
 
     // This property is only populated if forChatList is true.
     public let chatListInfo: ChatListInfo?
 
-    @objc
     public init(thread: TSThread, forChatList: Bool, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
         self.disappearingMessagesConfiguration = thread.disappearingMessagesConfiguration(with: transaction)
@@ -119,7 +93,7 @@ public class ThreadViewModel: NSObject {
             self.isWallpaperPhoto = false
         }
 
-        if let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction) {
+        if !thread.isNoteToSelf, let latestStory = StoryFinder.latestStoryForThread(thread, transaction: transaction) {
             storyState = latestStory.localUserViewedTimestamp != nil ? .viewed : .unviewed
         } else {
             self.storyState = .none
@@ -145,7 +119,6 @@ public class ChatListInfo: Dependencies {
     public let lastMessageDate: Date?
     public let snippet: CLVSnippet
 
-    @objc
     public init(thread: TSThread,
                 lastMessageForInbox: TSInteraction?,
                 hasPendingMessageRequest: Bool,
@@ -159,10 +132,12 @@ public class ChatListInfo: Dependencies {
                                            transaction: transaction)
     }
 
-    private static func buildCLVSnippet(thread: TSThread,
-                                       hasPendingMessageRequest: Bool,
-                                       lastMessageForInbox: TSInteraction?,
-                                       transaction: SDSAnyReadTransaction) -> CLVSnippet {
+    private static func buildCLVSnippet(
+        thread: TSThread,
+        hasPendingMessageRequest: Bool,
+        lastMessageForInbox: TSInteraction?,
+        transaction: SDSAnyReadTransaction
+    ) -> CLVSnippet {
 
         let isBlocked = blockingManager.isThreadBlocked(thread, transaction: transaction)
 
@@ -193,8 +168,7 @@ public class ChatListInfo: Dependencies {
                     transaction: transaction
                 )
             } else if lastMessageForInbox is TSOutgoingMessage {
-                return OWSLocalizedString("GROUP_MEMBER_LOCAL_USER",
-                                         comment: "Label indicating the local user.")
+                return CommonStrings.you
             } else {
                 return nil
             }

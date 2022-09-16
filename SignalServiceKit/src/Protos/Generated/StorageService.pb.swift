@@ -314,6 +314,8 @@ struct StorageServiceProtos_ContactRecord {
 
   var mutedUntilTimestamp: UInt64 = 0
 
+  var hideStory: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum IdentityState: SwiftProtobuf.Enum {
@@ -403,6 +405,11 @@ struct StorageServiceProtos_GroupV2Record {
   var markedUnread: Bool = false
 
   var mutedUntilTimestamp: UInt64 = 0
+
+  ///bool dontNotifyForMentionsIfMuted = 7;
+  var hideStory: Bool = false
+
+  var storySendEnabled: Bool = false
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -537,6 +544,17 @@ struct StorageServiceProtos_AccountRecord {
   var keepMutedChatsArchived: Bool {
     get {return _storage._keepMutedChatsArchived}
     set {_uniqueStorage()._keepMutedChatsArchived = newValue}
+  }
+
+  /// reserved 26
+  var viewedOnboardingStory: Bool {
+    get {return _storage._viewedOnboardingStory}
+    set {_uniqueStorage()._viewedOnboardingStory = newValue}
+  }
+
+  var storiesDisabled: Bool {
+    get {return _storage._storiesDisabled}
+    set {_uniqueStorage()._storiesDisabled = newValue}
   }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -1160,6 +1178,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     11: .same(proto: "archived"),
     12: .same(proto: "markedUnread"),
     13: .same(proto: "mutedUntilTimestamp"),
+    14: .same(proto: "hideStory"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1181,6 +1200,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       case 11: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
       case 12: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 13: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
+      case 14: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
       default: break
       }
     }
@@ -1226,6 +1246,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     if self.mutedUntilTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.mutedUntilTimestamp, fieldNumber: 13)
     }
+    if self.hideStory != false {
+      try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 14)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1243,6 +1266,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.archived != rhs.archived {return false}
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
+    if lhs.hideStory != rhs.hideStory {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1327,6 +1351,8 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     4: .same(proto: "archived"),
     5: .same(proto: "markedUnread"),
     6: .same(proto: "mutedUntilTimestamp"),
+    8: .same(proto: "hideStory"),
+    9: .same(proto: "storySendEnabled"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1341,6 +1367,8 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
       case 4: try { try decoder.decodeSingularBoolField(value: &self.archived) }()
       case 5: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 6: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
+      case 8: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
+      case 9: try { try decoder.decodeSingularBoolField(value: &self.storySendEnabled) }()
       default: break
       }
     }
@@ -1365,6 +1393,12 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if self.mutedUntilTimestamp != 0 {
       try visitor.visitSingularUInt64Field(value: self.mutedUntilTimestamp, fieldNumber: 6)
     }
+    if self.hideStory != false {
+      try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 8)
+    }
+    if self.storySendEnabled != false {
+      try visitor.visitSingularBoolField(value: self.storySendEnabled, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -1375,6 +1409,8 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.archived != rhs.archived {return false}
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
+    if lhs.hideStory != rhs.hideStory {return false}
+    if lhs.storySendEnabled != rhs.storySendEnabled {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -1407,6 +1443,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     23: .same(proto: "displayBadgesOnProfile"),
     24: .same(proto: "subscriptionManuallyCancelled"),
     25: .same(proto: "keepMutedChatsArchived"),
+    27: .same(proto: "viewedOnboardingStory"),
+    28: .same(proto: "storiesDisabled"),
   ]
 
   fileprivate class _StorageClass {
@@ -1434,6 +1472,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _displayBadgesOnProfile: Bool = false
     var _subscriptionManuallyCancelled: Bool = false
     var _keepMutedChatsArchived: Bool = false
+    var _viewedOnboardingStory: Bool = false
+    var _storiesDisabled: Bool = false
 
     static let defaultInstance = _StorageClass()
 
@@ -1464,6 +1504,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _displayBadgesOnProfile = source._displayBadgesOnProfile
       _subscriptionManuallyCancelled = source._subscriptionManuallyCancelled
       _keepMutedChatsArchived = source._keepMutedChatsArchived
+      _viewedOnboardingStory = source._viewedOnboardingStory
+      _storiesDisabled = source._storiesDisabled
     }
   }
 
@@ -1506,6 +1548,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 23: try { try decoder.decodeSingularBoolField(value: &_storage._displayBadgesOnProfile) }()
         case 24: try { try decoder.decodeSingularBoolField(value: &_storage._subscriptionManuallyCancelled) }()
         case 25: try { try decoder.decodeSingularBoolField(value: &_storage._keepMutedChatsArchived) }()
+        case 27: try { try decoder.decodeSingularBoolField(value: &_storage._viewedOnboardingStory) }()
+        case 28: try { try decoder.decodeSingularBoolField(value: &_storage._storiesDisabled) }()
         default: break
         }
       }
@@ -1590,6 +1634,12 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._keepMutedChatsArchived != false {
         try visitor.visitSingularBoolField(value: _storage._keepMutedChatsArchived, fieldNumber: 25)
       }
+      if _storage._viewedOnboardingStory != false {
+        try visitor.visitSingularBoolField(value: _storage._viewedOnboardingStory, fieldNumber: 27)
+      }
+      if _storage._storiesDisabled != false {
+        try visitor.visitSingularBoolField(value: _storage._storiesDisabled, fieldNumber: 28)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1623,6 +1673,8 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._displayBadgesOnProfile != rhs_storage._displayBadgesOnProfile {return false}
         if _storage._subscriptionManuallyCancelled != rhs_storage._subscriptionManuallyCancelled {return false}
         if _storage._keepMutedChatsArchived != rhs_storage._keepMutedChatsArchived {return false}
+        if _storage._viewedOnboardingStory != rhs_storage._viewedOnboardingStory {return false}
+        if _storage._storiesDisabled != rhs_storage._storiesDisabled {return false}
         return true
       }
       if !storagesAreEqual {return false}

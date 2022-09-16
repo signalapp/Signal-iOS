@@ -20,23 +20,26 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
     // hasn't changed. This is similar to how the time in the footer works.
     struct ViewState: Equatable {
         let timeRemainingText: String
-        let profileBadge: ProfileBadge?
+        let cachedBadgeValue: CachedBadge.Value?
     }
 
     static func buildViewState(_ giftBadge: CVComponentState.GiftBadge) -> ViewState {
         ViewState(
             timeRemainingText: GiftBadgeView.timeRemainingText(for: giftBadge.expirationDate),
-            profileBadge: giftBadge.cachedBadge.profileBadge
+            cachedBadgeValue: giftBadge.cachedBadge.cachedValue
         )
     }
 
     private var state: GiftBadgeView.State {
         let stateBadge: GiftBadgeView.State.Badge
-        if let profileBadge = self.viewState.profileBadge {
-            stateBadge = .loaded(profileBadge)
-        } else {
+        switch self.viewState.cachedBadgeValue {
+        case .none:
             let cachedBadge = self.giftBadge.cachedBadge
             stateBadge = .notLoaded({ cachedBadge.fetchIfNeeded().asVoid() })
+        case .some(.notFound):
+            stateBadge = .notFound
+        case .some(.profileBadge(let profileBadge)):
+            stateBadge = .loaded(profileBadge)
         }
         return GiftBadgeView.State(
             badge: stateBadge,
@@ -113,8 +116,8 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
         }
 
         let profileBadge: ProfileBadge
-        switch renderItem.componentState.giftBadge?.cachedBadge.profileBadge {
-        case .some(let value):
+        switch self.viewState.cachedBadgeValue {
+        case .some(.profileBadge(let value)):
             profileBadge = value
         default:
             // If there's not a badge, it's still showing the loading indicator.
@@ -126,7 +129,13 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
             return false
         }
 
-        componentDelegate.cvc_didTapGiftBadge(itemViewModel, profileBadge: profileBadge)
+        let giftBadge = self.giftBadge
+        componentDelegate.cvc_didTapGiftBadge(
+            itemViewModel,
+            profileBadge: profileBadge,
+            isExpired: giftBadge.expirationDate.isBeforeNow,
+            isRedeemed: giftBadge.redemptionState == .redeemed
+        )
         return true
     }
 

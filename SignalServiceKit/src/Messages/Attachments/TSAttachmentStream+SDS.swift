@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSAttachmentStream {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchAttachmentStream(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSAttachmentStream? {
+    class func anyFetchAttachmentStream(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSAttachmentStream? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
@@ -87,7 +89,8 @@ class TSAttachmentStreamSerializer: SDSSerializer {
         let cdnKey: String = model.cdnKey
         let cdnNumber: UInt32 = model.cdnNumber
         let isAnimatedCached: Bool? = archiveOptionalNSNumber(model.isAnimatedCached, conversion: { $0.boolValue })
+        let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached, attachmentSchemaVersion: attachmentSchemaVersion)
     }
 }

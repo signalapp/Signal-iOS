@@ -104,10 +104,6 @@ public class BaseStickerPackDataSource: NSObject {
             }
         }
     }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
 }
 
 // MARK: -

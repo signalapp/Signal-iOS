@@ -57,6 +57,9 @@ public class AppEnvironment: NSObject {
     let cvAudioPlayerRef = CVAudioPlayer()
 
     @objc
+    let speechManagerRef = SpeechManager()
+
+    @objc
     public var windowManagerRef: OWSWindowManager = OWSWindowManager()
 
     private override init() {
@@ -75,7 +78,7 @@ public class AppEnvironment: NSObject {
 
     @objc
     public func setup() {
-        callService.individualCallService.createCallUIAdapter()
+        callService.createCallUIAdapter()
 
         // Hang certain singletons on SSKEnvironment too.
         SSKEnvironment.shared.notificationsManagerRef = notificationPresenterRef

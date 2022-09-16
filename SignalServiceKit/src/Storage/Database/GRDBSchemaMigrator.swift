@@ -166,6 +166,14 @@ public class GRDBSchemaMigrator: NSObject {
         case addUnsavedMessagesToSendToJobRecord
         case addColumnsForSendGiftBadgeDurableJob
         case addDonationReceiptTypeColumn
+        case addAudioPlaybackRateColumn
+        case addSchemaVersionToAttachments
+        case makeAudioPlaybackRateColumnNonNull
+        case addLastViewedStoryTimestampToTSThread
+        case convertStoryIncomingManifestStorageFormat
+        case recreateStoryIncomingViewedTimestampIndex
+        case addColumnsForLocalUserLeaveGroupDurableJob
+        case addStoriesHiddenStateToThreadAssociatedData
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -211,10 +219,12 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_repairAvatar
         case dataMigration_dropEmojiAvailabilityStore
         case dataMigration_dropSentStories
+        case dataMigration_indexMultipleNameComponentsForReceipients
+        case dataMigration_syncGroupStories
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 39
+    public static let grdbSchemaVersionLatest: UInt = 43
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1835,6 +1845,114 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(.addAudioPlaybackRateColumn) { db in
+            do {
+                try db.alter(table: "thread_associated_data") { table in
+                    table.add(column: "audioPlaybackRate", .double)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addSchemaVersionToAttachments) { db in
+            do {
+                try db.alter(table: "model_TSAttachment") { table in
+                    table.add(column: "attachmentSchemaVersion", .integer).defaults(to: 0)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.makeAudioPlaybackRateColumnNonNull) { db in
+            do {
+                // Up until when this is merged, there has been no way for users
+                // to actually set an audio playback rate, so its okay to drop the column
+                // just to reset the schema constraints to non-null.
+                try db.alter(table: "thread_associated_data") { table in
+                    table.drop(column: "audioPlaybackRate")
+                    table.add(column: "audioPlaybackRate", .double).notNull().defaults(to: 1)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addLastViewedStoryTimestampToTSThread) { db in
+            do {
+                try db.alter(table: "model_TSThread") { table in
+                    table.add(column: "lastViewedStoryTimestamp", .integer)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.convertStoryIncomingManifestStorageFormat) { db in
+            do {
+                // Nest the "incoming" state under the "receivedState" key to make
+                // future migrations more future proof.
+                try db.execute(sql: """
+                    UPDATE model_StoryMessage
+                    SET manifest = json_replace(
+                        manifest,
+                        '$.incoming',
+                        json_object(
+                            'receivedState',
+                            json_extract(
+                                manifest,
+                                '$.incoming'
+                            )
+                        )
+                    )
+                    WHERE json_extract(manifest, '$.incoming') IS NOT NULL;
+                """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.recreateStoryIncomingViewedTimestampIndex) { db in
+            do {
+                try db.drop(index: "index_model_StoryMessage_on_incoming_viewedTimestamp")
+                try db.execute(sql: """
+                    CREATE
+                        INDEX index_model_StoryMessage_on_incoming_receivedState_viewedTimestamp
+                            ON model_StoryMessage (
+                            json_extract (
+                                manifest
+                                ,'$.incoming.receivedState.viewedTimestamp'
+                            )
+                        )
+                    ;
+                """)
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addColumnsForLocalUserLeaveGroupDurableJob) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { table in
+                    table.add(column: "replacementAdminUuid", .text)
+                    table.add(column: "waitForMessageProcessing", .boolean)
+                }
+            } catch let error {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.addStoriesHiddenStateToThreadAssociatedData) { db in
+            do {
+                try db.alter(table: "thread_associated_data") { table in
+                    table.add(column: "hideStory", .boolean).notNull().defaults(to: false)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2075,7 +2193,10 @@ public class GRDBSchemaMigrator: NSObject {
                         threadUniqueId: thread.uniqueId,
                         isArchived: thread.isArchivedObsolete,
                         isMarkedUnread: thread.isMarkedUnreadObsolete,
-                        mutedUntilTimestamp: thread.mutedUntilTimestampObsolete
+                        mutedUntilTimestamp: thread.mutedUntilTimestampObsolete,
+                        // this didn't exist pre-migration, just write the default
+                        audioPlaybackRate: 1,
+                        hideStory: false
                     ).insert(transaction.database)
                 } catch {
                     owsFail("Error \(error)")
@@ -2156,6 +2277,29 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.execute(sql: sql)
             } catch {
                 owsFail("Error \(error)")
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_indexMultipleNameComponentsForReceipients) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // We updated how we generate text for the search index for a
+            // recipient, and consequently should touch all recipients so that
+            // we regenerate the index text.
+
+            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient, _: UnsafeMutablePointer<ObjCBool>) in
+                GRDBFullTextSearchFinder.modelWasUpdated(model: signalRecipient, transaction: transaction)
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_syncGroupStories) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            for thread in AnyThreadFinder().storyThreads(transaction: transaction.asAnyRead) {
+                guard let thread = thread as? TSGroupThread else { continue }
+                self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
             }
         }
     }

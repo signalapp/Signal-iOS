@@ -37,6 +37,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<OWSTypingIndicators> typingIndicatorsRef;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloadsRef;
 @property (nonatomic) SignalServiceAddressCache *signalServiceAddressCacheRef;
+@property (nonatomic) id<OWSSignalServiceProtocol> signalServiceeRef;
 @property (nonatomic) StickerManager *stickerManagerRef;
 @property (nonatomic) SDSDatabaseStorage *databaseStorageRef;
 @property (nonatomic) StorageCoordinator *storageCoordinatorRef;
@@ -61,6 +62,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<WebSocketFactory> webSocketFactoryRef;
 @property (nonatomic) ChangePhoneNumber *changePhoneNumberRef;
 @property (nonatomic) id<SubscriptionManagerProtocol> subscriptionManagerRef;
+@property (nonatomic) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 
 @end
 
@@ -103,6 +105,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                          stickerManager:(StickerManager *)stickerManager
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
+                          signalService:(id<OWSSignalServiceProtocol>)signalService
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
@@ -128,6 +131,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                        webSocketFactory:(id<WebSocketFactory>)webSocketFactory
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
                     subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
+                     systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
 {
     self = [super init];
     if (!self) {
@@ -163,6 +167,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _stickerManagerRef = stickerManager;
     _databaseStorageRef = databaseStorage;
     _signalServiceAddressCacheRef = signalServiceAddressCache;
+    _signalServiceRef = signalService;
     _accountServiceClientRef = accountServiceClient;
     _storageServiceManagerRef = storageServiceManager;
     _storageCoordinatorRef = storageCoordinator;
@@ -188,6 +193,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _webSocketFactoryRef = webSocketFactory;
     _changePhoneNumberRef = changePhoneNumber;
     _subscriptionManagerRef = subscriptionManager;
+    _systemStoryManagerRef = systemStoryManager;
 
     return self;
 }
@@ -279,6 +285,8 @@ static SSKEnvironment *sharedSSKEnvironment;
         ^{ [self.tsAccountManager warmCaches]; },
         @"signalServiceAddressCache",
         ^{ [self.signalServiceAddressCache warmCaches]; },
+        @"signalService",
+        ^{ [self.signalService warmCaches]; },
         @"remoteConfigManager",
         ^{ [self.remoteConfigManager warmCaches]; },
         @"udManager",

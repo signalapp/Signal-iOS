@@ -1,2 +1,3 @@
-• Vi har gjort medieredigeringsprogrammet bedre slik at det blir lettere for deg å skreddersy både bildene og videoene dine før du sender dem.
-• Et knippe andre feilrettinger som sørger for at appen fungerer optimalt. Flere spennende oppdateringer er i vente!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

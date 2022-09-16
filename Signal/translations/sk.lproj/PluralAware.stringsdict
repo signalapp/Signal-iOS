@@ -92,10 +92,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d položky</string>
+			<key>many</key>
+			<string>%d položiek</string>
 			<key>one</key>
-			<string>1 item</string>
+			<string>1 položka</string>
 			<key>other</key>
-			<string>%d items</string>
+			<string>%d položiek</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -513,6 +517,26 @@
 			<string>V tomto hovore · %d ľudí</string>
 		</dict>
 	</dict>
+	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>few</key>
+			<string>Volám používateľom %2$@, %3$@ a %d ďalším…</string>
+			<key>many</key>
+			<string>Volám používateľom %2$@, %3$@ a %d ďalším…</string>
+			<key>one</key>
+			<string>Volám používateľom %2$@, %3$@ a 1 ďalšiemu…</string>
+			<key>other</key>
+			<string>Volám používateľom %2$@, %3$@ a %d ďalším…</string>
+		</dict>
+	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -571,6 +595,46 @@
 			<string>%2$@, %3$@ a 1 ďalší opustili hovor</string>
 			<key>other</key>
 			<string>%2$@, %3$@ a %d ďalší opustili hovor</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>few</key>
+			<string>%2$@, %3$@ a %d ďalší používatelia dostanú upozornenie</string>
+			<key>many</key>
+			<string>%2$@, %3$@ a %d ďalších používateľov dostane upozornenie</string>
+			<key>one</key>
+			<string>%2$@, %3$@ a 1 ďalší používateľ dostanú upozornenie</string>
+			<key>other</key>
+			<string>%2$@, %3$@ a %d ďalších používateľov dostane upozornenie</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>few</key>
+			<string>Signal zavolá používateľom %2$@, %3$@ a %d ďalším</string>
+			<key>many</key>
+			<string>Signal zavolá používateľom %2$@, %3$@ a %d ďalším</string>
+			<key>one</key>
+			<string>Signal zavolá používateľom %2$@, %3$@ a 1 ďalšiemu</string>
+			<key>other</key>
+			<string>Signal zavolá používateľom %2$@, %3$@ a %d ďalším</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -771,6 +835,26 @@
 			<string>%2$@ zrušil pozvánku do skupiny pre 1 osobu.</string>
 			<key>other</key>
 			<string>%2$@ zrušil pozvanie do skupiny pre %d ľudí.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>few</key>
+			<string>Používateľ %2$@ vyžiadal a zrušil %d žiadosti o pripojenie cez odkaz na skupinu.</string>
+			<key>many</key>
+			<string>Používateľ %2$@ vyžiadal a zrušil %d žiadostí o pripojenie cez odkaz na skupinu.</string>
+			<key>one</key>
+			<string>Používateľ %2$@ vyžiadal a zrušil svoju žiadosť o pripojenie cez odkaz na skupinu.</string>
+			<key>other</key>
+			<string>Používateľ %2$@ vyžiadal a zrušil %d žiadostí o pripojenie cez odkaz na skupinu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -983,14 +1067,10 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d vylúčení ľudia</string>
-			<key>many</key>
-			<string>%d vylúčených ľudí</string>
 			<key>one</key>
-			<string>1 vylúčená osoba</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>%d vylúčených ľudí</string>
+			<string>%d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1003,17 +1083,13 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d ľudia</string>
-			<key>many</key>
-			<string>%d ľudí</string>
 			<key>one</key>
-			<string>1 osoba</string>
+			<string>1 Viewer</string>
 			<key>other</key>
-			<string>%d ľudí</string>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
-	<key>MY_STORY_VIEWERS_%d</key>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -1023,14 +1099,42 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d sledovatelia</string>
-			<key>many</key>
-			<string>%d sledovateľov</string>
 			<key>one</key>
-			<string>1 sledovateľ</string>
+			<string>All Signal Connections · 1 Viewer</string>
 			<key>other</key>
-			<string>%d sledovateľov</string>
+			<string>All Signal Connections · %d Viewers</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>All Signal Connections · 1 Excluded</string>
+			<key>other</key>
+			<string>All Signal Connections · %d Excluded</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Only Share With · 1 Viewer</string>
+			<key>other</key>
+			<string>Only Share With · %d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1063,10 +1167,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d sledovatelia</string>
+			<key>many</key>
+			<string>%d sledovateľov</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 sledovateľ</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d sledovateľov</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1269,7 +1377,7 @@
 			<string>Zostáva vám %d pokusov. Ak vám dôjdu pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
 		</dict>
 	</dict>
-	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<key>STORY_REPLIES_COUNT_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@caption@</string>
@@ -1280,13 +1388,29 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>few</key>
-			<string>%d spojenia</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovede</string>
 			<key>many</key>
-			<string>%d spojení</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovedí</string>
 			<key>one</key>
-			<string>1 spojenie</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; odpoveď</string>
 			<key>other</key>
-			<string>%d spojení</string>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovedí</string>
+		</dict>
+	</dict>
+	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 Viewer</string>
+			<key>other</key>
+			<string>%d Viewers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1309,6 +1433,26 @@
 			<string>%d vylúčených</string>
 		</dict>
 	</dict>
+	<key>STORY_SENDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>few</key>
+			<string>Odosielajú sa %d…</string>
+			<key>many</key>
+			<string>Odosiela sa %d…</string>
+			<key>one</key>
+			<string>Odosiela sa…</string>
+			<key>other</key>
+			<string>Odosiela sa %d…</string>
+		</dict>
+	</dict>
 	<key>STORY_VIEWS_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -1327,6 +1471,61 @@
 			<string>1 zobrazenie</string>
 			<key>other</key>
 			<string>%d zobrazení</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@views@  %2$#@replies@</string>
+		<key>replies</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovede</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovedí</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; odpoveď</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovedí</string>
+		</dict>
+		<key>views</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; pozretia</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; pozretí</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; pozretie</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; pozretí</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_COUNT_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; pozretia</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; pozretí</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; pozretie</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; pozretí</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

@@ -105,10 +105,7 @@ class TurnOnPermissionView: UIStackView {
             addStepStack(step: step, number: index + 1)
         }
 
-        let button = button ?? self.button(title: NSLocalizedString(
-            "GO_TO_SETTINGS_BUTTON",
-            comment: "Turn on permission view 'go to settings' button"
-        ), selector: #selector(goToSettings))
+        let button = button ?? self.button(title: CommonStrings.goToSettingsButton, selector: #selector(goToSettings))
 
         addArrangedSubview(button)
     }

@@ -616,7 +616,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (!SSKFeatureFlags.stories && dataMessage.storyContext != nil) {
+    if (!RemoteConfig.stories && dataMessage.storyContext != nil) {
         OWSLogInfo(@"Ignoring message (author: %@, timestamp: %llu) related to story (author: %@, timestamp: %llu)",
             envelope.sourceAddress,
             dataMessage.timestamp,
@@ -1652,26 +1652,18 @@ NS_ASSUME_NONNULL_BEGIN
                                             groupContext:groupContextV1
                                              transaction:transaction];
             } else if (dataMessage.reaction != nil) {
-                TSThread *_Nullable thread = nil;
-
-                NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-                if (groupId != nil) {
-                    thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-                } else {
-                    thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
-                                                                      transaction:transaction];
-                }
-                if (thread == nil) {
+                if (transcript.thread == nil) {
                     OWSFailDebug(@"Could not process reaction from sync transcript.");
                     return;
                 }
                 OWSReactionProcessingResult result =
                     [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                                         thread:thread
+                                                         thread:transcript.thread
                                                         reactor:envelope.sourceAddress
                                                       timestamp:syncMessage.sent.timestamp
                                                 serverTimestamp:envelope.serverTimestamp
                                                expiresInSeconds:dataMessage.expireTimer
+                                                 sentTranscript:transcript
                                                     transaction:transaction];
                 switch (result) {
                     case OWSReactionProcessingResultSuccess:
@@ -1688,23 +1680,10 @@ NS_ASSUME_NONNULL_BEGIN
                         break;
                 }
             } else if (dataMessage.delete != nil) {
-                TSThread *_Nullable thread = nil;
-
-                NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
-                if (groupId != nil) {
-                    thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
-                } else {
-                    thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
-                                                                      transaction:transaction];
-                }
-                if (thread == nil) {
-                    OWSFailDebug(@"Could not process delete from sync transcript.");
-                    return;
-                }
                 OWSRemoteDeleteProcessingResult result =
                     [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
                                                      sentAtTimestamp:dataMessage.delete.targetSentTimestamp
-                                                      threadUniqueId:thread.uniqueId
+                                                      threadUniqueId:transcript.thread.uniqueId
                                                      serverTimestamp:envelope.serverTimestamp
                                                          transaction:transaction];
 
@@ -1744,7 +1723,7 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 [OWSRecordTranscriptJob processIncomingSentMessageTranscript:transcript transaction:transaction];
             }
-        } else if (syncMessage.sent.storyMessage) {
+        } else if (syncMessage.sent.isStoryTranscript) {
             NSError *error;
             [StoryManager processStoryMessageTranscript:syncMessage.sent transaction:transaction error:&error];
             if (error) {
@@ -1809,7 +1788,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Received blocked sync message.");
         [self handleSyncedBlockList:syncMessage.blocked transaction:transaction];
     } else if (syncMessage.read.count > 0) {
-        OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);
+        OWSLogInfo(@"Received %lu read receipt(s) in sync message", (unsigned long)syncMessage.read.count);
         NSArray<SSKProtoSyncMessageRead *> *earlyReceipts =
             [OWSReceiptManager.shared processReadReceiptsFromLinkedDevice:syncMessage.read
                                                             readTimestamp:envelope.timestamp
@@ -1821,7 +1800,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                               transaction:transaction];
         }
     } else if (syncMessage.viewed.count > 0) {
-        OWSLogInfo(@"Received %lu viewed receipt(s)", (unsigned long)syncMessage.viewed.count);
+        OWSLogInfo(@"Received %lu viewed receipt(s) in sync message", (unsigned long)syncMessage.viewed.count);
         NSArray<SSKProtoSyncMessageViewed *> *earlyReceipts =
             [OWSReceiptManager.shared processViewedReceiptsFromLinkedDevice:syncMessage.viewed
                                                             viewedTimestamp:envelope.timestamp
@@ -2033,6 +2012,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                timestamp:timestamp
                                                                          serverTimestamp:envelope.serverTimestamp
                                                                         expiresInSeconds:dataMessage.expireTimer
+                                                                          sentTranscript:nil
                                                                              transaction:transaction];
 
         switch (result) {
@@ -2243,6 +2223,11 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);
         OWSLogVerbose(@"Ignoring empty message(envelope): %@", envelope.debugDescription);
         OWSLogVerbose(@"Ignoring empty message(dataMessage): %@", dataMessage.debugDescription);
+        return nil;
+    }
+
+    if ((message.giftBadge != nil) && thread.isGroupThread) {
+        OWSFailDebug(@"Ignoring gift sent to group");
         return nil;
     }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "CallKitIdStore.h"
@@ -21,42 +21,48 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (void)setAddress:(SignalServiceAddress *)address forCallKitId:(NSString *)callKitId
++ (void)setThread:(TSThread *)thread forCallKitId:(NSString *)callKitId
 {
-    OWSAssertDebug(address.isValid);
     OWSAssertDebug(callKitId.length > 0);
+    OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        if (address.phoneNumber) {
-            [self.phoneNumberStore setString:address.phoneNumber key:callKitId transaction:transaction];
-        } else {
+        SignalServiceAddress *address = [(TSContactThread *)thread contactAddress];
+        NSString *uuidString = address.uuidString;
+        if (uuidString) {
+            [self.uuidStore setString:uuidString key:callKitId transaction:transaction];
             [self.phoneNumberStore removeValueForKey:callKitId transaction:transaction];
-        }
-
-        if (address.uuidString) {
-            [self.uuidStore setString:address.uuidString key:callKitId transaction:transaction];
         } else {
+            OWSFailDebug(@"making a call to an address with no UUID: %@", address.phoneNumber);
+            [self.phoneNumberStore setString:address.phoneNumber key:callKitId transaction:transaction];
             [self.uuidStore removeValueForKey:callKitId transaction:transaction];
         }
     });
 }
 
-+ (SignalServiceAddress *)addressForCallKitId:(NSString *)callKitId
++ (nullable TSThread *)threadForCallKitId:(NSString *)callKitId
 {
     OWSAssertDebug(callKitId.length > 0);
 
-    __block NSString *_Nullable phoneNumber;
-    __block NSString *_Nullable uuidString;
+    __block TSThread *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        phoneNumber = [self.phoneNumberStore getString:callKitId transaction:transaction];
-        uuidString = [self.uuidStore getString:callKitId transaction:transaction];
+        // Check for an ACI first, then phone numbers.
+        NSString *_Nullable uuidString = [self.uuidStore getString:callKitId transaction:transaction];
+        if (uuidString) {
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuidString:uuidString];
+            result = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
+            return;
+        }
+
+        NSString *_Nullable phoneNumber = [self.phoneNumberStore getString:callKitId transaction:transaction];
+        if (phoneNumber) {
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            result = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
+            return;
+        }
     }];
 
-    if (!phoneNumber && !uuidString) {
-        return nil;
-    }
-
-    return [[SignalServiceAddress alloc] initWithUuidString:uuidString phoneNumber:phoneNumber];
+    return result;
 }
 
 @end

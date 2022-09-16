@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumber.h"
@@ -224,6 +224,24 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     NSString *sanitizedString = [text filterAsE164];
 
     return [self phoneNumberFromUserSpecifiedText:sanitizedString];
+}
+
++ (nullable PhoneNumber *)tryParsePhoneNumberFromUserSpecifiedText:(NSString *)text callingCode:(NSString *)callingCode
+{
+    OWSAssertDebug(text != nil);
+
+    if ([text isEqualToString:@""]) {
+        return nil;
+    }
+    NSString *regionCode = [[PhoneNumberUtil shared] getRegionCodeForCountryCode:@([callingCode integerValue])];
+    if ([regionCode isEqual:NB_UNKNOWN_REGION]) {
+        return [self tryParsePhoneNumberFromUserSpecifiedText:[callingCode stringByAppendingString:text]];
+    }
+    NSString *sanitizedString = [text filterAsE164];
+    if ([sanitizedString hasPrefix:@"+"]) {
+        sanitizedString = [sanitizedString substringFromIndex:1];
+    }
+    return [self phoneNumberFromText:sanitizedString andRegion:regionCode];
 }
 
 + (nullable NSString *)nationalPrefixTransformRuleForDefaultRegion

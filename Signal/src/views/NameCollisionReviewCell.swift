@@ -228,9 +228,7 @@ class NameCollisionCell: UITableViewCell {
             config.dataSource = .address(model.address)
         }
         if model.address.isLocalAddress {
-            nameLabel.text = NSLocalizedString(
-                "GROUP_MEMBER_LOCAL_USER",
-                comment: "Label indicating the local user.")
+            nameLabel.text = CommonStrings.you
         } else {
             nameLabel.text = model.name
         }

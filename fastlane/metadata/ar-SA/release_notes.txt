@@ -1,2 +1,3 @@
-لقد قمنا بتحسين أداة تعديل الوسائط لنجعل عملية تعديل الصور والفيديوهات حسب ذوقك قبل إرسالها أسهل من أي وقت مضى.
-• مجموعة من الإصلاحات للأعطاب لِضمان اشتغال تطبيقك بسلاسة. تغييرات أكثر تشويقًا في الأفق!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

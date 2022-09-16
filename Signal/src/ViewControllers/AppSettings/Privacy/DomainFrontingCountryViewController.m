@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "DomainFrontingCountryViewController.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/OWSCountryMetadata.h>
-#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalUI/OWSTableViewController.h>
 #import <SignalUI/Theme.h>
 #import <SignalUI/UIFont+OWS.h>
@@ -56,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSTableContents *contents = [OWSTableContents new];
 
-    NSString *currentCountryCode = OWSSignalService.shared.manualCensorshipCircumventionCountryCode;
+    NSString *currentCountryCode = self.signalService.manualCensorshipCircumventionCountryCode;
 
     __weak DomainFrontingCountryViewController *weakSelf = self;
 
@@ -87,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(countryMetadata);
 
-    OWSSignalService.shared.manualCensorshipCircumventionCountryCode = countryMetadata.countryCode;
+    self.signalService.manualCensorshipCircumventionCountryCode = countryMetadata.countryCode;
 
     [self.navigationController popViewControllerAnimated:YES];
 }

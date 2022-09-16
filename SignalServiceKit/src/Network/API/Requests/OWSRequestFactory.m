@@ -501,7 +501,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     capabilities[@"gv1-migration"] = @(YES);
     capabilities[@"senderKey"] = @(YES);
 
-    if (SSKFeatureFlags.stories) {
+    if (RemoteConfig.stories) {
         capabilities[@"stories"] = @(YES);
     }
 
@@ -525,21 +525,23 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 + (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
                                       messages:(NSArray *)messages
-                                     timeStamp:(uint64_t)timeStamp
+                                     timestamp:(uint64_t)timestamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                       isOnline:(BOOL)isOnline
+                                      isUrgent:(BOOL)isUrgent
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(recipientAddress.isValid);
-    OWSAssertDebug(timeStamp > 0);
+    OWSAssertDebug(timestamp > 0);
 
     NSString *path = [self.textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
 
     // Returns the per-account-message parameters used when submitting a message to
     // the Signal Web Service.
-    // See:
-    // https://github.com/signalapp/Signal-Server/blob/9b3a8897cdfab4e830b3caa7f5f300ed25fedea9/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java
-    NSDictionary *parameters = @{ @"messages" : messages, @"timestamp" : @(timeStamp), @"online" : @(isOnline) };
+    // See
+    // <https://github.com/signalapp/Signal-Server/blob/65da844d70369cb8b44966cfb2d2eb9b925a6ba4/service/src/main/java/org/whispersystems/textsecuregcm/entities/IncomingMessageList.java>.
+    NSDictionary *parameters =
+        @{ @"messages" : messages, @"timestamp" : @(timestamp), @"online" : @(isOnline), @"urgent" : @(isUrgent) };
 
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
     if (udAccessKey != nil) {
@@ -552,6 +554,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                            compositeUDAccessKey:(SMKUDAccessKey *)udAccessKey
                                                       timestamp:(uint64_t)timestamp
                                                        isOnline:(BOOL)isOnline
+                                                       isUrgent:(BOOL)isUrgent
 {
     OWSAssertDebug(ciphertext);
     OWSAssertDebug(udAccessKey);
@@ -563,6 +566,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     components.queryItems = @[
         [NSURLQueryItem queryItemWithName:@"ts" value:[@(timestamp) stringValue]],
         [NSURLQueryItem queryItemWithName:@"online" value:isOnline ? @"true" : @"false"],
+        [NSURLQueryItem queryItemWithName:@"urgent" value:isUrgent ? @"true" : @"false"],
     ];
     NSURL *url = [components URL];
 
@@ -878,15 +882,16 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 #pragma mark - Groups v2
 
-+ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionDays:(uint32_t)fromRedemptionDays
-                                                         toRedemptionDays:(uint32_t)toRedemptionDays
++ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionSeconds:(uint64_t)fromRedemptionSeconds
+                                                         toRedemptionSeconds:(uint64_t)toRedemptionSeconds
 {
-    OWSAssertDebug(fromRedemptionDays > 0);
-    OWSAssertDebug(toRedemptionDays > 0);
+    OWSAssertDebug(fromRedemptionSeconds > 0);
+    OWSAssertDebug(toRedemptionSeconds > 0);
 
-    NSString *path = [NSString stringWithFormat:@"/v1/certificate/group/%lu/%lu",
-                               (unsigned long)fromRedemptionDays,
-                               (unsigned long)toRedemptionDays];
+    NSString *path =
+        [NSString stringWithFormat:@"/v1/certificate/auth/group?redemptionStartSeconds=%llu&redemptionEndSeconds=%llu",
+                  (unsigned long long)fromRedemptionSeconds,
+                  (unsigned long long)toRedemptionSeconds];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 

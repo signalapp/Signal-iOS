@@ -367,6 +367,16 @@ extension OWSUserProfileBadgeInfo: DeepCopyable {
 
 // MARK: -
 
+@objc
+extension TSInfoMessage.UpdateMessages: DeepCopyable {
+    public func deepCopy() throws -> AnyObject {
+        // This class can use shallow copies.
+        return try DeepCopies.shallowCopy(self)
+    }
+}
+
+// MARK: -
+
 // NOTE: We do not get compile-time type safety with NSOrderedSet.
 extension NSObject {
     public static func asDeepCopyable(_ value: Any) -> DeepCopyable? {

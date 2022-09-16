@@ -24,6 +24,7 @@ public enum PaymentsError: Error {
     case invalidServerResponse
     case attestationVerificationFailed
     case outdatedClient
+    case fogOutOfSync
     case serverRateLimited
     case serializationError
     case verificationStatusUnknown

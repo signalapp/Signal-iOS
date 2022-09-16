@@ -56,6 +56,7 @@ public struct AttachmentRecord: SDSRecord {
     public let cdnKey: String
     public let cdnNumber: UInt32
     public let isAnimatedCached: Bool?
+    public let attachmentSchemaVersion: UInt
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -87,6 +88,7 @@ public struct AttachmentRecord: SDSRecord {
         case cdnKey
         case cdnNumber
         case isAnimatedCached
+        case attachmentSchemaVersion
     }
 
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -139,6 +141,7 @@ public extension AttachmentRecord {
         cdnKey = row[26]
         cdnNumber = row[27]
         isAnimatedCached = row[28]
+        attachmentSchemaVersion = row[29]
     }
 }
 
@@ -171,6 +174,7 @@ extension TSAttachment {
 
             let uniqueId: String = record.uniqueId
             let albumMessageId: String? = record.albumMessageId
+            let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
             let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
@@ -186,6 +190,7 @@ extension TSAttachment {
             return TSAttachment(grdbId: recordId,
                                 uniqueId: uniqueId,
                                 albumMessageId: albumMessageId,
+                                attachmentSchemaVersion: attachmentSchemaVersion,
                                 attachmentType: attachmentType,
                                 blurHash: blurHash,
                                 byteCount: byteCount,
@@ -202,6 +207,7 @@ extension TSAttachment {
 
             let uniqueId: String = record.uniqueId
             let albumMessageId: String? = record.albumMessageId
+            let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
             let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
@@ -227,6 +233,7 @@ extension TSAttachment {
             return TSAttachmentPointer(grdbId: recordId,
                                        uniqueId: uniqueId,
                                        albumMessageId: albumMessageId,
+                                       attachmentSchemaVersion: attachmentSchemaVersion,
                                        attachmentType: attachmentType,
                                        blurHash: blurHash,
                                        byteCount: byteCount,
@@ -248,6 +255,7 @@ extension TSAttachment {
 
             let uniqueId: String = record.uniqueId
             let albumMessageId: String? = record.albumMessageId
+            let attachmentSchemaVersion: UInt = record.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = record.attachmentType
             let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
@@ -276,6 +284,7 @@ extension TSAttachment {
             return TSAttachmentStream(grdbId: recordId,
                                       uniqueId: uniqueId,
                                       albumMessageId: albumMessageId,
+                                      attachmentSchemaVersion: attachmentSchemaVersion,
                                       attachmentType: attachmentType,
                                       blurHash: blurHash,
                                       byteCount: byteCount,
@@ -353,6 +362,7 @@ extension TSAttachment: DeepCopyable {
             assert(type(of: modelToCopy) == TSAttachmentStream.self)
             let uniqueId: String = modelToCopy.uniqueId
             let albumMessageId: String? = modelToCopy.albumMessageId
+            let attachmentSchemaVersion: UInt = modelToCopy.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = modelToCopy.attachmentType
             let blurHash: String? = modelToCopy.blurHash
             let byteCount: UInt32 = modelToCopy.byteCount
@@ -378,6 +388,7 @@ extension TSAttachment: DeepCopyable {
             return TSAttachmentStream(grdbId: id,
                                       uniqueId: uniqueId,
                                       albumMessageId: albumMessageId,
+                                      attachmentSchemaVersion: attachmentSchemaVersion,
                                       attachmentType: attachmentType,
                                       blurHash: blurHash,
                                       byteCount: byteCount,
@@ -405,6 +416,7 @@ extension TSAttachment: DeepCopyable {
             assert(type(of: modelToCopy) == TSAttachmentPointer.self)
             let uniqueId: String = modelToCopy.uniqueId
             let albumMessageId: String? = modelToCopy.albumMessageId
+            let attachmentSchemaVersion: UInt = modelToCopy.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = modelToCopy.attachmentType
             let blurHash: String? = modelToCopy.blurHash
             let byteCount: UInt32 = modelToCopy.byteCount
@@ -425,6 +437,7 @@ extension TSAttachment: DeepCopyable {
             return TSAttachmentPointer(grdbId: id,
                                        uniqueId: uniqueId,
                                        albumMessageId: albumMessageId,
+                                       attachmentSchemaVersion: attachmentSchemaVersion,
                                        attachmentType: attachmentType,
                                        blurHash: blurHash,
                                        byteCount: byteCount,
@@ -448,6 +461,7 @@ extension TSAttachment: DeepCopyable {
             assert(type(of: modelToCopy) == TSAttachment.self)
             let uniqueId: String = modelToCopy.uniqueId
             let albumMessageId: String? = modelToCopy.albumMessageId
+            let attachmentSchemaVersion: UInt = modelToCopy.attachmentSchemaVersion
             let attachmentType: TSAttachmentType = modelToCopy.attachmentType
             let blurHash: String? = modelToCopy.blurHash
             let byteCount: UInt32 = modelToCopy.byteCount
@@ -463,6 +477,7 @@ extension TSAttachment: DeepCopyable {
             return TSAttachment(grdbId: id,
                                 uniqueId: uniqueId,
                                 albumMessageId: albumMessageId,
+                                attachmentSchemaVersion: attachmentSchemaVersion,
                                 attachmentType: attachmentType,
                                 blurHash: blurHash,
                                 byteCount: byteCount,
@@ -515,6 +530,7 @@ extension TSAttachmentSerializer {
     static var cdnKeyColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cdnKey", columnType: .unicodeString) }
     static var cdnNumberColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "cdnNumber", columnType: .int64) }
     static var isAnimatedCachedColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "isAnimatedCached", columnType: .int, isOptional: true) }
+    static var attachmentSchemaVersionColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "attachmentSchemaVersion", columnType: .int64) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -550,7 +566,8 @@ extension TSAttachmentSerializer {
         uploadTimestampColumn,
         cdnKeyColumn,
         cdnNumberColumn,
-        isAnimatedCachedColumn
+        isAnimatedCachedColumn,
+        attachmentSchemaVersionColumn
         ])
     }
 }
@@ -886,8 +903,10 @@ public extension TSAttachment {
         }
     }
 
-    class func anyExists(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> Bool {
+    class func anyExists(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -983,8 +1002,9 @@ class TSAttachmentSerializer: SDSSerializer {
         let cdnKey: String = model.cdnKey
         let cdnNumber: UInt32 = model.cdnNumber
         let isAnimatedCached: Bool? = nil
+        let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber, isAnimatedCached: isAnimatedCached, attachmentSchemaVersion: attachmentSchemaVersion)
     }
 }
 

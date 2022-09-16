@@ -6,12 +6,37 @@ import UIKit
 import SignalMessaging
 
 public protocol ConversationAvatarViewDelegate: AnyObject {
-    func didTapAvatar()
     func didTapBadge()
+
+    var canPresentStories: Bool { get }
+
+    func presentStoryViewController()
+    func presentAvatarViewController()
+
+    func presentActionSheet(_ vc: ActionSheetController, animated: Bool)
 }
 public extension ConversationAvatarViewDelegate {
-    func didTapAvatar() {}
-    func didTapBadge() {}
+    func didTapAvatar() {
+        if canPresentStories {
+            let actionSheet = ActionSheetController()
+            actionSheet.addAction(OWSActionSheets.cancelAction)
+            actionSheet.addAction(.init(
+                title: OWSLocalizedString("VIEW_PHOTO", comment: "View the photo of a group or user"),
+                handler: { [weak self] _ in
+                    self?.presentStoryViewController()
+                }
+            ))
+            actionSheet.addAction(.init(
+                title: OWSLocalizedString("VIEW_STORY", comment: "View the story of a group or user"),
+                handler: { [weak self] _ in
+                    self?.presentAvatarViewController()
+                }
+            ))
+            presentActionSheet(actionSheet, animated: true)
+        } else {
+            presentAvatarViewController()
+        }
+    }
 }
 
 public class ConversationAvatarView: UIView, CVView, PrimaryImageView {

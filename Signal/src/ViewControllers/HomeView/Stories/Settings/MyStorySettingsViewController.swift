@@ -26,11 +26,14 @@ class MyStorySettingsViewController: OWSTableViewController2 {
         let visibilitySection = OWSTableSection()
         visibilitySection.separatorInsetLeading = NSNumber(value: Self.cellHInnerMargin + 32)
         visibilitySection.headerTitle = NSLocalizedString(
-            "MY_STORIES_SETTINGS_VISIBILITY_HEADER",
-            comment: "Header for the 'visibility' section of the my stories settings")
+            "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
+            comment: "Section header for the 'viewers' section on the 'story settings' view"
+        )
+        // TODO: Add 'learn more' sheet button
         visibilitySection.footerTitle = NSLocalizedString(
-            "MY_STORIES_SETTINGS_VISIBILITY_FOOTER",
-            comment: "Footer for the 'visibility' section of the my stories settings")
+            "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
+            comment: "Section footer for the 'viewers' section on the 'story settings' view"
+        )
         contents.addSection(visibilitySection)
 
         do {
@@ -39,9 +42,6 @@ class MyStorySettingsViewController: OWSTableViewController2 {
                 title: NSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE",
                     comment: "Title for the visibility option"),
-                subtitle: NSLocalizedString(
-                    "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE",
-                    comment: "Subtitle for the visibility option"),
                 isSelected: isSelected,
                 showDisclosureIndicator: false
             ) { [weak self] in
@@ -59,23 +59,21 @@ class MyStorySettingsViewController: OWSTableViewController2 {
 
         do {
             let isSelected = myStoryThread.storyViewMode == .blockList && myStoryThread.addresses.count > 0
-            let subtitle: String
+            let detailText: String?
             if isSelected {
                 let formatString = NSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d",
                     tableName: "PluralAware",
                     comment: "Subtitle for the visibility option. Embeds number of excluded members")
-                subtitle = String.localizedStringWithFormat(formatString, myStoryThread.addresses.count)
+                detailText = String.localizedStringWithFormat(formatString, myStoryThread.addresses.count)
             } else {
-                subtitle = NSLocalizedString(
-                    "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE",
-                    comment: "Subtitle for the visibility option")
+                detailText = nil
             }
             visibilitySection.add(buildVisibilityItem(
                 title: NSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE",
                     comment: "Title for the visibility option"),
-                subtitle: subtitle,
+                detailText: detailText,
                 isSelected: isSelected,
                 showDisclosureIndicator: true
             ) { [weak self] in
@@ -88,23 +86,21 @@ class MyStorySettingsViewController: OWSTableViewController2 {
 
         do {
             let isSelected = myStoryThread.storyViewMode == .explicit
-            let subtitle: String
+            let detailText: String?
             if isSelected {
                 let formatString = NSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d",
                     tableName: "PluralAware",
                     comment: "Subtitle for the visibility option. Embeds number of allowed members")
-                subtitle = String.localizedStringWithFormat(formatString, myStoryThread.addresses.count)
+                detailText = String.localizedStringWithFormat(formatString, myStoryThread.addresses.count)
             } else {
-                subtitle = NSLocalizedString(
-                    "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE",
-                    comment: "Subtitle for the visibility option")
+                detailText = nil
             }
             visibilitySection.add(buildVisibilityItem(
                 title: NSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE",
                     comment: "Title for the visibility option"),
-                subtitle: subtitle,
+                detailText: detailText,
                 isSelected: isSelected,
                 showDisclosureIndicator: true
             ) { [weak self] in
@@ -139,7 +135,7 @@ class MyStorySettingsViewController: OWSTableViewController2 {
 
     func buildVisibilityItem(
         title: String,
-        subtitle: String,
+        detailText: String? = nil,
         isSelected: Bool,
         showDisclosureIndicator: Bool,
         action: @escaping () -> Void
@@ -163,24 +159,22 @@ class MyStorySettingsViewController: OWSTableViewController2 {
                 hStack.addArrangedSubview(.spacer(withWidth: 22))
             }
 
-            let vStack = UIStackView()
-            vStack.axis = .vertical
-            vStack.spacing = 2
-            hStack.addArrangedSubview(vStack)
-
             let titleLabel = UILabel()
             titleLabel.text = title
             titleLabel.numberOfLines = 0
             titleLabel.font = .ows_dynamicTypeBody
             titleLabel.textColor = Theme.primaryTextColor
-            vStack.addArrangedSubview(titleLabel)
+            hStack.addArrangedSubview(titleLabel)
 
-            let subtitleLabel = UILabel()
-            subtitleLabel.text = subtitle
-            subtitleLabel.numberOfLines = 0
-            subtitleLabel.font = .ows_dynamicTypeFootnote
-            subtitleLabel.textColor = Theme.secondaryTextAndIconColor
-            vStack.addArrangedSubview(subtitleLabel)
+            if let detailText = detailText {
+                let detailLabel = UILabel()
+                detailLabel.setContentHuggingHorizontalHigh()
+                detailLabel.text = detailText
+                detailLabel.numberOfLines = 0
+                detailLabel.font = .ows_dynamicTypeBody
+                detailLabel.textColor = Theme.secondaryTextAndIconColor
+                hStack.addArrangedSubview(detailLabel)
+            }
 
             if showDisclosureIndicator {
                 cell.accessoryType = .disclosureIndicator

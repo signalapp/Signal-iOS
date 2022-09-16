@@ -81,7 +81,6 @@ public class ChatListCell: UITableViewCell {
         let isBlocked: Bool
         let overrideSnippet: NSAttributedString?
         let overrideDate: Date?
-        let isSplitViewControllerExpanded: Bool
 
         fileprivate var hasOverrideSnippet: Bool {
             overrideSnippet != nil
@@ -107,14 +106,12 @@ public class ChatListCell: UITableViewCell {
              lastReloadDate: Date?,
              isBlocked: Bool,
              overrideSnippet: NSAttributedString? = nil,
-             overrideDate: Date? = nil,
-             isSplitViewControllerExpanded: Bool) {
+             overrideDate: Date? = nil) {
             self.thread = thread
             self.lastReloadDate = lastReloadDate
             self.isBlocked = isBlocked
             self.overrideSnippet = overrideSnippet
             self.overrideDate = overrideDate
-            self.isSplitViewControllerExpanded = isSplitViewControllerExpanded
         }
     }
     private var cellContentToken: CLVCellContentToken?
@@ -204,7 +201,6 @@ public class ChatListCell: UITableViewCell {
             isBlocked: configuration.isBlocked,
             shouldShowMuteIndicator: shouldShowMuteIndicator,
             hasOverrideSnippet: configuration.hasOverrideSnippet,
-            isSplitViewControllerExpanded: configuration.isSplitViewControllerExpanded,
             messageStatusToken: messageStatusToken,
             unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
 
@@ -313,7 +309,7 @@ public class ChatListCell: UITableViewCell {
     func configure(cellContentToken: CLVCellContentToken, asyncAvatarLoadingAllowed: Bool = true) {
         AssertIsOnMainThread()
 
-        OWSTableItem.configureCell(self, isSplitViewControllerExpanded: cellContentToken.configs.isSplitViewControllerExpanded)
+        OWSTableItem.configureCell(self)
         self.preservesSuperviewLayoutMargins = false
         self.contentView.preservesSuperviewLayoutMargins = false
 
@@ -948,7 +944,6 @@ private struct CLVCellConfigs {
     let isBlocked: Bool
     let shouldShowMuteIndicator: Bool
     let hasOverrideSnippet: Bool
-    let isSplitViewControllerExpanded: Bool
     let messageStatusToken: CLVMessageStatusToken?
     let unreadIndicatorLabelConfig: CVLabelConfig?
 

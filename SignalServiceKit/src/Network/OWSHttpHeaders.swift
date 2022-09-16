@@ -36,7 +36,7 @@ public class OWSHttpHeaders: NSObject {
 
     @objc
     public func hasValueForHeader(_ header: String) -> Bool {
-        Set(headers.keys.map { $0.lowercased() }).contains(header.lowercased())
+        headers.keys.lazy.map { $0.lowercased() }.contains(header.lowercased())
     }
 
     @objc
@@ -96,8 +96,7 @@ public class OWSHttpHeaders: NSObject {
     }
 
     @objc
-    public func addHeaderList(_ newHttpHeaders: [String]?,
-                             overwriteOnConflict: Bool) {
+    public func addHeaderList(_ newHttpHeaders: [String]?, overwriteOnConflict: Bool) {
         guard let newHttpHeaders = newHttpHeaders else {
             return
         }

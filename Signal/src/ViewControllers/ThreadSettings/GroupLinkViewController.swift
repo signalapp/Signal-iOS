@@ -114,14 +114,19 @@ public class GroupLinkViewController: OWSTableViewController2 {
             let section = OWSTableSection()
             section.footerTitle = NSLocalizedString("GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER",
                                                     comment: "Footer for the 'member requests' section of the 'group link' view.")
-            section.add(OWSTableItem.switch(withText: NSLocalizedString("GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",
-                                                                        comment: "Label for the 'approve new members' switch in the 'group link' view."),
-                                            isOn: { groupModelV2.access.addFromInviteLink == .administrator },
-                                            isEnabledBlock: {
-                                                true
-            },
-                                            target: self,
-                                            selector: #selector(didToggleApproveNewMembers(_:))))
+
+            if groupModelV2.isGroupInviteLinkEnabled {
+                section.add(OWSTableItem.switch(withText: NSLocalizedString("GROUP_LINK_VIEW_APPROVE_NEW_MEMBERS_SWITCH",
+                                                                            comment: "Label for the 'approve new members' switch in the 'group link' view."),
+                                                isOn: { groupModelV2.access.addFromInviteLink == .administrator },
+                                                isEnabledBlock: {
+                                                    true
+                },
+                                                target: self,
+                                                selector: #selector(didToggleApproveNewMembers(_:))))
+
+            }
+
             contents.addSection(section)
         }
 

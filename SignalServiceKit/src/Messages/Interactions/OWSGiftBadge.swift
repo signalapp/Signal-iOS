@@ -56,10 +56,16 @@ public class OWSGiftBadge: MTLModel {
         return try ReceiptCredentialPresentation(contents: [UInt8](rcPresentationData))
     }
 
-    public func getReceiptDetails() throws -> (UInt64, Date) {
+    public struct Level: Hashable {
+        public var rawLevel: UInt64
+
+        public static let signalGift = Level(rawLevel: 100)
+    }
+
+    public func getReceiptDetails() throws -> (level: Level, expirationTime: Date) {
         let rcPresentation = try self.getReceiptCredentialPresentation()
 
-        let receiptLevel = try rcPresentation.getReceiptLevel()
+        let receiptLevel = Level(rawLevel: try rcPresentation.getReceiptLevel())
         let receiptExpiration = try rcPresentation.getReceiptExpirationTime()
 
         return (receiptLevel, Date(timeIntervalSince1970: TimeInterval(receiptExpiration)))
@@ -88,12 +94,9 @@ public class OWSGiftBadge: MTLModel {
         guard let rcPresentationData = giftBadge.receiptCredentialPresentation else {
             throw GiftBadgeError.malformed
         }
-        // If we can't parse the credential, we should drop the message.
-        let rcPresentation = try ReceiptCredentialPresentation(contents: [UInt8](rcPresentationData))
-
-        // TODO: (GB) Validate additional fields, if necessary.
-        _ = rcPresentation
-
-        return .init(redemptionCredential: rcPresentationData)
+        let result = OWSGiftBadge(redemptionCredential: rcPresentationData)
+        // If we can't parse the details, drop the message.
+        _ = try result.getReceiptDetails()
+        return result
     }
 }

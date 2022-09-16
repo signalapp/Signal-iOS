@@ -74,9 +74,18 @@ public class SafetyNumberConfirmationSheet: UIViewController {
      *          false if there were no unconfirmed identities
      */
     @objc
-    public class func presentIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, completion: @escaping (Bool) -> Void) -> Bool {
+    public class func presentIfNecessary(
+        addresses: [SignalServiceAddress],
+        confirmationText: String,
+        untrustedThreshold: TimeInterval = OWSIdentityManager.minimumUntrustedThreshold,
+        completion: @escaping (Bool) -> Void
+    ) -> Bool {
 
-        let untrustedAddresses = untrustedIdentitiesForSendingWithSneakyTransaction(addresses: addresses)
+        let untrustedAddresses = databaseStorage.read { transaction in
+            addresses.filter { address in
+                identityManager.untrustedIdentityForSending(to: address, untrustedThreshold: untrustedThreshold, transaction: transaction) != nil
+            }
+        }
 
         guard !untrustedAddresses.isEmpty else {
             // No identities to confirm, no alert to present.
@@ -91,12 +100,6 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
         CurrentAppContext().frontmostViewController()?.present(sheet, animated: true)
         return true
-    }
-
-    private class func untrustedIdentitiesForSendingWithSneakyTransaction(addresses: [SignalServiceAddress]) -> [SignalServiceAddress] {
-        databaseStorage.read { transaction in
-            addresses.filter { Self.identityManager.untrustedIdentityForSending(to: $0, transaction: transaction) != nil }
-        }
     }
 
     // MARK: -

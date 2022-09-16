@@ -48,6 +48,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol MobileCoinHelper;
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
+@protocol OWSSignalServiceProtocol;
 @protocol OWSTypingIndicators;
 @protocol OWSUDManager;
 @protocol PaymentsCurrencies;
@@ -60,6 +61,7 @@ extern NSNotificationName const WarmCachesNotification;
 @protocol StorageServiceManagerProtocol;
 @protocol SubscriptionManagerProtocol;
 @protocol SyncManagerProtocol;
+@protocol SystemStoryManagerProtocolObjc;
 @protocol VersionedProfiles;
 @protocol WebSocketFactory;
 
@@ -99,6 +101,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                          stickerManager:(StickerManager *)stickerManager
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
+                          signalService:(id<OWSSignalServiceProtocol>)signalService
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
@@ -123,7 +126,9 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
                         phoneNumberUtil:(PhoneNumberUtil *)phoneNumberUtil
                        webSocketFactory:(id<WebSocketFactory>)webSocketFactory
                       changePhoneNumber:(ChangePhoneNumber *)changePhoneNumber
-                    subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager NS_DESIGNATED_INITIALIZER;
+                    subscriptionManager:(id<SubscriptionManagerProtocol>)subscriptionManager
+                     systemStoryManager:(id<SystemStoryManagerProtocolObjc>)systemStoryManager
+    NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -161,6 +166,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicatorsRef;
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloadsRef;
 @property (nonatomic, readonly) SignalServiceAddressCache *signalServiceAddressCacheRef;
+@property (nonatomic, readonly) id<OWSSignalServiceProtocol> signalServiceRef;
 @property (nonatomic, readonly) AccountServiceClient *accountServiceClientRef;
 @property (nonatomic, readonly) id<StorageServiceManagerProtocol> storageServiceManagerRef;
 @property (nonatomic, readonly) id<GroupsV2> groupsV2Ref;
@@ -188,6 +194,7 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 @property (nonatomic, readonly) id<WebSocketFactory> webSocketFactoryRef;
 @property (nonatomic, readonly) ChangePhoneNumber *changePhoneNumberRef;
 @property (nonatomic, readonly) id<SubscriptionManagerProtocol> subscriptionManagerRef;
+@property (nonatomic, readonly) id<SystemStoryManagerProtocolObjc> systemStoryManagerRef;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandlerRef;

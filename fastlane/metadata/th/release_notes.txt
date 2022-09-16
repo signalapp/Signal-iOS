@@ -1,2 +1,3 @@
-• เราพัฒนาปรับปรุงโปรแกรมตัดต่อสื่อ เพื่อให้คุณสามารถปรับแต่งรูปภาพและวิดีโอก่อนส่งได้อย่างง่ายดายยิ่งขึ้น
-• แก้ไขข้อบกพร่องต่างๆ เพื่อให้แอปของคุณทำงานได้อย่างราบรื่นไร้ปัญหา พร้อมการเปลี่ยนแปลงที่น่าตื่นเต้นอีกมากมาย เร็วๆ นี้!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

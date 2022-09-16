@@ -224,7 +224,10 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
             OWSLogInfo(@"Removing: %@", logFileName);
             BOOL success = [fileManager removeItemAtPath:logFilePath error:&error];
             if (!success || error) {
-                OWSFailDebug(@"Failed to delete log file: %@", error);
+                // Ignore failures for dotfiles that get generated in simulator environments
+                if (!([Platform isSimulator] && [logFileName hasPrefix:@"."])) {
+                    OWSFailDebug(@"Failed to delete log file: %@", error);
+                }
             }
         }
     }

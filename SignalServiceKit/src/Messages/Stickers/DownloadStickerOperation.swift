@@ -29,9 +29,11 @@ class DownloadStickerOperation: CDNDownloadOperation {
     private let failure: (Error) -> Void
 
     @objc
-    public required init(stickerInfo: StickerInfo,
-                               success : @escaping (URL) -> Void,
-                               failure : @escaping (Error) -> Void) {
+    public required init(
+        stickerInfo: StickerInfo,
+        success: @escaping (URL) -> Void,
+        failure: @escaping (Error) -> Void
+    ) {
         assert(stickerInfo.packId.count > 0)
         assert(stickerInfo.packKey.count > 0)
 

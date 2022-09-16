@@ -36,6 +36,11 @@
     return NO;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 - (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {

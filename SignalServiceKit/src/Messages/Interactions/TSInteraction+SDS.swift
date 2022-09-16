@@ -4938,8 +4938,10 @@ public extension TSInteraction {
         }
     }
 
-    class func anyExists(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> Bool {
+    class func anyExists(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {

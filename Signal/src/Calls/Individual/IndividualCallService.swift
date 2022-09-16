@@ -19,13 +19,6 @@ final public class IndividualCallService: NSObject {
         return callService.callManager
     }
 
-    // MARK: - Properties
-
-    // Exposed by environment.m
-
-    @objc
-    public var callUIAdapter: CallUIAdapter!
-
     // MARK: Class
 
     static let fallbackIceServer = RTCIceServer(urlStrings: ["stun:stun1.l.google.com:19302"])
@@ -37,21 +30,6 @@ final public class IndividualCallService: NSObject {
         SwiftSingletons.register(self)
     }
 
-    /**
-     * Choose whether to use CallKit or a Notification backed interface for calling.
-     */
-    @objc
-    public func createCallUIAdapter() {
-        AssertIsOnMainThread()
-
-        if let call = callService.currentCall {
-            Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
-            callService.terminate(call: call)
-        }
-
-        self.callUIAdapter = CallUIAdapter()
-    }
-
     // MARK: - Call Control Actions
 
     /**
@@ -61,7 +39,7 @@ final public class IndividualCallService: NSObject {
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
-        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(call.individualCall.localId)")
+        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(call.localId)")
 
         guard callService.currentCall == nil else {
             owsFailDebug("call already exists: \(String(describing: callService.currentCall))")
@@ -264,7 +242,7 @@ final public class IndividualCallService: NSObject {
             callType: callType
         )
 
-        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.individualCall.localId)")
+        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
         guard tsAccountManager.isOnboarded(with: transaction) else {
             Logger.warn("user is not onboarded, skipping call.")
@@ -279,7 +257,7 @@ final public class IndividualCallService: NSObject {
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            callService.terminate(call: newCall, transaction: transaction)
+            callService.terminate(call: newCall)
 
             return
         }
@@ -288,17 +266,20 @@ final public class IndividualCallService: NSObject {
                                                                                     transaction: transaction) {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 
-            let callerName = self.contactsManager.displayName(for: thread.contactAddress,
-                                                                 transaction: transaction)
-
             switch untrustedIdentity.verificationState {
             case .verified:
                 owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
-                self.notificationPresenter.presentMissedCall(newCall.individualCall, callerName: callerName)
+                let sentAtTimestamp = Date(millisecondsSince1970: newCall.individualCall.sentAtTimestamp)
+                self.notificationPresenter.presentMissedCall(newCall,
+                                                             caller: thread.contactAddress,
+                                                             sentAt: sentAtTimestamp)
             case .default:
-                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: newCall.individualCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: newCall,
+                                                                                 caller: thread.contactAddress)
             case .noLongerVerified:
-                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall.individualCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(
+                    call: newCall,
+                    caller: thread.contactAddress)
             }
 
             let callRecord = TSCall(
@@ -312,7 +293,7 @@ final public class IndividualCallService: NSObject {
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            callService.terminate(call: newCall, transaction: transaction)
+            callService.terminate(call: newCall)
 
             return
         }
@@ -330,7 +311,7 @@ final public class IndividualCallService: NSObject {
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            callService.terminate(call: newCall, transaction: transaction)
+            callService.terminate(call: newCall)
 
             return
         }
@@ -363,7 +344,7 @@ final public class IndividualCallService: NSObject {
             callRecord.anyInsert(transaction: transaction)
 
             newCall.individualCall.state = .localFailure
-            callService.terminate(call: newCall, transaction: transaction)
+            callService.terminate(call: newCall)
 
             return
         }
@@ -524,7 +505,7 @@ final public class IndividualCallService: NSObject {
             if !isOutgoing {
                 // If we are using the NSE, we need to kick off a ring ASAP in case this incoming call
                 // has resulted in the NSE waking up the main app.
-                owsAssertDebug(callUIAdapter.adaptee(for: call) === callUIAdapter.callKitAdaptee)
+                owsAssertDebug(callService.callUIAdapter.adaptee(for: call) === callService.callUIAdapter.callKitAdaptee)
                 Logger.info("Performing early ring")
                 handleRinging(call: call, isAnticipatory: true)
             } else {
@@ -588,7 +569,7 @@ final public class IndividualCallService: NSObject {
             // Set the audio session configuration before audio is enabled in WebRTC
             // via recipientAcceptedCall().
             handleConnected(call: call)
-            callUIAdapter.recipientAcceptedCall(call)
+            callService.callUIAdapter.recipientAcceptedCall(call)
 
         case .endedLocalHangup:
             Logger.debug("")
@@ -614,7 +595,7 @@ final public class IndividualCallService: NSObject {
             call.individualCall.state = .remoteHangup
 
             // Notify UI
-            callUIAdapter.remoteDidHangupCall(call)
+            callService.callUIAdapter.remoteDidHangupCall(call)
 
             callService.terminate(call: call)
 
@@ -636,7 +617,7 @@ final public class IndividualCallService: NSObject {
             call.individualCall.state = .remoteHangupNeedPermission
 
             // Notify UI
-            callUIAdapter.remoteDidHangupCall(call)
+            callService.callUIAdapter.remoteDidHangupCall(call)
 
             callService.terminate(call: call)
 
@@ -719,7 +700,7 @@ final public class IndividualCallService: NSObject {
             call.individualCall.state = .remoteBusy
 
             // Notify UI
-            callUIAdapter.remoteBusy(call)
+            callService.callUIAdapter.remoteBusy(call)
 
             callService.terminate(call: call)
 
@@ -731,18 +712,18 @@ final public class IndividualCallService: NSObject {
 
             if let callRecord = call.individualCall.callRecord {
                 switch callRecord.callType {
-                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
+                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
                     // already handled and ended, don't update the call record.
                     break
                 case .incomingIncomplete, .incoming:
                     callRecord.updateCallType(.incomingMissed)
-                    callUIAdapter.reportMissedCall(call)
+                    callService.callUIAdapter.reportMissedCall(call)
                 case .outgoingIncomplete:
                     callRecord.updateCallType(.outgoingMissed)
-                    callUIAdapter.remoteBusy(call)
+                    callService.callUIAdapter.remoteBusy(call)
                 case .outgoing:
                     callRecord.updateCallType(.outgoingMissed)
-                    callUIAdapter.reportMissedCall(call)
+                    callService.callUIAdapter.reportMissedCall(call)
                 @unknown default:
                     owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
                 }
@@ -756,7 +737,7 @@ final public class IndividualCallService: NSObject {
                 )
                 databaseStorage.asyncWrite { callRecord.anyInsert(transaction: $0) }
                 call.individualCall.callRecord = callRecord
-                callUIAdapter.reportMissedCall(call)
+                callService.callUIAdapter.reportMissedCall(call)
             }
             call.individualCall.state = .localHangup
             callService.terminate(call: call)
@@ -1067,9 +1048,21 @@ final public class IndividualCallService: NSObject {
     /**
      * User didn't answer incoming call
      */
-    public func handleMissedCall(_ call: SignalCall) {
+    public func handleMissedCall(_ call: SignalCall, error: SignalCall.CallError? = nil) {
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
+
+        let callType: RPRecentCallType
+        switch error {
+        case .doNotDisturbEnabled?:
+            callType = .incomingMissedBecauseOfDoNotDisturb
+        default:
+            if call.individualCall?.direction == .outgoing {
+                callType = .outgoingMissed
+            } else {
+                callType = .incomingMissed
+            }
+        }
 
         let callRecord: TSCall
         if let existingCallRecord = call.individualCall.callRecord {
@@ -1087,15 +1080,16 @@ final public class IndividualCallService: NSObject {
         switch callRecord.callType {
         case .incomingMissed:
             databaseStorage.asyncWrite { transaction in
+                callRecord.updateCallType(callType, transaction: transaction)
                 callRecord.anyUpsert(transaction: transaction)
             }
-            callUIAdapter.reportMissedCall(call)
+            callService.callUIAdapter.reportMissedCall(call)
         case .incomingIncomplete, .incoming:
-            callRecord.updateCallType(.incomingMissed)
-            callUIAdapter.reportMissedCall(call)
+            callRecord.updateCallType(callType)
+            callService.callUIAdapter.reportMissedCall(call)
         case .outgoingIncomplete:
-            callRecord.updateCallType(.outgoingMissed)
-        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
+            callRecord.updateCallType(callType)
+        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere, .incomingMissedBecauseOfDoNotDisturb:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
             databaseStorage.asyncWrite { transaction in
                 callRecord.anyUpsert(transaction: transaction)
@@ -1128,7 +1122,7 @@ final public class IndividualCallService: NSObject {
         call.individualCall.state = .answeredElsewhere
 
         // Notify UI
-        callUIAdapter.didAnswerElsewhere(call: call)
+        callService.callUIAdapter.didAnswerElsewhere(call: call)
 
         callService.terminate(call: call)
     }
@@ -1153,7 +1147,7 @@ final public class IndividualCallService: NSObject {
         call.individualCall.state = .declinedElsewhere
 
         // Notify UI
-        callUIAdapter.didDeclineElsewhere(call: call)
+        callService.callUIAdapter.didDeclineElsewhere(call: call)
 
         callService.terminate(call: call)
     }
@@ -1178,7 +1172,7 @@ final public class IndividualCallService: NSObject {
         call.individualCall.state = .busyElsewhere
 
         // Notify UI
-        callUIAdapter.wasBusyElsewhere(call: call)
+        callService.callUIAdapter.wasBusyElsewhere(call: call)
 
         callService.terminate(call: call)
     }
@@ -1209,12 +1203,12 @@ final public class IndividualCallService: NSObject {
 
         switch call.individualCall.state {
         case .dialing:
-            BenchEventComplete(eventId: "call-\(call.individualCall.localId)")
+            BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = .remoteRinging
         case .answering:
-            BenchEventComplete(eventId: "call-\(call.individualCall.localId)")
+            BenchEventComplete(eventId: "call-\(call.localId)")
             call.individualCall.state = isAnticipatory ? .localRinging_Anticipatory : .localRinging_ReadyToAnswer
-            self.callUIAdapter.reportIncomingCall(call, thread: call.individualCall.thread)
+            callService.callUIAdapter.reportIncomingCall(call)
         case .localRinging_Anticipatory:
             // RingRTC became ready during our anticipatory ring. User hasn't tried to answer yet.
             owsAssertDebug(isAnticipatory == false)
@@ -1377,7 +1371,7 @@ final public class IndividualCallService: NSObject {
         case .answering, .localRinging_Anticipatory, .localRinging_ReadyToAnswer, .accepting:
             assert(failedCall.individualCall.callRecord == nil)
             // call failed before any call record could be created, make one now.
-            handleMissedCall(failedCall)
+            handleMissedCall(failedCall, error: callError)
         default:
             assert(failedCall.individualCall.callRecord != nil)
         }
@@ -1391,7 +1385,7 @@ final public class IndividualCallService: NSObject {
         failedCall.individualCall.state = .localFailure
 
         if shouldResetUI {
-            self.callUIAdapter.failCall(failedCall, error: callError)
+            callService.callUIAdapter.failCall(failedCall, error: callError)
         }
 
         if callError.shouldSilentlyDropCall(),
@@ -1484,27 +1478,7 @@ final public class IndividualCallService: NSObject {
 
 extension RPRecentCallType: CustomStringConvertible {
     public var description: String {
-        switch self {
-        case .incoming:
-            return ".incoming"
-        case .outgoing:
-            return ".outgoing"
-        case .incomingMissed:
-            return ".incomingMissed"
-        case .outgoingIncomplete:
-            return ".outgoingIncomplete"
-        case .incomingIncomplete:
-            return ".incomingIncomplete"
-        case .incomingMissedBecauseOfChangedIdentity:
-            return ".incomingMissedBecauseOfChangedIdentity"
-        case .incomingDeclined:
-            return ".incomingDeclined"
-        case .outgoingMissed:
-            return ".outgoingMissed"
-        default:
-            owsFailDebug("unexpected RPRecentCallType: \(self.rawValue)")
-            return "RPRecentCallTypeUnknown"
-        }
+        NSStringFromCallType(self)
     }
 }
 

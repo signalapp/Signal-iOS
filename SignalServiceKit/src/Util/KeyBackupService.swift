@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalArgon2
+import SignalCoreKit
 
 @objc(OWSKeyBackupService)
 public class KeyBackupService: NSObject {
@@ -553,7 +554,7 @@ public class KeyBackupService: NSObject {
 
     private static func assertIsOnBackgroundQueue() {
         guard !CurrentAppContext().isRunningTests else { return }
-        assertOnQueue(DispatchQueue.global())
+        AssertNotOnMainThread()
     }
 
     static func deriveEncryptionKeyAndAccessKey(pin: String, backupId: Data) throws -> (encryptionKey: Data, accessKey: Data) {

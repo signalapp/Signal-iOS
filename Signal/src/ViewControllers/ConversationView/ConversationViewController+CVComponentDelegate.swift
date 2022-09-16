@@ -19,16 +19,26 @@ extension ConversationViewController: CVComponentDelegate {
         self.loadCoordinator.enqueueReload()
     }
 
+    public func cvc_enqueueReloadWithoutCaches() {
+        self.loadCoordinator.enqueueReloadWithoutCaches()
+    }
+
     // MARK: - Body Text Items
 
-    public func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+    public func cvc_didTapBodyTextItem(_ item: CVTextLabel.Item) {
         AssertIsOnMainThread()
 
         didTapBodyTextItem(item)
     }
 
-    public func cvc_didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {
+    public func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.Item) {
         didLongPressBodyTextItem(item)
+    }
+
+    // MARK: - System Message Items
+
+    public func cvc_didTapSystemMessageItem(_ item: CVTextLabel.Item) {
+        didTapSystemMessageItem(item)
     }
 
     // MARK: - Long Press
@@ -119,11 +129,8 @@ extension ConversationViewController: CVComponentDelegate {
             owsFailDebug("not an incoming message.")
             return
         }
-        let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
-        groupViewHelper.delegate = self
-        let actionSheet = MemberActionSheet(address: incomingMessage.authorAddress,
-                                            groupViewHelper: groupViewHelper)
-        actionSheet.present(from: self)
+
+        showMemberActionSheet(forAddress: incomingMessage.authorAddress, withHapticFeedback: false)
     }
 
     public func cvc_shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool {
@@ -244,7 +251,7 @@ extension ConversationViewController: CVComponentDelegate {
                 block: { StoryFinder.story(timestamp: quotedReply.timestamp, author: quotedReply.authorAddress, transaction: $0) }
             ) else { return }
 
-            let vc = StoryPageViewController(context: quotedStory.context)
+            let vc = StoryPageViewController(context: quotedStory.context, loadMessage: quotedStory)
             presentFullScreen(vc, animated: true)
         } else {
             scrollToQuotedMessage(quotedReply, isAnimated: true)
@@ -319,83 +326,14 @@ extension ConversationViewController: CVComponentDelegate {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
 
-    public func cvc_willWrapGift(_ messageUniqueId: String) -> Bool {
-        // If a gift is unwrapped at roughly the same we're reloading the
-        // conversation for an unrelated reason, there's a chance we'll try to
-        // re-wrap a gift that was just unwrapped. This provides an opportunity to
-        // override that behavior.
-        return !self.viewState.unwrappedGiftMessageIds.contains(messageUniqueId)
-    }
+    public func cvc_willWrapGift(_ messageUniqueId: String) -> Bool { willWrapGift(messageUniqueId) }
 
-    public func cvc_willShakeGift(_ messageUniqueId: String) -> Bool {
-        let (justInserted, _) = self.viewState.shakenGiftMessageIds.insert(messageUniqueId)
-        return justInserted
-    }
+    public func cvc_willShakeGift(_ messageUniqueId: String) -> Bool { willShakeGift(messageUniqueId) }
 
-    public func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) {
-        self.viewState.unwrappedGiftMessageIds.insert(itemViewModel.interaction.uniqueId)
-        self.markGiftAsOpened(itemViewModel.interaction)
-    }
+    public func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) { willUnwrapGift(itemViewModel) }
 
-    private func markGiftAsOpened(_ interaction: TSInteraction) {
-        guard let outgoingMessage = interaction as? TSOutgoingMessage else {
-            return
-        }
-        guard outgoingMessage.giftBadge?.redemptionState == .pending else {
-            return
-        }
-        self.databaseStorage.asyncWrite { transaction in
-            outgoingMessage.anyUpdateOutgoingMessage(transaction: transaction) {
-                $0.giftBadge?.redemptionState = .opened
-            }
-
-            self.receiptManager.outgoingGiftWasOpened(outgoingMessage, transaction: transaction)
-        }
-    }
-
-    public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {
-        AssertIsOnMainThread()
-
-        let viewControllerToPresent: UIViewController
-
-        switch itemViewModel.interaction {
-        case let incomingMessage as TSIncomingMessage:
-            let (shortName, fullName) = self.databaseStorage.read { transaction -> (String, String) in
-                let authorAddress = incomingMessage.authorAddress
-                return (
-                    self.contactsManager.shortDisplayName(for: authorAddress, transaction: transaction),
-                    self.contactsManager.displayName(for: authorAddress, transaction: transaction)
-                )
-            }
-            viewControllerToPresent = BadgeThanksSheet(badge: profileBadge, type: .gift(
-                shortName: shortName,
-                fullName: fullName,
-                notNowAction: { [weak self] in self?.showRedeemBadgeLaterText() },
-                incomingMessage: incomingMessage
-            ))
-
-        case is TSOutgoingMessage:
-            guard let thread = thread as? TSContactThread else {
-                owsFailDebug("Clicked a gift badge that wasn't in a contact thread")
-                return
-            }
-
-            viewControllerToPresent = BadgeGiftThanksSheet(thread: thread, badge: profileBadge)
-
-        default:
-            owsFailDebug("Tapped on gift that's not a message")
-            return
-        }
-
-        self.present(viewControllerToPresent, animated: true)
-    }
-
-    private func showRedeemBadgeLaterText() {
-        let text = NSLocalizedString(
-            "BADGE_GIFTING_REDEEM_LATER",
-            comment: "A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift."
-        )
-        self.presentToastCVC(text)
+    public func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge, isExpired: Bool, isRedeemed: Bool) {
+        didTapGiftBadge(itemViewModel, profileBadge: profileBadge, isExpired: isExpired, isRedeemed: isRedeemed)
     }
 
     public func cvc_didTapSignalMeLink(url: URL) {
@@ -735,6 +673,56 @@ extension ConversationViewController: CVComponentDelegate {
         AssertIsOnMainThread()
 
         showConversationSettingsAndShowMemberRequests()
+    }
+
+    public func cvc_didTapBlockRequest(
+        groupModel: TSGroupModelV2,
+        requesterName: String,
+        requesterUuid: UUID
+    ) {
+        AssertIsOnMainThread()
+
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "GROUPS_BLOCK_REQUEST_SHEET_TITLE",
+                comment: "Title for sheet asking if the user wants to block a request to join the group."
+            ),
+            message: String(
+                format: OWSLocalizedString(
+                    "GROUPS_BLOCK_REQUEST_SHEET_MESSAGE",
+                    comment: "Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}."
+                ),
+                requesterName
+            ))
+
+        actionSheet.addAction(.init(
+            title: OWSLocalizedString(
+                "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON",
+                comment: "Label for button that will block a request to join a group."
+            ),
+            style: .default,
+            handler: { _ in
+                GroupViewUtils.updateGroupWithActivityIndicator(
+                    fromViewController: self,
+                    withGroupModel: groupModel,
+                    updateDescription: "Blocking join request",
+                    updateBlock: {
+                        // If the user in question has canceled their request,
+                        // this call will still block them.
+                        GroupManager.acceptOrDenyMemberRequestsV2(
+                            groupModel: groupModel,
+                            uuids: [requesterUuid],
+                            shouldAccept: false
+                        )
+                    },
+                    completion: nil
+                )
+            })
+        )
+
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        OWSActionSheets.showActionSheet(actionSheet, fromViewController: self)
     }
 
     public func cvc_didTapShowUpgradeAppUI() {

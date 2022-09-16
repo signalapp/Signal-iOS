@@ -1,2 +1,3 @@
-• Vi har forbedret medie-editoren, hvilket har gjort det nemmere end nogensinde for dig at skræddersy fotos og videoer, inden du sender dem.
-• Flere rettelser, så din app kan kører uden problemer. Flere spændende ændringer på vej!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

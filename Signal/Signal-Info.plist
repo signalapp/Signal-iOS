@@ -5,7 +5,7 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>WebRTCCommit</key>
-		<string>ad402b0e117e79a20b5836bdba0a7614a30d11ec Production build of v2.20.11</string>
+		<string>e8fb87c14a326888b3d05a12e3cce20315797001 Production build of v2.21.0</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -26,7 +26,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>5.47.0</string>
+	<string>5.54.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -43,13 +43,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>6</string>
+	<string>7</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
 	<string>support@signal.org</string>
-	<key>LOGS_URL</key>
-	<string>https://github.com/signalapp/Signal-iOS/issues</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.social-networking</string>
 	<key>LSApplicationQueriesSchemes</key>
@@ -141,7 +139,7 @@
 		<string>INStartCallIntent</string>
 	</array>
 	<key>OWSBundleVersion4</key>
-	<string>5.47.0.6</string>
+	<string>5.54.0.7</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIApplicationShortcutItems</key>

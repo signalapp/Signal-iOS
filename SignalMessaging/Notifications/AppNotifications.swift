@@ -36,6 +36,7 @@ public enum AppNotificationCategory: CaseIterable {
     case missedCallFromNoLongerVerifiedIdentity
     case internalError
     case incomingMessageGeneric
+    case incomingGroupStoryReply
 }
 
 public enum AppNotificationAction: String, CaseIterable {
@@ -54,6 +55,7 @@ public struct AppNotificationUserInfoKey {
     public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
     public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
     public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
+    public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
     public static let callBackUuid = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
     public static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
@@ -91,6 +93,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.internalError"
         case .incomingMessageGeneric:
             return "Signal.AppNotificationCategory.incomingMessageGeneric"
+        case .incomingGroupStoryReply:
+            return "Signal.AppNotificationCategory.incomingGroupStoryReply"
         }
     }
 
@@ -127,6 +131,8 @@ extension AppNotificationCategory {
             return []
         case .incomingMessageGeneric:
             return []
+        case .incomingGroupStoryReply:
+            return [.reply]
         }
     }
 }
@@ -235,10 +241,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return adaptee.registerNotificationSettings()
     }
 
-    public func presentIncomingCall(_ call: IndividualCallNotificationInfo, callerName: String) {
-
-        let remoteAddress = call.remoteAddress
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+    public func presentIncomingCall(_ call: CallNotificationInfo,
+                                    caller: SignalServiceAddress) {
+        let thread = call.thread
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -247,7 +252,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
             threadIdentifier = thread.uniqueId
         }
 
@@ -265,7 +270,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         var interaction: INInteraction?
         if #available(iOS 15, *),
             previewType != .noNameNoPreview,
-            let intent = thread.generateStartCallIntent(callerAddress: remoteAddress) {
+            let intent = thread.generateStartCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -312,10 +317,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCall(_ call: IndividualCallNotificationInfo, callerName: String) {
-
-        let remoteAddress = call.remoteAddress
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+    public func presentMissedCall(_ call: CallNotificationInfo,
+                                  caller: SignalServiceAddress,
+                                  sentAt timestamp: Date) {
+        let thread = call.thread
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -324,11 +329,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
             threadIdentifier = thread.uniqueId
         }
 
-        let timestamp = Date(millisecondsSince1970: call.sentAtTimestamp)
         let timestampClassification = TimestampClassification(timestamp)
         let timestampArgument: String
         switch timestampClassification {
@@ -382,7 +386,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
         let notificationBody = String(format: notificationBodyFormat, timestampArgument)
 
-        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: remoteAddress)
+        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: caller)
 
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
@@ -391,7 +395,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         var interaction: INInteraction?
         if #available(iOS 15, *),
             previewType != .noNameNoPreview,
-            let intent = thread.generateStartCallIntent(callerAddress: remoteAddress) {
+            let intent = thread.generateStartCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
             wrapper.direction = .incoming
             interaction = wrapper
@@ -411,11 +415,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: IndividualCallNotificationInfo,
-                                                                   callerName: String) {
+    public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: CallNotificationInfo,
+                                                                   caller: SignalServiceAddress) {
 
-        let remoteAddress = call.remoteAddress
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+        let thread = call.thread
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -424,7 +427,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
@@ -446,11 +449,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    public func presentMissedCallBecauseOfNewIdentity(call: IndividualCallNotificationInfo,
-                                                      callerName: String) {
+    public func presentMissedCallBecauseOfNewIdentity(call: CallNotificationInfo,
+                                                      caller: SignalServiceAddress) {
 
-        let remoteAddress = call.remoteAddress
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
+        let thread = call.thread
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -459,11 +461,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = callerName
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: remoteAddress)
+        let userInfo = userInfoForMissedCall(thread: thread, remoteAddress: caller)
 
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
@@ -499,13 +501,29 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction).isMuted
     }
 
-    public func canNotify(for incomingMessage: TSIncomingMessage,
-                          thread: TSThread,
-                          transaction: SDSAnyReadTransaction) -> Bool {
-        guard !incomingMessage.isGroupStoryReply else { return false }
-
+    public func canNotify(
+        for incomingMessage: TSIncomingMessage,
+        thread: TSThread,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         guard isThreadMuted(thread, transaction: transaction) else {
-            return true
+            guard incomingMessage.isGroupStoryReply else { return true }
+
+            guard
+                let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value,
+                let storyAuthorAddress = incomingMessage.storyAuthorAddress,
+                let storyAuthorUuidString = storyAuthorAddress.uuidString
+            else { return false }
+
+            // Always notify for replies to group stories you sent
+            if storyAuthorAddress.isLocalAddress { return true }
+
+            // Notify people who did not author the story if they've previously replied to it
+            return InteractionFinder.hasLocalUserReplied(
+                storyTimestamp: storyTimestamp,
+                storyAuthorUuidString: storyAuthorUuidString,
+                transaction: transaction
+            )
         }
 
         guard thread.isGroupThread else { return false }
@@ -564,9 +582,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             case is TSContactThread:
                 notificationTitle = senderName
             case let groupThread as TSGroupThread:
-                notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat,
-                                           senderName,
-                                           groupThread.groupNameOrDefault)
+                notificationTitle = String(
+                    format: incomingMessage.isGroupStoryReply
+                    ? NotificationStrings.incomingGroupStoryReplyTitleFormat
+                    : NotificationStrings.incomingGroupMessageTitleFormat,
+                    senderName,
+                    groupThread.groupNameOrDefault
+                )
             default:
                 owsFailDebug("Invalid thread: \(thread.uniqueId)")
                 return
@@ -600,15 +622,21 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             category = .incomingMessageFromNoLongerVerifiedIdentity
         } else if !shouldShowActions {
             category = .incomingMessageWithoutActions
+        } else if incomingMessage.isGroupStoryReply {
+            category = .incomingGroupStoryReply
         } else {
             category = (thread.canSendChatMessagesToThread()
                             ? .incomingMessageWithActions_CanReply
                             : .incomingMessageWithActions_CannotReply)
         }
-        let userInfo = [
+        var userInfo: [AnyHashable: Any] = [
             AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.messageId: incomingMessage.uniqueId
         ]
+
+        if let storyTimestamp = incomingMessage.storyTimestamp?.uint64Value {
+            userInfo[AppNotificationUserInfoKey.storyTimestamp] = storyTimestamp
+        }
 
         var interaction: INInteraction?
         if previewType != .noNameNoPreview,
@@ -1038,10 +1066,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     // This method is thread-safe.
     private func checkIfShouldPlaySound() -> Bool {
         guard CurrentAppContext().isMainAppAndActive else {
+            Logger.info("[Notification Sounds] not playing sound, app inactive")
             return true
         }
 
         guard preferences.soundInForeground() else {
+            Logger.info("[Notification Sounds] foreground sound disabled")
             return false
         }
 
@@ -1052,6 +1082,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             let recentNotifications = mostRecentNotifications.filter { $0 > recentThreshold }
 
             guard recentNotifications.count < kAudioNotificationsThrottleCount else {
+                Logger.info("[Notification Sounds] sound throttled")
                 return false
             }
 
@@ -1096,9 +1127,8 @@ extension TruncatedList: Collection {
     }
 }
 
-public protocol IndividualCallNotificationInfo {
-    var remoteAddress: SignalServiceAddress { get }
+public protocol CallNotificationInfo {
+    var thread: TSThread { get }
     var localId: UUID { get }
     var offerMediaType: TSRecentCallOfferType { get }
-    var sentAtTimestamp: UInt64 { get }
 }

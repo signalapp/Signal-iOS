@@ -10,9 +10,14 @@ import SignalUI
 import SafariServices
 import CoreMedia
 
-protocol StoryItemMediaViewDelegate: AnyObject {
+protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
     func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView)
+
+    func storyItemMediaViewShouldBeMuted(_ storyItemMediaView: StoryItemMediaView) -> Bool
+
+    var contextMenuGenerator: StoryContextMenuGenerator { get }
+    var context: StoryContext { get }
 }
 
 class StoryItemMediaView: UIView {
@@ -34,8 +39,9 @@ class StoryItemMediaView: UIView {
 
     private let bottomContentVStack = UIStackView()
 
-    init(item: StoryItem) {
+    init(item: StoryItem, delegate: StoryItemMediaViewDelegate) {
         self.item = item
+        self.delegate = delegate
 
         super.init(frame: .zero)
 
@@ -89,6 +95,7 @@ class StoryItemMediaView: UIView {
     }
 
     func updateTimestampText() {
+        timestampLabel.isHidden = item.message.authorAddress.isSystemStoryAddress
         timestampLabel.text = DateUtil.formatTimestampRelatively(item.message.timestamp)
     }
 
@@ -110,22 +117,26 @@ class StoryItemMediaView: UIView {
             return didHandle
         }
 
+        if contextButton.bounds.contains(gesture.location(in: contextButton)) {
+            return true
+        }
+
         return false
     }
 
     // MARK: - Playback
 
-    func pause(hideChrome: Bool = false, animateAlongside: @escaping () -> Void) {
+    func pause(hideChrome: Bool = false, animateAlongside: (() -> Void)? = nil) {
         videoPlayer?.pause()
 
         if hideChrome {
             UIView.animate(withDuration: 0.15, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
                 self.bottomContentVStack.alpha = 0
                 self.gradientProtectionView.alpha = 0
-                animateAlongside()
+                animateAlongside?()
             } completion: { _ in }
         } else {
-            animateAlongside()
+            animateAlongside?()
         }
     }
 
@@ -142,42 +153,61 @@ class StoryItemMediaView: UIView {
     }
 
     var duration: CFTimeInterval {
+        var duration: CFTimeInterval = 0
+        var glyphCount: Int?
         switch item.attachment {
         case .pointer:
             owsFailDebug("Undownloaded attachments should not progress.")
             return 0
         case .stream(let stream):
+            glyphCount = stream.caption?.glyphCount
+
             if let asset = videoPlayer?.avPlayer.currentItem?.asset {
                 let videoDuration = CMTimeGetSeconds(asset.duration)
                 if stream.isLoopingVideo {
                     // GIFs should loop 3 times, or play for 5 seconds
                     // whichever is longer.
-                    return max(5, videoDuration * 3)
+                    duration = max(5, videoDuration * 3)
                 } else {
-                    return videoDuration
+                    // Videos should play for their duration
+                    duration = videoDuration
+
+                    // For now, we don't want to factor captions into video durations,
+                    // as it would cause the video to loop leading to weird UX
+                    glyphCount = nil
                 }
             } else {
-                // Images should play for 5 seconds
-                return 5
+                // System stories play slightly longer.
+                if item.message.authorAddress.isSystemStoryAddress {
+                    // Based off glyph calculation below for the text
+                    // embedded in the images in english.
+                    duration = 10
+                } else {
+                    // At base static images should play for 5 seconds
+                    duration = 5
+                }
             }
         case .text(let attachment):
-            // As a base, all text attachments play for at least 3s,
-            // even if they have no text.
-            var duration: CFTimeInterval = 3
+            glyphCount = attachment.text?.glyphCount
 
-            if let text = attachment.text {
-                // For each bucket of glyphs after the first 15,
-                // add an additional 1s of playback time.
-                let fifteenGlyphBuckets = (max(0, CGFloat(text.glyphCount) - 15) / 15).rounded(.up)
-                duration += fifteenGlyphBuckets
-            }
+            // As a base, all text attachments play for at least 5s,
+            // even if they have no text.
+            duration = 5
 
             // If a text attachment includes a link preview, play
             // for an additional 2s
             if attachment.preview != nil { duration += 2 }
-
-            return duration
         }
+
+        // If we have a glyph count, increase the duration to allow it to be readable
+        if let glyphCount = glyphCount {
+            // For each bucket of glyphs after the first 15,
+            // add an additional 1s of playback time.
+            let fifteenGlyphBuckets = (max(0, CGFloat(glyphCount) - 15) / 15).rounded(.up)
+            duration += fifteenGlyphBuckets
+        }
+
+        return duration
     }
 
     var elapsedTime: CFTimeInterval? {
@@ -187,36 +217,16 @@ class StoryItemMediaView: UIView {
         return CMTimeGetSeconds(currentTime) + loopedElapsedTime
     }
 
-    // MARK: - Downloading
-
     private func startAttachmentDownloadIfNecessary(_ gesture: UITapGestureRecognizer) -> Bool {
-        guard case .pointer(let pointer) = item.attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
-
         // Only start downloads when the user taps in the center of the view.
         let downloadHitRegion = CGRect(
             origin: CGPoint(x: frame.center.x - 30, y: frame.center.y - 30),
             size: CGSize(square: 60)
         )
         guard downloadHitRegion.contains(gesture.location(in: self)) else { return false }
-
-        attachmentDownloads.enqueueDownloadOfAttachments(
-            forStoryMessageId: item.message.uniqueId,
-            attachmentGroup: .allAttachmentsIncoming,
-            downloadBehavior: .bypassAll,
-            touchMessageImmediately: true) { [weak self] _ in
-                Logger.info("Successfully re-downloaded attachment.")
-                DispatchQueue.main.async { self?.updateMediaView() }
-            } failure: { [weak self] error in
-                Logger.warn("Failed to redownload attachment with error: \(error)")
-                DispatchQueue.main.async { self?.updateMediaView() }
-            }
-
-        return true
-    }
-
-    var isPendingDownload: Bool {
-        guard case .pointer = item.attachment else { return false }
-        return true
+        return item.startAttachmentDownloadIfNecessary { [weak self] in
+            self?.updateMediaView()
+        }
     }
 
     // MARK: - Author Row
@@ -229,21 +239,84 @@ class StoryItemMediaView: UIView {
             buildNameLabel(transaction: $0)
         ) }
 
+        let nameTrailingView: UIView
+        let nameTrailingSpacing: CGFloat
+        if item.message.authorAddress.isSystemStoryAddress {
+            let icon = UIImageView(image: UIImage(named: "official-checkmark-20"))
+            icon.contentMode = .center
+            nameTrailingView = icon
+            nameTrailingSpacing = 3
+        } else {
+            nameTrailingView = timestampLabel
+            nameTrailingSpacing = 8
+        }
+
+        let metadataStackView: UIStackView
+
+        let nameHStack = UIStackView(arrangedSubviews: [
+            nameLabel,
+            nameTrailingView
+        ])
+        nameHStack.spacing = nameTrailingSpacing
+        nameHStack.axis = .horizontal
+        nameHStack.alignment = .center
+
+        if
+            case .privateStory(let uniqueId) = delegate?.context,
+            let privateStoryThread = databaseStorage.read(
+                block: { TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: $0) }
+            ),
+            !privateStoryThread.isMyStory
+        {
+            // For private stories, other than "My Story", render the name of the story
+
+            let contextIcon = UIImageView()
+            contextIcon.setTemplateImageName("lock-16", tintColor: Theme.darkThemePrimaryColor)
+            contextIcon.autoSetDimensions(to: .square(16))
+
+            let contextNameLabel = UILabel()
+            contextNameLabel.textColor = Theme.darkThemePrimaryColor
+            contextNameLabel.font = .ows_dynamicTypeFootnote
+            contextNameLabel.text = privateStoryThread.name
+
+            let contextHStack = UIStackView(arrangedSubviews: [
+                contextIcon,
+                contextNameLabel
+            ])
+            contextHStack.spacing = 4
+            contextHStack.axis = .horizontal
+            contextHStack.alignment = .center
+            contextHStack.alpha = 0.8
+
+            metadataStackView = UIStackView(arrangedSubviews: [nameHStack, contextHStack])
+            metadataStackView.axis = .vertical
+            metadataStackView.alignment = .leading
+            metadataStackView.spacing = 1
+        } else {
+            metadataStackView = nameHStack
+        }
+
         authorRow.addArrangedSubviews([
             avatarView,
             .spacer(withWidth: 12),
-            nameLabel,
-            .spacer(withWidth: 8),
-            timestampLabel,
-            .hStretchingSpacer()
+            metadataStackView,
+            .hStretchingSpacer(),
+            .spacer(withWidth: Self.contextButtonSize)
         ])
         authorRow.axis = .horizontal
         authorRow.alignment = .center
 
+        authorRow.addSubview(contextButton)
+        contextButton.autoPinEdge(toSuperviewEdge: .trailing)
+        NSLayoutConstraint.activate([
+            contextButton.centerYAnchor.constraint(equalTo: authorRow.centerYAnchor)
+        ])
+
         timestampLabel.setCompressionResistanceHorizontalHigh()
         timestampLabel.setContentHuggingHorizontalHigh()
         timestampLabel.font = .ows_dynamicTypeFootnote
-        timestampLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        timestampLabel.textColor = Theme.darkThemePrimaryColor
+        timestampLabel.alpha = 0.8
         updateTimestampText()
 
         bottomContentVStack.addArrangedSubview(authorRow)
@@ -257,14 +330,23 @@ class StoryItemMediaView: UIView {
             shape: .circular,
             useAutolayout: true
         )
+
         authorAvatarView.update(transaction) { config in
-            config.dataSource = .address(item.message.authorAddress)
+            config.dataSource = try? StoryUtil.authorAvatarDataSource(
+                for: item.message,
+                transaction: transaction
+            )
         }
 
         switch item.message.context {
-        case .groupId(let groupId):
-            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                owsFailDebug("Unexpectedly missing group thread")
+        case .groupId:
+            guard
+                let groupAvatarDataSource = try? StoryUtil.contextAvatarDataSource(
+                    for: item.message,
+                    transaction: transaction
+                )
+            else {
+                owsFailDebug("Unexpectedly missing group avatar")
                 return authorAvatarView
             }
 
@@ -276,7 +358,7 @@ class StoryItemMediaView: UIView {
                 useAutolayout: true
             )
             groupAvatarView.update(transaction) { config in
-                config.dataSource = .thread(groupThread)
+                config.dataSource = groupAvatarDataSource
             }
 
             let avatarContainer = UIView()
@@ -290,7 +372,7 @@ class StoryItemMediaView: UIView {
             groupAvatarView.autoPinEdge(.leading, to: .trailing, of: authorAvatarView, withOffset: -4)
 
             return avatarContainer
-        case .authorUuid, .none:
+        case .authorUuid, .privateStory, .none:
             return authorAvatarView
         }
     }
@@ -299,34 +381,28 @@ class StoryItemMediaView: UIView {
         let label = UILabel()
         label.textColor = Theme.darkThemePrimaryColor
         label.font = UIFont.ows_dynamicTypeSubheadline.ows_semibold
-        label.text = {
-            switch item.message.context {
-            case .groupId(let groupId):
-                let groupName: String = {
-                    guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                        owsFailDebug("Missing group thread for group story")
-                        return TSGroupThread.defaultGroupName
-                    }
-                    return groupThread.groupNameOrDefault
-                }()
-
-                let authorShortName = Self.contactsManager.shortDisplayName(
-                    for: item.message.authorAddress,
-                    transaction: transaction
-                )
-                let nameFormat = NSLocalizedString(
-                    "GROUP_STORY_NAME_FORMAT",
-                    comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}")
-                return String(format: nameFormat, authorShortName, groupName)
-            default:
-                return Self.contactsManager.displayName(
-                    for: item.message.authorAddress,
-                    transaction: transaction
-                )
-            }
-        }()
+        label.text = StoryUtil.authorDisplayName(
+            for: item.message,
+            contactsManager: contactsManager,
+            useFullNameForLocalAddress: false,
+            transaction: transaction
+        )
         return label
     }
+
+    static let contextButtonSize: CGFloat = 42
+
+    private lazy var contextButton: DelegatingContextMenuButton = {
+        let contextButton = DelegatingContextMenuButton(delegate: delegate)
+        contextButton.showsContextMenuAsPrimaryAction = true
+        contextButton.tintColor = Theme.darkThemePrimaryColor
+        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.contentMode = .center
+
+        contextButton.autoSetDimensions(to: .square(Self.contextButtonSize))
+
+        return contextButton
+    }()
 
     // MARK: - Caption
 
@@ -568,12 +644,17 @@ class StoryItemMediaView: UIView {
         }
     }
 
+    public func updateMuteState() {
+        videoPlayer?.isMuted = delegate?.storyItemMediaViewShouldBeMuted(self) ?? false
+    }
+
     private var videoPlayerLoopCount = 0
     private var videoPlayer: OWSVideoPlayer?
     private func buildVideoView(originalMediaUrl: URL, shouldLoop: Bool) -> UIView {
-        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop)
+        let player = OWSVideoPlayer(url: originalMediaUrl, shouldLoop: shouldLoop, shouldMixAudioWithOthers: true)
         player.delegate = self
         self.videoPlayer = player
+        updateMuteState()
 
         videoPlayerLoopCount = 0
 
@@ -651,19 +732,20 @@ class StoryItemMediaView: UIView {
 
     private static let mediaCache = CVMediaCache()
     private func buildDownloadStateView(for pointer: TSAttachmentPointer) -> UIView {
-        let view = UIView()
-
         let progressView = CVAttachmentProgressView(
             direction: .download(attachmentPointer: pointer),
-            style: .withCircle,
+            diameter: 56,
             isDarkThemeEnabled: true,
             mediaCache: Self.mediaCache
         )
-        view.addSubview(progressView)
-        progressView.autoSetDimensions(to: progressView.layoutSize)
-        progressView.autoCenterInSuperview()
 
-        return view
+        let manualLayoutView = OWSLayerView(frame: .zero) { layerView in
+            progressView.frame.size = progressView.layoutSize
+            progressView.center = layerView.center
+        }
+        manualLayoutView.addSubview(progressView)
+
+        return manualLayoutView
     }
 
     private func buildContentUnavailableView() -> UIView {
@@ -686,6 +768,34 @@ class StoryItem: NSObject {
         self.message = message
         self.numberOfReplies = numberOfReplies
         self.attachment = attachment
+    }
+}
+
+extension StoryItem {
+    // MARK: - Downloading
+
+    @discardableResult
+    func startAttachmentDownloadIfNecessary(completion: (() -> Void)? = nil) -> Bool {
+        guard case .pointer(let pointer) = attachment, ![.enqueued, .downloading].contains(pointer.state) else { return false }
+
+        attachmentDownloads.enqueueDownloadOfAttachments(
+            forStoryMessageId: message.uniqueId,
+            attachmentGroup: .allAttachmentsIncoming,
+            downloadBehavior: .bypassAll,
+            touchMessageImmediately: true) { _ in
+                Logger.info("Successfully re-downloaded attachment.")
+                DispatchQueue.main.async { completion?() }
+            } failure: { error in
+                Logger.warn("Failed to redownload attachment with error: \(error)")
+                DispatchQueue.main.async { completion?() }
+            }
+
+        return true
+    }
+
+    var isPendingDownload: Bool {
+        guard case .pointer = attachment else { return false }
+        return true
     }
 }
 

@@ -8,7 +8,7 @@ open class CDNDownloadOperation: OWSOperation {
 
     // MARK: - Dependencies
 
-    private var cdn0urlSession: OWSURLSession {
+    private var cdn0urlSession: OWSURLSessionProtocol {
         signalService.urlSessionForCdn(cdnNumber: 0)
     }
 

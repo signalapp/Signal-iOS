@@ -47,7 +47,7 @@ class NotificationService: UNNotificationServiceExtension {
             if DebugFlags.internalLogging,
                _logTimer == nil {
                 _logTimer = OffMainThreadTimer(timeInterval: 1.0, repeats: true) { _ in
-                    Logger.info("... memoryUsage: \(LocalDevice.memoryUsageString)")
+                    NSELogger.uncorrelated.info("... memoryUsage: \(LocalDevice.memoryUsageString)")
                 }
             }
 
@@ -71,76 +71,96 @@ class NotificationService: UNNotificationServiceExtension {
     // MARK: -
 
     // This method is thread-safe.
-    func completeSilenty(timeHasExpired: Bool = false) {
+    func completeSilently(timeHasExpired: Bool = false, logger: NSELogger) {
+        defer { logger.flush() }
 
         let nseCount = Self.nseDidComplete()
 
         guard let contentHandler = contentHandler.swap(nil) else {
             if DebugFlags.internalLogging {
-                Logger.warn("No contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
+                logger.warn("No contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
             }
-            Logger.flush()
             return
         }
 
         let content = UNMutableNotificationContent()
-
-        let updatedBadgeCount: NSNumber?
-        if environment.hasAppContent, let nseContext = CurrentAppContext() as? NSEContext {
-            if !timeHasExpired {
-                // If we have time, we might as well get the current up-to-date badge count
-                let freshCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
-                updatedBadgeCount = NSNumber(value: freshCount)
-            } else if let cachedBadgeCount = nseContext.desiredBadgeNumber.get() {
-                // If we don't have time to get a fresh count, let's use the cached count stored in our context
-                updatedBadgeCount = NSNumber(value: cachedBadgeCount)
+        content.badge = {
+            if environment.hasAppContent, let nseContext = CurrentAppContext() as? NSEContext {
+                if !timeHasExpired {
+                    // If we have time, we might as well get the current up-to-date badge count
+                    let freshCount = databaseStorage.read { InteractionFinder.unreadCountInAllThreads(transaction: $0.unwrapGrdbRead) }
+                    return NSNumber(value: freshCount)
+                } else if let cachedBadgeCount = nseContext.desiredBadgeNumber.get() {
+                    // If we don't have time to get a fresh count, let's use the cached count stored in our context
+                    return NSNumber(value: cachedBadgeCount)
+                } else {
+                    // The context never set a badge count, let's leave things as-is:
+                    return nil
+                }
             } else {
-                // The context never set a badge count, let's leave things as-is:
-                updatedBadgeCount = nil
+                // We never set up an NSEContext. Let's leave things as-is:
+                return nil
             }
-        } else {
-            // We never set up an NSEContext. Let's leave things as-is:
-            updatedBadgeCount = nil
-        }
-        content.badge = updatedBadgeCount
+        }()
 
         if DebugFlags.internalLogging {
-            Logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
+            logger.info("Invoking contentHandler, memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount).")
         }
-        Logger.flush()
 
-        contentHandler(content)
+        if timeHasExpired {
+            contentHandler(content)
+        } else {
+            // If we have some time left, query current notification state
+            logger.info("Querying existing notifications")
+
+            let notificationCenter = UNUserNotificationCenter.current()
+            notificationCenter.getPendingNotificationRequests { requests in
+                defer { logger.flush() }
+                logger.info("Found \(requests.count) pending notification requests with identifiers: \(requests.map { $0.identifier }.joined(separator: ", "))")
+
+                notificationCenter.getDeliveredNotifications { notifications in
+                    defer { logger.flush() }
+                    logger.info("Found \(notifications.count) delivered notifications with identifiers: \(notifications.map { $0.request.identifier }.joined(separator: ", "))")
+
+                    contentHandler(content)
+                }
+            }
+        }
     }
 
-    override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+    override func didReceive(
+        _ request: UNNotificationRequest,
+        withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
+    ) {
+        let logger = NSELogger()
 
         // This should be the first thing we do.
-        environment.ensureAppContext()
+        environment.ensureAppContext(logger: logger)
 
         // Detect and handle "no GRDB file" and "no keychain access; device
         // not yet unlocked for first time" cases _before_ calling
         // setupIfNecessary().
-        if let errorContent = NSEEnvironment.verifyDBKeysAvailable() {
+        if let errorContent = NSEEnvironment.verifyDBKeysAvailable(logger: logger) {
             if hasShownFirstUnlockError.tryToSetFlag() {
-                NSLog("DB Keys not accessible; showing error.")
+                logger.error("DB Keys not accessible; showing error.")
                 contentHandler(errorContent)
             } else {
                 // Only show a single error if we receive multiple pushes
                 // before first device unlock.
-                NSLog("DB Keys not accessible; completing silently.")
+                logger.error("DB Keys not accessible; completing silently.")
                 let emptyContent = UNMutableNotificationContent()
                 contentHandler(emptyContent)
             }
             return
         }
 
-        if let errorContent = environment.setupIfNecessary() {
+        if let errorContent = environment.setupIfNecessary(logger: logger) {
             // This should not occur; see above.  If we've reached this
             // point, the NSEEnvironment.isSetup flag is already set,
             // but the environment has _not_ been setup successfully.
             // We need to terminate the NSE to return to a good state.
-            Logger.warn("Posting error notification and skipping processing.")
-            Logger.flush()
+            logger.warn("Posting error notification and skipping processing.")
+            logger.flush()
             contentHandler(errorContent)
             fatalError("Posting error notification and skipping processing.")
         }
@@ -151,19 +171,21 @@ class NotificationService: UNNotificationServiceExtension {
 
         let nseCount = Self.nseDidStart()
 
-        Logger.info("Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount)")
+        logger.info(
+            "Received notification in class: \(self), thread: \(Thread.current), pid: \(ProcessInfo.processInfo.processIdentifier), memoryUsage: \(LocalDevice.memoryUsageString), nseCount: \(nseCount)"
+        )
 
         AppReadiness.runNowOrWhenAppDidBecomeReadySync {
-            environment.askMainAppToHandleReceipt { [weak self] mainAppHandledReceipt in
+            environment.askMainAppToHandleReceipt(logger: logger) { [weak self] mainAppHandledReceipt in
                 guard !mainAppHandledReceipt else {
-                    Logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")
-                    self?.completeSilenty()
+                    logger.info("Received notification handled by main application, memoryUsage: \(LocalDevice.memoryUsageString).")
+                    self?.completeSilently(logger: logger)
                     return
                 }
 
-                Logger.info("Processing received notification, memoryUsage: \(LocalDevice.memoryUsageString).")
+                logger.info("Processing received notification, memoryUsage: \(LocalDevice.memoryUsageString).")
 
-                self?.fetchAndProcessMessages()
+                self?.fetchAndProcessMessages(logger: logger)
             }
         }
     }
@@ -175,19 +197,19 @@ class NotificationService: UNNotificationServiceExtension {
         // We complete silently here so that nothing is presented to the user.
         // By default the OS will present whatever the raw content of the original
         // notification is to the user otherwise.
-        completeSilenty(timeHasExpired: true)
+        completeSilently(timeHasExpired: true, logger: .uncorrelated)
     }
 
     // This method is thread-safe.
-    private func fetchAndProcessMessages() {
+    private func fetchAndProcessMessages(logger: NSELogger) {
         guard !AppExpiry.shared.isExpired else {
             owsFailDebug("Not processing notifications for expired application.")
-            return completeSilenty()
+            return completeSilently(logger: logger)
         }
 
         environment.processingMessageCounter.increment()
 
-        Logger.info("Beginning message fetch.")
+        logger.info("Beginning message fetch.")
 
         let fetchPromise = messageFetcherJob.run().promise
         fetchPromise.timeout(seconds: 20, description: "Message Fetch Timeout.") {
@@ -196,7 +218,7 @@ class NotificationService: UNNotificationServiceExtension {
             // Do nothing, Promise.timeout() will log timeouts.
         }
         fetchPromise.then(on: .global()) { [weak self] () -> Promise<Void> in
-            Logger.info("Waiting for processing to complete.")
+            logger.info("Waiting for processing to complete.")
             guard let self = self else { return Promise.value(()) }
 
             let runningAndCompletedPromises = AtomicArray<(String, Promise<Void>)>()
@@ -206,7 +228,7 @@ class NotificationService: UNNotificationServiceExtension {
                 runningAndCompletedPromises.append(("MessageProcessorCompletion", promise))
                 return promise
             }.then(on: .global()) { () -> Promise<Void> in
-                Logger.info("Initial message processing complete.")
+                logger.info("Initial message processing complete.")
                 // Wait until all async side effects of message processing are complete.
                 let completionPromises: [(String, Promise<Void>)] = [
                     // Wait until all ACKs are complete.
@@ -220,7 +242,7 @@ class NotificationService: UNNotificationServiceExtension {
                 ]
                 let joinedPromise = Promise.when(resolved: completionPromises.map { (name, promise) in
                     promise.done(on: .global()) {
-                        Logger.info("\(name) complete")
+                        logger.info("\(name) complete")
                     }
                 })
                 completionPromises.forEach { runningAndCompletedPromises.append($0) }
@@ -233,7 +255,7 @@ class NotificationService: UNNotificationServiceExtension {
             }
             processingCompletePromise.timeout(seconds: 20, ticksWhileSuspended: true, description: "Message Processing Timeout.") {
                 runningAndCompletedPromises.get().filter { $0.1.isSealed == false }.forEach {
-                    Logger.warn("Completion promise: \($0.0) did not finish.")
+                    logger.warn("Completion promise: \($0.0) did not finish.")
                 }
                 return NotificationServiceError.timeout
             }.catch { _ in
@@ -241,11 +263,11 @@ class NotificationService: UNNotificationServiceExtension {
             }
             return processingCompletePromise
         }.ensure(on: .global()) { [weak self] in
-            Logger.info("Message fetch completed.")
+            logger.info("Message fetch completed.")
             environment.processingMessageCounter.decrementOrZero()
-            self?.completeSilenty()
+            self?.completeSilently(logger: logger)
         }.catch(on: .global()) { error in
-            Logger.warn("Error: \(error)")
+            logger.error("Error: \(error)")
         }
     }
 

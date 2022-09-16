@@ -3,6 +3,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <SignalServiceKit/TSAttachmentPointer.h>
+#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SignalServiceKit/TSCall.h>
+#import <SignalServiceKit/TSContactThread.h>
+#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SignalServiceKit/TSInvalidIdentityKeySendingErrorMessage.h>
+#import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -79,6 +87,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSIncomingMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
+
+@end
+
+#pragma mark -
+
+@interface TSAttachment (SDS)
+
+@property (nonatomic, readonly) NSUInteger attachmentSchemaVersion;
 
 @end
 

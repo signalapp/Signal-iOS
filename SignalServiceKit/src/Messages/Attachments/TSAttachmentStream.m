@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSAttachmentStream.h"
@@ -132,6 +132,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
@@ -157,6 +158,7 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
                     albumMessageId:albumMessageId
+           attachmentSchemaVersion:attachmentSchemaVersion
                     attachmentType:attachmentType
                           blurHash:blurHash
                          byteCount:byteCount
@@ -184,6 +186,8 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
     _isValidVideoCached = isValidVideoCached;
     _localRelativeFilePath = localRelativeFilePath;
 
+    [self sdsFinalizeAttachmentStream];
+
     return self;
 }
 
@@ -191,31 +195,21 @@ NSString *NSStringForAttachmentThumbnailQuality(AttachmentThumbnailQuality value
 
 // --- CODE GENERATION MARKER
 
+- (void)sdsFinalizeAttachmentStream
+{
+    [self upgradeAttachmentSchemaVersionIfNecessary];
+}
+
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
 {
     [super upgradeFromAttachmentSchemaVersion:attachmentSchemaVersion];
 
-    if (attachmentSchemaVersion < 3) {
-        // We want to treat any legacy TSAttachmentStream as though
-        // they have already been uploaded.  If it needs to be reuploaded,
-        // the OWSUploadingService will update this progress when the
-        // upload begins.
-        self.isUploaded = YES;
-    }
-
-    if (attachmentSchemaVersion < 4) {
-        // Legacy image sizes don't correctly reflect image orientation.
-        @synchronized(self)
-        {
-            self.cachedImageWidth = nil;
-            self.cachedImageHeight = nil;
+    if (attachmentSchemaVersion < 1) {
+        // Older video attachments could incorrectly be marked as not
+        // valid before we increased our size limits to allow 4k video.
+        if (self.isValidVideoCached && !self.isValidVideoCached.boolValue) {
+            self.isValidVideoCached = nil;
         }
-    }
-
-    if (attachmentSchemaVersion < 5) {
-        // Older audio attachments could have incorrect durations due
-        // to weirdness in AVAudioPlayer. Reset so we can recalculate.
-        self.cachedAudioDurationSeconds = nil;
     }
 }
 

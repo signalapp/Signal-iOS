@@ -168,8 +168,10 @@ public extension DebugUIStress {
                 return validMembersToAdd.compactMap { $0.uuid }
             }()
 
-            return GroupManager.updateExistingGroup(existingGroupModel: dstGroupThread.groupModel,
-                                                    update: .addNormalMembers(uuids: uuidsToAdd))
+            return GroupManager.addOrInvite(
+                aciOrPniUuids: uuidsToAdd,
+                toExistingGroup: dstGroupThread.groupModel
+            )
         }.done { (groupThread) in
             Logger.info("Complete.")
 
@@ -202,8 +204,10 @@ public extension DebugUIStress {
             return GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                          description: self.logTag())
         }.then(on: .global()) { _ in
-            GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
-                                             update: .addNormalMembers(uuids: uuidsToAdd))
+            GroupManager.addOrInvite(
+                aciOrPniUuids: uuidsToAdd,
+                toExistingGroup: oldGroupModel
+            )
         }.done(on: .global()) { (_) in
             Logger.info("Complete.")
         }.catch(on: .global()) { error in

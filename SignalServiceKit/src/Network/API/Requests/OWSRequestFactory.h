@@ -83,15 +83,17 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
                                       messages:(NSArray *)messages
-                                     timeStamp:(uint64_t)timeStamp
+                                     timestamp:(uint64_t)timestamp
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-                                      isOnline:(BOOL)isOnline;
+                                      isOnline:(BOOL)isOnline
+                                      isUrgent:(BOOL)isUrgent;
 
 + (TSRequest *)submitMultiRecipientMessageRequestWithCiphertext:(NSData *)ciphertext
                                            compositeUDAccessKey:(SMKUDAccessKey *)udAccessKey
                                                       timestamp:(uint64_t)timestamp
                                                        isOnline:(BOOL)isOnline
-    NS_SWIFT_NAME(submitMultiRecipientMessageRequest(ciphertext:compositeUDAccessKey:timestamp:isOnline:));
+                                                       isUrgent:(BOOL)isUrgent
+    NS_SWIFT_NAME(submitMultiRecipientMessageRequest(ciphertext:compositeUDAccessKey:timestamp:isOnline:isUrgent:));
 
 + (TSRequest *)verifyPrimaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
                                                   phoneNumber:(NSString *)phoneNumber
@@ -197,9 +199,9 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 #pragma mark - Groups v2
 
-+ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionDays:(uint32_t)fromRedemptionDays
-                                                         toRedemptionDays:(uint32_t)toRedemptionDays
-    NS_SWIFT_NAME(groupAuthenticationCredentialRequest(fromRedemptionDays:toRedemptionDays:));
++ (TSRequest *)groupAuthenticationCredentialRequestWithFromRedemptionSeconds:(uint64_t)fromRedemptionSeconds
+                                                         toRedemptionSeconds:(uint64_t)toRedemptionSeconds
+    NS_SWIFT_NAME(groupAuthenticationCredentialRequest(fromRedemptionSeconds:toRedemptionSeconds:));
 
 #pragma mark - Payments
 

@@ -64,14 +64,6 @@ public extension NSObject {
         groupV2Updates as! GroupV2UpdatesImpl
     }
 
-    final var versionedProfilesImpl: VersionedProfilesImpl {
-        versionedProfiles as! VersionedProfilesImpl
-    }
-
-    static var versionedProfilesImpl: VersionedProfilesImpl {
-        versionedProfiles as! VersionedProfilesImpl
-    }
-
     final var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
         Environment.shared.broadcastMediaMessageJobQueueRef
     }
@@ -188,14 +180,6 @@ public extension Dependencies {
         groupV2Updates as! GroupV2UpdatesImpl
     }
 
-    var versionedProfilesImpl: VersionedProfilesImpl {
-        versionedProfiles as! VersionedProfilesImpl
-    }
-
-    static var versionedProfilesImpl: VersionedProfilesImpl {
-        versionedProfiles as! VersionedProfilesImpl
-    }
-
     var broadcastMediaMessageJobQueue: BroadcastMediaMessageJobQueue {
         Environment.shared.broadcastMediaMessageJobQueueRef
     }
@@ -248,11 +232,25 @@ public extension Dependencies {
 // MARK: - Swift-only Dependencies
 
 public extension NSObject {
+    var versionedProfilesSwift: VersionedProfilesSwift {
+        versionedProfiles as! VersionedProfilesSwift
+    }
+
+    static var versionedProfilesSwift: VersionedProfilesSwift {
+        versionedProfiles as! VersionedProfilesSwift
+    }
 }
 
 // MARK: - Swift-only Dependencies
 
 public extension Dependencies {
+    var versionedProfilesSwift: VersionedProfilesSwift {
+        versionedProfiles as! VersionedProfilesSwift
+    }
+
+    static var versionedProfilesSwift: VersionedProfilesSwift {
+        versionedProfiles as! VersionedProfilesSwift
+    }
 }
 
 // MARK: -

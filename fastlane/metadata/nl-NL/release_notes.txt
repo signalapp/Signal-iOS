@@ -1,2 +1,3 @@
-• We hebben de media-editor verbeterd, zodat je nu gemakkelijker dan ooit foto's en video's kunt bewerken voor je ze verstuurt.
-• Wat bugfixes om je app soepel te laten werken. Er komen binnenkort nog meer leuke wijzigingen aan.
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

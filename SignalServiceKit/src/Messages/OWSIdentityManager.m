@@ -41,9 +41,6 @@ static NSString *keyForIdentity(OWSIdentity identity)
     }
 }
 
-// Don't trust an identity for sending to unless they've been around for at least this long
-static const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
-
 // The canonical key includes 32 bytes of identity material plus one byte specifying the key type
 const NSUInteger kIdentityKeyLength = 33;
 
@@ -84,11 +81,6 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     AppReadinessRunNowOrWhenAppDidBecomeReadyAsync(^{ [self checkForPniIdentity]; });
 
     return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)observeNotifications
@@ -433,7 +425,17 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     return result;
 }
 
+
 - (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address
+                                                            transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self untrustedIdentityForSendingToAddress:address
+                                   untrustedThreshold:[self class].minimumUntrustedThreshold
+                                          transaction:transaction];
+}
+
+- (nullable OWSRecipientIdentity *)untrustedIdentityForSendingToAddress:(SignalServiceAddress *)address
+                                                     untrustedThreshold:(NSTimeInterval)untrustedThreshold
                                                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
@@ -453,6 +455,7 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     BOOL isTrusted = [self isTrustedIdentityKey:recipientIdentity.identityKey
                                         address:address
                                       direction:TSMessageDirectionOutgoing
+                             untrustedThreshold:untrustedThreshold
                                     transaction:transaction];
     if (isTrusted) {
         return nil;
@@ -472,6 +475,19 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey
                      address:(SignalServiceAddress *)address
                    direction:(TSMessageDirection)direction
+                 transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self isTrustedIdentityKey:identityKey
+                              address:address
+                            direction:direction
+                   untrustedThreshold:[self class].minimumUntrustedThreshold
+                          transaction:transaction];
+}
+
+- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
+                     address:(SignalServiceAddress *)address
+                   direction:(TSMessageDirection)direction
+          untrustedThreshold:(NSTimeInterval)untrustedThreshold
                  transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
@@ -506,7 +522,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
             }
             OWSRecipientIdentity *existingIdentity = [OWSRecipientIdentity anyFetchWithUniqueId:accountId
                                                                                     transaction:transaction];
-            return [self isTrustedKey:identityKey forSendingToIdentity:existingIdentity];
+            return [self isTrustedKey:identityKey
+                 forSendingToIdentity:existingIdentity
+                   untrustedThreshold:untrustedThreshold];
         }
         default: {
             OWSFailDebug(@"unexpected message direction: %ld", (long)direction);
@@ -515,7 +533,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     }
 }
 
-- (BOOL)isTrustedKey:(NSData *)identityKey forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
+- (BOOL)isTrustedKey:(NSData *)identityKey
+    forSendingToIdentity:(nullable OWSRecipientIdentity *)recipientIdentity
+      untrustedThreshold:(NSTimeInterval)untrustedThreshold
 {
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
 
@@ -535,8 +555,18 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
     switch (recipientIdentity.verificationState) {
         case OWSVerificationStateDefault: {
-            BOOL isNew = (fabs([recipientIdentity.createdAt timeIntervalSinceNow])
-                < kIdentityKeyStoreNonBlockingSecondsThreshold);
+            // This user has never been explicitly verified, but we still want to check
+            // if the identity key is one we newly learned about to give the local user
+            // time to ensure they wish to send. If it has been created in the last N
+            // seconds, we'll treat it as untrusted so sends fail. We enforce a minimum
+            // and maximum threshold for the new window to ensure that we never inadvertently
+            // block sending indefinitely or use a window so small it would be impossible
+            // for the local user to notice a key change. This is a best effort, and we'll
+            // continue to allow sending to the user after the "new" window elapses without
+            // any explicit action from the local user.
+            NSTimeInterval clampedUntrustedThreshold = CGFloatClamp(
+                untrustedThreshold, [self class].minimumUntrustedThreshold, [self class].maximumUntrustedThreshold);
+            BOOL isNew = (fabs([recipientIdentity.createdAt timeIntervalSinceNow]) < clampedUntrustedThreshold);
             if (isNew) {
                 OWSLogWarn(@"not trusting new identity for accountId: %@", recipientIdentity.accountId);
                 return NO;
@@ -547,6 +577,8 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
         case OWSVerificationStateVerified:
             return YES;
         case OWSVerificationStateNoLongerVerified:
+            // This user was previously verified and their key has changed. We will not trust
+            // them again until the user explicitly acknowledges the key change.
             OWSLogWarn(@"not trusting no longer verified identity for accountId: %@", recipientIdentity.accountId);
             return NO;
     }

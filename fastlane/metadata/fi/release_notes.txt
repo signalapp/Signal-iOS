@@ -1,2 +1,3 @@
-• Olemme tehneet parannuksia mediaeditoriin. Kuvien ja videoiden muokkaus ennen lähettämistä on nyt helpompaa kuin koskaan.
-• Useita virheenkorjauksia, jotka sujuvoittavat sovelluksen käyttöä. Lisää kiinnostavia uudistuksia tulossa!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

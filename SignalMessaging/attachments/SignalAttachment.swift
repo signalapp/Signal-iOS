@@ -783,8 +783,19 @@ public class SignalAttachment: NSObject {
             }
 
             // Never re-encode animated images (i.e. GIFs) as JPEGs.
-            Logger.verbose("Sending raw \(attachment.mimeType) to retain any animation")
-            return attachment
+            if dataUTI == (kUTTypePNG as String) {
+                Logger.verbose("Attempting to remove metadata from animated PNG")
+                do {
+                    return try attachment.removingImageMetadata()
+                } catch {
+                    Logger.warn("Failed to remove metadata from animated PNG. Error: \(error)")
+                    attachment.error = .couldNotRemoveMetadata
+                    return attachment
+                }
+            } else {
+                Logger.verbose("Sending raw \(attachment.mimeType) to retain any animation")
+                return attachment
+            }
         } else {
             if let sourceFilename = dataSource.sourceFilename,
                 let sourceFileExtension = sourceFilename.fileExtension,
@@ -1045,8 +1056,51 @@ public class SignalAttachment: NSObject {
         "\(kCGImageMetadataPrefixIPTCCore):\(kCGImagePropertyIPTCImageOrientation)" as CFString
     ]
 
+    private static let pngChunkTypesToKeep: Set<Data> = {
+        let asAscii: [String] = [
+            // [Critical chunks.][0]
+            // [0]: https://www.w3.org/TR/PNG/#11Critical-chunks
+            "IHDR", "PLTE", "IDAT", "IEND",
+            // [Ancillary chunks][1] that might affect rendering.
+            // [1]: https://www.w3.org/TR/PNG/#11Ancillary-chunks
+            "tRNS", "cHRM", "gAMA", "iCCP", "sRGB", "bKGD", "pHYs", "sPLT",
+            // [Animated PNG chunks.][2]
+            // [2]: https://wiki.mozilla.org/APNG_Specification#Structure
+            "acTL", "fcTL", "fdAT"
+        ]
+        let asBytes = asAscii.lazy.compactMap { $0.data(using: .ascii) }
+        return Set(asBytes)
+    }()
+
+    /// Remove nonessential chunks from PNG data.
+    /// - Returns: Cleaned PNG data.
+    /// - Throws: `SignalAttachmentError.couldNotRemoveMetadata` if the PNG parser fails.
+    private static func removeMetadata(fromPng pngData: Data) throws -> Data {
+        do {
+            let chunker = try PngChunker(data: pngData)
+            var result = PngChunker.pngSignature
+            while let chunk = try chunker.next() {
+                if pngChunkTypesToKeep.contains(chunk.type) {
+                    result += chunk.allBytes()
+                }
+            }
+            return result
+        } catch {
+            Logger.warn("Could not remove PNG metadata: \(error)")
+            throw SignalAttachmentError.couldNotRemoveMetadata
+        }
+    }
+
     private func removingImageMetadata() throws -> SignalAttachment {
         owsAssertDebug(isImage)
+
+        if dataUTI == (kUTTypePNG as String) {
+            let cleanedData = try Self.removeMetadata(fromPng: data)
+            guard let dataSource = DataSourceValue.dataSource(with: cleanedData, utiType: dataUTI) else {
+                throw SignalAttachmentError.couldNotRemoveMetadata
+            }
+            return replacingDataSource(with: dataSource)
+        }
 
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             throw SignalAttachmentError.missingData

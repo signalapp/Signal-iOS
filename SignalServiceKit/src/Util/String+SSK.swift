@@ -64,6 +64,10 @@ public extension String {
 
         self.init(cString: value)
     }
+
+    func appendingPathComponent(_ other: String) -> String {
+        return (self as NSString).appendingPathComponent(other)
+    }
 }
 
 // MARK: -
@@ -653,7 +657,7 @@ public extension NSString {
 
 public extension String {
     static func formatDurationLossless(durationSeconds: UInt32) -> String {
-        return NSString.formatDurationLossless(durationSeconds: durationSeconds)
+        NSString.formatDurationLossless(durationSeconds: durationSeconds)
     }
 }
 
@@ -668,57 +672,39 @@ public extension NSString {
         let secondsPerWeek: UInt32 = secondsPerDay * 7
         let secondsPerYear: UInt32 = secondsPerDay * 365
 
-        struct Unit {
-            let secondsPerUnit: UInt32
-            let unitFormat: String
-        }
+        let dateComponents: DateComponents = {
+            var dateComponents = DateComponents()
 
-        // Listed in descending order.
-        let units: [Unit] = [
-            // Years
-            Unit(secondsPerUnit: secondsPerYear,
-                 unitFormat: OWSLocalizedString("TIME_AMOUNT_YEARS_%d", tableName: "PluralAware",
-                                                comment: "{{N years}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 years}}'. Embeds: {{ the number of years }}.  See other *_TIME_AMOUNT strings")),
-            // Weeks
-            Unit(secondsPerUnit: secondsPerWeek,
-                 unitFormat: OWSLocalizedString("TIME_AMOUNT_WEEKS_%d", tableName: "PluralAware",
-                                                comment: "{{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings")),
-            // Days
-            Unit(secondsPerUnit: secondsPerDay,
-                 unitFormat: OWSLocalizedString("TIME_AMOUNT_DAYS_%d", tableName: "PluralAware",
-                                                comment: "{{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings")),
-            // Hours
-            Unit(secondsPerUnit: secondsPerHour,
-                 unitFormat: OWSLocalizedString("TIME_AMOUNT_HOURS_%d", tableName: "PluralAware",
-                                                comment: "{{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings")),
-            // Minutes
-            Unit(secondsPerUnit: secondsPerMinute,
-                 unitFormat: OWSLocalizedString("TIME_AMOUNT_MINUTES_%d", tableName: "PluralAware",
-                                                comment: "{{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings")),
-            // Seconds
-            Unit(secondsPerUnit: 1,
-                 unitFormat: OWSLocalizedString("TIME_AMOUNT_SECONDS_%d", tableName: "PluralAware",
-                                                comment: "{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings"))
-        ]
+            var remainingDuration = durationSeconds
 
-        var components = [String]()
-        var remainder = durationSeconds
-        for unit in units {
-            let secondsPerUnit = unit.secondsPerUnit
-            if remainder >= secondsPerUnit {
-                let units = remainder / secondsPerUnit
-                remainder -= units * secondsPerUnit
-                assert(units > 0)
-                components.append(String.localizedStringWithFormat(unit.unitFormat, Int(units)))
-            }
-        }
+            let years = remainingDuration / secondsPerYear
+            remainingDuration -= years * secondsPerYear
+            dateComponents.year = Int(years)
 
-        if components.isEmpty {
-            return String.localizedStringWithFormat(OWSLocalizedString("TIME_AMOUNT_SECONDS_%d", tableName: "PluralAware",
-                                                     comment: "{{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings"), 0)
-        } else {
-            // TODO: Can we localize this join?
-            return components.joined(separator: ", ")
+            let weeks = remainingDuration / secondsPerWeek
+            remainingDuration -= weeks * secondsPerWeek
+            dateComponents.weekOfYear = Int(weeks)
+
+            let days = remainingDuration / secondsPerDay
+            remainingDuration -= days * secondsPerDay
+            dateComponents.day = Int(days)
+
+            let minutes = remainingDuration / secondsPerMinute
+            remainingDuration -= minutes * secondsPerMinute
+            dateComponents.minute = Int(minutes)
+
+            dateComponents.second = Int(remainingDuration)
+
+            return dateComponents
+        }()
+
+        let durationFormatter = DateComponentsFormatter()
+        durationFormatter.unitsStyle = .full
+        durationFormatter.allowedUnits = [.year, .weekOfMonth, .day, .hour, .minute, .second]
+        guard let formattedDuration = durationFormatter.string(from: dateComponents) else {
+            owsFailDebug("Could not format duration")
+            return ""
         }
+        return formattedDuration
     }
 }

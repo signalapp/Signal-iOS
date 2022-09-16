@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension TSUnreadIndicatorInteraction {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchUnreadIndicatorInteraction(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSUnreadIndicatorInteraction? {
+    class func anyFetchUnreadIndicatorInteraction(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> TSUnreadIndicatorInteraction? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

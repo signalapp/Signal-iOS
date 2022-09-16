@@ -14,8 +14,10 @@ import SignalCoreKit
 @objc
 public extension OWSRecoverableDecryptionPlaceholder {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchRecoverableDecryptionPlaceholder(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> OWSRecoverableDecryptionPlaceholder? {
+    class func anyFetchRecoverableDecryptionPlaceholder(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> OWSRecoverableDecryptionPlaceholder? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,

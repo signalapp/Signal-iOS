@@ -572,7 +572,7 @@ private extension GroupMigrationActionSheet {
         return firstly { () -> Promise<Void> in
             GroupManager.messageProcessingPromise(for: oldGroupModel,
                                                   description: self.logTag)
-        }.map(on: .global()) { _ -> GroupManager.GroupUpdate in
+        }.map(on: .global()) { _ -> Promise<TSGroupThread> in
             let uuidsToAdd = members
                 .compactMap { address -> UUID? in
                     if let uuid = address.uuid,
@@ -587,10 +587,10 @@ private extension GroupMigrationActionSheet {
                 throw OWSAssertionError("No members to add.")
             }
 
-            return .addNormalMembers(uuids: uuidsToAdd)
-        }.then(on: .global()) { groupUpdate in
-            GroupManager.updateExistingGroup(existingGroupModel: oldGroupModel,
-                                             update: groupUpdate)
+            return GroupManager.addOrInvite(
+                aciOrPniUuids: uuidsToAdd,
+                toExistingGroup: oldGroupModel
+            )
         }.asVoid()
     }
 

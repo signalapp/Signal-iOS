@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class StoryMessage;
+
 @interface TSOutgoingDeleteMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
@@ -13,6 +15,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread
                        message:(TSOutgoingMessage *)message
+                   transaction:(SDSAnyReadTransaction *)transaction;
+
+- (instancetype)initWithThread:(TSThread *)thread
+                  storyMessage:(StoryMessage *)storyMessage
+             skippedRecipients:(nullable NSSet<SignalServiceAddress *> *)skippedRecipients
                    transaction:(SDSAnyReadTransaction *)transaction;
 
 @end

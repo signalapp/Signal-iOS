@@ -463,9 +463,9 @@ public class GroupsV2IncomingChanges: Dependencies {
         }
 
         for action in changeActionsProto.addBannedMembers {
-            guard let userId = action.added?.userID,
-                  let bannedAtTimestamp = action.added?.bannedAtTimestamp,
-                  bannedAtTimestamp > 0
+            guard
+                let userId = action.added?.userID,
+                let bannedAtTimestamp = action.added?.bannedAtTimestamp
             else {
                 throw OWSAssertionError("Invalid addBannedMember action")
             }

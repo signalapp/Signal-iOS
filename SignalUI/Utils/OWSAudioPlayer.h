@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +14,7 @@ typedef NS_CLOSED_ENUM(NSInteger, AudioPlaybackState) {
 
 @property (nonatomic) AudioPlaybackState audioPlaybackState;
 
-- (void)setAudioProgress:(NSTimeInterval)progress duration:(NSTimeInterval)duration;
+- (void)setAudioProgress:(NSTimeInterval)progress duration:(NSTimeInterval)duration playbackRate:(float)playbackRate;
 
 @optional
 - (void)audioPlayerDidFinish;
@@ -26,6 +26,7 @@ typedef NS_CLOSED_ENUM(NSInteger, AudioPlaybackState) {
 typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
     OWSAudioBehavior_Unknown,
     OWSAudioBehavior_Playback,
+    OWSAudioBehavior_PlaybackMixWithOthers,
     OWSAudioBehavior_AudioMessagePlayback,
     OWSAudioBehavior_PlayAndRecord,
     OWSAudioBehavior_Call,
@@ -37,6 +38,8 @@ typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
 
 @property (nonatomic) BOOL isLooping;
 @property (nonatomic, readonly) NSTimeInterval duration;
+/// 1 (default) is normal playback speed. 0.5 is half speed, 2.0 is twice as fast.
+@property (nonatomic) float playbackRate;
 
 - (instancetype)initWithMediaUrl:(NSURL *)mediaUrl audioBehavior:(OWSAudioBehavior)audioBehavior;
 

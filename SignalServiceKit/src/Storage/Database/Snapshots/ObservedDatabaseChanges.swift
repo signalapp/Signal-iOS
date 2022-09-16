@@ -14,7 +14,6 @@ public protocol DatabaseChanges: AnyObject {
     var interactionUniqueIds: Set<UniqueId> { get }
     var storyMessageUniqueIds: Set<UniqueId> { get }
     var storyMessageRowIds: Set<RowId> { get }
-    var attachmentUniqueIds: Set<UniqueId> { get }
 
     var interactionDeletedUniqueIds: Set<UniqueId> { get }
     var storyMessageDeletedUniqueIds: Set<UniqueId> { get }
@@ -91,7 +90,6 @@ class ObservedDatabaseChanges: NSObject {
                     threads.isEmpty &&
                     interactions.isEmpty &&
                     storyMessages.isEmpty &&
-                    attachments.isEmpty &&
                     _lastError == nil)
     }
 
@@ -222,6 +220,14 @@ class ObservedDatabaseChanges: NSObject {
         interactions.append(rowIds: interactionRowIds)
     }
 
+    func append(deletedInteractionRowId: RowId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        interactions.append(deletedRowId: deletedInteractionRowId)
+    }
+
     // MARK: - Stories
 
     private var storyMessages = ObservedModelChanges()
@@ -272,58 +278,6 @@ class ObservedDatabaseChanges: NSObject {
         #endif
 
         storyMessages.append(rowIds: storyMessageRowIds)
-    }
-
-    // MARK: - Attachments
-
-    private var attachments = ObservedModelChanges()
-
-    func append(attachment: TSAttachment) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        attachments.append(model: attachment)
-    }
-
-    func append(attachmentUniqueId: UniqueId) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        attachments.append(uniqueId: attachmentUniqueId)
-    }
-
-    func append(attachmentUniqueIds: Set<UniqueId>) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        attachments.append(uniqueIds: attachmentUniqueIds)
-    }
-
-    func append(attachmentRowId: RowId) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        attachments.append(rowId: attachmentRowId)
-    }
-
-    func append(attachmentRowIds: Set<RowId>) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        attachments.append(rowIds: attachmentRowIds)
-    }
-
-    func append(deletedInteractionRowId: RowId) {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        interactions.append(deletedRowId: deletedInteractionRowId)
     }
 
     // MARK: - Errors
@@ -457,14 +411,6 @@ extension ObservedDatabaseChanges: DatabaseChanges {
         return storyMessages.rowIds
     }
 
-    var attachmentUniqueIds: Set<UniqueId> {
-        #if TESTABLE_BUILD
-        checkConcurrency()
-        #endif
-
-        return attachments.uniqueIds
-    }
-
     var interactionDeletedUniqueIds: Set<UniqueId> {
         #if TESTABLE_BUILD
         checkConcurrency()
@@ -553,22 +499,6 @@ extension ObservedDatabaseChanges: DatabaseChanges {
                                                                 rowIdToUniqueIdMap: interactions.rowIdToUniqueIdMap,
                                                                 tableName: "\(InteractionRecord.databaseTableName)",
                                                                 uniqueIdColumnName: "\(interactionColumn: .uniqueId)"))
-
-        // We need to convert all attachment "row ids" to "unique ids".
-        attachments.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
-                                                               rowIds: attachments.rowIds,
-                                                               uniqueIds: attachments.uniqueIds,
-                                                               rowIdToUniqueIdMap: attachments.rowIdToUniqueIdMap,
-                                                               tableName: "\(AttachmentRecord.databaseTableName)",
-                                                               uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
-
-        // We need to convert _deleted_ attachment "row ids" to "unique ids".
-        attachments.append(deletedUniqueIds: try mapRowIdsToUniqueIds(db: db,
-                                                                      rowIds: attachments.deletedRowIds,
-                                                                      uniqueIds: attachments.deletedUniqueIds,
-                                                                      rowIdToUniqueIdMap: attachments.rowIdToUniqueIdMap,
-                                                                      tableName: "\(AttachmentRecord.databaseTableName)",
-                                                                      uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
 
         // We need to convert _deleted_ interaction "row ids" to "unique ids".
         interactions.append(deletedUniqueIds: try mapRowIdsToUniqueIds(db: db,

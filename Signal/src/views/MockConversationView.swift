@@ -128,6 +128,7 @@ class MockConversationView: UIView {
                 isWallpaperPhoto: false,
                 chatColor: chatColor
             )
+            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
             for item in model.items {
                 let interaction: TSInteraction
                 switch item {
@@ -142,6 +143,7 @@ class MockConversationView: UIView {
                 guard let renderItem = CVLoader.buildStandaloneRenderItem(
                     interaction: interaction,
                     thread: self.thread,
+                    threadAssociatedData: threadAssociatedData,
                     conversationStyle: conversationStyle,
                     transaction: transaction
                 ) else {
@@ -273,9 +275,13 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_enqueueReload() {}
 
-    func cvc_didTapBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}
+    func cvc_enqueueReloadWithoutCaches() {}
 
-    func cvc_didLongPressBodyTextItem(_ item: CVBodyTextLabel.ItemObject) {}
+    func cvc_didTapBodyTextItem(_ item: CVTextLabel.Item) {}
+
+    func cvc_didLongPressBodyTextItem(_ item: CVTextLabel.Item) {}
+
+    func cvc_didTapSystemMessageItem(_ item: CVTextLabel.Item) {}
 
     func cvc_didLongPressTextViewItem(_ cell: CVCell,
                                       itemViewModel: CVItemViewModelImpl,
@@ -354,7 +360,7 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_willUnwrapGift(_ itemViewModel: CVItemViewModelImpl) {}
 
-    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge) {}
+    func cvc_didTapGiftBadge(_ itemViewModel: CVItemViewModelImpl, profileBadge: ProfileBadge, isExpired: Bool, isRedeemed: Bool) {}
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
@@ -362,7 +368,7 @@ extension MockConversationView: CVComponentDelegate {
         return {}
     }
 
-    var view: UIView { self }
+    var view: UIView! { self }
 
     var isConversationPreview: Bool { true }
 
@@ -407,6 +413,12 @@ extension MockConversationView: CVComponentDelegate {
     func cvc_didTapShowConversationSettings() {}
 
     func cvc_didTapShowConversationSettingsAndShowMemberRequests() {}
+
+    func cvc_didTapBlockRequest(
+        groupModel: TSGroupModelV2,
+        requesterName: String,
+        requesterUuid: UUID
+    ) {}
 
     func cvc_didTapShowUpgradeAppUI() {}
 

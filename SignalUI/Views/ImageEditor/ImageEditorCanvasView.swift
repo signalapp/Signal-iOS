@@ -168,10 +168,17 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
 
     private var imageLayer = CALayer()
 
-    var roundCorners: Bool = false {
-        didSet {
-            clipView.layer.cornerRadius = roundCorners ? 18 : 0
+    func setCornerRadius(_ cornerRadius: CGFloat, animationDuration: TimeInterval = 0) {
+        guard cornerRadius != clipView.layer.cornerRadius else { return }
+
+        if animationDuration > 0 {
+            let animation = CABasicAnimation(keyPath: #keyPath(CALayer.cornerRadius))
+            animation.fromValue = clipView.layer.cornerRadius
+            animation.toValue = cornerRadius
+            animation.duration = animationDuration
+            clipView.layer.add(animation, forKey: "cornerRadius")
         }
+        clipView.layer.cornerRadius = cornerRadius
     }
 
     func configureSubviews() {
@@ -745,20 +752,21 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
 
         // We need to adjust the font size to reflect the current output scale,
         // using the image width as reference.
-        let fontSize = item.font.pointSize * imageFrame.size.width / item.fontReferenceImageWidth
+        let fontSize = item.fontSize * imageFrame.size.width / item.fontReferenceImageWidth
+        let font = MediaTextView.font(forTextStyle: item.textStyle, pointSize: fontSize)
 
         let textColor: UIColor = {
-            switch item.style {
-            case .regular: return item.color.color
+            switch item.decorationStyle {
+            case .none: return item.color.color
             default: return UIColor.white
             }
         }()
 
         let text = item.text.filterForDisplay ?? ""
         let attributedString = NSMutableAttributedString(string: text,
-                                                         attributes: [ .font: item.font.withSize(fontSize),
+                                                         attributes: [ .font: font,
                                                                        .foregroundColor: textColor ])
-        switch item.style {
+        switch item.decorationStyle {
         case .underline:
             attributedString.addAttributes([ .underlineStyle: NSUnderlineStyle.single.rawValue,
                                              .underlineColor: item.color.color ],
@@ -791,12 +799,7 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         // * Model transform (so that text doesn't become blurry as you zoom the content).
         layer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
 
-        // TODO: Min with measured width.
-        let maxWidth = imageFrame.size.width * item.unitWidth
-
-        let maxSize = CGSize(width: maxWidth, height: CGFloat.greatestFiniteMagnitude)
-        // TODO: Is there a more accurate way to measure text in a CATextLayer?
-        //       CoreText?
+        let maxSize = CGSize(width: imageFrame.size.width * item.unitWidth, height: CGFloat.greatestFiniteMagnitude)
         let textBounds = attributedString.boundingRect(with: maxSize,
                                                        options: [ .usesLineFragmentOrigin, .usesFontLeading ],
                                                        context: nil)

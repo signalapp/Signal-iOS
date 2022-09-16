@@ -7,11 +7,11 @@ import Foundation
 @objc
 public extension TSInfoMessage {
 
-    func groupUpdateDescription(transaction: SDSAnyReadTransaction) -> String {
+    func groupUpdateDescription(transaction: SDSAnyReadTransaction) -> NSAttributedString {
         // for legacy group updates we persisted a pre-rendered string, rather than the details
         // to generate that string
         if let customMessage = self.customMessage {
-            return customMessage
+            return NSAttributedString(string: customMessage)
         }
 
         guard let newGroupModel = self.newGroupModel else {
@@ -70,7 +70,7 @@ extension TSInfoMessage {
         oldGroupModel: TSGroupModel?,
         newGroupModel: TSGroupModel,
         transaction: SDSAnyReadTransaction
-    ) -> String {
+    ) -> NSAttributedString {
         guard let groupUpdate = makeGroupUpdate(
             oldGroupModel: oldGroupModel,
             newGroupModel: newGroupModel,
@@ -143,6 +143,7 @@ extension TSInfoMessage {
             newDisappearingMessageToken: newDisappearingMessageToken,
             localAddress: localAddress,
             groupUpdateSourceAddress: groupUpdateSourceAddress,
+            updateMessages: updateMessages,
             transaction: transaction
         )
     }
@@ -201,6 +202,10 @@ extension TSInfoMessage {
         return groupModel
     }
 
+    public var updateMessages: UpdateMessages? {
+        return infoMessageValue(forKey: .updateMessages)
+    }
+
     public var oldGroupModel: TSGroupModel? {
         return infoMessageValue(forKey: .oldGroupModel)
     }
@@ -223,5 +228,27 @@ extension TSInfoMessage {
 
     fileprivate var profileChanges: ProfileChanges? {
         return infoMessageValue(forKey: .profileChanges)
+    }
+}
+
+extension TSInfoMessage {
+    private func setInfoMessageValue(_ value: Any, forKey key: InfoMessageUserInfoKey) {
+        if self.infoMessageUserInfo != nil {
+            self.infoMessageUserInfo![key] = value
+        } else {
+            self.infoMessageUserInfo = [key: value]
+        }
+    }
+
+    public func setUpdateMessages(_ messages: UpdateMessages) {
+        setInfoMessageValue(messages, forKey: .updateMessages)
+    }
+
+    public func setNewGroupModel(_ newGroupModel: TSGroupModel) {
+        setInfoMessageValue(newGroupModel, forKey: .newGroupModel)
+    }
+
+    public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
+        setInfoMessageValue(newDisappearingMessageToken, forKey: .newDisappearingMessageToken)
     }
 }

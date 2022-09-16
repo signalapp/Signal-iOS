@@ -88,18 +88,22 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
         ActionSheetController *alert = [[ActionSheetController alloc]
             initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_TITLE", @"Title of the debug log alert.")
                   message:NSLocalizedString(@"DEBUG_LOG_ALERT_MESSAGE", @"Message of the debug log alert.")];
-        [alert
-            addAction:[[ActionSheetAction alloc]
-                                    initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
-                                                      @"Label for the 'email debug log' option of the debug log alert.")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
-                                            style:ActionSheetActionStyleDefault
-                                          handler:^(ActionSheetAction *action) {
-                                              [ComposeSupportEmailOperation
-                                                  sendEmailWithDefaultErrorHandlingWithSupportFilter:supportFilter
-                                                                                              logUrl:url];
-                                              completion();
-                                          }]];
+
+        if ([ComposeSupportEmailOperation canSendEmails]) {
+            [alert
+                addAction:
+                    [[ActionSheetAction alloc]
+                                  initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EMAIL",
+                                                    @"Label for the 'email debug log' option of the debug log alert.")
+                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
+                                          style:ActionSheetActionStyleDefault
+                                        handler:^(ActionSheetAction *action) {
+                                            [ComposeSupportEmailOperation
+                                                sendEmailWithDefaultErrorHandlingWithSupportFilter:supportFilter
+                                                                                            logUrl:url];
+                                            completion();
+                                        }]];
+        }
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
                                                          @"Label for the 'copy link' option of the debug log alert.")
@@ -111,26 +115,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
 
                                                  completion();
                                              }]];
-#ifdef DEBUG
-        [alert addAction:[[ActionSheetAction alloc]
-                                       initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF",
-                                                         @"Label for the 'send to self' option of the debug log alert.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_to_self")
-                                               style:ActionSheetActionStyleDefault
-                                             handler:^(ActionSheetAction *action) {
-                                                 [Pastelog.shared sendToSelf:url];
-                                                 completion();
-                                             }]];
-#endif
-        [alert
-            addAction:[[ActionSheetAction
-                          alloc] initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_BUG_REPORT",
-                                                   @"Label for the 'Open a Bug Report' option of the debug log alert.")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"submit_bug_report")
-                                            style:ActionSheetActionStyleDefault
-                                          handler:^(ActionSheetAction *action) {
-                                              [Pastelog.shared prepareRedirection:url completion:completion];
-                                          }]];
         [alert addAction:[[ActionSheetAction alloc]
                                        initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SHARE",
                                                          @"Label for the 'Share' option of the debug log alert.")
@@ -206,49 +190,17 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
 {
     OWSAssertIsOnMainThread();
 
-    NSString *errorString;
-    NSString *logsDirPath = [self collectLogsWithErrorString:&errorString];
-    if (!logsDirPath) {
+    CollectedLogsResult *collectedLogsResult = [self collectLogs];
+    if (!collectedLogsResult.succeeded) {
+        NSString *errorString = collectedLogsResult.errorString;
         [Pastelog showFailureAlertWithMessage:errorString ?: @"(unknown error)" logArchiveOrDirectoryPath:nil];
         return;
     }
+    NSString *logsDirPath = collectedLogsResult.logsDirPath;
 
     [AttachmentSharing showShareUIForURL:[NSURL fileURLWithPath:logsDirPath]
                                   sender:nil
                               completion:^{ (void)[OWSFileSystem deleteFile:logsDirPath]; }];
-}
-
-- (nullable NSString *)collectLogsWithErrorString:(NSString *_Nullable *_Nonnull)errorString
-{
-    NSDateFormatter *dateFormatter = [NSDateFormatter new];
-    [dateFormatter setLocale:[NSLocale currentLocale]];
-    [dateFormatter setDateFormat:@"yyyy.MM.dd hh.mm.ss"];
-    NSString *dateString = [dateFormatter stringFromDate:[NSDate new]];
-    NSString *logsName = [[dateString stringByAppendingString:@" "] stringByAppendingString:NSUUID.UUID.UUIDString];
-
-    NSString *zipDirPath = [OWSTemporaryDirectory() stringByAppendingPathComponent:logsName];
-    [OWSFileSystem ensureDirectoryExists:zipDirPath];
-
-    NSArray<NSString *> *logFilePaths = DebugLogger.shared.allLogFilePaths;
-    if (logFilePaths.count < 1) {
-        *errorString
-            = NSLocalizedString(@"DEBUG_LOG_ALERT_NO_LOGS", @"Error indicating that no debug logs could be found.");
-        return nil;
-    }
-
-    for (NSString *logFilePath in logFilePaths) {
-        NSString *copyFilePath = [zipDirPath stringByAppendingPathComponent:logFilePath.lastPathComponent];
-        NSError *error;
-        if (![[NSFileManager defaultManager] copyItemAtPath:logFilePath toPath:copyFilePath error:&error]) {
-            OWSLogError(@"could not copy log file at %@: %@", logFilePath, error);
-            // Write the error to the file that would have been copied.
-            [[error description] writeToFile:copyFilePath atomically:YES encoding:NSUTF8StringEncoding error:NULL];
-            // We still want to get *some* of the logs.
-            continue;
-        }
-        [OWSFileSystem protectFileOrFolderAtPath:copyFilePath];
-    }
-    return zipDirPath;
 }
 
 - (void)uploadLogsWithSuccess:(UploadDebugLogsSuccess)successParam failure:(UploadDebugLogsFailure)failureParam
@@ -263,12 +215,13 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
     };
 
     // Phase 1. Make a local copy of all of the log files.
-    NSString *errorString;
-    NSString *zipDirPath = [self collectLogsWithErrorString:&errorString];
-    if (!zipDirPath) {
+    CollectedLogsResult *collectedLogsResult = [self collectLogs];
+    if (!collectedLogsResult.succeeded) {
+        NSString *errorString = collectedLogsResult.errorString;
         failure(errorString, nil);
         return;
     }
+    NSString *zipDirPath = collectedLogsResult.logsDirPath;
 
     // Phase 2. Zip up the log files.
     NSString *zipFilePath = [zipDirPath stringByAppendingPathExtension:@"zip"];
@@ -312,97 +265,6 @@ typedef NS_ERROR_ENUM(PastelogErrorDomain, PastelogError) {
                         @"Error indicating that a debug log could not be uploaded."),
                 zipFilePath);
         }];
-}
-
-+ (void)showFailureAlertWithMessage:(NSString *)message
-          logArchiveOrDirectoryPath:(nullable NSString *)logArchiveOrDirectoryPath
-{
-    void (^deleteArchive)(void) = ^{
-        if (logArchiveOrDirectoryPath) {
-            (void)[OWSFileSystem deleteFile:logArchiveOrDirectoryPath];
-        }
-    };
-
-    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:nil message:message];
-    if (logArchiveOrDirectoryPath) {
-        [alert addAction:[[ActionSheetAction alloc]
-                                       initWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
-                                                         @"Label for the 'Export Logs' fallback option for the alert "
-                                                         @"when debug log uploading fails.")
-                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"export_log_archive")
-                                               style:ActionSheetActionStyleDefault
-                                             handler:^(ActionSheetAction *action) {
-                                                 [AttachmentSharing
-                                                     showShareUIForURL:[NSURL fileURLWithPath:logArchiveOrDirectoryPath]
-                                                                sender:nil
-                                                            completion:deleteArchive];
-                                             }]];
-    }
-    [alert addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.okButton
-                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                                                        style:ActionSheetActionStyleDefault
-                                                      handler:^(ActionSheetAction *action) { deleteArchive(); }]];
-    UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentActionSheet:alert];
-}
-
-- (void)prepareRedirection:(NSURL *)url completion:(SubmitDebugLogsCompletion)completion
-{
-    OWSAssertDebug(completion);
-
-    UIPasteboard *pb = [UIPasteboard generalPasteboard];
-    [pb setString:url.absoluteString];
-
-    ActionSheetController *alert =
-        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE",
-                                                         @"Title of the alert before redirecting to GitHub Issues.")
-                                             message:NSLocalizedString(@"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE",
-                                                         @"Message of the alert before redirecting to GitHub Issues.")];
-    [alert
-        addAction:[[ActionSheetAction alloc]
-                                initWithTitle:CommonStrings.okButton
-                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"ok")
-                                        style:ActionSheetActionStyleDefault
-                                      handler:^(ActionSheetAction *action) {
-                                          [UIApplication.sharedApplication
-                                              openURL:[NSURL
-                                                          URLWithString:[[NSBundle mainBundle]
-                                                                            objectForInfoDictionaryKey:@"LOGS_URL"]]
-                                              options:@{ }
-                                    completionHandler:nil];
-
-                                          completion();
-                                      }]];
-    UIViewController *presentingViewController = UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
-    [presentingViewController presentActionSheet:alert];
-}
-
-- (void)sendToSelf:(NSURL *)url
-{
-    if (![self.tsAccountManager isRegistered]) {
-        return;
-    }
-    SignalServiceAddress *recipientAddress = TSAccountManager.localAddress;
-
-    DispatchMainThreadSafe(^{
-        __block TSThread *thread = nil;
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactAddress:recipientAddress transaction:transaction];
-        });
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [ThreadUtil enqueueMessageWithBody:[[MessageBody alloc] initWithText:url.absoluteString
-                                                                          ranges:MessageBodyRanges.empty]
-                              mediaAttachments:@[]
-                                        thread:thread
-                              quotedReplyModel:nil
-                              linkPreviewDraft:nil
-                  persistenceCompletionHandler:nil
-                                   transaction:transaction];
-        }];
-    });
-
-    // Also copy to pasteboard.
-    [[UIPasteboard generalPasteboard] setString:url.absoluteString];
 }
 
 @end

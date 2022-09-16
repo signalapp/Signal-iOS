@@ -209,7 +209,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         }
 
         return CVAttachmentProgressView(direction: direction,
-                                        style: .withoutCircle(diameter: progressSize),
+                                        diameter: progressSize,
                                         isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                         mediaCache: mediaCache)
     }

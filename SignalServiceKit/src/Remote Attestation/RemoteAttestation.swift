@@ -101,7 +101,7 @@ public extension RemoteAttestation {
 public extension RemoteAttestation {
     struct EnclaveConfig {
         let enclaveName: String
-        let mrenclave: String
+        let mrenclave: MrEnclave
         let host: String
         let censorshipCircumventionPrefix: String
     }
@@ -363,7 +363,7 @@ fileprivate extension RemoteAttestation {
                                          clientEphemeralKeyPair: ECKeyPair,
                                          cookies: [HTTPCookie],
                                          enclaveName: String,
-                                         mrenclave: String,
+                                         mrenclave: MrEnclave,
                                          auth: Auth) throws -> RemoteAttestation {
         let serverEphemeralPublic = try params.requiredBase64EncodedData(key: "serverEphemeralPublic", byteCount: 32)
         let serverStaticPublic = try params.requiredBase64EncodedData(key: "serverStaticPublic", byteCount: 32)
@@ -520,9 +520,7 @@ fileprivate extension RemoteAttestation {
 // MARK: - Quote Verification
 
 fileprivate extension RemoteAttestation {
-    static func verifyServerQuote(_ quote: RemoteAttestationQuote, keys: Keys, mrenclave: String) throws {
-        owsAssertDebug(!mrenclave.isEmpty)
-
+    static func verifyServerQuote(_ quote: RemoteAttestationQuote, keys: Keys, mrenclave: MrEnclave) throws {
         let theirServerPublicStatic = quote.reportData.prefix(keys.serverStaticPublic.count)
         guard theirServerPublicStatic.count == keys.serverStaticPublic.count else {
             throw attestationError(reason: "reportData has unexpected length: \(quote.reportData.count)")
@@ -532,10 +530,7 @@ fileprivate extension RemoteAttestation {
             throw attestationError(reason: "server public statics do not match.")
         }
 
-        guard let ourMrEnclaveData = Data.data(fromHex: mrenclave) else {
-            throw attestationError(reason: "failed to convert mrenclave hex to data")
-        }
-
+        let ourMrEnclaveData = mrenclave.dataValue
         guard ourMrEnclaveData.ows_constantTimeIsEqual(to: quote.mrenclave) else {
             throw attestationError(reason: "mrenclave does not match.")
         }

@@ -59,6 +59,8 @@ public struct JobRecordRecord: SDSRecord {
     public let messageText: String?
     public let paymentIntentClientSecret: String?
     public let paymentMethodId: String?
+    public let replacementAdminUuid: String?
+    public let waitForMessageProcessing: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -93,6 +95,8 @@ public struct JobRecordRecord: SDSRecord {
         case messageText
         case paymentIntentClientSecret
         case paymentMethodId
+        case replacementAdminUuid
+        case waitForMessageProcessing
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -148,6 +152,8 @@ public extension JobRecordRecord {
         messageText = row[29]
         paymentIntentClientSecret = row[30]
         paymentMethodId = row[31]
+        replacementAdminUuid = row[32]
+        waitForMessageProcessing = row[33]
     }
 }
 
@@ -236,6 +242,29 @@ extension SSKJobRecord {
                                                  sortId: sortId,
                                                  status: status,
                                                  attachmentId: attachmentId)
+
+        case .localUserLeaveGroupJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let exclusiveProcessIdentifier: String? = record.exclusiveProcessIdentifier
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let sortId: UInt64 = UInt64(recordId)
+            let status: SSKJobRecordStatus = record.status
+            let replacementAdminUuid: String? = record.replacementAdminUuid
+            let threadId: String = try SDSDeserialization.required(record.threadId, name: "threadId")
+            let waitForMessageProcessing: Bool = try SDSDeserialization.required(record.waitForMessageProcessing, name: "waitForMessageProcessing")
+
+            return OWSLocalUserLeaveGroupJobRecord(grdbId: recordId,
+                                                   uniqueId: uniqueId,
+                                                   exclusiveProcessIdentifier: exclusiveProcessIdentifier,
+                                                   failureCount: failureCount,
+                                                   label: label,
+                                                   sortId: sortId,
+                                                   status: status,
+                                                   replacementAdminUuid: replacementAdminUuid,
+                                                   threadId: threadId,
+                                                   waitForMessageProcessing: waitForMessageProcessing)
 
         case .receiptCredentialRedemptionJobRecord:
 
@@ -428,6 +457,9 @@ extension SSKJobRecord: SDSModel {
         case let model as OWSReceiptCredentialRedemptionJobRecord:
             assert(type(of: model) == OWSReceiptCredentialRedemptionJobRecord.self)
             return OWSReceiptCredentialRedemptionJobRecordSerializer(model: model)
+        case let model as OWSLocalUserLeaveGroupJobRecord:
+            assert(type(of: model) == OWSLocalUserLeaveGroupJobRecord.self)
+            return OWSLocalUserLeaveGroupJobRecordSerializer(model: model)
         case let model as OWSIncomingGroupSyncJobRecord:
             assert(type(of: model) == OWSIncomingGroupSyncJobRecord.self)
             return OWSIncomingGroupSyncJobRecordSerializer(model: model)
@@ -639,6 +671,30 @@ extension SSKJobRecord: DeepCopyable {
                                                            targetSubscriptionLevel: targetSubscriptionLevel)
         }
 
+        if let modelToCopy = self as? OWSLocalUserLeaveGroupJobRecord {
+            assert(type(of: modelToCopy) == OWSLocalUserLeaveGroupJobRecord.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let exclusiveProcessIdentifier: String? = modelToCopy.exclusiveProcessIdentifier
+            let failureCount: UInt = modelToCopy.failureCount
+            let label: String = modelToCopy.label
+            let sortId: UInt64 = modelToCopy.sortId
+            let status: SSKJobRecordStatus = modelToCopy.status
+            let replacementAdminUuid: String? = modelToCopy.replacementAdminUuid
+            let threadId: String = modelToCopy.threadId
+            let waitForMessageProcessing: Bool = modelToCopy.waitForMessageProcessing
+
+            return OWSLocalUserLeaveGroupJobRecord(grdbId: id,
+                                                   uniqueId: uniqueId,
+                                                   exclusiveProcessIdentifier: exclusiveProcessIdentifier,
+                                                   failureCount: failureCount,
+                                                   label: label,
+                                                   sortId: sortId,
+                                                   status: status,
+                                                   replacementAdminUuid: replacementAdminUuid,
+                                                   threadId: threadId,
+                                                   waitForMessageProcessing: waitForMessageProcessing)
+        }
+
         if let modelToCopy = self as? OWSIncomingGroupSyncJobRecord {
             assert(type(of: modelToCopy) == OWSIncomingGroupSyncJobRecord.self)
             let uniqueId: String = modelToCopy.uniqueId
@@ -776,6 +832,8 @@ extension SSKJobRecordSerializer {
     static var messageTextColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "messageText", columnType: .unicodeString, isOptional: true) }
     static var paymentIntentClientSecretColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentIntentClientSecret", columnType: .unicodeString, isOptional: true) }
     static var paymentMethodIdColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "paymentMethodId", columnType: .unicodeString, isOptional: true) }
+    static var replacementAdminUuidColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "replacementAdminUuid", columnType: .unicodeString, isOptional: true) }
+    static var waitForMessageProcessingColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "waitForMessageProcessing", columnType: .int, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -814,7 +872,9 @@ extension SSKJobRecordSerializer {
         unsavedMessagesToSendColumn,
         messageTextColumn,
         paymentIntentClientSecretColumn,
-        paymentMethodIdColumn
+        paymentMethodIdColumn,
+        replacementAdminUuidColumn,
+        waitForMessageProcessingColumn
         ])
     }
 }
@@ -1134,8 +1194,10 @@ public extension SSKJobRecord {
         }
     }
 
-    class func anyExists(uniqueId: String,
-                        transaction: SDSAnyReadTransaction) -> Bool {
+    class func anyExists(
+        uniqueId: String,
+        transaction: SDSAnyReadTransaction
+    ) -> Bool {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -1232,8 +1294,10 @@ class SSKJobRecordSerializer: SDSSerializer {
         let messageText: String? = nil
         let paymentIntentClientSecret: String? = nil
         let paymentMethodId: String? = nil
+        let replacementAdminUuid: String? = nil
+        let waitForMessageProcessing: Bool? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage, serverDeliveryTimestamp: serverDeliveryTimestamp, exclusiveProcessIdentifier: exclusiveProcessIdentifier, isHighPriority: isHighPriority, receiptCredentailRequest: receiptCredentailRequest, receiptCredentailRequestContext: receiptCredentailRequestContext, priorSubscriptionLevel: priorSubscriptionLevel, subscriberID: subscriberID, targetSubscriptionLevel: targetSubscriptionLevel, boostPaymentIntentID: boostPaymentIntentID, isBoost: isBoost, receiptCredentialPresentation: receiptCredentialPresentation, amount: amount, currencyCode: currencyCode, unsavedMessagesToSend: unsavedMessagesToSend, messageText: messageText, paymentIntentClientSecret: paymentIntentClientSecret, paymentMethodId: paymentMethodId, replacementAdminUuid: replacementAdminUuid, waitForMessageProcessing: waitForMessageProcessing)
     }
 }
 

@@ -95,11 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)signalAccountsDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();

@@ -314,7 +314,9 @@ typedef NS_ENUM(NSUInteger, OWSAttachmentInfoReference) {
         // We need to account for that here.
         body = [@"👤 " stringByAppendingString:quotedMessage.contactShare.name.displayName];
     } else if (quotedMessage.storyReactionEmoji.length > 0) {
-        body = quotedMessage.storyReactionEmoji;
+        body = [NSString stringWithFormat:OWSLocalizedString(@"STORY_REACTION_QUOTE_FORMAT",
+                                              @"quote text for a reaction to a story. Embeds {{reaction emoji}}"),
+                         quotedMessage.storyReactionEmoji];
     } else if (quotedMessage.giftBadge != nil) {
         isGiftBadge = YES;
     }

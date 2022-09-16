@@ -58,7 +58,7 @@ public class OWSMessageSend: NSObject {
     @objc
     public let isLocalAddress: Bool
 
-    private let promise: Promise<Void>
+    public let promise: Promise<Void>
 
     @objc
     public var asAnyPromise: AnyPromise {

@@ -272,6 +272,8 @@ public extension JobQueue {
                 return
             }
             if self.requiresInternet {
+                // FIXME: The returned observer token is never unregistered.
+                // In practice all our JobQueues live forever, so this isn't a problem.
                 NotificationCenter.default.addObserver(forName: SSKReachability.owsReachabilityDidChange,
                                                        object: nil,
                                                        queue: nil) { _ in

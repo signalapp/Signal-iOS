@@ -89,11 +89,18 @@ public class OWSAudioSession: NSObject {
     }
 
     @objc
+    public var outputVolume: Float {
+        return avAudioSession.outputVolume
+    }
+
+    private let unfairLock = UnfairLock()
+
+    @objc
     public func startAudioActivity(_ audioActivity: AudioActivity) -> Bool {
         Logger.debug("with \(audioActivity)")
 
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
+        unfairLock.lock()
+        defer { unfairLock.unlock() }
 
         self.currentActivities.append(Weak(value: audioActivity))
 
@@ -110,8 +117,8 @@ public class OWSAudioSession: NSObject {
     public func endAudioActivity(_ audioActivity: AudioActivity) {
         Logger.debug("with audioActivity: \(audioActivity)")
 
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
+        unfairLock.lock()
+        defer { unfairLock.unlock() }
 
         currentActivities = currentActivities.filter { return $0.value != audioActivity }
         do {
@@ -123,8 +130,8 @@ public class OWSAudioSession: NSObject {
 
     @objc
     public func ensureAudioState() {
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
+        unfairLock.lock()
+        defer { unfairLock.unlock() }
         do {
             try reconcileAudioCategory()
         } catch {
@@ -151,7 +158,13 @@ public class OWSAudioSession: NSObject {
             // session handling.
         } else if aggregateBehaviors.contains(.playAndRecord) {
             assert(avAudioSession.recordPermission == .granted)
-            try avAudioSession.setCategory(.record)
+            try setCategory(
+                .playAndRecord,
+                mode: .default,
+                options: [
+                    .defaultToSpeaker
+                ]
+            )
             if #available(iOS 13, *) {
                 try avAudioSession.setAllowHapticsAndSystemSoundsDuringRecording(true)
             }
@@ -159,32 +172,54 @@ public class OWSAudioSession: NSObject {
             if self.device.proximityState {
                 Logger.debug("proximityState: true")
 
-                try avAudioSession.setCategory(.playAndRecord)
+                try setCategory(.playAndRecord)
                 try avAudioSession.overrideOutputAudioPort(.none)
             } else {
                 Logger.debug("proximityState: false")
-                try avAudioSession.setCategory(.playback)
+                try setCategory(.playback)
             }
         } else if aggregateBehaviors.contains(.playback) {
-            try avAudioSession.setCategory(.playback)
+            try setCategory(.playback)
+        } else if aggregateBehaviors.contains(.playbackMixWithOthers) {
+            try setCategory(.playback, options: .mixWithOthers)
         } else {
             if avAudioSession.category != AVAudioSession.Category.ambient {
                 Logger.debug("reverting to fallback audio category: ambient")
-                try avAudioSession.setCategory(.ambient)
+                try setCategory(.ambient)
             }
 
             ensureAudioSessionActivationState()
         }
     }
 
-    func ensureAudioSessionActivationState(remainingRetries: UInt = 3) {
+    private func setCategory(
+        _ category: AVAudioSession.Category,
+        mode: AVAudioSession.Mode? = nil,
+        options: AVAudioSession.CategoryOptions = []
+    ) throws {
+        guard
+            avAudioSession.category != category
+            || (avAudioSession.mode != (mode ?? .default))
+            || (avAudioSession.categoryOptions != options)
+        else {
+            return
+        }
+        if let mode = mode, !options.isEmpty {
+            try avAudioSession.setCategory(category, mode: mode, options: options)
+        } else if let mode = mode {
+            try avAudioSession.setCategory(category, mode: mode)
+        } else if !options.isEmpty {
+            try avAudioSession.setCategory(category, options: options)
+        } else {
+            try avAudioSession.setCategory(category)
+        }
+    }
+
+    private func ensureAudioSessionActivationState(remainingRetries: UInt = 3) {
         guard remainingRetries > 0 else {
             owsFailDebug("ensureAudioSessionActivationState has no remaining retries")
             return
         }
-
-        objc_sync_enter(self)
-        defer { objc_sync_exit(self) }
 
         // Cull any stale activities
         currentActivities = currentActivities.compactMap { oldActivity in
@@ -217,6 +252,9 @@ public class OWSAudioSession: NSObject {
                 // Error Domain=NSOSStatusErrorDomain Code=560030580 “The operation couldn’t be completed. (OSStatus error 560030580.)”
                 // aka "AVAudioSessionErrorCodeIsBusy"
                 DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+                    // We've dispatched asynchronously, have to re-acquire the lock.
+                    self.unfairLock.lock()
+                    defer { self.unfairLock.unlock() }
                     self.ensureAudioSessionActivationState(remainingRetries: remainingRetries - 1)
                 }
                 return
@@ -234,6 +272,8 @@ extension OWSAudioBehavior: CustomStringConvertible {
             return "OWSAudioBehavior.unknown"
         case .playback:
             return "OWSAudioBehavior.playback"
+        case .playbackMixWithOthers:
+            return "OWSAudioBehavior.playbackMixWithOthers"
         case .audioMessagePlayback:
             return "OWSAudioBehavior.audioMessagePlayback"
         case .playAndRecord:

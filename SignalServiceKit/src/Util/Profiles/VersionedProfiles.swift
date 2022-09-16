@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import LibSignalClient
 
 @objc
 public class VersionedProfileUpdate: NSObject {
@@ -50,6 +51,9 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
                               profileAvatarData: Data?,
                               visibleBadgeIds: [String],
                               unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate>
+
+    func profileKeyCredential(for address: SignalServiceAddress,
+                              transaction: SDSAnyReadTransaction) throws -> ProfileKeyCredential?
 }
 
 // MARK: -
@@ -77,5 +81,10 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
                                      visibleBadgeIds: [String],
                                      unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate> {
         owsFail("Not implemented.")
+    }
+
+    public func profileKeyCredential(for address: SignalServiceAddress,
+                                     transaction: SDSAnyReadTransaction) throws -> ProfileKeyCredential? {
+        owsFail("Not implemented")
     }
 }

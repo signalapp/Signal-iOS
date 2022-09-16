@@ -19,8 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Defaults to `YES`
 @property (nonatomic) BOOL shouldHideLocalRecipient;
 /// Defaults to `YES`
-@property (nonatomic) BOOL includeBlockedContacts;
-/// Defaults to `YES`
 @property (nonatomic) BOOL allowsSelectingUnregisteredPhoneNumbers;
 /// Defaults to `YES`
 @property (nonatomic) BOOL shouldShowGroups;

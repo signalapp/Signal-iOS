@@ -26,7 +26,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController {
     }
 
     override func prepareContentView() {
-        editorView.roundCorners = true
+        editorView.setHasRoundCorners(true)
         editorView.textInteractionModes = [ .tap, .move ]
         editorView.configureSubviews()
     }

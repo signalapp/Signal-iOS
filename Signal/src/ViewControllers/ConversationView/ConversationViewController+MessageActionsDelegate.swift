@@ -2,6 +2,8 @@
 //  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
+import AVFAudio
+
 extension ConversationViewController: MessageActionsDelegate {
     func messageActionsShowDetailsForItem(_ itemViewModel: CVItemViewModelImpl) {
         showDetailView(itemViewModel)
@@ -68,7 +70,8 @@ extension ConversationViewController: MessageActionsDelegate {
 
         let load = {
             Self.databaseStorage.read { transaction in
-                OWSQuotedReplyModel.quotedReplyForSending(withItem: itemViewModel, transaction: transaction)
+                OWSQuotedReplyModel.quotedReplyForSending(withItem: itemViewModel,
+                                                          transaction: transaction)
             }
         }
         guard let quotedReply = load() else {
@@ -97,5 +100,26 @@ extension ConversationViewController: MessageActionsDelegate {
     func messageActionsDeleteItem(_ itemViewModel: CVItemViewModelImpl) {
         guard let message = itemViewModel.interaction as? TSMessage else { return }
         message.presentDeletionActionSheet(from: self)
+    }
+
+    func messageActionsSpeakItem(_ itemViewModel: CVItemViewModelImpl) {
+        guard let textValue = itemViewModel.displayableBodyText?.fullTextValue else {
+            return
+        }
+
+        let utterance: AVSpeechUtterance = {
+            switch textValue {
+            case .text(let text):
+                return AVSpeechUtterance(string: text)
+            case .attributedText(let attributedText):
+                return AVSpeechUtterance(attributedString: attributedText)
+            }
+        }()
+
+        self.speechManager.speak(utterance)
+    }
+
+    func messageActionsStopSpeakingItem(_ itemViewModel: CVItemViewModelImpl) {
+        self.speechManager.stop()
     }
 }

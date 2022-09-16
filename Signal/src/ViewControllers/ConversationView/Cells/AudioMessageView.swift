@@ -4,26 +4,28 @@
 
 import Foundation
 import Lottie
+import UIKit
 
 class AudioMessageView: ManualStackView {
 
+    // MARK: - State
+
+    private let threadUniqueId: String
     private let audioAttachment: AudioAttachment
     private var attachment: TSAttachment { audioAttachment.attachment }
     private var attachmentStream: TSAttachmentStream? { audioAttachment.attachmentStream }
     private var durationSeconds: TimeInterval { audioAttachment.durationSeconds }
 
+    // Initially set to the value from the database (via itemViewState).
+    // When the user changes the rate, model updates are paused via
+    // `cvc_beginCellAnimation` and this value is updated. Once animations
+    // are done, the whole cell gets recreated with the new plaback rate
+    // value.
+    private var audioPlaybackRate: AudioPlaybackRate
+
     private let isIncoming: Bool
     private weak var componentDelegate: CVComponentDelegate?
     private let mediaCache: CVMediaCache
-
-    private let playedDotAnimation: Lottie.AnimationView
-    private let playedDotContainer = ManualLayoutView(name: "playedDotContainer")
-    private let playPauseAnimation: Lottie.AnimationView
-    private let playPauseContainer = ManualLayoutView.circleView(name: "playPauseContainer")
-    private let playbackTimeLabel = CVLabel()
-    private let progressSlider = UISlider()
-    private let waveformProgress: AudioWaveformProgressView
-    private let waveformContainer = ManualLayoutView(name: "waveformContainer")
 
     private var audioPlaybackState: AudioPlaybackState {
         cvAudioPlayer.audioPlaybackState(forAttachmentId: attachment.uniqueId)
@@ -43,25 +45,60 @@ class AudioMessageView: ManualStackView {
         updateContents(animated: animated)
     }
 
-    init(audioAttachment: AudioAttachment,
-         isIncoming: Bool,
-         componentDelegate: CVComponentDelegate,
-         mediaCache: CVMediaCache) {
+    // MARK: - Views
 
+    private let playedDotAnimation: Lottie.AnimationView
+    private let playedDotContainer = ManualLayoutView(name: "playedDotContainer")
+    private let playPauseAnimation: Lottie.AnimationView
+    private let playPauseContainer = ManualLayoutView.circleView(name: "playPauseContainer")
+    private let playbackTimeLabel = CVLabel()
+    private let playbackRateView: AudioMessagePlaybackRateView
+    private let progressSlider = UISlider()
+    private let waveformProgress: AudioWaveformProgressView
+    private let waveformContainer = ManualLayoutView(name: "waveformContainer")
+
+    // MARK: Init
+
+    init(
+        threadUniqueId: String,
+        audioAttachment: AudioAttachment,
+        audioPlaybackRate: Float,
+        isIncoming: Bool,
+        componentDelegate: CVComponentDelegate,
+        mediaCache: CVMediaCache
+    ) {
+        self.threadUniqueId = threadUniqueId
         self.audioAttachment = audioAttachment
         self.isIncoming = isIncoming
         self.componentDelegate = componentDelegate
         self.mediaCache = mediaCache
+        self.audioPlaybackRate = AudioPlaybackRate(rawValue: audioPlaybackRate)
 
         self.waveformProgress = AudioWaveformProgressView(mediaCache: mediaCache)
         self.playedDotAnimation = mediaCache.buildLottieAnimationView(name: "audio-played-dot")
         self.playPauseAnimation = mediaCache.buildLottieAnimationView(name: "playPauseButton")
 
+        self.playbackRateView = AudioMessagePlaybackRateView(
+            threadUniqueId: threadUniqueId,
+            audioAttachment: audioAttachment,
+            playbackRate: AudioPlaybackRate(rawValue: audioPlaybackRate),
+            isIncoming: isIncoming
+        )
+
         super.init(name: "AudioMessageView")
     }
 
-    public func configureForRendering(cellMeasurement: CVCellMeasurement,
-                                      conversationStyle: ConversationStyle) {
+    @available(swift, obsoleted: 1.0)
+    required init(name: String, arrangedSubviews: [UIView] = []) {
+        owsFail("Do not use this initializer.")
+    }
+
+    // MARK: - Rendering
+
+    public func configureForRendering(
+        cellMeasurement: CVCellMeasurement,
+        conversationStyle: ConversationStyle
+    ) {
 
         var outerSubviews = [UIView]()
 
@@ -134,7 +171,7 @@ class AudioMessageView: ManualStackView {
             leftView = playPauseContainer
         } else if let attachmentPointer = audioAttachment.attachmentPointer {
             leftView = CVAttachmentProgressView(direction: .download(attachmentPointer: attachmentPointer),
-                                                style: .withoutCircle(diameter: Self.animationSize),
+                                                diameter: Constants.animationSize,
                                                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
                                                 mediaCache: mediaCache)
         } else {
@@ -159,6 +196,7 @@ class AudioMessageView: ManualStackView {
                 .transparentSpacer(),
                 playbackTimeLabel,
                 playedDotContainer,
+                playbackRateView,
                 .transparentSpacer()
         ]
 
@@ -181,15 +219,19 @@ class AudioMessageView: ManualStackView {
         cvAudioPlayer.addListener(self)
     }
 
+    // MARK: - Measurement
+
     private static let measurementKey_topInnerStack = "CVComponentAudioAttachment.measurementKey_topInnerStack"
     private static let measurementKey_bottomInnerStack = "CVComponentAudioAttachment.measurementKey_bottomInnerStack"
     private static let measurementKey_outerStack = "CVComponentAudioAttachment.measurementKey_outerStack"
 
-    public static func measure(maxWidth: CGFloat,
-                               audioAttachment: AudioAttachment,
-                               isIncoming: Bool,
-                               conversationStyle: ConversationStyle,
-                               measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+    public static func measure(
+        maxWidth: CGFloat,
+        audioAttachment: AudioAttachment,
+        isIncoming: Bool,
+        conversationStyle: ConversationStyle,
+        measurementBuilder: CVCellMeasurement.Builder
+    ) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         var outerSubviewInfos = [ManualStackSubviewInfo]()
@@ -201,12 +243,12 @@ class AudioMessageView: ManualStackView {
         }
 
         var topInnerSubviewInfos = [ManualStackSubviewInfo]()
-        let leftViewSize = CGSize(square: animationSize)
+        let leftViewSize = CGSize(square: Constants.animationSize)
         topInnerSubviewInfos.append(leftViewSize.asManualSubviewInfo(hasFixedSize: true))
 
         topInnerSubviewInfos.append(CGSize(width: 12, height: 0).asManualSubviewInfo(hasFixedWidth: true))
 
-        let waveformSize = CGSize(width: 0, height: waveformHeight)
+        let waveformSize = CGSize(width: 0, height: Constants.waveformHeight)
         topInnerSubviewInfos.append(waveformSize.asManualSubviewInfo(hasFixedHeight: true))
 
         topInnerSubviewInfos.append(CGSize(width: 6, height: 0).asManualSubviewInfo(hasFixedWidth: true))
@@ -225,20 +267,16 @@ class AudioMessageView: ManualStackView {
                                                                              conversationStyle: conversationStyle)
         let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
 
+        let playbackRateSize = AudioMessagePlaybackRateView.measure(maxWidth: maxWidth)
+
         var bottomInnerSubviewInfos: [ManualStackSubviewInfo] = [
             playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true),
-            dotSize.asManualSubviewInfo(hasFixedSize: true)
+            dotSize.asManualSubviewInfo(hasFixedSize: true),
+            playbackRateSize.asManualSubviewInfo(hasFixedSize: true)
         ]
 
-        // The playback controls are always rendered RTL, but the timestamps remain pinned to the
-        // trailing edge of the message bubble, as such we need to re-arrange the spacing to accommodate.
-        if CurrentAppContext().isRTL {
-            bottomInnerSubviewInfos.insert(CGSize.zero.asManualSubviewInfo(hasFixedSize: true), at: 0)
-            bottomInnerSubviewInfos.append(.empty)
-        } else {
-            bottomInnerSubviewInfos.insert(CGSize(width: 44, height: 0).asManualSubviewInfo(hasFixedWidth: true), at: 0)
-            bottomInnerSubviewInfos.append(.empty)
-        }
+        bottomInnerSubviewInfos.insert(CGSize.zero.asManualSubviewInfo(hasFixedWidth: true), at: 0)
+        bottomInnerSubviewInfos.append(.empty)
 
         let bottomInnerStackMeasurement = ManualStackView.measure(config: bottomInnerStackConfig,
                                                             measurementBuilder: measurementBuilder,
@@ -255,15 +293,12 @@ class AudioMessageView: ManualStackView {
         return outerStackMeasurement.measuredSize
     }
 
-    @available(swift, obsoleted: 1.0)
-    required init(name: String, arrangedSubviews: [UIView] = []) {
-        owsFail("Do not use this initializer.")
-    }
+    // MARK: - View Configs
 
     private static var outerStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .vertical,
                           alignment: .fill,
-                          spacing: vSpacing,
+                          spacing: Constants.vSpacing,
                           layoutMargins: .zero)
     }
 
@@ -271,13 +306,13 @@ class AudioMessageView: ManualStackView {
         CVStackViewConfig(axis: .horizontal,
                           alignment: .center,
                           spacing: 0,
-                          layoutMargins: innerLayoutMargins)
+                          layoutMargins: Constants.innerLayoutMargins)
     }
 
     private static var bottomInnerStackConfig: CVStackViewConfig {
         CVStackViewConfig(axis: .horizontal,
                           alignment: .center,
-                          spacing: 8,
+                          spacing: Constants.bottomInnerStackSpacing,
                           layoutMargins: .zero)
     }
 
@@ -298,7 +333,7 @@ class AudioMessageView: ManualStackView {
         }
 
         return CVLabelConfig(text: text,
-                             font: labelFont,
+                             font: Constants.labelFont,
                              textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming))
     }
 
@@ -323,9 +358,39 @@ class AudioMessageView: ManualStackView {
     private static func playbackTimeLabelConfig(text: String,
                                                 isIncoming: Bool,
                                                 conversationStyle: ConversationStyle) -> CVLabelConfig {
-        CVLabelConfig(text: text,
-                      font: UIFont.ows_dynamicTypeCaption1.ows_monospaced,
-                      textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming))
+        return CVLabelConfig(
+            text: text,
+            font: UIFont.ows_dynamicTypeCaption1Clamped,
+            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+        )
+    }
+
+    // MARK: - Constants
+
+    fileprivate enum Constants {
+        static let labelFont: UIFont = .ows_dynamicTypeCaption2
+        static let waveformHeight: CGFloat = 32
+        static let animationSize: CGFloat = 40
+        static let vSpacing: CGFloat = 2
+        static let innerLayoutMargins = UIEdgeInsets(hMargin: 0, vMargin: 4)
+
+        static var bottomInnerStackSpacing: CGFloat {
+            switch UIApplication.shared.preferredContentSizeCategory {
+            case .extraSmall, .small, .medium, .large, .extraLarge:
+                return 8
+            default:
+                return 4
+            }
+        }
+    }
+
+    // MARK: - Tapping
+
+    public func handleTap(
+        sender: UITapGestureRecognizer,
+        itemModel: CVItemModel
+    ) -> Bool {
+        return playbackRateView.handleTap(sender: sender, itemModel: itemModel, componentDelegate: componentDelegate)
     }
 
     // MARK: - Scrubbing
@@ -359,14 +424,6 @@ class AudioMessageView: ManualStackView {
 
     // MARK: - Contents
 
-    private static var labelFont: UIFont = .ows_dynamicTypeCaption2
-    private static var waveformHeight: CGFloat = 32
-    private static var animationSize: CGFloat = 40
-    private static var vSpacing: CGFloat = 2
-    private static var innerLayoutMargins: UIEdgeInsets {
-        UIEdgeInsets(hMargin: 0, vMargin: 4)
-    }
-
     private lazy var playedColor: UIColor = isIncoming
         ? (Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray60)
         : .ows_white
@@ -385,7 +442,10 @@ class AudioMessageView: ManualStackView {
         updatePlaybackState(animated: animated)
         updateViewedState(animated: animated)
         updateAudioProgress()
+        updatePlaybackRate(animated: animated)
     }
+
+    // MARK: Progress
 
     private var audioProgressRatio: CGFloat {
         if let overrideProgress = self.overrideProgress {
@@ -406,6 +466,8 @@ class AudioMessageView: ManualStackView {
         }
     }
 
+    // MARK: Playback State
+
     private func updatePlaybackState(animated: Bool = true) {
         let isPlaying = audioPlaybackState == .playing
         let destination: AnimationProgressTime = isPlaying ? 1 : 0
@@ -420,22 +482,6 @@ class AudioMessageView: ManualStackView {
             }
         } else {
             playPauseAnimation.currentProgress = destination
-        }
-    }
-
-    private func updateViewedState(animated: Bool = true) {
-        let destination: AnimationProgressTime = isViewed ? 1 : 0
-
-        // Do nothing if we're already there.
-        guard destination != playedDotAnimation.currentProgress else { return }
-
-        if animated {
-            let endCellAnimation = componentDelegate?.cvc_beginCellAnimation(maximumDuration: 0.2)
-            playedDotAnimation.play(toProgress: destination) { _ in
-                endCellAnimation?()
-            }
-        } else {
-            playedDotAnimation.currentProgress = destination
         }
     }
 
@@ -474,9 +520,39 @@ class AudioMessageView: ManualStackView {
             .asTintedImage(color: color)?
             .resizableImage(withCapInsets: UIEdgeInsets(top: 0, leading: 2, bottom: 0, trailing: 2))
     }
+
+    // MARK: Viewed State
+
+    private func updateViewedState(animated: Bool = true) {
+        let destination: AnimationProgressTime = isViewed ? 1 : 0
+
+        // Do nothing if we're already there.
+        guard destination != playedDotAnimation.currentProgress else { return }
+
+        if animated {
+            let endCellAnimation = componentDelegate?.cvc_beginCellAnimation(maximumDuration: 0.2)
+            playedDotAnimation.play(toProgress: destination) { _ in
+                endCellAnimation?()
+            }
+        } else {
+            playedDotAnimation.currentProgress = destination
+        }
+    }
+
+    // MARK: Playback Rate
+
+    private func updatePlaybackRate(animated: Bool) {
+        let isPlaying: Bool = {
+            guard let attachmentStream = attachmentStream else {
+                return false
+            }
+            return cvAudioPlayer.audioPlaybackState(forAttachmentId: attachmentStream.uniqueId) == .playing
+        }()
+        playbackRateView.setVisibility(isPlaying, animated: animated)
+    }
 }
 
-// MARK: -
+// MARK: - CVAudioPlayerListener
 
 extension AudioMessageView: CVAudioPlayerListener {
     func audioPlayerStateDidChange(attachmentId: String) {

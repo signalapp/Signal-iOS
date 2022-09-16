@@ -448,3 +448,23 @@ public class AtomicSet<T: Hashable> {
         }
     }
 }
+
+@propertyWrapper
+public struct Atomic<Value> {
+
+    private var value: Value
+    private let lock = AtomicLock()
+
+    public init(wrappedValue value: Value) {
+        self.value = value
+    }
+
+    public var wrappedValue: Value {
+      get {
+          lock.perform { value }
+      }
+      set {
+          lock.perform { value = newValue }
+      }
+    }
+}

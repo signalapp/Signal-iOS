@@ -414,6 +414,11 @@ public class EarlyMessageManager: NSObject {
     }
 
     public func applyPendingMessages(for storyMessage: StoryMessage, transaction: SDSAnyWriteTransaction) {
+        guard !storyMessage.authorAddress.isSystemStoryAddress else {
+            // Don't process read receipts for system stories.
+            Logger.info("Not processing viewed receipt for system story")
+            return
+        }
         let identifier = MessageIdentifier(timestamp: storyMessage.timestamp, author: storyMessage.authorAddress)
         applyPendingMessages(for: identifier, transaction: transaction) { earlyReceipt in
             switch earlyReceipt {

@@ -116,18 +116,6 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
-    public var relay: String? {
-        guard hasRelay else {
-            return nil
-        }
-        return proto.relay
-    }
-    @objc
-    public var hasRelay: Bool {
-        return proto.hasRelay
-    }
-
-    @objc
     public var legacyMessage: Data? {
         guard hasLegacyMessage else {
             return nil
@@ -323,9 +311,6 @@ extension SSKProtoEnvelope {
         if let _value = destinationUuid {
             builder.setDestinationUuid(_value)
         }
-        if let _value = relay {
-            builder.setRelay(_value)
-        }
         if let _value = legacyMessage {
             builder.setLegacyMessage(_value)
         }
@@ -401,17 +386,6 @@ public class SSKProtoEnvelopeBuilder: NSObject {
 
     public func setDestinationUuid(_ valueParam: String) {
         proto.destinationUuid = valueParam
-    }
-
-    @objc
-    @available(swift, obsoleted: 1.0)
-    public func setRelay(_ valueParam: String?) {
-        guard let valueParam = valueParam else { return }
-        proto.relay = valueParam
-    }
-
-    public func setRelay(_ valueParam: String) {
-        proto.relay = valueParam
     }
 
     @objc
@@ -1271,6 +1245,16 @@ public class SSKProtoTextAttachmentGradient: NSObject, Codable, NSSecureCoding {
         return proto.hasAngle
     }
 
+    @objc
+    public var colors: [UInt32] {
+        return proto.colors
+    }
+
+    @objc
+    public var positions: [Float] {
+        return proto.positions
+    }
+
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -1357,6 +1341,8 @@ extension SSKProtoTextAttachmentGradient {
         if hasAngle {
             builder.setAngle(angle)
         }
+        builder.setColors(colors)
+        builder.setPositions(positions)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -1385,6 +1371,26 @@ public class SSKProtoTextAttachmentGradientBuilder: NSObject {
     @objc
     public func setAngle(_ valueParam: UInt32) {
         proto.angle = valueParam
+    }
+
+    @objc
+    public func addColors(_ valueParam: UInt32) {
+        proto.colors.append(valueParam)
+    }
+
+    @objc
+    public func setColors(_ wrappedItems: [UInt32]) {
+        proto.colors = wrappedItems
+    }
+
+    @objc
+    public func addPositions(_ valueParam: Float) {
+        proto.positions.append(valueParam)
+    }
+
+    @objc
+    public func setPositions(_ wrappedItems: [Float]) {
+        proto.positions = wrappedItems
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

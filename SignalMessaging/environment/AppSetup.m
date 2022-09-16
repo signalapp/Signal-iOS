@@ -87,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
         StickerManager *stickerManager = [[StickerManager alloc] init];
         SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
+        id<OWSSignalServiceProtocol> signalService = [OWSSignalService new];
         AccountServiceClient *accountServiceClient = [AccountServiceClient new];
         OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
         SSKPreferences *sskPreferences = [SSKPreferences new];
@@ -119,6 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
         PhoneNumberUtil *phoneNumberUtil = [PhoneNumberUtil new];
         ChangePhoneNumber *changePhoneNumber = [ChangePhoneNumber new];
         SubscriptionManager *subscriptionManager = [SubscriptionManager new];
+        SystemStoryManager *systemStoryManager = [SystemStoryManager new];
 
         [Environment setShared:[[Environment alloc] initWithIncomingContactSyncJobQueue:incomingContactSyncJobQueue
                                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
@@ -159,6 +161,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    stickerManager:stickerManager
                                                                   databaseStorage:databaseStorage
                                                         signalServiceAddressCache:signalServiceAddressCache
+                                                                    signalService:signalService
                                                              accountServiceClient:accountServiceClient
                                                             storageServiceManager:storageServiceManager
                                                                storageCoordinator:storageCoordinator
@@ -183,7 +186,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   phoneNumberUtil:phoneNumberUtil
                                                                  webSocketFactory:webSocketFactory
                                                                 changePhoneNumber:changePhoneNumber
-                                                              subscriptionManager:subscriptionManager]];
+                                                              subscriptionManager:subscriptionManager
+                                                               systemStoryManager:systemStoryManager]];
 
         appSpecificSingletonBlock();
 

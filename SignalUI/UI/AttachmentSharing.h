@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -14,6 +14,14 @@ typedef void (^AttachmentSharingCompletion)(void);
 
 + (void)showShareUIForAttachment:(TSAttachmentStream *)stream sender:(nullable id)sender;
 + (void)showShareUIForAttachments:(NSArray<TSAttachmentStream *> *)attachments sender:(nullable id)sender;
+
++ (void)showShareUIForAttachment:(TSAttachmentStream *)stream
+                          sender:(nullable id)sender
+                      completion:(nullable AttachmentSharingCompletion)completion;
+
++ (void)showShareUIForAttachments:(NSArray<TSAttachmentStream *> *)attachments
+                           sender:(nullable id)sender
+                       completion:(nullable AttachmentSharingCompletion)completion;
 
 + (void)showShareUIForURL:(NSURL *)url sender:(nullable id)sender;
 

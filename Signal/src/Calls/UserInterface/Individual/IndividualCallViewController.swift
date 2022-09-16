@@ -218,6 +218,11 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         allAudioSources = Set(callService.audioService.availableInputs)
 
         self.shouldUseTheme = false
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(updateOrientationForPhone),
+                                               name: CallService.phoneOrientationDidChange,
+                                               object: nil)
     }
 
     deinit {
@@ -254,6 +259,9 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         super.viewWillAppear(animated)
 
         updateCallUI()
+        if call.offerMediaType == .video {
+            callService.sendInitialPhoneOrientationNotification()
+        }
     }
 
     override func loadView() {
@@ -1026,6 +1034,19 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         updateCallStatusLabel()
     }
 
+    @objc
+    private func updateOrientationForPhone(_ notification: Notification) {
+        let rotationAngle = notification.object as! CGFloat
+
+        if view.window == nil {
+            self.contactAvatarView.transform = CGAffineTransform(rotationAngle: rotationAngle)
+        } else {
+            UIView.animate(withDuration: 0.3, delay: 0, options: .allowUserInteraction) {
+                self.contactAvatarView.transform = CGAffineTransform(rotationAngle: rotationAngle)
+            }
+        }
+    }
+
     // MARK: - Video control timeout
 
     private var controlTimeoutTimer: Timer?
@@ -1063,7 +1084,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     func didPressHangup(sender: UIButton) {
         Logger.info("")
 
-        individualCallUIAdapter.localHangupCall(call)
+        callService.callUIAdapter.localHangupCall(call)
 
         dismissIfPossible(shouldDelay: false)
     }
@@ -1073,7 +1094,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         Logger.info("")
         let isMuted = !sender.isSelected
 
-        individualCallUIAdapter.setIsMuted(call: call, isMuted: isMuted)
+        callService.callUIAdapter.setIsMuted(call: call, isMuted: isMuted)
     }
 
     @objc
@@ -1106,15 +1127,15 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         if sender == videoAnswerIncomingAudioOnlyButton {
             // Answer without video, set state before answering.
-            individualCallUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: false)
+            callService.callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: false)
         }
 
-        individualCallUIAdapter.answerCall(call)
+        callService.callUIAdapter.answerCall(call)
 
         // We should always be unmuted when we answer an incoming call.
         // Explicitly setting it so will cause us to prompt for
         // microphone permissions if necessary.
-        individualCallUIAdapter.setIsMuted(call: call, isMuted: false)
+        callService.callUIAdapter.setIsMuted(call: call, isMuted: false)
     }
 
     @objc
@@ -1124,10 +1145,18 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
         // When turning off video, default speakerphone to on.
         if !hasLocalVideo {
+            if !hasAlternateAudioSources {
+                audioModeSourceButton.isSelected = true
+            }
             callService.audioService.requestSpeakerphone(isEnabled: true)
         }
 
-        individualCallUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
+        callService.callUIAdapter.setHasLocalVideo(call: call, hasLocalVideo: hasLocalVideo)
+    }
+
+    @objc
+    func didPressRing(sender: UIButton) {
+        owsFailDebug("1:1 calls always ring")
     }
 
     @objc
@@ -1137,7 +1166,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
         let isUsingFrontCamera = !sender.isSelected
         Logger.info("with isUsingFrontCamera: \(isUsingFrontCamera)")
 
-        individualCallUIAdapter.setCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
+        callService.callUIAdapter.setCameraSource(call: call, isUsingFrontCamera: isUsingFrontCamera)
     }
 
     /**
@@ -1147,7 +1176,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
     func didPressDeclineCall(sender: UIButton) {
         Logger.info("")
 
-        individualCallUIAdapter.localHangupCall(call)
+        callService.callUIAdapter.localHangupCall(call)
 
         dismissIfPossible(shouldDelay: false)
     }

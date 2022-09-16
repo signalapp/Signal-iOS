@@ -109,7 +109,7 @@ public extension ChatListViewController {
             return
         }
 
-        Logger.info("[Subscriptions] showing expiry sheet for badge \(expiredBadgeID)")
+        Logger.info("[Subscriptions] showing expiry sheet for expired badge \(expiredBadgeID)")
 
         if BoostBadgeIds.contains(expiredBadgeID) {
             firstly {
@@ -361,8 +361,6 @@ public enum ShowAppSettingsMode {
 // MARK: -
 
 public extension ChatListViewController {
-
-    @objc
     func createAvatarBarButtonViewWithSneakyTransaction() -> UIView {
         let avatarView = ConversationAvatarView(sizeClass: .twentyEight, localUserDisplayMode: .asUser)
         databaseStorage.read { readTx in
@@ -374,6 +372,61 @@ public extension ChatListViewController {
             }
         }
         return avatarView
+    }
+
+    @objc
+    func createSettingsBarButtonItem() -> UIBarButtonItem {
+        let contextButton = ContextMenuButton()
+        contextButton.showsContextMenuAsPrimaryAction = true
+        contextButton.contextMenu = settingsContextMenu()
+        contextButton.accessibilityLabel = CommonStrings.openSettingsButton
+
+        let avatarImageView = createAvatarBarButtonViewWithSneakyTransaction()
+        contextButton.addSubview(avatarImageView)
+        avatarImageView.autoPinEdgesToSuperviewEdges()
+
+        let wrapper = UIView.container()
+        wrapper.addSubview(contextButton)
+        contextButton.autoPinEdgesToSuperviewEdges()
+
+        if unreadPaymentNotificationsCount > 0 {
+            PaymentsViewUtils.addUnreadBadge(toView: wrapper)
+        }
+
+        return .init(customView: wrapper)
+    }
+
+    func settingsContextMenu() -> ContextMenu {
+        var contextMenuActions: [ContextMenuAction] = []
+        if renderState.inboxCount > 0 {
+            contextMenuActions.append(
+                ContextMenuAction(
+                    title: NSLocalizedString("HOME_VIEW_TITLE_SELECT_CHATS", comment: "Title for the 'Select Chats' option in the ChatList."),
+                    image: Theme.isDarkThemeEnabled ? UIImage(named: "check-circle-solid-24")?.tintedImage(color: .white) : UIImage(named: "check-circle-outline-24"),
+                    attributes: [],
+                    handler: { [weak self] (_) in
+                        self?.willEnterMultiselectMode()
+                    }))
+        }
+        contextMenuActions.append(
+            ContextMenuAction(
+                title: CommonStrings.openSettingsButton,
+                image: Theme.isDarkThemeEnabled ? UIImage(named: "settings-solid-24")?.tintedImage(color: .white) : UIImage(named: "settings-outline-24"),
+                attributes: [],
+                handler: { [weak self] (_) in
+                        self?.showAppSettings(mode: .none)
+            }))
+        if renderState.archiveCount > 0 {
+            contextMenuActions.append(
+                ContextMenuAction(
+                    title: NSLocalizedString("HOME_VIEW_TITLE_ARCHIVE", comment: "Title for the conversation list's 'archive' mode."),
+                    image: Theme.isDarkThemeEnabled ? UIImage(named: "archive-solid-24")?.tintedImage(color: .white) : UIImage(named: "archive-outline-24"),
+                    attributes: [],
+                    handler: { [weak self] (_) in
+                        self?.showArchivedConversations(offerMultiSelectMode: true)
+                }))
+        }
+        return .init(contextMenuActions)
     }
 
     @objc

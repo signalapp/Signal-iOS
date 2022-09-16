@@ -1,6 +1,6 @@
 [main]
 host = https://www.transifex.com
-lang_map = ar: ar-SA, de: de-DE, en_AU: en-AU, en_CA: en-CA, en_GB: en-GB, en_US: en-US, es_ES: es-ES, es_MX: es-MX, fr: fr-FR, nb: no, nl: nl-NL, pt_BR: pt-BR, pt_PT: pt-PT, zh_CN: zh-Hans, zh_TW: zh-Hant
+lang_map = ar: ar-SA, de: de-DE, en_AU: en-AU, en_CA: en-CA, en_GB: en-GB, en_US: en-US, es: es-ES, fr: fr-FR, nb: no, nl: nl-NL, pt_BR: pt-BR, pt_PT: pt-PT, zh_CN: zh-Hans, zh_TW: zh-Hant
 
 
 [o:signalapp:p:signal-ios:r:app-store-release-notes]

@@ -1,20 +1,20 @@
-Todos los días millones de personas utilizan Signal para comunicarse en tiempo real desde cualquier parte del mundo de forma gratuita. Con Signal podrás recibir mensajes de alta fidelidad, participar en llamadas y videollamadas de alta calidad y explorar unas funciones en constante desarrollo que te ayudarán a conectarte. La tecnología avanzada de Signal especializada en proteger tu intimidad está siempre activada, así que te puedes centrar en compartir los momentos que te importan con las personas que te importan.
+Millones de personas utilizan Signal cada día para comunicarse instantáneamente y sin costes en cualquier parte del mundo. Envía y recibe mensajes confidenciales, participa en llamadas de vídeo/voz de alta definición y explora un sinfín de nuevas funciones que te permitirán estar conectada. La avanzada tecnología de Signal pensada para mantener la privacidad de tus conversaciones siempre está activada para que puedas centrarte en compartir momentos importantes con la gente que te importa.
 
-• Di lo que quieras - El avanzado protocolo de cifrado de extremo a extremo mantiene la privacidad de tus chats gracias a la tecnología de código abierto Signal Protocol™. En Signal la privacidad no es algo opcional, sino que está integrada en su funcionamiento; en todos tus mensajes, todas tus llamadas, todo el tiempo.
+• Di lo que quieras - Signal utiliza un avanzado protocolo de código abierto con cifrado de extremo a extremo para mantener la privacidad de tus chats. La privacidad no es una opción configurable, es la manera como funciona Signal. En todos tus mensajes, todas tus llamadas. Siempre.
 
-• Rápido - Los mensajes se entregan de forma rápida y fiable, incluso con las conexiones más lentas. Signal está diseñado para funcionar en el entorno más restringido posible.
+• Rápida - Con Signal, los mensajes se entregan de forma rápida y fiable, incluso si la red es lenta. El protocolo de Signal está diseñado para funcionar en el entorno más restringido posible.
 
-• Sé libre - Signal es una organización 501c3 sin ánimo de lucro completamente independiente. Su desarrollo depende de usuarios como tú. Sin publicidad ni rastreadores, solo sinceridad.
+• Sin ataduras – Signal es una organización 501c3 sin ánimo de lucro y totalmente independiente. Usuarias como tú participan en su desarrollo. Sin anuncios, sin rastreadores, sin engaños.
 
-• Sé tú mismo - Signal utiliza tu número de teléfono y libreta de direcciones existentes para que te puedas comunicar con tus amigos de forma segura.
+• Sé tú misma - Puedes utilizar tu número de teléfono y libreta de direcciones existentes para comunicarte con total seguridad con tus amistades.
 
-• Haz que se oiga tu voz - No importa si vives en otra ciudad o al otro lado del océano, la calidad mejorada del audio y vídeo de Signal te permitirán acercarte a tu familia y amigos.
+• Habla con libertad - Haz llamadas y videollamadas de calidad cristalina a amistades y familiares que viven al otro lado de la ciudad o al otro lado del océano y creerás que están a tu lado.
 
-• Oculto entre las sombras - Cambia al modo oscuro si no quieres ver la luz.
+• Susurra en la penumbra – Si te molesta la luz a ciertas horas, activa el modo oscuro.
 
-• Práctico y a tu medida - Elige alertas personalizadas para cada contacto o activa el modo silencioso. Si quieres disfrutar del sonido del silencio, como en la exitosa canción compuesta por Simon & Garfunkel en 1964, elige la opción "Ninguno" como tono de notificaciones.
+• Personalízala – Selecciona alertas personalizadas para cada parsona o desactiva el sonido completemente. Al igual que en la canción de Simon & Garfunkel, puedes experimentar el sonido del silencio siempre que quieras eliminando el tono de llamada para notificaciones. Además, puedes seleccionar un fondo y color de chat especial para esas personas tan especiales.
 
-• Desarrolla tu creatividad - Utiliza las funciones de edición de imagen incorporadas para dibujar, recortar y girar las fotos que envíes. También puedes utilizar la herramienta de redacción para escribir en la foto. ¿Quién dijo que una imagen vale más que mil palabras?
+• Imaginación al poder – Utiliza las funciones de edición de imagen integradas para editar, recortar y girar tus fotos. Con la herramienta de texto podrás añadir más palabras a las más que mil que vale tu imagen.
 
 
 Para ayuda, preguntas o más información, ve a la página:

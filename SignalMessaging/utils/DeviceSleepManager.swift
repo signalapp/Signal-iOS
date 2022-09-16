@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -55,10 +55,6 @@ public class DeviceSleepManager: NSObject {
                 self.removeBlock(blockObject: launchBlockObject)
             }
         }
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 
     @objc

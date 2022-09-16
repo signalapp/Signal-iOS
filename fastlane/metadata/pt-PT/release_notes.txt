@@ -1,2 +1,3 @@
-• Melhorámos o editor de multimédia, facilitando a personalização de fotos e vídeos antes do envio.
-• Algumas correções de bugs para manter o bom funcionamento da app. Há mais mudanças empolgantes a caminho!
+• Video Call Picture-in-Picture rises above the keyboard when typing
+• Improve group metadata update reliability & error handling
+

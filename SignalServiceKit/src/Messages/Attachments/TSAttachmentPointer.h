@@ -120,6 +120,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
                   albumMessageId:(nullable NSString *)albumMessageId
+         attachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion
                   attachmentType:(TSAttachmentType)attachmentType
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
@@ -136,7 +137,7 @@ NSString *NSStringForTSAttachmentPointerState(TSAttachmentPointerState value);
                        mediaSize:(CGSize)mediaSize
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 
 // clang-format on
 

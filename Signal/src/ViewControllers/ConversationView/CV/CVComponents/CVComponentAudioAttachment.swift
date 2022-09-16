@@ -64,17 +64,23 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
         owsAssertDebug(attachment.isAudio)
         // TODO: We might want to convert AudioMessageView into a form that can be reused.
-        let audioMessageView = AudioMessageView(audioAttachment: audioAttachment,
-                                                isIncoming: isIncoming,
-                                                componentDelegate: componentDelegate,
-                                                mediaCache: mediaCache)
+        let audioMessageView = AudioMessageView(
+            threadUniqueId: itemModel.thread.uniqueId,
+            audioAttachment: audioAttachment,
+            audioPlaybackRate: itemModel.itemViewState.audioPlaybackRate,
+            isIncoming: isIncoming,
+            componentDelegate: componentDelegate,
+            mediaCache: mediaCache
+        )
         if let incomingMessage = interaction as? TSIncomingMessage {
             audioMessageView.setViewed(incomingMessage.wasViewed, animated: false)
         } else if let outgoingMessage = interaction as? TSOutgoingMessage {
             audioMessageView.setViewed(!outgoingMessage.viewedRecipientAddresses().isEmpty, animated: false)
         }
-        audioMessageView.configureForRendering(cellMeasurement: cellMeasurement,
-                                               conversationStyle: conversationStyle)
+        audioMessageView.configureForRendering(
+            cellMeasurement: cellMeasurement,
+            conversationStyle: conversationStyle
+        )
         componentView.audioMessageView = audioMessageView
         stackView.configure(config: stackViewConfig,
                             cellMeasurement: cellMeasurement,
@@ -108,11 +114,13 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
             measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
         }
 
-        let audioSize = AudioMessageView.measure(maxWidth: maxWidth,
-                                                 audioAttachment: audioAttachment,
-                                                 isIncoming: isIncoming,
-                                                 conversationStyle: conversationStyle,
-                                                 measurementBuilder: measurementBuilder).ceil
+        let audioSize = AudioMessageView.measure(
+            maxWidth: maxWidth,
+            audioAttachment: audioAttachment,
+            isIncoming: isIncoming,
+            conversationStyle: conversationStyle,
+            measurementBuilder: measurementBuilder
+        ).ceil
         let audioInfo = audioSize.asManualSubviewInfo
         let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
                                                        measurementBuilder: measurementBuilder,
@@ -126,11 +134,24 @@ public class CVComponentAudioAttachment: CVComponentBase, CVComponent {
 
     // MARK: - Events
 
-    public override func handleTap(sender: UITapGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    public override func handleTap(
+        sender: UITapGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem
+    ) -> Bool {
+        if
+            let audioMessageView = (componentView as? CVComponentViewAudioAttachment)?.audioMessageView,
+            audioMessageView.handleTap(sender: sender, itemModel: renderItem.itemModel)
+        {
+            return true
+        }
+
         if audioAttachment.isDownloaded {
+            cvAudioPlayer.setPlaybackRate(
+                renderItem.itemViewState.audioPlaybackRate,
+                forThreadUniqueId: renderItem.itemModel.thread.uniqueId
+            )
             cvAudioPlayer.togglePlayState(forAudioAttachment: audioAttachment)
             return true
 

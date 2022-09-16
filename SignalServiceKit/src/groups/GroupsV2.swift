@@ -3,18 +3,20 @@
 //
 
 import Foundation
+import LibSignalClient
 
 public enum GroupsV2Error: Error {
-    // By the time we tried to apply the change, it was irrelevant.
+    /// By the time we tried to apply the change, it was irrelevant.
     case redundantChange
+    /// The change we attempted conflicts with what is on the service.
+    case conflictingChangeOnService
     case shouldRetry
     case shouldDiscard
-    case groupNotInDatabase
     case timeout
     case localUserNotInGroup
-    case conflictingChange
-    case lastAdminCantLeaveGroup
-    case tooManyMembers
+    case cannotBuildGroupChangeProto_conflictingChange
+    case cannotBuildGroupChangeProto_lastAdminCantLeaveGroup
+    case cannotBuildGroupChangeProto_tooManyMembers
     case gv2NotEnabled
     case localUserIsAlreadyRequestingMember
     case localUserIsNotARequestingMember
@@ -26,7 +28,6 @@ public enum GroupsV2Error: Error {
     case groupCannotBeMigrated
     case groupDowngradeNotAllowed
     case missingGroupChangeProtos
-    case unexpectedRevision
     case groupBlocked
     case newMemberMissingAnnouncementOnlyCapability
     case localUserBlockedFromJoining
@@ -66,9 +67,6 @@ public protocol GroupsV2: AnyObject {
     func hasProfileKeyCredential(for address: SignalServiceAddress,
                                  transaction: SDSAnyReadTransaction) -> Bool
 
-    func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress],
-                                              ignoreMissingProfiles: Bool) -> AnyPromise
-
     func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data
 
     func buildGroupContextV2Proto(groupModel: TSGroupModelV2,
@@ -85,8 +83,6 @@ public protocol GroupsV2: AnyObject {
     func isGroupKnownToStorageService(groupModel: TSGroupModelV2,
                                       transaction: SDSAnyReadTransaction) -> Bool
 
-    func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction)
-
     func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool
 
     func clearTemporalCredentials(transaction: SDSAnyWriteTransaction)
@@ -95,24 +91,32 @@ public protocol GroupsV2: AnyObject {
 // MARK: -
 
 public protocol GroupsV2Swift: GroupsV2 {
+
+    typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
+
     func createNewGroupOnService(groupModel: TSGroupModelV2,
                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<Void>
 
-    func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
-                                          ignoreMissingProfiles: Bool) -> Promise<Void>
+    func loadProfileKeyCredentials(
+        for uuids: [UUID],
+        forceRefresh: Bool
+    ) -> Promise<ProfileKeyCredentialMap>
+
+    func tryToFetchProfileKeyCredentials(
+        for uuids: [UUID],
+        ignoreMissingProfiles: Bool,
+        forceRefresh: Bool
+    ) -> Promise<Void>
 
     func fetchCurrentGroupV2Snapshot(groupModel: TSGroupModelV2) -> Promise<GroupV2Snapshot>
 
     func fetchCurrentGroupV2Snapshot(groupSecretParamsData: Data) -> Promise<GroupV2Snapshot>
 
-    // On success returns a group thread model that reflects the
-    // latest state in the service, which (due to races) might
-    // reflect changes after the change set.
-    func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
-                                      requiredRevision: UInt32?) -> Promise<TSGroupThread>
-
-    func updateGroupV2(groupModel: TSGroupModelV2,
-                       changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void) -> Promise<TSGroupThread>
+    func updateGroupV2(
+        groupId: Data,
+        groupSecretParamsData: Data,
+        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+    ) -> Promise<TSGroupThread>
 
     func reuploadLocalProfilePromise() -> Promise<Void>
 
@@ -158,6 +162,16 @@ public protocol GroupsV2Swift: GroupsV2 {
     func fetchGroupExternalCredentials(groupModel: TSGroupModelV2) throws -> Promise<GroupsProtoGroupExternalCredential>
 
     func updateAlreadyMigratedGroupIfNecessary(v2GroupId: Data) -> Promise<Void>
+
+    func groupRecordPendingStorageServiceRestore(
+        masterKeyData: Data,
+        transaction: SDSAnyReadTransaction
+    ) -> StorageServiceProtoGroupV2Record?
+
+    func restoreGroupFromStorageServiceIfNecessary(
+        groupRecord: StorageServiceProtoGroupV2Record,
+        transaction: SDSAnyWriteTransaction
+    )
 }
 
 // MARK: -
@@ -204,6 +218,8 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
     func rotateInviteLinkPassword()
 
     func setIsAnnouncementsOnly(_ isAnnouncementsOnly: Bool)
+
+    func setShouldUpdateLocalProfileKey()
 
     func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
                                currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
@@ -276,9 +292,6 @@ public protocol GroupV2Updates: AnyObject {
     func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread)
 
     func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread)
-
-    func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
-                                                            upToRevision: UInt32)
 }
 
 // MARK: -
@@ -537,13 +550,18 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func tryToEnsureProfileKeyCredentialsObjc(for addresses: [SignalServiceAddress],
-                                                     ignoreMissingProfiles: Bool) -> AnyPromise {
+    public func loadProfileKeyCredentials(
+        for uuids: [UUID],
+        forceRefresh: Bool
+    ) -> Promise<ProfileKeyCredentialMap> {
         owsFail("Not implemented.")
     }
 
-    public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress],
-                                                 ignoreMissingProfiles: Bool) -> Promise<Void> {
+    public func tryToFetchProfileKeyCredentials(
+        for uuids: [UUID],
+        ignoreMissingProfiles: Bool,
+        forceRefresh: Bool
+    ) -> Promise<Void> {
         return Promise.value(())
     }
 
@@ -564,13 +582,11 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         owsFail("Not implemented.")
     }
 
-    public func updateExistingGroupOnService(changes: GroupsV2OutgoingChanges,
-                                             requiredRevision: UInt32?) -> Promise<TSGroupThread> {
-        owsFail("Not implemented.")
-    }
-
-    public func updateGroupV2(groupModel: TSGroupModelV2,
-                              changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void) -> Promise<TSGroupThread> {
+    public func updateGroupV2(
+        groupId: Data,
+        groupSecretParamsData: Data,
+        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+    ) -> Promise<TSGroupThread> {
         owsFail("Not implemented.")
     }
 
@@ -616,7 +632,11 @@ public class MockGroupsV2: NSObject, GroupsV2Swift, GroupsV2 {
         return true
     }
 
-    public func restoreGroupFromStorageServiceIfNecessary(masterKeyData: Data, transaction: SDSAnyWriteTransaction) {
+    public func groupRecordPendingStorageServiceRestore(masterKeyData: Data, transaction: SDSAnyReadTransaction) -> StorageServiceProtoGroupV2Record? {
+        return nil
+    }
+
+    public func restoreGroupFromStorageServiceIfNecessary(groupRecord: StorageServiceProtoGroupV2Record, transaction: SDSAnyWriteTransaction) {
         owsFail("Not implemented.")
     }
 
@@ -698,12 +718,6 @@ public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift, GroupV2Updates {
 
     @objc
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithoutThrottling(_ groupThread: TSGroupThread) {
-        owsFail("Not implemented.")
-    }
-
-    @objc
-    public func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
-                                                                   upToRevision: UInt32) {
         owsFail("Not implemented.")
     }
 

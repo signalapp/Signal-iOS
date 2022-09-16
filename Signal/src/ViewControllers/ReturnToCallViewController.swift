@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 @objc
 public protocol CallViewControllerWindowReference: AnyObject {
@@ -82,6 +83,21 @@ public class ReturnToCallViewController: UIViewController {
     private lazy var backgroundAvatarView = UIImageView()
     private lazy var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
 
+    /// Tracks the frame of the keyboard if it is showing and docked (attached to the bottom of the screen).
+    ///
+    /// `nil` if the keyboard is hidden, undocked, or floating (the latter two only apply to iOS).
+    /// Used to restrict `pipBoundingRect` to exclude the keyboard.
+    private var dockedKeyboardFrame: CGRect?
+    /// The frame of the PiP window before the user brings up the keyboard.
+    ///
+    /// Captured at the moment the user brings up the keyboard, and used to set the position of the PiP window while
+    /// the keyboard is up (by clamping it to the new `pipBoundingRect`) as well as resetting the position when the
+    /// keyboard is dismissed.
+    ///
+    /// `nil` if the keyboard is hidden, undocked, or floating, as well as when the user manually adjusts the PiP
+    /// while the keyboard is docked (because then we no longer have anything to reset to).
+    private var frameBeforeAdjustingForKeyboard: CGRect?
+
     override public func loadView() {
         view = UIView()
 
@@ -101,6 +117,12 @@ public class ReturnToCallViewController: UIViewController {
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleTap)))
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan)))
+
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self,
+                                       selector: #selector(keyboardFrameWillChange),
+                                       name: UIWindow.keyboardWillChangeFrameNotification,
+                                       object: nil)
     }
 
     public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -155,33 +177,63 @@ public class ReturnToCallViewController: UIViewController {
         }
     }
 
+    /// The frame that the PiP window must be contained within, in screen coordinates.
+    ///
+    /// Essentially "a rect inset from the main window safe areas".
     private var pipBoundingRect: CGRect {
         let padding: CGFloat = 4
-        var rect = CurrentAppContext().frame
-
+        // Don't let the PiP window overlap the chat list tab bar or the message input box in a conversation.
+        // This is a hardcoded estimate that doesn't adjust with dynamic type because
+        // - the height of the tab bar and the height of the message input box could change differently, and
+        // - trying to track either would require exposing that information in a way this controller could get at it;
+        // - trying to account for all that as well as for the user changing their preferences while the app is running
+        //   would be hard, and
+        // - this is just a nicety; nothing bad actually happens if the PiP window overlaps those views.
+        let bottomBarEstimatedHeight: CGFloat = 56
         let safeAreaInsets = OWSWindowManager.shared.rootWindow.safeAreaInsets
 
-        let leftInset = safeAreaInsets.left + padding
-        let rightInset = safeAreaInsets.right + padding
-        rect.origin.x += leftInset
-        rect.size.width -= leftInset + rightInset
-
-        let topInset = safeAreaInsets.top + padding
-        let bottomInset = safeAreaInsets.bottom + padding
-        rect.origin.y += topInset
-        rect.size.height -= topInset + bottomInset
+        var rect = CurrentAppContext().frame
+        rect = rect.inset(by: safeAreaInsets)
+        rect.size.height -= bottomBarEstimatedHeight
+        if let dockedKeyboardFrame = dockedKeyboardFrame, rect.maxY > dockedKeyboardFrame.minY {
+            rect.size.height -= rect.maxY - dockedKeyboardFrame.minY
+        }
+        rect = rect.inset(by: UIEdgeInsets(margin: padding))
 
         return rect
     }
 
-    private func updatePipLayout() {
+    /// Animates the PiP window to its new position.
+    ///
+    /// This gets the position of `frameBeforeAdjustingForKeyboard`, falling back to the current frame, and pins it to
+    /// one of the vertical edges of `pipBoundingRect` (bringing the resulting frame fully within the bounding rect and
+    /// adjusting it to the nearest vertical edge).
+    ///
+    /// If `animationDuration` and `animationCurve` are nil, a default animation is used.
+    private func updatePipLayout(animationDuration: CGFloat? = nil,
+                                 animationCurve: UIView.AnimationCurve? = nil) {
         guard !isAnimating else { return }
         guard let window = view.window else { return owsFailDebug("missing window") }
+        let origin = frameBeforeAdjustingForKeyboard?.origin ?? window.frame.origin
         let newFrame = CGRect(
-            origin: window.frame.origin,
+            origin: origin,
             size: Self.pipSize
         ).pinnedToVerticalEdge(of: pipBoundingRect)
-        UIView.animate(withDuration: 0.25) {
+
+        let animationOptions: UIView.AnimationOptions
+        switch animationCurve ?? .easeInOut {
+        case .easeInOut:
+            animationOptions = .curveEaseInOut
+        case .easeIn:
+            animationOptions = .curveEaseIn
+        case .easeOut:
+            animationOptions = .curveEaseOut
+        case .linear:
+            animationOptions = .curveLinear
+        @unknown default:
+            animationOptions = .curveEaseInOut
+        }
+        UIView.animate(withDuration: animationDuration ?? 0.25, delay: 0, options: animationOptions) {
             self.updateLocalVideoFrame()
             window.frame = newFrame
         }
@@ -190,6 +242,9 @@ public class ReturnToCallViewController: UIViewController {
     @objc
     func handlePan(sender: UIPanGestureRecognizer) {
         guard let window = view.window else { return owsFailDebug("missing window") }
+
+        // Don't try to reset to the old frame when the keyboard is dismissed.
+        frameBeforeAdjustingForKeyboard = nil
 
         switch sender.state {
         case .began, .changed:
@@ -212,6 +267,89 @@ public class ReturnToCallViewController: UIViewController {
     @objc
     private func handleTap(sender: UITapGestureRecognizer) {
         OWSWindowManager.shared.returnToCallView()
+    }
+
+    @objc
+    private func keyboardFrameWillChange(_ notification: Notification) {
+        guard let window = view.window else { return }
+
+        guard
+            let userInfo = notification.userInfo,
+            let startFrame = userInfo[UIWindow.keyboardFrameBeginUserInfoKey] as? CGRect,
+            let endFrame = userInfo[UIWindow.keyboardFrameEndUserInfoKey] as? CGRect
+        else {
+            owsFailDebug("bad notification")
+            return
+        }
+
+        // On an iPhone the keyboard only has two positions: showing and hidden.
+        // But iPads have many more:
+        // - hidden
+        // - showing
+        // - shortcut bar only (for hardware keyboards)
+        // - floating (on newer iPads)
+        // - undocked (on iPads with home buttons)
+        // - undocked and split (on iPads with home buttons)
+        // When changing this method, please be sure to check all iPad state transitions (on both old and new iPads),
+        // as well as dragging an undocked or floating keyboard around (which should do nothing).
+        // You should also check phones with and without home buttons.
+
+        guard dockedKeyboardFrame != endFrame else {
+            // The older iPad "dock" action transitions to the end frame twice;
+            // ignore the second one so we don't get messed up.
+            return
+        }
+
+        let animationDuration = userInfo[UIWindow.keyboardAnimationDurationUserInfoKey] as? CGFloat
+        let rawAnimationCurve = userInfo[UIWindow.keyboardAnimationDurationUserInfoKey] as? Int
+        let animationCurve = rawAnimationCurve.flatMap { UIView.AnimationCurve(rawValue: $0) }
+
+        let fullFrame = CurrentAppContext().frame
+        func isDockedAndOnscreen(_ keyboardFrame: CGRect) -> Bool {
+            if keyboardFrame.minY >= fullFrame.maxY {
+                // off-screen
+                return false
+            }
+            if keyboardFrame.maxY < fullFrame.maxY {
+                // on-screen, but floating or undocked (iPad)
+                return false
+            }
+            return true
+        }
+
+        // Useful when debugging state transitions.
+        Logger.verbose("\(userInfo)")
+        Logger.verbose("keyboard start: \((startFrame.minY, startFrame.maxY))")
+        Logger.verbose("keyboard end: \((endFrame.minY, endFrame.maxY))")
+        Logger.verbose("full height: \(fullFrame.maxY)")
+        Logger.verbose("current bottom: \(window.frame.maxY)")
+        Logger.verbose("saved bottom: \(frameBeforeAdjustingForKeyboard?.maxY ?? 0)")
+
+        if isDockedAndOnscreen(endFrame) {
+            guard !(animationDuration == 0 && endFrame.maxY > fullFrame.maxY) else {
+                // The older iPad "undock" action has a mysterious zero-duration transition
+                // from an empty rect to a half-offscreen frame, *after* a normal transition
+                // from a valid docked to a valid undocked frame. We want to ignore that.
+                // This is very subtle, and could be broken by a later OS update...
+                // but keep in mind that the failure mode here is that the PiP window ends up somewhere it shouldn't.
+                // Not the end of the world.
+                return
+            }
+            dockedKeyboardFrame = endFrame
+            if !isDockedAndOnscreen(startFrame) {
+                // The keyboard is newly docked-and-on-screen;
+                // save the current PiP window position so we can reset to it later.
+                frameBeforeAdjustingForKeyboard = window.frame
+            }
+            updatePipLayout(animationDuration: animationDuration, animationCurve: animationCurve)
+        } else {
+            dockedKeyboardFrame = nil
+            if frameBeforeAdjustingForKeyboard != nil {
+                // This handles both dismissing the keyboard and changing from docked to undocked/floating.
+                updatePipLayout(animationDuration: animationDuration, animationCurve: animationCurve)
+                frameBeforeAdjustingForKeyboard = nil
+            }
+        }
     }
 
     // MARK: Orientation

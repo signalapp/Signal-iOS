@@ -22,9 +22,6 @@
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "สื่อ";
 
-/* Accessibility label for messages sent by you. */
-"ACCESSIBILITY_LABEL_SENDER_SELF" = "คุณ";
-
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "สติกเกอร์";
 
@@ -75,9 +72,6 @@
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ เป็นสมาชิกของ %@ อยู่แล้ว ";
-
-/* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "การสนทนาล่าสุด";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ ถูกเพิ่มเข้า %@";
@@ -132,9 +126,6 @@
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "ข้อผิดพลาด";
-
-/* No comment provided by engineer. */
-"APP_LAUNCH_FAILURE_CHECK_DATABASE" = "ดำเนินการตรวจสอบความสมบูรณ์ของฐานข้อมูล";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "เปิด Signal แทน";
@@ -368,10 +359,10 @@
 "BADGE_DETAILS_GIVE_A_BOOST" = "มอบ Boost ให้ Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_BODY_FORMAT" = "โล่ Boost ของคุณหมดอายุแล้ว และจะไม่แสดงที่โปรไฟล์ของคุณอีกต่อไป คุณยังใช้ Signal ต่อไปได้ แต่เพื่อที่จะสนับสนุนเทคโนโลยีที่สร้างมาเพื่อคุณ อยากให้ลองพิจารณาการสมัครเป็นผู้สนับสนุนด้วยการบริจาครายเดือน";
+"BADGE_EXPIRED_BOOST_BODY" = "โล่บูสต์ของคุณหมดอายุแล้ว และจะไม่ปรากฏบนโปรไฟล์คุณอีกต่อไป";
 
 /* String explaining to the user that their boost badge has expired while they are a current subscription sustainer on the badge expiry sheet. */
-"BADGE_EXIPRED_BOOST_CURRENT_SUSTAINER_BODY_FORMAT" = "โล่ Boost ของคุณหมดอายุแล้ว และจะไม่แสดงที่โปรไฟล์ของคุณอีกต่อไป คุณสามารถเปิดใช้งานโล่ Boost ใหม่ได้เป็นเวลา 30 วัน ด้วยการบริจาคครั้งเดียว";
+"BADGE_EXPIRED_BOOST_CURRENT_SUSTAINER_BODY" = "โล่ Boost ของคุณหมดอายุแล้ว และจะไม่แสดงที่โปรไฟล์ของคุณอีกต่อไป คุณสามารถเปิดใช้งานโล่ Boost ใหม่ได้เป็นเวลา 30 วัน ด้วยการบริจาคครั้งเดียว";
 
 /* Button title for boost on the badge expiration sheet, used if the user is not already a sustainer. */
 "BADGE_EXPIRED_BOOST_RENEWAL_BUTTON" = "เป็นผู้สนับสนุน";
@@ -382,8 +373,20 @@
 /* Title for boost on the badge expiration sheet. */
 "BADGE_EXPIRED_BOOST_TITLE" = "โล่หมดอายุ";
 
+/* String explaining to the user that their gift badge has expired. Shown on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_BODY" = "โล่ของขวัญของคุณหมดอายุแล้ว และจะไม่ปรากฏบนโปรไฟล์คุณอีกต่อไป";
+
+/* Title for gift on the badge expiration sheet. */
+"BADGE_EXPIRED_GIFT_TITLE" = "โล่ของขวัญของคุณหมดอายุแล้ว";
+
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "เรียนรู้เพิ่มเติม";
+
+/* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
+"BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "คุณสามารถใช้ Signal ต่อไปได้ แต่หากต้องการสนับสนุนเทคโนโลยีที่สร้างมาเพื่อคุณ ให้ลองพิจารณาการเป็นผู้สนับสนุนด้วยการบริจาครายเดือน";
+
+/* Button title to donate monthly on the badge expiration sheet. */
+"BADGE_EXPIRED_RENEWAL_MONTHLY" = "บริจาครายเดือน";
 
 /* Button text when a badge expires, asking you to renew your subscription */
 "BADGE_EXPIRED_SUBSCRIPTION_RENEWAL_BUTTON" = "ต่ออายุการเป็นสมาชิก";
@@ -412,7 +415,7 @@
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
 "BADGE_GIFTING_CHAT_EXPIRED" = "หมดอายุ";
 
-/* Shown on a gift badge message to indicate that the message contains a gift. */
+/* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "โล่ของขวัญ";
 
 /* Short paragraph on the screen where you choose a gift badge */
@@ -465,6 +468,12 @@
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
 "BADGE_GIFTING_REDEEM" = "แลกเปลี่ยน";
+
+/* Shown as the body of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_BODY" = "ไม่สามารถแลกของขวัญของคุณได้ กรุณาตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง";
+
+/* Shown as the title of an alert when failing to redeem a gift. */
+"BADGE_GIFTING_REDEEM_ERROR_TITLE" = "ไม่สามารถแลกของขวัญได้";
 
 /* A toast that appears at the bottom of the screen after tapping 'Not Now' when redeeming a gift. */
 "BADGE_GIFTING_REDEEM_LATER" = "คุณสามารถแลกโล่ได้ภายหลัง";
@@ -775,8 +784,11 @@
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "กล้อง";
 
+/* VoiceOver label for -> button in text story composer. */
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "ทำต่อ";
+
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_CAMERA_ALBUM_MODE" = "Album mode";
+"CAMERA_VO_CAMERA_ALBUM_MODE" = "โหมดอัลบั้ม";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE_OFF" = "ปิด";
@@ -785,25 +797,28 @@
 "CAMERA_VO_CAMERA_ALBUM_MODE_ON" = "เปิด";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_BACK_FACING" = "Back facing";
+"CAMERA_VO_CAMERA_BACK_FACING" = "กล้องหลัง";
 
 /* VoiceOver label for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "Camera Chooser";
+"CAMERA_VO_CAMERA_CHOOSER_BUTTON" = "ตัวเลือกกล้อง";
 
 /* VoiceOver hint for Switch Camera button in in-app camera. */
-"CAMERA_VO_CAMERA_CHOOSER_HINT" = "Switches between cameras";
+"CAMERA_VO_CAMERA_CHOOSER_HINT" = "สลับกล้อง";
 
 /* VoiceOver value for Switch Camera button that tells which camera is currently active. */
-"CAMERA_VO_CAMERA_FRONT_FACING" = "Front facing";
+"CAMERA_VO_CAMERA_FRONT_FACING" = "กล้องหน้า";
 
 /* VoiceOver label for close (X) button in camera. */
 "CAMERA_VO_CLOSE_BUTTON" = "ปิด";
 
+/* VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen. */
+"CAMERA_VO_COMPOSER_MODE" = "โหมดเขียนข้อความ";
+
 /* VoiceOver description of current flash setting. */
-"CAMERA_VO_FLASH_AUTO" = "Automatic";
+"CAMERA_VO_FLASH_AUTO" = "อัตโนมัติ";
 
 /* VoiceOver label for Flash button in camera. */
-"CAMERA_VO_FLASH_BUTTON" = "Flash";
+"CAMERA_VO_FLASH_BUTTON" = "แฟลช";
 
 /* VoiceOver description of current flash setting. */
 "CAMERA_VO_FLASH_OFF" = "ปิด";
@@ -812,22 +827,22 @@
 "CAMERA_VO_FLASH_ON" = "เปิด";
 
 /* VoiceOver label for button to choose existing photo/video in in-app camera */
-"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "Photo and video viewer";
+"CAMERA_VO_PHOTO_LIBRARY_BUTTON" = "ดูแฟ้มภาพและวิดีโอ";
 
 /* VoiceOver label for the round capture button in in-app camera during video recording. */
-"CAMERA_VO_STOP_VIDEO_REC" = "Stop Recording Video";
+"CAMERA_VO_STOP_VIDEO_REC" = "หยุดบันทึกวิดีโอ";
 
 /* VoiceOver label for the round capture button in in-app camera. */
-"CAMERA_VO_TAKE_PICTURE" = "Take Picture";
+"CAMERA_VO_TAKE_PICTURE" = "ถ่ายภาพ";
 
 /* VoiceOver label for other possible action for round capture button in in-app camera. */
-"CAMERA_VO_TAKE_VIDEO" = "Take Video";
+"CAMERA_VO_TAKE_VIDEO" = "ถ่ายวิดีโอ";
 
 /* VoiceOver label for camera zoom control. */
 "CAMERA_VO_ZOOM" = "ซูม";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@times";
+"CAMERA_VO_ZOOM_LEVEL" = "%@ เท่า";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "ไม่สามารถตรวจยืนยันผู้ใช้นี้ได้จนกว่าคุณจะได้แลกเปลี่ยนข้อความกับเขา";
@@ -1150,6 +1165,12 @@
 /* Context menu button title */
 "CONTEXT_MENU_SHARE_MEDIA" = "แบ่งปัน";
 
+/* Context menu button title */
+"CONTEXT_MENU_SPEAK_MESSAGE" = "พูด";
+
+/* Context menu button title */
+"CONTEXT_MENU_STOP_SPEAKING_MESSAGE" = "หยุด";
+
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "การสนทนานี้จะถูกลบออกจากอุปกรณ์นี้";
 
@@ -1173,9 +1194,6 @@
 
 /* Always */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "ตลอดเวลา";
-
-/* table section header button to add a new story */
-"CONVERSATION_PICKER_ADD_NEW_STORY_BUTTON" = "+ New Story";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
 "CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "เฉพาะผู้ดูแลเท่านั้นที่ส่งข้อความไปยังกลุ่มนี้ได้";
@@ -1442,16 +1460,13 @@
 "DATABASE_INTEGRITY_CHECK_ACTION_RUN" = "เปิดใช้งาน";
 
 /* Message for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_MESSAGE" = "สิ่งนี้อาจจะใช้เวลาเล็กน้อย (ประมาณสองถึงสามนาทีหรือมากกว่านั้น) ขึ้นอยู่กับคุณใช้ Signal บ่อยแค่ไหน หากใช้เวลานานเกินไป ให้ปิด Signal เพื่อความปลอดภัย";
+"DATABASE_INTEGRITY_CHECK_MESSAGE" = "ขั้นตอนนี้จะช่วยให้เราแก้ปัญหาของคุณได้ และอาจใช้เวลาสักครู่ คุณสามารถปิดแอป Signal ระหว่างทำการตรวจสอบนี้ แต่กรุณากลับมาส่งบันทึกข้อมูลการใช้งานของคุณ";
 
-/* Button to save database integrity check results to the debug log */
-"DATABASE_INTEGRITY_CHECK_RESULTS_ACTION_LOG" = "เพิ่มไปยังปูมดีบัก";
-
-/* Title for alert after running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_RESULTS_TITLE" = "ผลลัพธ์การตรวจสอบความสมบูรณ์";
+/* Button to skip database integrity check step */
+"DATABASE_INTEGRITY_CHECK_SKIP" = "ข้าม";
 
 /* Title for alert before running a database integrity check */
-"DATABASE_INTEGRITY_CHECK_TITLE" = "ดำเนินการตรวจสอบความสมบูรณ์ของฐานข้อมูล";
+"DATABASE_INTEGRITY_CHECK_TITLE" = "ดำเนินการตรวจสอบฐานข้อมูลหรือไม่";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "นี่อาจใช้เวลาสองสามนาที";
@@ -1480,9 +1495,6 @@
 /* Error indicating that no debug logs could be found. */
 "DEBUG_LOG_ALERT_NO_LOGS" = "ไม่พบปูมใดๆ";
 
-/* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "เปิดการรายงานข้อบกพร่อง";
-
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "คัดลอกลิงก์";
 
@@ -1492,20 +1504,11 @@
 /* Label for the 'Export Logs' fallback option for the alert when debug log uploading fails. */
 "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE" = "ส่งออกปูม";
 
-/* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "ส่งหาตัวเอง";
-
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "แบ่งปัน";
 
 /* Title of the debug log alert. */
 "DEBUG_LOG_ALERT_TITLE" = "อีกหนึ่งขั้นตอน";
-
-/* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "คัดลอกลิงก์ของ gist ไว้ในคลิปบอร์ดของคุณแล้ว คุณกำลังถูกนำไปยังรายการประเด็นของ GitHub";
-
-/* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "เปลี่ยนเส้นทางไปยัง GitHub";
 
 /* Accessibility label for the ? vector asset used to get info about debug logs */
 "DEBUG_LOG_INFO_BUTTON" = "ข้อมูลเกี่ยวกับปูมดีบัก";
@@ -2158,7 +2161,13 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "ป้อนการค้นหาของคุณ";
 
-/* Turn on permission view 'go to settings' button */
+/* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "ของขวัญที่คุณได้รับจาก %@ หมดอายุแล้ว คุณไม่สามารถแลกของขวัญนี้ได้อีกต่อไป";
+
+/* Title when trying to redeem a gift that's already expired. */
+"GIFT_NOT_REDEEMED_TITLE" = "ของขวัญของคุณหมดอายุแล้ว";
+
+/* Label for the 'go to settings' button */
 "GO_TO_SETTINGS_BUTTON" = "ไปที่ การตั้งค่า";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
@@ -2227,14 +2236,17 @@
 /* Text explaining the group call is full */
 "GROUP_CALL_IS_FULL" = "ห้องเต็ม";
 
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "กำลังโทรหา %@…";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "กำลังโทรหา %1$@ และ %2$@…";
+
 /* Button to join an ongoing group call */
 "GROUP_CALL_JOIN_BUTTON" = "เข้าร่วมสาย";
 
 /* Button to leave a group call */
 "GROUP_CALL_LEAVE_BUTTON" = "ออกจากสาย";
-
-/* Text explaining that there are more than three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2, %3$@ participantCount-2 }} */
-"GROUP_CALL_MANY_PEOPLE_HERE_FORMAT" = "%1$@ %2$@ และคนอื่นๆ อีก %3$@ คน อยู่ในสายนี้";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
 "GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "ไม่สามารถรับเสียงและวิดีโอจาก %@";
@@ -2296,8 +2308,8 @@
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
 "GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ ได้เริ่มการโทรแบบกลุ่ม";
 
-/* Text explaining that there are three people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
-"GROUP_CALL_THREE_PEOPLE_HERE_FORMAT" = "%1$@ %2$@ และคนอื่นอีกหนึ่งคนอยู่ในสายนี้";
+/* Text displayed when trying to turn on ringing when calling a large group. */
+"GROUP_CALL_TOO_LARGE_TO_RING" = "กลุ่มใหญ่เกินไปที่จะจับกลุ่มผู้เข้าร่วม";
 
 /* Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT" = "%1$@ และ %2$@ อยู่ในสายนี้";
@@ -2305,8 +2317,17 @@
 /* An error displayed to the user when the group call unexpectedly ends. */
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "คุณได้หลุดจากการโทร กรุณาตรวจสอบการเชื่อมต่อของคุณแล้วลองใหม่อีกครั้ง";
 
-/* Text describing the local user as a participant in a group call. */
-"GROUP_CALL_YOU" = "คุณ";
+/* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ จะได้รับการแจ้งเตือน";
+
+/* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ และ %2$@ จะได้รับการแจ้งเตือน";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal จะโทรหา %@";
+
+/* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
+"GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal จะโทรหา %1$@ และ %2$@";
 
 /* Text explaining that you are in the group call. */
 "GROUP_CALL_YOU_ARE_HERE" = "คุณอยู่ในการโทรแบบกลุ่ม";
@@ -2626,9 +2647,6 @@
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "ผู้ดูแล";
 
-/* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "คุณ";
-
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "คุณสามารถเพิ่มหรือเชิญเพื่อนหลังจากสร้างกลุ่มนี้";
 
@@ -2752,6 +2770,18 @@
 /* Name for a group story on the stories list. Embeds {author's name}, {group name} */
 "GROUP_STORY_NAME_FORMAT" = "%1$@ ถึง %2$@";
 
+/* Button to delete the story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+
+/* Action sheet title confirming deletion of a group story on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "คุณแน่ใจหรือไม่ว่าต้องการลบสตอรี่นี้";
+
+/* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+
+/* Section header for the 'viewers' section on the 'group story settings' view */
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ปรับปรุงกลุ่มแล้ว";
 
@@ -2835,6 +2865,18 @@
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "ส่งข้อความถึงผู้ดูแล";
+
+/* Label for button that lets the user block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_BUTTON" = "ปิดกั้นคำขอ";
+
+/* Label for button that will block a request to join a group. */
+"GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "ปิดกั้นคำขอ";
+
+/* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ ไม่สามารถเข้าร่วมหรือส่งคำขอเพื่อเข้าร่วมกลุ่มนี้ได้ทางลิงก์กลุ่ม แต่ผู้ดูแลสามารถเพิ่มเข้ากลุ่มได้";
+
+/* Title for sheet asking if the user wants to block a request to join the group. */
+"GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "ปิดกั้นคำขอหรือไม่";
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "เลือกผู้ดูแลคนใหม่ก่อนคุณออกจากกลุ่มนี้";
@@ -3307,9 +3349,6 @@
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
 
-/* Short sender label for media sent by you */
-"MEDIA_GALLERY_SENDER_NAME_YOU" = "คุณ";
-
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "เดือนนี้";
 
@@ -3385,6 +3424,12 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "แบ่งปันสื่อ";
 
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_SPEAK_MESSAGE" = "อ่านออกเสียงข้อความ";
+
+/* Action sheet accessibility label */
+"MESSAGE_ACTION_STOP_SPEAKING_MESSAGE" = "หยุดการอ่านออกเสียงข้อความ";
+
 /* Title for message actions for a group invite link. */
 "MESSAGE_ACTION_TITLE_GROUP_INVITE" = "คำเชิญกลุ่ม";
 
@@ -3408,6 +3453,9 @@
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "ชนิด MIME";
+
+/* Label for the 'disappears' field of the 'message metadata' view. */
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "ลบตัวเอง";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "ส่งถึงแล้วที่";
@@ -3435,6 +3483,9 @@
 
 /* Status label for messages which are viewed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED" = "เห็นโดย";
+
+/* On the 'message metadata' view, if a message never disappears, this text is shown as a fallback. */
+"MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS" = "ไม่เลย";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "ได้รับแล้ว";
@@ -3619,6 +3670,12 @@
 /* info message text in conversation view */
 "MISSED_CALL" = "สายที่พลาด";
 
+/* info message text in conversation view (use Apple's name for 'Do Not Disturb' on iOS 14 and older) */
+"MISSED_CALL_DO_NOT_DISTURB" = "สายที่ไม่ได้รับระหว่างเปิดใช้งาน \"ห้ามรบกวน\"";
+
+/* info message text in conversation view (use Apple's name for 'Focus') */
+"MISSED_CALL_FOCUS_MODE" = "สายที่ไม่ได้รับระหว่างใช้โหมดโฟกัส";
+
 /* Alert body */
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "คุณสามารถเปิดการเข้าถึงกล้องได้ในการตั้งค่าของ iOS เพื่อให้สามารถโทรวิดีโอใน Signal ได้";
 
@@ -3652,26 +3709,11 @@
 /* Indicates that there are no sent stories to render */
 "MY_STORIES_NO_STORIES" = "การอัปเดตสตอรี่ของคุณจะแสดงตรงนี้";
 
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE" = "ซ่อนสตอรี่ของคุณจากบางคน";
+/* Title for the visibility option */
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "ผู้ติดต่อ Signal ทั้งหมด ยกเว้น…";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE" = "แบ่งปันกับสายสัมพันธ์ทั้งหมด";
-
-/* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "ผู้ติดต่อ Signal ทั้งหมด";
-
-/* Footer for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_FOOTER" = "เลือกว่าจะให้ใครเห็นสตอรี่ของคุณบ้าง การเปลี่ยนแปลงจะไม่ส่งผลต่อสตอรี่ที่คุณส่งไปแล้ว";
-
-/* Header for the 'visibility' section of the my stories settings */
-"MY_STORIES_SETTINGS_VISIBILITY_HEADER" = "ใครที่เห็นสตอรี่นี้ได้บ้าง";
-
-/* Subtitle for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE" = "เลือกคนที่คุณต้องการแชร์ด้วย";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "เครือข่าย Signal ทั้งหมด";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "แชร์ให้เฉพาะ…";
@@ -3684,6 +3726,9 @@
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "สตอรี่ของฉัน";
+
+/* Prompt to add to your story */
+"MY_STORY_TAP_TO_ADD" = "แตะเพื่อเพิ่มสตอรี่";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "เพิ่งเปลี่ยนชื่อของเขาจาก %1$@ เป็น %2$@";
@@ -3745,8 +3790,11 @@
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "เลือกสมาชิก";
 
+/* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+
 /* Title for the 'new group story' view */
-"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Choose Group";
+"NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "เลือกกลุ่ม";
 
 /* No comment provided by engineer. */
 "new_message" = "ข้อความใหม่";
@@ -3758,31 +3806,34 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "ค้นหาผู้ใช้";
 
 /* Title for the 'new private story' confirmation view */
-"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "Name Story";
+"NEW_PRIVATE_STORY_CONFIRM_TITLE" = "ตั้งชื่อสตอรี่";
 
 /* Button to create a new private story */
 "NEW_PRIVATE_STORY_CREATE_BUTTON" = "สร้าง";
 
 /* Message for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "A story name is required.";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE" = "ต้องตั้งชื่อสตอรี่";
 
 /* Title for error alert indicating that a story name is required. */
-"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "Missing Story Name";
+"NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE" = "ไม่พบชื่อสตอรี่";
 
 /* Placeholder text for a new private story name */
-"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "Story Name (Required)";
+"NEW_PRIVATE_STORY_NAME_PLACEHOLDER" = "ชื่อสตอรี่ (ต้องระบุ)";
 
 /* The title for the 'new private story' view. */
-"NEW_PRIVATE_STORY_VIEW_TITLE" = "Select Viewers";
+"NEW_PRIVATE_STORY_VIEW_TITLE" = "เลือกผู้ชม";
 
 /* Header for the 'viewers' section of the 'new private story' view */
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "ผู้ชม";
+
+/* table section header button to add a new story */
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "สตอรี่ใหม่";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "แชร์ไปยังกลุ่มที่มีอยู่";
 
 /* Title for create group story row on the 'new story sheet' */
-"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "New Group Story";
+"NEW_STORY_SHEET_GROUP_STORY_TITLE" = "สตอรี่กลุ่มใหม่";
 
 /* Subtitle for create private story row on the 'new story sheet' */
 "NEW_STORY_SHEET_PRIVATE_STORY_SUBTITLE" = "เห็นได้เป็นบางคนเท่านั้น";
@@ -3791,7 +3842,7 @@
 "NEW_STORY_SHEET_PRIVATE_STORY_TITLE" = "สตอรี่ส่วนตัวใหม่";
 
 /* Title for the new story sheet */
-"NEW_STORY_SHEET_TITLE" = "Choose Story Type";
+"NEW_STORY_SHEET_TITLE" = "เลือกประเภทสตอรี่";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "ค้นหาผู้ติดต่อด้วยหมายเลขโทรศัพท์";
@@ -3801,12 +3852,6 @@
 
 /* A string describing that the user has no groups in common other than the group implied by the current UI context */
 "NO_OTHER_GROUPS_IN_COMMON" = "ไม่มีกลุ่มอื่นร่วมกัน";
-
-/* Explanation of how to see a conversation. */
-"NO_SELECTED_CONVERSATION_DESCRIPTION" = "เลือกผู้ติดต่อหรือกลุ่มเพื่อเริ่มต้นการแชต";
-
-/* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "ยินดีต้อนรับสู่ Signal";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "ข้อความใหม่ถึง:";
@@ -4265,7 +4310,7 @@
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "ปฏิเสธคำขอ";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "Deny request from “%@”? They will not be able to request to join via the group link again.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "ปฏิเสธคำขอจาก \"%@\" หรือไม่ ผู้ติดต่อจะไม่สามารถส่งคำขอเพื่อเข้าร่วมด้วยลิงก์กลุ่มนี้ได้อีก";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "ไม่มีคำขอเป็นสมาชิกที่ค้างอยู่ในขณะนี้";
@@ -4616,25 +4661,22 @@
 "PRIVACY_VERIFY_BUTTON" = "ทำเครื่องหมายว่าตรวจยืนยันแล้ว";
 
 /* Button to add a new viewer on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "Add Viewers";
+"PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON" = "เพิ่มผู้ชม";
 
 /* Button to delete the story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
+"PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "ลบสตอรี่ส่วนตัว";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "คุณแน่ใจหรือไม่ว่าต้องการลบสตอรี่นี้";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ลบ";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "คนคนนี้จะไม่เห็นสตอรี่ของคุณอีกต่อไป";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Remove %1$@?";
-
-/* Section header for the 'viewers' section on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER" = "ใครที่เห็นสตอรี่นี้ได้บ้าง";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "ลบ %1$@ หรือไม่";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "ทำต่อ";
@@ -4732,9 +4774,6 @@
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
 
-/* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "คุณ";
-
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "ไม่พบข้อความต้นฉบับ";
 
@@ -4809,9 +4848,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "ตอบสนอง %@ ต่อข้อความเสียงของคุณ";
-
-/* Text describing the local user in the reaction details pane. */
-"REACTIONS_DETAIL_YOU" = "คุณ";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "อ่านแล้ว";
@@ -5323,9 +5359,6 @@
 /* The title for the data settings. */
 "SETTINGS_DATA_TITLE" = "การใช้ข้อมูล";
 
-/* table cell label in conversation settings */
-"SETTINGS_DEFAULT_DISAPPEARING_MESSAGES" = "ตัวจับเวลาค่าเริ่มต้นสำหรับแชตใหม่";
-
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "ลบบัญชี";
 
@@ -5406,9 +5439,6 @@
 
 /* Label for the 'video' attachment type in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "วิดีโอ";
-
-/* Label for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING" = "การส่งข้อความ";
 
 /* Explanation for the 'messaging' privacy settings. */
 "SETTINGS_MESSAGING_FOOTER" = "ดูและแบ่งปันว่าข้อความได้อ่านแล้วและกำลังพิมพ์อยู่ หากปิดไว้ คุณจะไม่เห็นสัญลักษณ์ว่าอ่านแล้วหรือกำลังพิมพ์อยู่จากคนอื่น";
@@ -5616,9 +5646,6 @@
 
 /* Format for the sender info in the payment details view in the app settings. Embeds {{ %1$@ the name of the sender of the payment, %2$@ the date the transaction was sent }}. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_FORMAT" = "%1$@ เมื่อ %2$@";
-
-/* Indicates that you send the payment in the payment details view in the app settings. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER_YOU" = "คุณ";
 
 /* Indicates that you sent a payment in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "ส่งแล้ว";
@@ -5950,6 +5977,12 @@
 /* Footer for setting for enabling & disabling contact and notification sharing with iOS. */
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "อนุญาตให้ iOS เข้าถึงรายชื่อผู้ติดต่อ Signal และแชตสำหรับฟีเจอร์ เช่น การแชร์คำแนะนำและการแจ้งเตือน";
 
+/* Explanation for the 'stories' privacy settings. */
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+
+/* Label for the stories section of the settings view */
+"SETTINGS_STORIES_TITLE" = "สตอรี่";
+
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "กุญแจลงทะเบียน";
 
@@ -5973,9 +6006,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "รุ่น";
-
-/* Label for the 'who can' privacy settings. */
-"SETTINGS_WHO_CAN" = "ใครสามารถ...";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "จดหมาย";
@@ -6106,20 +6136,50 @@
 /* Context menu action to delete the selected story reply */
 "STORIES_DELETE_REPLY_ACTION" = "ลบ";
 
+/* Context menu action to delete the selected story */
+"STORIES_DELETE_STORY_ACTION" = "ลบ";
+
+/* Title asking the user if they are sure they want to delete their story */
+"STORIES_DELETE_STORY_ACTION_SHEET_TITLE" = "ต้องการลบสตอรี่นี้ใช่ไหม สตอรี่จะถูกลบสำหรับทุกคนที่ได้รับด้วยเช่นกัน";
+
+/* toast alert shown after user taps the 'save' button */
+"STORIES_DID_SAVE" = "บันทึกสตอรี่แล้ว";
+
 /* Context menu action to forward the selected story */
 "STORIES_FORWARD_STORY_ACTION" = "ส่งต่อ";
 
 /* Context menu action to open the chat associated with the selected story */
 "STORIES_GO_TO_CHAT_ACTION" = "ไปที่แชต";
 
+/* Text indicating you can't reply to a group story because you're not a member of the group */
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+
+/* Header for the hidden stories section of the stories list */
+"STORIES_HIDDEN_SECTION_HEADER" = "สตอรี่ที่ซ่อนไว้";
+
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "ซ่อนสตอรี่";
+
+/* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "สตอรี่อัปเดตใหม่จาก %@ จะไม่ปรากฏที่ด้านบนของรายการสตอรี่อีกต่อไป";
+
+/* Title asking the user if they are sure they want to hide stories from another user */
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "ซ่อนสตอรี่ใช่หรือไม่";
+
+/* Toast shown when a story is successfuly hidden */
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "ซ่อนสตอรี่แล้ว";
+
+/* Context menu action to view metadata about the story */
+"STORIES_INFO_ACTION" = "ข้อมูล";
 
 /* Indicates that there are no recent stories to render */
 "STORIES_NO_RECENT_MESSAGES" = "ไม่มีอัปเดตแสดงในตอนนี้ \nแตะ + เพื่อเพิ่มสตอรี่ของคุณ";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "ยังไม่มีการตอบกลับ";
+
+/* Indicates that this story has no views yet */
+"STORIES_NO_VIEWS_YET" = "ยังไม่มีคนดู";
 
 /* Section footer for the 'replies & reactions' section in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_FOOTER" = "ให้คนที่ดูสตอรี่ของคุณแสดงความรู้สึกและตอบกลับได้";
@@ -6130,23 +6190,74 @@
 /* Toggle text for the 'replies & reactions' switch in stories settings */
 "STORIES_REPLIES_AND_REACTIONS_TOGGLE" = "อนุญาตการตอบกลับและการแสดงความรู้สึก";
 
-/* Label for 'new private story' button in story settings view. */
-"STORIES_SETTINGS_NEW_STORY" = "สตอรี่ส่วนตัวใหม่";
+/* Title text for the 'replies' tab on the stories views & replies sheet */
+"STORIES_REPLIES_TAB" = "ตอบกลับ";
 
-/* Footer for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_FOOTER" = "สตอรี่ส่วนตัวจะสามารถดูได้เฉพาะคนที่คุณเพิ่มเข้าไปให้เท่านั้น มีเพียงคุณที่เห็นชื่อสตอรี่";
+/* alert notifying that the 'save' operation failed */
+"STORIES_SAVE_FAILED" = "ไม่สามารถบันทึกสตอรี่";
 
-/* Header for the 'Private Stories' section of the stories settings */
-"STORIES_SETTINGS_PRIVATE_STORIES_HEADER" = "สตอรี่ส่วนตัว";
+/* Context menu action to save the selected story */
+"STORIES_SAVE_STORY_ACTION" = "บันทึก";
+
+/* Footer for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "สตอรี่จะหายไปอัตโนมัติภายใน 24 ชั่วโมง เลือกได้ว่าจะให้ใครเห็นสตอรี่ของคุณ หรือสร้างสตอรี่ใหม่พร้อมกำหนดผู้ชมหรือกลุ่มเฉพาะ";
+
+/* Header for the 'My Stories' section of the stories settings */
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "สตอรี่ของฉัน";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "ความเป็นส่วนตัวของสตอรี่";
+
+/* Title for the action sheet confirming you want to turn off stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+
+/* Footer for the 'turn off' section of the stories settings */
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "หากคุณปิดใช้งานสตอรี่ คุณจะไม่สามารถแชร์หรือรับชมสตอรี่ได้อีกต่อไป";
+
+/* Button to turn off stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+
+/* Footer for the 'turn on' section of the stories settings */
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+
+/* Button to turn on stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "แบ่งปัน";
 
 /* Title for the stories view. */
 "STORIES_TITLE" = "สตอรี่";
+
+/* Context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION" = "ยกเลิกการซ่อนสตอรี่";
+
+/* Toast shown when a story is successfuly unhidden */
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "ยกเลิกการซ่อนสตอรี่แล้ว";
+
+/* Text explaining that you will not see any views for your story because you have read receipts turned off */
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+
+/* Title text for the 'views' tab on the stories views & replies sheet */
+"STORIES_VIEWS_TAB" = "รับชม";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_CAMERA" = "กล้อง";
+
+/* Displayed when failed to fetch link preview in Text Story composer. */
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+
+/* Displayed in text story composer when user is about to attach a link with preview */
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "แชร์ลิงก์กับผู้ที่รับชมสตอรี่ของคุณ";
+
+/* Placeholder text in text stories compose UI */
+"STORY_COMPOSER_TAP_ADD_TEXT" = "แตะเพื่อเพิ่มข้อความ";
+
+/* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
+"STORY_COMPOSER_TEXT" = "ข้อความ";
+
+/* Placeholder text for URL input field in Text Story composer UI. */
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "พิมพ์หรือวาง URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "ไปที่ลิงก์";
@@ -6157,14 +6268,17 @@
 /* Button to access the story privacy settings menu */
 "STORY_PRIVACY_SETTINGS" = "ความเป็นส่วนตัว";
 
-/* Button for replying to a story with a single existing reply. */
-"STORY_REPLY_BUTTON_WITH_1_REPLY" = "ตอบกลับ <bold>1</bold> ";
+/* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
 
-/* Button for replying to a story with N existing replies. {embeds the number of replies} */
-"STORY_REPLY_BUTTON_WITH_N_REPLIES_FORMAT" = "ตอบกลับ <bold>%@</bold> ";
+/* quote text for a reaction to a story. Embeds {{reaction emoji}} */
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+
+/* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
-"STORY_REPLY_BUTTON_WITH_NO_REPLIES" = "ตอบกลับ";
+"STORY_REPLY_BUTTON" = "ตอบกลับ";
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "โต้ตอบสตอรี่ของคุณ";
@@ -6172,26 +6286,47 @@
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ตอบกลับ";
 
-/* Author text when the local user author's a story reply */
-"STORY_REPLY_YOU_AUTHOR" = "คุณ";
+/* Button for replying to a group story with no existing replies. */
+"STORY_REPLY_TO_GROUP_BUTTON" = "ตอบกลับกลุ่ม";
+
+/* Title for the dialog asking user if they wish to resend a failed story message. */
+"STORY_RESEND_MESSAGE_ACTION_SHEET" = "ไม่สามารถส่งสตอรี่นี้ได้ ตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "ผู้ติดต่อ";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "แชร์ให้เฉพาะ…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "ผู้ติดต่อที่ซ่อนไว้";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
-/* Action text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_ACTION" = "บริจาค";
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED" = "ส่งไม่สำเร็จ";
 
-/* Body for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_BODY" = "Signal ขับเคลื่อนโดยผู้ใช้เช่นคุณ ร่วมบริจาคแล้วรับโล่ติดโปรไฟล์";
+/* Text indicating that you can tap to retry sending */
+"STORY_SEND_FAILED_RETRY" = "แตะเพื่อลองใหม่";
 
-/* Cancel text for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_CANCEL" = "ไม่ใช่ตอนนี้";
+/* Text indicating that the story is currently sending */
+"STORY_SENDING" = "กำลังส่ง…";
 
-/* Title for subscription megaphone */
-"SUBSCRIPTION_MEGAPHONE_TITLE" = "เป็นผู้สนับสนุน";
+/* Section footer for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+
+/* Section header for the 'viewers' section on the 'story settings' view */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_1" = "แตะเพื่อดูโพสต์ต่อไป";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_2" = "ปัดขึ้นเพื่อข้าม";
+
+/* Text shown the first time the user opens the story viewer instructing them how to use it. */
+"STORY_VIEWER_ONBOARDING_3" = "ปัดขวาเพื่อออก";
+
+/* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "เข้าใจแล้ว";
+
+/* Text indicating that the user has views turned off */
+"STORY_VIEWS_OFF" = "ปิดการแจ้งว่าอ่านแล้ว";
 
 /* Toast indicating that the user has copied their subscriber ID. */
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "คัดลอกไอดีสมาชิกไปยังคลิปบอร์ดแล้ว";
@@ -6351,6 +6486,9 @@
 
 /* Label for 'on' state of a switch control. */
 "SWITCH_ON" = "เปิด";
+
+/* Name to display for the 'system' sender, e.g. for release notes and the onboarding story */
+"SYSTEM_ADDRESS_NAME" = "Signal";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ตรวจยืนยัน";
@@ -6607,6 +6745,12 @@
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "แฟ้มสื่อที่ดูได้ครั้งเดียวขาออกจะถูกลบอัตโนมัติหลังจากส่งแล้ว";
 
+/* View the photo of a group or user */
+"VIEW_PHOTO" = "ดูรูปภาพ";
+
+/* View the story of a group or user */
+"VIEW_STORY" = "View Story";
+
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "เลื่อนเพื่อยกเลิก";
 
@@ -6702,6 +6846,9 @@
 
 /* Set wallpaper action in wallpaper settings view. */
 "WALLPAPER_SETTINGS_SET_WALLPAPER" = "ตั้งภาพพื้นหลัง";
+
+/* Second person pronoun to represent the local user. */
+"YOU" = "คุณ";
 
 /* text indicating the message was remotely deleted by you */
 "YOU_DELETED_THIS_MESSAGE" = "คุณได้ลบข้อความนี้";

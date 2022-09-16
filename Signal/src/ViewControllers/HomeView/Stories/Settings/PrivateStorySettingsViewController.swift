@@ -44,42 +44,15 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
         defer { self.setContents(contents, shouldReload: shouldReload) }
 
-        let nameSection = OWSTableSection()
-        contents.addSection(nameSection)
-        nameSection.add(OWSTableItem(customCellBlock: { [weak self] in
-            let cell = OWSTableItem.newCell()
-            cell.preservesSuperviewLayoutMargins = true
-            cell.contentView.preservesSuperviewLayoutMargins = true
-
-            let iconView = OWSTableItem.buildIconInCircleView(
-                icon: .settingsPrivateStory,
-                iconSize: AvatarBuilder.smallAvatarSizePoints,
-                innerIconSize: 24,
-                iconTintColor: Theme.primaryTextColor
-            )
-
-            let rowLabel = UILabel()
-            rowLabel.text = self?.thread.name
-            rowLabel.textColor = Theme.primaryTextColor
-            rowLabel.font = OWSTableItem.primaryLabelFont
-            rowLabel.lineBreakMode = .byTruncatingTail
-
-            let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-            contentRow.spacing = ContactCellView.avatarTextHSpacing
-
-            cell.contentView.addSubview(contentRow)
-            contentRow.autoPinWidthToSuperviewMargins()
-            contentRow.autoPinHeightToSuperview(withMargin: 7)
-
-            return cell
-        }) { [weak self] in
-            self?.editPressed()
-        })
-
         let viewersSection = OWSTableSection()
         viewersSection.headerTitle = NSLocalizedString(
-            "PRIVATE_STORY_SETTINGS_WHO_CAN_SEE_THIS_HEADER",
-            comment: "Section header for the 'viewers' section on the 'private story settings' view"
+            "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
+            comment: "Section header for the 'viewers' section on the 'story settings' view"
+        )
+        // TODO: Add 'learn more' sheet button
+        viewersSection.footerTitle = NSLocalizedString(
+            "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
+            comment: "Section footer for the 'viewers' section on the 'story settings' view"
         )
         viewersSection.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
         contents.addSection(viewersSection)
@@ -269,7 +242,7 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
         )
 
         let actionSheet = ActionSheetController(
-            title: String(format: format, Self.contactsManager.displayName(for: address)),
+            title: String.localizedStringWithFormat(format, Self.contactsManager.displayName(for: address)),
             message: NSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION",
                 comment: "Action sheet description prompting to remove a viewer from a story on the 'private story settings' view."

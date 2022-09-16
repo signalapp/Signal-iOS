@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -281,18 +281,18 @@ public class CVText {
         return textContainer.size(for: config.text, font: config.font)
     }
 
-    // MARK: - CVBodyTextLabel
+    // MARK: - CVTextLabel
 
-    private static let bodyTextLabelCache = LRUCache<CacheKey, CVBodyTextLabel.Measurement>(maxSize: cacheSize)
+    private static let bodyTextLabelCache = LRUCache<CacheKey, CVTextLabel.Measurement>(maxSize: cacheSize)
 
-    public static func measureBodyTextLabel(config: CVBodyTextLabel.Config, maxWidth: CGFloat) -> CVBodyTextLabel.Measurement {
+    public static func measureBodyTextLabel(config: CVTextLabel.Config, maxWidth: CGFloat) -> CVTextLabel.Measurement {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
         if cacheMeasurements,
            let result = bodyTextLabelCache.get(key: cacheKey) {
             return result
         }
 
-        let measurement = CVBodyTextLabel.measureSize(config: config, maxWidth: maxWidth)
+        let measurement = CVTextLabel.measureSize(config: config, maxWidth: maxWidth)
         owsAssertDebug(measurement.size.width > 0)
         owsAssertDebug(measurement.size.height > 0)
         owsAssertDebug(measurement.size == measurement.size.ceil)
@@ -316,11 +316,14 @@ private extension NSTextContainer {
         switch textValue {
         case .attributedText(let text):
             let mutableText = NSMutableAttributedString(attributedString: text)
-            // The original attributed string may not have an overall font
-            // assigned. Without it, measurement will not be correct. We
-            // assign a font here with "add" which will not override any
-            // ranges that already have a different font assigned.
-            mutableText.addAttributeToEntireString(.font, value: font)
+            // The original attributed string may not have an overall font assigned.
+            // Without it, measurement will not be correct. We assign the default font
+            // to any ranges that don't currently have a font assigned.
+            mutableText.enumerateAttribute(.font, in: mutableText.entireRange) { existingFont, subrange, stop in
+                if existingFont == nil {
+                    mutableText.addAttribute(.font, value: font, range: subrange)
+                }
+            }
             attributedString = mutableText
         case .text(let text):
             attributedString = NSAttributedString(string: text, attributes: [.font: font])

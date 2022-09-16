@@ -591,7 +591,21 @@ class AnySearchIndexer: Dependencies {
     }
 
     private static let recipientIndexer: SearchIndexer<SignalServiceAddress> = SearchIndexer { recipientAddress, transaction in
-        let displayName = contactsManager.displayName(for: recipientAddress, transaction: transaction)
+        // A contact should always be searchable by their display name, as well
+        // as by name components from system contacts if available. Note that
+        // not all name components are available, as we only store
+        // given/family/nicknames (excludes middle/prefix/suffix/phonetic).
+        //
+        // We may likely end up with duplicate text in the index since the
+        // display name will likely include some or all of the name components,
+        // but that's fine.
+        var nameStrings: Set<String> = [contactsManager.displayName(for: recipientAddress, transaction: transaction)]
+        if let nameComponents = contactsManager.nameComponents(for: recipientAddress, transaction: transaction) {
+            let insert: (String?) -> Void = { if let s = $0 { nameStrings.insert(s) } }
+            insert(nameComponents.givenName)
+            insert(nameComponents.familyName)
+            insert(nameComponents.nickname)
+        }
 
         let nationalNumber: String? = { (recipientId: String?) -> String? in
             guard let recipientId = recipientId else { return nil }
@@ -613,7 +627,7 @@ class AnySearchIndexer: Dependencies {
             return String(String.UnicodeScalarView(digitScalars))
         }(recipientAddress.phoneNumber)
 
-        return "\(recipientAddress.phoneNumber ?? "") \(nationalNumber ?? "") \(displayName)"
+        return "\(recipientAddress.phoneNumber ?? "") \(nationalNumber ?? "") \(nameStrings.joined(separator: " "))"
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: SDSAnyReadTransaction) in

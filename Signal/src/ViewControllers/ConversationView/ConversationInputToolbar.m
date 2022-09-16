@@ -125,6 +125,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 - (instancetype)initWithConversationStyle:(ConversationStyle *)conversationStyle
                                mediaCache:(CVMediaCache *)mediaCache
                              messageDraft:(nullable MessageBody *)messageDraft
+                              quotedReply:(nullable OWSQuotedReplyModel *)quotedReply
                      inputToolbarDelegate:(id<ConversationInputToolbarDelegate>)inputToolbarDelegate
                     inputTextViewDelegate:(id<ConversationInputTextViewDelegate>)inputTextViewDelegate
                           mentionDelegate:(id<MentionTextViewDelegate>)mentionDelegate
@@ -140,6 +141,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     if (self) {
         [self createContentsWithMessageDraft:messageDraft
+                                 quotedReply:quotedReply
                        inputTextViewDelegate:inputTextViewDelegate
                              mentionDelegate:mentionDelegate];
     }
@@ -166,6 +168,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 }
 
 - (void)createContentsWithMessageDraft:(nullable MessageBody *)messageDraft
+                           quotedReply:(nullable OWSQuotedReplyModel *)quotedReply
                  inputTextViewDelegate:(id<ConversationInputTextViewDelegate>)inputTextViewDelegate
                        mentionDelegate:(id<MentionTextViewDelegate>)mentionDelegate
 {
@@ -292,11 +295,12 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     }
 
     _quotedReplyWrapper = [UIView containerView];
-    self.quotedReplyWrapper.hidden = YES;
+    self.quotedReplyWrapper.hidden = quotedReply == nil;
     [self.quotedReplyWrapper setContentHuggingHorizontalLow];
     [self.quotedReplyWrapper setCompressionResistanceHorizontalLow];
     self.quotedReplyWrapper.backgroundColor = Theme.conversationInputBackgroundColor;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _quotedReplyWrapper);
+    self.quotedReply = quotedReply;
 
     _linkPreviewWrapper = [UIView containerView];
     self.linkPreviewWrapper.hidden = YES;
@@ -483,6 +487,16 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     OWSAssertDebug(self.inputTextView);
 
     return self.inputTextView.messageBody;
+}
+
+- (nullable TSThreadReplyInfo *)draftReply
+{
+    OWSAssertDebug(self.inputTextView);
+    if (_quotedReply == nil) {
+        return nil;
+    }
+    return [[TSThreadReplyInfo alloc] initWithTimestamp:_quotedReply.timestamp
+                                          authorAddress:_quotedReply.authorAddress];
 }
 
 - (void)setMessageBody:(nullable MessageBody *)value animated:(BOOL)isAnimated
@@ -1109,6 +1123,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         completion:^(BOOL finished) {
             [self.voiceMemoRedRecordingCircle removeFromSuperview];
             [self.voiceMemoLockView removeFromSuperview];
+            UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification, Nil);
         }];
 }
 

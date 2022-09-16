@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -85,6 +85,7 @@ extension CVItemBuilding {
     // Convenience Accessors
     var threadViewModel: ThreadViewModel { itemBuildingContext.threadViewModel }
     var thread: TSThread { itemBuildingContext.thread }
+    var threadAssociatedData: ThreadAssociatedData { threadViewModel.associatedData }
     var viewStateSnapshot: CVViewStateSnapshot { itemBuildingContext.viewStateSnapshot }
     var conversationStyle: ConversationStyle { itemBuildingContext.conversationStyle }
     var mediaCache: CVMediaCache { itemBuildingContext.mediaCache }

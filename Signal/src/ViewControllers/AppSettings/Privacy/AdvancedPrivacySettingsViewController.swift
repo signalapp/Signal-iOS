@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -58,8 +58,8 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         let censorshipCircumventionSection = OWSTableSection()
 
         let isAnySocketOpen = socketManager.isAnySocketOpen
-        if OWSSignalService.shared().hasCensoredPhoneNumber {
-            if OWSSignalService.shared().isCensorshipCircumventionManuallyDisabled {
+        if self.signalService.hasCensoredPhoneNumber {
+            if self.signalService.isCensorshipCircumventionManuallyDisabled {
                 censorshipCircumventionSection.footerTitle = NSLocalizedString(
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED",
                     comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled."
@@ -92,7 +92,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION",
                 comment: "Label for the  'manual censorship circumvention' switch."
             ),
-            isOn: { OWSSignalService.shared().isCensorshipCircumventionActive },
+            isOn: { self.signalService.isCensorshipCircumventionActive },
             isEnabledBlock: {
                 // Do enable if :
                 //
@@ -107,10 +107,10 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
                 //      internet connection.
                 if DebugFlags.exposeCensorshipCircumvention {
                     return true
-                } else if OWSSignalService.shared().isCensorshipCircumventionActive {
+                } else if self.signalService.isCensorshipCircumventionActive {
                     return true
-                } else if OWSSignalService.shared().hasCensoredPhoneNumber,
-                          OWSSignalService.shared().isCensorshipCircumventionManuallyDisabled {
+                } else if self.signalService.hasCensoredPhoneNumber,
+                          self.signalService.isCensorshipCircumventionManuallyDisabled {
                     return true
                 } else if Self.socketManager.isAnySocketOpen {
                     return false
@@ -122,7 +122,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             selector: #selector(didToggleEnableCensorshipCircumventionSwitch)
         ))
 
-        if OWSSignalService.shared().isCensorshipCircumventionManuallyActivated {
+        if self.signalService.isCensorshipCircumventionManuallyActivated {
             censorshipCircumventionSection.add(.disclosureItem(
                 withText: NSLocalizedString(
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY",
@@ -242,14 +242,14 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     func didToggleEnableCensorshipCircumventionSwitch(_ sender: UISwitch) {
-        OWSSignalService.shared().isCensorshipCircumventionManuallyDisabled = !sender.isOn
-        OWSSignalService.shared().isCensorshipCircumventionManuallyActivated = sender.isOn
+        self.signalService.isCensorshipCircumventionManuallyDisabled = !sender.isOn
+        self.signalService.isCensorshipCircumventionManuallyActivated = sender.isOn
         updateTableContents()
     }
 
     private func ensureManualCensorshipCircumventionCountry() -> OWSCountryMetadata {
-        let countryCode = OWSSignalService.shared().manualCensorshipCircumventionCountryCode ?? PhoneNumber.defaultCountryCode()
-        OWSSignalService.shared().manualCensorshipCircumventionCountryCode = countryCode
+        let countryCode = self.signalService.manualCensorshipCircumventionCountryCode ?? PhoneNumber.defaultCountryCode()
+        self.signalService.manualCensorshipCircumventionCountryCode = countryCode
         return OWSCountryMetadata(forCountryCode: countryCode)
     }
 

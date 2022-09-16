@@ -13,6 +13,7 @@ class GroupCallViewController: UIViewController {
     private let call: SignalCall
     private var groupCall: GroupCall { call.groupCall }
     private lazy var callControls = CallControls(call: call, delegate: self)
+    private lazy var noVideoIndicatorView: UIStackView = createNoVideoIndicatorView()
     private lazy var callHeader = CallHeader(call: call, delegate: self)
     private lazy var notificationView = GroupCallNotificationView(call: call)
 
@@ -55,6 +56,7 @@ class GroupCallViewController: UIViewController {
         didSet { updateCallUI() }
     }
     var hasUnresolvedSafetyNumberMismatch = false
+    var shouldRing = false
 
     private static let keyValueStore = SDSKeyValueStore(collection: "GroupCallViewController")
     private static let didUserSwipeToSpeakerViewKey = "didUserSwipeToSpeakerView"
@@ -163,12 +165,19 @@ class GroupCallViewController: UIViewController {
         callHeader.autoPinWidthToSuperview()
         callHeader.autoPinEdge(toSuperviewEdge: .top)
 
+        view.addSubview(noVideoIndicatorView)
+        noVideoIndicatorView.autoHCenterInSuperview()
+        // Be flexible on the vertical centering on a cramped screen.
+        noVideoIndicatorView.autoVCenterInSuperview().priority = .defaultLow
+        noVideoIndicatorView.autoPinEdge(.top, to: .bottom, of: callHeader, withOffset: 8, relation: .greaterThanOrEqual)
+
         view.addSubview(notificationView)
         notificationView.autoPinEdgesToSuperviewEdges()
 
         view.addSubview(callControls)
         callControls.autoPinWidthToSuperview()
         callControls.autoPinEdge(toSuperviewEdge: .bottom)
+        callControls.autoPinEdge(.top, to: .bottom, of: noVideoIndicatorView, withOffset: 8, relation: .greaterThanOrEqual)
 
         view.addSubview(videoOverflow)
         videoOverflow.autoPinEdge(toSuperviewEdge: .leading)
@@ -185,6 +194,39 @@ class GroupCallViewController: UIViewController {
         view.addGestureRecognizer(tapGesture)
 
         updateCallUI()
+    }
+
+    private func createNoVideoIndicatorView() -> UIStackView {
+        let icon = UIImageView()
+        icon.contentMode = .scaleAspectFit
+        icon.setTemplateImage(#imageLiteral(resourceName: "video-off-solid-28"), tintColor: .ows_white)
+
+        let label = UILabel()
+        label.font = .ows_dynamicTypeCaption1
+        label.text = NSLocalizedString("CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
+                                       comment: "Indicates to the user that their camera is currently off.")
+        label.textAlignment = .center
+        label.textColor = Theme.darkThemePrimaryColor
+
+        let container = UIStackView(arrangedSubviews: [icon, label])
+        if UIDevice.current.isIPhone5OrShorter {
+            // Use a horizontal layout to save on vertical space.
+            // Allow the icon to shrink below its natural size of 28pt...
+            icon.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+            container.axis = .horizontal
+            container.spacing = 4
+            // ...by always matching the label's height.
+            container.alignment = .fill
+        } else {
+            // Use a simple vertical layout.
+            icon.autoSetDimensions(to: CGSize(square: 28))
+            container.axis = .vertical
+            container.spacing = 10
+            container.alignment = .center
+            label.autoPinWidthToSuperview()
+        }
+
+        return container
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -206,6 +248,8 @@ class GroupCallViewController: UIViewController {
 
         guard !hasAppeared else { return }
         hasAppeared = true
+
+        callService.sendInitialPhoneOrientationNotification()
 
         if let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) {
             view.superview?.insertSubview(splitViewSnapshot, belowSubview: view)
@@ -410,6 +454,10 @@ class GroupCallViewController: UIViewController {
 
         guard !isCallMinimized else { return }
 
+        let showNoVideoIndicator = groupCall.remoteDeviceStates.isEmpty && groupCall.isOutgoingVideoMuted
+        // Hide the subviews of this view to collapse the stack.
+        noVideoIndicatorView.subviews.forEach { $0.isHidden = !showNoVideoIndicator }
+
         let hideRemoteControls = shouldRemoteVideoControlsBeHidden && !groupCall.remoteDeviceStates.isEmpty
         let remoteControlsAreHidden = callControls.isHidden && callHeader.isHidden
         if hideRemoteControls != remoteControlsAreHidden {
@@ -603,8 +651,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         let approveText: String
         let denyText: String
         if localDeviceHasNotJoined {
-            let deviceCount = call.groupCall.peekInfo?.deviceCount ?? 0
-            approveText = deviceCount > 0 ? joinCallString : startCallString
+            approveText = call.ringRestrictions.contains(.callInProgress) ? joinCallString : startCallString
             denyText = cancelString
         } else {
             approveText = continueCallString
@@ -732,16 +779,56 @@ extension GroupCallViewController: CallControlsDelegate {
         }
     }
 
+    func didPressRing(sender: UIButton) {
+        if call.ringRestrictions.isEmpty {
+            let oldShouldRing = sender.isSelected
+            let newShouldRing = !oldShouldRing
+            sender.isSelected = newShouldRing
+            call.userWantsToRing = newShouldRing
+
+            // Refresh the call header.
+            callHeader.groupCallLocalDeviceStateChanged(call)
+        } else {
+            if call.ringRestrictions.intersects([.notApplicable, .callInProgress]) {
+                owsFailDebug("should not show the ring button at all")
+            } else if call.ringRestrictions.contains(.groupTooLarge) {
+                let toast = ToastController(text: NSLocalizedString("GROUP_CALL_TOO_LARGE_TO_RING", comment: "Text displayed when trying to turn on ringing when calling a large group."))
+                toast.presentToastView(from: .top, of: view, inset: view.safeAreaInsets.top + 8)
+            } else {
+                owsAssertDebug(call.ringRestrictions.isEmpty, "unknown ring restriction")
+            }
+        }
+    }
+
     func didPressFlipCamera(sender: UIButton) {
         sender.isSelected = !sender.isSelected
         callService.updateCameraSource(call: call, isUsingFrontCamera: !sender.isSelected)
     }
 
-    func didPressCancel(sender: UIButton) {
-        dismissCall()
-    }
-
     func didPressJoin(sender: UIButton) {
+        guard !call.groupCall.isFull else {
+            let text: String
+            if let maxDevices = call.groupCall.maxDevices {
+                let formatString = NSLocalizedString("GROUP_CALL_HAS_MAX_DEVICES_%d", tableName: "PluralAware",
+                                                     comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                )
+                text = String.localizedStringWithFormat(formatString, maxDevices)
+            } else {
+                text = NSLocalizedString(
+                    "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
+                )
+            }
+
+            let toastController = ToastController(text: text)
+            // Leave the toast up longer than usual because this message is pretty long.
+            toastController.presentToastView(from: .top,
+                                             of: view,
+                                             inset: view.safeAreaInsets.top + 8,
+                                             dismissAfter: .seconds(8))
+            return
+        }
+
         presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
             guard let self = self else { return }
             if success {

@@ -21,6 +21,7 @@ class AppSettingsViewController: OWSTableViewController2 {
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
 
+        updateHasExpiredGiftBadge()
         updateTableContents()
 
         if let localAddress = tsAccountManager.localAddress {
@@ -45,6 +46,13 @@ class AppSettingsViewController: OWSTableViewController2 {
             self,
             selector: #selector(subscriptionStateDidChange),
             name: SubscriptionManager.SubscriptionJobQueueDidFinishJobNotification,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(hasExpiredGiftBadgeDidChange),
+            name: .hasExpiredGiftBadgeDidChangeNotification,
             object: nil
         )
     }
@@ -73,6 +81,23 @@ class AppSettingsViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         updateTableContents()
+    }
+
+    private var hasExpiredGiftBadge: Bool = false
+
+    private func updateHasExpiredGiftBadge() {
+        self.hasExpiredGiftBadge = DonationViewController.shouldShowExpiredGiftBadgeSheetWithSneakyTransaction()
+    }
+
+    @objc
+    func hasExpiredGiftBadgeDidChange() {
+        AssertIsOnMainThread()
+
+        let oldValue = self.hasExpiredGiftBadge
+        self.updateHasExpiredGiftBadge()
+        if oldValue != self.hasExpiredGiftBadge {
+            self.updateTableContents()
+        }
     }
 
     override func themeDidChange() {
@@ -105,23 +130,38 @@ class AppSettingsViewController: OWSTableViewController2 {
                 self?.navigationController?.pushViewController(vc, animated: true)
             }
         ))
-        section1.add(.disclosureItem(
-            icon: .settingsLinkedDevices,
-            name: NSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager"),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "linked-devices"),
-            actionBlock: { [weak self] in
-                let vc = LinkedDevicesTableViewController()
-                self?.navigationController?.pushViewController(vc, animated: true)
+        if self.tsAccountManager.isPrimaryDevice {
+            section1.add(.disclosureItem(
+                icon: .settingsLinkedDevices,
+                name: NSLocalizedString("LINKED_DEVICES_TITLE", comment: "Menu item and navbar title for the device manager"),
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "linked-devices"),
+                actionBlock: { [weak self] in
+                    let vc = LinkedDevicesTableViewController()
+                    self?.navigationController?.pushViewController(vc, animated: true)
+                }
+            ))
+        }
+        section1.add(.init(customCellBlock: { [weak self] in
+            guard let self = self else { return UITableViewCell() }
+            let accessoryView: UIView?
+            if self.hasExpiredGiftBadge {
+                let imageView = UIImageView(image: UIImage(named: "info-solid-24")?.withRenderingMode(.alwaysTemplate))
+                imageView.tintColor = Theme.accentBlueColor
+                imageView.autoSetDimensions(to: CGSize(square: 24))
+                accessoryView = imageView
+            } else {
+                accessoryView = nil
             }
-        ))
-        section1.add(.disclosureItem(
-            icon: .settingsDonate,
-            name: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate"),
-            actionBlock: { [weak self] in
-                self?.navigationController?.pushViewController(DonationViewController(), animated: true)
-            }
-        ))
+            return OWSTableItem.buildCellWithAccessoryLabel(
+                icon: .settingsDonate,
+                itemName: NSLocalizedString("SETTINGS_DONATE", comment: "Title for the 'donate to signal' link in settings."),
+                accessoryType: .disclosureIndicator,
+                accessoryView: accessoryView,
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "donate")
+            )
+        }, actionBlock: { [weak self] in
+            self?.navigationController?.pushViewController(DonationViewController(), animated: true)
+        }))
         contents.addSection(section1)
 
         let section2 = OWSTableSection()

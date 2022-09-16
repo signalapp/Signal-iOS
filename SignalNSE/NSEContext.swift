@@ -21,9 +21,11 @@ class NSEContext: NSObject, AppContext {
     var hasActiveCall: Bool { false }
 
     let appLaunchTime = Date()
+    // In NSE foreground and launch are the same.
+    var appForegroundTime: Date { return appLaunchTime }
     lazy var buildTime: Date = {
         guard let buildTimestamp = Bundle.main.object(forInfoDictionaryKey: "BuildTimestamp") as? TimeInterval, buildTimestamp > 0 else {
-            Logger.debug("No build timestamp, assuming app never expires.")
+            NSELogger.uncorrelated.debug("No build timestamp, assuming app never expires.")
             return .distantFuture
         }
 
@@ -64,17 +66,19 @@ class NSEContext: NSObject, AppContext {
         queue: .global()
     )
 
-    override init() {
+    init(logger: NSELogger) {
         super.init()
+
+        logger.info("NSEContext init()")
 
         memoryPressureSource.setEventHandler { [weak self] in
             if let self = self {
-                Logger.warn("Memory pressure event: \(self.memoryPressureSource.memoryEventDescription)")
+                logger.warn("Memory pressure event: \(self.memoryPressureSource.memoryEventDescription)")
             } else {
-                Logger.warn("Memory pressure event.")
+                logger.warn("Memory pressure event.")
             }
-            Logger.warn("Current memory usage: \(LocalDevice.memoryUsageString)")
-            Logger.flush()
+            logger.warn("Current memory usage: \(LocalDevice.memoryUsageString)")
+            logger.flush()
         }
         memoryPressureSource.resume()
 

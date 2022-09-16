@@ -168,14 +168,17 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         }
     }
 
-    private func performConfirmationAction(_ promise: @escaping () -> Promise<Void>) {
+    private func performConfirmationAction(_ promise: @escaping () -> Promise<Void>, errorHandler: @escaping (Error) -> Void) {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            promise().ensure {
+            promise().done {
                 modal.dismiss {
                     self.dismiss(animated: true)
                 }
             }.catch { error in
                 owsFailDebug("Unexpectedly failed to confirm badge action \(error)")
+                modal.dismiss {
+                    errorHandler(error)
+                }
             }
         }
     }
@@ -214,8 +217,6 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             )
         }.done(on: .global()) {
             Self.updateGiftBadge(incomingMessage: incomingMessage, state: .redeemed)
-        }.`catch`(on: .global()) { error in
-            // TODO: (GB) Handle errors when failing to redeem gift badges.
         }
     }
 
@@ -266,11 +267,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             )
             return String(format: formatText, self.badge.localizedName)
         case .gift(_, fullName: let fullName, _, _):
-            let formatText = NSLocalizedString(
-                "BADGE_GIFTING_YOU_RECEIVED_FORMAT",
-                comment: "Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}."
-            )
-            return String(format: formatText, fullName)
+            return BadgeGiftingStrings.youReceived(from: fullName)
         }
     }
 
@@ -412,6 +409,8 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 guard let self = self else { return }
                 self.performConfirmationAction {
                     self.saveVisibilityChanges()
+                } errorHandler: { error in
+                    self.dismiss(animated: true)
                 }
             }
             button.autoSetHeightUsingFont()
@@ -451,6 +450,19 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 self.performConfirmationAction {
                     Self.redeemGiftBadge(incomingMessage: incomingMessage)
                         .then(on: .global()) { self.saveVisibilityChanges() }
+                } errorHandler: { error in
+                    OWSActionSheets.showActionSheet(
+                        title: NSLocalizedString(
+                            "BADGE_GIFTING_REDEEM_ERROR_TITLE",
+                            value: "Couldn’t Redeem Gift",
+                            comment: "Shown as the title of an alert when failing to redeem a gift."
+                        ),
+                        message: NSLocalizedString(
+                            "BADGE_GIFTING_REDEEM_ERROR_BODY",
+                            value: "Your gift couldn’t be redeemed. Check your connection and try again.",
+                            comment: "Shown as the body of an alert when failing to redeem a gift."
+                        )
+                    )
                 }
             }
             redeemButton.autoSetHeightUsingFont()

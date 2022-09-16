@@ -56,6 +56,11 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

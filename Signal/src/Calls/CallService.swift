@@ -31,6 +31,8 @@ public final class CallService: LightweightCallManager {
         }
     }
 
+    public var callUIAdapter: CallUIAdapter!
+
     @objc
     public let individualCallService = IndividualCallService()
     let groupCallMessageHandler = GroupCallUpdateMessageHandler()
@@ -69,6 +71,9 @@ public final class CallService: LightweightCallManager {
             if oldValue != newValue {
                 if let oldValue = oldValue {
                     DeviceSleepManager.shared.removeBlock(blockObject: oldValue)
+                    if !UIDevice.current.isIPad {
+                        UIDevice.current.endGeneratingDeviceOrientationNotifications()
+                    }
                 }
 
                 if let newValue = newValue {
@@ -81,6 +86,10 @@ public final class CallService: LightweightCallManager {
                         self.audioService.requestSpeakerphone(isEnabled: false)
 
                         individualCallService.startCallTimer()
+                    }
+
+                    if !UIDevice.current.isIPad {
+                        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
                     }
                 } else {
                     individualCallService.stopAnyCallTimer()
@@ -162,6 +171,11 @@ public final class CallService: LightweightCallManager {
             selector: #selector(configureBandwidthMode),
             name: Self.callServicePreferencesDidChange,
             object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationChanged),
+            name: .registrationStateDidChange,
+            object: nil)
 
         // Note that we're not using the usual .owsReachabilityChanged
         // We want to update our bandwidth mode if the app has been backgrounded
@@ -171,13 +185,36 @@ public final class CallService: LightweightCallManager {
             name: .reachabilityChanged,
             object: nil)
 
+        // We don't support a rotating call screen on phones,
+        // but we do still want to rotate the various icons.
+        if !UIDevice.current.isIPad {
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(phoneOrientationDidChange),
+                                                   name: UIDevice.orientationDidChangeNotification,
+                                                   object: nil)
+        }
+
         AppReadiness.runNowOrWhenAppDidBecomeReadyAsync {
             SDSDatabaseStorage.shared.appendDatabaseChangeDelegate(self)
+            if let localUuid = self.tsAccountManager.localUuid {
+                self.callManager.setSelfUuid(localUuid)
+            }
         }
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
+    /**
+     * Choose whether to use CallKit or a Notification backed interface for calling.
+     */
+    @objc
+    public func createCallUIAdapter() {
+        AssertIsOnMainThread()
+
+        if let call = callService.currentCall {
+            Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
+            callService.terminate(call: call)
+        }
+
+        self.callUIAdapter = CallUIAdapter()
     }
 
     // MARK: - Observers
@@ -418,15 +455,6 @@ public final class CallService: LightweightCallManager {
      * Clean up any existing call state and get ready to receive a new call.
      */
     func terminate(call: SignalCall) {
-        databaseStorage.read { transaction in
-            self.terminate(call: call, transaction: transaction)
-        }
-    }
-
-    /**
-     * Clean up any existing call state and get ready to receive a new call.
-     */
-    func terminate(call: SignalCall, transaction: SDSAnyReadTransaction) {
         AssertIsOnMainThread()
         Logger.info("call: \(call as Optional)")
 
@@ -456,10 +484,6 @@ public final class CallService: LightweightCallManager {
                 owsFailDebug("Invalid thread type")
             }
         }
-
-        // Apparently WebRTC will sometimes disable device orientation notifications.
-        // After every call ends, we need to ensure they are enabled.
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     }
 
     // MARK: - Video
@@ -560,13 +584,17 @@ public final class CallService: LightweightCallManager {
         // this method would be called when you're already joined, but it is
         // safe to do so.
         if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
+
+        if call.ringRestrictions.isEmpty && call.userWantsToRing {
+            call.groupCall.ringAll()
+        }
     }
 
     func buildOutgoingIndividualCallIfPossible(thread: TSContactThread, hasVideo: Bool) -> SignalCall? {
         AssertIsOnMainThread()
         guard !hasCallInProgress else { return nil }
 
-        let call = SignalCall.outgoingIndividualCall(localId: UUID(), thread: thread)
+        let call = SignalCall.outgoingIndividualCall(thread: thread)
         call.individualCall.offerMediaType = hasVideo ? .video : .audio
 
         addCall(call)
@@ -590,7 +618,6 @@ public final class CallService: LightweightCallManager {
         }
 
         let newCall = SignalCall.incomingIndividualCall(
-            localId: UUID(),
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,
             offerMediaType: offerMediaType
@@ -613,6 +640,65 @@ public final class CallService: LightweightCallManager {
     func didBecomeActive() {
         AssertIsOnMainThread()
         self.updateIsVideoEnabled()
+    }
+
+    @objc
+    private func registrationChanged() {
+        AssertIsOnMainThread()
+        if let localUuid = tsAccountManager.localUuid {
+            callManager.setSelfUuid(localUuid)
+        }
+    }
+
+    /// The object is the rotation angle necessary to match the new orientation.
+    static var phoneOrientationDidChange = Notification.Name("CallService.phoneOrientationDidChange")
+
+    @objc
+    private func phoneOrientationDidChange() {
+        guard currentCall != nil else {
+            return
+        }
+        sendPhoneOrientationNotification()
+    }
+
+    private func sendPhoneOrientationNotification() {
+        owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
+
+        let rotationAngle: CGFloat
+        if let call = currentCall,
+           call.isIndividualCall,
+           !call.individualCall.hasLocalVideo,
+           !call.individualCall.isRemoteVideoEnabled {
+            // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
+            // Don't distract them with rotating icons.
+            // But we still send the notification in case
+            // 1. either the user or their contact (but not both) has video on
+            // 2. the user has the phone in landscape
+            // 3. whoever had video turns it off (but the icons are still landscape-oriented)
+            // 4. the user rotates back to portrait
+            rotationAngle = 0
+        } else {
+            switch UIDevice.current.orientation {
+            case .landscapeLeft:
+                rotationAngle = .halfPi
+            case .landscapeRight:
+                rotationAngle = -.halfPi
+            case .portrait, .portraitUpsideDown, .faceDown, .faceUp, .unknown:
+                fallthrough
+            @unknown default:
+                rotationAngle = 0
+            }
+        }
+
+        NotificationCenter.default.post(name: Self.phoneOrientationDidChange, object: rotationAngle)
+    }
+
+    /// Pretend the phone just changed orientations so that the call UI will autorotate.
+    func sendInitialPhoneOrientationNotification() {
+        guard !UIDevice.current.isIPad else {
+            return
+        }
+        sendPhoneOrientationNotification()
     }
 
     // MARK: -
@@ -859,7 +945,43 @@ extension CallService: CallManagerDelegate {
         message: Data,
         urgency: CallMessageUrgency
     ) {
-        Logger.info("Stubbed \(#function)")
+        AssertIsOnMainThread()
+        Logger.info("")
+
+        databaseStorage.read(.promise) { transaction throws -> TSGroupThread in
+            guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                throw OWSAssertionError("tried to send call message to unknown group")
+            }
+            return thread
+        }.then(on: .global()) { thread throws -> Promise<Void> in
+            let opaqueBuilder = SSKProtoCallMessageOpaque.builder()
+            opaqueBuilder.setData(message)
+            opaqueBuilder.setUrgency(urgency.protobufValue)
+
+            return try Self.databaseStorage.write { transaction in
+                let callMessage = OWSOutgoingCallMessage(
+                    thread: thread,
+                    opaqueMessage: try opaqueBuilder.build(),
+                    transaction: transaction
+                )
+
+                return ThreadUtil.enqueueMessagePromise(
+                    message: callMessage,
+                    limitToCurrentProcessLifetime: true,
+                    isHighPriority: true,
+                    transaction: transaction
+                )
+            }
+        }.done(on: .main) { _ in
+            // TODO: Tell RingRTC we succeeded in sending the message. API TBD
+        }.catch(on: .main) { error in
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("Failed to send opaque message \(error)")
+            } else {
+                Logger.error("Failed to send opaque message \(error)")
+            }
+            // TODO: Tell RingRTC something went wrong. API TBD
+        }
     }
 
     public func callManager(

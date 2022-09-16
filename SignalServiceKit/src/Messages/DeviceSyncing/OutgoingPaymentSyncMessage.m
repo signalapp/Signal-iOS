@@ -79,6 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self syncMessageBuilderWithMobileCoin:self.mobileCoin transaction:transaction];
 }
 
+- (BOOL)isUrgent
+{
+    return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

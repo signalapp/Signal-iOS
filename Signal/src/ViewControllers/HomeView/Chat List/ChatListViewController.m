@@ -78,11 +78,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - Theme
 
 - (void)themeDidChange
@@ -103,15 +98,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [super applyTheme];
 
-    if (self.splitViewController.isCollapsed) {
-        self.view.backgroundColor = Theme.backgroundColor;
-        self.tableView.backgroundColor = Theme.backgroundColor;
-        [self.searchBar switchToStyle:OWSSearchBarStyle_Default];
-    } else {
-        self.view.backgroundColor = Theme.secondaryBackgroundColor;
-        self.tableView.backgroundColor = Theme.secondaryBackgroundColor;
-        [self.searchBar switchToStyle:OWSSearchBarStyle_SecondaryBar];
-    }
+    self.view.backgroundColor = Theme.backgroundColor;
+    self.tableView.backgroundColor = Theme.backgroundColor;
 
     [self updateBarButtonItems];
 }
@@ -153,7 +141,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             } else {
                 self.getStartedBanner.view.alpha = 1;
             }
-            [self adjustContextMenuPosition];
         }
                         completion:nil];
 }
@@ -516,23 +503,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     // Settings button.
-    UIButton *avatarButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    avatarButton.accessibilityLabel = CommonStrings.openSettingsButton;
-    [avatarButton addTarget:self action:@selector(showOrHideMenu:) forControlEvents:UIControlEventTouchDown];
-
-    UIView *avatarImageView = [self createAvatarBarButtonViewWithSneakyTransaction];
-    [avatarButton addSubview:avatarImageView];
-    [avatarImageView autoPinEdgesToSuperviewEdges];
-
-    UIView *avatarWrapper = [UIView containerView];
-    [avatarWrapper addSubview:avatarButton];
-    [avatarButton autoPinEdgesToSuperviewEdges];
-
-    if (self.unreadPaymentNotificationsCount > 0) {
-        [PaymentsViewUtils addUnreadBadgeToView:avatarWrapper];
-    }
-
-    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarWrapper];
+    UIBarButtonItem *settingsButton = [self createSettingsBarButtonItem];
 
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
@@ -704,8 +675,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             }
 
             CameraFirstCaptureNavigationController *cameraModal =
-                [CameraFirstCaptureNavigationController cameraFirstModalWithStoriesOnly:NO];
-            cameraModal.cameraFirstCaptureSendFlow.delegate = self;
+                [CameraFirstCaptureNavigationController cameraFirstModalWithStoriesOnly:NO delegate:self];
             cameraModal.modalPresentationStyle = UIModalPresentationOverFullScreen;
 
             // Defer hiding status bar until modal is fully onscreen
@@ -731,7 +701,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.isViewVisible = YES;
 
     // Ensure the tabBar is always hidden if stories is disabled or we're in the archive.
-    BOOL shouldHideTabBar = !SSKFeatureFlags.stories || self.chatListMode == ChatListModeArchive;
+    BOOL shouldHideTabBar = !StoryManager.areStoriesEnabled || self.chatListMode == ChatListModeArchive;
     if (shouldHideTabBar) {
         self.tabBarController.tabBar.hidden = YES;
         self.extendedLayoutIncludesOpaqueBars = YES;
@@ -901,11 +871,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 }
 
 #pragma mark - HomeFeedTableViewCellDelegate
-
-- (BOOL)isThreadPinned:(ThreadViewModel *)threadViewModel
-{
-    return [PinnedThreadManager isThreadPinned:threadViewModel.threadRecord];
-}
 
 - (void)presentThread:(TSThread *)thread action:(ConversationViewAction)action animated:(BOOL)isAnimated
 {

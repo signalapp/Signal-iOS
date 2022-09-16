@@ -138,10 +138,10 @@ public class MobileCoinAPI: Dependencies {
                 // Never resolve.
                 return promise
             }
-            client.updateBalance { (result: Swift.Result<Balance, ConnectionError>) in
+            client.updateBalances { (result: Swift.Result<Balances, BalanceUpdateError>) in
                 switch result {
-                case .success(let balance):
-                    future.resolve(balance)
+                case .success(let balances):
+                    future.resolve(balances.mobBalance)
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
                     future.reject(error)
@@ -151,7 +151,7 @@ public class MobileCoinAPI: Dependencies {
         }.map(on: .global()) { (balance: MobileCoin.Balance) -> TSPaymentAmount in
             Logger.verbose("Success: \(balance)")
             // We do not need to support amountPicoMobHigh.
-            guard let amountPicoMob = balance.amountPicoMob() else {
+            guard let amountPicoMob = balance.amount() else {
                 throw OWSAssertionError("Invalid balance.")
             }
             return TSPaymentAmount(currency: .mobileCoin, picoMob: amountPicoMob)
@@ -179,7 +179,7 @@ public class MobileCoinAPI: Dependencies {
                 // Never resolve.
                 return promise
             }
-            client.estimateTotalFee(toSendAmount: paymentAmount.picoMob,
+            client.estimateTotalFee(toSendAmount: Amount(paymentAmount.picoMob, in: .MOB),
                                     feeLevel: Self.feeLevel) { (result: Swift.Result<UInt64,
                                                                                      TransactionEstimationFetcherError>) in
                 switch result {
@@ -220,7 +220,7 @@ public class MobileCoinAPI: Dependencies {
                 // Never resolve.
                 return promise
             }
-            client.amountTransferable(feeLevel: Self.feeLevel) { (result: Swift.Result<UInt64,
+            client.amountTransferable(tokenId: .MOB, feeLevel: Self.feeLevel) { (result: Swift.Result<UInt64,
                                                                                        BalanceTransferEstimationFetcherError>) in
                 switch result {
                 case .success(let feePicoMob):
@@ -292,13 +292,13 @@ public class MobileCoinAPI: Dependencies {
             }
             // We don't need to support amountPicoMobHigh.
             client.prepareTransaction(to: recipientPublicAddress,
-                                      amount: paymentAmount.picoMob,
-                                      fee: estimatedFeeAmount.picoMob) { (result: Swift.Result<(transaction: MobileCoin.Transaction,
-                                                                                                receipt: MobileCoin.Receipt),
-                                                                                               TransactionPreparationError>) in
+                                      amount: Amount(paymentAmount.picoMob, in: .MOB),
+                                      fee: estimatedFeeAmount.picoMob) { (result: Swift.Result<PendingSinglePayloadTransaction,
+                                                                                                TransactionPreparationError>) in
                 switch result {
-                case .success(let transactionAndReceipt):
-                    let (transaction, receipt) = transactionAndReceipt
+                case .success(let payload):
+                    let transaction = payload.transaction
+                    let receipt = payload.receipt
                     let finalFeeAmount = TSPaymentAmount(currency: .mobileCoin,
                                                          picoMob: transaction.fee)
                     owsAssertDebug(estimatedFeeAmount == finalFeeAmount)
@@ -334,7 +334,7 @@ public class MobileCoinAPI: Dependencies {
                 // Never resolve.
                 return promise
             }
-            client.requiresDefragmentation(toSendAmount: paymentAmount.picoMob,
+            client.requiresDefragmentation(toSendAmount: Amount(paymentAmount.picoMob, in: .MOB),
                                            feeLevel: Self.feeLevel) { (result: Swift.Result<Bool,
                                                                                             TransactionEstimationFetcherError>) in
                 switch result {
@@ -365,7 +365,7 @@ public class MobileCoinAPI: Dependencies {
                 // Never resolve.
                 return promise
             }
-            client.prepareDefragmentationStepTransactions(toSendAmount: paymentAmount.picoMob,
+            client.prepareDefragmentationStepTransactions(toSendAmount: Amount(paymentAmount.picoMob, in: .MOB),
                                                           feeLevel: Self.feeLevel) { (result: Swift.Result<[MobileCoin.Transaction],
                                                                                                            MobileCoin.DefragTransactionPreparationError>) in
                 switch result {
@@ -534,10 +534,10 @@ public class MobileCoinAPI: Dependencies {
                 // Never resolve.
                 return promise
             }
-            client.updateBalance { (result: Swift.Result<Balance, ConnectionError>) in
+            client.updateBalances { (result: Swift.Result<Balances, BalanceUpdateError>) in
                 switch result {
                 case .success:
-                    future.resolve(client.accountActivity)
+                    future.resolve(client.accountActivity(for: .MOB))
                 case .failure(let error):
                     let error = Self.convertMCError(error: error)
                     future.reject(error)
@@ -597,15 +597,7 @@ struct MCOutgoingTransactionStatus {
 
 extension MobileCoinAPI {
     public static func convertMCError(error: Error) -> PaymentsError {
-        switch error {
-        case let error as MobileCoin.SecurityError:
-            // Wraps errors from Apple Security framework used in SecSSLCertificate init.
-            owsFailDebug("Error: \(error)")
-            return PaymentsError.invalidInput
-        case let error as MobileCoin.InvalidInputError:
-            owsFailDebug("Error: \(error)")
-            return PaymentsError.invalidInput
-        case let error as MobileCoin.ConnectionError:
+        func switchOnConnectionError(_ error: MobileCoin.ConnectionError) -> PaymentsError {
             switch error {
             case .connectionFailure(let reason):
                 Logger.warn("Error: \(error), reason: \(reason)")
@@ -633,6 +625,26 @@ extension MobileCoinAPI {
                 owsFailDebug("Error: \(error), reason: \(reason)")
                 return PaymentsError.serverRateLimited
             }
+        }
+
+        switch error {
+        case let error as MobileCoin.SecurityError:
+            // Wraps errors from Apple Security framework used in SecSSLCertificate init.
+            owsFailDebug("Error: \(error)")
+            return PaymentsError.invalidInput
+        case let error as MobileCoin.InvalidInputError:
+            owsFailDebug("Error: \(error)")
+            return PaymentsError.invalidInput
+        case let error as MobileCoin.BalanceUpdateError:
+            switch error {
+            case .connectionError(let error):
+                return switchOnConnectionError(error)
+            case .fogSyncError(let error):
+                Logger.warn("Error: \(error)")
+                return PaymentsError.fogOutOfSync
+            }
+        case let error as MobileCoin.ConnectionError:
+            return switchOnConnectionError(error)
         case let error as MobileCoin.TransactionPreparationError:
             switch error {
             case .invalidInput(let reason):
@@ -752,6 +764,7 @@ public extension PaymentsError {
              .killSwitch:
             return false
         case .connectionFailure,
+             .fogOutOfSync,
              .timeout,
              .outgoingVerificationTakingTooLong:
             return true
@@ -790,6 +803,7 @@ public extension PaymentsError {
              .connectionFailure,
              .timeout,
              .outgoingVerificationTakingTooLong,
+             .fogOutOfSync,
              .missingMemo:
             return false
         case .tooOldToSubmit,
