@@ -90,11 +90,9 @@ extension OWSDispatch {
 
     /// Returns a reverse-DNS queue label namespaced by appending the `suffix` to the current executable's bundleId
     public static func createLabel(_ suffix: String) -> String {
-        let prefix = Bundle.main.bundleIdentifier ?? {
-            owsFailDebug("Missing bundleID")
-            return "UNDEFINED"
-        }()
-
+        guard let prefix = Bundle.main.bundleIdentifier else {
+            owsFail("Missing bundleID")
+        }
         return "\(prefix).\(suffix)"
     }
 }
