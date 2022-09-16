@@ -37,21 +37,21 @@ public struct OpenGroup: Codable, Identifiable, FetchableRecord, PersistableReco
             self.rawValue = rawValue
         }
         
-        public func toString() -> String {
-            return ""
-                .appending(self.contains(.read) ? "r" : "-")
-                .appending(self.contains(.write) ? "w" : "-")
-                .appending(self.contains(.upload) ? "u" : "-")
-        }
-        
-        public static func getPermissionsfromRoomInfo(_ roomInfo: OpenGroupAPI.RoomPollInfo) -> Permissions {
+        public init(roomInfo: OpenGroupAPI.RoomPollInfo) {
             var permissions: Permissions = []
             
             if roomInfo.read { permissions.insert(.read) }
             if roomInfo.write { permissions.insert(.write) }
             if roomInfo.upload { permissions.insert(.upload) }
             
-            return permissions
+            self.init(rawValue: permissions.rawValue)
+        }
+        
+        public func toString() -> String {
+            return ""
+                .appending(self.contains(.read) ? "r" : "-")
+                .appending(self.contains(.write) ? "w" : "-")
+                .appending(self.contains(.upload) ? "u" : "-")
         }
 
         static let read: Permissions = Permissions(rawValue: 1 << 0)
