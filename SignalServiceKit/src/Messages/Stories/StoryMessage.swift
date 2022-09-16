@@ -401,6 +401,22 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    public func updateWithAllSendingRecipientsMarkedAsFailed(transaction: SDSAnyWriteTransaction) {
+        anyUpdate(transaction: transaction) { message in
+            guard case .outgoing(var recipientStates) = message.manifest else {
+                return owsFailDebug("Unexpectedly tried to recipient states as failed on message of wrong type.")
+            }
+
+            for (uuid, var recipientState) in recipientStates {
+                guard recipientState.sendingState == .sending else { continue }
+                recipientState.sendingState = .failed
+                recipientStates[uuid] = recipientState
+            }
+
+            message.manifest = .outgoing(recipientStates: recipientStates)
+        }
+    }
+
     public func threads(transaction: SDSAnyReadTransaction) -> [TSThread] {
         var threads = [TSThread]()
 

@@ -20,6 +20,11 @@ public class FailedMessagesJob: Dependencies {
                     updateFailedMessageIfNecessary(failedInteractionId, transaction: writeTx)
                 }
             }
+
+            StoryFinder.enumerateSendingStories(transaction: writeTx) { storyMessage, _ in
+                storyMessage.updateWithAllSendingRecipientsMarkedAsFailed(transaction: writeTx)
+                self.count += 1
+            }
         }
         Logger.info("Finished job. Marked \(count) incomplete sends as failed")
     }
