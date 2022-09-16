@@ -21,7 +21,7 @@ struct MyStoryViewModel: Dependencies {
         }
         hasFailedSends = messages.contains { $0.sendingState == .failed }
 
-        let sortedFilteredMessages = messages.sorted { $0.timestamp < $1.timestamp }.prefix(2)
+        let sortedFilteredMessages = messages.sorted { $0.timestamp < $1.timestamp }.suffix(2)
         self.messages = Array(sortedFilteredMessages)
 
         if let latestMessage = sortedFilteredMessages.last {
