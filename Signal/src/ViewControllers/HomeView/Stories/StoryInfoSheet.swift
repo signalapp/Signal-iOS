@@ -149,14 +149,19 @@ class StoryInfoSheet: OWSTableSheetViewController {
         for state in orderedSendingStates {
             guard let recipients = groupedRecipientStates[state], !recipients.isEmpty else { continue }
 
+            let sortedRecipientAddresses = contactsManagerImpl
+                .sortSignalServiceAddressesWithSneakyTransaction(
+                    recipients.compactMap { .init(uuid: $0.key) }
+                )
+
             let section = OWSTableSection()
             section.hasBackground = false
             section.headerTitle = sectionTitle(for: state)
             sections.append(section)
 
-            for recipient in recipients {
+            for address in sortedRecipientAddresses {
                 section.add(contactItem(
-                    for: SignalServiceAddress(uuid: recipient.key),
+                    for: address,
                     accessoryText: statusMessage(for: state)
                 ))
             }
