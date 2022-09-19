@@ -9,9 +9,6 @@ import UIKit
 public class OWSNavigationBar: UINavigationBar {
 
     @objc
-    public let navbarWithoutStatusHeight: CGFloat = 44
-
-    @objc
     public var statusBarHeight: CGFloat {
         return CurrentAppContext().statusBarHeight
     }
@@ -80,7 +77,16 @@ public class OWSNavigationBar: UINavigationBar {
 
                 // navbar frame doesn't account for statusBar, so, same as the built-in navbar background, we need to exceed
                 // the navbar bounds to have the blur extend up and behind the status bar.
-                blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: -statusBarHeight, left: 0, bottom: 0, right: 0))
+                var topInset = -statusBarHeight
+                if UIDevice.current.hasDynamicIsland && statusBarHeight == 44 {
+                    // If we are on Xcode <=13.X and using a 14 pro device, we misreport the status bar height,
+                    // as 44, so we end up with a little area peeking out the top. Adjust to compensate.
+                    // If we were on xcode >=14.0, the statusBarHeight wouldn't be 44 for 14 pros,
+                    // so the second condition essentially acts as a "are we on Xcode 13 or earlier" check.
+                    // TODO: remove this after we move to Xcode 14.
+                    topInset = -59
+                }
+                blurEffectView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: topInset, left: 0, bottom: 0, right: 0))
 
                 return blurEffectView
             }()
