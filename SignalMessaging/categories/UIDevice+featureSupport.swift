@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,11 +39,17 @@ public extension UIDevice {
         case 2532:
             // iPhone 12 Pro
             return true
+        case 2556:
+            // iPhone 14 Pro
+            return true
         case 2688:
             // iPhone X Max
             return true
         case 2778:
             // iPhone 12 Pro Max
+            return true
+        case 2796:
+            // iPhone 14 Pro Max
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.
@@ -80,11 +86,17 @@ public extension UIDevice {
         case 2532:
             // iPhone 12 Pro
             return false
+        case 2556:
+            // iPhone 14 Pro
+            return false
         case 2688:
             // iPhone X Max
             return true
         case 2778:
             // iPhone 12 Pro Max
+            return true
+        case 2796:
+            // iPhone 14 Pro Max
             return true
         default:
             // Verify all our IOS_DEVICE_CONSTANT tags make sense when adding a new device size.

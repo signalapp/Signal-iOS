@@ -12,7 +12,7 @@ public protocol ConversationHeaderViewDelegate {
     func didTapConversationHeaderViewAvatar(_ conversationHeaderView: ConversationHeaderView)
 }
 
-public class ConversationHeaderView: UIStackView {
+public class ConversationHeaderView: UIView {
 
     public weak var delegate: ConversationHeaderViewDelegate?
 
@@ -95,17 +95,21 @@ public class ConversationHeaderView: UIStackView {
 
         super.init(frame: .zero)
 
-        self.layoutMargins = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
-        self.isLayoutMarginsRelativeArrangement = true
+        let rootStack = UIStackView()
+        rootStack.layoutMargins = UIEdgeInsets(top: 4, left: 0, bottom: 4, right: 0)
+        rootStack.isLayoutMarginsRelativeArrangement = true
 
-        self.axis = .horizontal
-        self.alignment = .center
-        self.spacing = 0
-        self.addArrangedSubview(avatarView)
-        self.addArrangedSubview(textRows)
+        rootStack.axis = .horizontal
+        rootStack.alignment = .center
+        rootStack.spacing = 0
+        rootStack.addArrangedSubview(avatarView)
+        rootStack.addArrangedSubview(textRows)
+
+        addSubview(rootStack)
+        rootStack.autoPinEdgesToSuperviewEdges()
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapView))
-        self.addGestureRecognizer(tapGesture)
+        rootStack.addGestureRecognizer(tapGesture)
 
         NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
     }
