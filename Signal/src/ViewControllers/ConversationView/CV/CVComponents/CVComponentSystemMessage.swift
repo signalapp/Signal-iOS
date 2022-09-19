@@ -136,8 +136,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
         let selectionView = componentView.selectionView
         let textLabel = componentView.textLabel
 
-        if isReusing {
+        // Configuring the text label should happen in both reuse and non-reuse
+        // scenarios
+        textLabel.configureForRendering(config: textLabelConfig)
+        textLabel.view.accessibilityLabel = textLabelConfig.attributedString.string
 
+        if isReusing {
             innerVStack.configureForReuse(config: innerVStackConfig,
                                           cellMeasurement: cellMeasurement,
                                           measurementKey: Self.measurementKey_innerVStack)
@@ -154,9 +158,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 wallpaperBlurView.updateIfNecessary()
             }
         } else {
-            textLabel.configureForRendering(config: textLabelConfig)
-            textLabel.view.accessibilityLabel = textLabelConfig.attributedString.string
-
             var innerVStackViews: [UIView] = [
                 textLabel.view
             ]

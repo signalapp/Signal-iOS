@@ -159,8 +159,6 @@ public class CVTextLabel: NSObject {
 
     public func configureForRendering(config: Config) {
         AssertIsOnMainThread()
-        owsAssertDebug(label.config == nil)
-
         label.config = config
     }
 
