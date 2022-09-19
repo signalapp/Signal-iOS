@@ -78,6 +78,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         SNAppearance.switchToSessionAppearance()
         
+        if Environment.shared?.callManager.wrappedValue?.currentCall == nil {
+            UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
+        }
+        
         // No point continuing if we are running tests
         guard !CurrentAppContext().isRunningTests else { return true }
 
@@ -132,21 +136,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         // NOTE: Fix an edge case where user taps on the callkit notification
         // but answers the call on another device
-        stopPollers(shouldStopUserPoller: !self.hasIncomingCallWaiting())
+        stopPollers(shouldStopUserPoller: !self.hasCallOngoing())
         
         // Stop all jobs except for message sending and when completed suspend the database
         JobRunner.stopAndClearPendingJobs(exceptForVariant: .messageSend) {
-            NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            if !self.hasCallOngoing() {
+                NotificationCenter.default.post(name: Database.suspendNotification, object: self)
+            }
         }
     }
     
     func applicationDidReceiveMemoryWarning(_ application: UIApplication) {
         Logger.info("applicationDidReceiveMemoryWarning")
     }
-    
+
     func applicationWillTerminate(_ application: UIApplication) {
         DDLog.flushLog()
-        
+
         stopPollers()
     }
     
@@ -244,15 +250,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         Configuration.performMainSetup()
         JobRunner.add(executor: SyncPushTokensJob.self, for: .syncPushTokens)
         
-        // Trigger any launch-specific jobs and start the JobRunner
-        JobRunner.appDidFinishLaunching()
-        
         /// Setup the UI
         ///
-        /// **Note:** This **MUST** be run before calling `AppReadiness.setAppIsReady()` otherwise if
-        /// we are launching the app from a push notification the HomeVC won't be setup yet and it won't open the
-        /// related thread
+        /// **Note:** This **MUST** be run before calling:
+        /// - `AppReadiness.setAppIsReady()`:
+        ///    If we are launching the app from a push notification the HomeVC won't be setup yet
+        ///    and it won't open the related thread
+        ///
+        /// - `JobRunner.appDidFinishLaunching()`:
+        ///    The jobs which run on launch (eg. DisappearingMessages job) can impact the interactions
+        ///    which get fetched to display on the home screen, if the PagedDatabaseObserver hasn't
+        ///    been setup yet then the home screen can show stale (ie. deleted) interactions incorrectly
         self.ensureRootViewController(isPreAppReadyCall: true)
+        
+        // Trigger any launch-specific jobs and start the JobRunner
+        JobRunner.appDidFinishLaunching()
         
         // Note that this does much more than set a flag;
         // it will also run all deferred blocks (including the JobRunner
@@ -632,6 +644,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard let call = AppEnvironment.shared.callManager.currentCall else { return false }
         
         return !call.hasStartedConnecting
+    }
+    
+    func hasCallOngoing() -> Bool {
+        guard let call = AppEnvironment.shared.callManager.currentCall else { return false }
+        
+        return !call.hasEnded
     }
     
     func handleAppActivatedWithOngoingCallIfNeeded() {

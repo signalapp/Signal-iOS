@@ -340,13 +340,14 @@ extension MessageReceiver {
                     sortId: sortId
                 )
                 try reaction.insert(db)
-                Environment.shared?.notificationsManager.wrappedValue?
-                    .notifyUser(
-                        db,
-                        forReaction: reaction,
-                        in: thread
-                    )
-                
+                if sender != getUserHexEncodedPublicKey(db) {
+                    Environment.shared?.notificationsManager.wrappedValue?
+                        .notifyUser(
+                            db,
+                            forReaction: reaction,
+                            in: thread
+                        )
+                }
             case .remove:
                 try Reaction
                     .filter(Reaction.Columns.interactionId == interactionId)

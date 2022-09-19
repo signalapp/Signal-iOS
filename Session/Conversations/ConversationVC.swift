@@ -69,10 +69,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     }
 
     override var inputAccessoryView: UIView? {
-        guard
-            viewModel.threadData.threadVariant != .closedGroup ||
-            viewModel.threadData.currentUserIsClosedGroupMember == true
-        else { return nil }
+        guard viewModel.threadData.canWrite else { return nil }
         
         return (isShowingSearchUI ? searchController.resultsBar : snInputView)
     }
@@ -142,10 +139,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         result.showsVerticalScrollIndicator = false
         result.contentInsetAdjustmentBehavior = .never
         result.keyboardDismissMode = .interactive
+        let bottomInset: CGFloat = viewModel.threadData.canWrite ? Values.mediumSpacing : Values.mediumSpacing + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         result.contentInset = UIEdgeInsets(
             top: 0,
             leading: 0,
-            bottom: Values.mediumSpacing,
+            bottom: bottomInset,
             trailing: 0
         )
         result.registerHeaderFooterView(view: UITableViewHeaderFooterView.self)
@@ -264,7 +262,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
         result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        result.setTitle(NSLocalizedString("TXT_DELETE_TITLE", comment: ""), for: .normal)
+        result.setTitle(NSLocalizedString("TXT_DECLINE_TITLE", comment: ""), for: .normal)
         result.setTitleColor(Colors.destructive, for: .normal)
         result.setBackgroundImage(
             Colors.destructive
@@ -280,6 +278,18 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             ).cgColor
         result.layer.borderWidth = 1
         result.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)
+
+        return result
+    }()
+    
+    private lazy var messageRequestBlockButton: UIButton = {
+        let result: UIButton = UIButton()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        result.setTitle(NSLocalizedString("TXT_BLOCK_USER_TITLE", comment: ""), for: .normal)
+        result.setTitleColor(Colors.destructive, for: .normal)
+        result.addTarget(self, action: #selector(block), for: .touchUpInside)
 
         return result
     }()
@@ -343,6 +353,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         view.addSubview(scrollButton)
         view.addSubview(messageRequestView)
 
+        messageRequestView.addSubview(messageRequestBlockButton)
         messageRequestView.addSubview(messageRequestDescriptionLabel)
         messageRequestView.addSubview(messageRequestAcceptButton)
         messageRequestView.addSubview(messageRequestDeleteButton)
@@ -355,7 +366,10 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         self.scrollButtonBottomConstraint?.isActive = false // Note: Need to disable this to avoid a conflict with the other bottom constraint
         self.scrollButtonMessageRequestsBottomConstraint = scrollButton.pin(.bottom, to: .top, of: messageRequestView, withInset: -16)
         
-        messageRequestDescriptionLabel.pin(.top, to: .top, of: messageRequestView, withInset: 10)
+        messageRequestBlockButton.pin(.top, to: .top, of: messageRequestView, withInset: 10)
+        messageRequestBlockButton.center(.horizontal, in: messageRequestView)
+        
+        messageRequestDescriptionLabel.pin(.top, to: .bottom, of: messageRequestBlockButton, withInset: 5)
         messageRequestDescriptionLabel.pin(.left, to: .left, of: messageRequestView, withInset: 40)
         messageRequestDescriptionLabel.pin(.right, to: .right, of: messageRequestView, withInset: -40)
 
@@ -878,7 +892,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
             deleteSectionsAnimation: .none,
             insertSectionsAnimation: .none,
             reloadSectionsAnimation: .none,
-            deleteRowsAnimation: .bottom,
+            deleteRowsAnimation: .fade,
             insertRowsAnimation: .none,
             reloadRowsAnimation: .none,
             interrupt: { itemChangeInfo?.isInsertAtTop == true || $0.changeCount > ConversationViewModel.pageSize }

@@ -315,12 +315,11 @@ extension ConversationVC:
             let modal = SendSeedModal()
             modal.modalPresentationStyle = .overFullScreen
             modal.modalTransitionStyle = .crossDissolve
-            modal.proceed = { self.sendMessage(hasPermissionToSendSeed: true) }
+            modal.proceed = { [weak self] in self?.sendMessage(hasPermissionToSendSeed: true) }
             return present(modal, animated: true, completion: nil)
         }
         
-        // Clearing this out immediately (even though it already happens in 'messageSent') to prevent
-        // "double sending" if the user rapidly taps the send button
+        // Clearing this out immediately to make this appear more snappy
         DispatchQueue.main.async { [weak self] in
             self?.snInputView.text = ""
             self?.snInputView.quoteDraftInfo = nil
@@ -416,7 +415,7 @@ extension ConversationVC:
         )
     }
 
-    func sendAttachments(_ attachments: [SignalAttachment], with text: String, onComplete: (() -> ())? = nil) {
+    func sendAttachments(_ attachments: [SignalAttachment], with text: String, hasPermissionToSendSeed: Bool = false, onComplete: (() -> ())? = nil) {
         guard !showBlockedModalIfNeeded() else { return }
         
         for attachment in attachments {
@@ -426,6 +425,25 @@ extension ConversationVC:
         }
         
         let text = replaceMentions(in: snInputView.text.trimmingCharacters(in: .whitespacesAndNewlines))
+        
+        if text.contains(mnemonic) && !viewModel.threadData.threadIsNoteToSelf && !hasPermissionToSendSeed {
+            // Warn the user if they're about to send their seed to someone
+            let modal = SendSeedModal()
+            modal.modalPresentationStyle = .overFullScreen
+            modal.modalTransitionStyle = .crossDissolve
+            modal.proceed = { [weak self] in
+                self?.sendAttachments(attachments, with: text, hasPermissionToSendSeed: true, onComplete: onComplete)
+            }
+            return present(modal, animated: true, completion: nil)
+        }
+        
+        // Clearing this out immediately to make this appear more snappy
+        DispatchQueue.main.async { [weak self] in
+            self?.snInputView.text = ""
+            self?.snInputView.quoteDraftInfo = nil
+
+            self?.resetMentions()
+        }
 
         // Note: 'shouldBeVisible' is set to true the first time a thread is saved so we can
         // use it to determine if the user is creating a new thread and update the 'isApproved'
@@ -492,13 +510,6 @@ extension ConversationVC:
     }
 
     func handleMessageSent() {
-        DispatchQueue.main.async { [weak self] in
-            self?.snInputView.text = ""
-            self?.snInputView.quoteDraftInfo = nil
-            
-            self?.resetMentions()
-        }
-
         if Storage.shared[.playNotificationSoundInForeground] {
             let soundID = Preferences.Sound.systemSoundId(for: .messageSent, quiet: true)
             AudioServicesPlaySystemSound(soundID)
@@ -667,7 +678,7 @@ extension ConversationVC:
                 .elements
                 .firstIndex(of: cellViewModel),
             let cell = tableView.cellForRow(at: IndexPath(row: index, section: sectionIndex)) as? VisibleMessageCell,
-            let snapshot = cell.bubbleView.snapshotView(afterScreenUpdates: false),
+            let snapshot = cell.snContentView.snapshotView(afterScreenUpdates: false),
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
@@ -686,7 +697,7 @@ extension ConversationVC:
         self.contextMenuWindow = ContextMenuWindow()
         self.contextMenuVC = ContextMenuVC(
             snapshot: snapshot,
-            frame: cell.convert(cell.bubbleView.frame, to: keyWindow),
+            frame: cell.convert(cell.snContentView.frame, to: keyWindow),
             cellViewModel: cellViewModel,
             actions: actions
         ) { [weak self] in
@@ -920,6 +931,7 @@ extension ConversationVC:
     }
     
     func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?) {
+        guard viewModel.threadData.canWrite else { return }
         guard SessionId.Prefix(from: sessionId) == .blinded else {
             Storage.shared.write { db in
                 try SessionThread.fetchOrCreate(db, id: sessionId, variant: .contact)
@@ -2118,6 +2130,35 @@ extension ConversationVC {
             preferredStyle: .actionSheet
         )
         alertVC.addAction(UIAlertAction(title: "TXT_DELETE_TITLE".localized(), style: .destructive) { _ in
+            // Delete the request
+            Storage.shared.writeAsync(
+                updates: { db in
+                    _ = try SessionThread
+                        .filter(id: threadId)
+                        .deleteAll(db)
+                },
+                completion: { db, _ in
+                    DispatchQueue.main.async { [weak self] in
+                        self?.navigationController?.popViewController(animated: true)
+                    }
+                }
+            )
+        })
+        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
+        
+        self.present(alertVC, animated: true, completion: nil)
+    }
+    
+    @objc func block() {
+        guard self.viewModel.threadData.threadVariant == .contact else { return }
+        
+        let threadId: String = self.viewModel.threadData.threadId
+        let alertVC: UIAlertController = UIAlertController(
+            title: "MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON".localized(),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction(title: "BLOCK_LIST_BLOCK_BUTTON".localized(), style: .destructive) { _ in
             // Delete the request
             Storage.shared.writeAsync(
                 updates: { db in

@@ -376,6 +376,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         switch section.model {
             case .threads:
                 let threadId: String = section.elements[indexPath.row].threadId
+                
                 let delete = UITableViewRowAction(
                     style: .destructive,
                     title: "TXT_DELETE_TITLE".localized()
@@ -383,8 +384,16 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                     self?.delete(threadId)
                 }
                 delete.backgroundColor = Colors.destructive
+            
+                let block: UITableViewRowAction = UITableViewRowAction(
+                    style: .normal,
+                    title: "BLOCK_LIST_BLOCK_BUTTON".localized()
+                ) { [weak self] _, _ in
+                    self?.block(threadId)
+                }
+                block.backgroundColor = Colors.blockActionBackground
 
-                return [ delete ]
+                return [ delete, block ]
                 
             default: return []
         }
@@ -416,19 +425,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 _ = try SessionThread
                     .filter(ids: threadIds)
                     .deleteAll(db)
-                
-                try threadIds.forEach { threadId in
-                    _ = try Contact
-                        .fetchOrCreate(db, id: threadId)
-                        .with(
-                            isApproved: false,
-                            isBlocked: true
-                        )
-                        .saved(db)
-                }
-                
-                // Force a config sync
-                try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
             }
         })
         alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
@@ -443,6 +439,27 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         )
         alertVC.addAction(UIAlertAction(
             title: "TXT_DELETE_TITLE".localized(),
+            style: .destructive
+        ) { _ in
+            Storage.shared.write { db in
+                _ = try SessionThread
+                    .filter(id: threadId)
+                    .deleteAll(db)
+            }
+        })
+        
+        alertVC.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel, handler: nil))
+        self.present(alertVC, animated: true, completion: nil)
+    }
+    
+    private func block(_ threadId: String) {
+        let alertVC: UIAlertController = UIAlertController(
+            title: "MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON".localized(),
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        alertVC.addAction(UIAlertAction(
+            title: "BLOCK_LIST_BLOCK_BUTTON".localized(),
             style: .destructive
         ) { _ in
             Storage.shared.write { db in
