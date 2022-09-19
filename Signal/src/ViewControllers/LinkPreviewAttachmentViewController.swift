@@ -40,14 +40,14 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
                                       value: "Type or paste a URL",
                                       comment: "Placeholder text for URL input field in Text Story composer UI."),
             attributes: [ .foregroundColor: UIColor.ows_gray25 ])
+        textField.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         return textField
     }()
     private lazy var textFieldContainer: UIView = {
         let view = PillView()
         view.backgroundColor = .ows_gray80
-        view.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         view.addSubview(textField)
-        textField.autoPinEdgesToSuperviewMargins()
+        textField.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(hMargin: 16, vMargin: 0))
         return view
     }()
     private let doneButton: UIButton = {
@@ -75,6 +75,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         let stackView = UIStackView(arrangedSubviews: [ linkPreviewPanel, inputFieldContainer ])
         stackView.axis = .vertical
         stackView.spacing = 24
+        stackView.alignment = .fill
         contentView.addSubview(stackView)
         stackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
 
@@ -118,12 +119,13 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
     private func updateSheetHeight() {
         guard let sheetView = contentView.superview else { return }
 
-        let sheetSize = sheetView.systemLayoutSizeFitting(.init(width: maxWidth, height: .greatestFiniteMagnitude),
+        let sheetSize = sheetView.systemLayoutSizeFitting(.init(width: maxWidth, height: view.height),
                                                           withHorizontalFittingPriority: .required,
                                                           verticalFittingPriority: .fittingSizeLevel)
         if sheetHeight != sheetSize.height {
             sheetHeight = sheetSize.height
             heightConstraint.constant = sheetHeight
+            maxHeightConstraint.constant = sheetHeight
         }
     }
 
@@ -271,14 +273,15 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
         override init(frame: CGRect) {
             super.init(frame: frame)
+            NSLayoutConstraint.autoSetPriority(.defaultLow + 10) {
+                autoSetDimension(.height, toSize: 100)
+            }
             updateContentViewForCurrentState(animated: false)
         }
 
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
-
-        override var intrinsicContentSize: CGSize { CGSize(width: UIView.noIntrinsicMetric, height: 100) }
 
         // MARK: - Layout
 
