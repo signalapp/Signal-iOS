@@ -888,30 +888,36 @@ private final class JobQueue {
             // but we want at least 1 second to pass before doing so - the job itself should
             // really update it's own 'nextRunTimestamp' (this is just a safety net)
             case .recurring where job.nextRunTimestamp <= Date().timeIntervalSince1970:
+                guard let jobId: Int64 = job.id else { break }
+                
                 Storage.shared.write { db in
-                    _ = try job
-                        .with(nextRunTimestamp: (Date().timeIntervalSince1970 + 1))
-                        .saved(db)
+                    _ = try Job
+                        .filter(id: jobId)
+                        .updateAll(
+                            db,
+                            Job.Columns.failureCount.set(to: 0),
+                            Job.Columns.nextRunTimestamp.set(to: (Date().timeIntervalSince1970 + 1))
+                        )
                 }
                 
-            // For `recurringOnLaunch/Active` jobs which have already run, we want to clear their
-            // `failureCount` and `nextRunTimestamp` to prevent them from endlessly running over
-            // and over and reset their retry backoff in case they fail next time
+            // For `recurringOnLaunch/Active` jobs which have already run but failed once, we need to
+            // clear their `failureCount` and `nextRunTimestamp` to prevent them from endlessly running
+            // over and over again
             case .recurringOnLaunch, .recurringOnActive:
-                if
+                guard
                     let jobId: Int64 = job.id,
                     job.failureCount != 0 &&
                     job.nextRunTimestamp > TimeInterval.leastNonzeroMagnitude
-                {
-                    Storage.shared.write { db in
-                        _ = try Job
-                            .filter(id: jobId)
-                            .updateAll(
-                                db,
-                                Job.Columns.failureCount.set(to: 0),
-                                Job.Columns.nextRunTimestamp.set(to: 0)
-                            )
-                    }
+                else { break }
+                
+                Storage.shared.write { db in
+                    _ = try Job
+                        .filter(id: jobId)
+                        .updateAll(
+                            db,
+                            Job.Columns.failureCount.set(to: 0),
+                            Job.Columns.nextRunTimestamp.set(to: 0)
+                        )
                 }
             
             default: break

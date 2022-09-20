@@ -17,7 +17,7 @@ public enum DisappearingMessagesJob: JobExecutor {
         deferred: @escaping (Job) -> ()
     ) {
         // The 'backgroundTask' gets captured and cleared within the 'completion' block
-        let timestampNowMs: TimeInterval = (Date().timeIntervalSince1970 * 1000)
+        let timestampNowMs: TimeInterval = ceil(Date().timeIntervalSince1970 * 1000)
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: #function)
         
         let updatedJob: Job? = Storage.shared.write { db in
@@ -29,12 +29,9 @@ public enum DisappearingMessagesJob: JobExecutor {
             // Update the next run timestamp for the DisappearingMessagesJob (if the call
             // to 'updateNextRunIfNeeded' returns 'nil' then it doesn't need to re-run so
             // should have it's 'nextRunTimestamp' cleared)
-            return updateNextRunIfNeeded(db)
-                .defaulting(
-                    to: try job
-                        .with(nextRunTimestamp: 0)
-                        .saved(db)
-                )
+            return try updateNextRunIfNeeded(db)
+                .defaulting(to: job.with(nextRunTimestamp: 0))
+                .saved(db)
         }
         
         success(updatedJob ?? job, false)
@@ -65,7 +62,7 @@ public extension DisappearingMessagesJob {
         return try? Job
             .filter(Job.Columns.variant == Job.Variant.disappearingMessages)
             .fetchOne(db)?
-            .with(nextRunTimestamp: ((nextExpirationTimestampMs / 1000) + 1))
+            .with(nextRunTimestamp: ceil(nextExpirationTimestampMs / 1000))
             .saved(db)
     }
     

@@ -98,7 +98,7 @@ public class TypingIndicators {
                 withTimeInterval: (direction == .outgoing ? 3 : 5),
                 repeats: false
             ) { _ in
-                Storage.shared.write { db in
+                Storage.shared.writeAsync { db in
                     TypingIndicators.didStopTyping(db, threadId: threadId, direction: direction)
                 }
             }
@@ -123,7 +123,7 @@ public class TypingIndicators {
                 withTimeInterval: 10,
                 repeats: false
             ) { [weak self] _ in
-                Storage.shared.write { db in
+                Storage.shared.writeAsync { db in
                     self?.scheduleRefreshCallback(db)
                 }
             }
