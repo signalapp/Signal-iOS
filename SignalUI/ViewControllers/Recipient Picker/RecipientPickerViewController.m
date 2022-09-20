@@ -86,7 +86,7 @@ const NSUInteger kMinimumSearchLength = 1;
     _allowsAddByPhoneNumber = YES;
     _shouldHideLocalRecipient = YES;
     _allowsSelectingUnregisteredPhoneNumbers = YES;
-    _shouldShowGroups = YES;
+    _groupsToShow = RecipientPickerViewControllerGroupsToShow_ShowGroupsThatUserIsMemberOfWhenSearching;
     _shouldShowInvites = NO;
     _shouldShowAlphabetSlider = YES;
 
@@ -720,20 +720,10 @@ const NSUInteger kMinimumSearchLength = 1;
         [sections addObject:contactsSection];
     }
 
-    if (self.shouldShowGroups) {
-        // When searching, we include matching groups
-        OWSTableSection *groupSection =
-            [self buildSectionWithTitle:OWSLocalizedString(@"COMPOSE_MESSAGE_GROUP_SECTION_TITLE",
-                                            @"Table section header for group listing when composing a new message")];
-        NSArray<TSGroupThread *> *filteredGroupThreads = searchResults.groupThreads;
-        for (TSGroupThread *thread in filteredGroupThreads) {
-            hasSearchResults = YES;
-
-            [groupSection addItem:[self itemForRecipient:[PickedRecipient forGroupThread:thread]]];
-        }
-        if (filteredGroupThreads.count > 0) {
-            [sections addObject:groupSection];
-        }
+    OWSTableSection *groupSection = [self groupSectionForSearchResults:searchResults];
+    if (groupSection != nil) {
+        hasSearchResults = YES;
+        [sections addObject:groupSection];
     }
 
     OWSTableSection *phoneNumbersSection =

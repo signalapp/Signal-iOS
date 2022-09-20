@@ -1248,6 +1248,7 @@
 		F9B0DC5E28948656004E07B7 /* GTSR1.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4C28948656004E07B7 /* GTSR1.crt */; };
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
 		F9B0DC6028948656004E07B7 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4E28948656004E07B7 /* textsecure.cer */; };
+		F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */; };
 		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
 		F9C5C89F289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
 		F9C5C8A7289451B900548EEE /* SignalServiceKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C899289451B900548EEE /* SignalServiceKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3647,6 +3648,7 @@
 		F9B0DC4C28948656004E07B7 /* GTSR1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR1.crt; sourceTree = "<group>"; };
 		F9B0DC4D28948656004E07B7 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
 		F9B0DC4E28948656004E07B7 /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
+		F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewController.swift; sourceTree = "<group>"; };
 		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
 		F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessageTest.swift; sourceTree = "<group>"; };
 		F9C5C897289451B900548EEE /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6443,6 +6445,7 @@
 				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
 				8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */,
 				8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */,
+				F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */,
 			);
 			path = "Recipient Picker";
 			sourceTree = "<group>";
@@ -9784,6 +9787,7 @@
 				32FAB92A2727A57100FB76A6 /* PrimaryImageView.swift in Sources */,
 				88B986F528807D6F00F8C74D /* RecipientPickerDelegate.swift in Sources */,
 				88B986F628807D6F00F8C74D /* RecipientPickerViewController.m in Sources */,
+				F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */,
 				34ACA7F62733183000E47AD4 /* RegistrationValues.swift in Sources */,
 				88B986FA28807EEA00F8C74D /* ReminderView.swift in Sources */,
 				3402AA86271D9E180084CBAE /* ResizingScrollView.swift in Sources */,

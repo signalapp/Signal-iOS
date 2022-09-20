@@ -18,7 +18,9 @@ class ComposeViewController: OWSViewController {
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowInvites = true
         recipientPicker.shouldShowNewGroup = true
+        recipientPicker.groupsToShow = .showGroupsThatUserIsMemberOfWhenSearching
         recipientPicker.shouldHideLocalRecipient = false
+
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)

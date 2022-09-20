@@ -36,7 +36,7 @@ class PaymentsSendRecipientViewController: OWSViewController {
         recipientPicker.allowsAddByPhoneNumber = false
         recipientPicker.shouldHideLocalRecipient = true
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.shouldShowGroups = false
+        recipientPicker.groupsToShow = .showNoGroups
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)

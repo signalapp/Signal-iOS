@@ -91,7 +91,7 @@ open class BaseMemberViewController: OWSViewController {
         memberCountWrapper.layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
 
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.shouldShowGroups = false
+        recipientPicker.groupsToShow = .showNoGroups
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.showUseAsyncSelection = true
         recipientPicker.delegate = self

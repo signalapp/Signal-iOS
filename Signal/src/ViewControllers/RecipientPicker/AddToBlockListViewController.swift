@@ -13,7 +13,16 @@ protocol AddToBlockListDelegate: AnyObject {
 class AddToBlockListViewController: OWSViewController {
     @objc
     weak var delegate: AddToBlockListDelegate?
-    let recipientPicker = RecipientPickerViewController()
+
+    let recipientPicker: RecipientPickerViewController = {
+        let recipientPicker = RecipientPickerViewController()
+        recipientPicker.groupsToShow = .showAllGroupsWhenSearching
+        recipientPicker.findByPhoneNumberButtonTitle = NSLocalizedString(
+            "BLOCK_LIST_VIEW_BLOCK_BUTTON",
+            comment: "A label for the block button in the block list view"
+        )
+        return recipientPicker
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,11 +37,6 @@ class AddToBlockListViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
-
-        recipientPicker.findByPhoneNumberButtonTitle = NSLocalizedString(
-            "BLOCK_LIST_VIEW_BLOCK_BUTTON",
-            comment: "A label for the block button in the block list view"
-        )
     }
 
     override func viewWillAppear(_ animated: Bool) {

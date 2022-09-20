@@ -72,6 +72,11 @@ public extension TSThread {
                 return false
             }
         }
+        if let groupThread = self as? TSGroupThread {
+            guard groupThread.isLocalUserFullMember else {
+                return false
+            }
+        }
         return true
     }
 

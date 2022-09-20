@@ -6,6 +6,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_CLOSED_ENUM(NSUInteger, RecipientPickerViewControllerGroupsToShow) {
+    RecipientPickerViewControllerGroupsToShow_ShowNoGroups = 0,
+    RecipientPickerViewControllerGroupsToShow_ShowGroupsThatUserIsMemberOfWhenSearching,
+    RecipientPickerViewControllerGroupsToShow_ShowAllGroupsWhenSearching,
+};
+
 @protocol RecipientPickerDelegate;
 
 @class PickedRecipient;
@@ -20,8 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldHideLocalRecipient;
 /// Defaults to `YES`
 @property (nonatomic) BOOL allowsSelectingUnregisteredPhoneNumbers;
-/// Defaults to `YES`
-@property (nonatomic) BOOL shouldShowGroups;
+/// Defaults to `RecipientPickerViewControllerGroupsToShow_ShowGroupsThatUserIsMemberOfWhenSearching`
+@property (nonatomic) RecipientPickerViewControllerGroupsToShow groupsToShow;
 /// Defaults to `NO`
 @property (nonatomic) BOOL shouldShowInvites;
 /// Defaults to `YES`
