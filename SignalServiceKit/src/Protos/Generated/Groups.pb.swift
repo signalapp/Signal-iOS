@@ -553,6 +553,10 @@ struct GroupsProtos_GroupChange {
 
       var presentation: Data = Data()
 
+      var userID: Data = Data()
+
+      var profileKey: Data = Data()
+
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
@@ -597,6 +601,10 @@ struct GroupsProtos_GroupChange {
       // methods supported on all messages.
 
       var presentation: Data = Data()
+
+      var userID: Data = Data()
+
+      var profileKey: Data = Data()
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1908,6 +1916,8 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftPr
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".ModifyMemberProfileKeyAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "presentation"),
+    2: .standard(proto: "user_id"),
+    3: .standard(proto: "profile_key"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1917,6 +1927,8 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftPr
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self.presentation) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.userID) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self.profileKey) }()
       default: break
       }
     }
@@ -1926,11 +1938,19 @@ extension GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction: SwiftPr
     if !self.presentation.isEmpty {
       try visitor.visitSingularBytesField(value: self.presentation, fieldNumber: 1)
     }
+    if !self.userID.isEmpty {
+      try visitor.visitSingularBytesField(value: self.userID, fieldNumber: 2)
+    }
+    if !self.profileKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction, rhs: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) -> Bool {
     if lhs.presentation != rhs.presentation {return false}
+    if lhs.userID != rhs.userID {return false}
+    if lhs.profileKey != rhs.profileKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -2008,6 +2028,8 @@ extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProt
   static let protoMessageName: String = GroupsProtos_GroupChange.Actions.protoMessageName + ".PromotePendingMemberAction"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "presentation"),
+    2: .standard(proto: "user_id"),
+    3: .standard(proto: "profile_key"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2017,6 +2039,8 @@ extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProt
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularBytesField(value: &self.presentation) }()
+      case 2: try { try decoder.decodeSingularBytesField(value: &self.userID) }()
+      case 3: try { try decoder.decodeSingularBytesField(value: &self.profileKey) }()
       default: break
       }
     }
@@ -2026,11 +2050,19 @@ extension GroupsProtos_GroupChange.Actions.PromotePendingMemberAction: SwiftProt
     if !self.presentation.isEmpty {
       try visitor.visitSingularBytesField(value: self.presentation, fieldNumber: 1)
     }
+    if !self.userID.isEmpty {
+      try visitor.visitSingularBytesField(value: self.userID, fieldNumber: 2)
+    }
+    if !self.profileKey.isEmpty {
+      try visitor.visitSingularBytesField(value: self.profileKey, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction, rhs: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) -> Bool {
     if lhs.presentation != rhs.presentation {return false}
+    if lhs.userID != rhs.userID {return false}
+    if lhs.profileKey != rhs.profileKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
