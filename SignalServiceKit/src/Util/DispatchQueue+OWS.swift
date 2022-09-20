@@ -7,25 +7,25 @@ import Foundation
 extension DispatchQueue {
 
     public static let sharedUserInteractive: DispatchQueue = {
-        return DispatchQueue(label: "org.whispersystems.signal.sharedUserInteractive",
+        return DispatchQueue(label: OWSDispatch.createLabel("sharedUserInteractive"),
                              qos: .userInteractive,
                              autoreleaseFrequency: .workItem)
     }()
 
     public static let sharedUserInitiated: DispatchQueue = {
-        return DispatchQueue(label: "org.whispersystems.signal.sharedUserInitiated",
+        return DispatchQueue(label: OWSDispatch.createLabel("sharedUserInitiated"),
                              qos: .userInitiated,
                              autoreleaseFrequency: .workItem)
     }()
 
     public static let sharedUtility: DispatchQueue = {
-        return DispatchQueue(label: "org.whispersystems.signal.sharedUtility",
+        return DispatchQueue(label: OWSDispatch.createLabel("sharedUtility"),
                              qos: .utility,
                              autoreleaseFrequency: .workItem)
     }()
 
     public static let sharedBackground: DispatchQueue = {
-        return DispatchQueue(label: "org.whispersystems.signal.sharedBackground",
+        return DispatchQueue(label: OWSDispatch.createLabel("sharedBackground"),
                              qos: .background,
                              autoreleaseFrequency: .workItem)
     }()
@@ -86,5 +86,13 @@ extension OWSDispatch {
         let qosClass = DispatchQoS.QoSClass(flooring: rawQoS)
         let qos = DispatchQoS(qosClass: qosClass, relativePriority: 0)
         return DispatchQueue.sharedQueue(at: qos)
+    }
+
+    /// Returns a reverse-DNS queue label namespaced by appending the `suffix` to the current executable's bundleId
+    public static func createLabel(_ suffix: String) -> String {
+        guard let prefix = Bundle.main.bundleIdentifier else {
+            owsFail("Missing bundleID")
+        }
+        return "\(prefix).\(suffix)"
     }
 }

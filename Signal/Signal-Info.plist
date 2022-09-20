@@ -35,7 +35,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>org.whispersystems.signal</string>
+			<string>$(SIGNAL_BUNDLEID_PREFIX).signal</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>sgnl</string>
@@ -138,8 +138,12 @@
 		<string>INSendMessageIntent</string>
 		<string>INStartCallIntent</string>
 	</array>
+	<key>OWSBundleIDPrefix</key>
+	<string>$(SIGNAL_BUNDLEID_PREFIX)</string>
 	<key>OWSBundleVersion4</key>
 	<string>5.55.0.7</string>
+	<key>OWSMerchantID</key>
+	<string>$(SIGNAL_MERCHANTID)</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIApplicationShortcutItems</key>
@@ -150,7 +154,7 @@
 			<key>UIApplicationShortcutItemTitle</key>
 			<string>New Message</string>
 			<key>UIApplicationShortcutItemType</key>
-			<string>org.whispersystems.signal.quickCompose</string>
+			<string>$(SIGNAL_BUNDLEID_PREFIX).signal.quickCompose</string>
 		</dict>
 	</array>
 	<key>UIBackgroundModes</key>

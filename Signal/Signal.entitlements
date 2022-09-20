@@ -14,18 +14,18 @@
 	<string>NSFileProtectionComplete</string>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
-		<string>merchant.org.signalfoundation</string>
+		<string>merchant.$(SIGNAL_MERCHANTID)</string>
 	</array>
 	<key>com.apple.developer.usernotifications.communication</key>
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.org.whispersystems.signal.group</string>
-		<string>group.org.whispersystems.signal.group.staging</string>
+		<string>group.$(SIGNAL_BUNDLEID_PREFIX).signal.group</string>
+		<string>group.$(SIGNAL_BUNDLEID_PREFIX).signal.group.staging</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)org.whispersystems.signal</string>
+		<string>$(AppIdentifierPrefix)$(SIGNAL_BUNDLEID_PREFIX).signal</string>
 	</array>
 </dict>
 </plist>

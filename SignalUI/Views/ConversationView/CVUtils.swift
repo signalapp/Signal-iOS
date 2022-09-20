@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,13 +11,13 @@ public class CVUtils {
     private init() {}
 
     private static let workQueue_userInitiated: DispatchQueue = {
-        DispatchQueue(label: "org.whispersystems.signal.conversationView.workQueue_userInitiated",
+        DispatchQueue(label: OWSDispatch.createLabel("conversationView.workQueue_userInitiated"),
                       qos: .userInitiated,
                       autoreleaseFrequency: .workItem)
     }()
 
     private static let workQueue_userInteractive: DispatchQueue = {
-        DispatchQueue(label: "org.whispersystems.signal.conversationView.workQueue_userInteractive",
+        DispatchQueue(label: OWSDispatch.createLabel("conversationView.workQueue_userInteractive"),
                       qos: .userInteractive,
                       autoreleaseFrequency: .workItem)
     }()
@@ -27,7 +27,7 @@ public class CVUtils {
     }
 
     public static let landingQueue: DispatchQueue = {
-        DispatchQueue(label: "org.whispersystems.signal.conversationView.landingQueue",
+        DispatchQueue(label: OWSDispatch.createLabel("conversationView.landingQueue"),
                       qos: .userInitiated,
                       autoreleaseFrequency: .workItem)
     }()
