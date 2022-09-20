@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-enum LaunchFailure: UInt {
+enum LaunchFailure: UInt, CustomStringConvertible {
     case none
     case couldNotLoadDatabase
     case unknownDatabaseVersion
@@ -13,6 +13,25 @@ enum LaunchFailure: UInt {
     case databaseUnrecoverablyCorrupted
     case lastAppLaunchCrashed
     case lowStorageSpaceAvailable
+
+    public var description: String {
+        switch self {
+        case .none:
+            return "LaunchFailure_None"
+        case .couldNotLoadDatabase:
+            return "LaunchFailure_CouldNotLoadDatabase"
+        case .unknownDatabaseVersion:
+            return "LaunchFailure_UnknownDatabaseVersion"
+        case .couldNotRestoreTransferredData:
+            return "LaunchFailure_CouldNotRestoreTransferredData"
+        case .databaseUnrecoverablyCorrupted:
+            return "LaunchFailure_DatabaseUnrecoverablyCorrupted"
+        case .lastAppLaunchCrashed:
+            return "LaunchFailure_LastAppLaunchCrashed"
+        case .lowStorageSpaceAvailable:
+            return "LaunchFailure_NoDiskSpaceAvailable"
+        }
+    }
 }
 
 extension AppDelegate {
@@ -157,7 +176,7 @@ extension AppDelegate {
 
     @objc(showUIForLaunchFailure:)
     func showUI(forLaunchFailure launchFailure: LaunchFailure) {
-        Logger.info("launchFailure: \(Self.string(for: launchFailure))")
+        Logger.info("launchFailure: \(launchFailure)")
 
         // Disable normal functioning of app.
         didAppLaunchFail = true
@@ -249,8 +268,10 @@ extension AppDelegate {
             let title = NSLocalizedString("SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", comment: "")
             result.addAction(.init(title: title) { _ in
                 func submitDebugLogs() {
-                    Pastelog.submitLogs(withSupportTag: Self.string(for: launchFailure),
-                                        completion: onContinue)
+                    Pastelog.submitLogs(
+                        withSupportTag: String(describing: launchFailure),
+                        completion: onContinue
+                    )
                 }
 
                 if launchFailure == .databaseUnrecoverablyCorrupted {
@@ -272,26 +293,6 @@ extension AppDelegate {
         }
 
         return result
-    }
-
-    @objc(stringForLaunchFailure:)
-    class func string(for launchFailure: LaunchFailure) -> String {
-        switch launchFailure {
-        case .none:
-            return "LaunchFailure_None"
-        case .couldNotLoadDatabase:
-            return "LaunchFailure_CouldNotLoadDatabase"
-        case .unknownDatabaseVersion:
-            return "LaunchFailure_UnknownDatabaseVersion"
-        case .couldNotRestoreTransferredData:
-            return "LaunchFailure_CouldNotRestoreTransferredData"
-        case .databaseUnrecoverablyCorrupted:
-            return "LaunchFailure_DatabaseUnrecoverablyCorrupted"
-        case .lastAppLaunchCrashed:
-            return "LaunchFailure_LastAppLaunchCrashed"
-        case .lowStorageSpaceAvailable:
-            return "LaunchFailure_NoDiskSpaceAvailable"
-        }
     }
 
     // MARK: - Remote notifications
