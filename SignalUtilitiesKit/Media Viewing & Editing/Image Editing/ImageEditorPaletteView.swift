@@ -1,10 +1,9 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 
-public protocol ImageEditorPaletteViewDelegate: class {
+public protocol ImageEditorPaletteViewDelegate: AnyObject {
     func selectedColorDidChange()
 }
 
@@ -74,7 +73,7 @@ private class PalettePreviewView: OWSLayerView {
     private let teardropColor = UIColor.white
     public var selectedColor = UIColor.white {
         didSet {
-            circleLayer.fillColor = selectedColor.cgColor
+            circleLayer.themeFillColorForced = .color(selectedColor)
         }
     }
 
@@ -89,14 +88,15 @@ private class PalettePreviewView: OWSLayerView {
 
         super.init()
 
-        circleLayer.strokeColor = nil
-        teardropLayer.strokeColor = nil
+        circleLayer.themeStrokeColor = nil
+        teardropLayer.themeStrokeColor = nil
+        
         // Layer order matters.
         layer.addSublayer(teardropLayer)
         layer.addSublayer(circleLayer)
 
-        teardropLayer.fillColor = teardropColor.cgColor
-        teardropLayer.shadowColor = UIColor.black.cgColor
+        teardropLayer.themeFillColorForced = .color(teardropColor)
+        teardropLayer.themeShadowColor = .black
         teardropLayer.shadowRadius = 2.0
         teardropLayer.shadowOpacity = 0.33
         teardropLayer.shadowOffset = .zero
@@ -205,12 +205,12 @@ public class ImageEditorPaletteView: UIView {
     private var previewConstraint: NSLayoutConstraint?
 
     private func createContents() {
-        self.backgroundColor = .clear
+        self.themeBackgroundColor = .clear
         self.isOpaque = false
         self.layoutMargins = .zero
 
-        shadowView.backgroundColor = .black
-        shadowView.layer.shadowColor = UIColor.black.cgColor
+        shadowView.themeBackgroundColor = .black
+        shadowView.themeShadowColor = .black
         shadowView.layer.shadowRadius = 2.0
         shadowView.layer.shadowOpacity = 0.33
         shadowView.layer.shadowOffset = .zero
@@ -229,7 +229,8 @@ public class ImageEditorPaletteView: UIView {
         // We use an invisible margin to expand the hot area of this control.
         let margin: CGFloat = 20
         imageView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: margin, left: margin, bottom: margin, right: margin))
-        imageView.addBorder(with: .white)
+        imageView.themeBorderColor = .white
+        imageView.layer.borderWidth = 1
 
         imageWrapper.layoutCallback = { [weak self] (view) in
             guard let strongSelf = self else {
@@ -241,7 +242,8 @@ public class ImageEditorPaletteView: UIView {
         imageWrapper.autoPin(toEdgesOf: imageView)
         shadowView.autoPin(toEdgesOf: imageView)
 
-        selectionView.addBorder(with: .white)
+        selectionView.themeBorderColor = .white
+        selectionView.layer.borderWidth = 1
         selectionView.layer.cornerRadius = selectionSize / 2
         selectionView.autoSetDimensions(to: CGSize(width: selectionSize, height: selectionSize))
         imageWrapper.addSubview(selectionView)
@@ -329,7 +331,7 @@ public class ImageEditorPaletteView: UIView {
     }
 
     private func updateState() {
-        selectionView.backgroundColor = selectedValue.color
+        selectionView.themeBackgroundColorForced = .color(selectedValue.color)
         previewView.selectedColor = selectedValue.color
 
         guard let selectionConstraint = selectionConstraint else {

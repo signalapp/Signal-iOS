@@ -1,12 +1,14 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import AVFoundation
 import PromiseKit
 import SessionUIKit
 import SessionUtilitiesKit
 import SessionSnodeKit
+import SignalUtilitiesKit
 
-final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, QRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
@@ -42,29 +44,32 @@ final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewCont
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = NSLocalizedString("vc_link_device_scan_qr_code_explanation", comment: "")
+        let message = "vc_link_device_scan_qr_code_explanation".localized()
         let result = ScanQRCodeWrapperVC(message: message)
         result.delegate = self
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setNavBarTitle("vc_link_device_title".localized())
-        let navigationBar = navigationController!.navigationBar
+        
         // Page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ recoveryPhraseVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
         pageVC.setViewControllers([ recoveryPhraseVC ], direction: .forward, animated: false, completion: nil)
+        
         // Tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
         tabBarTopConstraint = tabBar.autoPinEdge(toSuperviewSafeArea: .top)
         view.pin(.trailing, to: .trailing, of: tabBar)
+        
         // Page VC constraints
         let pageVCView = pageVC.view!
         view.addSubview(pageVCView)
@@ -72,10 +77,11 @@ final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewCont
         pageVCView.pin(.top, to: .bottom, of: tabBar)
         view.pin(.trailing, to: .trailing, of: pageVCView)
         view.pin(.bottom, to: .bottom, of: pageVCView)
+        
         let screen = UIScreen.main.bounds
         pageVCView.set(.width, to: screen.width)
         let statusBarHeight = UIApplication.shared.statusBarFrame.height
-        let height = navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight - statusBarHeight
+        let height = (navigationController?.view.bounds.height ?? 0) - (navigationController?.navigationBar.bounds.height ?? 0) - TabBar.snHeight - statusBarHeight
         pageVCView.set(.height, to: height)
         recoveryPhraseVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
@@ -90,7 +96,8 @@ final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewCont
         NotificationCenter.default.removeObserver(self)
     }
     
-    // MARK: General
+    // MARK: - General
+    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let index = pages.firstIndex(of: viewController), index != 0 else { return nil }
         return pages[index - 1]
@@ -106,7 +113,8 @@ final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewCont
         pageVC.setViewControllers([ scanQRCodeWrapperVC ], direction: .forward, animated: false, completion: nil)
     }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {
         guard let targetVC = pendingViewControllers.first, let index = pages.firstIndex(of: targetVC) else { return }
         targetVCIndex = index
@@ -117,27 +125,31 @@ final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewCont
         tabBar.selectTab(at: index)
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func close() {
         dismiss(animated: true, completion: nil)
     }
     
-    func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
+    func controller(_ controller: QRCodeScanningViewController, didDetectQRCodeWith string: String) {
         let seed = Data(hex: string)
         continueWithSeed(seed)
     }
     
     func continueWithSeed(_ seed: Data) {
         if (seed.count != 16) {
-            let alert = UIAlertController(
-                title: "invalid_recovery_phrase".localized(),
-                message: "INVALID_RECOVERY_PHRASE_MESSAGE".localized(),
-                preferredStyle: .alert
+            let modal: ConfirmationModal = ConfirmationModal(
+                info: ConfirmationModal.Info(
+                    title: "invalid_recovery_phrase".localized(),
+                    explanation: "INVALID_RECOVERY_PHRASE_MESSAGE".localized(),
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .textPrimary,
+                    afterClosed: { [weak self] in
+                        self?.scanQRCodeWrapperVC.startCapture()
+                    }
+                )
             )
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: { _ in
-                self.scanQRCodeWrapperVC.startCapture()
-            }))
-            presentAlert(alert)
+            present(modal, animated: true)
             return
         }
         let (ed25519KeyPair, x25519KeyPair) = try! Identity.generate(from: seed)
@@ -164,7 +176,7 @@ final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewCont
     }
 }
 
-private final class RecoveryPhraseVC : UIViewController {
+private final class RecoveryPhraseVC: UIViewController {
     weak var linkDeviceVC: LinkDeviceVC!
     private var spacer1HeightConstraint: NSLayoutConstraint!
     private var spacer2HeightConstraint: NSLayoutConstraint!
@@ -172,21 +184,23 @@ private final class RecoveryPhraseVC : UIViewController {
     private var bottomConstraint: NSLayoutConstraint!
     
     private lazy var mnemonicTextView: TextView = {
-        let result = TextView(placeholder: NSLocalizedString("vc_restore_seed_text_field_hint", comment: ""))
-        result.layer.borderColor = Colors.text.cgColor
+        let result = TextView(placeholder: "vc_restore_seed_text_field_hint".localized())
+        result.themeBorderColor = .textPrimary
         result.accessibilityLabel = "Recovery phrase text view"
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         // Title label
         let titleLabel = UILabel()
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = "vc_enter_recovery_phrase_title".localized()
-        titleLabel.textColor = Colors.text
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
         
@@ -194,7 +208,7 @@ private final class RecoveryPhraseVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = "vc_enter_recovery_phrase_explanation".localized()
-        explanationLabel.textColor = Colors.text
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.numberOfLines = 0
         
@@ -267,7 +281,8 @@ private final class RecoveryPhraseVC : UIViewController {
         mnemonicTextView.resignFirstResponder()
     }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = -newHeight // Negative due to how the constraint is set up
@@ -289,11 +304,12 @@ private final class RecoveryPhraseVC : UIViewController {
         }
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func handleContinueButtonTapped() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
+            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
             presentAlert(alert)
         }
         let mnemonic = mnemonicTextView.text!.lowercased()
@@ -309,31 +325,35 @@ private final class RecoveryPhraseVC : UIViewController {
     }
 }
 
-private final class ScanQRCodePlaceholderVC : UIViewController {
+private final class ScanQRCodePlaceholderVC: UIViewController {
     weak var linkDeviceVC: LinkDeviceVC!
     
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
+        
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_scan_qr_code_camera_access_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
         // Set up call to action button
         let callToActionButton = UIButton()
-        callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
-        callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
+        callToActionButton.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        callToActionButton.setTitle("vc_scan_qr_code_grant_camera_access_button_title".localized(), for: .normal)
+        callToActionButton.setThemeTitleColor(.primary, for: .normal)
+        callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: .touchUpInside)
+        
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])
         stackView.axis = .vertical
         stackView.spacing = Values.mediumSpacing
         stackView.alignment = .center
+        
         // Set up constraints
         view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)

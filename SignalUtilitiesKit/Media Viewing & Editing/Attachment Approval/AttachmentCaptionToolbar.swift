@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 import SessionUIKit
 
-protocol AttachmentCaptionToolbarDelegate: class {
+protocol AttachmentCaptionToolbarDelegate: AnyObject {
     func attachmentCaptionToolbarDidEdit(_ attachmentCaptionToolbar: AttachmentCaptionToolbar)
     func attachmentCaptionToolbarDidComplete()
 }
@@ -49,7 +49,7 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
         // sizing when used as an input accessory view.
         self.autoresizingMask = .flexibleHeight
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.backgroundColor = UIColor.clear
+        self.themeBackgroundColor = .clear
 
         textView.delegate = self
 
@@ -92,12 +92,12 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
         let lengthLimitLabel = UILabel()
 
         // Length Limit Label shown when the user inputs too long of a message
-        lengthLimitLabel.textColor = .white
+        lengthLimitLabel.themeTextColor = .textPrimary
         lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the media message field.")
         lengthLimitLabel.textAlignment = .center
 
         // Add shadow in case overlayed on white content
-        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
+        lengthLimitLabel.themeShadowColor = .black
         lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8
         lengthLimitLabel.layer.shadowRadius = 2.0
@@ -127,11 +127,11 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
         let textView = AttachmentTextView()
 
         textView.keyboardAppearance = isLightMode ? .default : .dark
-        textView.backgroundColor = .clear
-        textView.tintColor = .white
+        textView.themeBackgroundColor = .clear
+        textView.themeTintColor = .textPrimary
 
         textView.font = UIFont.ows_dynamicTypeBody
-        textView.textColor = .white
+        textView.themeTextColor = .textPrimary
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
 
         return textView

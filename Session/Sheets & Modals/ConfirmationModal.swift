@@ -39,7 +39,7 @@ public class ConfirmationModal: Modal {
             attributedExplanation: NSAttributedString? = nil,
             stateToShow: State = .always,
             confirmTitle: String? = nil,
-            confirmStyle: ThemeValue = .textPrimary,
+            confirmStyle: ThemeValue = .alert_text,
             cancelTitle: String = "TXT_CANCEL_TITLE".localized(),
             cancelStyle: ThemeValue = .danger,
             dismissOnConfirm: Bool = true,
@@ -115,7 +115,7 @@ public class ConfirmationModal: Modal {
     private lazy var titleLabel: UILabel = {
         let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        result.themeTextColor = .textPrimary
+        result.themeTextColor = .alert_text
         result.textAlignment = .center
         result.lineBreakMode = .byWordWrapping
         result.numberOfLines = 0
@@ -126,7 +126,7 @@ public class ConfirmationModal: Modal {
     private lazy var explanationLabel: UILabel = {
         let result: UILabel = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
-        result.themeTextColor = .textPrimary
+        result.themeTextColor = .alert_text
         result.textAlignment = .center
         result.lineBreakMode = .byWordWrapping
         result.numberOfLines = 0

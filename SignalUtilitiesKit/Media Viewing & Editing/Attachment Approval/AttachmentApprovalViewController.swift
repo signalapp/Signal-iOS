@@ -213,18 +213,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.themeBackgroundColor = .backgroundSecondary
         
-        let backgroundImage: UIImage = UIImage(color: Colors.navigationBarBackground)
-        self.navigationItem.title = nil
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = Colors.navigationBarBackground
-        (self.navigationController?.navigationBar as? OWSNavigationBar)?.respectsTheme = true
-        self.navigationController?.navigationBar.backgroundColor = Colors.navigationBarBackground
-        self.navigationController?.navigationBar.setBackgroundImage(backgroundImage, for: .default)
-
         // Avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
         pagerScrollView?.isScrollEnabled = (attachmentItems.count > 1)
 
@@ -369,12 +359,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
                 self?.cancelPressed()
             }
-            cancelButton.setTitleColor(Colors.text, for: .normal)
-            if let titleLabel = cancelButton.titleLabel {
-                titleLabel.font = UIFont.systemFont(ofSize: 17.0)
-            } else {
-                owsFailDebug("Missing titleLabel.")
-            }
+            cancelButton.titleLabel?.font = .systemFont(ofSize: 17.0)
+            cancelButton.setThemeTitleColor(.textPrimary, for: .normal)
+            cancelButton.setThemeTitleColor(.textSecondary, for: .highlighted)
             cancelButton.sizeToFit()
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         }
@@ -382,7 +369,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Mimic a conventional back button, but with a shadow.
             let isRTL = CurrentAppContext().isRTL
             let imageName = (isRTL ? "NavBarBackRTL" : "NavBarBack")
-            let backButton = OWSButton(imageName: imageName, tintColor: Colors.text) { [weak self] in
+            let backButton = OWSButton(imageName: imageName, tintColor: .textPrimary) { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             }
 
@@ -727,13 +714,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 // MARK: -
 
 extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
-    func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController?.setAttachmentViewScale(.compact, animated: true)
-    }
+    func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {}
 
-    func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController?.setAttachmentViewScale(.fullsize, animated: true)
-    }
+    func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {}
 
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar) {
         // Toolbar flickers in and out if there are errors
@@ -768,9 +751,9 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
 extension SignalAttachmentItem: GalleryRailItem {
     func buildRailItemView() -> UIView {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = UIColor.black.withAlphaComponent(0.33)
         imageView.image = getThumbnailImage()
+        imageView.themeBackgroundColor = .backgroundSecondary
+        imageView.contentMode = .scaleAspectFill
         
         return imageView
     }

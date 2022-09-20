@@ -3,6 +3,7 @@
 import UIKit
 import SessionUIKit
 import SessionUtilitiesKit
+import SignalUtilitiesKit
 
 final class SeedVC: BaseVC {
     private let mnemonic: String = {
@@ -26,12 +27,19 @@ final class SeedVC: BaseVC {
     
     private lazy var seedReminderView: SeedReminderView = {
         let result = SeedReminderView(hasContinueButton: false)
-        let title = "You're almost finished! 90%"
-        let attributedTitle = NSMutableAttributedString(string: title)
-        attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "90%"))
-        result.title = attributedTitle
         result.subtitle = "view_seed_reminder_subtitle_2".localized()
         result.setProgress(0.9, animated: false)
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] _, primaryColor in
+            let title = "You're almost finished! 90%"
+            let attributedTitle = NSMutableAttributedString(string: title)
+            attributedTitle.addAttribute(
+                .foregroundColor,
+                value: primaryColor.color,
+                range: (title as NSString).range(of: "90%")
+            )
+            result?.title = attributedTitle
+        }
         
         return result
     }()
@@ -39,7 +47,7 @@ final class SeedVC: BaseVC {
     private lazy var mnemonicLabel: UILabel = {
         let result = UILabel()
         result.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
-        result.textColor = Colors.accent
+        result.themeTextColor = .primary
         result.textAlignment = .center
         result.lineBreakMode = .byWordWrapping
         result.numberOfLines = 0
@@ -64,14 +72,14 @@ final class SeedVC: BaseVC {
         
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
+        closeButton.themeTintColor = .textPrimary
         navigationItem.leftBarButtonItem = closeButton
         
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = "vc_seed_title_2".localized()
-        titleLabel.textColor = Colors.text
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
         
@@ -79,7 +87,7 @@ final class SeedVC: BaseVC {
         let explanationLabel = UILabel()
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = "vc_seed_explanation".localized()
-        explanationLabel.textColor = Colors.text
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.numberOfLines = 0
         
@@ -94,15 +102,15 @@ final class SeedVC: BaseVC {
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
         mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing)
+        mnemonicLabelContainer.themeBorderColor = .textPrimary
         mnemonicLabelContainer.layer.cornerRadius = TextField.cornerRadius
         mnemonicLabelContainer.layer.borderWidth = 1
-        mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
         
         // Set up call to action label
         let callToActionLabel = UILabel()
         callToActionLabel.font = .systemFont(ofSize: isIPhone5OrSmaller ? Values.smallFontSize : Values.mediumFontSize)
         callToActionLabel.text = "vc_seed_reveal_button_title".localized()
-        callToActionLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        callToActionLabel.themeTextColor = .textSecondary
         callToActionLabel.textAlignment = .center
         
         let callToActionLabelGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(revealMnemonic))
@@ -179,14 +187,20 @@ final class SeedVC: BaseVC {
     @objc private func revealMnemonic() {
         UIView.transition(with: mnemonicLabel, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.mnemonicLabel.text = self.mnemonic
-            self.mnemonicLabel.textColor = Colors.text
+            self.mnemonicLabel.themeTextColor = .textPrimary
         }, completion: nil)
         
         UIView.transition(with: seedReminderView.titleLabel, duration: 0.25, options: .transitionCrossDissolve, animations: {
-            let title = "Account Secured! 100%"
-            let attributedTitle = NSMutableAttributedString(string: title)
-            attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "100%"))
-            self.seedReminderView.title = attributedTitle
+            ThemeManager.onThemeChange(observer: self.seedReminderView) { [weak self] _, primaryColor in
+                let title = "Account Secured! 100%"
+                let attributedTitle = NSMutableAttributedString(string: title)
+                attributedTitle.addAttribute(
+                    .foregroundColor,
+                    value: primaryColor.color,
+                    range: (title as NSString).range(of: "100%")
+                )
+                self?.seedReminderView.title = attributedTitle
+            }
         }, completion: nil)
         
         UIView.transition(with: seedReminderView.subtitleLabel, duration: 1, options: .transitionCrossDissolve, animations: {

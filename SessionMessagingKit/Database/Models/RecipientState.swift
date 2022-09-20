@@ -65,7 +65,7 @@ public struct RecipientState: Codable, Equatable, FetchableRecord, PersistableRe
             }
         }
         
-        public func statusIconInfo(variant: Interaction.Variant, hasAtLeastOneReadReceipt: Bool) -> (image: UIImage?, tintColor: ThemeValue) {
+        public func statusIconInfo(variant: Interaction.Variant, hasAtLeastOneReadReceipt: Bool) -> (image: UIImage?, themeTintColor: ThemeValue) {
             guard variant == .standardOutgoing else { return (nil, .textPrimary) }
 
             switch (self, hasAtLeastOneReadReceipt) {

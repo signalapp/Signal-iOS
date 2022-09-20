@@ -125,7 +125,7 @@ final class ConversationTitleView: UIView {
             }
             guard !onlyNotifyForMentions else {
                 let imageAttachment = NSTextAttachment()
-                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: textPrimary)
+                imageAttachment.image = UIImage(named: "NotifyMentions.png")?.withTint(textPrimary)
                 imageAttachment.bounds = CGRect(
                     x: 0,
                     y: -2,

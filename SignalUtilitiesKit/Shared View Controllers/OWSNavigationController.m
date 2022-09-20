@@ -146,11 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-    if (OWSWindowManager.sharedManager.hasCall) {
-        // Status bar is overlaying the green "call banner"
-        return UIStatusBarStyleLightContent;
-    }
-    
     // Note: The view controllers contain the logic needed to get the correct statusBarStyle
     // for the current theme
     if (self.topViewController != nil) {
@@ -168,9 +163,6 @@ NS_ASSUME_NONNULL_BEGIN
     
     if (!CurrentAppContext().isMainApp) {
         self.additionalSafeAreaInsets = UIEdgeInsetsZero;
-    }
-    else if (OWSWindowManager.sharedManager.hasCall) {
-        self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
     }
     else {
         self.additionalSafeAreaInsets = UIEdgeInsetsZero;

@@ -4,6 +4,7 @@ import UIKit
 import Sodium
 import Curve25519Kit
 import SessionUIKit
+import SignalUtilitiesKit
 
 final class RegisterVC : BaseVC {
     private var seed: Data! { didSet { updateKeyPair() } }
@@ -14,11 +15,11 @@ final class RegisterVC : BaseVC {
     
     private lazy var publicKeyLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = Fonts.spaceMono(ofSize: isIPhone5OrSmaller ? Values.mediumFontSize : 20)
-        result.numberOfLines = 0
-        result.lineBreakMode = .byCharWrapping
+        result.themeTextColor = .textPrimary
         result.accessibilityLabel = "Session ID label"
+        result.lineBreakMode = .byCharWrapping
+        result.numberOfLines = 0
         
         return result
     }()
@@ -33,21 +34,23 @@ final class RegisterVC : BaseVC {
     
     private lazy var legalLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        result.themeTextColor = .textPrimary
         let text = "By using this service, you agree to our Terms of Service, End User License Agreement (EULA) and Privacy Policy"
         let attributedText = NSMutableAttributedString(string: text, attributes: [ .font : UIFont.systemFont(ofSize: Values.verySmallFontSize) ])
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Terms of Service"))
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "End User License Agreement (EULA)"))
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Privacy Policy"))
         result.attributedText = attributedText
-        result.numberOfLines = 0
         result.textAlignment = .center
         result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,7 +60,7 @@ final class RegisterVC : BaseVC {
         let titleLabel = UILabel()
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = "vc_register_title".localized()
-        titleLabel.textColor = Colors.text
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
         
@@ -65,7 +68,7 @@ final class RegisterVC : BaseVC {
         let explanationLabel = UILabel()
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = "vc_register_explanation".localized()
-        explanationLabel.textColor = Colors.text
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.numberOfLines = 0
         
@@ -75,7 +78,7 @@ final class RegisterVC : BaseVC {
         publicKeyLabel.pin(to: publicKeyLabelContainer, withInset: Values.mediumSpacing)
         publicKeyLabelContainer.layer.cornerRadius = TextField.cornerRadius
         publicKeyLabelContainer.layer.borderWidth = 1
-        publicKeyLabelContainer.layer.borderColor = Colors.text.cgColor
+        publicKeyLabelContainer.themeBorderColor = .textPrimary
         
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()

@@ -38,8 +38,8 @@ final class SeedReminderView: UIView {
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
         result.themeTextColor = .textSecondary
-        result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 2
         
         return result
     }()
@@ -66,8 +66,17 @@ final class SeedReminderView: UIView {
         // Set background color
         themeBackgroundColor = .conversationButton_background
         
+        // Note: We hard-code the height of the subtitle to 2 lines so changing it's content
+        // doesn't result in the view changing height (which looks buggy)
+        let subtitleContainerView: UIView = UIView()
+        subtitleContainerView.set(.height, to: (subtitleLabel.font.lineHeight * 2))
+        subtitleContainerView.addSubview(subtitleLabel)
+        subtitleLabel.pin(.top, to: .top, of: subtitleContainerView)
+        subtitleLabel.pin(.leading, to: .leading, of: subtitleContainerView)
+        subtitleLabel.pin(.trailing, to: .trailing, of: subtitleContainerView)
+        
         // Set up label stack view
-        let labelStackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        let labelStackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleContainerView ])
         labelStackView.axis = .vertical
         labelStackView.spacing = 4
         
@@ -103,12 +112,12 @@ final class SeedReminderView: UIView {
         stackView.pin(to: self)
     }
     
-    // MARK: Updating
+    // MARK: - Updating
+    
     func setProgress(_ progress: Float, animated isAnimated: Bool) {
         progressIndicatorView.setProgress(progress, animated: isAnimated)
     }
     
-    // MARK: Updating
     @objc private func handleContinueButtonTapped() {
         delegate?.handleContinueButtonTapped(from: self)
     }

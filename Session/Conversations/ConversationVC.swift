@@ -137,7 +137,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     lazy var tableView: InsetLockableTableView = {
         let result: InsetLockableTableView = InsetLockableTableView()
         result.separatorStyle = .none
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.contentInsetAdjustmentBehavior = .never
         result.keyboardDismissMode = .interactive
@@ -257,7 +257,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         result.clipsToBounds = true
         result.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         result.setTitle("TXT_BLOCK_USER_TITLE".localized(), for: .normal)
-        result.setTitleColor(Colors.destructive, for: .normal)
+        result.setThemeTitleColor(.danger, for: .normal)
         result.addTarget(self, action: #selector(block), for: .touchUpInside)
 
         return result
@@ -1058,7 +1058,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                 self.view.layoutIfNeeded()
             }
         }
-
+        
         let keyboardTop = (UIScreen.main.bounds.height - keyboardRect.minY)
         let messageRequestsOffset: CGFloat = (messageRequestView.isHidden ? 0 : messageRequestView.bounds.height + 16)
         let oldContentInset: UIEdgeInsets = tableView.contentInset
@@ -1210,7 +1210,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         switch section.model {
             case .loadOlder, .loadNewer:
                 let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
-                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.themeTintColor = .textPrimary
                 loadingIndicator.alpha = 0.5
                 loadingIndicator.startAnimating()
                 
@@ -1386,7 +1386,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             let ipadCancelButton = UIButton()
             ipadCancelButton.setTitle("cancel".localized(), for: .normal)
             ipadCancelButton.addTarget(self, action: #selector(hideSearchUI), for: .touchUpInside)
-            ipadCancelButton.setTitleColor(Colors.text, for: .normal)
+            ipadCancelButton.setThemeTitleColor(.textPrimary, for: .normal)
             searchBarContainer.addSubview(ipadCancelButton)
             ipadCancelButton.pin(.trailing, to: .trailing, of: searchBarContainer)
             ipadCancelButton.autoVCenterInSuperview()

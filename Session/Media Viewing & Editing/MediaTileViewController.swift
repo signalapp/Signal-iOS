@@ -71,7 +71,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     lazy var collectionView: UICollectionView = {
         let result: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: mediaTileViewLayout)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.backgroundColor = Colors.navigationBarBackground
+        result.themeBackgroundColor = .backgroundSecondary
         result.delegate = self
         result.dataSource = self
         result.register(view: PhotoGridViewCell.self)
@@ -95,8 +95,8 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
             animated: false
         )
 
-        result.barTintColor = Colors.navigationBarBackground
-        result.tintColor = Colors.text
+        result.themeBarTintColor = .backgroundPrimary
+        result.themeTintColor = .textPrimary
 
         return result
     }()
@@ -107,19 +107,21 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
             target: self,
             action: #selector(didPressDelete)
         )
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
 
         return result
     }()
 
     // MARK: - Lifecycle
-
+    
     override public func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.themeBackgroundColor = .backgroundSecondary
 
         // Add a custom back button if this is the only view controller
         if self.navigationController?.viewControllers.first == self {
-            let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
+            let backButton = UIViewController.createOWSBackButton(target: self, selector: #selector(didPressDismissButton))
             self.navigationItem.leftBarButtonItem = backButton
         }
         
@@ -763,25 +765,21 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
 
     override init(frame: CGRect) {
         label = UILabel()
-        label.textColor = Colors.text
-
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        label.themeTextColor = .textPrimary
 
         super.init(frame: frame)
 
-        self.backgroundColor = isLightMode ? Colors.cellBackground : UIColor.ows_black.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        self.themeBackgroundColor = .clear
+        
+        let backgroundView: UIView = UIView()
+        backgroundView.themeBackgroundColor = .backgroundSecondary
+        addSubview(backgroundView)
+        backgroundView.pin(to: self)
 
-        self.addSubview(blurEffectView)
         self.addSubview(label)
-
-        blurEffectView.autoPinEdgesToSuperviewEdges()
-        blurEffectView.isHidden = isLightMode
-        label.autoPinEdge(toSuperviewMargin: .trailing)
-        label.autoPinEdge(toSuperviewMargin: .leading)
-        label.autoVCenterInSuperview()
+        label.pin(.leading, to: .leading, of: self, withInset: Values.largeSpacing)
+        label.pin(.trailing, to: .trailing, of: self, withInset: -Values.largeSpacing)
+        label.center(.vertical, in: self)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -811,7 +809,7 @@ private class MediaGalleryStaticHeader: UICollectionViewCell {
 
         addSubview(label)
 
-        label.textColor = Colors.text
+        label.themeTextColor = .textPrimary
         label.textAlignment = .center
         label.numberOfLines = 0
         label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 0, leading: Values.largeSpacing, bottom: 0, trailing: Values.largeSpacing))

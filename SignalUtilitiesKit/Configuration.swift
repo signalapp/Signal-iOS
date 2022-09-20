@@ -14,6 +14,6 @@ public enum Configuration {
         
         SNMessagingKit.configure()
         SNSnodeKit.configure()
-        SUIKit.configure()
+        SNUIKit.configure()
     }
 }

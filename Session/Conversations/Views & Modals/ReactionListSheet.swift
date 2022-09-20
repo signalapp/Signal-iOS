@@ -122,7 +122,7 @@ final class ReactionListSheet: BaseVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
         swipeGestureRecognizer.direction = .down
@@ -133,6 +133,7 @@ final class ReactionListSheet: BaseVC {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         reactionContainer.scrollToItem(
             at: IndexPath(item: lastSelectedReactionIndex, section: 0),
             at: .centeredHorizontally,
@@ -150,7 +151,7 @@ final class ReactionListSheet: BaseVC {
         view.addSubview(contentView)
         contentView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.bottom ], to: view)
         // Emoji collectionView height + seleted emoji detail height + 5 × user cell height + footer cell height + bottom safe area inset
-        let contentViewHeight: CGFloat = 100 + 5 * 65 + 45 + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+        let contentViewHeight: CGFloat = 100 + 5 * 65 + 45 + (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
         contentView.set(.height, to: contentViewHeight)
         populateContentView()
     }
@@ -163,7 +164,7 @@ final class ReactionListSheet: BaseVC {
         
         // Seperator
         let seperator = UIView()
-        seperator.backgroundColor = Colors.border.withAlphaComponent(0.1)
+        seperator.themeBackgroundColor = .borderSeparator
         seperator.set(.height, to: 0.5)
         contentView.addSubview(seperator)
         seperator.pin(.leading, to: .leading, of: contentView, withInset: Values.smallSpacing)
@@ -180,7 +181,7 @@ final class ReactionListSheet: BaseVC {
         // Line
         let line = UIView()
         line.set(.height, to: 0.5)
-        line.backgroundColor = Colors.border.withAlphaComponent(0.5)
+        line.themeBackgroundColor = .borderSeparator
         contentView.addSubview(line)
         line.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
         line.pin(.top, to: .bottom, of: stackView, withInset: Values.smallSpacing)
@@ -541,12 +542,12 @@ extension ReactionListSheet {
     }
     
     fileprivate final class FooterCell: UITableViewCell {
-        
         private lazy var label: UILabel = {
-            let result = UILabel()
-            result.textAlignment = .center
+            let result: UILabel = UILabel()
             result.font = .systemFont(ofSize: Values.smallFontSize)
-            result.textColor = Colors.grey.withAlphaComponent(0.8)
+            result.themeTextColor = .textSecondary
+            result.textAlignment = .center
+            
             return result
         }()
         
@@ -554,17 +555,19 @@ extension ReactionListSheet {
         
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
+            
             setUpViewHierarchy()
         }
 
         required init?(coder: NSCoder) {
             super.init(coder: coder)
+            
             setUpViewHierarchy()
         }
 
         private func setUpViewHierarchy() {
             // Background color
-            backgroundColor = Colors.cellBackground
+            themeBackgroundColor = .backgroundSecondary
             
             contentView.addSubview(label)
             label.pin(to: contentView)
@@ -572,9 +575,10 @@ extension ReactionListSheet {
         }
         
         func update(moreReactorCount: Int, emoji: String) {
-            label.text = (moreReactorCount == 1) ?
+            label.text = (moreReactorCount == 1 ?
                 String(format: "EMOJI_REACTS_MORE_REACTORS_ONE".localized(), "\(emoji)") :
                 String(format: "EMOJI_REACTS_MORE_REACTORS_MUTIPLE".localized(), "\(moreReactorCount)" ,"\(emoji)")
+            )
         }
     }
 }

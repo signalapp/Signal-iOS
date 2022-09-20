@@ -12,22 +12,27 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var tabBar: TabBar = {
-        let tabs = [
-            TabBar.Tab(title: MediaStrings.media) { [weak self] in
-                guard let self = self else { return }
-                self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
-                self.updateSelectButton(updatedData: self.mediaTitleViewController.viewModel.galleryData, inBatchSelectMode: self.mediaTitleViewController.isInBatchSelectMode)
-            },
-            TabBar.Tab(title: MediaStrings.document) { [weak self] in
-                guard let self = self else { return }
-                self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
-                self.endSelectMode()
-                self.navigationItem.rightBarButtonItem = nil
-            }
-        ]
-        return TabBar(tabs: tabs)
+        let result: TabBar = TabBar(
+            tabs: [
+                TabBar.Tab(title: MediaStrings.media) { [weak self] in
+                    guard let self = self else { return }
+                    self.pageVC.setViewControllers([ self.pages[0] ], direction: .forward, animated: false, completion: nil)
+                    self.updateSelectButton(updatedData: self.mediaTitleViewController.viewModel.galleryData, inBatchSelectMode: self.mediaTitleViewController.isInBatchSelectMode)
+                },
+                TabBar.Tab(title: MediaStrings.document) { [weak self] in
+                    guard let self = self else { return }
+                    self.pageVC.setViewControllers([ self.pages[1] ], direction: .forward, animated: false, completion: nil)
+                    self.endSelectMode()
+                    self.navigationItem.rightBarButtonItem = nil
+                }
+            ]
+        )
+        result.themeBackgroundColor = .backgroundPrimary
+        
+        return result
     }()
     
     private var mediaTitleViewController: MediaTileViewController
@@ -54,11 +59,11 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.themeBackgroundColor = .backgroundPrimary
+        view.themeBackgroundColor = .backgroundSecondary
         
         // Add a custom back button if this is the only view controller
         if self.navigationController?.viewControllers.first == self {
-            let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
+            let backButton = UIViewController.createOWSBackButton(target: self, selector: #selector(didPressDismissButton))
             self.navigationItem.leftBarButtonItem = backButton
         }
         

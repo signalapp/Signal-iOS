@@ -402,6 +402,7 @@ public class MediaGalleryViewModel {
                 .baseQuery(
                     orderSQL: SQL(interactionAttachment[.albumIndex]),
                     customFilters: SQL("""
+                        \(attachment[.isVisualMedia]) = true AND
                         \(attachment[.isValid]) = true AND
                         \(interaction[.id]) = \(interactionId)
                     """)
@@ -416,6 +417,8 @@ public class MediaGalleryViewModel {
                 .baseQuery(
                     orderSQL: Item.galleryReverseOrderSQL,
                     customFilters: SQL("""
+                        \(attachment[.isVisualMedia]) = true AND
+                        \(attachment[.isValid]) = true AND
                         \(interaction[.timestampMs]) > \(albumTimestampMs) AND
                         \(interaction[.threadId]) = \(threadId)
                     """)
@@ -425,6 +428,8 @@ public class MediaGalleryViewModel {
                 .baseQuery(
                     orderSQL: Item.galleryOrderSQL,
                     customFilters: SQL("""
+                        \(attachment[.isVisualMedia]) = true AND
+                        \(attachment[.isValid]) = true AND
                         \(interaction[.timestampMs]) < \(albumTimestampMs) AND
                         \(interaction[.threadId]) = \(threadId)
                     """)

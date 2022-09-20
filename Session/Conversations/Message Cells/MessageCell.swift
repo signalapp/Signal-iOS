@@ -30,10 +30,10 @@ public class MessageCell: UITableViewCell {
     }
 
     func setUpViewHierarchy() {
-        backgroundColor = .clear
+        themeBackgroundColor = .clear
         
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = .clear
+        selectedBackgroundView.themeBackgroundColor = .clear
         self.selectedBackgroundView = selectedBackgroundView
     }
 

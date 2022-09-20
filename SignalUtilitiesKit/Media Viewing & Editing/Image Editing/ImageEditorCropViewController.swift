@@ -87,34 +87,40 @@ class ImageEditorCropViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
 
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.themeBackgroundColor = .backgroundSecondary
         self.view.layoutMargins = .zero
 
         // MARK: - Buttons
 
-        let rotate90Button = OWSButton(imageName: "image_editor_rotate",
-                                       tintColor: Colors.text) { [weak self] in
+        let rotate90Button = OWSButton(
+            imageName: "image_editor_rotate",
+            tintColor: .textPrimary
+        ) { [weak self] in
             self?.rotate90ButtonPressed()
         }
-        let flipButton = OWSButton(imageName: "image_editor_flip",
-                                   tintColor: Colors.text) { [weak self] in
-                                    self?.flipButtonPressed()
+        let flipButton = OWSButton(
+            imageName: "image_editor_flip",
+            tintColor: .textPrimary
+        ) { [weak self] in
+            self?.flipButtonPressed()
         }
-        let cropLockButton = OWSButton(imageName: "image_editor_crop_unlock",
-                                   tintColor: Colors.text) { [weak self] in
-                                    self?.cropLockButtonPressed()
+        let cropLockButton = OWSButton(
+            imageName: "image_editor_crop_unlock",
+            tintColor: .textPrimary
+        ) { [weak self] in
+            self?.cropLockButtonPressed()
         }
         self.cropLockButton = cropLockButton
 
         // MARK: - Canvas & Wrapper
 
         let wrapperView = UIView.container()
-        wrapperView.backgroundColor = .clear
+        wrapperView.themeBackgroundColor = .clear
         wrapperView.isOpaque = false
 
         // TODO: We could mask the clipped region with a semi-transparent overlay like WA.
         clipView.clipsToBounds = true
-        clipView.backgroundColor = .clear
+        clipView.themeBackgroundColor = .clear
         clipView.isOpaque = false
         clipView.layoutCallback = { [weak self] (_) in
             guard let strongSelf = self else {
@@ -126,7 +132,7 @@ class ImageEditorCropViewController: OWSViewController {
 
         croppedImageLayer.contents = previewImage.cgImage
         croppedImageLayer.contentsScale = previewImage.scale
-        croppedContentView.backgroundColor = .clear
+        croppedContentView.themeBackgroundColor = .clear
         croppedContentView.isOpaque = false
         croppedContentView.layer.addSublayer(croppedImageLayer)
         croppedContentView.layoutCallback = { [weak self] (_) in
@@ -145,7 +151,7 @@ class ImageEditorCropViewController: OWSViewController {
         // should be semi-transparent to distinguish it from
         // the content within the crop bounds.
         uncroppedImageLayer.opacity = 0.5
-        uncroppedContentView.backgroundColor = .clear
+        uncroppedContentView.themeBackgroundColor = .clear
         uncroppedContentView.isOpaque = false
         uncroppedContentView.layer.addSublayer(uncroppedImageLayer)
         wrapperView.addSubview(uncroppedContentView)
@@ -153,15 +159,17 @@ class ImageEditorCropViewController: OWSViewController {
 
         // MARK: - Footer
 
-        let footer = UIStackView(arrangedSubviews: [
-            rotate90Button,
-            flipButton,
-            UIView.hStretchingSpacer(),
-            cropLockButton
-            ])
+        let footer = UIStackView(
+            arrangedSubviews: [
+                rotate90Button,
+                flipButton,
+                UIView.hStretchingSpacer(),
+                cropLockButton
+            ]
+        )
         footer.axis = .horizontal
         footer.spacing = 16
-        footer.backgroundColor = .clear
+        footer.themeBackgroundColor = .clear
         footer.isOpaque = false
 
         let imageMargin: CGFloat = 20
@@ -269,16 +277,18 @@ class ImageEditorCropViewController: OWSViewController {
     private func setCropViewAppearance() {
 
         // TODO: Tune the size.
-        let cornerSize = CGSize(width: min(clipView.width() * 0.5, ImageEditorCropViewController.desiredCornerSize),
-                                height: min(clipView.height() * 0.5, ImageEditorCropViewController.desiredCornerSize))
+        let cornerSize = CGSize(
+            width: min(clipView.width() * 0.5, ImageEditorCropViewController.desiredCornerSize),
+            height: min(clipView.height() * 0.5, ImageEditorCropViewController.desiredCornerSize)
+        )
         self.cornerSize = cornerSize
         for cropCornerView in cropCornerViews {
             let cornerThickness: CGFloat = 2
 
             let shapeLayer = CAShapeLayer()
             cropCornerView.layer.addSublayer(shapeLayer)
-            shapeLayer.fillColor = UIColor.white.cgColor
-            shapeLayer.strokeColor = nil
+            shapeLayer.themeFillColor = .white
+            shapeLayer.themeStrokeColor = nil
             cropCornerView.layoutCallback = { (view) in
                 let shapeFrame = view.bounds.insetBy(dx: -cornerThickness, dy: -cornerThickness)
                 shapeLayer.frame = shapeFrame
@@ -329,7 +339,8 @@ class ImageEditorCropViewController: OWSViewController {
                 shapeLayer.path = bezierPath.cgPath
             }
         }
-        cropView.addBorder(with: .white)
+        cropView.themeBorderColor = .white
+        cropView.layer.borderWidth = 1
     }
 
     private func updateCropViewLayout() {

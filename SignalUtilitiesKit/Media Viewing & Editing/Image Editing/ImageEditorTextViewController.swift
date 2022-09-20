@@ -92,7 +92,7 @@ private class VAlignTextView: UITextView {
 // MARK: -
 
 @objc
-public protocol ImageEditorTextViewControllerDelegate: class {
+public protocol ImageEditorTextViewControllerDelegate: AnyObject {
     func textEditDidComplete(textItem: ImageEditorTextItem)
     func textEditDidDelete(textItem: ImageEditorTextItem)
     func textEditDidCancel()
@@ -105,32 +105,33 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
     private weak var delegate: ImageEditorTextViewControllerDelegate?
 
     private let textItem: ImageEditorTextItem
-
     private let isNewItem: Bool
-
     private let maxTextWidthPoints: CGFloat
-
     private let textView = VAlignTextView(alignment: .center)
-
     private let model: ImageEditorModel
-
     private let canvasView: ImageEditorCanvasView
-
     private let paletteView: ImageEditorPaletteView
+    private let bottomInset: CGFloat
 
-    init(delegate: ImageEditorTextViewControllerDelegate,
-         model: ImageEditorModel,
-         textItem: ImageEditorTextItem,
-         isNewItem: Bool,
-         maxTextWidthPoints: CGFloat) {
+    init(
+        delegate: ImageEditorTextViewControllerDelegate,
+        model: ImageEditorModel,
+        textItem: ImageEditorTextItem,
+        isNewItem: Bool,
+        maxTextWidthPoints: CGFloat,
+        bottomInset: CGFloat
+    ) {
         self.delegate = delegate
         self.model = model
         self.textItem = textItem
         self.isNewItem = isNewItem
         self.maxTextWidthPoints = maxTextWidthPoints
-        self.canvasView = ImageEditorCanvasView(model: model,
-                                                itemIdsToIgnore: [textItem.itemId])
+        self.canvasView = ImageEditorCanvasView(
+            model: model,
+            itemIdsToIgnore: [textItem.itemId]
+        )
         self.paletteView = ImageEditorPaletteView(currentColor: textItem.color)
+        self.bottomInset = bottomInset
 
         super.init(nibName: nil, bundle: nil)
 
@@ -162,24 +163,26 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
     public override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.themeBackgroundColor = .backgroundSecondary
         self.view.isOpaque = true
 
         canvasView.configureSubviews()
         self.view.addSubview(canvasView)
-        canvasView.autoPinEdgesToSuperviewEdges()
+        canvasView.pin(.top, to: .top, of: self.view)
+        canvasView.pin(.leading, to: .leading, of: self.view)
+        canvasView.pin(.trailing, to: .trailing, of: self.view)
+        canvasView.pin(.bottom, to: .bottom, of: self.view, withInset: -bottomInset)
 
         let tintView = UIView()
-        tintView.backgroundColor = .clear
-        tintView.isOpaque = false
+        tintView.themeBackgroundColor = .black
+        tintView.alpha = 0
         self.view.addSubview(tintView)
+        
         tintView.autoPinEdgesToSuperviewEdges()
-        tintView.layer.opacity = 0
-        UIView.animate(withDuration: 0.25, animations: {
-            tintView.layer.opacity = 1
-        }, completion: { (_) in
-            tintView.layer.opacity = 1
-        })
+        
+        UIView.animate(withDuration: 0.25) {
+            tintView.alpha = 0.4
+        }
 
         configureTextView()
 
@@ -207,13 +210,13 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
     private func configureTextView() {
         textView.text = textItem.text
         textView.font = textItem.font
-        textView.textColor = textItem.color.color
+        textView.themeTextColorForced = .color(textItem.color.color)
 
         textView.isEditable = true
-        textView.backgroundColor = .clear
+        textView.themeBackgroundColor = .clear
         textView.isOpaque = false
         // We use a white cursor since we use a dark background.
-        textView.tintColor = .white
+        textView.themeTintColor = .primary
         // TODO: Limit the size of the text?
         // textView.delegate = self
         textView.isScrollEnabled = true
@@ -362,6 +365,6 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
 extension ImageEditorTextViewController: ImageEditorPaletteViewDelegate {
     public func selectedColorDidChange() {
-        self.textView.textColor = self.paletteView.selectedValue.color
+        self.textView.themeTextColorForced = .color(self.paletteView.selectedValue.color)
     }
 }

@@ -6,6 +6,7 @@ import Foundation
 import Photos
 import PromiseKit
 import SessionUIKit
+import SignalUtilitiesKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController)
@@ -48,7 +49,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.themeBackgroundColor = .backgroundSecondary
 
         library.add(delegate: self)
 
@@ -71,7 +72,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let cancelImage = UIImage(imageLiteralResourceName: "X")
         let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
 
-        cancelButton.tintColor = Colors.text
+        cancelButton.themeTintColor = .textPrimary
         navigationItem.leftBarButtonItem = cancelButton
 
         let titleView = TitleView()
@@ -80,7 +81,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         navigationItem.titleView = titleView
         self.titleView = titleView
 
-        collectionView.backgroundColor = Colors.navigationBarBackground
+        collectionView.themeBackgroundColor = .backgroundSecondary
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
         selectionPanGesture.delegate = self
@@ -105,7 +106,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     enum BatchSelectionGestureMode {
         case select, deselect
     }
+    
     var selectionPanGestureMode: BatchSelectionGestureMode = .select
+    var hasEverAppeared: Bool = false
     
     @objc
     func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
@@ -189,20 +192,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         super.viewWillLayoutSubviews()
         updateLayout()
     }
-
-    var hasEverAppeared: Bool = false
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        let backgroundImage: UIImage = UIImage(color: Colors.navigationBarBackground)
-        self.navigationItem.title = nil
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = Colors.navigationBarBackground
-        (self.navigationController?.navigationBar as? OWSNavigationBar)?.respectsTheme = true
-        self.navigationController?.navigationBar.backgroundColor = Colors.navigationBarBackground
-        self.navigationController?.navigationBar.setBackgroundImage(backgroundImage, for: .default)
         
         // Determine the size of the thumbnails to request
         let scale = UIScreen.main.scale
@@ -362,9 +354,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - Batch Selection
 
     func batchSelectModeDidChange() {
-        guard let delegate = delegate else {
-            return
-        }
+        guard let delegate = delegate else { return }
 
         guard let collectionView = collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
@@ -397,7 +387,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
 
-        let toastController = ToastController(text: toastText)
+        let toastController = ToastController(text: toastText, background: .backgroundPrimary)
 
         let kToastInset: CGFloat = 10
         let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
@@ -531,8 +521,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         let cell: PhotoGridViewCell = collectionView.dequeue(type: PhotoGridViewCell.self, for: indexPath)
-        cell.loadingColor = UIColor(white: 0.2, alpha: 1)
-        
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
 
@@ -586,12 +574,12 @@ class TitleView: UIView {
 
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
-
-        label.textColor = Colors.text
+        
         label.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        label.themeTextColor = .textPrimary
 
-        iconView.tintColor = Colors.text
         iconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
+        iconView.themeTintColor = .textPrimary
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
     }

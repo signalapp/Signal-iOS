@@ -1,6 +1,4 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
 import UIKit
@@ -55,17 +53,17 @@ class AttachmentApprovalInputAccessoryView: UIView {
         // sizing when used as an input accessory view.
         self.autoresizingMask = .flexibleHeight
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.backgroundColor = .clear
+        self.themeBackgroundColor = .clear
 
         preservesSuperviewLayoutMargins = true
 
         // Use a background view that extends below the keyboard to avoid animation glitches.
         let backgroundView = UIView()
-        backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        backgroundView.themeBackgroundColor = .backgroundPrimary
         addSubview(backgroundView)
         backgroundView.autoPinEdgesToSuperviewEdges()
 
-        currentCaptionLabel.textColor = .white
+        currentCaptionLabel.themeTextColor = .white
         currentCaptionLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         currentCaptionLabel.numberOfLines = 5
         currentCaptionLabel.lineBreakMode = .byWordWrapping
@@ -90,7 +88,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
         stackView.autoPinEdge(toSuperviewMargin: .bottom)
         
         let galleryRailBlockingView: UIView = UIView()
-        galleryRailBlockingView.backgroundColor = backgroundView.backgroundColor
+        galleryRailBlockingView.themeBackgroundColor = .backgroundPrimary
         stackView.addSubview(galleryRailBlockingView)
         galleryRailBlockingView.pin(.top, to: .bottom, of: attachmentTextToolbar)
         galleryRailBlockingView.pin(.left, to: .left, of: stackView)
@@ -101,9 +99,8 @@ class AttachmentApprovalInputAccessoryView: UIView {
     // MARK: - Events
 
     @objc func captionTapped(sender: UIGestureRecognizer) {
-        guard sender.state == .recognized else {
-            return
-        }
+        guard sender.state == .recognized else { return }
+        
         delegate?.attachmentApprovalInputStartEditingCaptions()
     }
 

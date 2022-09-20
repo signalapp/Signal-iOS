@@ -60,7 +60,7 @@ class PrimaryColorSelectionView: UIView {
     
     private func setupUI(color: Theme.PrimaryColor) {
         // Set the appropriate colours
-        selectionView.backgroundColor = color.color
+        selectionView.themeBackgroundColorForced = .primary(color)
         
         // Add the UI
         addSubview(backgroundButton)

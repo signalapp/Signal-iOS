@@ -1,34 +1,27 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
+import UIKit
 import SessionUIKit
 
-@objc
-public class ToastController: NSObject, ToastViewDelegate {
-
+public class ToastController: ToastViewDelegate {
     static var currentToastController: ToastController?
 
+    private let id: UUID
     private let toastView: ToastView
     private var isDismissing: Bool
 
     // MARK: Initializers
 
-    @objc
-    required public init(text: String) {
-        toastView = ToastView()
+    required public init(text: String, background: ThemeValue) {
+        id = UUID()
+        toastView = ToastView(background: background)
         toastView.text = text
         isDismissing = false
-
-        super.init()
-
         toastView.delegate = self
     }
 
     // MARK: Public
 
-    @objc
     public func presentToastView(fromBottomOfView view: UIView, inset: CGFloat) {
         Logger.debug("")
         toastView.alpha = 0
@@ -37,11 +30,11 @@ public class ToastController: NSObject, ToastViewDelegate {
         toastView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -inset)
         toastView.autoPinWidthToSuperview(withMargin: 24)
 
-        if let currentToastController = type(of: self).currentToastController {
+        if let currentToastController = ToastController.currentToastController {
             currentToastController.dismissToastView()
-            type(of: self).currentToastController = nil
+            ToastController.currentToastController = nil
         }
-        type(of: self).currentToastController = self
+        ToastController.currentToastController = self
 
         UIView.animate(withDuration: 0.1) {
             self.toastView.alpha = 1
@@ -72,26 +65,26 @@ public class ToastController: NSObject, ToastViewDelegate {
     func dismissToastView() {
         Logger.debug("")
 
-        guard !isDismissing else {
-            return
-        }
+        guard !isDismissing else { return }
         isDismissing = true
 
-        if type(of: self).currentToastController == self {
-            type(of: self).currentToastController = nil
+        if ToastController.currentToastController?.id == self.id {
+            ToastController.currentToastController = nil
         }
 
-        UIView.animate(withDuration: 0.1,
-                       animations: {
-            self.toastView.alpha = 0
-        },
-                       completion: { (_) in
-            self.toastView.removeFromSuperview()
-        })
+        UIView.animate(
+            withDuration: 0.1,
+            animations: {
+                self.toastView.alpha = 0
+            },
+            completion: { [weak self] _ in
+                self?.toastView.removeFromSuperview()
+            }
+        )
     }
 }
 
-protocol ToastViewDelegate: class {
+protocol ToastViewDelegate: AnyObject {
     func didTapToastView(_ toastView: ToastView)
     func didSwipeToastView(_ toastView: ToastView)
 }
@@ -99,12 +92,8 @@ protocol ToastViewDelegate: class {
 class ToastView: UIView {
 
     var text: String? {
-        get {
-            return label.text
-        }
-        set {
-            label.text = newValue
-        }
+        get { return label.text }
+        set { label.text = newValue }
     }
     weak var delegate: ToastViewDelegate?
 
@@ -112,17 +101,17 @@ class ToastView: UIView {
 
     // MARK: Initializers
 
-    override init(frame: CGRect) {
+    init(background: ThemeValue) {
         label = UILabel()
-        super.init(frame: frame)
+        
+        super.init(frame: .zero)
 
-        self.layer.cornerRadius = 4
-        self.backgroundColor = (isDarkMode ? UIColor.ows_gray75 : UIColor.ows_gray60)
+        self.themeBackgroundColor = background
         self.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
 
+        label.font = .systemFont(ofSize: Values.mediumFontSize)
+        label.themeTextColor = .textPrimary
         label.textAlignment = .center
-        label.textColor = (isDarkMode ? UIColor.ows_white : UIColor.ows_white)
-        label.font = UIFont.ows_dynamicTypeBody
         label.numberOfLines = 0
         self.addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
@@ -137,16 +126,20 @@ class ToastView: UIView {
     required init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        self.layer.cornerRadius = (self.frame.height / 2)
+    }
 
     // MARK: Gestures
 
-    @objc
-    func didTap(gesture: UITapGestureRecognizer) {
+    @objc func didTap(gesture: UITapGestureRecognizer) {
         self.delegate?.didTapToastView(self)
     }
 
-    @objc
-    func didSwipe(gesture: UISwipeGestureRecognizer) {
+    @objc func didSwipe(gesture: UISwipeGestureRecognizer) {
         self.delegate?.didSwipeToastView(self)
     }
 }

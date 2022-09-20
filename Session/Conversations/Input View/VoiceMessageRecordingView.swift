@@ -381,7 +381,7 @@ extension VoiceMessageRecordingView {
         private func setUpViewHierarchy() {
             // Background & blur
             let backgroundView: UIView = UIView()
-            backgroundView.themeBackgroundColor = .backgroundSecondary// .backgroundColor = isLightMode ? .white : .black
+            backgroundView.themeBackgroundColor = .backgroundSecondary
             backgroundView.alpha = Values.lowOpacity
             addSubview(backgroundView)
             backgroundView.pin(to: self)

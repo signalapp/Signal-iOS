@@ -111,21 +111,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view;
 
-- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor;
-
 #pragma mark - Containers
 
 + (UIView *)containerView;
 
 + (UIView *)verticalStackWithSubviews:(NSArray<UIView *> *)subviews spacing:(int)spacing;
-
-#pragma mark - Debugging
-
-- (void)addBorderWithColor:(UIColor *)color;
-- (void)addRedBorder;
-
-// Add red border to self, and all subviews recursively.
-- (void)addRedBorderRecursively;
 
 @end
 

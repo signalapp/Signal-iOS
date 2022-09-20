@@ -70,7 +70,7 @@ public enum AppSetup {
                 SNUtilitiesKit.migrations(),
                 SNSnodeKit.migrations(),
                 SNMessagingKit.migrations(),
-                SUIKit.migrations()
+                SNUIKit.migrations()
             ],
             onProgressUpdate: migrationProgressChanged,
             onComplete: { error, needsConfigSync in

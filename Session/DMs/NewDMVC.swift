@@ -1,13 +1,15 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import AVFoundation
 import GRDB
 import Curve25519Kit
 import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
+import SignalUtilitiesKit
 
-final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, QRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
@@ -38,7 +40,7 @@ final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControlle
     
     private lazy var scanQRCodePlaceholderVC: ScanQRCodePlaceholderVC = {
         let result = ScanQRCodePlaceholderVC()
-        result.NewDMVC = self
+        result.newDMVC = self
         
         return result
     }()
@@ -142,7 +144,7 @@ final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControlle
         dismiss(animated: true, completion: nil)
     }
 
-    func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
+    func controller(_ controller: QRCodeScanningViewController, didDetectQRCodeWith string: String) {
         let hexEncodedPublicKey = string
         startNewDMIfPossible(with: hexEncodedPublicKey)
     }
@@ -450,7 +452,7 @@ private final class EnterPublicKeyVC: UIViewController {
 // MARK: - ScanQRCodePlaceholderVC
 
 private final class ScanQRCodePlaceholderVC: UIViewController {
-    weak var NewDMVC: NewDMVC!
+    weak var newDMVC: NewDMVC!
     
     override func viewDidLoad() {
         // Remove background color
@@ -493,12 +495,8 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
     }
     
     @objc private func requestCameraAccess() {
-        ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
-            if hasCameraAccess {
-                self?.NewDMVC.handleCameraAccessGranted()
-            } else {
-                // Do nothing
-            }
-        })
+        Permissions.requestLibraryPermissionIfNeeded { [weak self] in
+            self?.newDMVC.handleCameraAccessGranted()
+        }
     }
 }

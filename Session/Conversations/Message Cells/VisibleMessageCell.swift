@@ -1118,8 +1118,8 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                             )
                             .forEach { range in
                                 let legacyRange: NSRange = NSRange(range, in: normalizedBody)
-                                attributedText.addAttribute(.backgroundColor, value: backgroundPrimaryColor, range: legacyRange)
-                                attributedText.addAttribute(.foregroundColor, value: textPrimaryColor, range: legacyRange)
+                                attributedText.addThemeAttribute(.background(backgroundPrimaryColor), range: legacyRange)
+                                attributedText.addThemeAttribute(.foreground(textPrimaryColor), range: legacyRange)
                             }
                     }
             }

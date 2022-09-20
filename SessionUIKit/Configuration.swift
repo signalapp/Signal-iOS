@@ -3,13 +3,13 @@
 import Foundation
 import SessionUtilitiesKit
 
-public enum SUIKit {
+public enum SNUIKit {
     public static func migrations() -> TargetMigrations {
         return TargetMigrations(
             identifier: .uiKit,
             migrations: [
                 // Want to ensure the initial DB stuff has been completed before doing any
-                // SUIKit migrations
+                // SNUIKit migrations
                 [], // Initial DB Creation
                 [], // YDB to GRDB Migration
                 [], // YDB Removal

@@ -65,10 +65,13 @@ final class LinkPreviewView: UIView {
     private lazy var hStackView: UIStackView = UIStackView()
 
     private lazy var cancelButton: UIButton = {
-        // FIXME: This will have issues with theme transitions
         let result: UIButton = UIButton(type: .custom)
-        result.setImage(UIImage(named: "X")?.withRenderingMode(.alwaysTemplate), for: UIControl.State.normal)
-        result.tintColor = (isLightMode ? .black : .white)
+        result.setImage(
+            UIImage(named: "X")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = .textPrimary
         
         let cancelButtonSize = LinkPreviewView.cancelButtonSize
         result.set(.width, to: cancelButtonSize)

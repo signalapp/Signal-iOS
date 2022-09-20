@@ -126,43 +126,49 @@ public final class SearchResultsBar: UIView {
     private lazy var label: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
+        
         return result
     }()
     
     private lazy var upButton: UIButton = {
         let icon = #imageLiteral(resourceName: "ic_chevron_up").withRenderingMode(.alwaysTemplate)
-        let result = UIButton()
+        let result: UIButton = UIButton()
         result.setImage(icon, for: UIControl.State.normal)
-        result.tintColor = Colors.accent
+        result.themeTintColor = .primary
         result.addTarget(self, action: #selector(handleUpButtonTapped), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
     private lazy var downButton: UIButton = {
         let icon = #imageLiteral(resourceName: "ic_chevron_down").withRenderingMode(.alwaysTemplate)
-        let result = UIButton()
+        let result: UIButton = UIButton()
         result.setImage(icon, for: UIControl.State.normal)
-        result.tintColor = Colors.accent
+        result.themeTintColor = .primary
         result.addTarget(self, action: #selector(handleDownButtonTapped), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let result = UIActivityIndicatorView(style: .medium)
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
         result.alpha = 0.5
         result.hidesWhenStopped = true
+        
         return result
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setUpViewHierarchy()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        
         setUpViewHierarchy()
     }
     
@@ -171,7 +177,7 @@ public final class SearchResultsBar: UIView {
         
         // Background & blur
         let backgroundView = UIView()
-        backgroundView.backgroundColor = isLightMode ? .white : .black
+        backgroundView.themeBackgroundColor = .backgroundSecondary
         backgroundView.alpha = Values.lowOpacity
         addSubview(backgroundView)
         backgroundView.pin(to: self)
@@ -189,8 +195,8 @@ public final class SearchResultsBar: UIView {
         
         // Separator
         let separator = UIView()
-        separator.backgroundColor = Colors.text.withAlphaComponent(0.2)
-        separator.set(.height, to: 1 / UIScreen.main.scale)
+        separator.themeBackgroundColor = .borderSeparator
+        separator.set(.height, to: Values.separatorThickness)
         addSubview(separator)
         separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.top, UIView.HorizontalEdge.trailing ], to: self)
         

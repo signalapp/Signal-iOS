@@ -5,8 +5,9 @@ import PromiseKit
 import SessionUIKit
 import SessionMessagingKit
 import SessionSnodeKit
+import SignalUtilitiesKit
 
-final class PNModeVC : BaseVC, OptionViewDelegate {
+final class PNModeVC: BaseVC, OptionViewDelegate {
 
     private var optionViews: [OptionView] {
         [ apnsOptionView, backgroundPollingOptionView ]
@@ -16,36 +17,47 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         return optionViews.first { $0.isSelected }
     }
 
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var apnsOptionView: OptionView = {
-        let explanation = NSLocalizedString("fast_mode_explanation", comment: "")
-        let result = OptionView(title: "Fast Mode", explanation: explanation, delegate: self, isRecommended: true)
+        let result: OptionView = OptionView(
+            title: "Fast Mode",
+            explanation: "fast_mode_explanation".localized(),
+            delegate: self,
+            isRecommended: true
+        )
         result.accessibilityLabel = "Fast mode option"
+        
         return result
     }()
     
     private lazy var backgroundPollingOptionView: OptionView = {
-        let explanation = NSLocalizedString("slow_mode_explanation", comment: "")
-        let result = OptionView(title: "Slow Mode", explanation: explanation, delegate: self)
+        let result: OptionView = OptionView(
+            title: "Slow Mode",
+            explanation: "slow_mode_explanation".localized(),
+            delegate: self
+        )
         result.accessibilityLabel = "Slow mode option"
+        
         return result
     }()
 
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUpNavBarSessionIcon()
         
         let learnMoreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "ic_info"), style: .plain, target: self, action: #selector(learnMore))
-        learnMoreButton.tintColor = Colors.text
+        learnMoreButton.themeTintColor = .textPrimary
         navigationItem.rightBarButtonItem = learnMoreButton
         
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = "vc_pn_mode_title".localized()
-        titleLabel.textColor = Colors.text
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
         

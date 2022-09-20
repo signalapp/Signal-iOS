@@ -139,7 +139,7 @@ final class ShareAppExtensionContext: NSObject, AppContext {
     }
     
     func frontmostViewController() -> UIViewController? {
-        return rootViewController.findFrontmostViewController(true)
+        return rootViewController.findFrontmostViewController(ignoringAlerts: true)
     }
     
     func appDocumentDirectoryPath() -> String {

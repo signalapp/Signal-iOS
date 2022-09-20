@@ -25,7 +25,7 @@ class NotificationContentViewModelSpec: QuickSpec {
                         SNUtilitiesKit.migrations(),
                         SNSnodeKit.migrations(),
                         SNMessagingKit.migrations(),
-                        SUIKit.migrations()
+                        SNUIKit.migrations()
                     ]
                 )
                 viewModel = NotificationContentViewModel(storage: mockStorage)

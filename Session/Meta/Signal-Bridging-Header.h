@@ -13,9 +13,7 @@
 #import "OWSBezierPathView.h"
 #import "OWSMessageTimerView.h"
 #import "OWSNavigationController.h"
-#import "OWSProgressView.h"
 #import "OWSWindowManager.h"
-#import "OWSQRCodeScanningViewController.h"
 #import "MainAppContext.h"
 #import "UIViewController+Permissions.h"
 #import <PureLayout/PureLayout.h>
@@ -31,9 +29,7 @@
 #import <SignalUtilitiesKit/OWSViewController.h>
 #import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
-#import <SignalUtilitiesKit/UIUtil.h>
 #import <SessionUtilitiesKit/UIView+OWS.h>
-#import <SignalUtilitiesKit/UIViewController+OWS.h>
 #import <SignalUtilitiesKit/AppVersion.h>
 #import <SessionUtilitiesKit/DataSource.h>
 #import <SessionUtilitiesKit/MIMETypeUtil.h>

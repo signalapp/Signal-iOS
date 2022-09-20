@@ -439,36 +439,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return container;
 }
 
-#pragma mark - Debugging
-
-- (void)addBorderWithColor:(UIColor *)color
-{
-    self.layer.borderColor = color.CGColor;
-    self.layer.borderWidth = 1;
-}
-
-- (void)addRedBorder
-{
-    [self addBorderWithColor:[UIColor redColor]];
-}
-
-- (void)addRedBorderRecursively
-{
-    [self addRedBorder];
-    for (UIView *subview in self.subviews) {
-        [subview addRedBorderRecursively];
-    }
-}
-
-- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor
-{
-    visitor(self);
-
-    for (UIView *subview in self.subviews) {
-        [subview traverseViewHierarchyWithVisitor:visitor];
-    }
-}
-
 @end
 
 #pragma mark -

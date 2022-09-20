@@ -79,8 +79,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         )
         
-        SNAppearance.switchToSessionAppearance()
-        
         if Environment.shared?.callManager.wrappedValue?.currentCall == nil {
             UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
         }

@@ -29,7 +29,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
         let result: UITableView = UITableView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.separatorStyle = .none
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.showsHorizontalScrollIndicator = false
         result.register(view: SettingsAvatarCell.self)

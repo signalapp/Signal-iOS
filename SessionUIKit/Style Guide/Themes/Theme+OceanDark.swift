@@ -74,6 +74,7 @@ internal enum Theme_OceanDark: ThemeColors {
         .appearance_buttonHighlight: .oceanDark4,
         
         // Alert
+        .alert_text: .oceanDark6,
         .alert_background: .oceanDark3,
         .alert_buttonBackground: .oceanDark3,
         .alert_buttonHighlight: .oceanDark4,
@@ -96,6 +97,7 @@ internal enum Theme_OceanDark: ThemeColors {
         // ContextMenu
         .contextMenu_background: .oceanDark2,
         .contextMenu_highlight: .primary,
+        .contextMenu_text: .oceanDark6,
         .contextMenu_textHighlight: .oceanDark0,
         
         // Call

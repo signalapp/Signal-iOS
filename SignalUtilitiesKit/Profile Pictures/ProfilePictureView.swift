@@ -23,7 +23,7 @@ public final class ProfilePictureView: UIView {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
-        result.backgroundColor = Colors.unimportant
+        result.themeBackgroundColor = .backgroundSecondary
         
         return result
     }()
@@ -154,7 +154,7 @@ public final class ProfilePictureView: UIView {
             imageView.contentMode = .center
             imageView.isHidden = false
             animatedImageView.isHidden = true
-            imageContainerView.backgroundColor = UIColor(rgbHex: 0x353535)
+            imageContainerView.themeBackgroundColor = .backgroundSecondary
             imageContainerView.layer.cornerRadius = (self.size / 2)
             imageViewWidthConstraint.constant = self.size
             imageViewHeightConstraint.constant = self.size
@@ -287,7 +287,7 @@ public final class ProfilePictureView: UIView {
         
         imageView.contentMode = .scaleAspectFill
         animatedImageView.contentMode = .scaleAspectFill
-        imageContainerView.backgroundColor = Colors.unimportant
+        imageContainerView.themeBackgroundColor = .backgroundSecondary
         imageContainerView.layer.cornerRadius = (targetSize / 2)
         additionalImageContainerView.layer.cornerRadius = (targetSize / 2)
     }

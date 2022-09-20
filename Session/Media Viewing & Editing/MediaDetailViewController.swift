@@ -93,7 +93,7 @@ class MediaDetailViewController: OWSViewController, UIScrollViewDelegate, OWSVid
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.themeBackgroundColor = .backgroundSecondary
         
         self.view.addSubview(scrollView)
         scrollView.pin(to: self.view)
@@ -185,13 +185,13 @@ class MediaDetailViewController: OWSViewController, UIScrollViewDelegate, OWSVid
             }
             else {
                 self.mediaView = UIView()
-                self.mediaView.backgroundColor = Colors.unimportant
+                self.mediaView.themeBackgroundColor = .backgroundSecondary
             }
         }
         else if self.image == nil {
             // Still loading thumbnail.
             self.mediaView = UIView()
-            self.mediaView.backgroundColor = Colors.unimportant
+            self.mediaView.themeBackgroundColor = .backgroundSecondary
         }
         else if self.galleryItem.attachment.isVideo {
             if self.galleryItem.attachment.isValid {
@@ -199,7 +199,7 @@ class MediaDetailViewController: OWSViewController, UIScrollViewDelegate, OWSVid
             }
             else {
                 self.mediaView = UIView()
-                self.mediaView.backgroundColor = Colors.unimportant
+                self.mediaView.themeBackgroundColor = .backgroundSecondary
             }
         }
         else {

@@ -1,14 +1,18 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class ScanQRCodeWrapperVC : BaseVC {
-    var delegate: (UIViewController & OWSQRScannerDelegate)? = nil
+import UIKit
+import SessionUIKit
+
+final class ScanQRCodeWrapperVC: BaseVC {
+    var delegate: (UIViewController & QRScannerDelegate)? = nil
     var isPresentedModally = false
     private let message: String
-    private let scanQRCodeVC = OWSQRCodeScanningViewController()
+    private let scanQRCodeVC = QRCodeScanningViewController()
     
-    // MARK: Settings
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init(message: String) {
         self.message = message
         super.init(nibName: nil, bundle: nil)
@@ -24,6 +28,9 @@ final class ScanQRCodeWrapperVC : BaseVC {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        title = "Scan QR Code"
+        
         // Set up navigation bar if needed
         if isPresentedModally {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(close))
@@ -37,6 +44,7 @@ final class ScanQRCodeWrapperVC : BaseVC {
         scanQRCodeVCView.pin(.trailing, to: .trailing, of: view)
         scanQRCodeVCView.autoPinEdge(.top, to: .top, of: view)
         scanQRCodeVCView.autoPinToSquareAspectRatio()
+        
         // Set up bottom view
         let bottomView = UIView()
         view.addSubview(bottomView)
@@ -44,37 +52,35 @@ final class ScanQRCodeWrapperVC : BaseVC {
         bottomView.pin(.leading, to: .leading, of: view)
         bottomView.pin(.trailing, to: .trailing, of: view)
         bottomView.pin(.bottom, to: .bottom, of: view)
+        
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.text = message
-        explanationLabel.textColor = Colors.text
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.textAlignment = .center
+        explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
         bottomView.addSubview(explanationLabel)
         explanationLabel.autoPinWidthToSuperview(withMargin: 32)
         explanationLabel.autoPinHeightToSuperview(withMargin: 32)
-        // Title
-        title = "Scan QR Code"
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
         UIDevice.current.ows_setOrientation(.portrait)
-        DispatchQueue.main.async { [weak self] in
-            self?.scanQRCodeVC.startCapture()
-        }
+        
+        self.scanQRCodeVC.startCapture()
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func close() {
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
     public func startCapture() {
-        DispatchQueue.main.async { [weak self] in
-            self?.scanQRCodeVC.startCapture()
-        }
+        self.scanQRCodeVC.startCapture()
     }
 }

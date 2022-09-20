@@ -62,20 +62,20 @@ final class SAEScreenLockViewController: ScreenLockViewController {
         ThemeManager.onThemeChange(observer: self.unlockButton) { [weak self] theme, _ in
             switch theme.interfaceStyle {
                 case .light:
-                    self?.unlockButton.setTitleColor(theme.colors[.textPrimary], for: .normal)
-                    self?.unlockButton.setBackgroundImage(
-                        theme.colors[.textPrimary]?.withAlphaComponent(0.3).toImage(),
+                    self?.unlockButton.setThemeTitleColorForced(.theme(theme, color: .textPrimary), for: .normal)
+                    self?.unlockButton.setThemeBackgroundColorForced(
+                        .theme(theme, color: .textPrimary),
                         for: .highlighted
                     )
-                    self?.unlockButton.layer.borderColor = theme.colors[.textPrimary]?.cgColor
+                    self?.unlockButton.themeBorderColorForced = .theme(theme, color: .textPrimary)
                     
                 default:
-                    self?.unlockButton.setTitleColor(Theme.PrimaryColor.green.color, for: .normal)
-                    self?.unlockButton.setBackgroundImage(
-                        Theme.PrimaryColor.green.color.withAlphaComponent(0.3).toImage(),
+                    self?.unlockButton.setThemeTitleColorForced(.primary(.green), for: .normal)
+                    self?.unlockButton.setThemeBackgroundColorForced(
+                        .primary(.green, alpha: 0.3),
                         for: .highlighted
                     )
-                    self?.unlockButton.layer.borderColor = Theme.PrimaryColor.green.color.cgColor
+                    self?.unlockButton.themeBorderColorForced = .primary(.green)
             }
         }
     }

@@ -3,6 +3,7 @@
 import UIKit
 import SessionUIKit
 import SessionMessagingKit
+import SignalUtilitiesKit
 
 final class DisplayNameVC: BaseVC {
     private var spacer1HeightConstraint: NSLayoutConstraint!
@@ -13,8 +14,8 @@ final class DisplayNameVC: BaseVC {
     // MARK: - Components
     
     private lazy var displayNameTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("vc_display_name_text_field_hint", comment: ""))
-        result.layer.borderColor = Colors.text.cgColor
+        let result = TextField(placeholder: "vc_display_name_text_field_hint".localized())
+        result.themeBorderColor = .textPrimary
         result.accessibilityLabel = "Display name text field"
         
         return result
@@ -31,7 +32,7 @@ final class DisplayNameVC: BaseVC {
         let titleLabel = UILabel()
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = "vc_display_name_title_2".localized()
-        titleLabel.textColor = Colors.text
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.numberOfLines = 0
         
@@ -39,7 +40,7 @@ final class DisplayNameVC: BaseVC {
         let explanationLabel = UILabel()
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
         explanationLabel.text = "vc_display_name_explanation".localized()
-        explanationLabel.textColor = Colors.text
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.numberOfLines = 0
         

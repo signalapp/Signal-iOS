@@ -23,5 +23,4 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/TSConstants.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
-#import <SignalUtilitiesKit/UIUtil.h>
-#import <SignalUtilitiesKit/UIViewController+OWS.h>
+#import <SignalUtilitiesKit/UIColor+OWS.h>

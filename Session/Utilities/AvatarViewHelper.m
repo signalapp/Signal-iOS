@@ -7,8 +7,6 @@
 #import "Session-Swift.h"
 #import <MobileCoreServices/UTCoreTypes.h>
 
-#import <SignalUtilitiesKit/UIUtil.h>
-
 #import <SignalUtilitiesKit/SignalUtilitiesKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

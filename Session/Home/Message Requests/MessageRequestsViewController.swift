@@ -38,7 +38,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     private lazy var tableView: UITableView = {
         let result: UITableView = UITableView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.separatorStyle = .none
         result.register(view: FullConversationCell.self)
         result.dataSource = self
@@ -277,7 +277,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         switch section.model {
             case .loadMore:
                 let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
-                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.themeTintColor = .textPrimary
                 loadingIndicator.alpha = 0.5
                 loadingIndicator.startAnimating()
                 

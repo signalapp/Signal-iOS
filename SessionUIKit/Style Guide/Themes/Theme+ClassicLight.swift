@@ -74,6 +74,7 @@ internal enum Theme_ClassicLight: ThemeColors {
         .appearance_buttonHighlight: .classicLight4,
         
         // Alert
+        .alert_text: .classicLight0,
         .alert_background: .classicLight6,
         .alert_buttonBackground: .classicLight6,
         .alert_buttonHighlight: .classicLight4,
@@ -96,6 +97,7 @@ internal enum Theme_ClassicLight: ThemeColors {
         // ContextMenu
         .contextMenu_background: .classicLight6,
         .contextMenu_highlight: .primary,
+        .contextMenu_text: .classicLight0,
         .contextMenu_textHighlight: .classicLight0,
         
         // Call

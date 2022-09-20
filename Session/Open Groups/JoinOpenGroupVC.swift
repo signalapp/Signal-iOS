@@ -1,12 +1,13 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import AVFoundation
 import GRDB
 import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, QRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var isJoining = false
@@ -136,7 +137,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         dismiss(animated: true, completion: nil)
     }
 
-    func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
+    func controller(_ controller: QRCodeScanningViewController, didDetectQRCodeWith string: String) {
         joinOpenGroup(with: string)
     }
 

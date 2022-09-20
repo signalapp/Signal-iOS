@@ -1,11 +1,12 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import AVFoundation
 import Curve25519Kit
 import SessionUIKit
 import SessionUtilitiesKit
 
-final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, QRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
@@ -127,7 +128,7 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
         dismiss(animated: true, completion: nil)
     }
     
-    func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
+    func controller(_ controller: QRCodeScanningViewController, didDetectQRCodeWith string: String) {
         let hexEncodedPublicKey = string
         startNewPrivateChatIfPossible(with: hexEncodedPublicKey)
     }
@@ -200,12 +201,12 @@ private final class ViewMyQRCodeVC : UIViewController {
         ThemeManager.onThemeChange(observer: qrCodeImageView) { theme, _ in
             switch theme.interfaceStyle {
                 case .light:
-                    qrCodeImageView.tintColor = theme.colors[.textPrimary]
-                    qrCodeImageViewBackgroundView.backgroundColor = nil
+                    qrCodeImageView.themeTintColorForced = .theme(theme, color: .textPrimary)
+                    qrCodeImageViewBackgroundView.themeBackgroundColorForced = nil
                     
                 default:
-                    qrCodeImageView.tintColor = theme.colors[.backgroundPrimary]
-                    qrCodeImageViewBackgroundView.backgroundColor = .white
+                    qrCodeImageView.themeTintColorForced = .theme(theme, color: .backgroundPrimary)
+                    qrCodeImageViewBackgroundView.themeBackgroundColorForced = .color(.white)
             }
             
         }

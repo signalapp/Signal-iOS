@@ -125,6 +125,7 @@ public enum ThemeValue {
     case appearance_buttonHighlight
     
     // Alert
+    case alert_text
     case alert_background
     case alert_buttonBackground
     case alert_buttonHighlight
@@ -147,6 +148,7 @@ public enum ThemeValue {
     // ContextMenu
     case contextMenu_background
     case contextMenu_highlight
+    case contextMenu_text
     case contextMenu_textHighlight
     
     // Call
@@ -156,4 +158,41 @@ public enum ThemeValue {
     // Reactions
     case reactions_contextBackground
     case reactions_contextMoreBackground
+}
+
+// MARK: - ForcedThemeValue
+
+public enum ForcedThemeValue {
+    case color(UIColor)
+    case primary(Theme.PrimaryColor, alpha: CGFloat?)
+    case theme(Theme, color: ThemeValue, alpha: CGFloat?)
+    
+    public static func primary(_ primary: Theme.PrimaryColor) -> ForcedThemeValue {
+        return .primary(primary, alpha: nil)
+    }
+    
+    public static func theme(_ theme: Theme, color: ThemeValue) -> ForcedThemeValue {
+        return .theme(theme, color: color, alpha: nil)
+    }
+}
+
+// MARK: - ForcedThemeAttribute
+
+public enum ForcedThemeAttribute {
+    case background(UIColor)
+    case foreground(UIColor)
+    
+    public var key: NSAttributedString.Key {
+        switch self {
+            case .background: return NSAttributedString.Key.backgroundColor
+            case .foreground: return NSAttributedString.Key.foregroundColor
+        }
+    }
+    
+    public var value: Any {
+        switch self {
+            case .background(let value): return value
+            case .foreground(let value): return value
+        }
+    }
 }

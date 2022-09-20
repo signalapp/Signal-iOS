@@ -9,10 +9,10 @@ import SessionMessagingKit
 class AddMoreRailItem: GalleryRailItem {
     func buildRailItemView() -> UIView {
         let view = UIView()
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.33)
+        view.themeBackgroundColor = .backgroundSecondary
 
         let iconView = UIImageView(image: #imageLiteral(resourceName: "ic_plus_24").withRenderingMode(.alwaysTemplate))
-        iconView.tintColor = .ows_white
+        iconView.themeTintColor = .textPrimary
         view.addSubview(iconView)
         iconView.setCompressionResistanceHigh()
         iconView.setContentHuggingHigh()
@@ -66,9 +66,9 @@ class SignalAttachmentItem: Hashable {
     }
 
     // MARK: Hashable
-
-    public var hashValue: Int {
-        return attachment.hashValue
+    
+    func hash(into hasher: inout Hasher) {
+        attachment.hash(into: &hasher)
     }
 
     // MARK: Equatable

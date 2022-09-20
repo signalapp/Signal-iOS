@@ -82,7 +82,10 @@ public enum ThemeManager {
             
             // Note: We have to trigger this directly or the 'TraitObservingWindow' won't actually
             // trigger the trait change if the app launched with this setting switched off
-            applyWindowStyling()
+            
+            // Note: We need to set this to 'unspecified' to force the UI to properly update as the
+            // 'TraitObservingWindow' won't actually trigger the trait change otherwise
+            mainWindow?.overrideUserInterfaceStyle = .unspecified
         }
     }
     
@@ -203,8 +206,6 @@ public enum ThemeManager {
     
     public static func applyWindowStyling() {
         mainWindow?.overrideUserInterfaceStyle = {
-            guard !ThemeManager.matchSystemNightModeSetting else { return .unspecified }
-            
             switch ThemeManager.currentTheme.interfaceStyle {
                 case .light: return .light
                 case .dark, .unspecified: return .dark

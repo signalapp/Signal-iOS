@@ -16,7 +16,7 @@ class MediaGalleryNavigationController: OWSNavigationController {
     
     private lazy var backgroundView: UIView = {
         let result: UIView = UIView()
-        result.backgroundColor = Colors.navigationBarBackground
+        result.themeBackgroundColor = .backgroundSecondary
         
         return result
     }()
@@ -27,18 +27,8 @@ class MediaGalleryNavigationController: OWSNavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        guard let navigationBar = self.navigationBar as? OWSNavigationBar else {
-            owsFailDebug("navigationBar had unexpected class: \(self.navigationBar)")
-            return
-        }
-
-        view.backgroundColor = Colors.navigationBarBackground
-
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
+        
+        view.themeBackgroundColor = .backgroundSecondary
         
         // Insert a view to ensure the nav bar colour goes to the top of the screen
         relayoutBackgroundView()

@@ -340,17 +340,35 @@ final class ContextMenuVC: UIViewController {
     
     func snDismiss() {
         let currentFrame: CGRect = self.snapshot.frame
+        let currentLabelFrame: CGRect = self.timestampLabel.frame
         let originalFrame: CGRect = self.frame
+        let frameDiff: CGRect = CGRect(
+            x: (currentFrame.minX - originalFrame.minX),
+            y: (currentFrame.minY - originalFrame.minY),
+            width: (currentFrame.width - originalFrame.width),
+            height: (currentFrame.height - originalFrame.height)
+        )
+        let endLabelFrame: CGRect = CGRect(
+            x: (currentLabelFrame.minX - (frameDiff.origin.x + frameDiff.width)),
+            y: (currentLabelFrame.minY - (frameDiff.origin.y + frameDiff.height)),
+            width: currentLabelFrame.width,
+            height: currentLabelFrame.height
+        )
         
-        // Remove the snapshot view from the view hierarchy to remove its constaints (and prevent
-        // them from causing animation bugs - also need to turn 'translatesAutoresizingMaskIntoConstraints'
-        // back on so autod layout doesn't mess with the frame manipulation)
+        // Remove the snapshot view and it's timestampLabel from the view hierarchy to remove its
+        // constaints (and prevent them from causing animation bugs - also need to turn
+        // 'translatesAutoresizingMaskIntoConstraints' back on so autod layout doesn't mess with
+        // the frame manipulation)
         let oldSuperview: UIView? = self.snapshot.superview
         self.snapshot.removeFromSuperview()
+        self.timestampLabel.removeFromSuperview()
         oldSuperview?.insertSubview(self.snapshot, aboveSubview: self.blurView)
+        oldSuperview?.insertSubview(self.timestampLabel, aboveSubview: self.blurView)
         
         self.snapshot.translatesAutoresizingMaskIntoConstraints = true
+        self.timestampLabel.translatesAutoresizingMaskIntoConstraints = true
         self.snapshot.frame = currentFrame
+        self.timestampLabel.frame = currentLabelFrame
         
         UIView.animate(
             withDuration: 0.15,
@@ -358,6 +376,7 @@ final class ContextMenuVC: UIViewController {
             options: .curveEaseOut,
             animations: { [weak self] in
                 self?.snapshot.frame = originalFrame
+                self?.timestampLabel.frame = endLabelFrame
             },
             completion: nil
         )

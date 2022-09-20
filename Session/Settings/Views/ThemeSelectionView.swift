@@ -80,10 +80,10 @@ class ThemeSelectionView: UIView {
         self.themeBackgroundColor = .appearance_sectionBackground
         
         // Set the appropriate colours
-        previewView.backgroundColor = theme.colors[.backgroundPrimary]
-        previewView.layer.borderColor = theme.colors[.borderSeparator]?.cgColor
-        previewIncomingMessageView.backgroundColor = theme.colors[.messageBubble_incomingBackground]
-        previewOutgoingMessageView.backgroundColor = theme.colors[.defaultPrimary]
+        previewView.themeBackgroundColorForced = .theme(theme, color: .backgroundPrimary)
+        previewView.themeBorderColorForced = .theme(theme, color: .borderSeparator)
+        previewIncomingMessageView.themeBackgroundColorForced = .theme(theme, color: .messageBubble_incomingBackground)
+        previewOutgoingMessageView.themeBackgroundColorForced = .theme(theme, color: .defaultPrimary)
         selectionView.text = theme.title
         
         // Add the UI

@@ -81,9 +81,9 @@ class SendMediaNavigationController: OWSNavigationController {
         didSet {
             if oldValue != isInBatchSelectMode {
                 mediaLibraryViewController.batchSelectModeDidChange()
-                guard let topViewController = viewControllers.last else {
-                    return
-                }
+                
+                guard let topViewController = viewControllers.last else { return }
+                
                 updateButtons(topViewController: topViewController)
             }
         }
@@ -91,23 +91,26 @@ class SendMediaNavigationController: OWSNavigationController {
 
     func updateButtons(topViewController: UIViewController) {
         switch topViewController {
-        case is AttachmentApprovalViewController:
-            batchModeButton.isHidden = true
-            doneButton.isHidden = true
-            cameraModeButton.isHidden = true
-            mediaLibraryModeButton.isHidden = true
-        case is ImagePickerGridController:
-            batchModeButton.isHidden = isInBatchSelectMode
-            doneButton.isHidden = !isInBatchSelectMode || (attachmentDraftCollection.count == 0 && mediaLibrarySelections.count == 0)
-            cameraModeButton.isHidden = false
-            mediaLibraryModeButton.isHidden = true
-        case is PhotoCaptureViewController:
-            batchModeButton.isHidden = isInBatchSelectMode
-            doneButton.isHidden = !isInBatchSelectMode || (attachmentDraftCollection.count == 0 && mediaLibrarySelections.count == 0)
-            cameraModeButton.isHidden = true
-            mediaLibraryModeButton.isHidden = false
-        default:
-            owsFailDebug("unexpected topViewController: \(topViewController)")
+            case is AttachmentApprovalViewController:
+                batchModeButton.isHidden = true
+                doneButton.isHidden = true
+                cameraModeButton.isHidden = true
+                mediaLibraryModeButton.isHidden = true
+                
+            case is ImagePickerGridController:
+                batchModeButton.isHidden = isInBatchSelectMode
+                doneButton.isHidden = !isInBatchSelectMode || (attachmentDraftCollection.count == 0 && mediaLibrarySelections.count == 0)
+                cameraModeButton.isHidden = false
+                mediaLibraryModeButton.isHidden = true
+                
+            case is PhotoCaptureViewController:
+                batchModeButton.isHidden = isInBatchSelectMode
+                doneButton.isHidden = !isInBatchSelectMode || (attachmentDraftCollection.count == 0 && mediaLibrarySelections.count == 0)
+                cameraModeButton.isHidden = true
+                mediaLibraryModeButton.isHidden = false
+                
+            default:
+                owsFailDebug("unexpected topViewController: \(topViewController)")
         }
 
         doneButton.updateCount()
@@ -150,52 +153,60 @@ class SendMediaNavigationController: OWSNavigationController {
     private lazy var doneButton: DoneButton = {
         let button = DoneButton()
         button.delegate = self
-        button.setShadow()
 
         return button
     }()
 
     private lazy var batchModeButton: UIButton = {
-        let button = OWSButton(imageName: "media_send_batch_mode_disabled",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapBatchModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
+        let button = OWSButton(
+            imageName: "media_send_batch_mode_disabled",
+            tintColor: .backgroundPrimary,
+            block: { [weak self] in self?.didTapBatchModeButton() }
+        )
+        button.clipsToBounds = true
+        button.adjustsImageWhenHighlighted = false
+        button.setThemeBackgroundColor(.textPrimary, for: .normal)
+        button.setThemeBackgroundColor(.textSecondary, for: .highlighted)
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
+        button.layer.cornerRadius = (SendMediaNavigationController.bottomButtonWidth / 2)
+        button.set(.width, to: SendMediaNavigationController.bottomButtonWidth)
+        button.set(.height, to: SendMediaNavigationController.bottomButtonWidth)
 
         return button
     }()
 
     private lazy var cameraModeButton: UIButton = {
-        let button = OWSButton(imageName: "settings-avatar-camera-2",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapCameraModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
+        let button = OWSButton(
+            imageName: "settings-avatar-camera-2",
+            tintColor: .backgroundPrimary,
+            block: { [weak self] in self?.didTapCameraModeButton() }
+        )
+        button.clipsToBounds = true
+        button.adjustsImageWhenHighlighted = false
+        button.setThemeBackgroundColor(.textPrimary, for: .normal)
+        button.setThemeBackgroundColor(.textSecondary, for: .highlighted)
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
+        button.layer.cornerRadius = (SendMediaNavigationController.bottomButtonWidth / 2)
+        button.set(.width, to: SendMediaNavigationController.bottomButtonWidth)
+        button.set(.height, to: SendMediaNavigationController.bottomButtonWidth)
 
         return button
     }()
 
     private lazy var mediaLibraryModeButton: UIButton = {
-        let button = OWSButton(imageName: "actionsheet_camera_roll_black",
-                               tintColor: .ows_gray60,
-                               block: { [weak self] in self?.didTapMediaLibraryModeButton() })
-
-        let width: CGFloat = type(of: self).bottomButtonWidth
-        button.autoSetDimensions(to: CGSize(width: width, height: width))
-        button.layer.cornerRadius = width / 2
+        let button = OWSButton(
+            imageName: "actionsheet_camera_roll_black",
+            tintColor: .backgroundPrimary,
+            block: { [weak self] in self?.didTapMediaLibraryModeButton() }
+        )
+        button.clipsToBounds = true
+        button.adjustsImageWhenHighlighted = false
+        button.setThemeBackgroundColor(.textPrimary, for: .normal)
+        button.setThemeBackgroundColor(.textSecondary, for: .highlighted)
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.backgroundColor = .ows_white
-        button.setShadow()
+        button.layer.cornerRadius = (SendMediaNavigationController.bottomButtonWidth / 2)
+        button.set(.width, to: SendMediaNavigationController.bottomButtonWidth)
+        button.set(.height, to: SendMediaNavigationController.bottomButtonWidth)
 
         return button
     }()
@@ -243,63 +254,45 @@ class SendMediaNavigationController: OWSNavigationController {
         pushViewController(approvalViewController, animated: true)
     }
 
-    private func didRequestExit(dontAbandonText: String) {
-        if attachmentDraftCollection.count == 0 {
+    private func didRequestExit() {
+        guard attachmentDraftCollection.count > 0 else {
             self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
-        } else {
-            let alertTitle = NSLocalizedString("SEND_MEDIA_ABANDON_TITLE", comment: "alert title when user attempts to leave the send media flow when they have an in-progress album")
-
-            let alert = UIAlertController(title: alertTitle, message: nil, preferredStyle: .alert)
-
-            let confirmAbandonText = NSLocalizedString("SEND_MEDIA_CONFIRM_ABANDON_ALBUM", comment: "alert action, confirming the user wants to exit the media flow and abandon any photos they've taken")
-            let confirmAbandonAction = UIAlertAction(title: confirmAbandonText,
-                                                     style: .destructive,
-                                                     handler: { [weak self] _ in
-                                                        guard let self = self else { return }
-                                                        self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
-            })
-            alert.addAction(confirmAbandonAction)
-            let dontAbandonAction = UIAlertAction(title: dontAbandonText,
-                                                  style: .default,
-                                                  handler: { _ in  })
-            alert.addAction(dontAbandonAction)
-
-            self.presentAlert(alert)
+            return
         }
+        
+        let modal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: "SEND_MEDIA_ABANDON_TITLE".localized(),
+                confirmTitle: "SEND_MEDIA_CONFIRM_ABANDON_ALBUM".localized(),
+                confirmStyle: .danger,
+                cancelStyle: .textPrimary,
+                onConfirm: { [weak self] _ in
+                    self?.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
+                }
+            )
+        )
+        self.present(modal, animated: true)
     }
 }
 
 extension SendMediaNavigationController: UINavigationControllerDelegate {
-
-    private func setNavBarBackgroundColor(to color: UIColor) {
-        guard let navBar = navigationBar as? OWSNavigationBar else { return }
-        navBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navBar.shadowImage = UIImage()
-        navBar.isTranslucent = false
-        navBar.barTintColor = color
-    }
-
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if viewController == captureViewController {
-            setNavBarBackgroundColor(to: .black)
-        } else {
-            setNavBarBackgroundColor(to: Colors.navigationBarBackground)
-        }
-
         switch viewController {
-        case is PhotoCaptureViewController:
-            if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
-                // User is navigating "back" to the previous view, indicating
-                // they want to discard the previously captured item
-                discardDraft()
-            }
-        case is ImagePickerGridController:
-            if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
-                isInBatchSelectMode = true
-                self.mediaLibraryViewController.batchSelectModeDidChange()
-            }
-        default:
-            break
+            case is PhotoCaptureViewController:
+                if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
+                    // User is navigating "back" to the previous view, indicating
+                    // they want to discard the previously captured item
+                    discardDraft()
+                }
+            
+            case is ImagePickerGridController:
+                if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
+                    isInBatchSelectMode = true
+                    self.mediaLibraryViewController.batchSelectModeDidChange()
+                }
+            
+            default:
+                break
         }
 
         self.updateButtons(topViewController: viewController)
@@ -307,29 +300,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
 
     // In case back navigation was canceled, we re-apply whatever is showing.
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        if viewController == captureViewController {
-            setNavBarBackgroundColor(to: .black)
-        } else {
-            setNavBarBackgroundColor(to: Colors.navigationBarBackground)
-        }
-
         self.updateButtons(topViewController: viewController)
-    }
-
-    // MARK: - Helpers
-
-    private func preferredNavbarTheme(viewController: UIViewController) -> OWSNavigationBar.NavigationBarThemeOverride? {
-        switch viewController {
-        case is AttachmentApprovalViewController:
-            return .clear
-        case is ImagePickerGridController:
-            return .alwaysDark
-        case is PhotoCaptureViewController:
-            return .clear
-        default:
-            owsFailDebug("unexpected viewController: \(viewController)")
-            return nil
-        }
     }
 }
 
@@ -338,14 +309,14 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         attachmentDraftCollection.append(.camera(attachment: attachment))
         if isInBatchSelectMode {
             updateButtons(topViewController: photoCaptureViewController)
-        } else {
+        }
+        else {
             pushApprovalViewController()
         }
     }
 
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController) {
-        let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_CAMERA", comment: "alert action when the user decides not to cancel the media flow after all.")
-        didRequestExit(dontAbandonText: dontAbandonText)
+        didRequestExit()
     }
 
     func discardDraft() {
@@ -364,8 +335,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController) {
-        let dontAbandonText = NSLocalizedString("SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY", comment: "alert action when the user decides not to cancel the media flow after all.")
-        didRequestExit(dontAbandonText: dontAbandonText)
+        didRequestExit()
     }
 
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
@@ -374,18 +344,21 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
             let attachmentPromises: [Promise<MediaLibraryAttachment>] = mediaLibrarySelections.map { $0.promise }
 
-            when(fulfilled: attachmentPromises).map { attachments in
-                Logger.debug("built all attachments")
-                modal.dismiss {
-                    self.attachmentDraftCollection.selectedFromPicker(attachments: attachments)
-                    self.pushApprovalViewController()
+            when(fulfilled: attachmentPromises)
+                .map { attachments in
+                    Logger.debug("built all attachments")
+                    modal.dismiss {
+                        self.attachmentDraftCollection.selectedFromPicker(attachments: attachments)
+                        self.pushApprovalViewController()
+                    }
                 }
-            }.catch { error in
-                Logger.error("failed to prepare attachments. error: \(error)")
-                modal.dismiss {
-                    OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+                .catch { error in
+                    Logger.error("failed to prepare attachments. error: \(error)")
+                    modal.dismiss {
+                        OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+                    }
                 }
-            }.retainUntilComplete()
+                .retainUntilComplete()
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: self,
@@ -398,22 +371,17 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>) {
-        guard !mediaLibrarySelections.hasValue(forKey: asset) else {
-            return
-        }
+        guard !mediaLibrarySelections.hasValue(forKey: asset) else { return }
 
         let libraryMedia = MediaLibrarySelection(asset: asset, signalAttachmentPromise: attachmentPromise)
         mediaLibrarySelections.append(key: asset, value: libraryMedia)
-
         updateButtons(topViewController: imagePicker)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset) {
-        guard mediaLibrarySelections.hasValue(forKey: asset) else {
-            return
-        }
+        guard mediaLibrarySelections.hasValue(forKey: asset) else { return }
+        
         mediaLibrarySelections.remove(key: asset)
-
         updateButtons(topViewController: imagePicker)
     }
 
@@ -599,19 +567,70 @@ private protocol DoneButtonDelegate: AnyObject {
 
 private class DoneButton: UIView {
     weak var delegate: DoneButtonDelegate?
+    let numberFormatter: NumberFormatter = NumberFormatter()
+    
+    private var didTouchDownInside: Bool = false
+    
+    // MARK: - UI
+    
+    private let container: UIView = {
+        let result: UIView = UIView()
+        result.themeBackgroundColor = .textPrimary
+        result.layer.cornerRadius = 20
+        
+        return result
+    }()
+    
+    private lazy var badge: CircleView = {
+        let result: CircleView = CircleView()
+        result.themeBackgroundColor = .primary
+
+        return result
+    }()
+
+    private lazy var badgeLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = .ows_dynamicTypeSubheadline.ows_monospaced()
+        result.themeTextColor = .black   // Will render on the primary color so should always be black
+        result.textAlignment = .center
+        
+        return result
+    }()
+
+    private lazy var chevron: UIView = {
+        let image: UIImage = {
+            guard CurrentAppContext().isRTL else { return #imageLiteral(resourceName: "small_chevron_right") }
+            
+            return #imageLiteral(resourceName: "small_chevron_left")
+        }()
+        let result: UIImageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
+        result.contentMode = .scaleAspectFit
+        result.themeTintColor = .backgroundPrimary
+        result.set(.width, to: 10)
+        result.set(.height, to: 18)
+
+        return result
+    }()
+    
+    // MARK: - Lifecycle
 
     init() {
         super.init(frame: .zero)
+
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(tapGesture:)))
         addGestureRecognizer(tapGesture)
-
-        let container = UIView()
-        container.backgroundColor = .ows_white
-        container.layer.cornerRadius = 20
-        container.layoutMargins = UIEdgeInsets(top: 7, leading: 8, bottom: 7, trailing: 8)
-
+        
         addSubview(container)
-        container.autoPinEdgesToSuperviewMargins()
+        container.pin(to: self)
+        
+        badge.addSubview(badgeLabel)
+        badgeLabel.pin(to: badge, withInset: 4)
+        
+        // Constrain to be a pill that is at least a circle, and maybe wider.
+        badgeLabel.autoPin(toAspectRatio: 1.0, relation: .greaterThanOrEqual)
+        NSLayoutConstraint.autoSetPriority(.defaultLow) {
+            badgeLabel.autoPinToSquareAspectRatio()
+        }
 
         let stackView = UIStackView(arrangedSubviews: [badge, chevron])
         stackView.axis = .horizontal
@@ -619,74 +638,78 @@ private class DoneButton: UIView {
         stackView.spacing = 9
 
         container.addSubview(stackView)
-        stackView.autoPinEdgesToSuperviewMargins()
-    }
-
-    let numberFormatter: NumberFormatter = NumberFormatter()
-
-    func updateCount() {
-        guard let delegate = delegate else {
-            return
-        }
-
-        badgeLabel.text = numberFormatter.string(for: delegate.doneButtonCount)
+        stackView.pin(.top, to: .top, of: container, withInset: 7)
+        stackView.pin(.leading, to: .leading, of: container, withInset: 8)
+        stackView.pin(.trailing, to: .trailing, of: container, withInset: -8)
+        stackView.pin(.bottom, to: .bottom, of: container, withInset: -7)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // MARK: - Functions
+    
+    func updateCount() {
+        guard let delegate = delegate else { return }
 
-    // MARK: - Subviews
+        badgeLabel.text = numberFormatter.string(for: delegate.doneButtonCount)
+    }
+    
+    // MARK: - Interaction
 
-    private lazy var badge: UIView = {
-        let badge = CircleView()
-        badge.layoutMargins = UIEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
-        badge.backgroundColor = .ows_signalBlue
-        badge.addSubview(badgeLabel)
-        badgeLabel.autoPinEdgesToSuperviewMargins()
-
-        // Constrain to be a pill that is at least a circle, and maybe wider.
-        badgeLabel.autoPin(toAspectRatio: 1.0, relation: .greaterThanOrEqual)
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            badgeLabel.autoPinToSquareAspectRatio()
-        }
-
-        return badge
-    }()
-
-    private lazy var badgeLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .ows_white
-        label.font = UIFont.ows_dynamicTypeSubheadline.ows_monospaced()
-        label.textAlignment = .center
-        return label
-    }()
-
-    private lazy var chevron: UIView = {
-        let image: UIImage
-        if CurrentAppContext().isRTL {
-            image = #imageLiteral(resourceName: "small_chevron_left")
-        } else {
-            image = #imageLiteral(resourceName: "small_chevron_right")
-        }
-        let chevron = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
-        chevron.contentMode = .scaleAspectFit
-        chevron.tintColor = .ows_gray60
-        chevron.autoSetDimensions(to: CGSize(width: 10, height: 18))
-
-        return chevron
-    }()
-
-    @objc
-    func didTap(tapGesture: UITapGestureRecognizer) {
+    @objc func didTap(tapGesture: UITapGestureRecognizer) {
         delegate?.doneButtonWasTapped(self)
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard
+            isUserInteractionEnabled,
+            let location: CGPoint = touches.first?.location(in: self),
+            bounds.contains(location)
+        else { return }
+        
+        didTouchDownInside = true
+        container.themeBackgroundColor = .textSecondary
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard
+            isUserInteractionEnabled,
+            let location: CGPoint = touches.first?.location(in: self),
+            bounds.contains(location),
+            didTouchDownInside
+        else {
+            if didTouchDownInside {
+                container.themeBackgroundColor = .textPrimary
+            }
+            return
+        }
+        
+        container.themeBackgroundColor = .textSecondary
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if didTouchDownInside {
+            container.themeBackgroundColor = .textPrimary
+        }
+        
+        didTouchDownInside = false
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if didTouchDownInside {
+            container.themeBackgroundColor = .textPrimary
+        }
+        
+        didTouchDownInside = false
     }
 }
 
 // MARK: - SendMediaNavDelegate
 
 protocol SendMediaNavDelegate: AnyObject {
-    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController)
+    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController?)
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didApproveAttachments attachments: [SignalAttachment], forThreadId threadId: String, messageText: String?)
 
     func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String?

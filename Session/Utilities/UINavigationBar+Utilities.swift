@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 
 extension UINavigationBar {
     func generateSnapshot(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
@@ -31,7 +32,7 @@ extension UINavigationBar {
                 height: frame.maxY
             )
         )
-        snapshotView.backgroundColor = backgroundColor
+        snapshotView.themeBackgroundColorForced = self.themeBackgroundColorForced
         
         let imageView: UIImageView = UIImageView(image: image)
         imageView.frame = frame

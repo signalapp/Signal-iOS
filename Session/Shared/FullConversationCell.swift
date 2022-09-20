@@ -407,7 +407,7 @@ public final class FullConversationCell: UITableViewCell {
             hasAtLeastOneReadReceipt: (cellViewModel.interactionHasAtLeastOneReadReceipt ?? false)
         )
         statusIndicatorView.image = stateInfo?.image
-        statusIndicatorView.themeTintColor = stateInfo?.tintColor
+        statusIndicatorView.themeTintColor = stateInfo?.themeTintColor
         statusIndicatorView.isHidden = (
             cellViewModel.interactionVariant != .standardOutgoing &&
             cellViewModel.interactionState != .skipped
@@ -456,7 +456,7 @@ public final class FullConversationCell: UITableViewCell {
         }
         else if cellViewModel.threadOnlyNotifyForMentions == true {
             let imageAttachment = NSTextAttachment()
-            imageAttachment.image = UIImage(named: "NotifyMentions.png")?.asTintedImage(color: textColor)
+            imageAttachment.image = UIImage(named: "NotifyMentions.png")?.withTint(textColor)
             imageAttachment.bounds = CGRect(x: 0, y: -2, width: Values.smallFontSize, height: Values.smallFontSize)
             
             let imageString = NSAttributedString(attachment: imageAttachment)

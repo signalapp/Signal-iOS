@@ -74,6 +74,7 @@ internal enum Theme_ClassicDark: ThemeColors {
         .appearance_buttonHighlight: .classicDark3,
         
         // Alert
+        .alert_text: .classicDark6,
         .alert_background: .classicDark1,
         .alert_buttonBackground: .classicDark1,
         .alert_buttonHighlight: .classicDark3,
@@ -96,6 +97,7 @@ internal enum Theme_ClassicDark: ThemeColors {
         // ContextMenu
         .contextMenu_background: .classicDark1,
         .contextMenu_highlight: .primary,
+        .contextMenu_text: .classicDark6,
         .contextMenu_textHighlight: .classicDark0,
         
         // Call
@@ -104,6 +106,6 @@ internal enum Theme_ClassicDark: ThemeColors {
         
         // Reactions
         .reactions_contextBackground: .classicDark2,
-        .reactions_contextMoreBackground: .classicDark3
+        .reactions_contextMoreBackground: .classicDark1
     ]
 }

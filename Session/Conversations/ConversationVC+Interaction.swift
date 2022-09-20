@@ -148,7 +148,7 @@ extension ConversationVC:
 
     // MARK: - SendMediaNavDelegate
 
-    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController) {
+    func sendMediaNavDidCancel(_ sendMediaNavigationController: SendMediaNavigationController?) {
         dismiss(animated: true, completion: nil)
     }
 
@@ -795,7 +795,7 @@ extension ConversationVC:
             )
         }
         
-        self.contextMenuWindow?.backgroundColor = .clear
+        self.contextMenuWindow?.themeBackgroundColor = .clear
         self.contextMenuWindow?.rootViewController = self.contextMenuVC
         self.contextMenuWindow?.overrideUserInterfaceStyle = (isDarkMode ? .dark : .light)
         self.contextMenuWindow?.makeKeyAndVisible()

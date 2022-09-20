@@ -5,7 +5,7 @@
 import UIKit
 
 @objc
-public protocol ImageEditorViewDelegate: class {
+public protocol ImageEditorViewDelegate: AnyObject {
     func imageEditor(presentFullScreenView viewController: UIViewController,
                      isTransparent: Bool)
     func imageEditorUpdateNavigationBar()
@@ -135,7 +135,12 @@ public class ImageEditorView: UIView {
     @objc func didTapBrush(sender: UIButton) {
         Logger.verbose("")
 
-        let brushView = ImageEditorBrushViewController(delegate: self, model: model, currentColor: currentColor)
+        let brushView = ImageEditorBrushViewController(
+            delegate: self,
+            model: model,
+            currentColor: currentColor,
+            bottomInset: ((self.superview?.frame.height ?? 0) - self.frame.height)
+        )
         self.delegate?.imageEditor(presentFullScreenView: brushView,
                                    isTransparent: false)
     }
@@ -446,11 +451,14 @@ public class ImageEditorView: UIView {
         let maxTextWidthPoints = model.srcImageSizePixels.width * ImageEditorTextItem.kDefaultUnitWidth
         //        let maxTextWidthPoints = canvasView.imageView.width() * ImageEditorTextItem.kDefaultUnitWidth
 
-        let textEditor = ImageEditorTextViewController(delegate: self,
-                                                       model: model,
-                                                       textItem: textItem,
-                                                       isNewItem: isNewItem,
-                                                       maxTextWidthPoints: maxTextWidthPoints)
+        let textEditor = ImageEditorTextViewController(
+            delegate: self,
+            model: model,
+            textItem: textItem,
+            isNewItem: isNewItem,
+            maxTextWidthPoints: maxTextWidthPoints,
+            bottomInset: ((self.superview?.frame.height ?? 0) - self.frame.height)
+        )
         self.delegate?.imageEditor(presentFullScreenView: textEditor,
                                    isTransparent: false)
     }

@@ -7,7 +7,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
 #import <SignalCoreKit/Threading.h>
-#import <SignalUtilitiesKit/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
