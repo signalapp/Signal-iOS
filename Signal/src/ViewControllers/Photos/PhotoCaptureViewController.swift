@@ -362,16 +362,29 @@ class PhotoCaptureViewController: OWSViewController {
             textViewContentLayoutGuide.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor)
         ])
 
-        // textViewWrapperView contains text view and link preview - these two are grouped together
-        // and are centered vertically in text content area.
-        textViewWrapperView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(textViewWrapperView)
+        // This is a colored background for `inverted` text style.
+        let textViewWrapper = UIView()
+        textViewWrapper.addSubview(textViewBackgroundView)
+        textViewWrapper.addSubview(textView)
+        textViewBackgroundView.autoSetDimension(.width, toSize: 52, relation: .greaterThanOrEqual)
+        textViewBackgroundView.autoSetDimension(.height, toSize: 52, relation: .greaterThanOrEqual)
+        textViewBackgroundView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
+        textViewBackgroundView.autoPinHeightToSuperview(relation: .lessThanOrEqual)
+        textViewBackgroundView.autoCenterInSuperview()
+        textView.autoPin(toEdgesOf: textViewBackgroundView, with: UIEdgeInsets(hMargin: 16, vMargin: 2))
+
+        // Text view and link preview are grouped together in a vertical stack view
+        // that is centered vertically in text content area.
+        let stackView = UIStackView(arrangedSubviews: [ textViewWrapper, linkPreviewWrapperView ])
+        stackView.axis = .vertical
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(stackView)
         view.addConstraints([
-            textViewWrapperView.leadingAnchor.constraint(equalTo: textViewContentLayoutGuide.leadingAnchor),
-            textViewWrapperView.topAnchor.constraint(greaterThanOrEqualTo: textViewContentLayoutGuide.topAnchor),
-            textViewWrapperView.trailingAnchor.constraint(equalTo: textViewContentLayoutGuide.trailingAnchor),
-            textViewWrapperView.bottomAnchor.constraint(lessThanOrEqualTo: textViewContentLayoutGuide.bottomAnchor),
-            textViewWrapperView.centerYAnchor.constraint(equalTo: textViewContentLayoutGuide.centerYAnchor)
+            stackView.leadingAnchor.constraint(equalTo: textViewContentLayoutGuide.leadingAnchor),
+            stackView.topAnchor.constraint(greaterThanOrEqualTo: textViewContentLayoutGuide.topAnchor),
+            stackView.trailingAnchor.constraint(equalTo: textViewContentLayoutGuide.trailingAnchor),
+            stackView.bottomAnchor.constraint(lessThanOrEqualTo: textViewContentLayoutGuide.bottomAnchor),
+            stackView.centerYAnchor.constraint(equalTo: textViewContentLayoutGuide.centerYAnchor)
         ])
 
         // Placeholder text is centered in "text content area".
@@ -402,21 +415,20 @@ class PhotoCaptureViewController: OWSViewController {
         button.layoutMargins = .zero
         return button
     }()
-    private lazy var textViewWrapperView: UIView = {
-        let wrapperView = UIStackView(arrangedSubviews: [ textView, linkPreviewWrapperView ])
-        wrapperView.axis = .vertical
-        return wrapperView
+    private lazy var textViewBackgroundView: UIView = {
+        let backgroundView = UIView()
+        backgroundView.layer.cornerRadius = 12
+        return backgroundView
     }()
     private lazy var textView: MediaTextView = {
         let textView = MediaTextView()
         textView.delegate = self
-        textView.autoSetDimension(.height, toSize: 32, relation: .greaterThanOrEqual)
         return textView
     }()
     private lazy var textViewAccessoryToolbar: TextStylingToolbar = {
         let toolbar = TextStylingToolbar(layout: .textStory)
         toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.colorPickerView.delegate = self
+        toolbar.addTarget(self, action: #selector(didChangeTextColor), for: .valueChanged)
         toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton), for: .touchUpInside)
         toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton), for: .touchUpInside)
         toolbar.doneButton.addTarget(self, action: #selector(didTapTextViewDoneButton), for: .touchUpInside)
@@ -869,6 +881,7 @@ extension PhotoCaptureViewController {
     private func updateTextViewAttributes(using textToolbar: TextStylingToolbar) {
         let (fontPointSize, textAlignment) = PhotoCaptureViewController.desiredAttributes(forText: strippedTextViewText)
         textView.update(using: textToolbar, fontPointSize: fontPointSize, textAlignment: textAlignment)
+        textViewBackgroundView.backgroundColor = textViewAccessoryToolbar.textBackgroundColor
     }
 
     private func adjustFontSizeIfNecessary() {
@@ -910,7 +923,6 @@ extension PhotoCaptureViewController {
     private func updateTextEditorUI(animated: Bool) {
         let isPlaceholderHidden = textView.isFirstResponder || textView.hasText || linkPreview != nil
         textViewPlaceholderLabel.setIsHidden(isPlaceholderHidden, animated: animated)
-
         bottomBar.proceedButton.isEnabled = !isTextViewContentEmpty
     }
 
@@ -1065,9 +1077,7 @@ extension PhotoCaptureViewController {
         textViewAccessoryToolbar.decorationStyle = nextDecorationStyle
 
         // Update text view.
-        if textView.isFirstResponder {
-            updateTextViewAttributes(using: textViewAccessoryToolbar)
-        }
+        updateTextViewAttributes(using: textViewAccessoryToolbar)
     }
 
     @objc
@@ -1101,16 +1111,8 @@ extension PhotoCaptureViewController {
     private func didTapTextStoryProceedButton() {
         Logger.verbose("")
 
-        let textForegroundColor: UIColor
-        let textBackgroundColor: UIColor?
-        switch textViewAccessoryToolbar.decorationStyle {
-        case .inverted:
-            textForegroundColor = .white
-            textBackgroundColor = textViewAccessoryToolbar.colorPickerView.color
-        default:
-            textForegroundColor = textViewAccessoryToolbar.colorPickerView.color
-            textBackgroundColor = nil
-        }
+        let textForegroundColor = textViewAccessoryToolbar.textForegroundColor
+        let textBackgroundColor = textViewAccessoryToolbar.textBackgroundColor
 
         let textStyle: TextAttachment.TextStyle = {
             switch textViewAccessoryToolbar.textStyle {
@@ -1139,6 +1141,11 @@ extension PhotoCaptureViewController {
             linkPreview: validatedLinkPreview)
         delegate?.photoCaptureViewController(self, didFinishWithTextAttachment: textAttachment)
     }
+
+    @objc
+    private func didChangeTextColor() {
+        updateTextViewAttributes(using: textViewAccessoryToolbar)
+    }
 }
 
 extension PhotoCaptureViewController: UITextViewDelegate {
@@ -1158,13 +1165,6 @@ extension PhotoCaptureViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         adjustFontSizeIfNecessary()
         updateTextEditorUI(animated: false)
-    }
-}
-
-extension PhotoCaptureViewController: ColorPickerBarViewDelegate {
-
-    func colorPickerBarView(_ pickerView: ColorPickerBarView, didSelectColor color: ColorPickerBarColor) {
-        updateTextViewAttributes(using: textViewAccessoryToolbar)
     }
 }
 

@@ -776,11 +776,6 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
                                              .strokeColor: item.color.color ],
                                            range: attributedString.entireRange)
 
-        case .inverted:
-            attributedString.addAttribute(.backgroundColor,
-                                          value: item.color.color,
-                                          range: attributedString.entireRange)
-
         default:
             break
         }
@@ -812,6 +807,15 @@ class ImageEditorCanvasView: AttachmentPrepContentView {
         layer.frame = CGRect(origin: CGPoint(x: centerInCanvas.x - layerSize.width * 0.5,
                                              y: centerInCanvas.y - layerSize.height * 0.5),
                              size: layerSize)
+
+        // Enlarge the layer slightly when setting the background color to add some horizontal padding around the text.
+        // Unfortunately there's no easy way to add vertical padding because default CATextLayer's behavior
+        // is to start drawing text from the top.
+        if item.decorationStyle == .inverted {
+            layer.frame = layer.frame.insetBy(dx: -4, dy: 0)
+            layer.backgroundColor = item.color.color.cgColor
+            layer.cornerRadius = 8
+        }
 
         let transform = CGAffineTransform.identity.scaledBy(x: item.scaling, y: item.scaling).rotated(by: item.rotationRadians)
         layer.setAffineTransform(transform)

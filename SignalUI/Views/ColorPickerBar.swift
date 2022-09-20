@@ -34,7 +34,11 @@ public class ColorPickerBarColor {
     }
 
     class var white: ColorPickerBarColor {
-        ColorPickerBarColor(color: UIColor(rgbHex: 0xffffff), palettePhase: 1)
+        ColorPickerBarColor(color: .white, palettePhase: 1)
+    }
+
+    class var black: ColorPickerBarColor {
+        ColorPickerBarColor(color: .black, palettePhase: 0)
     }
 
     static var gradientUIColors: [UIColor] {

@@ -51,11 +51,21 @@ extension ImageEditorViewController {
         textContainerBackground.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .bottom)
         textContainerBackground.autoPinEdge(toSuperviewEdge: .bottom, withInset: -300)
 
-        textViewContainer.addSubview(textView)
-        textView.autoVCenterInSuperview()
-        textView.autoPinWidthToSuperviewMargins()
-        textView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
-        textView.widthAnchor.constraint(greaterThanOrEqualToConstant: 40).isActive = true
+        textViewBackgroundView.layer.cornerRadius = 8
+        textViewWrapperView.addSubview(textViewBackgroundView)
+        textViewWrapperView.addSubview(textView)
+        textViewBackgroundView.autoSetDimension(.width, toSize: 36, relation: .greaterThanOrEqual)
+        textViewBackgroundView.autoSetDimension(.height, toSize: 36, relation: .greaterThanOrEqual)
+        textViewBackgroundView.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
+        textViewBackgroundView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
+        textViewBackgroundView.autoCenterInSuperview()
+        // These inset values provide the best visual match with CATextLayer's bounds when background color is set.
+        textView.autoPin(toEdgesOf: textViewBackgroundView, with: UIEdgeInsets(top: -6, left: 6, bottom: -7, right: 6))
+
+        textViewContainer.addSubview(textViewWrapperView)
+        textViewWrapperView.autoVCenterInSuperview()
+        textViewWrapperView.autoPinWidthToSuperviewMargins()
+        textViewWrapperView.autoPinHeightToSuperviewMargins(relation: .lessThanOrEqual)
 
         view.addSubview(textViewContainer)
         textViewContainer.autoPinEdge(toSuperviewEdge: .top)
@@ -84,8 +94,32 @@ extension ImageEditorViewController {
      * Load all UITextView's attributes from ImageEditorTextItem.
      * This method needs to be called when text item editing is about to begin.
      */
-    func updateTextViewAttributes(using textItem: ImageEditorTextItem) {
-        textView.update(withColor: textItem.color.color, font: textItem.font, decorationStyle: textItem.decorationStyle)
+    private func updateTextViewAttributes(using textItem: ImageEditorTextItem) {
+        let textForegroundColor: UIColor = {
+            switch textItem.decorationStyle {
+            case .none: return textItem.color.color
+            default: return .white
+            }
+        }()
+        let textDecorationColor: UIColor? = {
+            switch textItem.decorationStyle {
+            case .none, .inverted: return nil
+            default: return textItem.color.color
+            }
+        }()
+        textView.updateWith(textForegroundColor: textForegroundColor,
+                            font: textItem.font,
+                            textAlignment: .center,
+                            textDecorationColor: textDecorationColor,
+                            decorationStyle: textItem.decorationStyle)
+
+        let textBackgroundColor: UIColor = {
+            switch textItem.decorationStyle {
+            case .inverted: return textItem.color.color
+            default: return .clear
+            }
+        }()
+        textViewBackgroundView.backgroundColor = textBackgroundColor
     }
 
     // Update UITextView to use style (font, color, decoration) as selected in provided TextToolbar.
@@ -94,6 +128,7 @@ extension ImageEditorViewController {
     func updateTextViewAttributes(using textToolbar: TextStylingToolbar) {
         let fontPointSize = textView.font?.pointSize ?? ImageEditorTextItem.defaultFontSize
         textView.update(using: textToolbar, fontPointSize: fontPointSize)
+        textViewBackgroundView.backgroundColor = textToolbar.textBackgroundColor
     }
 
     override func updateBottomLayoutConstraint(fromInset before: CGFloat, toInset after: CGFloat) {
@@ -128,8 +163,8 @@ extension ImageEditorViewController {
     func beginTextEditing() {
         guard let textItem = currentTextItem?.textItem else { return }
 
-        textToolbar.colorPickerView.selectedValue = textItem.color
-        textViewAccessoryToolbar.colorPickerView.selectedValue = textItem.color
+        textToolbar.currentColorPickerValue = textItem.color
+        textViewAccessoryToolbar.currentColorPickerValue = textItem.color
 
         textToolbar.textStyle = textItem.textStyle
         textViewAccessoryToolbar.textStyle = textItem.textStyle
@@ -171,7 +206,7 @@ extension ImageEditorViewController {
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewBounds.size,
                                                           imageSize: model.srcImageSizePixels,
                                                           transform: model.currentTransform())
-        let unitWidth = textView.width / imageFrame.width
+        let unitWidth = textViewWrapperView.width / imageFrame.width
         textItem = textItem.copy(unitWidth: unitWidth)
 
         // Ensure continuity of the new text item's location with its apparent location in this text editor.
@@ -201,7 +236,7 @@ extension ImageEditorViewController {
         }
 
         // Update text.
-        textItem = textItem.copy(withText: text, color: textToolbar.colorPickerView.selectedValue)
+        textItem = textItem.copy(withText: text, color: textToolbar.currentColorPickerValue)
 
         guard currentTextItem.textItem != textItem else {
             // No changes were made.  Cancel to avoid dirtying the undo stack.
@@ -342,8 +377,8 @@ extension ImageEditorViewController: ImageEditorViewDelegate {
            let textItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
             mode = .text
 
-            textToolbar.colorPickerView.selectedValue = textItem.color
-            textViewAccessoryToolbar.colorPickerView.selectedValue = textItem.color
+            textToolbar.currentColorPickerValue = textItem.color
+            textViewAccessoryToolbar.currentColorPickerValue = textItem.color
 
             textToolbar.textStyle = textItem.textStyle
             textViewAccessoryToolbar.textStyle = textItem.textStyle

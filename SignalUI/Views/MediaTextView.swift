@@ -81,45 +81,40 @@ public class MediaTextView: UITextView {
                        fontPointSize: CGFloat,
                        textAlignment: NSTextAlignment = .center) {
         let font = MediaTextView.font(forTextStyle: textStylingToolbar.textStyle, pointSize: fontPointSize)
-        update(withColor: textStylingToolbar.colorPickerView.color,
-               font: font,
-               textAlignment: textAlignment,
-               decorationStyle: textStylingToolbar.decorationStyle)
+        updateWith(textForegroundColor: textStylingToolbar.textForegroundColor,
+                   font: font,
+                   textAlignment: textAlignment,
+                   textDecorationColor: textStylingToolbar.textDecorationColor,
+                   decorationStyle: textStylingToolbar.decorationStyle)
     }
 
-    public func update(withColor color: UIColor,
-                       font: UIFont,
-                       textAlignment: NSTextAlignment = .center,
-                       decorationStyle: MediaTextView.DecorationStyle) {
+    public func updateWith(textForegroundColor: UIColor,
+                           font: UIFont,
+                           textAlignment: NSTextAlignment,
+                           textDecorationColor: UIColor?,
+                           decorationStyle: MediaTextView.DecorationStyle) {
         var attributes: [NSAttributedString.Key: Any] = [ .font: font]
 
-        let textColor: UIColor = {
-            switch decorationStyle {
-            case .none: return color
-            default: return .white
-            }
-        }()
-        attributes[.foregroundColor] = textColor
+        attributes[.foregroundColor] = textForegroundColor
 
         if let paragraphStyle = NSParagraphStyle.default.mutableCopy() as? NSMutableParagraphStyle {
             paragraphStyle.alignment = textAlignment
             attributes[.paragraphStyle] = paragraphStyle
         }
 
-        switch decorationStyle {
-        case .underline:
-            attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
-            attributes[.underlineColor] = color
+        if let textDecorationColor = textDecorationColor {
+            switch decorationStyle {
+            case .underline:
+                attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
+                attributes[.underlineColor] = textDecorationColor
 
-        case .outline:
-            attributes[.strokeWidth] = -3
-            attributes[.strokeColor] = color
+            case .outline:
+                attributes[.strokeWidth] = -3
+                attributes[.strokeColor] = textDecorationColor
 
-        case .inverted:
-            attributes[.backgroundColor] = color
-
-        default:
-            break
+            default:
+                break
+            }
         }
 
         attributedText = NSAttributedString(string: text, attributes: attributes)
@@ -148,7 +143,7 @@ public class MediaTextView: UITextView {
     }
 }
 
-public class TextStylingToolbar: UIView {
+public class TextStylingToolbar: UIControl {
 
     public enum Layout {
         case photoOverlay
@@ -156,7 +151,13 @@ public class TextStylingToolbar: UIView {
     }
     let layout: Layout
 
-    public let colorPickerView: ColorPickerBarView
+    private let colorPickerView: ColorPickerBarView
+
+    // Photo Editor operates with ColorPickerBarColor hence the need to expose this value.
+    public var currentColorPickerValue: ColorPickerBarColor {
+        get { colorPickerView.selectedValue }
+        set { colorPickerView.selectedValue = newValue }
+    }
 
     private static func defaultColor(forLayout layout: Layout) -> ColorPickerBarColor {
         switch layout {
@@ -170,10 +171,38 @@ public class TextStylingToolbar: UIView {
     public let textStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-font"), backgroundStyle: .blur)
     public var textStyle: MediaTextView.TextStyle = .regular
 
+    public var textForegroundColor: UIColor {
+        switch decorationStyle {
+        case .none: return colorPickerView.color
+        case .inverted, .outline, .underline: return .white
+        }
+    }
+    public var textBackgroundColor: UIColor? {
+        switch decorationStyle {
+        case .none, .underline, .outline: return nil
+        case .inverted: return colorPickerView.color
+        }
+    }
+    public var textDecorationColor: UIColor? {
+        switch decorationStyle {
+        case .none, .inverted: return nil
+        case .outline, .underline: return colorPickerView.color
+        }
+    }
+
     public let decorationStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-style-1"), backgroundStyle: .blur)
     public var decorationStyle: MediaTextView.DecorationStyle = .none {
         didSet {
             decorationStyleButton.isSelected = (decorationStyle != .none)
+            // Change default decoration style away from white to avoid white on white situation.
+            if decorationStyle != .none && colorPickerView.selectedValue == .white {
+                colorPickerView.selectedValue = .black
+            }
+            // Switch color picker color back to white because it now controls text color.
+            // The idea is that cycling through decoration styles should keep text white.
+            if decorationStyle == .none && colorPickerView.selectedValue == .black {
+                colorPickerView.selectedValue = .white
+            }
         }
     }
 
@@ -184,6 +213,8 @@ public class TextStylingToolbar: UIView {
         colorPickerView = ColorPickerBarView(currentColor: currentColor ?? TextStylingToolbar.defaultColor(forLayout: layout))
 
         super.init(frame: .zero)
+
+        colorPickerView.delegate = self
 
         decorationStyleButton.setContentCompressionResistancePriority(.required, for: .vertical)
         decorationStyleButton.setImage(#imageLiteral(resourceName: "media-editor-text-style-2"), for: .selected)
@@ -240,5 +271,12 @@ public class TextStylingToolbar: UIView {
     @available(iOS, unavailable, message: "Use init(currentColor:)")
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension TextStylingToolbar: ColorPickerBarViewDelegate {
+
+    public func colorPickerBarView(_ pickerView: ColorPickerBarView, didSelectColor color: ColorPickerBarColor) {
+        sendActions(for: .valueChanged)
     }
 }
