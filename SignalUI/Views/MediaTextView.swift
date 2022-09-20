@@ -27,7 +27,7 @@ public class MediaTextView: UITextView {
 
         switch textStyle {
         case .regular:
-            attributes = [.name: "Inter-Regular_Bold"]
+            attributes = [.name: "Inter-Regular_Medium"]
         case .bold:
             attributes = [.name: "Inter-Regular_Black"]
         case .serif:
