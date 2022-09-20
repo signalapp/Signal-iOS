@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalRingRTC
+import UIKit
 
 @objc
 protocol CallHeaderDelegate: AnyObject {
@@ -121,6 +122,13 @@ class CallHeader: UIView {
         callTitleLabel.textAlignment = .center
         callTitleLabel.textColor = UIColor.white
         addShadow(to: callTitleLabel)
+
+#if TESTABLE_BUILD
+        // For debugging purposes, make it easy to force the call to disconnect.
+        callTitleLabel.addGestureRecognizer(UILongPressGestureRecognizer(target: self,
+                                                                         action: #selector(injectDisconnect)))
+        callTitleLabel.isUserInteractionEnabled = true
+#endif
 
         vStack.addArrangedSubview(callTitleLabel)
 
@@ -349,6 +357,12 @@ class CallHeader: UIView {
         let isJoined = call.groupCall.localDeviceState.joinState == .joined
         let remoteMemberCount = isJoined ? call.groupCall.remoteDeviceStates.count : Int(call.groupCall.peekInfo?.deviceCount ?? 0)
         groupMembersButton.updateMemberCount(remoteMemberCount + (isJoined ? 1 : 0))
+    }
+
+    // For testing abnormal scenarios.
+    @objc
+    private func injectDisconnect() {
+        call.groupCall.disconnect()
     }
 
     required init?(coder: NSCoder) {

@@ -112,6 +112,9 @@ public class CallUIAdapter: NSObject, CallServiceObserver {
     var defaultAdaptee: CallUIAdaptee { callKitAdaptee ?? nonCallKitAdaptee }
 
     func adaptee(for call: SignalCall) -> CallUIAdaptee {
+        guard call.isIndividualCall else {
+            return defaultAdaptee
+        }
         switch call.individualCall.callAdapterType {
         case .nonCallKit: return nonCallKitAdaptee
         case .default: return defaultAdaptee

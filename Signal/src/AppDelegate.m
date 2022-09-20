@@ -964,12 +964,22 @@ static void uncaughtExceptionHandler(NSException *exception)
         return [CallKitIdStore threadForCallKitId:handle];
     }
 
+    NSData *_Nullable groupId = [CallKitCallManager decodeGroupIdFromIntentHandle:handle];
+    if (groupId) {
+        __block TSGroupThread *thread = nil;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+        }];
+        return thread;
+    }
+
     for (PhoneNumber *phoneNumber in
         [PhoneNumber tryParsePhoneNumbersFromUserSpecifiedText:handle
                                               clientPhoneNumber:[TSAccountManager localNumber]]) {
         SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
         return [TSContactThread getOrCreateThreadWithContactAddress:address];
     }
+
     return nil;
 }
 

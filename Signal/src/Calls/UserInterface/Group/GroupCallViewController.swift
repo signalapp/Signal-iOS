@@ -491,7 +491,7 @@ class GroupCallViewController: UIViewController {
     }
 
     func dismissCall() {
-        callService.terminate(call: call)
+        callService.callUIAdapter.localHangupCall(call)
 
         guard let splitViewSnapshot = SignalApp.shared().snapshotSplitViewController(afterScreenUpdates: false) else {
             OWSWindowManager.shared.endCall(self)

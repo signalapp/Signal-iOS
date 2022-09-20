@@ -218,7 +218,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             // to unmute the call. We can work around this
             // by ignoring the next "unmute" request from
             // CallKit after the call is answered.
-            self.ignoreFirstUnmuteAfterRemoteAnswer = call.individualCall.isMuted
+            self.ignoreFirstUnmuteAfterRemoteAnswer = call.isOutgoingAudioMuted
 
             // Enable audio for remotely accepted calls after the session is configured.
             self.audioSession.isRTCAudioEnabled = true
@@ -234,6 +234,11 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
     func localHangupCall(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
+
+        guard call.systemState == .reported else {
+            callService.handleLocalHangupCall(call)
+            return
+        }
 
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
             self.callManager.localHangup(call: call)
@@ -346,7 +351,9 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // We can't wait for long before fulfilling the CXAction, else CallKit will show a "Failed Call". We don't 
         // actually need to wait for the outcome of the handleOutgoingCall promise, because it handles any errors by 
         // manually failing the call.
-        self.callService.individualCallService.handleOutgoingCall(call)
+        if call.isIndividualCall {
+            self.callService.individualCallService.handleOutgoingCall(call)
+        }
 
         action.fulfill()
         provider.reportOutgoingCall(with: call.localId, startedConnectingAt: nil)
@@ -354,11 +361,28 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
         if showNamesOnCallScreen {
             update.localizedCallerName = contactsManager.displayNameWithSneakyTransaction(thread: call.thread)
-        } else {
+        } else if call.isIndividualCall {
             update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_CONTACT_NAME",
                                                            comment: "The generic name used for calls if CallKit privacy is enabled")
+        } else {
+            update.localizedCallerName = NSLocalizedString("CALLKIT_ANONYMOUS_GROUP_NAME",
+                                                           comment: "The generic name used for group calls if CallKit privacy is enabled")
         }
         provider.reportCall(with: call.localId, updated: update)
+
+        if call.isGroupCall {
+            switch call.groupCallRingState {
+            case .shouldRing, .ringing:
+                // Let CallService call recipientAcceptedCall when someone joins.
+                break
+            case .ringingEnded:
+                Logger.warn("ringing ended before we even reported the call to CallKit (maybe our peek info was out of date)")
+                fallthrough
+            case .doNotRing:
+                // Immediately consider ourselves connected.
+                recipientAcceptedCall(call)
+            }
+        }
     }
 
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
@@ -394,7 +418,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        self.callService.individualCallService.handleLocalHangupCall(call)
+        callService.handleLocalHangupCall(call)
 
         // Signal to the system that the action has been successfully performed.
         action.fulfill()
@@ -487,7 +511,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             return
         }
 
-        if call.individualCall.direction == .incoming {
+        if call.isIndividualCall && call.individualCall.direction == .incoming {
             // Only enable audio upon activation for locally accepted calls.
             self.audioSession.isRTCAudioEnabled = true
         }

@@ -19,23 +19,39 @@ NS_ASSUME_NONNULL_BEGIN
     return [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerCallKitIdToUUIDCollection"];
 }
 
++ (SDSKeyValueStore *)groupIdStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerCallKitIdToGroupId"];
+}
+
 #pragma mark -
 
 + (void)setThread:(TSThread *)thread forCallKitId:(NSString *)callKitId
 {
     OWSAssertDebug(callKitId.length > 0);
-    OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
 
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        SignalServiceAddress *address = [(TSContactThread *)thread contactAddress];
-        NSString *uuidString = address.uuidString;
-        if (uuidString) {
-            [self.uuidStore setString:uuidString key:callKitId transaction:transaction];
+        TSGroupModel *groupModel = [thread groupModelIfGroupThread];
+        if (groupModel) {
+            [self.groupIdStore setData:groupModel.groupId key:callKitId transaction:transaction];
+            // This is probably overkill since we currently generate these IDs randomly,
+            // but better futureproof than sorry.
+            [self.uuidStore removeValueForKey:callKitId transaction:transaction];
             [self.phoneNumberStore removeValueForKey:callKitId transaction:transaction];
         } else {
-            OWSFailDebug(@"making a call to an address with no UUID: %@", address.phoneNumber);
-            [self.phoneNumberStore setString:address.phoneNumber key:callKitId transaction:transaction];
-            [self.uuidStore removeValueForKey:callKitId transaction:transaction];
+            OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
+            SignalServiceAddress *address = [(TSContactThread *)thread contactAddress];
+            NSString *uuidString = address.uuidString;
+            if (uuidString) {
+                [self.uuidStore setString:uuidString key:callKitId transaction:transaction];
+                [self.phoneNumberStore removeValueForKey:callKitId transaction:transaction];
+            } else {
+                OWSFailDebug(@"making a call to an address with no UUID: %@", address.phoneNumber);
+                [self.phoneNumberStore setString:address.phoneNumber key:callKitId transaction:transaction];
+                [self.uuidStore removeValueForKey:callKitId transaction:transaction];
+            }
+
+            [self.groupIdStore removeValueForKey:callKitId transaction:transaction];
         }
     });
 }
@@ -46,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block TSThread *_Nullable result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        // Check for an ACI first, then phone numbers.
+        // Most likely: modern 1:1 calls
         NSString *_Nullable uuidString = [self.uuidStore getString:callKitId transaction:transaction];
         if (uuidString) {
             SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithUuidString:uuidString];
@@ -54,6 +70,14 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
+        // Next try group calls
+        NSData *_Nullable groupId = [self.groupIdStore getData:callKitId transaction:transaction];
+        if (groupId) {
+            result = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+            return;
+        }
+
+        // Finally check the phone number store, for very old 1:1 calls.
         NSString *_Nullable phoneNumber = [self.phoneNumberStore getString:callKitId transaction:transaction];
         if (phoneNumber) {
             SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];

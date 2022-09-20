@@ -56,8 +56,8 @@ public class SignalCall: NSObject, CallManagerCallReference {
 
     public let audioActivity: AudioActivity
 
-    private var systemState: SystemState = .notReported
-    private enum SystemState {
+    private(set) var systemState: SystemState = .notReported
+    enum SystemState {
         case notReported
         case reported
         case removed
@@ -104,6 +104,13 @@ public class SignalCall: NSObject, CallManagerCallReference {
             return false
         case .individual(let call):
             return call.hasTerminated
+        }
+    }
+
+    public var isOutgoingAudioMuted: Bool {
+        switch mode {
+        case .individual(let call): return call.isMuted
+        case .group(let call): return call.isOutgoingAudioMuted
         }
     }
 

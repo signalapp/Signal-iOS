@@ -451,6 +451,14 @@ public final class CallService: LightweightCallManager {
         }
     }
 
+    func handleLocalHangupCall(_ call: SignalCall) {
+        if call.isIndividualCall {
+            individualCallService.handleLocalHangupCall(call)
+        } else {
+            terminate(call: call)
+        }
+    }
+
     /**
      * Clean up any existing call state and get ready to receive a new call.
      */
@@ -564,12 +572,12 @@ public final class CallService: LightweightCallManager {
     func joinGroupCallIfNecessary(_ call: SignalCall) {
         owsAssertDebug(call.isGroupCall)
 
-        guard currentCall == nil || currentCall == call else {
+        let currentCall = self.currentCall
+        if currentCall == nil {
+            self.currentCall = call
+        } else if currentCall != call {
             return owsFailDebug("A call is already in progress")
         }
-
-        // The joined/joining call must always be the current call.
-        currentCall = call
 
         // If we're not yet connected, connect now. This may happen if, for
         // example, the call ended unexpectedly.
@@ -583,7 +591,14 @@ public final class CallService: LightweightCallManager {
         // If we're not yet joined, join now. In general, it's unexpected that
         // this method would be called when you're already joined, but it is
         // safe to do so.
-        if call.groupCall.localDeviceState.joinState == .notJoined { call.groupCall.join() }
+        if call.groupCall.localDeviceState.joinState == .notJoined {
+            call.groupCall.join()
+            // Group calls can get disconnected, but we don't count that as ending the call.
+            // So this call may have already been reported.
+            if call.systemState == .notReported {
+                callUIAdapter.startOutgoingCall(call: call)
+            }
+        }
     }
 
     @discardableResult
@@ -842,7 +857,14 @@ extension CallService: CallObserver {
         }
     }
 
-    public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {}
+    public func groupCallRemoteDeviceStatesChanged(_ call: SignalCall) {
+        if call.groupCallRingState == .ringing && !call.groupCall.remoteDeviceStates.isEmpty {
+            // The first time someone joins after a ring, we need to mark the call accepted.
+            // (But if we didn't ring, the call will have already been marked accepted.)
+            callUIAdapter.recipientAcceptedCall(call)
+        }
+    }
+
     public func groupCallPeekChanged(_ call: SignalCall) {
         guard let thread = call.thread as? TSGroupThread else {
             owsFailDebug("Invalid thread for call: \(call)")
