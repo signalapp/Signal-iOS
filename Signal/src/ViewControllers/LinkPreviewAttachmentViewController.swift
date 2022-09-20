@@ -47,7 +47,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         let view = PillView()
         view.backgroundColor = .ows_gray80
         view.addSubview(textField)
-        textField.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(hMargin: 16, vMargin: 0))
+        textField.autoPinEdgesToSuperviewEdges(withInsets: UIEdgeInsets(hMargin: 16, vMargin: 7))
         return view
     }()
     private let doneButton: UIButton = {
@@ -55,12 +55,14 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
                                       backgroundStyle: .solid(.ows_accentBlue))
         button.layoutMargins = .zero
         button.contentEdgeInsets = UIEdgeInsets(margin: 10)
+        button.layoutMargins = UIEdgeInsets(margin: 4)
         button.setContentHuggingHigh()
         return button
     }()
     private lazy var inputFieldContainer: UIView = {
         let stackView = UIStackView(arrangedSubviews: [ textFieldContainer, doneButton ])
         stackView.axis = .horizontal
+        stackView.alignment = .center
         stackView.spacing = 10
         return stackView
     }()
@@ -113,7 +115,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
 
     override var canBecomeFirstResponder: Bool { true }
 
-    override var sheetBackgroundColor: UIColor { .ows_gray95 }
+    override var sheetBackgroundColor: UIColor { Theme.darkThemeTableView2PresentedBackgroundColor }
 
     private var sheetHeight: CGFloat = 0
     private func updateSheetHeight() {
@@ -355,7 +357,10 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
                 case .loading:
                     return loadingView
                 case .draft(let linkPreviewDraft):
-                    return TextAttachmentView.LinkPreviewView(linkPreview: LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft))
+                    return TextAttachmentView.LinkPreviewView(
+                        linkPreview: LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft),
+                        isDraft: true
+                    )
                 case .error:
                     return errorView
                 }

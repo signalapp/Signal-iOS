@@ -165,60 +165,123 @@ public class TextAttachmentView: UIView {
 
     public class LinkPreviewView: UIStackView {
 
-        public init(linkPreview: LinkPreviewState) {
+        private enum Layout {
+            case regular
+            case compact
+            case draft
+            case domainOnly
+        }
+
+        public init(linkPreview: LinkPreviewState, isDraft: Bool = false) {
             super.init(frame: .zero)
 
-            axis = .horizontal
-            alignment = .center
-            spacing = 8
-            isLayoutMarginsRelativeArrangement = true
-            layoutMargins = UIEdgeInsets(hMargin: 12, vMargin: 12)
-            addBackgroundView(withBackgroundColor: .ows_blackAlpha40, cornerRadius: 12)
+            let backgroundColor: UIColor = isDraft ? Theme.darkThemeTableView2PresentedBackgroundColor : .ows_gray02
+            let backgroundView = addBackgroundView(withBackgroundColor: backgroundColor)
 
-            if linkPreview.imageState() == .loaded {
-                let thumbnailImageView = UIImageView()
-                thumbnailImageView.layer.cornerRadius = 8
-                thumbnailImageView.clipsToBounds = true
+            let title = linkPreview.title()
+            let description = linkPreview.previewDescription()
+            let hasTitleOrDescription = title != nil || description != nil
+            var layout: Layout = isDraft ? .draft : (hasTitleOrDescription ? .regular : .domainOnly)
+
+            let thumbnailImageView = UIImageView()
+            thumbnailImageView.clipsToBounds = true
+            if layout != .domainOnly && linkPreview.imageState() == .loaded {
                 thumbnailImageView.contentMode = .scaleAspectFill
-                thumbnailImageView.autoSetDimensions(to: CGSize(square: 76))
-                addArrangedSubview(thumbnailImageView)
 
-                linkPreview.imageAsync(thumbnailQuality: .small) { image in
+                // Downgrade "regular" to "compact" if thumbnail is too small.
+                let imageSize = linkPreview.imagePixelSize
+                if layout == .regular && (imageSize.width < 300 || imageSize.height < 300) {
+                    layout = .compact
+                }
+                linkPreview.imageAsync(thumbnailQuality: layout == .regular ? .mediumLarge : .small) { image in
                     thumbnailImageView.image = image
                 }
+            } else {
+                // Dark placeholder icon on light background if there's no thumbnail associated with the link preview.
+                thumbnailImageView.backgroundColor = .ows_gray02
+                thumbnailImageView.contentMode = .center
+                thumbnailImageView.image = UIImage(imageLiteralResourceName: "link-diagonal")
+                thumbnailImageView.tintColor = Theme.lightThemePrimaryColor
             }
+
+            switch layout {
+            case .regular:
+                // Display image above the text with the fixed height and all available width.
+                axis = .vertical
+                alignment = .fill
+
+            default:
+                // Display image and text side by side.
+                axis = .horizontal
+                alignment = .center
+            }
+
+            switch layout {
+            case .regular:
+                backgroundView.layer.cornerRadius = 18
+                thumbnailImageView.autoSetDimension(.height, toSize: 152)
+                thumbnailImageView.layer.maskedCorners = [ .layerMinXMinYCorner, .layerMaxXMinYCorner ]
+
+            case .compact:
+                backgroundView.layer.cornerRadius = 18
+                thumbnailImageView.autoSetDimensions(to: CGSize(square: 88))
+                thumbnailImageView.layer.maskedCorners = [ .layerMinXMinYCorner, .layerMinXMaxYCorner ]
+
+            case .draft:
+                backgroundView.layer.cornerRadius = 8
+                thumbnailImageView.autoSetDimensions(to: CGSize(square: 76))
+                thumbnailImageView.layer.maskedCorners = .all
+
+            case .domainOnly:
+                backgroundView.layer.cornerRadius = 12
+                thumbnailImageView.autoSetDimensions(to: CGSize(width: 50, height: 50))
+            }
+            thumbnailImageView.layer.cornerRadius = backgroundView.layer.cornerRadius
+            addArrangedSubview(thumbnailImageView)
 
             let previewVStack = UIStackView()
             previewVStack.axis = .vertical
+            previewVStack.spacing = 2
             previewVStack.alignment = .leading
-            addArrangedSubview(previewVStack)
+            previewVStack.isLayoutMarginsRelativeArrangement = true
+            previewVStack.layoutMargins = UIEdgeInsets(hMargin: 12, vMargin: 8)
+            // Make placeholder icon look centered between leading edge of the panel and text.
+            if layout == .domainOnly {
+                previewVStack.layoutMargins.leading = 0
+            }
+           addArrangedSubview(previewVStack)
 
-            if let title = linkPreview.title() {
+            if let title = title {
                 let titleLabel = UILabel()
                 titleLabel.text = title
-                titleLabel.font = .boldSystemFont(ofSize: 16)
-                titleLabel.textColor = Theme.darkThemePrimaryColor
+                titleLabel.font = .ows_dynamicTypeSubheadlineClamped.ows_semibold
+                titleLabel.textColor = isDraft ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor
                 titleLabel.numberOfLines = 2
                 titleLabel.setCompressionResistanceVerticalHigh()
                 titleLabel.setContentHuggingVerticalHigh()
                 previewVStack.addArrangedSubview(titleLabel)
             }
 
-            if let description = linkPreview.previewDescription() {
+            if let description = description {
                 let descriptionLabel = UILabel()
                 descriptionLabel.text = description
-                descriptionLabel.font = .systemFont(ofSize: 12)
-                descriptionLabel.textColor = Theme.darkThemePrimaryColor
-                descriptionLabel.numberOfLines = 3
+                descriptionLabel.font = .ows_dynamicTypeFootnoteClamped
+                descriptionLabel.textColor = isDraft ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor
+                descriptionLabel.numberOfLines = 2
                 descriptionLabel.setCompressionResistanceVerticalHigh()
                 descriptionLabel.setContentHuggingVerticalHigh()
                 previewVStack.addArrangedSubview(descriptionLabel)
             }
 
             let footerLabel = UILabel()
-            footerLabel.font = .systemFont(ofSize: 12)
-            footerLabel.numberOfLines = 2
-            footerLabel.textColor = Theme.darkThemeSecondaryTextAndIconColor
+            footerLabel.numberOfLines = 1
+            if hasTitleOrDescription {
+                footerLabel.font = .ows_dynamicTypeCaption1Clamped
+                footerLabel.textColor = isDraft ? Theme.darkThemeSecondaryTextAndIconColor : .ows_gray60
+            } else {
+                footerLabel.font = .ows_dynamicTypeSubheadlineClamped.ows_semibold
+                footerLabel.textColor = isDraft ? Theme.darkThemePrimaryColor : Theme.lightThemePrimaryColor
+            }
             footerLabel.setCompressionResistanceVerticalHigh()
             footerLabel.setContentHuggingVerticalHigh()
             previewVStack.addArrangedSubview(footerLabel)

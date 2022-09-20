@@ -10,7 +10,10 @@ open class RoundMediaButton: UIButton {
     public enum BackgroundStyle {
         case none
         case solid(UIColor)
-        case blur
+        case blur(UIBlurEffect.Style)
+
+        public static let blur: BackgroundStyle = .blur(.dark)
+        public static let blurLight: BackgroundStyle = .blur(.light)
     }
 
     let backgroundStyle: BackgroundStyle
@@ -40,8 +43,8 @@ open class RoundMediaButton: UIButton {
             case .solid:
                 return UIView()
 
-            case .blur:
-                return UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+            case .blur(let style):
+                return UIVisualEffectView(effect: UIBlurEffect(style: style))
             }
         }()
 

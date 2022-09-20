@@ -459,7 +459,8 @@ class PhotoCaptureViewController: OWSViewController {
         return view
     }()
     private lazy var deleteLinkPreviewButton: UIButton = {
-        let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "x-24"), backgroundStyle: .blur)
+        let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "x-24"), backgroundStyle: .blurLight)
+        button.tintColor = Theme.lightThemePrimaryColor
         button.contentEdgeInsets = UIEdgeInsets(margin: 8)
         button.layoutMargins = UIEdgeInsets(margin: 2)
         button.translatesAutoresizingMaskIntoConstraints = false
