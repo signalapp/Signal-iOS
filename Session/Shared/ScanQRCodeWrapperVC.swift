@@ -2,14 +2,14 @@
 final class ScanQRCodeWrapperVC : BaseVC {
     var delegate: (UIViewController & OWSQRScannerDelegate)? = nil
     var isPresentedModally = false
-    private let message: String
+    private let message: String?
     private let scanQRCodeVC = OWSQRCodeScanningViewController()
     
     // MARK: Settings
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
     
     // MARK: Lifecycle
-    init(message: String) {
+    init(message: String?) {
         self.message = message
         super.init(nibName: nil, bundle: nil)
     }
@@ -36,25 +36,30 @@ final class ScanQRCodeWrapperVC : BaseVC {
         scanQRCodeVCView.pin(.leading, to: .leading, of: view)
         scanQRCodeVCView.pin(.trailing, to: .trailing, of: view)
         scanQRCodeVCView.autoPinEdge(.top, to: .top, of: view)
-        scanQRCodeVCView.autoPinToSquareAspectRatio()
-        // Set up bottom view
-        let bottomView = UIView()
-        view.addSubview(bottomView)
-        bottomView.pin(.top, to: .bottom, of: scanQRCodeVCView)
-        bottomView.pin(.leading, to: .leading, of: view)
-        bottomView.pin(.trailing, to: .trailing, of: view)
-        bottomView.pin(.bottom, to: .bottom, of: view)
-        // Set up explanation label
-        let explanationLabel = UILabel()
-        explanationLabel.text = message
-        explanationLabel.textColor = Colors.text
-        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.textAlignment = .center
-        bottomView.addSubview(explanationLabel)
-        explanationLabel.autoPinWidthToSuperview(withMargin: 32)
-        explanationLabel.autoPinHeightToSuperview(withMargin: 32)
+        if let message = message {
+            scanQRCodeVCView.autoPinToSquareAspectRatio()
+            // Set up bottom view
+            let bottomView = UIView()
+            view.addSubview(bottomView)
+            bottomView.pin(.top, to: .bottom, of: scanQRCodeVCView)
+            bottomView.pin(.leading, to: .leading, of: view)
+            bottomView.pin(.trailing, to: .trailing, of: view)
+            bottomView.pin(.bottom, to: .bottom, of: view)
+            // Set up explanation label
+            let explanationLabel = UILabel()
+            explanationLabel.text = message
+            explanationLabel.textColor = Colors.text
+            explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+            explanationLabel.numberOfLines = 0
+            explanationLabel.lineBreakMode = .byWordWrapping
+            explanationLabel.textAlignment = .center
+            bottomView.addSubview(explanationLabel)
+            explanationLabel.autoPinWidthToSuperview(withMargin: 32)
+            explanationLabel.autoPinHeightToSuperview(withMargin: 32)
+        } else {
+            scanQRCodeVCView.autoPinEdge(.bottom, to: .bottom, of: view)
+        }
+        
         // Title
         title = "Scan QR Code"
     }
@@ -62,9 +67,7 @@ final class ScanQRCodeWrapperVC : BaseVC {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         UIDevice.current.ows_setOrientation(.portrait)
-        DispatchQueue.main.async { [weak self] in
-            self?.scanQRCodeVC.startCapture()
-        }
+        self.scanQRCodeVC.startCapture()
     }
     
     // MARK: Interaction
@@ -73,8 +76,6 @@ final class ScanQRCodeWrapperVC : BaseVC {
     }
     
     public func startCapture() {
-        DispatchQueue.main.async { [weak self] in
-            self?.scanQRCodeVC.startCapture()
-        }
+        self.scanQRCodeVC.startCapture()
     }
 }

@@ -9,6 +9,14 @@ public extension String {
         
         return CTLineGetGlyphCount(line)
     }
+    
+    var isSingleAlphabet: Bool {
+        return (glyphCount == 1 && isAlphabetic)
+    }
+    
+    var isAlphabetic: Bool {
+        return !isEmpty && range(of: "[^a-zA-Z]", options: .regularExpression) == nil
+    }
 
     var isSingleEmoji: Bool {
         return (glyphCount == 1 && containsEmoji)

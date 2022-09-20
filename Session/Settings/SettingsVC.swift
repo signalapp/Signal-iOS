@@ -287,7 +287,7 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
                 return image!
             }
             
-            let backgroundColor = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
+            let backgroundColor = isLightMode ? UIColor(hex: 0xF9F9F9) : UIColor(hex: 0x1B1B1B)
             button.setBackgroundImage(getImage(withColor: backgroundColor), for: UIControl.State.normal)
             
             let selectedColor = isLightMode ? UIColor(hex: 0xDFDFDF) : UIColor(hex: 0x0C0C0C)

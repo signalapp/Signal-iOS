@@ -7,8 +7,9 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
+final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedReminderViewDelegate {
     private static let loadingHeaderHeight: CGFloat = 20
+    public static let newConversationButtonSize: CGFloat = 60
     
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?
@@ -72,9 +73,8 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             left: 0,
             bottom: (
                 Values.newConversationButtonBottomOffset +
-                NewConversationButtonSet.expandedButtonSize +
                 Values.largeSpacing +
-                NewConversationButtonSet.collapsedButtonSize
+                HomeVC.newConversationButtonSize
             ),
             right: 0
         )
@@ -90,10 +90,28 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
         return result
     }()
-
-    private lazy var newConversationButtonSet: NewConversationButtonSet = {
-        let result = NewConversationButtonSet()
-        result.delegate = self
+    
+    private lazy var newConversationButton: UIButton = {
+        let result = UIButton(type: .system)
+        let iconSize = CGFloat(24)
+        let icon = #imageLiteral(resourceName: "Plus").scaled(to: CGSize(width: iconSize, height: iconSize))
+        let glowConfiguration = UIView.CircularGlowConfiguration(
+            size: Self.newConversationButtonSize,
+            color: Colors.expandedButtonGlowColor,
+            isAnimated: false,
+            radius: isLightMode ? 4 : 6
+        )
+        result.setImage(icon, for: .normal)
+        result.set(.width, to: Self.newConversationButtonSize)
+        result.set(.height, to: Self.newConversationButtonSize)
+        result.contentMode = .center
+        result.backgroundColor = Colors.accent
+        result.layer.cornerRadius = Self.newConversationButtonSize / 2
+        result.setCircularGlow(with: glowConfiguration)
+        result.layer.masksToBounds = false
+        result.tintColor = .white
+        result.addTarget(self, action: #selector(createNewConversation), for: .touchUpInside)
+        
         return result
     }()
     
@@ -185,10 +203,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         let verticalCenteringConstraint = emptyStateView.center(.vertical, in: view)
         verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
         
-        // New conversation button set
-        view.addSubview(newConversationButtonSet)
-        newConversationButtonSet.center(.horizontal, in: view)
-        newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
+        // New conversation button
+        view.addSubview(newConversationButton)
+        newConversationButton.center(.horizontal, in: view)
+        newConversationButton.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
         
         // Notifications
         NotificationCenter.default.addObserver(
@@ -383,6 +401,16 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         }
     }
     
+    private func updateNewConversationButton() {
+        let glowConfiguration = UIView.CircularGlowConfiguration(
+            size: Self.newConversationButtonSize,
+            color: Colors.expandedButtonGlowColor,
+            isAnimated: false,
+            radius: isLightMode ? 4 : 6
+        )
+        newConversationButton.setCircularGlow(with: glowConfiguration)
+    }
+    
     private func updateNavBarButtons() {
         // Profile picture view
         let profilePictureSize = Values.verySmallProfilePictureSize
@@ -433,6 +461,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
         let gradient = Gradients.homeVCFade
         fadeView.setGradient(gradient) // Re-do the gradient
+        updateNewConversationButton()
         tableView.reloadData()
     }
     
@@ -702,42 +731,34 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         self.navigationController?.setViewControllers([ self, searchController ], animated: true)
     }
     
-    @objc func joinOpenGroup() {
-        let joinOpenGroupVC: JoinOpenGroupVC = JoinOpenGroupVC()
-        let navigationController: OWSNavigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
-        
+    @objc func createNewConversation() {
+        let newConversationVC = NewConversationVC()
+        let navigationController = OWSNavigationController(rootViewController: newConversationVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
-        
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
     
     @objc func createNewDM() {
-        let newDMVC = NewDMVC()
+        let newDMVC = NewDMVC(shouldShowBackButton: false)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
     
     @objc(createNewDMFromDeepLink:)
     func createNewDMFromDeepLink(sessionID: String) {
-        let newDMVC = NewDMVC(sessionID: sessionID)
+        let newDMVC = NewDMVC(sessionID: sessionID, shouldShowBackButton: false)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
-        present(navigationController, animated: true, completion: nil)
-    }
-    
-    @objc func createClosedGroup() {
-        let newClosedGroupVC = NewClosedGroupVC()
-        let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
-        if UIDevice.current.isIPad {
-            navigationController.modalPresentationStyle = .fullScreen
-        }
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
 }

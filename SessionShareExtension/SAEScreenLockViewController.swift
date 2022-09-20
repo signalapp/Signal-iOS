@@ -36,7 +36,7 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
         let layer: CAGradientLayer = CAGradientLayer()
         
         let gradientStartColor: UIColor = (LKAppModeUtilities.isLightMode ?
-            UIColor(rgbHex: 0xFCFCFC) :
+            UIColor(rgbHex: 0xF9F9F9) :
             UIColor(rgbHex: 0x171717)
         )
         let gradientEndColor: UIColor = (LKAppModeUtilities.isLightMode ?

@@ -44,7 +44,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
     }()
 
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let result: ScanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: "vc_join_public_chat_scan_qr_code_explanation".localized())
+        let result: ScanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: nil)
         result.delegate = self
         
         return result
@@ -59,11 +59,9 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         setUpNavBarStyle()
         setNavBarTitle("vc_join_public_chat_title".localized())
         
-        // Navigation bar buttons
-        let navBarHeight: CGFloat = (navigationController?.navigationBar.frame.size.height ?? 0)
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
-        navigationItem.leftBarButtonItem = closeButton
+        navigationItem.rightBarButtonItem = closeButton
         
         // Page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
@@ -75,26 +73,18 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         // Tab bar
         view.addSubview(tabBar)
         tabBar.pin(.leading, to: .leading, of: view)
-        tabBar.pin(
-            .top,
-            to: .top,
-            of: view,
-            withInset: (UIDevice.current.isIPad ? navBarHeight + 20 : navBarHeight)
-        )
-        view.pin(.trailing, to: .trailing, of: tabBar)
+        tabBar.pin(.top, to: .top, of: view)
+        tabBar.pin(.trailing, to: .trailing, of: view)
         
         // Page VC constraints
         let pageVCView = pageVC.view!
         view.addSubview(pageVCView)
         pageVCView.pin(.leading, to: .leading, of: view)
         pageVCView.pin(.top, to: .bottom, of: tabBar)
-        view.pin(.trailing, to: .trailing, of: pageVCView)
-        view.pin(.bottom, to: .bottom, of: pageVCView)
-        
-        let screen = UIScreen.main.bounds
+        pageVCView.pin(.trailing, to: .trailing, of: view)
+        pageVCView.pin(.bottom, to: .bottom, of: view)
+        let navBarHeight: CGFloat = (navigationController?.navigationBar.frame.size.height ?? 0)
         let height: CGFloat = ((navigationController?.view.bounds.height ?? 0) - navBarHeight - TabBar.snHeight)
-        pageVCView.set(.width, to: screen.width)
-        pageVCView.set(.height, to: height)
         enterURLVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
     }
@@ -156,7 +146,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         joinOpenGroup(roomToken: room, server: server, publicKey: publicKey)
     }
 
-    fileprivate func joinOpenGroup(roomToken: String, server: String, publicKey: String) {
+    fileprivate func joinOpenGroup(roomToken: String, server: String, publicKey: String, shouldOpenCommunity: Bool = false) {
         guard !isJoining, let navigationController: UINavigationController = navigationController else { return }
         
         isJoining = true
@@ -176,8 +166,19 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
                     Storage.shared.writeAsync { db in
                         try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete() // FIXME: It's probably cleaner to do this inside addOpenGroup(...)
                     }
-
+                    
                     self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                    
+                    if shouldOpenCommunity {
+                        SessionApp.presentConversation(
+                            for: OpenGroup.idFor(roomToken: roomToken, server: server),
+                            threadVariant: .openGroup,
+                            isMessageRequest: false,
+                            action: .compose,
+                            focusInteractionId: nil,
+                            animated: false
+                        )
+                    }
                 }
                 .catch(on: DispatchQueue.main) { [weak self] error in
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader
@@ -244,18 +245,18 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         view.backgroundColor = .clear
         
         // Next button
-        let nextButton = Button(style: .prominentOutline, size: .large)
-        nextButton.setTitle(NSLocalizedString("next", comment: ""), for: UIControl.State.normal)
-        nextButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
+        let joinButton = Button(style: .prominentOutline, size: .large)
+        joinButton.setTitle("JOIN_COMMUNITY_BUTTON_TITLE".localized(), for: UIControl.State.normal)
+        joinButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         
-        let nextButtonContainer = UIView(
-            wrapping: nextButton,
+        let joinButtonContainer = UIView(
+            wrapping: joinButton,
             withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80),
             shouldAdaptForIPadWithWidth: Values.iPadButtonWidth
         )
         
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), joinButtonContainer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)
@@ -319,7 +320,8 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         joinOpenGroupVC?.joinOpenGroup(
             roomToken: room.token,
             server: OpenGroupAPI.defaultServer,
-            publicKey: OpenGroupAPI.defaultServerPublicKey
+            publicKey: OpenGroupAPI.defaultServerPublicKey,
+            shouldOpenCommunity: true
         )
     }
 

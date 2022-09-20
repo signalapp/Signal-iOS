@@ -11,6 +11,7 @@ final class UserCell: UITableViewCell {
         case none
         case lock
         case tick(isSelected: Bool)
+        case radio(isSelected: Bool)
         case x
     }
 
@@ -35,6 +36,8 @@ final class UserCell: UITableViewCell {
         
         return result
     }()
+    
+    private lazy var roundSelectionView = RoundSelectionView()
 
     private lazy var separator: UIView = {
         let result: UIView = UIView()
@@ -80,7 +83,8 @@ final class UserCell: UITableViewCell {
                 UIView.hSpacer(Values.mediumSpacing),
                 displayNameLabel,
                 spacer,
-                accessoryImageView
+                accessoryImageView,
+                roundSelectionView
             ]
         )
         stackView.axis = .horizontal
@@ -134,26 +138,64 @@ final class UserCell: UITableViewCell {
         )
         
         switch accessory {
-            case .none: accessoryImageView.isHidden = true
-            
+            case .none:
+                accessoryImageView.isHidden = true
+                roundSelectionView.isHidden = true
             case .lock:
+                roundSelectionView.isHidden = true
                 accessoryImageView.isHidden = false
                 accessoryImageView.image = #imageLiteral(resourceName: "ic_lock_outline").withRenderingMode(.alwaysTemplate)
                 accessoryImageView.tintColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
                 
             case .tick(let isSelected):
+                roundSelectionView.isHidden = true
                 let icon: UIImage = (isSelected ? #imageLiteral(resourceName: "CircleCheck") : #imageLiteral(resourceName: "Circle"))
                 accessoryImageView.isHidden = false
                 accessoryImageView.image = icon.withRenderingMode(.alwaysTemplate)
                 accessoryImageView.tintColor = Colors.text
             case .x:
+                roundSelectionView.isHidden = true
                 accessoryImageView.isHidden = false
                 accessoryImageView.image = #imageLiteral(resourceName: "X").withRenderingMode(.alwaysTemplate)
                 accessoryImageView.contentMode = .center
                 accessoryImageView.tintColor = Colors.text
+            case .radio(let isSelected):
+                accessoryImageView.isHidden = true
+                roundSelectionView.isHidden = false
+                roundSelectionView.update(isSelected: isSelected)
         }
         
         let alpha: CGFloat = (isZombie ? 0.5 : 1)
         [ profilePictureView, displayNameLabel, accessoryImageView ].forEach { $0.alpha = alpha }
+    }
+}
+
+fileprivate class RoundSelectionView: UIView {
+    
+    private lazy var centralView: UIView = {
+        let result = UIView()
+        result.backgroundColor = Colors.accent
+        return result
+    }()
+    
+    init() {
+        super.init(frame: CGRect.zero)
+        self.addSubview(centralView)
+        self.set(.width, to: 20)
+        self.set(.height, to: 20)
+        self.layer.cornerRadius = 10
+        self.layer.borderWidth = 1
+        self.layer.borderColor = Colors.text.cgColor
+        
+        centralView.pin(to: self, withInset: 3)
+        centralView.layer.cornerRadius = 7
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func update(isSelected: Bool) {
+        centralView.isHidden = !isSelected
     }
 }

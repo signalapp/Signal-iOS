@@ -44,7 +44,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         result.dataSource = self
         result.delegate = self
 
-        let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
+        let bottomInset = Values.newConversationButtonBottomOffset + Values.largeSpacing + HomeVC.newConversationButtonSize
         result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
         result.showsVerticalScrollIndicator = false
         
@@ -180,7 +180,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 constant: -Values.largeSpacing
             ),
             clearAllButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth),
-            clearAllButton.heightAnchor.constraint(equalToConstant: NewConversationButtonSet.collapsedButtonSize)
+            clearAllButton.heightAnchor.constraint(equalToConstant: HomeVC.newConversationButtonSize)
         ])
     }
     

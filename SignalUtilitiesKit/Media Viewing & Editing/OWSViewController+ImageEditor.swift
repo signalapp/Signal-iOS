@@ -52,7 +52,7 @@ public extension UIViewController {
         navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationBar.shadowImage = UIImage()
         navigationBar.isTranslucent = false
-        let color = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x161616)
+        let color = isLightMode ? UIColor(hex: 0xF9F9F9) : UIColor(hex: 0x161616)
         navigationBar.barTintColor = color
         navigationBar.backgroundColor = color
         let backgroundImage = UIImage(color: color)

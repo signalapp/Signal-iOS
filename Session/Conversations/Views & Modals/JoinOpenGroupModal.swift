@@ -53,7 +53,7 @@ final class JoinOpenGroupModal: Modal {
         joinButton.backgroundColor = Colors.buttonBackground
         joinButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
         joinButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        joinButton.setTitle("Join", for: UIControl.State.normal)
+        joinButton.setTitle("JOIN_COMMUNITY_BUTTON_TITLE".localized(), for: UIControl.State.normal)
         joinButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         
         // Button stack view
