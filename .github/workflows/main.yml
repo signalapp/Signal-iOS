@@ -76,7 +76,7 @@ jobs:
   check_autogenstrings:
     name: Check if strings file is outdated
 
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     runs-on: macos-12
 
