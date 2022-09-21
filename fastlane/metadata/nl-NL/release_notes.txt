@@ -1,3 +1,2 @@
-• Scherm-in-scherm van videogesprek wordt tijdens typen zichtbaar boven het toetsenbord
-• Verbeterde betrouwbaarheid van groepsmetadata en afhandeling van fouten
-
+• Geblokkeerde contacten verschijnen niet meer in je contactenlijst, lijsten met contacten om berichten te sturen of aan een groep toe te voegen, en meer.  
+• Gebruikers met Spreek-selectie ingeschakeld kunnen lang op een tekst drukken en 'Spreek' kiezen om de tekst hardop te horen. Met dank aan onze opensourcecommunity voor deze toegankelijkheidsfunctie.

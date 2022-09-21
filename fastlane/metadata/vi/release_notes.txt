@@ -1,3 +1,2 @@
-• Cuộc Gọi Video Hình trong hình sẽ dịch chuyển lên phía trên bàn phím khi bạn gõ phím
-• Cải thiện việc cập nhật thông tin nhóm & sửa lỗi liên quan đến nhóm
-
+• Các liên hệ bạn đã chặn sẽ không hiển thị trên các danh sách liên hệ, danh sách người nhận tin nhắn hoặc người để thêm vào nhóm, và các danh sách khác nữa.
+• Những người dùng đã bật tính năng có thể nhấn vào một đoạn nội dung và giữ rồi chọn "Đọc" để nghe tin nhắn văn bản được đọc thành lời. Cảm ơn công đồng mã nguồn mở của ứng dụng vì tính năng trợ năng này!

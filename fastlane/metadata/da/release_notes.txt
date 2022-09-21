@@ -1,3 +1,2 @@
-• Billede-i-billede for videoopkald dukker op ovenpå tastaturet, når der tastes
-• Forbedr pålideligheden af opdateringer af gruppens metadata og fejlhåndtering
-
+• Blokerede kontakter dukker ikke længere op i din kontaktliste og modtagerlister, når du sender beskeder eller opretter grupper mm.
+• Brugere med oplæsning slået til kan klikke på en besked og vælge "Læs op" for at få beskeden læst højt. Tak, fordi du støtter vores open source-fællesskab med denne hjælpefunktion!

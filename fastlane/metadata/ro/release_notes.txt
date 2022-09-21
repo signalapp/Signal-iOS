@@ -1,3 +1,2 @@
-• Apelul video Imagine-în-Imagine se ridică deasupra tastaturii atunci când tastezi
-• Îmbunătățește gestionarea erorilor și fiabilitatea actualizărilor privind metadatele de grup
-
+• Contactele blocate nu vor mai apărea în agendă, în lista de destinatari pentru trimiterea mesajelor sau pentru adăugarea la un grup și altele.
+• Utilizatorii cu Selectarea vorbirii activată pot să apese lung pe un text și să selecteze „Vorbește” ca să audă rostit mesajul text. Mulțumim comunității noastre open source pentru această funcție de accesibilitate!

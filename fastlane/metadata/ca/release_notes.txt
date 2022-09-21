@@ -1,3 +1,2 @@
-• Durant les videotrucades, la funció Picture-in-Picture s'elevarà per sobre del teclat mentre teclegis
-• Millora de la fiabilitat de les metadades de grup i la gestió d'errors
-
+• Els contactes bloquejats ja no es mostraran ni a la teva llista de contactes, ni a les llistes de destinataris per enviar missatges ni a afegir a un grup, i més.
+• Els usuaris que hagin habilitat Selecció per veu poden pressionar sobre un text i seleccionar "Parla" perquè el missatge de text sigui llegit en veu alta. Donem gràcies a la nostra comunitat de codi obert per aquesta funció!

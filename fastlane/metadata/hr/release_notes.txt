@@ -1,3 +1,2 @@
-• Slika u slici minimizira prozor videopoziva iznad tipkovnice dok tipkate
-• Poboljšanje pouzdanosti ažuriranja grupnih metapodataka i upravljanja pogreškama
-
+• Blokirani korisnici više se neće prikazivati ​​među vašim kontaktima, na popisu primatelja za slanje poruka ili dodavanje u grupu i sl.
+• Korisnici koji su uključili Čitanje odabira mogu označiti i dugo pritisnuti tekst te odabrati "Čitaj" da bi poslušali poruku. Ova značajka pristupačnosti dostupna je zahvaljujući našoj zajednici otvorenog koda!

@@ -1,3 +1,2 @@
-• Gambar-dalam-Gambar Panggilan Video muncul di atas keyboard saat mengetik
-• Peningkatan pada keandalan pembaruan metadata grup & penanganan eror
-
+• Kontak yang diblokir tidak akan ditampilkan lagi di daftar kontak, daftar penerima pengiriman pesan, atau penambahan ke grup, dan lainnya.
+• Pengguna yang mengaktifkan fitur Pilihan Baca bisa menekan lama suatu teks dan memilih “Baca” untuk mendengar pembacaan pesan teks tersebut. Fitur ini tersedia berkat komunitas sumber terbuka kami!

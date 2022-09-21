@@ -1,3 +1,2 @@
-• Videohovor obraz v obraze se při psaní zobrazí nad klávesnicí
-• Vyšší spolehlivost aktualizací skupin metadat a řešení chyb
-
+• Zablokované kontakty se již nebudou zobrazovat ve vašem seznamu kontaktů, v seznamech příjemců pro odesílání zpráv ani v seznamech pro přidávání do skupin a dalších.
+• Uživatelé, kteří mají aktivovanou funkci Přečíst výběr, mohou text dlouze stisknout a vybrat „Přečíst“. Zpráva se jim přehraje nahlas. Děkujeme naší otevřené komunitě za tuto funkci usnadnění!

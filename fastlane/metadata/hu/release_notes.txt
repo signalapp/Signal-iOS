@@ -1,3 +1,2 @@
-• Gépelés közben a billentyűzet fölé emelkedik a kép a képben funckiót biztosító videohívás lehetősége
-• Jobbá tettük a csoport metaadat-frissítésének megbízhatóságát és hibakezelését
-
+• A letiltott névjegyek többé nem jelennek meg a névjegyzékben, az üzenetküldéshez vagy a csoporthoz való felvételhez szükséges címzettek listáján stb.
+• Azok a felhasználók, akiknél engedélyezve van a Beszédhangok funkció, hosszan rányomhatnak a szövegre, és kiválaszthatják a „Beszéd” lehetőséget, hogy meghallgassák a szöveges üzenetet. Köszönjük nyílt forráskódú közösségünknek ezt a kisegítő lehetőséget!

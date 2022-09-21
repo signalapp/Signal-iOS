@@ -1,3 +1,2 @@
-• En las videollamadas, la función Picture-in-Picture se elevará por encima del teclado cuando teclees
-• Mejora de la fiabilidad de los metadatos de grupo y la gestión de errores
-
+• Los contactos bloqueados ya no se mostrarán en tu lista de contactos, las listas de destinatarios para enviar mensajes o añadir a un grupo, y más.
+• Los usuarios que hayan habilitado Selección por voz pueden presionar sobre un texto y seleccionar "Habla" para que el mensaje de texto sea leído en voz alta. ¡Esta función ha sido posible gracias a nuestra comunidad de código abierto!

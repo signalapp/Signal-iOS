@@ -1,3 +1,2 @@
-• Videopuhelun Kuva kuvassa -tila nousee näppäimistön yläpuolelle kirjoitettaessa
-• Parannettu ryhmän metatietojen päivittämisen luotettavuutta ja virheiden käsittelyä
-
+• Estettyjä yhteyshenkilöitä ei näytetä enää yhteystietoluettelossasi, lähtevien viestien vastaanottajien luettelossa, ryhmään lisättäessä tai muissa paikoissa.
+• Käyttäjät, joilla on puhevalinta käytössä, voivat painaa tekstiviestiä pitkään ja valita ”Lue ääneen” kuullakseen sen luettuna ääneen. Haluamme kiittää vapaaehtoista yhteisöämme tästä esteettömyysominaisuudesta!

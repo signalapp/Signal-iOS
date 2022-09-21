@@ -1,3 +1,2 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
-
+• Blocked contacts will no longer show up in your contact list, recipient lists for sending messages or adding to a group, and more.   
+• Users with Speak Selection enabled can long press a text and select “Speak” to hear the text message read aloud. Thank you to our open source community for this accessibility feature!

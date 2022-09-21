@@ -1,3 +1,2 @@
-• Videosamtal med bild-i-bild läggs ovanför tangentbordet när du skriver
-• Förbättra uppdateringars pålitlighet och felhantering för gruppmetadata
-
+• Blockerade kontakter kommer inte visas i din kontaktlista, mottagarlista för att skicka meddelanden eller lägga till i grupper, med flera.
+• Användare som har aktiverat Läs upp markering kan trycka länge på en text och välja Läs upp för att höra textmeddelandet. Tack till vår öppen källkod-community för den här hjälpmedelsfunktionen.

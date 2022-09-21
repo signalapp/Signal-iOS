@@ -1,3 +1,2 @@
-• Videoanruf Bild-in-Bild erscheint beim Tippen über der Tastatur
-• Zuverlässigkeit bei der Aktualisierung von Gruppenmetadaten und Fehlerbehebung verbessern
-
+• Geblockte Kontakte erscheinen nicht länger in deiner Kontaktliste, in den Empfängerlisten zum Versenden von Nachrichten oder zum Hinzufügen zu einer Gruppe und vieles mehr.
+• User mit aktivierter Sprachauswahl können lange auf einen Text drücken und «Sprechen» auswählen, um sich die Textnachricht laut vorlesen zu lassen. Vielen Dank an unsere Open-Source-Community für diese barrierefreie Funktion!

@@ -1,3 +1,2 @@
-• Yazı yazarken Görüntülü Arama sırasındaki Resim İçinde Resim, klavyenin üzerine çıkar
-• Grup meta veri güncelleme güvenilirliğini ve hata işlemeyi iyileştir
-
+• Engellenen kişiler artık kişi listende, mesaj gönderdiğin veya bir gruba ekleme yaptığın alıcı listelerinde ve diğer listelerde görünmeyecektir.
+• Seçimi Seslendir özelliğini etkinleştiren kullanıcılar, bir metne uzun süre basılı tutabilir ve metni sesli olarak okutmak için “Seslendir”i seçebilir. Bu erişilebilirlik özelliği için açık kaynak topluluğumuza teşekkür ederiz!

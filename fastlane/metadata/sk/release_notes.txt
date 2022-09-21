@@ -1,3 +1,2 @@
-• Pri písaní počas videohovoru sa okno Obraz v obraze posunie nad klávesnicu
-• Vyššia spoľahlivosť aktualizácie skupinových metadát a spracovania chýb
-
+• Blokované kontakty sa už viac nebudú zobrazovať v zozname kontaktov, zoznamoch príjemcov na odosielanie správ alebo pridávanie do skupiny atď.
+• Používatelia s aktivovanou funkciou Predčítanie obsahu môžu dlhšie podržať označený text a vybrať možnosť „Rozprávať“, aby si vypočuli textovú správu nahlas. Za túto funkciu prístupnosti ďakujeme našej open source komunite!
