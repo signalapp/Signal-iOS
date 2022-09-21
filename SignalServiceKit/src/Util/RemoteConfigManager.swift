@@ -328,11 +328,7 @@ public class RemoteConfig: BaseFlags {
         }
 
         // uuid_bucket = UINT64_FROM_FIRST_8_BYTES_BIG_ENDIAN(SHA256(rawFlag + "." + uuidBytes)) % bucketSize
-        let uuidBucket = hash[0..<8].withUnsafeBytes {
-            UInt64(bigEndian: $0.load(as: UInt64.self)) % bucketSize
-        }
-
-        return uuidBucket
+        return UInt64(bigEndianData: hash.prefix(8))! % bucketSize
     }
 
     private static func isEnabled(_ flag: Flags.SupportedIsEnabledFlags, defaultValue: Bool = false) -> Bool {

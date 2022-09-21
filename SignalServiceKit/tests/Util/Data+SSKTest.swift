@@ -22,4 +22,20 @@ class DataSSKTests: XCTestCase {
             XCTAssertEqual(tupleResult?.1, 16)
         }
     }
+
+    func testFixedWidthInteger() {
+        let dataValue = Data(1...9)
+        let testCases: [(UInt64, Data)] = [
+            // Test byte ordering and considering all bytes
+            (0x01_02_03_04_05_06_07_08, dataValue),
+            // Test an unaligned load
+            (0x02_03_04_05_06_07_08_09, dataValue.dropFirst())
+        ]
+        for (expectedValue, bigEndianData) in testCases {
+            XCTAssertEqual(UInt64(bigEndianData: bigEndianData), expectedValue)
+            let tupleResult = UInt64.from(bigEndianData: bigEndianData)
+            XCTAssertEqual(tupleResult?.0, expectedValue)
+            XCTAssertEqual(tupleResult?.1, 8)
+        }
+    }
 }
