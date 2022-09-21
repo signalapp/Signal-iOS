@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • 遭封鎖的聯絡人不會再顯示於你的聯絡人清單、訊息接收者清單、新增成員的清單及其他清單中。
 • 啟用「朗讀所選文字」功能的使用者可長按某段文字內容，並選取「朗讀」以聆聽文字訊息。感謝我們的開源社群讓這項輔助功能得以順利上線！

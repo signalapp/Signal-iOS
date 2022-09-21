@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Les contacts bloqués n'apparaîtront plus dans vos listes de contacts ou de destinataires lors de l'envoi de messages ou de l'ajout à un groupe, etc.  
 • Si la fonction de lecture Speak Selection est activée, les utilisateurs peuvent appuyer longuement sur un texte et sélectionner « Speak » pour écouter le message texte à haute voix. Nous remercions nos développeurs pour cette fonctionnalité d'accessibilité !

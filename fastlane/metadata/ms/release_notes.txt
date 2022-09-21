@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 Kenalan yang disekat tidak akan ditunjukkan dalam senarai kenalan, senarai penerima untuk penghantaran mesej atau ditambah ke dalam kumpulan serta lain-lain lagi.
 Pengguna yang mendayakan Pilihan Bercakap boleh menekan sesuatu teks dalam tempoh yang agak lama dan memilih "Bercakap" untuk mendengar mesej teks itu dibaca dengan kuat. Terima kasih kepada komuniti terbuka kami yang memberi akses kepada ciri ini!

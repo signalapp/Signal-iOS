@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Geblokkeerde contacten verschijnen niet meer in je contactenlijst, lijsten met contacten om berichten te sturen of aan een groep toe te voegen, en meer.  
 • Gebruikers met Spreek-selectie ingeschakeld kunnen lang op een tekst drukken en 'Spreek' kiezen om de tekst hardop te horen. Met dank aan onze opensourcecommunity voor deze toegankelijkheidsfunctie.

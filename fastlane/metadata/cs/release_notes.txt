@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Zablokované kontakty se již nebudou zobrazovat ve vašem seznamu kontaktů, v seznamech příjemců pro odesílání zpráv ani v seznamech pro přidávání do skupin a dalších.
 • Uživatelé, kteří mají aktivovanou funkci Přečíst výběr, mohou text dlouze stisknout a vybrat „Přečíst“. Zpráva se jim přehraje nahlas. Děkujeme naší otevřené komunitě za tuto funkci usnadnění!

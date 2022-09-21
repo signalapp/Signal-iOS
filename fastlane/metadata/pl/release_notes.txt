@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Zablokowane kontakty nie będą się już wyświetlać m.in. na liście kontaktów, odbiorców wiadomości czy użytkowników, których możesz dodać do grupy.
 • Od teraz wiadomość może zostać odczytana na głos — aby ją usłyszeć, wystarczy włączyć opcję „Mów zaznaczone”, a następnie przytrzymać dłużej wybraną wiadomość i wybrać opcję „Powiedz”. Dziękujemy naszej społeczności open source za tę funkcję dostępności!

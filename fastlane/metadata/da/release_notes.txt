@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Blokerede kontakter dukker ikke længere op i din kontaktliste og modtagerlister, når du sender beskeder eller opretter grupper mm.
 • Brugere med oplæsning slået til kan klikke på en besked og vælge "Læs op" for at få beskeden læst højt. Tak, fordi du støtter vores open source-fællesskab med denne hjælpefunktion!

@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • 被屏蔽的联系人将不再显示于您的联系人列表、消息接收人列表、群组成员添加列表及其他列表中。
 • 启用“朗读所选文本”的用户可以长按文本并选择“朗读”，以听取文本消息的朗读版本。感谢我们的开源社区提供了此辅助功能！

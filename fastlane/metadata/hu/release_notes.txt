@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • A letiltott névjegyek többé nem jelennek meg a névjegyzékben, az üzenetküldéshez vagy a csoporthoz való felvételhez szükséges címzettek listáján stb.
 • Azok a felhasználók, akiknél engedélyezve van a Beszédhangok funkció, hosszan rányomhatnak a szövegre, és kiválaszthatják a „Beszéd” lehetőséget, hogy meghallgassák a szöveges üzenetet. Köszönjük nyílt forráskódú közösségünknek ezt a kisegítő lehetőséget!

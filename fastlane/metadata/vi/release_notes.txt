@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Các liên hệ bạn đã chặn sẽ không hiển thị trên các danh sách liên hệ, danh sách người nhận tin nhắn hoặc người để thêm vào nhóm, và các danh sách khác nữa.
 • Những người dùng đã bật tính năng có thể nhấn vào một đoạn nội dung và giữ rồi chọn "Đọc" để nghe tin nhắn văn bản được đọc thành lời. Cảm ơn công đồng mã nguồn mở của ứng dụng vì tính năng trợ năng này!

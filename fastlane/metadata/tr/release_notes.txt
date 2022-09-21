@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Engellenen kişiler artık kişi listende, mesaj gönderdiğin veya bir gruba ekleme yaptığın alıcı listelerinde ve diğer listelerde görünmeyecektir.
 • Seçimi Seslendir özelliğini etkinleştiren kullanıcılar, bir metne uzun süre basılı tutabilir ve metni sesli olarak okutmak için “Seslendir”i seçebilir. Bu erişilebilirlik özelliği için açık kaynak topluluğumuza teşekkür ederiz!

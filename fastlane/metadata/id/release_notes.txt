@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Kontak yang diblokir tidak akan ditampilkan lagi di daftar kontak, daftar penerima pengiriman pesan, atau penambahan ke grup, dan lainnya.
 • Pengguna yang mengaktifkan fitur Pilihan Baca bisa menekan lama suatu teks dan memilih “Baca” untuk mendengar pembacaan pesan teks tersebut. Fitur ini tersedia berkat komunitas sumber terbuka kami!

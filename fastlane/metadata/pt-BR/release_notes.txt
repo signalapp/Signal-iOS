@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Os contatos bloqueados não aparecerão mais na sua lista de contatos nem nas listas de destinatários para enviar mensagens ou adicionar a um grupo, entre outros.
 • Usuários com o modo Falar seleção ativado podem pressionar uma mensagem de texto e selecionar "Falar" para ouvir a mensagem em voz alta. Agradecemos a nossa comunidade de software aberto por oferecer este recurso de acessibilidade!

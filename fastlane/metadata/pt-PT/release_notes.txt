@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Os contactos bloqueados já não apareceração na sua lista de contactos, listas de destinatários de mensagens ou de adicionar a grupos, e mais.
 • Os utilizadores com a função Enunciar Seleção ativada podem premir uma mensagem sem largar e selecionar "Enunciar" para ouvirem a mensagem em voz alta. Agradecemos à nossa comunidade open source por esta funcionalidade de acessibilidade!

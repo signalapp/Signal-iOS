@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • I contatti bloccati non appariranno più nella tua lista contatti generale e nemmeno nella lista dei contatti che compare quando vuoi inviare un messaggio o aggiungere una persona a un gruppo.
 • Gli utenti che hanno attivato la funzione Contenuto letto ad alta voce possono tener premuto su un qualsiasi testo e poi selezionare "Leggi ad alta voce" per ascoltare il testo scritto letto ad alta voce. Ringraziamo la nostra community basata sull'open source per aver reso realtà questa nuova funzione di accessibilità!

@@ -1,2 +1,3 @@
+• Fixes an issue with registration for people switching to new iPhones and iPads
 • Blokkerte kontakter vises ikke lenger i listen over kontakter, i listen over mottakere som du kan sende meldinger og gruppeinvitasjoner til, med mer.
 • Brukere som har funksjonen «Les opp valg» slått på, kan velge et stykke tekst og trykke «Les opp» for å høre teksten lest høyt. Tusen takk til nettsamfunnet vårt som har ordnet dette og gjort Signal mer tilgjengelig!
