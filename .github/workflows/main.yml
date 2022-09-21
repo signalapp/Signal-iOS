@@ -7,6 +7,10 @@ on:
       - main
       - release/*
 
+env:
+  # Path format pulled from https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md#xcode
+  DEVELOPER_DIR: /Applications/Xcode_14.0.1.app
+
 jobs:
   build_and_test:
     name: Build and Test
@@ -21,25 +25,6 @@ jobs:
       - uses: ./.github/actions/clone-everything
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
-
-      - name: Setup environment
-        shell: bash
-        run: |
-          REQUIRED_VERSION=13.2
-          CURRENT_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
-
-          echo "Current Xcode version: $CURRENT_VERSION"
-          echo "Required Xcode version: $REQUIRED_VERSION"
-
-          if [[ $CURRENT_VERSION != $REQUIRED_VERSION ]]; then
-            # Path format pulled from https://github.com/actions/virtual-environments/blob/main/images/macos/macos-11-Readme.md#xcode
-            NEW_XCODE="/Applications/Xcode_$REQUIRED_VERSION.app"
-            echo "Changing selected Xcode to $NEW_XCODE"
-            sudo xcode-select -s $NEW_XCODE
-
-            CURRENT_VERSION=$(xcodebuild -version | grep "Xcode" | awk '{print $2}')
-            echo "$?: Current Xcode version: $CURRENT_VERSION"
-          fi
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1 # Reads .ruby-version file by default
@@ -100,7 +85,7 @@ jobs:
 
     timeout-minutes: 5
 
-    runs-on: macos-11
+    runs-on: macos-12
 
     if: github.event_name == 'pull_request'
 
