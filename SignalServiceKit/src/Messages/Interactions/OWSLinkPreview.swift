@@ -186,11 +186,6 @@ public class OWSLinkPreview: MTLModel, Codable {
             linkPreview.date = Date(millisecondsSince1970: proto.date)
         }
 
-        guard linkPreview.isValid() else {
-            Logger.error("Preview has neither title nor image.")
-            throw LinkPreviewError.invalidPreview
-        }
-
         return linkPreview
     }
 
@@ -207,21 +202,10 @@ public class OWSLinkPreview: MTLModel, Codable {
         let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
         linkPreview.previewDescription = info.previewDescription
         linkPreview.date = info.date
-
-        guard linkPreview.isValid() else {
-            owsFailDebug("Preview has neither title nor image.")
-            throw LinkPreviewError.invalidPreview
-        }
-
         return linkPreview
     }
 
     public func buildProto(transaction: SDSAnyReadTransaction) throws -> SSKProtoPreview {
-        guard isValid() else {
-            Logger.error("Preview has neither title nor image.")
-            throw LinkPreviewError.invalidPreview
-        }
-
         guard let urlString = urlString else {
             Logger.error("Preview does not have url.")
             throw LinkPreviewError.invalidPreview
@@ -283,15 +267,6 @@ public class OWSLinkPreview: MTLModel, Codable {
             owsFailDebug("Could not write data source for: \(fileUrl), error: \(error)")
             return nil
         }
-    }
-
-    private func isValid() -> Bool {
-        var hasTitle = false
-        if let titleValue = title {
-            hasTitle = titleValue.count > 0
-        }
-        let hasImage = imageAttachmentId != nil
-        return hasTitle || hasImage
     }
 
     @objc
@@ -360,9 +335,9 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
 
     // MARK: - Public
 
-    @objc(findFirstValidUrlInSearchString:)
-    public func findFirstValidUrl(in searchString: String) -> URL? {
-        guard areLinkPreviewsEnabledWithSneakyTransaction() else { return nil }
+    @objc(findFirstValidUrlInSearchString:bypassSettingsCheck:)
+    public func findFirstValidUrl(in searchString: String, bypassSettingsCheck: Bool) -> URL? {
+        guard bypassSettingsCheck || areLinkPreviewsEnabledWithSneakyTransaction() else { return nil }
         guard let detector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
             owsFailDebug("Could not create NSDataDetector")
             return nil

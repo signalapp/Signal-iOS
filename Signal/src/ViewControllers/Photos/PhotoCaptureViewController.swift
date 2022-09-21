@@ -1129,8 +1129,19 @@ extension PhotoCaptureViewController {
         var validatedLinkPreview: OWSLinkPreview?
         if let linkPreview = linkPreview {
             self.databaseStorage.write { transaction in
-                validatedLinkPreview = try? OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreview, transaction: transaction)
+                do {
+                    validatedLinkPreview = try OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreview, transaction: transaction)
+                } catch LinkPreviewError.featureDisabled {
+                    validatedLinkPreview = OWSLinkPreview(urlString: linkPreview.urlString, title: nil, imageAttachmentId: nil)
+                } catch {
+                    Logger.error("Failed to generate link preview.")
+                }
             }
+        }
+
+        guard validatedLinkPreview != nil || !strippedTextViewText.isEmpty else {
+            owsFailDebug("Empty content")
+            return
         }
 
         let textAttachment = TextAttachment(

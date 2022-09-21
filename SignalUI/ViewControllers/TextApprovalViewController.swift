@@ -147,7 +147,7 @@ public class TextApprovalViewController: OWSViewController, MentionTextViewDeleg
         let isOversizedText = trimmedText.lengthOfBytes(using: .utf8) >= kOversizeTextMessageSizeThreshold
         guard !isOversizedText else { return clearLinkPreview() }
 
-        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText) else { return clearLinkPreview() }
+        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText, bypassSettingsCheck: false) else { return clearLinkPreview() }
 
         currentPreviewUrl = previewUrl
     }

@@ -1435,7 +1435,8 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         return;
     }
 
-    NSURL *previewUrl = [self.linkPreviewManager findFirstValidUrlInSearchString:self.inputTextView.text];
+    NSURL *previewUrl = [self.linkPreviewManager findFirstValidUrlInSearchString:self.inputTextView.text
+                                                             bypassSettingsCheck:NO];
     if (!previewUrl.absoluteString.length) {
         [self clearLinkPreviewStateAndView];
         return;

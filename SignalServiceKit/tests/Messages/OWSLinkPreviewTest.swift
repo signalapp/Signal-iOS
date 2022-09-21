@@ -43,7 +43,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
             "https://test.signal.org/": "https://test.signal.org/"
         ]
         testSuite.forEach { string, expectedString in
-            let url = linkPreviewManager.findFirstValidUrl(in: string)
+            let url = linkPreviewManager.findFirstValidUrl(in: string, bypassSettingsCheck: true)
             XCTAssertEqual(url?.absoluteString, expectedString)
         }
     }
@@ -69,7 +69,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
             "https://3g2upl4pq6kufc4m.oniony#onion": "https://3g2upl4pq6kufc4m.oniony#onion"
         ]
         testSuite.forEach { string, expectedString in
-            let url = linkPreviewManager.findFirstValidUrl(in: string)
+            let url = linkPreviewManager.findFirstValidUrl(in: string, bypassSettingsCheck: true)
             XCTAssertEqual(url?.absoluteString, expectedString)
         }
     }
@@ -98,7 +98,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         ]
 
         testSuite.forEach { string, expectedString in
-            let url = linkPreviewManager.findFirstValidUrl(in: string)
+            let url = linkPreviewManager.findFirstValidUrl(in: string, bypassSettingsCheck: true)
             XCTAssertEqual(url?.absoluteString, expectedString)
         }
     }
@@ -157,25 +157,6 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         }
     }
 
-    func testBuildValidatedLinkPreview_NoTitleOrImage() {
-        let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
-        let body = "\(url)"
-        let previewBuilder = SSKProtoPreview.builder(url: url)
-        let dataBuilder = SSKProtoDataMessage.builder()
-        dataBuilder.addPreview(try! previewBuilder.build())
-
-        self.write { (transaction) in
-            do {
-                _ = try OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
-                                                                 body: body,
-                                                                 transaction: transaction)
-                XCTFail("Missing expected error.")
-            } catch {
-                // Do nothing.
-            }
-        }
-    }
-
     func testPreviewUrlForMessageBodyText() {
         Assert(bodyText: "", extractsLink: nil)
         Assert(bodyText: "alice bob jim", extractsLink: nil)
@@ -194,7 +175,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     }
 
     private func Assert(bodyText: String, extractsLink link: URL?, file: StaticString = #file, line: UInt = #line) {
-        let actual = linkPreviewManager.findFirstValidUrl(in: bodyText)
+        let actual = linkPreviewManager.findFirstValidUrl(in: bodyText, bypassSettingsCheck: true)
         XCTAssertEqual(actual, link, file: file, line: line)
     }
 }

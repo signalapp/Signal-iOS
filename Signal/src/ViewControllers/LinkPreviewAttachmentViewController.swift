@@ -223,17 +223,24 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             }.catch(on: .main) { [weak self] error in
                 guard let self = self else { return }
                 guard self.currentPreviewUrl == previewUrl else { return }
-                self.clearLinkPreview(withError: error)
+                switch error {
+                case LinkPreviewError.featureDisabled:
+                    self.displayLinkPreview(OWSLinkPreviewDraft(url: previewUrl, title: nil))
+                default:
+                    self.clearLinkPreview(withError: error)
+                }
             }
         }
     }
 
     private func updateLinkPreviewIfNecessary() {
-        guard let trimmedText = textField.text?.ows_stripped(), !trimmedText.isEmpty else {
+        guard
+            let trimmedText = textField.text?.ows_stripped(), !trimmedText.isEmpty,
+            let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText, bypassSettingsCheck: true) else
+        {
             clearLinkPreview()
             return
         }
-        guard let previewUrl = linkPreviewManager.findFirstValidUrl(in: trimmedText) else { return clearLinkPreview() }
         currentPreviewUrl = previewUrl
     }
 
