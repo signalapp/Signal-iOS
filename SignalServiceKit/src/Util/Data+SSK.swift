@@ -52,6 +52,8 @@ public extension Array where Element == UInt8 {
     }
 }
 
+// MARK: - UUID
+
 public extension UUID {
     var data: Data {
         return withUnsafeBytes(of: self.uuid) { Data($0) }
@@ -60,10 +62,26 @@ public extension UUID {
 
 public extension UUID {
     init?(data: Data) {
-        guard data.count >= MemoryLayout<uuid_t>.size else {
+        guard let (selfValue, _) = Self.from(data: data) else {
             owsFailDebug("Invalid UUID data")
             return nil
         }
-        self.init(uuid: data.withUnsafeBytes { $0.load(as: uuid_t.self) })
+        self = selfValue
+    }
+
+    static func from(data: Data) -> (Self, Int)? {
+        // The `data` parameter refers to a byte-aligned memory address. The load()
+        // call requires proper alignment, which therefore assumes uuid_t is
+        // byte-aligned. Verify this in debug builds in case it ever changes.
+        assert(MemoryLayout<uuid_t>.alignment == 1)
+        let count = MemoryLayout<uuid_t>.size
+        let uuidT: uuid_t? = data.withUnsafeBytes { bytes in
+            guard bytes.count >= count else { return nil }
+            return bytes.load(as: uuid_t.self)
+        }
+        guard let uuidT = uuidT else {
+            return nil
+        }
+        return (Self(uuid: uuidT), count)
     }
 }

@@ -766,6 +766,7 @@
 		503614CF282AF657008128B4 /* GiftBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503614CE282AF657008128B4 /* GiftBadgeView.swift */; };
 		5042EAA3287F96FB00C9B19F /* VisibleBadgeResolverTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */; };
 		5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4BC6C22102D697004040C9 /* ContactDiscoveryOperationTest.swift */; };
+		509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */; };
 		50CF28F02829C94800752AB3 /* CVComponentGiftBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */; };
 		641CECC436F5F3EE2AC07EE9 /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657FDE7B91C2845BB3BEAB5 /* Pods_SignalShareExtension.framework */; };
 		661396AB28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661396AA28BD53EF00E0C4DF /* HiddenStoryHeaderCell.swift */; };
@@ -3039,6 +3040,7 @@
 		503614D5282C578C008128B4 /* sq */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = sq; path = translations/sq.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		503614D6282C7B76008128B4 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = zh_CN; path = translations/zh_CN.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
 		5042EAA2287F96FB00C9B19F /* VisibleBadgeResolverTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisibleBadgeResolverTest.swift; sourceTree = "<group>"; };
+		509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+SSKTest.swift"; sourceTree = "<group>"; };
 		50CF28EF2829C94800752AB3 /* CVComponentGiftBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVComponentGiftBadge.swift; sourceTree = "<group>"; };
 		55D83291ED67EE1A7FC96E60 /* Pods-SignalNSE.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.testable release.xcconfig"; sourceTree = "<group>"; };
 		63BAA38DC365EE44110A6BD1 /* Pods-SignalTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -6946,6 +6948,7 @@
 			children = (
 				F94261F4289B1B5400460798 /* AppVersionTests.swift */,
 				661396AE28BE881E00E0C4DF /* ChainedPromiseTest.swift */,
+				509BBF7928CA556700F4D8A0 /* Data+SSKTest.swift */,
 				F93999F528C81F2100E34899 /* DataMessagePaddingTests.swift */,
 				F94261F8289B1B5400460798 /* Date+SSKTest.swift */,
 				F94261F6289B1B5400460798 /* DeviceNamesTest.swift */,
@@ -11127,6 +11130,7 @@
 				5075004628B09CE6001922C9 /* ContactDiscoveryOperationTest.swift in Sources */,
 				F9426282289B1B5600460798 /* ContactDiscoveryTaskTest.swift in Sources */,
 				F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */,
+				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
