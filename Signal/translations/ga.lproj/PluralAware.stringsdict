@@ -162,10 +162,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ní féidir leat níos mó ná %d chomhrá a roghnú.</string>
+			<key>many</key>
+			<string>Ní féidir leat níos mó ná %d gcomhrá a roghnú.</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>Ní féidir leat níos mó ná 1 chomhrá a roghnú.</string>
 			<key>other</key>
-			<string>You can’t select more than %d chats.</string>
+			<string>Ní féidir leat níos mó ná %d comhrá a roghnú.</string>
+			<key>two</key>
+			<string>Ní féidir leat níos mó ná %d chomhrá a roghnú.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -725,10 +731,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Scéal Grúpa · %d Amharcóir</string>
+			<key>many</key>
+			<string>Scéal Grúpa · %d nAmharcóir</string>
 			<key>one</key>
-			<string>Group Story · 1 Viewer</string>
+			<string>Scéal Grúpa · 1 Amharcóir</string>
 			<key>other</key>
-			<string>Group Story · %d Viewers</string>
+			<string>Scéal Grúpa · %d Amharcóir</string>
+			<key>two</key>
+			<string>Scéal Grúpa · %d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -773,10 +785,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ní féidir leat níos mó ná %d mhír a chomhroinnt.</string>
+			<key>many</key>
+			<string>Ní féidir leat níos mó ná %d mír a chomhroinnt.</string>
 			<key>one</key>
-			<string>You can’t share more than 1 item.</string>
+			<string>Ní féidir leat níos mó ná 1 mhír a chomhroinnt.</string>
 			<key>other</key>
-			<string>You can’t share more than %d items.</string>
+			<string>Ní féidir leat níos mó ná %d mír a chomhroinnt.</string>
+			<key>two</key>
+			<string>Ní féidir leat níos mó ná %d mhír a chomhroinnt.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -885,10 +903,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d As an áireamh</string>
+			<key>many</key>
+			<string>%d As an áireamh</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 As an áireamh</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d As an áireamh</string>
+			<key>two</key>
+			<string>%d As an áireamh</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -901,10 +925,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d Amharcóir</string>
+			<key>many</key>
+			<string>%d nAmharcóir</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 Amharcóir</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d Amharcóir</string>
+			<key>two</key>
+			<string>%d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -917,10 +947,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Gach Teagmhálaí Signal · %d Amharcóir</string>
+			<key>many</key>
+			<string>Gach Teagmhálaí Signal · %dnAmharcóir</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Gach Teagmhálaí Signal · 1 Amharcóir</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Viewers</string>
+			<string>Gach Teagmhálaí Signal · %d Amharcóir</string>
+			<key>two</key>
+			<string>Gach Teagmhálaí Signal · %d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -933,10 +969,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Gach Teagmhálaí Signal · %d As an Áireamh</string>
+			<key>many</key>
+			<string>Gach Teagmhálaí Signal · %d As an Áireamh</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Gach Teagmhálaí Signal · 1 As an Áireamh</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Excluded</string>
+			<string>Gach Teagmhálaí Signal · %d As an Áireamh</string>
+			<key>two</key>
+			<string>Gach Teagmhálaí Signal · %d As an Áireamh</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -949,10 +991,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Ná Comhroinn Ach Le · %d Amharcóir</string>
+			<key>many</key>
+			<string>Ná Comhroinn Ach Le · %d nAmharcóir</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Ná Comhroinn Ach Le · 1 Amharcóir</string>
 			<key>other</key>
-			<string>Only Share With · %d Viewers</string>
+			<string>Ná Comhroinn Ach Le · %d Amharcóir</string>
+			<key>two</key>
+			<string>Ná Comhroinn Ach Le · %d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1083,10 +1131,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Aisghair %d chuireadh a sheol  “%2$@”?</string>
+			<key>many</key>
+			<string>Aisghair %d gcuireadh a sheol “%2$@”?</string>
 			<key>one</key>
-			<string>Revoke group invite sent by “%2$@”?</string>
+			<string>Aisghair 1 chuireadh a sheol “%2$@”?</string>
 			<key>other</key>
-			<string>Revoke %d invites sent by “%2$@”?</string>
+			<string>Aisghair %d cuireadh a sheol “%2$@”?</string>
+			<key>two</key>
+			<string>Aisghair %d chuireadh a sheol  “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -1115,10 +1169,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Scéal Príobháideach · %d Amharcóir</string>
+			<key>many</key>
+			<string>Scéal Príobháideach · %dnAmharcóir</string>
 			<key>one</key>
-			<string>Private Story · 1 Viewer</string>
+			<string>Scéal Príobháideach · 1 Amharcóir</string>
 			<key>other</key>
-			<string>Private Story · %d Viewers</string>
+			<string>Scéal Príobháideach · %d Amharcóir</string>
+			<key>two</key>
+			<string>Scéal Príobháideach · %d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1185,10 +1245,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d Amharcóir</string>
+			<key>many</key>
+			<string>%d nAmharcóir</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 Amharcóir</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d Amharcóir</string>
+			<key>two</key>
+			<string>%d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1245,10 +1311,16 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d amharc</string>
+			<key>many</key>
+			<string>%d n-amharc</string>
 			<key>one</key>
-			<string>1 view</string>
+			<string>1 amharc</string>
 			<key>other</key>
-			<string>%d views</string>
+			<string>%d amharc</string>
+			<key>two</key>
+			<string>%d amharc</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>

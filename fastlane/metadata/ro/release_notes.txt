@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• Apelul video Imagine-în-Imagine se ridică deasupra tastaturii atunci când tastezi
+• Îmbunătățește gestionarea erorilor și fiabilitatea actualizărilor privind metadatele de grup
 

@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• 视频通话的画中画在打字时会升到键盘上方
+• 优化群组元数据更新的可靠性和错误处理能力
 

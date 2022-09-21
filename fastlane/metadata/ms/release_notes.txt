@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• Panggilan Video Gambar dalam Gambar naik di atas papan kekunci semasa menaip
+• Tingkatkan kebolehpercayaan kemas kini metadata kumpulan & pengendalian ralat
 

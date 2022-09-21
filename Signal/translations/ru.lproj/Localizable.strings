@@ -2771,16 +2771,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ в %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Удалить историю группы";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Вы действительно хотите удалить эту историю?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Члены группы «%@» могут просматривать эту историю и отвечать на неё. Вы можете обновить членство в этом чате в группе.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Кто может просматривать эту историю";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Группа обновлена.";
@@ -3710,7 +3710,7 @@
 "MY_STORIES_NO_STORIES" = "Обновления вашей истории будут показываться здесь.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Все, кроме...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Все контакты Signal";
@@ -3791,7 +3791,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Выберите участников";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ в %2$@ · История";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Выберите группу";
@@ -4673,7 +4673,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Удалить";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Этот человек больше не сможет видеть эту историю.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Удалить %1$@?";
@@ -5978,7 +5978,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Предоставить iOS доступ к контактам и чатам Signal для таких функций, как предложения поделиться и уведомления.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "Управляйте своими историями и определяйте, кто может их просматривать";
 
 /* Label for the stories section of the settings view */
 "SETTINGS_STORIES_TITLE" = "Истории";
@@ -6152,7 +6152,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Перейти к чату";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Вы не можете отвечать на эту историю, потому что вы больше не являетесь членом этой группы.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Скрытые истории";
@@ -6209,19 +6209,19 @@
 "STORIES_SETTINGS_TITLE" = "Настройки приватности историй";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "Вы больше не сможете делиться историями или просматривать их. Все истории, которыми вы недавно поделились, будут по-прежнему видны другим пользователям до истечения срока их действия.";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Если вы откажетесь от историй, вы больше не сможете делиться историями или просматривать их.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Отключить истории";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Делитесь и просматривайте истории других пользователей. Истории автоматически исчезают через 24 часа.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Включить истории";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Поделиться";
@@ -6236,7 +6236,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "История открыта";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Включите функцию уведомления о прочтении, чтобы узнать, кто просматривал ваши истории.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Просмотры";
@@ -6245,7 +6245,7 @@
 "STORY_COMPOSER_CAMERA" = "Камера";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Не удалось загрузить ссылку. Проверьте ваше подключение к интернету и попробуйте ещё раз.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
 "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Поделитесь ссылкой со зрителями своей истории";
@@ -6269,13 +6269,13 @@
 "STORY_PRIVACY_SETTINGS" = "Конфиденциальность";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Отреагировал(-а) %1$@ на вашу историю";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "Отреагировал(-а) %@ на историю";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Отреагировал(-а) %1$@ на историю %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Введите ответ…";
@@ -6296,7 +6296,7 @@
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Поделиться только с...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Все, кроме...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Отправка не удалась";
@@ -6308,10 +6308,10 @@
 "STORY_SENDING" = "Отправляем…";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Выберите, какие из контактов Signal могут просматривать вашу историю. Изменения не повлияют на истории, которые вы уже отправили.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Кто может просматривать эту историю";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Нажать, чтобы перейти к следующей истории";
@@ -6749,7 +6749,7 @@
 "VIEW_PHOTO" = "Просмотреть фото";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "Просмотреть историю";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Проведите для отмены";

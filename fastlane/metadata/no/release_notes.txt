@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• Bilde-i-bilde under videosamtaler flyttes over tastaturet når man skriver
+• Mer pålitelige oppdateringer av metadata for grupper og bedre feilretting
 

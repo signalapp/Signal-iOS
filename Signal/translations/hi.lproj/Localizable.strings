@@ -785,7 +785,7 @@
 "CAMERA_BUTTON_LABEL" = "कैमरा";
 
 /* VoiceOver label for -> button in text story composer. */
-"CAMERA_VO_ARROW_RIGHT_PROCEED" = "आगे बढें";
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "आगे बढ़ें";
 
 /* VoiceOver label for Flash button in camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "एलबम मोड";
@@ -2771,16 +2771,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ ने %2$@ को";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "ग्रुप स्टोरी हटाएँ";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "क्या आप वाकई में यह स्टोरी डिलीट करना चाहते/चाहती हैं?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "\"%@\" ग्रुप चैट के सदस्य इस स्टोरी को देख सकते और इसका जवाब दे सकते हैं। आप ग्रुप में इस चैट के लिए सदस्यता को अपडेट कर सकते हैं।";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "इस स्टोरी को कौन देख सकता है";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "ग्रुप अपडेट हो गया है।";
@@ -3710,7 +3710,7 @@
 "MY_STORIES_NO_STORIES" = "आपकी स्टोरी के अपडेट यहाँ दिखेंगे।";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "निम्न को छोड़कर सभी...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Signal के सभी कनेक्शन";
@@ -3791,7 +3791,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "सदस्य चुनें";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%2$@ से %1$@ · स्टोरी";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "ग्रुप चुनें";
@@ -4673,7 +4673,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "हटा दें ";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "यह व्यक्ति अब इस स्टोरी को नहीं देख पाएगा।";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ को हटाना है?";
@@ -5978,7 +5978,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "सुझाव और नोटिफ़िकेशन को शेयर करने जैसे फ़ीचर के लिए iOS को Signal के कॉन्टैक्ट और चैट के एक्सेस की अनुमति दें.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "मैनेज करें अपनी स्टोरीज़ को और यह कि कौन उन्हें देख सकता है।";
 
 /* Label for the stories section of the settings view */
 "SETTINGS_STORIES_TITLE" = "स्टोरीज़";
@@ -6152,7 +6152,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "चैट पर जाएँ";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "आप इस स्टोरी का जवाब नहीं दे सकते क्योंकि अब आप इस ग्रुप के सदस्य नहीं हैं।";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "छिपी हुई स्टोरीज़";
@@ -6209,19 +6209,19 @@
 "STORIES_SETTINGS_TITLE" = "स्टोरी की निजता";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "अब आप स्टोरीज़ शेयर या व्यू नहीं कर पाएंगे। हाल ही में जो भी स्टोरीज़ आपने शेयर की होंगी वह समाप्त होने तक फिर भी दूसरों द्वारा देखी जा सकेंगी।";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "स्टोरीज़ बंद करना चुनने पर आप न तो स्टोरीज़ शेयर कर पाएंगे, न ही उन्हें देख पाएंगे। ";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "स्टोरीज़ बंद करें";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "स्टोरीज़ शेयर करें या दूसरों की स्टोरीज़ देखें। 24 घंटे बाद स्टोरीज़ अपने आप गायब हो जाएंगी।";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "स्टोरीज़ चालू करें";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "साझा करें";
@@ -6236,7 +6236,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "स्टोरी नहीं छिपाई गई";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "प्राप्त सूचनाएँ सक्षम करके देखें कि आपकी स्टोरीज़ किसने देखी हैं।";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "व्यू";
@@ -6245,7 +6245,7 @@
 "STORY_COMPOSER_CAMERA" = "कैमरा";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "लिंक लोड नहीं किया जा सका। अपना कनेक्शन जाँचें और फिर से प्रयास करें।";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
 "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "अपनी स्टोरी के व्यूअर्स के साथ कोई लिंक शेयर करें";
@@ -6269,13 +6269,13 @@
 "STORY_PRIVACY_SETTINGS" = "गोपनियता ";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "आपकी स्टोरी पर %1$@ का रिऐक्शन दिया";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "किसी स्टोरी पर %@ का रिऐक्शन दिया";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ की स्टोरी पर %1$@ का रिऐक्शन दिया";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "उत्तर";
@@ -6296,7 +6296,7 @@
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "केवल निम्न के साथ शेयर करें...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "निम्न को छोड़कर सभी...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "भेजना विफल रहा";
@@ -6308,10 +6308,10 @@
 "STORY_SENDING" = "भेजा जा रहा है...";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "चुनें कि कौन-से Signal कनेक्शन आपकी स्टोरी देख सकते हैं। आपके द्वारा पहले ही भेजी जा चुकी स्टोरीज़ पर बदलाव लागू नहीं होंगे।";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "इस स्टोरी को कौन देख सकता है";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "आगे बढ़ने के लिए टैप करें";
@@ -6749,7 +6749,7 @@
 "VIEW_PHOTO" = "फ़ोटो देखें";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "स्टोरी देखें";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "रद्द करने के लिए स्लाइड करें";

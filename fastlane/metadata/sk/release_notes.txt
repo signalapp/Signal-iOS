@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• Pri písaní počas videohovoru sa okno Obraz v obraze posunie nad klávesnicu
+• Vyššia spoľahlivosť aktualizácie skupinových metadát a spracovania chýb
 

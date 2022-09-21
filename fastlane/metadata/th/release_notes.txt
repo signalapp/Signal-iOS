@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• วิดีโอคอลแบบหน้าต่างย่อย (Picture in Picture) ที่จะลอยเหนือแป้นพิมพ์ระหว่างพิมพ์
+• ปรับปรุงความน่าเชื่อถือในการอัปเดตข้อมูลเมตาของกลุ่มและการแก้ปัญหาต่างๆ
 
