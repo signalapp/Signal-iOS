@@ -2771,16 +2771,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ do %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Usuń relację grupową";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Czy na pewno chcesz usunąć tę relację?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Wyświetlać tę relację i na nią odpowiadać mogą członkowie grupy „%@”. Listę członków grupy możesz edytować.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kto może wyświetlać tę relację";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Zaktualizowano grupę.";
@@ -3710,7 +3710,7 @@
 "MY_STORIES_NO_STORIES" = "Tutaj pojawią się aktualizacje Twojej historii.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Wszyscy za wyjątkiem…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Wszystkie kontakty Signal";
@@ -3791,7 +3791,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Wybierz członków";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ do %2$@ · Relacja";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Wybierz grupę";
@@ -3827,7 +3827,7 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Widzowie";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nowa historia";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Nowa relacja";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Udostępnij istniejącej grupie";
@@ -4673,7 +4673,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Usuń";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ta osoba nie będzie już widzieć tej relacji.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ – usunąć?";
@@ -5978,10 +5978,10 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Zezwól na dostęp systemu iOS do kontaktów i rozmów Signal, aby korzystać z takich funkcji, jak sugestie udostępniania i powiadomienia.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "Zarządzaj relacjami oraz tym, kto może je wyświetlać.";
 
 /* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "Historie";
+"SETTINGS_STORIES_TITLE" = "Relacje";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Blokada rejestracji";
@@ -6152,7 +6152,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Przejdź do rozmowy";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Nie możesz odpowiadać na tę relację, bo nie jesteś już członkiem grupy.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Ukryte relacje";
@@ -6203,25 +6203,25 @@
 "STORIES_SETTINGS_MY_STORIES_FOOTER" = "Relacje znikają automatycznie po 24 godzinach. Decyduj, kto może wyświetlać Twoją relację lub twórz nowe relacje przeznaczone dla określonych widzów czy grup odbiorców.";
 
 /* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "Moje historie";
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "Moje relacje";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "Prywatność relacji";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "Stracisz możliwość udostępniania i wyświetlania relacji. Relacje przesłane przez Ciebie w ostatnich godzinach pozostaną widoczne dla innych użytkowników do momentu ich wygaśnięcia.";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Jeśli wyłączysz tę funkcję, stracisz możliwość udostępniania i wyświetlania relacji.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Wyłącz relacje";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Udostępniaj i oglądaj relacje innych. Relacje znikają automatycznie po 24 godzinach.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Włącz relacje";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Udostępnij";
@@ -6236,7 +6236,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Relacja ujawniona";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Włącz potwierdzenie przeczytania, aby sprawdzać, kto wyświetlił Twoje relacje.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Odsłony";
@@ -6245,10 +6245,10 @@
 "STORY_COMPOSER_CAMERA" = "Kamera";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Nie udało się wczytać linku. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Udostępnij link widzom swojej historii";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Udostępnij link widzom swojej relacji";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "Stuknij, aby dodać tekst";
@@ -6269,13 +6269,13 @@
 "STORY_PRIVACY_SETTINGS" = "Prywatność";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Zareagował(a) tak: %1$@ na Twoją relację";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "Zareagował(a) tak: %@ na Twoją relację";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Zareagował(a) tak: %1$@ na relację %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Odpowiedz";
@@ -6290,13 +6290,16 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Odpowiedz grupie";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_MESSAGE_ACTION_SHEET" = "Nie udało się wysłać relacji. Sprawdź jakość połączenia i spróbuj ponownie";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Nie udało się wysłać relacji. Sprawdź jakość połączenia i spróbuj ponownie";
+
+/* Title for the dialog asking user if they wish to resend a partially failed story message. */
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Udostępniaj tylko…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Wszyscy za wyjątkiem…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Wysyłanie nie powiodło się";
@@ -6304,14 +6307,26 @@
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Stuknij, aby spróbować ponownie";
 
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED" = "Częściowo wysłana";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Trwa wysyłanie…";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Zadecyduj, które kontakty Signal mogą wyświetlać Twoją relację. Zmiany nie wpłyną na już przesłane relacje.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kto może wyświetlać tę relację";
+
+/* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Stuknij, aby przejść dalej";
@@ -6749,7 +6764,7 @@
 "VIEW_PHOTO" = "Wyświetl zdjęcie";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "Wyświetl relację";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Przesuń, aby anulować";

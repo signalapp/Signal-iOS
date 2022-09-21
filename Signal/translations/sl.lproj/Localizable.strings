@@ -2771,16 +2771,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Odstrani Skupinsko zgodbo";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Ste prepričani, da želite izbrisati to Zgodbo?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Ste prepričani, da želite izbrisati to zgodbo?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Člani skupine »%@« si lahko ogledajo to zgodbo in odgovorijo nanjo. Članstvo za ta klepet lahko posodobite v skupini.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kdo lahko vidi to zgodbo";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Skupina posodobljena.";
@@ -3710,7 +3710,7 @@
 "MY_STORIES_NO_STORIES" = "Tu bodo prikazane posodobitve vaše zgodbe.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Vsi razen ...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Vse Signal povezave";
@@ -3728,7 +3728,7 @@
 "MY_STORY_SETTINGS_TITLE" = "Moja zgodba";
 
 /* Prompt to add to your story */
-"MY_STORY_TAP_TO_ADD" = "Tapnite za dodajanje Zgodbe";
+"MY_STORY_TAP_TO_ADD" = "Tapnite za dodajanje zgodbe";
 
 /* Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ old profile name }} and {{ %2$@ current profile name }} */
 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING" = "Uporabnik_ca je pred kratkim spremenil_a ime profila iz %1$@ v %2$@.";
@@ -3791,7 +3791,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Izbira članov";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ v %2$@ ·zgodba";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Izberi skupino";
@@ -4673,7 +4673,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Odstrani";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ta oseba ne bo več videla te zgodbe.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Odtstrani uporabnika_co %1$@?";
@@ -5978,7 +5978,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Dovolite, da iOS dostopa do Signal stikov in pogovorov, za uporabo možnosti, kot sta denimo deljenje predlogov in obvestil.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "Upravljajte svoje zgodbe in to, kdo si jih lahko ogleda.";
 
 /* Label for the stories section of the settings view */
 "SETTINGS_STORIES_TITLE" = "Zgodbe";
@@ -6152,22 +6152,22 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Pojdi na pogovor";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Na to zgodbo ne morete odgovoriti, ker niste več član te skupine.";
 
 /* Header for the hidden stories section of the stories list */
-"STORIES_HIDDEN_SECTION_HEADER" = "Hidden Stories";
+"STORIES_HIDDEN_SECTION_HEADER" = "Skrite zgodbe";
 
 /* Context menu action to hide the selected story */
 "STORIES_HIDE_STORY_ACTION" = "Skrij Zgodbo";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "New story updates from %@ won't appear at the top of the stories list anymore.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "Nove posodobitve zgodb uporabnika_ce %@ ne bodo več vidne na vrhu seznama zgodb.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
-"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Hide Story?";
+"STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Želite skriti zgodbo?";
 
 /* Toast shown when a story is successfuly hidden */
-"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Story Hidden";
+"STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Zgodba je skrita";
 
 /* Context menu action to view metadata about the story */
 "STORIES_INFO_ACTION" = "Info";
@@ -6200,7 +6200,7 @@
 "STORIES_SAVE_STORY_ACTION" = "Shrani";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Zgodbe samodejno izginejo po 24 urah. Izberite, kdo si lahko ogleda vašo Zgodbo, ali ustvarite nove z določenimi gledalci ali skupinami.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Zgodbe samodejno izginejo po 24 urah. Izberite, kdo si lahko ogleda vašo zgodbo, ali ustvarite nove z določenimi gledalci ali skupinami.";
 
 /* Header for the 'My Stories' section of the stories settings */
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "Moje zgodbe";
@@ -6209,19 +6209,19 @@
 "STORIES_SETTINGS_TITLE" = "Zasebnost Zgodb";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "Zgodb ne boste mogli več deliti ali si jih ogledovati. Vse zgodbe, ki ste jih nedavno poslali, bodo še vedno vidne drugim, dokler ne potečejo.";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Če se odjavite od Zgodb, jih ne boste mogli več deliti ali gledati.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Če se odjavite od zgodb, jih ne boste mogli več deliti ali gledati.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Izklopite zgodbe";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Delite in si oglejte zgodbe drugih. Zgodbe samodejno izginejo po 24 urah.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Vklopite zgodbe";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Deli";
@@ -6230,13 +6230,13 @@
 "STORIES_TITLE" = "Zgodbe";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Unhide Story";
+"STORIES_UNHIDE_STORY_ACTION" = "Ponovno prikazuj zgodbo";
 
 /* Toast shown when a story is successfuly unhidden */
-"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Story Unhidden";
+"STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Zgodba bo ponovno prikazana";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Omogočite potrdila o branju, da vidite, kdo si je ogledal vaše zgodbe.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Ogledi";
@@ -6245,19 +6245,19 @@
 "STORY_COMPOSER_CAMERA" = "Kamera";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Povezave ni bilo mogoče naložiti. Preverite povezavo in poskusite znova.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
 "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Delite povezavo z gledalci vaše zgodbe";
 
 /* Placeholder text in text stories compose UI */
-"STORY_COMPOSER_TAP_ADD_TEXT" = "Tapni za dodajanje teksta";
+"STORY_COMPOSER_TAP_ADD_TEXT" = "Tapnite za dodajanje teksta";
 
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_TEXT" = "Besedilo";
 
 /* Placeholder text for URL input field in Text Story composer UI. */
-"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Tipkajte ali prilepite URL";
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Vtipkajte ali prilepite URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Obišči povezavo";
@@ -6269,13 +6269,13 @@
 "STORY_PRIVACY_SETTINGS" = "Zasebnost";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Odziv na vašo zgodbo: %1$@";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "Odziv na vašo zgodbo: %@";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Odziv na zgodbo uporabnika_ce %2$@: %1$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Odgovori";
@@ -6290,13 +6290,16 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Odgovori skupini";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent. Check your connection and try again";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Te zgodbe ni bilo mogoče poslati. Preverite svojo povezavo in poskusite znova.";
+
+/* Title for the dialog asking user if they wish to resend a partially failed story message. */
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Deli le s/z ...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Vsi razen ...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Pošiljanje ni uspelo";
@@ -6304,14 +6307,26 @@
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Tapnite za ponoven poskus";
 
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED" = "Delno poslano";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Pošiljam ...";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Izberite, katere Signal povezave si lahko ogledajo vašo zgodbo. Spremembe ne bodo vplivale na zgodbe, ki ste jih že poslali.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Kdo lahko vidi to zgodbo";
+
+/* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Tapnite za napredovanje";
@@ -6749,7 +6764,7 @@
 "VIEW_PHOTO" = "Ogled fotografije";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "Ogled zgodbe";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Za prekinitev podrsajte v levo";

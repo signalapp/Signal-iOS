@@ -785,7 +785,7 @@
 "CAMERA_BUTTON_LABEL" = "کیمره";
 
 /* VoiceOver label for -> button in text story composer. */
-"CAMERA_VO_ARROW_RIGHT_PROCEED" = "آگے بڑھو";
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "آگے بڑھیں";
 
 /* VoiceOver label for Flash button in camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "البم موڈ";
@@ -2771,16 +2771,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@تا %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "گروپ سٹوری ہٹائیں";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "کیا آپ واقعی یہ سٹوری ڈیلیٹ کرنا چاہتے ہیں؟";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "گروپ چیٹ \"%@\" کے ممبرز اس سٹوری کو دیکھ سکتے اور اس کا جواب دے سکتے ہیں۔ آپ گروپ میں اس چیٹ کی ممبرشب اپ ڈیٹ کر سکتے ہیں۔";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "یہ سٹوری کون دیکھ سکتا ہے";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "گروپ کی تجدید ہوئی۔";
@@ -3710,7 +3710,7 @@
 "MY_STORIES_NO_STORIES" = "آپ کی اسٹوری کی اپ ڈیٹس یہاں دکھائی جائیں گی۔";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "تمام ماسوائے";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام Signal کنکشنز";
@@ -3791,7 +3791,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "ممبران کو منتخب کریں";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%2$@ سے %1$@ پر   سٹوری";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "گروپ منتخب کریں";
@@ -3827,7 +3827,7 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "ناظرین";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "نئی اسٹوری";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "نئی سٹوری";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "موجودہ گروپ پر شیئر کریں";
@@ -4673,7 +4673,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ہٹا دیں";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "یہ فرد یہ سٹوری مزید نہیں دیکھ سکے گا۔";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ کو ہٹانا ہے؟";
@@ -5978,10 +5978,10 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "iOS کو تجاویز کے اشتراک اور اطلاعات جیسی خصوصیات کے لیے Signal روابط اور چیٹس تک رسائی کی اجازت دیں۔";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "اپنی سٹوریز اور انہیں دیکھنے والوں کا نظم کریں۔";
 
 /* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "اسٹوریز";
+"SETTINGS_STORIES_TITLE" = "سٹوریز";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "رجسٹریشن لاک";
@@ -6152,7 +6152,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "چیٹ پر جائیں";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "آپ اس سٹوری کا جواب نہیں دے سکتے کیونکہ آپ اس گروپ کے ممبر نہیں رہے۔";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "مخفی سٹوریز";
@@ -6200,28 +6200,28 @@
 "STORIES_SAVE_STORY_ACTION" = "محفوظ کریں";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "سٹوریز خود کار طور پر 24 گھنٹوں کے بعد غائب ہو جائیں گی۔ انتخاب کریں کہ کون آپ کی سٹوریز دیکھ سکتا یا مخصوص ناظرین یا گروپس کے ساتھ ئنی سٹوریز تخلیق کر سکتا ہے۔";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "سٹوریز خود ہی 24 گھنٹوں کے بعد غائب ہو جاتی ہیں۔ اپنی سٹوریز دیکھنے والوں کا انتخاب کریں یا مخصوص ناظرین یا گروپس کے لیے ئنی سٹوریز بنائیں۔";
 
 /* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "میری اسٹوریز";
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "میری سٹوریز";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "اسٹوری کی رازداری";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "آپ سٹوریز شیئر کرنے یا دیکھنے کے مزید قابل نہیں ہوں گے۔ آپ کی جانب سے حالیہ طور پر شیئر کردہ کوئی بھی سٹوریز ان کے زائد المیعاد ہو جانے تک دوسروں کو دکھائی دیں گی۔";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "اگر آپ سٹوریز غیر منتخب کرتے ہیں تو آپ سٹوریز مزید شیئر کرنے یا دیکھنے سے قاصر ہوں گے۔";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "سٹوریز آپشن سے نکلنے پر آپ مزید سٹوریز دیکھ یا شیئر نہیں کر سکیں گے۔";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "سٹوریز آف کریں";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "سٹوریز شیئر کریں اور دوسروں کی سٹوریز دیکھیں۔ سٹوریز خود ہی 24 گھنٹے بعد غائب ہو جائیں گی۔";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "سٹوریز آن کریں";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "اشتراک کریں";
@@ -6236,7 +6236,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "سٹوری غیر مخفی کر دی گئی";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "میسج پڑھنے کا ثبوت فعال کریں تاکہ دیکھ سکیں کہ کس نے آپ کی سٹوریز دیکھی ہیں۔";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "ویوز";
@@ -6245,10 +6245,10 @@
 "STORY_COMPOSER_CAMERA" = "کیمرہ";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "لنک لوڈ نہیں کر سکے۔ اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "ناظرین کے ساتھ اپنی اسٹوری کا لنک شیئر کریں";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "ناظرین کے ساتھ اپنی سٹوری کا لنک شیئر کریں";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "متن شامل کرنے کے لیے ٹیپ کریں";
@@ -6269,13 +6269,13 @@
 "STORY_PRIVACY_SETTINGS" = "رازداری";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "آپ کی سٹوری پر %1$@ ردعمل دیا";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "سٹوری پر %@ ردعمل دیا";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ کی سٹوری پر %1$@ ردعمل دیا";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "جواب دیں";
@@ -6290,13 +6290,16 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "گروپ کو جواب دیں";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_MESSAGE_ACTION_SHEET" = "یہ سٹوری بھیجی نہیں جا سکتی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "یہ سٹوری بھیجی نہیں جا سکتی۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں";
+
+/* Title for the dialog asking user if they wish to resend a partially failed story message. */
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "صرف ان کے ساتھ شیئر کریں...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "صرف ان سے شیئر کریں...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "تمام ماسوائے...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "بھیجنے میں ناکام";
@@ -6304,14 +6307,26 @@
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "دوبارہ کوشش کے لیے ٹیپ کریں";
 
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED" = "جزوی طور پر بھیج دیا گیا";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "بھیج رہا ہے ...";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "انتخاب کریں کہ کون سے Signal کنکشنز آپ کی سٹوری دیکھ سکتے ہیں۔ تبدیلیاں اس سٹوریز کو متاثر نہیں کریں گی جنہیں آپ پہلے ہی بھیج چکے ہیں۔";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "یہ سٹوری کون دیکھ سکتا ہے";
+
+/* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "آگے بڑھنے کے لیے ٹیپ کریں";
@@ -6749,7 +6764,7 @@
 "VIEW_PHOTO" = "تصویر دیکھیں";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "سٹوری دیکھیں";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "منسوخ کرنے کیلئے سلائیڈ کریں";

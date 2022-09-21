@@ -146,10 +146,10 @@
 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE" = "Couldn’t Open Signal";
 
 /* Error description indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Signal couldn’t open because your device is low on storage space. To use Signal, free up space by managing your storage in Settings.";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE" = "Níorbh fhéidir Signal a oscailt toisc go bhfuil an spás stórais ar do ghléas íseal. Le Signal a úsáid, saor spás trí do stóras a bhainistiú i Socruithe.";
 
 /* Error title indicating that the app crashed because there was low storage space available on the device. */
-"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Storage Space Low";
+"APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE" = "Spás Stórais Íseal";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Níorbh fhéidir na sonraí ó do sheanghléas a athchóiriú. Seol an logchomhad dífhabhtaithe chuig support@signal.org sa chaoi go mbeimis in ann an fhadhb seo a réiteach. Má athshuiteálann tú Signal, caillfidh tú do chuid seanteachtaireachtaí.";
@@ -380,7 +380,7 @@
 "BADGE_EXPIRED_GIFT_TITLE" = "Tá Do Shuaitheantas Bronntanais Imithe As Feidhm";
 
 /* Text for the 'learn more' link in the badge expiration sheet, shown when a badge expires due to a charge failure */
-"BADGE_EXPIRED_LEARN_MORE_LINK" = "Learn more.";
+"BADGE_EXPIRED_LEARN_MORE_LINK" = "Tuilleadh faisnéise.";
 
 /* Shown when a non-monthly badge expires to suggest starting a recurring donation. */
 "BADGE_EXPIRED_MONTHLY_CALL_TO_ACTION" = "Is féidir leat leanúint le húsáid Signal ach chun tacú leis an teicneolaíocht atá á dtógáil duitse, smaoinigh faoi dheonú uair sa mhí mar chothaitheoir.";
@@ -401,7 +401,7 @@
 "BADGE_GIFT_THANKS_TITLE" = "Go raibh maith agat as do thacaíocht!";
 
 /* Text telling the user that they can add a message along with their gift badge */
-"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Your gift will be sent in a 1 on 1 message to the recipient. Add your own message below.";
+"BADGE_GIFTING_ADDITIONAL_MESSAGE" = "Seolfar do bhronntanas i dteachtaireacht 1 duine le 1 duine chuig an bhfaighteoir. Cuir do theachtaireacht féin leis thíos.";
 
 /* Placeholder in the text field where you can add text for a message along with your gift */
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "Cuir teachtaireacht leis";
@@ -413,7 +413,7 @@
 "BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "Ní Féidir Suaitheantas Bronntanais a Sheoladh";
 
 /* Shown on a gift badge message to indicate that it's already expired and can no longer be redeemed. */
-"BADGE_GIFTING_CHAT_EXPIRED" = "Expired";
+"BADGE_GIFTING_CHAT_EXPIRED" = "As Feidhm";
 
 /* Shown on a gift badge message and when tapping a redeemed gift message to denote the presence of a gift badge. */
 "BADGE_GIFTING_CHAT_TITLE" = "Suaitheantas Bronntanais";
@@ -422,13 +422,13 @@
 "BADGE_GIFTING_CHOOSE_BADGE_DESCRIPTION" = "Tabhair suaitheantas mar bhronntanas do dhuine trí airgead a thabhairt do Signal. Gheobhaidh an duine sin suaitheantas le taispeáint ar an bpróifíl aige/aici.";
 
 /* Title on the screen where you choose a gift badge */
-"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Gift a Badge";
+"BADGE_GIFTING_CHOOSE_BADGE_TITLE" = "Tabhair Suaitheantas mar Bhronntanas";
 
 /* Title on the screen where you choose a gift badge's recipient */
-"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Choose Recipient";
+"BADGE_GIFTING_CHOOSE_RECIPIENT_TITLE" = "Roghnaigh Faighteoir";
 
 /* Title on the screen where you confirm sending of a gift badge, and can write a message */
-"BADGE_GIFTING_CONFIRMATION_TITLE" = "Confirm Gift";
+"BADGE_GIFTING_CONFIRMATION_TITLE" = "Deimhnigh Bronntanas";
 
 /* Error message indicating that a user can't receive gifts. */
 "BADGE_GIFTING_ERROR_RECIPIENT_CANNOT_RECEIVE_GIFT_BADGES_BODY" = "Ní féidir leis an úsáideoir seo bronntanais a ghlacadh go dtí go n-uasghrádófar Signal.";
@@ -443,22 +443,22 @@
 "BADGE_GIFTING_ERROR_RECIPIENT_IS_BLOCKED_TITLE" = "Ní Féidir Suaitheantas Bronntanais a Sheoladh";
 
 /* When gifting a badge, the subtitle 'Send a Gift Badge' under the badge title */
-"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Send a Gift Badge";
+"BADGE_GIFTING_GIFT_ROW_SUBTITLE" = "Seol Suaitheantas Bronntanais";
 
 /* Text telling the user that their gift is a one-time donation */
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "Tabhairt airgid aonuaire";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Your payment couldn’t be processed and you have not been charged. Please try again.";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "Níorbh fhéidir d'íocaíocht a phróiseáil agus níor gearradh táillí ort. Triail arís.";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
-"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Payment Failed";
+"BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "Theip ar an Íocaíocht";
 
 /* Text in the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Your payment was processed but Signal could not send your gift badge. Please contact support.";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_BODY" = "Bhí d'íocaíocht próiseáilte ach níorbh fhéidir le Signal do shuaitheantas bronntanais a sheoladh. Déan teagmháil leis an bhfoireann tacaíochta.";
 
 /* Title for the action sheet when you try to send a gift badge. They were charged but the badge could not be sent. They should contact support. */
-"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Badge Gift Failed";
+"BADGE_GIFTING_PAYMENT_SUCCEEDED_BUT_GIFTING_FAILED_TITLE" = "Theip ar an Suaitheantas Bronntanais";
 
 /* Shown on the list of chats when the most recent message is a gift you received from someone else. */
 "BADGE_GIFTING_PREVIEW_INCOMING" = "🎁 Fuair tú bronntanas";
@@ -467,7 +467,7 @@
 "BADGE_GIFTING_PREVIEW_OUTGOING" = "🎁 Sheol tú bronntanas";
 
 /* Label for a button used to redeem a gift and add the gift's badge to your profile. */
-"BADGE_GIFTING_REDEEM" = "Redeem";
+"BADGE_GIFTING_REDEEM" = "Fuascail";
 
 /* Shown as the body of an alert when failing to redeem a gift. */
 "BADGE_GIFTING_REDEEM_ERROR_BODY" = "Níorbh fhéidir do bhronntanas a fhuascailt. Seiceáil do nasc agus triail arís.";
@@ -488,7 +488,7 @@
 "BADGE_GIFTING_REPLY" = "Bronntanas";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "Lasts %@";
+"BADGE_GIFTING_ROW_DURATION" = "Ar feadh %@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "Amharc";
@@ -497,10 +497,10 @@
 "BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "Fuair tú suaitheantas bronntanais ó %@. Taispeáin an suaitheantas seo ar do phróifíl le feasacht ar dheonú do Signal a chothú.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled. %@ Your %@ badge is no longer visible on your profile.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Cuireadh do dheonachán míosúil athfhillteach ar ceal go huathoibríoch. %@ Níl do shuaitheantas %@ infheicthe ar do phróifíl a thuilleadh.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Your recurring monthly donation was automatically cancelled because you were inactive for too long. Your %@ badge is no longer visible on your profile.\n\nYou can keep using Signal but to support the app and reactivate your badge, renew now.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "Cuireadh do dheonachán míosúil athfhillteach ar ceal go huathoibríoch toisc go raibh tú neamhghníomhach ar feadh tamall ró-fhada. Níl do shuaitheantas %@ infheicthe ar do phróifíl a thuilleadh.\n\nIs féidir leat leanúint le húsáid Signal ach chun tacú leis an aip agus do shuaitheantas a athghníomhachtú, athnuaigh anois é.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "Thanks for the Boost!";
@@ -1070,10 +1070,10 @@
 "CONTACT_SUPPORT" = "Déan Teagmháil le Foireann Tacaíochta Signal";
 
 /* The localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES" = "Deonacháin agus Suaitheantais";
 
 /* A brief localized representation of the 'Donations & Badges' support filter. */
-"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Donations & Badges";
+"CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT" = "Deonacháin agus Suaitheantais";
 
 /* The localized representation of the 'feature request' support filter. */
 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST" = "I’d like to request a new feature";
@@ -1208,7 +1208,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Daoine";
 
 /* table section header for section containing stories */
-"CONVERSATION_PICKER_SECTION_STORIES" = "Stories";
+"CONVERSATION_PICKER_SECTION_STORIES" = "Scéalta";
 
 /* navbar header */
 "CONVERSATION_PICKER_TITLE" = "Roghnaigh Faighteoirí";
@@ -1724,7 +1724,7 @@
 "DONATE_MEGAPHONE_ACTION" = "Tabhair airgead";
 
 /* Body for donate megaphone */
-"DONATE_MEGAPHONE_BODY" = "Signal is powered by people like you. Donate monthly and receive a badge.";
+"DONATE_MEGAPHONE_BODY" = "Tá Signal arna gcumhachtú ag daoine amhail tusa. Deonaigh ar bhonn míosúil agus faigh suaitheantas.";
 
 /* Cancel text for donate megaphone */
 "DONATE_MEGAPHONE_CANCEL" = "Ná bac leis anois";
@@ -1733,43 +1733,43 @@
 "DONATE_MEGAPHONE_TITLE" = "Bronn airgead ar Signal";
 
 /* Donation payment error for decline failures where authentication is required. */
-"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "Triail íocaíocht eile nó déan teagmháil le do bhanc le tuilleadh faisnéise a fháil.";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again. If you’re still having issues, contact your bank.";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "Seiceáil go bhfuil do mhodh íocaíochta suas chun dáta in Apple Pay. Mura bhfuil, déan é a nuashonrú agus triail arís. Má bhíonn fadhbanna agat fós, déan teagmháil le do bhanc.";
 
 /* Donation payment error for decline failures where the card is not supported. */
-"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Your card does not support this type of purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "Ní thacaíonn do chárta leis an gcineál seo ceannacháin. Triail modh íocaíochta eile nó déan teagmháil le do bhanc le tuilleadh faisnéise a fháil.";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Your card has expired. Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "Tá do chárta imithe as feidhm. Seiceáil go bhfuil do mhodh íocaíochta suas chun dáta in Apple Pay. Mura bhfuil, déan é a nuashonrú agus triail arís.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Your card number is incorrect. Check to see if your payment method is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "Tá uimhir do chárta mícheart. Seiceáil go bhfuil do mhodh íocaíochta curtha isteach i gceart in Apple Pay. Mura bhfuil, déan é a nuashonrú agus triail arís.";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Your CVC number is incorrect. Check to see if your CVC number is correctly entered in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "Tá d'uimhir CVC mícheart. Seiceáil go bhfuil d'uimhir CVC curtha isteach i gceart in Apple Pay. Mura bhfuil, déan í a nuashonrú agus triail arís.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Your card has insufficient funds to complete this purchase. Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "Níl go leor airgid i do chárta leis an gceannachán seo a chur i gcrích. Triail modh íocaíochta eile nó déan teagmháil le do bhanc le tuilleadh faisnéise a fháil.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "The expiration month on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "Tá an mhí as feidhm ar do mhodh íocaíochta mícheart. Déan í a nuashonrú in Apple Pay agus triail arís.";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "The expiration year on your payment method is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "Tá an bhliain as feidhm ar do mhodh íocaíochta mícheart. Déan í a nuashonrú in Apple Pay agus triail arís.";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Your card number is incorrect. Update it in Apple Pay and try again.";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "Tá uimhir do chárta mícheart. Déan í a nuashonrú in Apple Pay agus triail arís.";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
-"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Try completing the payment again or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "Triail an íocaíocht a chur i gcrích athuair nó déan teagmháil le do bhanc le tuilleadh faisnéise a fháil.";
 
 /* Donation payment error for unspecified decline failures. */
-"DONATION_PAYMENT_ERROR_OTHER" = "Try another payment method or contact your bank for more information.";
+"DONATION_PAYMENT_ERROR_OTHER" = "Triail íocaíocht eile nó déan teagmháil le do bhanc le tuilleadh faisnéise a fháil.";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Check to see if your payment method is up to date in Apple Pay. If it isn’t, update it and try again.";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "Seiceáil go bhfuil do mhodh íocaíochta suas chun dáta in Apple Pay. Mura bhfuil, déan é a nuashonrú in Apple Pay agus triail arís.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Amount";
@@ -1814,7 +1814,7 @@
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Donation to Signal";
 
 /* Title for the 'Gift a Badge' link in the donation view */
-"DONATION_VIEW_GIFT" = "Gift a Badge";
+"DONATION_VIEW_GIFT" = "Tabhair Suaitheantas mar Bhronntanas";
 
 /* Text that's shown when the donation view fails to load data, probably due to network failure */
 "DONATION_VIEW_LOAD_FAILED" = "Network error. Check your connection and try again.";
@@ -1850,7 +1850,7 @@
 "DONATION_VIEW_TITLE" = "Bronn airgead ar Signal";
 
 /* Label for the currency picker button in donation views */
-"DONATIONS_CURRENCY_PICKER_LABEL" = "Set currency";
+"DONATIONS_CURRENCY_PICKER_LABEL" = "Socraigh airgeadra";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Is féidir leat cead a thabhairt do Signal sna Socruithe iOS.";
@@ -2771,16 +2771,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ to %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Bain Scéal Grúpa";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "An bhfuil tú cinnte gur mian leat an scéal seo a scriosadh?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Is féidir le baill den chomhrá grúpa “%@” amharc ar an scéal seo agus freagairt a thabhairt. Is féidir leat ballraíocht don chomhrá seo a nuashonrú sa ghrúpa.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Na Daoine Ar Féidir Leo Amharc Ar An Scéal Seo";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Nuashonraíodh an grúpa.";
@@ -3146,10 +3146,10 @@
 "IN_CALL_TERMINATED" = "Deireadh an Ghlao.";
 
 /* Label reminding the user that they are in archive mode, and that muted chats remain archived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Muted chats that are archived will remain archived when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_MUTED_CHATS_REMINDER" = "Fanfaidh comhráite balbhaithe sa chartlann nuair a théann teachtaireacht nua isteach.";
 
 /* Label reminding the user that they are in archive mode, and that chats are unarchived when they receive a new message. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Archived chats will move to the Inbox when a new message arrives.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Bogfar comhráite sa chartlann isteach sa Bhosca Isteach nuair a fhaightear teachtaireacht nua isteach.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "No chats yet.\nGet started by messaging a friend.";
@@ -3407,10 +3407,10 @@
 "MESSAGE_ACTION_PHONE_NUMBER_CALL" = "Glaoigh";
 
 /* Label for button to make a FaceTime audio call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "FaceTime Audio";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_AUDIO" = "Teachtaireacht fuaime FaceTime";
 
 /* Label for button to make a FaceTime video call to a phone number. */
-"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "FaceTime Video";
+"MESSAGE_ACTION_PHONE_NUMBER_FACETIME_VIDEO" = "Físeán FaceTime";
 
 /* Label for button to send a text message a phone number. */
 "MESSAGE_ACTION_PHONE_NUMBER_SMS" = "Send Text Message";
@@ -3707,10 +3707,10 @@
 "MUTED_BADGE" = "Balbhaithe";
 
 /* Indicates that there are no sent stories to render */
-"MY_STORIES_NO_STORIES" = "Updates to your story will show up here.";
+"MY_STORIES_NO_STORIES" = "Taispeánfar nuashonruithe ar do scéal anseo.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Gach Duine Seachas...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Gach Teagmhálaí Signal";
@@ -3719,7 +3719,7 @@
 "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE" = "Ná Comhroinn Ach Le...";
 
 /* Title for the 'My Stories' view */
-"MY_STORIES_TITLE" = "My Stories";
+"MY_STORIES_TITLE" = "Mo chuid Scéalta";
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "Mo Scéal";
@@ -3791,7 +3791,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Baill a Roghnú";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ chuig %2$@ · Scéal";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Roghnaigh Grúpa";
@@ -3827,7 +3827,7 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Amharcóirí";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "New Story";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Scéal Nua";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Comhroinn le grúpa atá ann cheana";
@@ -4673,7 +4673,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Bain é";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Ní bheidh an duine sin in ann amharc ar an scéal seo a thuilleadh.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Bain %1$@?";
@@ -5159,10 +5159,10 @@
 "SEND_MEDIA_TURN_OFF_MM_BUTTON" = "Múch";
 
 /* In-app camera: message for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "You will lose any photos or videos taken.";
+"SEND_MEDIA_TURN_OFF_MM_MESSAGE" = "Caillfidh tú aon ghrianghraf nó físeáin a glacadh.";
 
 /* In-app camera: title for the prompt to turn off multi-mode that will cause previously taken photos to be discarded. */
-"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Turn off multi-mode?";
+"SEND_MEDIA_TURN_OFF_MM_TITLE" = "Cas as ilmhód?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "An bhfuil fonn ort cuireadh a thabhairt do chara trí SMS neamhshlán?";
@@ -5405,10 +5405,10 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Teachtaireacht Nua";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Muted chats that are archived will remain archived when a new message arrives.";
+"SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION" = "Fanfaidh comhráite balbhaithe sa chartlann nuair a théann teachtaireacht nua isteach.";
 
 /* When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a brief label for a switch paired with a longer description underneath, in the Chats settings. */
-"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Keep Muted Chats Archived";
+"SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Coinnigh Comhráite Balbhaithe sa Chartlann";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Téarmaí Úsáide ⁊ Polasaí Príobháideachais";
@@ -5771,7 +5771,7 @@
 "SETTINGS_PAYMENTS_SEND_PAYMENT" = "Send Payment";
 
 /* Label for the 'send payment to recipient' view in the payment settings. */
-"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Choose Recipient";
+"SETTINGS_PAYMENTS_SEND_TO_RECIPIENT_TITLE" = "Roghnaigh Faighteoir";
 
 /* Title for the 'set currency' view in the app settings. */
 "SETTINGS_PAYMENTS_SET_CURRENCY" = "Currency Conversion";
@@ -5978,10 +5978,10 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Allow iOS access to Signal contacts and chats for features such as sharing suggestions and notifications.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "Bainistigh do scéalta agus na daoine ar féidir leo amharc orthu.";
 
 /* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "Stories";
+"SETTINGS_STORIES_TITLE" = "Scéalta";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Glas Clárúcháin";
@@ -6152,7 +6152,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Go to Chat";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Ní féidir leat freagairt a thabhairt ar an scéal seo toisc nach ball den ghrúpa seo a thuilleadh thú.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Scéalta folaithe";
@@ -6173,7 +6173,7 @@
 "STORIES_INFO_ACTION" = "Faisnéis";
 
 /* Indicates that there are no recent stories to render */
-"STORIES_NO_RECENT_MESSAGES" = "No updates to show right now.\nTap + to add to your story.";
+"STORIES_NO_RECENT_MESSAGES" = "Níl aon nuashonrú le taispeáint díreach anois.\nTapáil + le cur le do scéal.";
 
 /* Indicates that this story has no replies yet */
 "STORIES_NO_REPLIES_YET" = "No replies yet";
@@ -6200,34 +6200,34 @@
 "STORIES_SAVE_STORY_ACTION" = "Sábháil";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Imíonn scéalta as radharc go huathoibríoch tar éis 24 uair an chloig. Roghnaigh cé acu ar féidir leo amharc ar do scéal nó cruthaigh scéalta nua in éineacht le lucht féachana nó grúpaí ar leith.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Imíonn scéalta as radharc go huathoibríoch tar éis 24 uair an chloig. Roghnaigh cé acu ar féidir leo amharc ar do scéal nó cruthaigh scéalta nua in éineacht le hamharcóirí nó grúpaí ar leith.";
 
 /* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "My Stories";
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "Mo chuid Scéalta";
 
 /* Title for the story privacy settings view */
-"STORIES_SETTINGS_TITLE" = "Story Privacy";
+"STORIES_SETTINGS_TITLE" = "Príobháideachas an Scéil";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "Ní bheidh tú in ann scéalta a chomhroinnt ná amharc ar scéalta. Feicfidh daoine eile aon scéal a chomhroinn tú le déanaí go dtí go n-imeoidh siad as feidhm.";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Má roghnaíonn tú gan scéalta a úsáid, ní bheidh tú in ann scéalta a chomhroinnt ná féachaint orthu a thuilleadh.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Cas As Scéalta";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Comhroinn scéalta agus amharc ar scéalta le daoine eile. Imíonn scéalta as radharc tar éis 24 uair an chloig.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Cas Air Scéalta";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Comhroinn";
 
 /* Title for the stories view. */
-"STORIES_TITLE" = "Stories";
+"STORIES_TITLE" = "Scéalta";
 
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "Dífholaigh scéal";
@@ -6236,7 +6236,7 @@
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Scéal dífholaithe";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Cumasaigh admhálacha léite leis na daoine a d'amharc ar do scéalta a fheiceáil.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Amhairc";
@@ -6245,19 +6245,19 @@
 "STORY_COMPOSER_CAMERA" = "Ceamara";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Níorbh fhéidir an nasc a lódáil. Seiceáil do nasc agus triail arís.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Share a link with viewers of your story";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Comhroinn nasc le hamharcóirí do scéil";
 
 /* Placeholder text in text stories compose UI */
-"STORY_COMPOSER_TAP_ADD_TEXT" = "Tap to add text";
+"STORY_COMPOSER_TAP_ADD_TEXT" = "Tapáil le téacs a chur leis";
 
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_TEXT" = "Téacs";
 
 /* Placeholder text for URL input field in Text Story composer UI. */
-"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Type or paste a URL";
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Clóscríobh nó greamaigh URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Visit link";
@@ -6269,13 +6269,13 @@
 "STORY_PRIVACY_SETTINGS" = "Príobháideachas";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Thug %1$@ freagairt ar do scéal";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "Thug %@ freagairt ar scéal";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Thug %1$@ freagairt ar scéal le %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Freagair";
@@ -6290,13 +6290,16 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Freagair an Grúpa";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_MESSAGE_ACTION_SHEET" = "Níorbh fhéidir an scéal seo a sheoladh. Seiceáil do nasc agus triail arís";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Níorbh fhéidir an scéal seo a sheoladh. Seiceáil do nasc agus triail arís";
+
+/* Title for the dialog asking user if they wish to resend a partially failed story message. */
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Ná Comhroinn Ach Le...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Gach Duine Seachas...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Theip ar an seoladh";
@@ -6304,23 +6307,35 @@
 /* Text indicating that you can tap to retry sending */
 "STORY_SEND_FAILED_RETRY" = "Tapáil lena atriail";
 
+/* Text indicating that the story send has failed */
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED" = "Partially sent";
+
+/* Text indicating that the story send has partially failed */
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Ag seoladh...";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Roghnaigh na Teagmhálaithe Signal atá in ann amharc ar do scéal. Ní rachaidh na hathruithe i bhfeidhm ar scéalta atá seolta agat cheana.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Na Daoine Ar Féidir Leo Amharc Ar An Scéal Seo";
+
+/* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
-"STORY_VIEWER_ONBOARDING_1" = "Tap to advance";
+"STORY_VIEWER_ONBOARDING_1" = "Tapáil le dul ar aghaidh";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
-"STORY_VIEWER_ONBOARDING_2" = "Swipe up to skip";
+"STORY_VIEWER_ONBOARDING_2" = "Svaidhpeáil suas le scipeáil";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
-"STORY_VIEWER_ONBOARDING_3" = "Swipe right to exit";
+"STORY_VIEWER_ONBOARDING_3" = "Svaidhpeáil ar dheis le scor";
 
 /* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
 "STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Tuigim";
@@ -6329,7 +6344,7 @@
 "STORY_VIEWS_OFF" = "Amhairc casta as";
 
 /* Toast indicating that the user has copied their subscriber ID. */
-"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "Copied subscriber id to clipboard";
+"SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "ID an rannpháirtí cóipeáilte chuig an ngearrthaisce";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Tá an uimhir shábháilteachta le %@ ceart. Is féidir leat an teagmhálaí seo a mharcáil deimhnithe.";
@@ -6746,10 +6761,10 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "Scriostar comhaid mheán aonuaire go huathoibríoch tar éis duit iad a sheoladh.";
 
 /* View the photo of a group or user */
-"VIEW_PHOTO" = "Féach ar an nGrianghraf";
+"VIEW_PHOTO" = "Amharc ar an nGrianghraf";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "Amharc ar an Scéal";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Sleamhnaigh chun é a chur ar ceal";

@@ -1063,10 +1063,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d izključene osebe</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 izključena oseba</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d izključenih oseb</string>
+			<key>two</key>
+			<string>%d izključeni osebi</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1079,10 +1083,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d gledalci_ke</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 gledalec_ka</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d gledalcev_k</string>
+			<key>two</key>
+			<string>%d gledalca_ki</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -1095,10 +1103,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Vse Signal povezave · %d gledalci_ke</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Vse Signal povezave · 1 gledalec_ka</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Viewers</string>
+			<string>Vse Signal povezave · %d gledalcev_k</string>
+			<key>two</key>
+			<string>Vse Signal povezave · %d gledalca_ki</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -1111,10 +1123,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Vse Signal povezave · %d izključene oseb</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Vse Signal povezave · 1 izključena oseba</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Excluded</string>
+			<string>Vse Signal povezave · %d izključenih oseb</string>
+			<key>two</key>
+			<string>Vse Signal povezave · %d izključeni osebi</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -1127,10 +1143,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Deli le s · %d gledalci_kami</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Deli le z · 1 gledalcem_ko</string>
 			<key>other</key>
-			<string>Only Share With · %d Viewers</string>
+			<string>Deli le s · %d gledalci_kami</string>
+			<key>two</key>
+			<string>Deli le z · %d gledalcema_kama</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1403,10 +1423,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>%d gledalci_ke</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 gledalec_ka</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d gledalcev_k</string>
+			<key>two</key>
+			<string>%d gledalca_ki</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1439,10 +1463,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>few</key>
+			<string>Pošiljanje %d...</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Pošiljanje...</string>
 			<key>other</key>
-			<string>Sending %d...</string>
+			<string>Pošiljanje %d ...</string>
+			<key>two</key>
+			<string>Pošiljanje %d...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>

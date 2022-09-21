@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• Chamada de vídeo Picture-in-picture aparece acima do teclado ao escrever.
+• Melhorar a atualização dos metadados do grupo sobre fiabilidade e resolução de bugs
 

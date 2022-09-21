@@ -2,6 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CAMERA_VO_N_ITEMS</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 položka</string>
+			<key>few</key>
+			<string>%d položky</string>
+			<key>many</key>
+			<string>%d položek</string>
+			<key>other</key>
+			<string>%d položek</string>
+		</dict>
+	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
@@ -12,34 +32,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Hlasové zprávy %d sekund</string>
-			<key>many</key>
-			<string>Hlasové zprávy %d sekund</string>
 			<key>one</key>
 			<string>Hlasová zpráva 1 sekund</string>
+			<key>few</key>
+			<string>Hlasové zprávy %d sekund</string>
+			<key>many</key>
+			<string>Hlasové zprávy %d sekund</string>
 			<key>other</key>
 			<string>Hlasové zprávy %d sekund</string>
-		</dict>
-	</dict>
-	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Přidat členy</string>
-			<key>many</key>
-			<string>Přidat členy</string>
-			<key>one</key>
-			<string>Přidat člena</string>
-			<key>other</key>
-			<string>Přidat členy</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -52,12 +52,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Přidat člena do „%2$@“?</string>
 			<key>few</key>
 			<string>Přidat %d členy do „%2$@“?</string>
 			<key>many</key>
 			<string>Přidat %d členů do „%2$@“?</string>
-			<key>one</key>
-			<string>Přidat člena do „%2$@“?</string>
 			<key>other</key>
 			<string>Přidat %dčlenů do „%2$@“?</string>
 		</dict>
@@ -72,17 +72,17 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Přidat nového člena</string>
 			<key>few</key>
 			<string>Přidat nové členy</string>
 			<key>many</key>
 			<string>Přidat nové členy</string>
-			<key>one</key>
-			<string>Přidat nového člena</string>
 			<key>other</key>
 			<string>Přidat nové členy</string>
 		</dict>
 	</dict>
-	<key>CAMERA_VO_N_ITEMS</key>
+	<key>ADD_GROUP_MEMBERS_ACTION_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -92,14 +92,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d položky</string>
-			<key>many</key>
-			<string>%d položek</string>
 			<key>one</key>
-			<string>1 položka</string>
+			<string>Přidat člena</string>
+			<key>few</key>
+			<string>Přidat členy</string>
+			<key>many</key>
+			<string>Přidat členy</string>
 			<key>other</key>
-			<string>%d položek</string>
+			<string>Přidat členy</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d</key>
@@ -112,12 +112,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Tato vlastní barva je použita v 1 chatu. Chcete ji smazat?</string>
 			<key>few</key>
 			<string>Tato vlastní barva je použita v %d chatech. Chcete ji smazat ze všech chatů?</string>
 			<key>many</key>
 			<string>Tato vlastní barva je použita v %d chatech. Chcete ji smazat ze všech chatů?</string>
-			<key>one</key>
-			<string>Tato vlastní barva je použita v 1 chatu. Chcete ji smazat?</string>
 			<key>other</key>
 			<string>Tato vlastní barva je použita v %d chatech. Chcete ji smazat ze všech chatů?</string>
 		</dict>
@@ -132,12 +132,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Tato barva je použita pro 1 chat. Chcete uložit změny pro všechny chaty?</string>
 			<key>few</key>
 			<string>Tato barva je použita pro %d chatů. Chcete uložit změny pro všechny chaty?</string>
 			<key>many</key>
 			<string>Tato barva je použita pro %d chatech. Chcete uložit změny pro všechny chaty?</string>
-			<key>one</key>
-			<string>Tato barva je použita pro 1 chat. Chcete uložit změny pro všechny chaty?</string>
 			<key>other</key>
 			<string>Tato barva je použita pro %d chatech. Chcete uložit změny pro všechny chaty?</string>
 		</dict>
@@ -152,12 +152,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Smazat 1 chat?</string>
 			<key>few</key>
 			<string>Smazat %d chatů?</string>
 			<key>many</key>
 			<string>Smazat %d chatů?</string>
-			<key>one</key>
-			<string>Smazat 1 chat?</string>
 			<key>other</key>
 			<string>Smazat %d chatů?</string>
 		</dict>
@@ -172,12 +172,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Tento chat bude vymazán z tohoto zařízení.</string>
 			<key>few</key>
 			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
 			<key>many</key>
 			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
-			<key>one</key>
-			<string>Tento chat bude vymazán z tohoto zařízení.</string>
 			<key>other</key>
 			<string>Tyto chaty budou vymazány z tohoto zařízení.</string>
 		</dict>
@@ -192,12 +192,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Nemůžete vybrat více než 1 chat</string>
 			<key>few</key>
 			<string>Nemůžete vybrat více než %d chatů</string>
 			<key>many</key>
 			<string>Nemůžete vybrat více než %d chatů</string>
-			<key>one</key>
-			<string>Nemůžete vybrat více než 1 chat</string>
 			<key>other</key>
 			<string>Nemůžete vybrat více než %d chatů</string>
 		</dict>
@@ -212,12 +212,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 %2$#@total@</string>
 			<key>few</key>
 			<string>%d %2$#@total@</string>
 			<key>many</key>
 			<string>%d %2$#@total@</string>
-			<key>one</key>
-			<string>1 %2$#@total@</string>
 			<key>other</key>
 			<string>%d %2$#@total@</string>
 		</dict>
@@ -227,12 +227,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>shoda</string>
 			<key>few</key>
 			<string>z %d shod</string>
 			<key>many</key>
 			<string>z %d shod</string>
-			<key>one</key>
-			<string>shoda</string>
 			<key>other</key>
 			<string>z %d shod</string>
 		</dict>
@@ -247,12 +247,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 člen</string>
 			<key>few</key>
 			<string>%d členové</string>
 			<key>many</key>
 			<string>%d členů</string>
-			<key>one</key>
-			<string>1 člen</string>
 			<key>other</key>
 			<string>%d členů</string>
 		</dict>
@@ -267,12 +267,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 společná skupina</string>
 			<key>few</key>
 			<string>%d společných skupin</string>
 			<key>many</key>
 			<string>%d společných skupin</string>
-			<key>one</key>
-			<string>1 společná skupina</string>
 			<key>other</key>
 			<string>%d společných skupin</string>
 		</dict>
@@ -287,11 +287,11 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>%dm</string>
 			<key>few</key>
 			<string>%dm</string>
 			<key>many</key>
-			<string>%dm</string>
-			<key>one</key>
 			<string>%dm</string>
 			<key>other</key>
 			<string>%dm</string>
@@ -307,12 +307,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Před 1 minutou</string>
 			<key>few</key>
 			<string>Před %d minutami</string>
 			<key>many</key>
 			<string>Před %dm minutami</string>
-			<key>one</key>
-			<string>Před 1 minutou</string>
 			<key>other</key>
 			<string>Před %dm minutami</string>
 		</dict>
@@ -327,12 +327,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Smazat 1 zprávu?</string>
 			<key>few</key>
 			<string>Smazat %d zpráv?</string>
 			<key>many</key>
 			<string>Smazat %d zpráv?</string>
-			<key>one</key>
-			<string>Smazat 1 zprávu?</string>
 			<key>other</key>
 			<string>Smazat %d zpráv?</string>
 		</dict>
@@ -347,12 +347,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Byla dosažen maximální počet %d člena skupiny.</string>
 			<key>few</key>
 			<string>Byla dosažen maximální počet %d členů skupiny.</string>
 			<key>many</key>
 			<string>Byla dosažen maximální počet %d členů skupiny.</string>
-			<key>one</key>
-			<string>Byla dosažen maximální počet %d člena skupiny.</string>
 			<key>other</key>
 			<string>Byla dosažen maximální počet %dčlenů skupiny.</string>
 		</dict>
@@ -367,12 +367,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Vaše verze Signalu vyprší za 1 den. Klepnutím aktualizujete na nejnovější verzi.</string>
 			<key>few</key>
 			<string>Vaše verze Signalu vyprší za %d dny. Klepnutím aktualizujete na nejnovější verzi.</string>
 			<key>many</key>
 			<string>Vaše verze Signalu vyprší za %d dnů. Klepnutím aktualizujete na nejnovější verzi.</string>
-			<key>one</key>
-			<string>Vaše verze Signalu vyprší za 1 den. Klepnutím aktualizujete na nejnovější verzi.</string>
 			<key>other</key>
 			<string>Vaše verze Signalu vyprší za %d dnů. Klepnutím aktualizujete na nejnovější verzi.</string>
 		</dict>
@@ -387,94 +387,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Odeslat zprávu</string>
 			<key>few</key>
 			<string>Odeslat %d zprávy</string>
 			<key>many</key>
 			<string>Odeslat %d zpráv</string>
-			<key>one</key>
-			<string>Odeslat zprávu</string>
 			<key>other</key>
 			<string>Odeslat %d zpráv</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Tuto skupinu nelze vytvořit, protože %d členové používají starou verzi Signalu. Můžete s nimi vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je před vytvořením skupiny odebrat. %2$@</string>
-			<key>many</key>
-			<string>Tuto skupinu nelze vytvořit, protože %d členů používá starou verzi Signalu. Můžete s nimi vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je před vytvořením skupiny odebrat. %2$@</string>
-			<key>one</key>
-			<string>Tuto skupinu nelze vytvořit, protože 1 člen používá starou verzi Signalu. Můžete s ním vytvořit skupinu nového typu poté, co si tento člen aktualizuje Signal, případně ho před vytvořením skupiny odebrat. %2$@</string>
-			<key>other</key>
-			<string>Tuto skupinu nelze vytvořit, protože %dčlenů používá starou verzi Signalu. Můžete s nimi vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je před vytvořením skupiny odebrat. %2$@</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Skupinu se nepodařilo vytvořit, protože %d členi využívají starou verzi Signalu. Můžete vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je odstraňte, než skupinu vytvoříte.</string>
-			<key>many</key>
-			<string>Skupinu se nepodařilo vytvořit, protože %d členů využívá starou verzi Signalu. Můžete vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je odstraňte, než skupinu vytvoříte.</string>
-			<key>one</key>
-			<string>Skupinu se nepodařilo vytvořit, protože 1 člen využívá starou verzi Signalu. Můžete vytvořit skupinu nového typu poté, co si tento člen aktualizuje Signal, případně ho odstraňte, než skupinu vytvoříte.</string>
-			<key>other</key>
-			<string>Tuto skupinu nelze vytvořit, protože %dčlenů používá starou verzi Signalu. Můžete s nimi vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je před vytvořením skupiny odebrat.</string>
-		</dict>
-	</dict>
-	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Do nové skupiny nebylo možné znovu přidat %d členy.  Chcete je přidat nyní?</string>
-			<key>many</key>
-			<string>Do nové skupiny nebylo možné znovu přidat %d členů. Chcete je přidat nyní?</string>
-			<key>one</key>
-			<string>Do nové skupiny nebylo možné znovu přidat 1 člena. Chcete ho přidat nyní?</string>
-			<key>other</key>
-			<string>Do nové skupiny nebylo možné znovu přidat %d členů. Chcete je přidat nyní?</string>
-		</dict>
-	</dict>
-	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Skupiny Signal fungují nejlépe s %d členy nebo méně. Přidání více členů povede ke zpoždění při odesílání a přijímání zpráv.</string>
-			<key>many</key>
-			<string>Skupiny Signal fungují nejlépe s %d členy nebo méně. Přidání více členů povede ke zpoždění při odesílání a přijímání zpráv.</string>
-			<key>one</key>
-			<string>Skupiny Signal fungují nejlépe s 1 členem nebo méně. Přidání více členů povede ke zpoždění při odesílání a přijímání zpráv.</string>
-			<key>other</key>
-			<string>Skupiny Signal fungují nejlépe s %d členy nebo méně. Přidání více členů povede ke zpoždění při odesílání a přijímání zpráv.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -487,12 +407,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Byl dosažen maximální počet 1 účastníka hovoru. Zkuste to znovu později.</string>
 			<key>few</key>
 			<string>Byl dosažen maximální počet %d účastníků hovoru. Zkuste to znovu později.</string>
 			<key>many</key>
 			<string>Byl dosažen maximální počet %d účastníků hovoru. Zkuste to znovu později.</string>
-			<key>one</key>
-			<string>Byl dosažen maximální počet 1 účastníka hovoru. Zkuste to znovu později.</string>
 			<key>other</key>
 			<string>Byl dosažen maximální počet %d účastníků hovoru. Zkuste to znovu později.</string>
 		</dict>
@@ -507,14 +427,174 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>V tomto hovoru · 1 člověk</string>
 			<key>few</key>
 			<string>V tomto hovoru · %d lidi</string>
 			<key>many</key>
 			<string>V tomto hovoru · %d lidí</string>
-			<key>one</key>
-			<string>V tomto hovoru · 1 člověk</string>
 			<key>other</key>
 			<string>V tomto hovoru · %d lidí</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 zobrazení</string>
+			<key>few</key>
+			<string>%d zobrazení</string>
+			<key>many</key>
+			<string>%d zobrazení</string>
+			<key>other</key>
+			<string>%d zobrazení</string>
+		</dict>
+	</dict>
+	<key>PRIVATE_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Soukromý příběh · 1 zobrazení</string>
+			<key>few</key>
+			<string>Soukromý příběh · %d zobrazení</string>
+			<key>many</key>
+			<string>Soukromý příběh · %d zobrazení</string>
+			<key>other</key>
+			<string>Soukromý příběh · %d zobrazení</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Všechna spojení Signal · 1 sledující</string>
+			<key>few</key>
+			<string>Všechna spojení Signal · %d sledující</string>
+			<key>many</key>
+			<string>Všechna spojení Signal ·%d sledujících</string>
+			<key>other</key>
+			<string>Všechna spojení Signal · %d sledujících</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Všechna spojení Signal · 1 vyloučený</string>
+			<key>few</key>
+			<string>Všechna spojení Signal · %d vyloučení</string>
+			<key>many</key>
+			<string>Všechna spojení Signal · %d vyloučených</string>
+			<key>other</key>
+			<string>Všechna spojení Signal · %d vyloučených</string>
+		</dict>
+	</dict>
+	<key>MY_STORY_VIEWERS_ONLY_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Sdílet jen s · 1 sledujícím</string>
+			<key>few</key>
+			<string>Sdílet jen s · %d sledujícími</string>
+			<key>many</key>
+			<string>Sdílet jen s · %d sledujícími</string>
+			<key>other</key>
+			<string>Sdílet jen s · %d sledujícími</string>
+		</dict>
+	</dict>
+	<key>GROUP_STORY_VIEWERS_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Skupinový příběh · 1 zobrazení</string>
+			<key>few</key>
+			<string>Skupinový příběh · %d zobrazení</string>
+			<key>many</key>
+			<string>Skupinový příběh · %d zobrazení</string>
+			<key>other</key>
+			<string>Skupinový příběh · %d zobrazení</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Signal zavolá uživatelům %2$@, %3$@ a 1 dalšímu člověku</string>
+			<key>few</key>
+			<string>Signal zavolá uživatelům %2$@, %3$@ a %d dalším</string>
+			<key>many</key>
+			<string>Signal zavolá uživatelům %2$@, %3$@ a %d dalším</string>
+			<key>other</key>
+			<string>Signal zavolá uživatelům %2$@, %3$@ a %d dalším</string>
+		</dict>
+	</dict>
+	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ a 1 další dostanou oznámení</string>
+			<key>few</key>
+			<string>%2$@, %3$@ a %d další dostanou oznámení</string>
+			<key>many</key>
+			<string>%2$@, %3$@ a %d další dostanou oznámení</string>
+			<key>other</key>
+			<string>%2$@, %3$@ a %d dalších dostanou oznámení</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -527,12 +607,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Volám uživatelům %2$@, %3$@ a 1 dalšímu…</string>
 			<key>few</key>
 			<string>Volám uživatelům %2$@, %3$@ a %d dalším…</string>
 			<key>many</key>
 			<string>Volám uživatelům %2$@, %3$@ a %d dalším…</string>
-			<key>one</key>
-			<string>Volám uživatelům %2$@, %3$@ a 1 dalšímu…</string>
 			<key>other</key>
 			<string>Volám uživatelům %2$@, %3$@ a %d dalším…</string>
 		</dict>
@@ -547,12 +627,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ a 1 další se účastní tohoto hovoru</string>
 			<key>few</key>
 			<string>%2$@, %3$@ a %d další se účastní tohoto hovoru</string>
 			<key>many</key>
 			<string>%2$@, %3$@ a %d dalších se účastní tohoto hovoru</string>
-			<key>one</key>
-			<string>%2$@, %3$@ a 1 další se účastní tohoto hovoru</string>
 			<key>other</key>
 			<string>%2$@, %3$@ a %d dalších se účastní tohoto hovoru</string>
 		</dict>
@@ -567,12 +647,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ a 1 další se připojili k hovoru</string>
 			<key>few</key>
 			<string>%2$@, %3$@a %ddalší se připojili k hovoru</string>
 			<key>many</key>
 			<string>%2$@, %3$@ a %d dalších se připojilo k hovoru</string>
-			<key>one</key>
-			<string>%2$@, %3$@ a 1 další se připojili k hovoru</string>
 			<key>other</key>
 			<string>%2$@, %3$@ a %d dalších se připojilo k hovoru</string>
 		</dict>
@@ -587,54 +667,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>%2$@, %3$@ a 1 další hovor opustili</string>
 			<key>few</key>
 			<string>%2$@, %3$@a %d další hovor opustili</string>
 			<key>many</key>
 			<string>%2$@, %3$@ a %d dalších hovor opustilo</string>
-			<key>one</key>
-			<string>%2$@, %3$@ a 1 další hovor opustili</string>
 			<key>other</key>
 			<string>%2$@, %3$@ a %d dalších hovor opustilo</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>%2$@, %3$@ a %d další dostanou oznámení</string>
-			<key>many</key>
-			<string>%2$@, %3$@ a %d další dostanou oznámení</string>
-			<key>one</key>
-			<string>%2$@, %3$@ a 1 další dostanou oznámení</string>
-			<key>other</key>
-			<string>%2$@, %3$@ a %d dalších dostanou oznámení</string>
-		</dict>
-	</dict>
-	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Signal zavolá uživatelům %2$@, %3$@ a %d dalším</string>
-			<key>many</key>
-			<string>Signal zavolá uživatelům %2$@, %3$@ a %d dalším</string>
-			<key>one</key>
-			<string>Signal zavolá uživatelům %2$@, %3$@ a 1 dalšímu člověku</string>
-			<key>other</key>
-			<string>Signal zavolá uživatelům %2$@, %3$@ a %d dalším</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -647,74 +687,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Pozvánka odeslána</string>
 			<key>few</key>
 			<string>%d pozvánky odeslány</string>
 			<key>many</key>
 			<string>%d pozvánek odesláno</string>
-			<key>one</key>
-			<string>Pozvánka odeslána</string>
 			<key>other</key>
 			<string>%d pozvánek odesláno</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>%d členové skupiny mají podobné jméno.</string>
-			<key>many</key>
-			<string>%d členů skupiny má podobné jméno.</string>
-			<key>one</key>
-			<string>1 člen skupiny má podobné jméno.</string>
-			<key>other</key>
-			<string>%d členů skupiny má podobné jméno.</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>%d členové skupiny mají podobné jméno, prohlédněte si členy níže nebo zvolte akci.</string>
-			<key>many</key>
-			<string>%d členů skupiny má podobné jméno, prohlédněte si členy níže nebo zvolte akci.</string>
-			<key>one</key>
-			<string>1 člen skupiny má podobné jméno, prohlédněte si člena níže nebo zvolte akci.</string>
-			<key>other</key>
-			<string>%dčlenů skupiny má podobné jméno, prohlédněte si členy níže nebo zvolte akci.</string>
-		</dict>
-	</dict>
-	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>%d členové skupiny mají stejné jméno, prohlédněte si členy níže nebo vyberte akci.</string>
-			<key>many</key>
-			<string>%d členů skupiny má stejné jméno, prohlédněte si členy níže nebo vyberte akci.</string>
-			<key>one</key>
-			<string>1 člen skupiny má stejné jméno, prohlédněte si člena níže nebo vyberte akci.</string>
-			<key>other</key>
-			<string>%d členů skupiny má stejné jméno, prohlédněte si  členy níže nebo vyberte akci.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -727,12 +707,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 člen</string>
 			<key>few</key>
 			<string>%d členové</string>
 			<key>many</key>
 			<string>%d členů</string>
-			<key>one</key>
-			<string>1 člen</string>
 			<key>other</key>
 			<string>%d členů</string>
 		</dict>
@@ -747,17 +727,17 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 člen</string>
 			<key>few</key>
 			<string>%d členové</string>
 			<key>many</key>
 			<string>%d členů</string>
-			<key>one</key>
-			<string>1 člen</string>
 			<key>other</key>
 			<string>%d členů</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@text@</string>
@@ -767,34 +747,54 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%d lidi byli pozváni do skupiny.</string>
-			<key>many</key>
-			<string>%d lidí bylo pozváno do skupiny.</string>
 			<key>one</key>
-			<string>1 osoba byla pozvána do skupiny.</string>
+			<string>1 člen skupiny má podobné jméno.</string>
+			<key>few</key>
+			<string>%d členové skupiny mají podobné jméno.</string>
+			<key>many</key>
+			<string>%d členů skupiny má podobné jméno.</string>
 			<key>other</key>
-			<string>%d lidí bylo pozváno do skupiny.</string>
+			<string>%d členů skupiny má podobné jméno.</string>
 		</dict>
 	</dict>
-	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@text@</string>
+		<string>%#@text@</string>
 		<key>text</key>
 		<dict>
 			<key>NSStringFormatSpecTypeKey</key>
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>%2$@ pozval/a %d lidi do skupiny.</string>
-			<key>many</key>
-			<string>%2$@ pozval/a %d lidí do skupiny.</string>
 			<key>one</key>
-			<string>%2$@ pozval/a 1 osobu do skupiny.</string>
+			<string>1 člen skupiny má podobné jméno, prohlédněte si člena níže nebo zvolte akci.</string>
+			<key>few</key>
+			<string>%d členové skupiny mají podobné jméno, prohlédněte si členy níže nebo zvolte akci.</string>
+			<key>many</key>
+			<string>%d členů skupiny má podobné jméno, prohlédněte si členy níže nebo zvolte akci.</string>
 			<key>other</key>
-			<string>%2$@ pozval/a %d lidí do skupiny.</string>
+			<string>%dčlenů skupiny má podobné jméno, prohlédněte si členy níže nebo zvolte akci.</string>
+		</dict>
+	</dict>
+	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 člen skupiny má stejné jméno, prohlédněte si člena níže nebo vyberte akci.</string>
+			<key>few</key>
+			<string>%d členové skupiny mají stejné jméno, prohlédněte si členy níže nebo vyberte akci.</string>
+			<key>many</key>
+			<string>%d členů skupiny má stejné jméno, prohlédněte si členy níže nebo vyberte akci.</string>
+			<key>other</key>
+			<string>%d členů skupiny má stejné jméno, prohlédněte si  členy níže nebo vyberte akci.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -807,12 +807,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Pozvání do skupiny bylo zrušeno 1 osobě.</string>
 			<key>few</key>
 			<string>Pozvání do skupiny bylo zrušeno %d lidem.</string>
 			<key>many</key>
 			<string>Pozvání do skupiny bylo zrušeno %d lidem.</string>
-			<key>one</key>
-			<string>Pozvání do skupiny bylo zrušeno 1 osobě.</string>
 			<key>other</key>
 			<string>Pozvání do skupiny bylo zrušeno %d lidem.</string>
 		</dict>
@@ -827,14 +827,54 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>%2$@ zrušil/a pozvání do skupiny 1 osobě.</string>
 			<key>few</key>
 			<string>%2$@ zrušil/a pozvání do skupiny %d lidem.</string>
 			<key>many</key>
 			<string>%2$@ zrušil/a pozvání do skupiny %d lidem.</string>
-			<key>one</key>
-			<string>%2$@ zrušil/a pozvání do skupiny 1 osobě.</string>
 			<key>other</key>
 			<string>%2$@ zrušil/a pozvání do skupiny %d lidem.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>1 osoba byla pozvána do skupiny.</string>
+			<key>few</key>
+			<string>%d lidi byli pozváni do skupiny.</string>
+			<key>many</key>
+			<string>%d lidí bylo pozváno do skupiny.</string>
+			<key>other</key>
+			<string>%d lidí bylo pozváno do skupiny.</string>
+		</dict>
+	</dict>
+	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>%2$@ pozval/a 1 osobu do skupiny.</string>
+			<key>few</key>
+			<string>%2$@ pozval/a %d lidi do skupiny.</string>
+			<key>many</key>
+			<string>%2$@ pozval/a %d lidí do skupiny.</string>
+			<key>other</key>
+			<string>%2$@ pozval/a %d lidí do skupiny.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -847,34 +887,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>%2$@ požádal/a a zrušil/a svou žádost o připojení ke skupině přes odkaz skupiny.</string>
 			<key>few</key>
 			<string>%2$@ požádal/a a zrušil/a %d žádosti o připojení ke skupině přes odkaz skupiny.</string>
 			<key>many</key>
 			<string>%2$@ požádal/a a zrušil/a %d žádostí o připojení ke skupině přes odkaz skupiny.</string>
-			<key>one</key>
-			<string>%2$@ požádal/a a zrušil/a svou žádost o připojení ke skupině přes odkaz skupiny.</string>
 			<key>other</key>
 			<string>%2$@ požádal/a a zrušil/a %d žádostí o připojení ke skupině přes odkaz skupiny.</string>
-		</dict>
-	</dict>
-	<key>GROUP_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Skupinový příběh · %d zobrazení</string>
-			<key>many</key>
-			<string>Skupinový příběh · %d zobrazení</string>
-			<key>one</key>
-			<string>Skupinový příběh · 1 zobrazení</string>
-			<key>other</key>
-			<string>Skupinový příběh · %d zobrazení</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -887,12 +907,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Jednoho člena nebylo možné přidat do nové verze skupiny a ze skupiny byl odebrán.</string>
 			<key>few</key>
 			<string>%d členy nebylo možné přidat do nové verze skupiny a ze skupiny byli odebráni.</string>
 			<key>many</key>
 			<string>%d členů nebylo možné přidat do nové verze skupiny a ze skupiny byli odebráni.</string>
-			<key>one</key>
-			<string>Jednoho člena nebylo možné přidat do nové verze skupiny a ze skupiny byl odebrán.</string>
 			<key>other</key>
 			<string>%d členů nebylo možné přidat do nové verze skupiny a ze skupiny byli odebráni.</string>
 		</dict>
@@ -907,14 +927,94 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Jednoho člena nebylo možné přidat do nové verze skupiny a byl pozván, aby se připojil.</string>
 			<key>few</key>
 			<string>%d členy nebylo možné přidat do nové verze skupiny a byli pozváni, aby se připojili.</string>
 			<key>many</key>
 			<string>%d členů nebylo možné přidat do nové verze skupiny a byli pozváni, aby se připojili.</string>
-			<key>one</key>
-			<string>Jednoho člena nebylo možné přidat do nové verze skupiny a byl pozván, aby se připojil.</string>
 			<key>other</key>
 			<string>%d členů nebylo možné přidat do nové verze skupiny a byli pozváni, aby se připojili.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Tuto skupinu nelze vytvořit, protože 1 člen používá starou verzi Signalu. Můžete s ním vytvořit skupinu nového typu poté, co si tento člen aktualizuje Signal, případně ho před vytvořením skupiny odebrat. %2$@</string>
+			<key>few</key>
+			<string>Tuto skupinu nelze vytvořit, protože %d členové používají starou verzi Signalu. Můžete s nimi vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je před vytvořením skupiny odebrat. %2$@</string>
+			<key>many</key>
+			<string>Tuto skupinu nelze vytvořit, protože %d členů používá starou verzi Signalu. Můžete s nimi vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je před vytvořením skupiny odebrat. %2$@</string>
+			<key>other</key>
+			<string>Tuto skupinu nelze vytvořit, protože %dčlenů používá starou verzi Signalu. Můžete s nimi vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je před vytvořením skupiny odebrat. %2$@</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Skupinu se nepodařilo vytvořit, protože 1 člen využívá starou verzi Signalu. Můžete vytvořit skupinu nového typu poté, co si tento člen aktualizuje Signal, případně ho odstraňte, než skupinu vytvoříte.</string>
+			<key>few</key>
+			<string>Skupinu se nepodařilo vytvořit, protože %d členi využívají starou verzi Signalu. Můžete vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je odstraňte, než skupinu vytvoříte.</string>
+			<key>many</key>
+			<string>Skupinu se nepodařilo vytvořit, protože %d členů využívá starou verzi Signalu. Můžete vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je odstraňte, než skupinu vytvoříte.</string>
+			<key>other</key>
+			<string>Tuto skupinu nelze vytvořit, protože %dčlenů používá starou verzi Signalu. Můžete s nimi vytvořit skupinu nového typu poté, co si tito členové aktualizují Signal, případně je před vytvořením skupiny odebrat.</string>
+		</dict>
+	</dict>
+	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Do nové skupiny nebylo možné znovu přidat 1 člena. Chcete ho přidat nyní?</string>
+			<key>few</key>
+			<string>Do nové skupiny nebylo možné znovu přidat %d členy.  Chcete je přidat nyní?</string>
+			<key>many</key>
+			<string>Do nové skupiny nebylo možné znovu přidat %d členů. Chcete je přidat nyní?</string>
+			<key>other</key>
+			<string>Do nové skupiny nebylo možné znovu přidat %d členů. Chcete je přidat nyní?</string>
+		</dict>
+	</dict>
+	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@text@</string>
+		<key>text</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Skupiny Signal fungují nejlépe s 1 členem nebo méně. Přidání více členů povede ke zpoždění při odesílání a přijímání zpráv.</string>
+			<key>few</key>
+			<string>Skupiny Signal fungují nejlépe s %d členy nebo méně. Přidání více členů povede ke zpoždění při odesílání a přijímání zpráv.</string>
+			<key>many</key>
+			<string>Skupiny Signal fungují nejlépe s %d členy nebo méně. Přidání více členů povede ke zpoždění při odesílání a přijímání zpráv.</string>
+			<key>other</key>
+			<string>Skupiny Signal fungují nejlépe s %d členy nebo méně. Přidání více členů povede ke zpoždění při odesílání a přijímání zpráv.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -927,12 +1027,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Nemůžete sdílet více než 1 položku.</string>
 			<key>few</key>
 			<string>Nemůžete sdílet více než %d položky.</string>
 			<key>many</key>
 			<string>Nemůžete sdílet více než %d položek.</string>
-			<key>one</key>
-			<string>Nemůžete sdílet více než 1 položku.</string>
 			<key>other</key>
 			<string>Nemůžete sdílet více než %d položek.</string>
 		</dict>
@@ -947,12 +1047,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 společná skupina</string>
 			<key>few</key>
 			<string>%d společné skupiny</string>
 			<key>many</key>
 			<string>%dspolečných skupin</string>
-			<key>one</key>
-			<string>1 společná skupina</string>
 			<key>other</key>
 			<string>%d společných skupin</string>
 		</dict>
@@ -967,12 +1067,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Smazat 1 zprávu</string>
 			<key>few</key>
 			<string>Smazat %d zprávy</string>
 			<key>many</key>
 			<string>Smazat %d zpráv</string>
-			<key>one</key>
-			<string>Smazat 1 zprávu</string>
 			<key>other</key>
 			<string>Smazat %d zpráv</string>
 		</dict>
@@ -987,12 +1087,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 fotka</string>
 			<key>few</key>
 			<string>%d fotky</string>
 			<key>many</key>
 			<string>%d fotek</string>
-			<key>one</key>
-			<string>1 fotka</string>
 			<key>other</key>
 			<string>%d fotek</string>
 		</dict>
@@ -1007,34 +1107,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 položka</string>
 			<key>few</key>
 			<string>%d položky</string>
 			<key>many</key>
 			<string>%d položek</string>
-			<key>one</key>
-			<string>1 položka</string>
 			<key>other</key>
 			<string>%d položek</string>
-		</dict>
-	</dict>
-	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Zablokoval/a jste %d členy této skupiny</string>
-			<key>many</key>
-			<string>Zablokoval/a jste %d členů této skupiny</string>
-			<key>one</key>
-			<string>Zablokoval/a jste 1 člena této skupiny</string>
-			<key>other</key>
-			<string>Zablokoval/a jste %d členů této skupiny</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -1047,14 +1127,34 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 vybrán</string>
 			<key>few</key>
 			<string>%d vybrány</string>
 			<key>many</key>
 			<string>%d vybráno</string>
-			<key>one</key>
-			<string>1 vybrán</string>
 			<key>other</key>
 			<string>%d vybráno</string>
+		</dict>
+	</dict>
+	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Zablokoval/a jste 1 člena této skupiny</string>
+			<key>few</key>
+			<string>Zablokoval/a jste %d členy této skupiny</string>
+			<key>many</key>
+			<string>Zablokoval/a jste %d členů této skupiny</string>
+			<key>other</key>
+			<string>Zablokoval/a jste %d členů této skupiny</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1068,9 +1168,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 vyloučený</string>
+			<key>few</key>
+			<string>%d vyloučení</string>
+			<key>many</key>
+			<string>%d vyloučených</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d vyloučených</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1084,57 +1188,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 sledující</string>
+			<key>few</key>
+			<string>%d sledující</string>
+			<key>many</key>
+			<string>%d sledujících</string>
 			<key>other</key>
-			<string>%d Viewers</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
-			<key>other</key>
-			<string>All Signal Connections · %d Viewers</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
-			<key>other</key>
-			<string>All Signal Connections · %d Excluded</string>
-		</dict>
-	</dict>
-	<key>MY_STORY_VIEWERS_ONLY_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
-			<key>other</key>
-			<string>Only Share With · %d Viewers</string>
+			<string>%d sledujících</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1147,12 +1207,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 člen</string>
 			<key>few</key>
 			<string>%d členové</string>
 			<key>many</key>
 			<string>%d členů</string>
-			<key>one</key>
-			<string>1 člen</string>
 			<key>other</key>
 			<string>%d členů</string>
 		</dict>
@@ -1167,12 +1227,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 zobrazení</string>
 			<key>few</key>
 			<string>%d zobrazení</string>
 			<key>many</key>
 			<string>%d zobrazení</string>
-			<key>one</key>
-			<string>1 zobrazení</string>
 			<key>other</key>
 			<string>%d Zobrazení</string>
 		</dict>
@@ -1187,12 +1247,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Nesprávný PIN. Zbývá 1 pokus.</string>
 			<key>few</key>
 			<string>Nesprávný PIN. Zbývají %d pokusy.</string>
 			<key>many</key>
 			<string>Nesprávný PIN. Zbývá %d pokusů.</string>
-			<key>one</key>
-			<string>Nesprávný PIN. Zbývá 1 pokus.</string>
 			<key>other</key>
 			<string>Nesprávný PIN. Zbývá %d pokusů.</string>
 		</dict>
@@ -1207,12 +1267,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>%2$@ pozval/a 1 osobu</string>
 			<key>few</key>
 			<string>%2$@ pozval/a %d lidi</string>
 			<key>many</key>
 			<string>%2$@ pozval/a %d lidí</string>
-			<key>one</key>
-			<string>%2$@ pozval/a 1 osobu</string>
 			<key>other</key>
 			<string>%2$@ pozval/a %d lidí</string>
 		</dict>
@@ -1227,12 +1287,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 nevyřízená žádost o členství.</string>
 			<key>few</key>
 			<string>%d nevyřízené žádosti o členství.</string>
 			<key>many</key>
 			<string>%d nevyřízených žádostí o členství.</string>
-			<key>one</key>
-			<string>1 nevyřízená žádost o členství.</string>
 			<key>other</key>
 			<string>%d nevyřízených žádostí o členství.</string>
 		</dict>
@@ -1247,34 +1307,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Zrušit neplatnou pozvánku</string>
 			<key>few</key>
 			<string>Zrušit %d neplatné pozvánky</string>
 			<key>many</key>
 			<string>Zrušit %d neplatných pozvánek</string>
-			<key>one</key>
-			<string>Zrušit neplatnou pozvánku</string>
 			<key>other</key>
 			<string>Zrušit %d neplatných pozvánek</string>
-		</dict>
-	</dict>
-	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Zrušit pozvánky</string>
-			<key>many</key>
-			<string>Zrušit pozvánky</string>
-			<key>one</key>
-			<string>Zrušit pozvánku</string>
-			<key>other</key>
-			<string>Zrušit pozvánky</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1287,14 +1327,34 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Zrušit pozvánku do skupiny odeslanou „%2$@“?</string>
 			<key>few</key>
 			<string>Zrušit %d pozvánky odeslané „%2$@“?</string>
 			<key>many</key>
 			<string>Zrušit %d pozvánek odeslaných „%2$@“?</string>
-			<key>one</key>
-			<string>Zrušit pozvánku do skupiny odeslanou „%2$@“?</string>
 			<key>other</key>
 			<string>Zrušit %d pozvánek odeslaných „%2$@“?</string>
+		</dict>
+	</dict>
+	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@caption@</string>
+		<key>caption</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Zrušit pozvánku</string>
+			<key>few</key>
+			<string>Zrušit pozvánky</string>
+			<key>many</key>
+			<string>Zrušit pozvánky</string>
+			<key>other</key>
+			<string>Zrušit pozvánky</string>
 		</dict>
 	</dict>
 	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
@@ -1307,34 +1367,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Připomeneme se vám později. Vytvoření PIN bude povinné za 1 den.</string>
 			<key>few</key>
 			<string>Připomeneme se vám později. Vytvoření PIN bude povinné za %d dny.</string>
 			<key>many</key>
 			<string>Připomeneme se vám později. Vytvoření PIN bude povinné za %d dnů.</string>
-			<key>one</key>
-			<string>Připomeneme se vám později. Vytvoření PIN bude povinné za 1 den.</string>
 			<key>other</key>
 			<string>Připomeneme se vám později. Vytvoření PIN bude povinné za %d dnů.</string>
-		</dict>
-	</dict>
-	<key>PRIVATE_STORY_VIEWERS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>Soukromý příběh · %d zobrazení</string>
-			<key>many</key>
-			<string>Soukromý příběh · %d zobrazení</string>
-			<key>one</key>
-			<string>Soukromý příběh · 1 zobrazení</string>
-			<key>other</key>
-			<string>Soukromý příběh · %d zobrazení</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1347,12 +1387,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Zbývají vám 1 pokus. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
 			<key>few</key>
 			<string>Zbývají vám %d pokusy. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
 			<key>many</key>
 			<string>Zbývá vám %d pokusů. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
-			<key>one</key>
-			<string>Zbývají vám 1 pokus. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
 			<key>other</key>
 			<string>Zbývá vám %d pokusů. Pokud vám pokusy dojdou, můžete si vytvořit nový PIN. Můžete se zaregistrovat a používat svůj účet, ale ztratíte některá uložená nastavení, např. informace v profilu.</string>
 		</dict>
@@ -1367,12 +1407,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Zbývá vám 1 pokus. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
 			<key>few</key>
 			<string>Zbývají vám %d pokusy. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
 			<key>many</key>
 			<string>Zbývá vám %d pokusů. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
-			<key>one</key>
-			<string>Zbývá vám 1 pokus. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
 			<key>other</key>
 			<string>Zbývá vám %d pokusů. Pokud vám pokusy dojdou, bude váš účet zablokován. Po 7 dnech nečinnosti se můžete znovu zaregistrovat bez svého PIN. Váš účet bude odstraněn a veškerý jeho obsah smazán.</string>
 		</dict>
@@ -1387,12 +1427,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; odpověď</string>
 			<key>few</key>
 			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědi</string>
 			<key>many</key>
 			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědí</string>
-			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; odpověď</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědí</string>
 		</dict>
@@ -1408,9 +1448,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 sledující</string>
+			<key>few</key>
+			<string>%d sledující</string>
+			<key>many</key>
+			<string>%d sledujících</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d sledujících</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1423,12 +1467,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 vyloučeno</string>
 			<key>few</key>
 			<string>%d vyloučena</string>
 			<key>many</key>
 			<string>%d vyloučeno</string>
-			<key>one</key>
-			<string>1 vyloučeno</string>
 			<key>other</key>
 			<string>%d Vyloučeno</string>
 		</dict>
@@ -1443,69 +1487,14 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>few</key>
-			<string>Odeslání příběhu %d…</string>
-			<key>many</key>
-			<string>Odeslání příběhu %d…</string>
 			<key>one</key>
 			<string>Odesílání…</string>
+			<key>few</key>
+			<string>Odeslání příběhu %d…</string>
+			<key>many</key>
+			<string>Odeslání příběhu %d…</string>
 			<key>other</key>
 			<string>Odeslání příběhu%d…</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@text@</string>
-		<key>text</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>%d zobrazení</string>
-			<key>many</key>
-			<string>%d zobrazení</string>
-			<key>one</key>
-			<string>1 zobrazení</string>
-			<key>other</key>
-			<string>%d zobrazení</string>
-		</dict>
-	</dict>
-	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%1$#@views@  %2$#@replies@</string>
-		<key>replies</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědi</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědí</string>
-			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; odpověď</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědí</string>
-		</dict>
-		<key>views</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>few</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
-			<key>many</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
-			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; zobrazení</string>
-			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1518,14 +1507,49 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; zobrazení</string>
 			<key>few</key>
 			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
 			<key>many</key>
 			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
-			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; zobrazení</string>
 			<key>other</key>
 			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
+		</dict>
+	</dict>
+	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%1$#@views@  %2$#@replies@</string>
+		<key>views</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; zobrazení</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; zobrazení</string>
+		</dict>
+		<key>replies</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>&lt;bold&gt;1&lt;/bold&gt; odpověď</string>
+			<key>few</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědi</string>
+			<key>many</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědí</string>
+			<key>other</key>
+			<string>&lt;bold&gt;%d&lt;/bold&gt; odpovědí</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1538,12 +1562,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>Člen %2$@, %3$@ a 1 další skupiny</string>
 			<key>few</key>
 			<string>Člen %2$@, %3$@ a %d dalších skupin</string>
 			<key>many</key>
 			<string>Člen %2$@, %3$@ a %d dalších skupin</string>
-			<key>one</key>
-			<string>Člen %2$@, %3$@ a 1 další skupiny</string>
 			<key>other</key>
 			<string>Člen %2$@, %3$@ a %d dalších skupin</string>
 		</dict>
@@ -1558,12 +1582,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 den</string>
 			<key>few</key>
 			<string>%d dny</string>
 			<key>many</key>
 			<string>%d dní</string>
-			<key>one</key>
-			<string>1 den</string>
 			<key>other</key>
 			<string>%d dní</string>
 		</dict>
@@ -1578,12 +1602,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 d</string>
 			<key>few</key>
 			<string>%d d</string>
 			<key>many</key>
 			<string>%d d</string>
-			<key>one</key>
-			<string>1 d</string>
 			<key>other</key>
 			<string>%d d</string>
 		</dict>
@@ -1598,12 +1622,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 hodina</string>
 			<key>few</key>
 			<string>%d hodiny</string>
 			<key>many</key>
 			<string>%d hodin</string>
-			<key>one</key>
-			<string>1 hodina</string>
 			<key>other</key>
 			<string>%d hodin</string>
 		</dict>
@@ -1618,12 +1642,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 h</string>
 			<key>few</key>
 			<string>%d h</string>
 			<key>many</key>
 			<string>%d h</string>
-			<key>one</key>
-			<string>1 h</string>
 			<key>other</key>
 			<string>%d h</string>
 		</dict>
@@ -1638,12 +1662,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 minuta</string>
 			<key>few</key>
 			<string>%d minuty</string>
 			<key>many</key>
 			<string>%d minut</string>
-			<key>one</key>
-			<string>1 minuta</string>
 			<key>other</key>
 			<string>%d minut</string>
 		</dict>
@@ -1658,12 +1682,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 m</string>
 			<key>few</key>
 			<string>%d m</string>
 			<key>many</key>
 			<string>%d m</string>
-			<key>one</key>
-			<string>1 m</string>
 			<key>other</key>
 			<string>%d m</string>
 		</dict>
@@ -1678,12 +1702,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 sekunda</string>
 			<key>few</key>
 			<string>%d sekundy</string>
 			<key>many</key>
 			<string>%d sekund</string>
-			<key>one</key>
-			<string>1 sekunda</string>
 			<key>other</key>
 			<string>%d sekund</string>
 		</dict>
@@ -1698,12 +1722,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 s</string>
 			<key>few</key>
 			<string>%d s</string>
 			<key>many</key>
 			<string>%d s</string>
-			<key>one</key>
-			<string>1 s</string>
 			<key>other</key>
 			<string>%d s</string>
 		</dict>
@@ -1718,12 +1742,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 týden</string>
 			<key>few</key>
 			<string>%d týdny</string>
 			<key>many</key>
 			<string>%d týdnů</string>
-			<key>one</key>
-			<string>1 týden</string>
 			<key>other</key>
 			<string>%d týdnů</string>
 		</dict>
@@ -1738,12 +1762,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 týd.</string>
 			<key>few</key>
 			<string>%d týd.</string>
 			<key>many</key>
 			<string>%d týd.</string>
-			<key>one</key>
-			<string>1 týd.</string>
 			<key>other</key>
 			<string>%d týd.</string>
 		</dict>
@@ -1758,12 +1782,12 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>one</key>
+			<string>1 rok</string>
 			<key>few</key>
 			<string>%d roky</string>
 			<key>many</key>
 			<string>%d let</string>
-			<key>one</key>
-			<string>1 rok</string>
 			<key>other</key>
 			<string>%d let</string>
 		</dict>

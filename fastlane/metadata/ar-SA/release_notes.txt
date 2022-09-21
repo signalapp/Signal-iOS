@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• المكالمة بالفيديو صورة-في-صورة ستظهر أعلى لوحة المفاتيح عند الكتابة
+• تحسين متانة تحديث البيانات التعريفية للمجموعة وأخطاء التعامل معها
 

@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 kişi seçilmedi</string>
 			<key>other</key>
-			<string>%d Excluded</string>
+			<string>%d kişi hariç tutuldu</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 Görüntüleyen</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d Görüntüleyen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -888,9 +888,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Tüm Signal Bağlantıları · 1 Görüntüleyen</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Viewers</string>
+			<string>Tüm Signal Bağlantıları · %d Görüntüleyen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -904,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Tüm Signal Bağlantıları · 1 Kişi Seçilmedi</string>
 			<key>other</key>
-			<string>All Signal Connections · %d Excluded</string>
+			<string>Tüm Signal Bağlantıları · %d Kişi Seçilmedi</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Yalnızca · 1 Görüntüleyenle Paylaş</string>
 			<key>other</key>
-			<string>Only Share With · %d Viewers</string>
+			<string>Yalnızca · %d Görüntüleyen ile Paylaş</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 Görüntüleyen</string>
 			<key>other</key>
-			<string>%d Viewers</string>
+			<string>%d Görüntüleyen</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>

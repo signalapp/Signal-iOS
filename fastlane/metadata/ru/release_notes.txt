@@ -1,3 +1,3 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
+• При наборе текста видеовызов в режиме «Картинка в картинке» идет над клавиатурой
+• Повышение надёжности обновления метаданных группы и обработки ошибок
 
