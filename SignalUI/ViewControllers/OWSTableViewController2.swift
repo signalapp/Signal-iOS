@@ -632,6 +632,39 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         return textView
     }
 
+    private var headerFont: UIFont { .ows_dynamicTypeBodyClamped.ows_semibold }
+    private var footerFont: UIFont { .ows_dynamicTypeCaption1Clamped }
+
+    private func headerTextContainerInsets(for section: OWSTableSection) -> UIEdgeInsets {
+        var textContainerInset = cellOuterInsetsWithMargin(
+            top: (defaultSpacingBetweenSections ?? 0) + 12,
+            bottom: 10
+        )
+
+        if section.hasBackground {
+            textContainerInset.left += Self.cellHInnerMargin * 0.5
+            textContainerInset.right += Self.cellHInnerMargin * 0.5
+        }
+
+        textContainerInset.left += tableView.safeAreaInsets.left
+        textContainerInset.right += tableView.safeAreaInsets.right
+        return textContainerInset
+    }
+
+    private func footerTextContainerInsets(for section: OWSTableSection) -> UIEdgeInsets {
+        var textContainerInset = cellOuterInsetsWithMargin(top: 12)
+
+        if section.hasBackground {
+            textContainerInset.left += Self.cellHInnerMargin
+            textContainerInset.right += Self.cellHInnerMargin
+        }
+
+        textContainerInset.left += tableView.safeAreaInsets.left
+        textContainerInset.right += tableView.safeAreaInsets.right
+
+        return textContainerInset
+    }
+
     public func tableView(_ tableView: UITableView, viewForHeaderInSection sectionIndex: Int) -> UIView? {
         guard let section = contents.sections[safe: sectionIndex] else {
             owsFailDebug("Missing section: \(sectionIndex)")
@@ -641,22 +674,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         func buildTextView() -> UITextView {
             let textView = buildHeaderOrFooterTextView()
             textView.textColor = (Theme.isDarkThemeEnabled || forceDarkMode) ? UIColor.ows_gray05 : UIColor.ows_gray90
-            textView.font = UIFont.ows_dynamicTypeBodyClamped.ows_semibold
-
-            var textContainerInset = cellOuterInsetsWithMargin(
-                top: (defaultSpacingBetweenSections ?? 0) + 12,
-                bottom: 10
-            )
-
-            if section.hasBackground {
-                textContainerInset.left += Self.cellHInnerMargin * 0.5
-                textContainerInset.right += Self.cellHInnerMargin * 0.5
-            }
-
-            textContainerInset.left += tableView.safeAreaInsets.left
-            textContainerInset.right += tableView.safeAreaInsets.right
-            textView.textContainerInset = textContainerInset
-
+            textView.font = headerFont
+            textView.textContainerInset = headerTextContainerInsets(for: section)
             return textView
         }
 
@@ -702,25 +721,16 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
         func buildTextView() -> UITextView {
             let textView = buildHeaderOrFooterTextView()
             textView.textColor = forceDarkMode ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
-            textView.font = UIFont.ows_dynamicTypeCaption1Clamped
+            textView.font = footerFont
 
             let linkTextAttributes: [NSAttributedString.Key: Any] = [
                 NSAttributedString.Key.foregroundColor: forceDarkMode ? Theme.darkThemePrimaryColor : Theme.primaryTextColor,
-                NSAttributedString.Key.font: UIFont.ows_dynamicTypeCaption1Clamped,
+                NSAttributedString.Key.font: footerFont,
                 NSAttributedString.Key.underlineStyle: 0
             ]
             textView.linkTextAttributes = linkTextAttributes
 
-            var textContainerInset = cellOuterInsetsWithMargin(top: 12)
-
-            if section.hasBackground {
-                textContainerInset.left += Self.cellHInnerMargin
-                textContainerInset.right += Self.cellHInnerMargin
-            }
-
-            textContainerInset.left += tableView.safeAreaInsets.left
-            textContainerInset.right += tableView.safeAreaInsets.right
-            textView.textContainerInset = textContainerInset
+            textView.textContainerInset = footerTextContainerInsets(for: section)
 
             return textView
         }
@@ -765,6 +775,42 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             let height = CGFloat(customHeaderHeight.floatValue)
             owsAssertDebug(height > 0 || height == automaticDimension)
             return height
+        } else if let headerTitle = section.headerTitle, !headerTitle.isEmpty {
+            // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
+            // of relying on UITableView.automaticDimension
+            if #available(iOS 17, *) { owsFailDebug("Canary to check if this has been fixed") }
+            let insets = headerTextContainerInsets(for: section)
+            // Reuse sizing code for CVText even though we aren't using a CVText here.
+            let height = CVText.measureLabel(
+                config: CVLabelConfig(
+                    text: headerTitle,
+                    font: headerFont,
+                    textColor: .black, // doesn't matter for sizing
+                    numberOfLines: 0,
+                    lineBreakMode: .byWordWrapping,
+                    textAlignment: .natural
+                ),
+                maxWidth: tableView.frame.width - insets.totalWidth
+            ).height
+            return height + insets.totalHeight
+        } else if let headerTitle = section.headerAttributedTitle, !headerTitle.isEmpty {
+            // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
+            // of relying on UITableView.automaticDimension
+            if #available(iOS 17, *) { owsFailDebug("Canary to check if this has been fixed") }
+            let insets = headerTextContainerInsets(for: section)
+            // Reuse sizing code for CVText even though we aren't using a CVText here.
+            let height = CVText.measureLabel(
+                config: CVLabelConfig(
+                    attributedText: headerTitle,
+                    font: headerFont,
+                    textColor: .black, // doesn't matter for sizing
+                    numberOfLines: 0,
+                    lineBreakMode: .byWordWrapping,
+                    textAlignment: .natural
+                ),
+                maxWidth: tableView.frame.width - insets.totalWidth
+            ).height
+            return height + insets.totalHeight
         } else if nil != self.tableView(tableView, viewForHeaderInSection: sectionIndex) {
             return automaticDimension
         } else {
@@ -782,6 +828,42 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
             let height = CGFloat(customFooterHeight.floatValue)
             owsAssertDebug(height > 0 || height == automaticDimension)
             return height
+        } else if let footerTitle = section.footerTitle, !footerTitle.isEmpty {
+            // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
+            // of relying on UITableView.automaticDimension
+            if #available(iOS 17, *) { owsFailDebug("Canary to check if this has been fixed") }
+            let insets = footerTextContainerInsets(for: section)
+            // Reuse sizing code for CVText even though we aren't using a CVText here.
+            let height = CVText.measureLabel(
+                config: CVLabelConfig(
+                    text: footerTitle,
+                    font: footerFont,
+                    textColor: .black, // doesn't matter for sizing
+                    numberOfLines: 0,
+                    lineBreakMode: .byWordWrapping,
+                    textAlignment: .natural
+                ),
+                maxWidth: tableView.frame.width - insets.totalWidth
+            ).height
+            return height + insets.totalHeight
+        } else if let footerTitle = section.footerAttributedTitle, !footerTitle.isEmpty {
+            // Get around a bug sizing UITextView in iOS 16 by manually sizing instead
+            // of relying on UITableView.automaticDimension
+            if #available(iOS 17, *) { owsFailDebug("Canary to check if this has been fixed") }
+            let insets = footerTextContainerInsets(for: section)
+            // Reuse sizing code for CVText even though we aren't using a CVText here.
+            let height = CVText.measureLabel(
+                config: CVLabelConfig(
+                    attributedText: footerTitle,
+                    font: footerFont,
+                    textColor: .black, // doesn't matter for sizing
+                    numberOfLines: 0,
+                    lineBreakMode: .byWordWrapping,
+                    textAlignment: .natural
+                ),
+                maxWidth: tableView.frame.width - insets.totalWidth
+            ).height
+            return height + insets.totalHeight
         } else if nil != self.tableView(tableView, viewForFooterInSection: sectionIndex) {
             return automaticDimension
         } else {
