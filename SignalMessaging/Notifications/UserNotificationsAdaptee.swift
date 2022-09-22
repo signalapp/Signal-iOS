@@ -155,6 +155,8 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         }
     }
 
+    // MARK: - Notify
+
     func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?,
                 completion: NotificationCompletion?) {
         assertOnQueue(NotificationPresenter.notificationQueue)
@@ -289,6 +291,70 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         }
 
         return promise
+    }
+
+    private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
+        assertOnQueue(NotificationPresenter.notificationQueue)
+
+        switch category {
+        case .incomingMessageFromNoLongerVerifiedIdentity,
+             .threadlessErrorMessage,
+             .incomingCall,
+             .missedCallWithActions,
+             .missedCallWithoutActions,
+             .missedCallFromNoLongerVerifiedIdentity:
+            // Always show these notifications
+            return true
+        case .internalError:
+            // Only show errors alerts on builds run by a test population (beta, internal, etc.)
+            return DebugFlags.testPopulationErrorAlerts
+        case .incomingMessageWithActions_CanReply,
+             .incomingMessageWithActions_CannotReply,
+             .incomingMessageWithoutActions,
+             .incomingReactionWithActions_CanReply,
+             .incomingReactionWithActions_CannotReply,
+             .infoOrErrorMessage:
+            // Only show these notification if:
+            // - The app is not foreground
+            // - The app is foreground, but the corresponding conversation is not open
+            guard CurrentAppContext().isMainAppAndActive else { return true }
+            guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
+                owsFailDebug("threadId was unexpectedly nil")
+                return true
+            }
+
+            guard let conversationSplitVC = CurrentAppContext().frontmostViewController() as? ConversationSplit else {
+                return true
+            }
+
+            // Show notifications for any *other* thread than the currently selected thread
+            return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
+        case .incomingGroupStoryReply:
+            guard StoryManager.areStoriesEnabled else { return false }
+
+            guard CurrentAppContext().isMainAppAndActive else { return true }
+
+            guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
+                owsFailDebug("threadId was unexpectedly nil")
+                return true
+            }
+
+            guard let notificationStoryTimestamp = userInfo[AppNotificationUserInfoKey.storyTimestamp] as? UInt64 else {
+                owsFailDebug("storyTimestamp was unexpectedly nil")
+                return true
+            }
+
+            guard let storyGroupReply = CurrentAppContext().frontmostViewController() as? StoryGroupReplier else {
+                return true
+            }
+
+            // Show notifications any time we're not currently showing the group reply sheet for that story
+            return notificationStoryTimestamp != storyGroupReply.storyMessage.timestamp
+                || notificationThreadId != storyGroupReply.threadUniqueId
+        case .incomingMessageGeneric:
+            owsFailDebug(".incomingMessageGeneric should never check shouldPresentNotification().")
+            return true
+        }
     }
 
     // MARK: - Cancellation
@@ -432,70 +498,6 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
         pendingCancellations.removeAllValues()
         Self.notificationCenter.removeAllPendingNotificationRequests()
         Self.notificationCenter.removeAllDeliveredNotifications()
-    }
-
-    private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
-        assertOnQueue(NotificationPresenter.notificationQueue)
-
-        switch category {
-        case .incomingMessageFromNoLongerVerifiedIdentity,
-             .threadlessErrorMessage,
-             .incomingCall,
-             .missedCallWithActions,
-             .missedCallWithoutActions,
-             .missedCallFromNoLongerVerifiedIdentity:
-            // Always show these notifications
-            return true
-        case .internalError:
-            // Only show errors alerts on builds run by a test population (beta, internal, etc.)
-            return DebugFlags.testPopulationErrorAlerts
-        case .incomingMessageWithActions_CanReply,
-             .incomingMessageWithActions_CannotReply,
-             .incomingMessageWithoutActions,
-             .incomingReactionWithActions_CanReply,
-             .incomingReactionWithActions_CannotReply,
-             .infoOrErrorMessage:
-            // Only show these notification if:
-            // - The app is not foreground
-            // - The app is foreground, but the corresponding conversation is not open
-            guard CurrentAppContext().isMainAppAndActive else { return true }
-            guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-                owsFailDebug("threadId was unexpectedly nil")
-                return true
-            }
-
-            guard let conversationSplitVC = CurrentAppContext().frontmostViewController() as? ConversationSplit else {
-                return true
-            }
-
-            // Show notifications for any *other* thread than the currently selected thread
-            return conversationSplitVC.visibleThread?.uniqueId != notificationThreadId
-        case .incomingGroupStoryReply:
-            guard StoryManager.areStoriesEnabled else { return false }
-
-            guard CurrentAppContext().isMainAppAndActive else { return true }
-
-            guard let notificationThreadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
-                owsFailDebug("threadId was unexpectedly nil")
-                return true
-            }
-
-            guard let notificationStoryTimestamp = userInfo[AppNotificationUserInfoKey.storyTimestamp] as? UInt64 else {
-                owsFailDebug("storyTimestamp was unexpectedly nil")
-                return true
-            }
-
-            guard let storyGroupReply = CurrentAppContext().frontmostViewController() as? StoryGroupReplier else {
-                return true
-            }
-
-            // Show notifications any time we're not currently showing the group reply sheet for that story
-            return notificationStoryTimestamp != storyGroupReply.storyMessage.timestamp
-                || notificationThreadId != storyGroupReply.threadUniqueId
-        case .incomingMessageGeneric:
-            owsFailDebug(".incomingMessageGeneric should never check shouldPresentNotification().")
-            return true
-        }
     }
 }
 
