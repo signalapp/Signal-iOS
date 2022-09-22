@@ -12,7 +12,6 @@ SIGNAL_APPGROUP = "group.org.whispersystems.signal.group"
 SIGNAL_APPGROUP_STAGING = "group.org.whispersystems.signal.group.staging"
 
 SIGNAL_DEBUG_PAYLOAD_NAME = "dbPayload.txt"
-SIGNAL_DEBUG_PAYLOAD_DBPATH_KEY = "dbPath"
 SIGNAL_DEBUG_PAYLOAD_PASSPHRASE_KEY = "key"
 SIGNAL_FALLBACK_DATABASE_PATH = "grdb/signal.sqlite"
 
@@ -93,15 +92,6 @@ class Simulator:
             return None
 
     def databasePath(self):
-        debugPayload = self.parseDebugPayload()
-
-        if debugPayload and SIGNAL_DEBUG_PAYLOAD_DBPATH_KEY in debugPayload:
-            payloadPath = debugPayload[SIGNAL_DEBUG_PAYLOAD_DBPATH_KEY]
-            if os.path.isfile(payloadPath):
-                return payloadPath
-            else:
-                printInfo("Debug payload " + payloadPath[-50:] + " not found. Falling back the standard path.")
-
         return (self.groupContainer + "/" + SIGNAL_FALLBACK_DATABASE_PATH)
 
     def passphraseIfAvailable(self):

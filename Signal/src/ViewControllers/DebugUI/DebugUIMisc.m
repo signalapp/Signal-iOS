@@ -602,10 +602,8 @@ NS_ASSUME_NONNULL_BEGIN
                              OWSAssert(OWSIsTestableBuild() && Platform.isSimulator);
 
                              // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
-                             NSDictionary *payload = @ {
-                                 @"dbPath" : SDSDatabaseStorage.grdbDatabaseFileUrl.path,
-                                 @"key" : [GRDBDatabaseStorageAdapter.debugOnly_keyData hexadecimalString]
-                             };
+                             NSDictionary *payload =
+                                 @ { @"key" : [GRDBDatabaseStorageAdapter.debugOnly_keyData hexadecimalString] };
                              NSData *payloadData = [NSJSONSerialization dataWithJSONObject:payload
                                                                                    options:NSJSONWritingPrettyPrinted
                                                                                      error:nil];
