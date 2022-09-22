@@ -96,7 +96,7 @@ class MyStoriesViewController: OWSViewController {
         items = .init(keyValueMap: groupedStories, orderedKeys: groupedStories.keys.sorted { lhs, rhs in
             if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
             if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
-            if rhs.lastSentStoryTimestamp == rhs.lastSentStoryTimestamp {
+            if lhs.lastSentStoryTimestamp == rhs.lastSentStoryTimestamp {
                 return storyName(for: lhs).localizedCaseInsensitiveCompare(storyName(for: rhs)) == .orderedAscending
             }
             return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
