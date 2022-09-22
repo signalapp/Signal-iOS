@@ -41,6 +41,7 @@ CREATE
             ,"addresses" BLOB
             ,"storyViewMode" INTEGER DEFAULT 0
             ,"lastViewedStoryTimestamp" INTEGER
+            ,"lastReceivedStoryTimestamp" INTEGER
         )
 ;
 
