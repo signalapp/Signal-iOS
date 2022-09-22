@@ -1,3 +1,2 @@
-• Billede-i-billede for videoopkald dukker op ovenpå tastaturet, når der tastes
-• Forbedr pålideligheden af opdateringer af gruppens metadata og fejlhåndtering
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

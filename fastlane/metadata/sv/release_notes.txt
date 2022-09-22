@@ -1,3 +1,2 @@
-• Videosamtal med bild-i-bild läggs ovanför tangentbordet när du skriver
-• Förbättra uppdateringars pålitlighet och felhantering för gruppmetadata
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

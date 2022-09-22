@@ -1,3 +1,2 @@
-• Panggilan Video Gambar dalam Gambar naik di atas papan kekunci semasa menaip
-• Tingkatkan kebolehpercayaan kemas kini metadata kumpulan & pengendalian ralat
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

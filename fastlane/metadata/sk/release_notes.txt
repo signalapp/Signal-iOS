@@ -1,3 +1,2 @@
-• Pri písaní počas videohovoru sa okno Obraz v obraze posunie nad klávesnicu
-• Vyššia spoľahlivosť aktualizácie skupinových metadát a spracovania chýb
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

@@ -1,3 +1,2 @@
-• La vidéo en mode PIP s'ouvre au-dessus du clavier pendant la saisie
-• Amélioration de la fiabilité des mises à jour des métadonnées de groupe et du traitement des erreurs
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

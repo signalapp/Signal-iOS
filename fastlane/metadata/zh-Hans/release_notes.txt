@@ -1,3 +1,2 @@
-• 视频通话的画中画在打字时会升到键盘上方
-• 优化群组元数据更新的可靠性和错误处理能力
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

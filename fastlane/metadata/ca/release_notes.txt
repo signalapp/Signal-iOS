@@ -1,3 +1,2 @@
-• Durant les videotrucades, la funció Picture-in-Picture s'elevarà per sobre del teclat mentre teclegis
-• Millora de la fiabilitat de les metadades de grup i la gestió d'errors
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

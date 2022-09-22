@@ -1,3 +1,2 @@
-• Ligação de vídeo PIP aparece acima do teclado ao digitar
-• Melhorar a atualização dos metadados do grupo sobre confiabilidade e resolução de bugs
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

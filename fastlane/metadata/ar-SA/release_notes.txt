@@ -1,3 +1,2 @@
-• المكالمة بالفيديو صورة-في-صورة ستظهر أعلى لوحة المفاتيح عند الكتابة
-• تحسين متانة تحديث البيانات التعريفية للمجموعة وأخطاء التعامل معها
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

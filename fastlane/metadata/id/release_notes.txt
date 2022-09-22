@@ -1,3 +1,2 @@
-• Gambar-dalam-Gambar Panggilan Video muncul di atas keyboard saat mengetik
-• Peningkatan pada keandalan pembaruan metadata grup & penanganan eror
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

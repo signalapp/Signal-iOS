@@ -1,3 +1,2 @@
-• При наборе текста видеовызов в режиме «Картинка в картинке» идет над клавиатурой
-• Повышение надёжности обновления метаданных группы и обработки ошибок
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

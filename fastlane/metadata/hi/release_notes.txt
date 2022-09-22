@@ -1,3 +1,2 @@
-• वीडियो कॉल पिक्चर-इन-पिक्चर टाइप करते समय अपने आप कीबोर्ड से ऊपर उठ जाती है
-• ग्रुप मेटाडेटा अपडेट की विश्वसनीयता व एरर हैंडलिंग को बेहतर बनाएँ
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

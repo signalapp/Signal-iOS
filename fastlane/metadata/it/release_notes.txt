@@ -1,3 +1,2 @@
-• Quando fai videochiamate usando il Picture-in-Picture, il video verrà mostrato sopra la tastiera se stai scrivendo
-• Migliorata la gestione degli aggiornamenti dei metadati per i gruppi e della risoluzione di eventuali errori
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups
