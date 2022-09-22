@@ -190,6 +190,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addColumnsForLocalUserLeaveGroupDurableJob
         case addStoriesHiddenStateToThreadAssociatedData
         case addUnregisteredAtTimestampToSignalRecipient
+        case addLastReceivedStoryTimestampToTSThread
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -237,10 +238,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_dropSentStories
         case dataMigration_indexMultipleNameComponentsForReceipients
         case dataMigration_syncGroupStories
+        case dataMigration_populateLastReceivedStoryTimestamp
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 44
+    public static let grdbSchemaVersionLatest: UInt = 45
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1979,6 +1981,16 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(.addLastReceivedStoryTimestampToTSThread) { db in
+            do {
+                try db.alter(table: "model_TSThread") { table in
+                    table.add(column: "lastReceivedStoryTimestamp", .integer)
+                }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2326,6 +2338,18 @@ public class GRDBSchemaMigrator: NSObject {
             for thread in AnyThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
                 guard let thread = thread as? TSGroupThread else { continue }
                 self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_populateLastReceivedStoryTimestamp) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            StoryMessage.anyEnumerate(transaction: transaction.asAnyRead) { message, _ in
+                guard !message.authorAddress.isLocalAddress else { return }
+                for thread in message.threads(transaction: transaction.asAnyRead) {
+                    thread.updateWithLastReceivedStoryTimestamp(NSNumber(value: message.timestamp), transaction: transaction.asAnyWrite)
+                }
             }
         }
     }

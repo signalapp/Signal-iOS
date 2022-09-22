@@ -187,6 +187,10 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         )
         record.anyInsert(transaction: transaction)
 
+        for thread in record.threads(transaction: transaction) {
+            thread.updateWithLastReceivedStoryTimestamp(NSNumber(value: timestamp), transaction: transaction)
+        }
+
         return record
     }
 

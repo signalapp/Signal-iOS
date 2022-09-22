@@ -71,6 +71,7 @@
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
+      lastReceivedStoryTimestamp:(nullable NSNumber *)lastReceivedStoryTimestamp
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
         lastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
@@ -93,6 +94,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                 isArchivedObsolete:isArchivedObsolete
             isMarkedUnreadObsolete:isMarkedUnreadObsolete
               lastInteractionRowId:lastInteractionRowId
+        lastReceivedStoryTimestamp:lastReceivedStoryTimestamp
             lastSentStoryTimestamp:lastSentStoryTimestamp
           lastViewedStoryTimestamp:lastViewedStoryTimestamp
          lastVisibleSortIdObsolete:lastVisibleSortIdObsolete

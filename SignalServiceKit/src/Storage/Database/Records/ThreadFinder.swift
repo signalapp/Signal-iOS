@@ -309,25 +309,47 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
     }
 
     public func storyThreads(includeImplicitGroupThreads: Bool, transaction: GRDBReadTransaction) -> [TSThread] {
-        var sql = """
+
+        var allowedDefaultThreadIds = [String]()
+
+        if includeImplicitGroupThreads {
+            // Prefetch the group thread uniqueIds that currently have stories
+            // TODO: We could potential join on the KVS for groupId -> threadId
+            // to further reduce the number of queries required here, but it
+            // may be overkill.
+
+            let storyMessageGroupIdsSQL = """
+                SELECT DISTINCT \(StoryMessage.columnName(.groupId))
+                FROM \(StoryMessage.databaseTableName)
+                WHERE \(StoryMessage.columnName(.groupId)) IS NOT NULL
+            """
+
+            do {
+                let groupIdCursor = try Data.fetchCursor(transaction.database, sql: storyMessageGroupIdsSQL)
+
+                while let groupId = try groupIdCursor.next() {
+                    allowedDefaultThreadIds.append(TSGroupThread.threadId(
+                        forGroupId: groupId,
+                        transaction: transaction.asAnyRead
+                    ))
+                }
+            } catch {
+                owsFailDebug("Failed to query group thread ids \(error)")
+            }
+        }
+
+        let sql = """
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
             WHERE \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.disabled.rawValue)
             AND \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.default.rawValue)
-
-        """
-
-        if includeImplicitGroupThreads {
-            sql += """
             OR (
                 \(threadColumn: .storyViewMode) = \(TSThreadStoryViewMode.default.rawValue)
                 AND \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)
+                AND \(threadColumn: .uniqueId) IN (\(allowedDefaultThreadIds.map { "\"\($0)\"" }.joined(separator: ", ")))
             )
-
-            """
-        }
-
-        sql += "ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC"
+            ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC
+        """
 
         let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
         var threads = [TSThread]()

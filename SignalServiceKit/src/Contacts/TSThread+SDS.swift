@@ -53,6 +53,7 @@ public struct ThreadRecord: SDSRecord {
     public let addresses: Data?
     public let storyViewMode: UInt
     public let lastViewedStoryTimestamp: UInt64?
+    public let lastReceivedStoryTimestamp: UInt64?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -81,6 +82,7 @@ public struct ThreadRecord: SDSRecord {
         case addresses
         case storyViewMode
         case lastViewedStoryTimestamp
+        case lastReceivedStoryTimestamp
     }
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -130,6 +132,7 @@ public extension ThreadRecord {
         addresses = row[23]
         storyViewMode = row[24]
         lastViewedStoryTimestamp = row[25]
+        lastReceivedStoryTimestamp = row[26]
     }
 }
 
@@ -167,6 +170,7 @@ extension TSThread {
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastReceivedStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastReceivedStoryTimestamp, name: "lastReceivedStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastViewedStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastViewedStoryTimestamp, name: "lastViewedStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
@@ -191,6 +195,7 @@ extension TSThread {
                                    isArchivedObsolete: isArchivedObsolete,
                                    isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                    lastInteractionRowId: lastInteractionRowId,
+                                   lastReceivedStoryTimestamp: lastReceivedStoryTimestamp,
                                    lastSentStoryTimestamp: lastSentStoryTimestamp,
                                    lastViewedStoryTimestamp: lastViewedStoryTimestamp,
                                    lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
@@ -215,6 +220,7 @@ extension TSThread {
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastReceivedStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastReceivedStoryTimestamp, name: "lastReceivedStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastViewedStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastViewedStoryTimestamp, name: "lastViewedStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
@@ -238,6 +244,7 @@ extension TSThread {
                                  isArchivedObsolete: isArchivedObsolete,
                                  isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                  lastInteractionRowId: lastInteractionRowId,
+                                 lastReceivedStoryTimestamp: lastReceivedStoryTimestamp,
                                  lastSentStoryTimestamp: lastSentStoryTimestamp,
                                  lastViewedStoryTimestamp: lastViewedStoryTimestamp,
                                  lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
@@ -260,6 +267,7 @@ extension TSThread {
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastReceivedStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastReceivedStoryTimestamp, name: "lastReceivedStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastViewedStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastViewedStoryTimestamp, name: "lastViewedStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
@@ -285,6 +293,7 @@ extension TSThread {
                                         isArchivedObsolete: isArchivedObsolete,
                                         isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                         lastInteractionRowId: lastInteractionRowId,
+                                        lastReceivedStoryTimestamp: lastReceivedStoryTimestamp,
                                         lastSentStoryTimestamp: lastSentStoryTimestamp,
                                         lastViewedStoryTimestamp: lastViewedStoryTimestamp,
                                         lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
@@ -309,6 +318,7 @@ extension TSThread {
             let isArchivedObsolete: Bool = record.isArchived
             let isMarkedUnreadObsolete: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastReceivedStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastReceivedStoryTimestamp, name: "lastReceivedStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastSentStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastSentStoryTimestamp, name: "lastSentStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastViewedStoryTimestamp: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.lastViewedStoryTimestamp, name: "lastViewedStoryTimestamp", conversion: { NSNumber(value: $0) })
             let lastVisibleSortIdObsolete: UInt64 = record.lastVisibleSortId
@@ -330,6 +340,7 @@ extension TSThread {
                             isArchivedObsolete: isArchivedObsolete,
                             isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                             lastInteractionRowId: lastInteractionRowId,
+                            lastReceivedStoryTimestamp: lastReceivedStoryTimestamp,
                             lastSentStoryTimestamp: lastSentStoryTimestamp,
                             lastViewedStoryTimestamp: lastViewedStoryTimestamp,
                             lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
@@ -404,6 +415,7 @@ extension TSThread: DeepCopyable {
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastReceivedStoryTimestamp: NSNumber? = modelToCopy.lastReceivedStoryTimestamp
             let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastViewedStoryTimestamp: NSNumber? = modelToCopy.lastViewedStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
@@ -440,6 +452,7 @@ extension TSThread: DeepCopyable {
                                         isArchivedObsolete: isArchivedObsolete,
                                         isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                         lastInteractionRowId: lastInteractionRowId,
+                                        lastReceivedStoryTimestamp: lastReceivedStoryTimestamp,
                                         lastSentStoryTimestamp: lastSentStoryTimestamp,
                                         lastViewedStoryTimestamp: lastViewedStoryTimestamp,
                                         lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
@@ -464,6 +477,7 @@ extension TSThread: DeepCopyable {
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastReceivedStoryTimestamp: NSNumber? = modelToCopy.lastReceivedStoryTimestamp
             let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastViewedStoryTimestamp: NSNumber? = modelToCopy.lastViewedStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
@@ -498,6 +512,7 @@ extension TSThread: DeepCopyable {
                                  isArchivedObsolete: isArchivedObsolete,
                                  isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                  lastInteractionRowId: lastInteractionRowId,
+                                 lastReceivedStoryTimestamp: lastReceivedStoryTimestamp,
                                  lastSentStoryTimestamp: lastSentStoryTimestamp,
                                  lastViewedStoryTimestamp: lastViewedStoryTimestamp,
                                  lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
@@ -520,6 +535,7 @@ extension TSThread: DeepCopyable {
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastReceivedStoryTimestamp: NSNumber? = modelToCopy.lastReceivedStoryTimestamp
             let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastViewedStoryTimestamp: NSNumber? = modelToCopy.lastViewedStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
@@ -554,6 +570,7 @@ extension TSThread: DeepCopyable {
                                    isArchivedObsolete: isArchivedObsolete,
                                    isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                                    lastInteractionRowId: lastInteractionRowId,
+                                   lastReceivedStoryTimestamp: lastReceivedStoryTimestamp,
                                    lastSentStoryTimestamp: lastSentStoryTimestamp,
                                    lastViewedStoryTimestamp: lastViewedStoryTimestamp,
                                    lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
@@ -579,6 +596,7 @@ extension TSThread: DeepCopyable {
             let isArchivedObsolete: Bool = modelToCopy.isArchivedObsolete
             let isMarkedUnreadObsolete: Bool = modelToCopy.isMarkedUnreadObsolete
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastReceivedStoryTimestamp: NSNumber? = modelToCopy.lastReceivedStoryTimestamp
             let lastSentStoryTimestamp: NSNumber? = modelToCopy.lastSentStoryTimestamp
             let lastViewedStoryTimestamp: NSNumber? = modelToCopy.lastViewedStoryTimestamp
             let lastVisibleSortIdObsolete: UInt64 = modelToCopy.lastVisibleSortIdObsolete
@@ -610,6 +628,7 @@ extension TSThread: DeepCopyable {
                             isArchivedObsolete: isArchivedObsolete,
                             isMarkedUnreadObsolete: isMarkedUnreadObsolete,
                             lastInteractionRowId: lastInteractionRowId,
+                            lastReceivedStoryTimestamp: lastReceivedStoryTimestamp,
                             lastSentStoryTimestamp: lastSentStoryTimestamp,
                             lastViewedStoryTimestamp: lastViewedStoryTimestamp,
                             lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
@@ -659,6 +678,7 @@ extension TSThreadSerializer {
     static var addressesColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "addresses", columnType: .blob, isOptional: true) }
     static var storyViewModeColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "storyViewMode", columnType: .int) }
     static var lastViewedStoryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastViewedStoryTimestamp", columnType: .int64, isOptional: true) }
+    static var lastReceivedStoryTimestampColumn: SDSColumnMetadata { SDSColumnMetadata(columnName: "lastReceivedStoryTimestamp", columnType: .int64, isOptional: true) }
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -691,7 +711,8 @@ extension TSThreadSerializer {
         nameColumn,
         addressesColumn,
         storyViewModeColumn,
-        lastViewedStoryTimestampColumn
+        lastViewedStoryTimestampColumn,
+        lastReceivedStoryTimestampColumn
         ])
     }
 }
@@ -1123,8 +1144,9 @@ class TSThreadSerializer: SDSSerializer {
         let addresses: Data? = nil
         let storyViewMode: UInt = model.storyViewMode.rawValue
         let lastViewedStoryTimestamp: UInt64? = archiveOptionalNSNumber(model.lastViewedStoryTimestamp, conversion: { $0.uint64Value })
+        let lastReceivedStoryTimestamp: UInt64? = archiveOptionalNSNumber(model.lastReceivedStoryTimestamp, conversion: { $0.uint64Value })
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp, allowsReplies: allowsReplies, lastSentStoryTimestamp: lastSentStoryTimestamp, name: name, addresses: addresses, storyViewMode: storyViewMode, lastViewedStoryTimestamp: lastViewedStoryTimestamp)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId, messageDraftBodyRanges: messageDraftBodyRanges, mentionNotificationMode: mentionNotificationMode, mutedUntilTimestamp: mutedUntilTimestamp, allowsReplies: allowsReplies, lastSentStoryTimestamp: lastSentStoryTimestamp, name: name, addresses: addresses, storyViewMode: storyViewMode, lastViewedStoryTimestamp: lastViewedStoryTimestamp, lastReceivedStoryTimestamp: lastReceivedStoryTimestamp)
     }
 }
 

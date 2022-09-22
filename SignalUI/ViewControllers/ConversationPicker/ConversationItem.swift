@@ -241,45 +241,27 @@ public struct StoryConversationItem {
     }
 
     public static func allItems(includeImplicitGroupThreads: Bool, transaction: SDSAnyReadTransaction) -> [StoryConversationItem] {
-        let storyThreads = AnyThreadFinder().storyThreads(
-            includeImplicitGroupThreads: includeImplicitGroupThreads,
-            transaction: transaction
-        )
-
-        // Sort group stories based on the last sent *or* received story.
-        // This info isn't on the thread, so we need to do an extra query.
-        var groupThreadTimestamps = [TSGroupThread: UInt64?]()
-        storyThreads
-            .lazy
-            .compactMap { $0 as? TSGroupThread }
-            .forEach { groupThread in
-                if let story = StoryFinder.latestStoryForThread(groupThread, transaction: transaction) {
-                    groupThreadTimestamps[groupThread] = story.timestamp
-                } else {
-                    groupThreadTimestamps[groupThread] = groupThread.lastSentStoryTimestamp?.uint64Value
-                }
+        func sortTime(for thread: TSThread) -> UInt64 {
+            if
+                let thread = thread as? TSGroupThread,
+                thread.lastReceivedStoryTimestamp?.uint64Value ?? 0 > thread.lastSentStoryTimestamp?.uint64Value ?? 0
+            {
+                return thread.lastReceivedStoryTimestamp?.uint64Value ?? 0
             }
 
-        return storyThreads.lazy
+            return thread.lastSentStoryTimestamp?.uint64Value ?? 0
+        }
+
+        return AnyThreadFinder()
+            .storyThreads(
+                includeImplicitGroupThreads: includeImplicitGroupThreads,
+                transaction: transaction
+            )
+            .lazy
             .sorted { lhs, rhs in
                 if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
                 if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
-
-                let lhsTimestamp: UInt64?
-                if let lhs = lhs as? TSGroupThread, let groupThreadTimestamp = groupThreadTimestamps[lhs] {
-                    lhsTimestamp = groupThreadTimestamp
-                } else {
-                    lhsTimestamp = lhs.lastSentStoryTimestamp?.uint64Value
-                }
-
-                let rhsTimestamp: UInt64?
-                if let rhs = rhs as? TSGroupThread, let groupThreadTimestamp = groupThreadTimestamps[rhs] {
-                    rhsTimestamp = groupThreadTimestamp
-                } else {
-                    rhsTimestamp = rhs.lastSentStoryTimestamp?.uint64Value
-                }
-
-                return (lhsTimestamp ?? 0) > (rhsTimestamp ?? 0)
+                return sortTime(for: lhs) > sortTime(for: rhs)
             }
             .compactMap { thread -> StoryConversationItem.ItemType? in
                 if let groupThread = thread as? TSGroupThread {
