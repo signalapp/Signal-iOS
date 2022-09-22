@@ -183,7 +183,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             ),
             proceedStyle: .destructive
         ) { _ in
-            ThreadUtil.deleteAllContent()
+            ThreadUtil.deleteAllContentWithSneakyTransaction()
         }
     }
 }

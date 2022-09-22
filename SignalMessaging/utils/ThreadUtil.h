@@ -52,10 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(addThreadToProfileWhitelistIfEmptyOrPendingRequest(thread:setDefaultTimerIfNecessary:transaction:));
 
-#pragma mark - Delete Content
-
-+ (void)deleteAllContent;
-
 @end
 
 NS_ASSUME_NONNULL_END

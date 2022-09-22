@@ -33,6 +33,9 @@ public protocol SDSCodableModel: Codable, FetchableRecord, PersistableRecord, SD
     func anyDidRemove(transaction: SDSAnyWriteTransaction)
 
     static func columnName(_ column: Columns, fullyQualified: Bool) -> String
+
+    static func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String]
+    static func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction)
 }
 
 public extension SDSCodableModel {
@@ -125,6 +128,48 @@ public extension SDSCodableModel {
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         sdsRemove(transaction: transaction)
+    }
+}
+
+public extension SDSCodableModel where Self: AnyObject {
+    /// Get the unique ID of each stored instance of the model.
+    static func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+
+        anyEnumerateUniqueIds(transaction: transaction) { uniqueId, _ in
+            result.append(uniqueId)
+        }
+
+        return result
+    }
+
+    /// Remove all stored instances of the model.
+    ///
+    /// Note: implementation based on the SDS-codegen-ed version of this method.
+    static func anyRemoveAllWithInstantiation(transaction: SDSAnyWriteTransaction) {
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+
+        var index: Int = 0
+        Batching.loop(batchSize: Batching.kDefaultBatchSize,
+                      loopBlock: { stop in
+            guard index < uniqueIds.count else {
+                stop.pointee = true
+                return
+            }
+            let uniqueId = uniqueIds[index]
+            index += 1
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                return
+            }
+            instance.anyRemove(transaction: transaction)
+        })
+
+        if ftsIndexMode != .never {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
     }
 }
 

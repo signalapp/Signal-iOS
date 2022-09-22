@@ -4,6 +4,8 @@
 
 import Foundation
 
+// MARK: - Enqueue messages
+
 @objc
 public extension ThreadUtil {
 
@@ -87,6 +89,30 @@ public extension ThreadUtil {
                 .donateSendMessageIntent(for: message, transaction: transaction)
         }
         return promise
+    }
+}
+
+// MARK: - Delete all content
+
+extension ThreadUtil {
+    public static func deleteAllContentWithSneakyTransaction() {
+        Logger.info("")
+
+        databaseStorage.write { transaction in
+            TSThread.anyEnumerate(transaction: transaction, batched: true) { thread, _ in
+                thread.softDelete(with: transaction)
+            }
+
+            TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
+            TSAttachment.anyRemoveAllWithInstantation(transaction: transaction)
+            StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
+
+            // Deleting attachments above should be enough to remove any gallery items, but
+            // we redunantly clean up *all* gallery items to be safe.
+            MediaGalleryManager.didRemoveAllContent(transaction: transaction)
+        }
+
+        TSAttachmentStream.deleteAttachmentsFromDisk()
     }
 }
 
