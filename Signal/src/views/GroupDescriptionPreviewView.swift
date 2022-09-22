@@ -102,7 +102,27 @@ class GroupDescriptionPreviewView: ManualLayoutView {
 
         setTextThatFits(textThatFits)
         var visibleCharacterRangeUpperBound = textView.visibleTextRange.upperBound
-
+        
+        
+        // Check if the line count exceeds the number if lines in the
+        // configuration.
+        let lineCount = textThatFits.filter { $0 == "\n" }.count + 1
+        
+        // If that is the case, we find the first offending new line,
+        // and truncate there.
+        if lineCount > numberOfLines {
+            var lines = textThatFits.components(separatedBy: "\n")
+            lines.removeSubrange(numberOfLines ... lines.count-1)
+            let joined = lines.joined(separator: "\n")
+            
+            if let firstIndex = joined.firstIndex(of: "\n") {
+                let intIndex = joined.distance(from: joined.startIndex, to: firstIndex)
+                visibleCharacterRangeUpperBound = intIndex
+            } else {
+                visibleCharacterRangeUpperBound = joined.count
+            }
+        }
+        
         // Check if we're displaying less than the full length of the description
         // text. If so, we will manually truncate and add a "more" button to view
         // the full description.
@@ -111,7 +131,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
         // We might fit without further truncation, for example if the description
         // contains new line characters, so set the possible new text immediately.
         textThatFits = textThatFits.substring(to: visibleCharacterRangeUpperBound)
-
+        
         setTextThatFits(textThatFits)
         visibleCharacterRangeUpperBound
             = textView.visibleTextRange.upperBound - Self.moreTextPlusPrefixLength
@@ -139,6 +159,7 @@ class GroupDescriptionPreviewView: ManualLayoutView {
     }
 
     func setTextThatFits(_ textThatFits: String) {
+        NSLog("Setting text:" + textThatFits)
         if textThatFits == descriptionText {
             textView.dataDetectorTypes = .all
             textView.linkTextAttributes = [
