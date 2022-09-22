@@ -626,7 +626,12 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) { thread.lastSentStoryTimestamp = lastSentStoryTimestamp; }];
+                             block:^(TSThread *thread) {
+                                 if (lastSentStoryTimestamp.unsignedIntegerValue
+                                     > thread.lastSentStoryTimestamp.unsignedIntegerValue) {
+                                     thread.lastSentStoryTimestamp = lastSentStoryTimestamp;
+                                 }
+                             }];
 }
 
 - (void)updateWithLastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
