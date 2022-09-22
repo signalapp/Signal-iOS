@@ -316,7 +316,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         backdropView = UIVisualEffectView(effect: effect)
         backdropView.backgroundColor = Theme.isDarkThemeEnabled || forceDarkTheme
             ? .ows_blackAlpha80
-            : UIColor(rgbHex: 0x787880).withAlphaComponent(0.2)
+            : .ows_whiteAlpha40
 
         var actionViews: [ContextMenuActionRow] = []
         for action in menu.children {
