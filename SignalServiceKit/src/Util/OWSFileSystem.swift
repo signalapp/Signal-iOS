@@ -4,6 +4,12 @@
 
 import Foundation
 
+public protocol FileManagerProtocol {
+    func attributesOfFileSystem(forPath path: String) throws -> [FileAttributeKey: Any]
+}
+
+extension FileManager: FileManagerProtocol {}
+
 @objc
 public extension OWSFileSystem {
     class func fileOrFolderExists(atPath filePath: String) -> Bool {
@@ -149,5 +155,21 @@ public extension OWSFileSystem {
             }
             return false
         }
+    }
+}
+
+// MARK: - Remaining space
+
+public extension OWSFileSystem {
+    /// Get the remaining free space for a path's volume in bytes.
+    class func freeSpaceInBytes(
+        forPath path: String,
+        fileManager: FileManagerProtocol
+    ) throws -> UInt64 {
+        let fileSystemAttributes = try fileManager.attributesOfFileSystem(forPath: path)
+        guard let result = fileSystemAttributes[.systemFreeSize] as? UInt64 else {
+            throw OWSGenericError("Could not determine remaining disk space")
+        }
+        return result
     }
 }

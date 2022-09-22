@@ -1220,6 +1220,7 @@
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
+		F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
@@ -3625,6 +3626,7 @@
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
+		F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFileSystemTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
@@ -6965,6 +6967,7 @@
 				F94261FE289B1B5400460798 /* NSURLSessionDataTask+OWS_HTTPTest.swift */,
 				F94261F7289B1B5400460798 /* OWSAnalyticsTests.swift */,
 				F94261E6289B1B5400460798 /* OWSErrorTest.swift */,
+				F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */,
 				F94261EE289B1B5400460798 /* OWSFormatTest.swift */,
 				F94261FB289B1B5400460798 /* OWSOperationTest.swift */,
 				F908AA7728CB894400472E68 /* PngChunkerTest.swift */,
@@ -11158,6 +11161,7 @@
 				F942627B289B1B5600460798 /* OWSDisappearingMessagesConfigurationTest.m in Sources */,
 				F9426299289B1B5600460798 /* OWSDisappearingMessagesJobTest.m in Sources */,
 				F9426253289B1B5500460798 /* OWSErrorTest.swift in Sources */,
+				F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */,
 				F942623E289B1B5500460798 /* OWSFingerprintTest.m in Sources */,
 				F942625B289B1B5500460798 /* OWSFormatTest.swift in Sources */,
 				F9426243289B1B5500460798 /* OWSHttpHeadersTest.swift in Sources */,
