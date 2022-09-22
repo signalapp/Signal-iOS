@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "StorageCoordinator.h"
@@ -52,7 +52,8 @@ NSString *NSStringForDataStore(DataStore value)
 
     OWSSingletonAssert();
 
-    _databaseStorage = [[SDSDatabaseStorage alloc] initWithDelegate:self];
+    NSURL *databaseFileUrl = [GRDBDatabaseStorageAdapter databaseFileUrlWithDirectoryMode:DirectoryModePrimary];
+    _databaseStorage = [[SDSDatabaseStorage alloc] initWithDatabaseFileUrl:databaseFileUrl delegate:self];
 
     [self configure];
 

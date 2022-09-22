@@ -174,8 +174,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
-    (void)[grdbSchemaMigrator runSchemaMigrations];
+    SDSDatabaseStorage *mainDatabase = self.databaseStorage;
+    [GRDBSchemaMigrator migrateDatabase:mainDatabase isMainDatabase:true];
 }
 
 @end

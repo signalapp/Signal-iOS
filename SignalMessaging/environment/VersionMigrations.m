@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "VersionMigrations.h"
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-        ^{ [self.databaseStorage runGrdbSchemaMigrationsWithCompletion:completion]; });
+        ^{ [self.databaseStorage runGrdbSchemaMigrationsOnMainDatabaseWithCompletion:completion]; });
 }
 
 + (BOOL)isVersion:(NSString *)thisVersionString

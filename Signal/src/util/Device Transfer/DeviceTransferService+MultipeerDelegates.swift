@@ -161,7 +161,7 @@ extension DeviceTransferService: MCSessionDelegate {
             firstly(on: .main) { () -> Guarantee<Void> in
                 // A successful restoration means we've updated our database path.
                 // Extensions will learn of this through NSUserDefaults KVO and exit ASAP
-                self.databaseStorage.reloadDatabase()
+                self.databaseStorage.reloadAsMainDatabase()
             }.then(on: .main) { () -> Guarantee<Void> in
                 self.finalizeRestorationIfNecessary()
             }.done(on: .main) {

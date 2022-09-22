@@ -66,6 +66,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return SDSDatabaseStorage.baseDir.appendingPathComponent(directoryMode.folderName, isDirectory: true)
     }
 
+    @objc
     public static func databaseFileUrl(directoryMode: DirectoryMode = .primary) -> URL {
         let databaseDir = databaseDirUrl(directoryMode: directoryMode)
         OWSFileSystem.ensureDirectoryExists(databaseDir.path)
@@ -78,7 +79,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         return databaseDir.appendingPathComponent("signal.sqlite-wal", isDirectory: false)
     }
 
-    private let databaseUrl: URL
+    private let databaseFileUrl: URL
 
     private let storage: GRDBStorage
 
@@ -94,8 +95,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     // lastSuccessfulCheckpointDate should only be accessed while checkpointLock is acquired.
     private var lastSuccessfulCheckpointDate: Date?
 
-    override init() {
-        databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(directoryMode: .primary)
+    init(databaseFileUrl: URL) {
+        self.databaseFileUrl = databaseFileUrl
 
         do {
             // Crash if keychain is inaccessible.
@@ -106,7 +107,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
         do {
             // Crash if storage can't be initialized.
-            storage = try GRDBStorage(dbURL: databaseUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
+            storage = try GRDBStorage(dbURL: databaseFileUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
         } catch {
             owsFail("\(error.grdbErrorForLogging)")
         }
@@ -208,7 +209,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     private func checkForDatabasePathChange() {
-        if databaseUrl != GRDBDatabaseStorageAdapter.databaseFileUrl() {
+        if databaseFileUrl != GRDBDatabaseStorageAdapter.databaseFileUrl() {
             Logger.warn("Remote process changed the active database path. Exiting...")
             Logger.flush()
             exit(0)
@@ -1007,15 +1008,15 @@ public struct GRDBKeySpecSource {
 
 extension GRDBDatabaseStorageAdapter {
     public var databaseFilePath: String {
-        return databaseUrl.path
+        return databaseFileUrl.path
     }
 
     public var databaseWALFilePath: String {
-        return databaseUrl.path + "-wal"
+        return databaseFileUrl.path + "-wal"
     }
 
     public var databaseSHMFilePath: String {
-        return databaseUrl.path + "-shm"
+        return databaseFileUrl.path + "-shm"
     }
 
     static func removeAllFiles() {

@@ -24,6 +24,8 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     // MARK: - Initialization / Setup
 
+    private let databaseFileUrl: URL
+
     private var _grdbStorage: GRDBDatabaseStorageAdapter?
 
     @objc
@@ -38,7 +40,8 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     @objc
-    public required init(delegate: SDSDatabaseStorageDelegate) {
+    public required init(databaseFileUrl: URL, delegate: SDSDatabaseStorageDelegate) {
+        self.databaseFileUrl = databaseFileUrl
         self.delegate = delegate
 
         super.init()
@@ -89,7 +92,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     // completion is performed on the main queue.
     @objc
-    public func runGrdbSchemaMigrations(completion: @escaping () -> Void) {
+    public func runGrdbSchemaMigrationsOnMainDatabase(completion: @escaping () -> Void) {
         guard storageCoordinatorState == .GRDB else {
             owsFailDebug("Not GRDB.")
             return
@@ -97,7 +100,10 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         Logger.info("")
 
-        let didPerformIncrementalMigrations = GRDBSchemaMigrator().runSchemaMigrations()
+        let didPerformIncrementalMigrations = GRDBSchemaMigrator.migrateDatabase(
+            databaseStorage: self,
+            isMainDatabase: true
+        )
 
         Logger.info("didPerformIncrementalMigrations: \(didPerformIncrementalMigrations)")
 
@@ -135,7 +141,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    public func reloadDatabase() -> Guarantee<Void> {
+    public func reloadAsMainDatabase() -> Guarantee<Void> {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
 
@@ -145,7 +151,10 @@ public class SDSDatabaseStorage: SDSTransactable {
 
         let (promise, future) = Guarantee<Void>.pending()
         reopenGRDBStorage {
-            _ = GRDBSchemaMigrator().runSchemaMigrations()
+            GRDBSchemaMigrator.migrateDatabase(
+                databaseStorage: self,
+                isMainDatabase: true
+            )
 
             self.grdbStorage.publishUpdatesImmediately()
 
@@ -164,7 +173,7 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
         return Bench(title: "Creating GRDB storage") {
-            return GRDBDatabaseStorageAdapter()
+            return GRDBDatabaseStorageAdapter(databaseFileUrl: databaseFileUrl)
         }
     }
 
