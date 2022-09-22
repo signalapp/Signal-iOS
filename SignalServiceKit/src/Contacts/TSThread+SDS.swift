@@ -179,7 +179,7 @@ extension TSThread {
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
-            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .none
+            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .default
             let contactPhoneNumber: String? = record.contactPhoneNumber
             let contactUUID: String? = record.contactUUID
             let hasDismissedOffers: Bool = try SDSDeserialization.required(record.hasDismissedOffers, name: "hasDismissedOffers")
@@ -227,7 +227,7 @@ extension TSThread {
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
-            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .none
+            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .default
             let groupModelSerialized: Data? = record.groupModel
             let groupModel: TSGroupModel = try SDSDeserialization.unarchive(groupModelSerialized, name: "groupModel")
 
@@ -272,7 +272,7 @@ extension TSThread {
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
-            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .none
+            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .default
             let addressesSerialized: Data? = record.addresses
             let addresses: [SignalServiceAddress] = try SDSDeserialization.unarchive(addressesSerialized, name: "addresses")
             let allowsReplies: Bool = try SDSDeserialization.required(record.allowsReplies, name: "allowsReplies")
@@ -321,7 +321,7 @@ extension TSThread {
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
-            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .none
+            let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .default
 
             return TSThread(grdbId: recordId,
                             uniqueId: uniqueId,

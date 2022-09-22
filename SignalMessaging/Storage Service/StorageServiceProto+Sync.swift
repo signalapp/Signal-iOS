@@ -400,7 +400,7 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         builder.setHideStory(threadAssociatedData.hideStory)
 
         if let thread = TSGroupThread.anyFetchGroupThread(uniqueId: threadId, transaction: transaction) {
-            builder.setStorySendEnabled(thread.isStorySendEnabled)
+            builder.setStorySendMode(thread.storyViewMode.storageServiceMode)
         } else if let enqueuedRecord = groupsV2Swift.groupRecordPendingStorageServiceRestore(
             masterKeyData: masterKeyData,
             transaction: transaction
@@ -408,7 +408,7 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
             // We have a record pending restoration from storage service,
             // preserve any of the data that we weren't able to restore
             // yet because the thread record doesn't exist.
-            builder.setStorySendEnabled(enqueuedRecord.storySendEnabled)
+            enqueuedRecord.storySendMode.map { builder.setStorySendMode($0) }
         }
 
         if let unknownFields = unknownFields {
@@ -477,9 +477,13 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         var mergeState: MergeState = .resolved(masterKey)
 
         if let localThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            let localStorySendEnabled = localThread.isStorySendEnabled
-            if localStorySendEnabled != storySendEnabled {
-                localThread.updateWithStorySendEnabled(storySendEnabled, shouldUpdateStorageService: false, transaction: transaction)
+            let localStorySendMode = localThread.storyViewMode.storageServiceMode
+            if let storySendMode = storySendMode {
+                if localStorySendMode != storySendMode {
+                    localThread.updateWithStoryViewMode(.init(storageServiceMode: storySendMode), transaction: transaction)
+                }
+            } else {
+                mergeState = .needsUpdate(masterKey)
             }
         } else {
             mergeState = .needsRefreshFromService(masterKey)

@@ -79,7 +79,7 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
                     comment: "The title for the 'select excluded connections for story' view if already some connections are selected. Embeds {{number}} of excluded connections.")
                 title = String.localizedStringWithFormat(format, recipientSet.count)
             }
-        case .none:
+        case .default, .disabled:
             owsFailDebug("Unexpected mode")
         }
     }

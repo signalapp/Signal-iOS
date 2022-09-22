@@ -185,11 +185,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 - (void)removeDevices:(NSSet<NSNumber *> *)devices
 {
-    OWSAssertDebug(devices.count > 0);
-
-    NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
-    [updatedDevices minusSet:devices];
-    self.devices = [updatedDevices copy];
+    if (devices.count > 0) {
+        NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
+        [updatedDevices minusSet:devices];
+        self.devices = [updatedDevices copy];
+    }
 
     if (!self.devices.count && !self.unregisteredAtTimestamp) {
         self.unregisteredAtTimestamp = @(NSDate.ows_millisecondTimeStamp);

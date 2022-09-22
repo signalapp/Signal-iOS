@@ -225,6 +225,13 @@ public struct StoryConversationItem {
         case privateStory(_ item: PrivateStoryConversationItem)
     }
 
+    public var threadId: String {
+        switch backingItem {
+        case .groupStory(let item): return item.groupThreadId
+        case .privateStory(let item): return item.storyThreadId
+        }
+    }
+
     public let backingItem: ItemType
     var unwrapped: ConversationItem {
         switch backingItem {
@@ -233,13 +240,46 @@ public struct StoryConversationItem {
         }
     }
 
-    public static func allItems(transaction: SDSAnyReadTransaction) -> [StoryConversationItem] {
-        AnyThreadFinder().storyThreads(transaction: transaction)
+    public static func allItems(includeImplicitGroupThreads: Bool, transaction: SDSAnyReadTransaction) -> [StoryConversationItem] {
+        let storyThreads = AnyThreadFinder().storyThreads(
+            includeImplicitGroupThreads: includeImplicitGroupThreads,
+            transaction: transaction
+        )
+
+        // Sort group stories based on the last sent *or* received story.
+        // This info isn't on the thread, so we need to do an extra query.
+        var groupThreadTimestamps = [TSGroupThread: UInt64?]()
+        storyThreads
             .lazy
+            .compactMap { $0 as? TSGroupThread }
+            .forEach { groupThread in
+                if let story = StoryFinder.latestStoryForThread(groupThread, transaction: transaction) {
+                    groupThreadTimestamps[groupThread] = story.timestamp
+                } else {
+                    groupThreadTimestamps[groupThread] = groupThread.lastSentStoryTimestamp?.uint64Value
+                }
+            }
+
+        return storyThreads.lazy
             .sorted { lhs, rhs in
                 if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
                 if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
-                return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
+
+                let lhsTimestamp: UInt64?
+                if let lhs = lhs as? TSGroupThread, let groupThreadTimestamp = groupThreadTimestamps[lhs] {
+                    lhsTimestamp = groupThreadTimestamp
+                } else {
+                    lhsTimestamp = lhs.lastSentStoryTimestamp?.uint64Value
+                }
+
+                let rhsTimestamp: UInt64?
+                if let rhs = rhs as? TSGroupThread, let groupThreadTimestamp = groupThreadTimestamps[rhs] {
+                    rhsTimestamp = groupThreadTimestamp
+                } else {
+                    rhsTimestamp = rhs.lastSentStoryTimestamp?.uint64Value
+                }
+
+                return (lhsTimestamp ?? 0) > (rhsTimestamp ?? 0)
             }
             .compactMap { thread -> StoryConversationItem.ItemType? in
                 if let groupThread = thread as? TSGroupThread {
@@ -318,7 +358,7 @@ extension StoryConversationItem: ConversationItem {
                         tableName: "PluralAware",
                         comment: "Format string representing the viewer count for 'My Story' when accessible to only an explicit list of viewers. Embeds {{ number of viewers }}.")
                     return String.localizedStringWithFormat(format, recipientCount)
-                case .none:
+                case .default, .disabled:
                     owsFailDebug("Unexpected view mode for my story")
                     return ""
                 }

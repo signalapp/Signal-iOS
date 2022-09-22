@@ -29,7 +29,7 @@ public extension TSPrivateStoryThread {
 
     override func recipientAddresses(with transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         switch storyViewMode {
-        case .none:
+        case .default, .disabled:
             owsFailDebug("Unexpectedly have private story with no view mode")
             return []
         case .explicit:

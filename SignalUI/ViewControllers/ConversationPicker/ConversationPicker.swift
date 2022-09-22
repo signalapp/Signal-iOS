@@ -340,7 +340,10 @@ open class ConversationPickerViewController: OWSTableViewController2 {
                 return lhsIndex < rhsIndex
             }.map { $0.value }
 
-            let storyItems = StoryConversationItem.allItems(transaction: transaction)
+            let storyItems = StoryConversationItem.allItems(
+                includeImplicitGroupThreads: true,
+                transaction: transaction
+            )
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: pinnedItems + recentItems,

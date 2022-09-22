@@ -2323,7 +2323,7 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db)
             defer { transaction.finalizeTransaction() }
 
-            for thread in AnyThreadFinder().storyThreads(transaction: transaction.asAnyRead) {
+            for thread in AnyThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
                 guard let thread = thread as? TSGroupThread else { continue }
                 self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
             }

@@ -408,15 +408,59 @@ struct StorageServiceProtos_GroupV2Record {
 
   var mutedUntilTimestamp: UInt64 = 0
 
-  ///bool dontNotifyForMentionsIfMuted = 7;
+  ///bool          dontNotifyForMentionsIfMuted = 7;
   var hideStory: Bool = false
 
-  var storySendEnabled: Bool = false
+  var storySendMode: StorageServiceProtos_GroupV2Record.StorySendMode = .default
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
+  enum StorySendMode: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case `default` // = 0
+    case disabled // = 1
+    case enabled // = 2
+    case UNRECOGNIZED(Int)
+
+    init() {
+      self = .default
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .default
+      case 1: self = .disabled
+      case 2: self = .enabled
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .default: return 0
+      case .disabled: return 1
+      case .enabled: return 2
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+  }
+
   init() {}
 }
+
+#if swift(>=4.2)
+
+extension StorageServiceProtos_GroupV2Record.StorySendMode: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static var allCases: [StorageServiceProtos_GroupV2Record.StorySendMode] = [
+    .default,
+    .disabled,
+    .enabled,
+  ]
+}
+
+#endif  // swift(>=4.2)
 
 struct StorageServiceProtos_AccountRecord {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -740,6 +784,7 @@ extension StorageServiceProtos_ContactRecord: @unchecked Sendable {}
 extension StorageServiceProtos_ContactRecord.IdentityState: @unchecked Sendable {}
 extension StorageServiceProtos_GroupV1Record: @unchecked Sendable {}
 extension StorageServiceProtos_GroupV2Record: @unchecked Sendable {}
+extension StorageServiceProtos_GroupV2Record.StorySendMode: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord.PhoneNumberSharingMode: @unchecked Sendable {}
 extension StorageServiceProtos_AccountRecord.PinnedConversation: @unchecked Sendable {}
@@ -1360,7 +1405,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     5: .same(proto: "markedUnread"),
     6: .same(proto: "mutedUntilTimestamp"),
     8: .same(proto: "hideStory"),
-    9: .same(proto: "storySendEnabled"),
+    10: .same(proto: "storySendMode"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1376,7 +1421,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
       case 5: try { try decoder.decodeSingularBoolField(value: &self.markedUnread) }()
       case 6: try { try decoder.decodeSingularUInt64Field(value: &self.mutedUntilTimestamp) }()
       case 8: try { try decoder.decodeSingularBoolField(value: &self.hideStory) }()
-      case 9: try { try decoder.decodeSingularBoolField(value: &self.storySendEnabled) }()
+      case 10: try { try decoder.decodeSingularEnumField(value: &self.storySendMode) }()
       default: break
       }
     }
@@ -1404,8 +1449,8 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if self.hideStory != false {
       try visitor.visitSingularBoolField(value: self.hideStory, fieldNumber: 8)
     }
-    if self.storySendEnabled != false {
-      try visitor.visitSingularBoolField(value: self.storySendEnabled, fieldNumber: 9)
+    if self.storySendMode != .default {
+      try visitor.visitSingularEnumField(value: self.storySendMode, fieldNumber: 10)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1418,10 +1463,18 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.mutedUntilTimestamp != rhs.mutedUntilTimestamp {return false}
     if lhs.hideStory != rhs.hideStory {return false}
-    if lhs.storySendEnabled != rhs.storySendEnabled {return false}
+    if lhs.storySendMode != rhs.storySendMode {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension StorageServiceProtos_GroupV2Record.StorySendMode: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "DEFAULT"),
+    1: .same(proto: "DISABLED"),
+    2: .same(proto: "ENABLED"),
+  ]
 }
 
 extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

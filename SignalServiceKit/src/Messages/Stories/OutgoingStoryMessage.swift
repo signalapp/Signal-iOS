@@ -91,6 +91,11 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
 
         thread.updateWithLastSentStoryTimestamp(NSNumber(value: storyMessage.timestamp), transaction: transaction)
 
+        // If story sending for a group was implicitly enabled, explicitly enable it
+        if let groupThread = thread as? TSGroupThread, !groupThread.isStorySendExplicitlyEnabled {
+            groupThread.updateWithStorySendEnabled(true, transaction: transaction)
+        }
+
         let outgoingMessage = OutgoingStoryMessage(thread: thread, storyMessage: storyMessage, transaction: transaction)
         return outgoingMessage
     }

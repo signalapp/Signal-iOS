@@ -13,7 +13,7 @@ public protocol ThreadFinder {
     func visibleThreadIds(isArchived: Bool, transaction: ReadTransaction) throws -> [String]
     func sortIndex(thread: TSThread, transaction: ReadTransaction) throws -> UInt?
     func threads(withThreadIds threadIds: Set<String>, transaction: ReadTransaction) throws -> Set<TSThread>
-    func storyThreads(transaction: ReadTransaction) -> [TSThread]
+    func storyThreads(includeImplicitGroupThreads: Bool, transaction: ReadTransaction) -> [TSThread]
     func threadsWithRecentInteractions(limit: UInt, transaction: ReadTransaction) -> [TSThread]
     func threadsWithRecentlyViewedStories(limit: UInt, transaction: ReadTransaction) -> [TSThread]
 }
@@ -82,10 +82,10 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         }
     }
 
-    public func storyThreads(transaction: SDSAnyReadTransaction) -> [TSThread] {
+    public func storyThreads(includeImplicitGroupThreads: Bool, transaction: SDSAnyReadTransaction) -> [TSThread] {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
-            return grdbAdapter.storyThreads(transaction: grdb)
+            return grdbAdapter.storyThreads(includeImplicitGroupThreads: includeImplicitGroupThreads, transaction: grdb)
         }
     }
 
@@ -308,17 +308,35 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
     }
 
-    public func storyThreads(transaction: GRDBReadTransaction) -> [TSThread] {
-        let sql = """
+    public func storyThreads(includeImplicitGroupThreads: Bool, transaction: GRDBReadTransaction) -> [TSThread] {
+        var sql = """
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
-            WHERE \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.none.rawValue)
-            ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC
+            WHERE \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.disabled.rawValue)
+            AND \(threadColumn: .storyViewMode) != \(TSThreadStoryViewMode.default.rawValue)
+
         """
+
+        if includeImplicitGroupThreads {
+            sql += """
+            OR (
+                \(threadColumn: .storyViewMode) = \(TSThreadStoryViewMode.default.rawValue)
+                AND \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)
+            )
+
+            """
+        }
+
+        sql += "ORDER BY \(threadColumn: .lastSentStoryTimestamp) DESC"
+
         let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
         var threads = [TSThread]()
         do {
             while let thread = try cursor.next() {
+                if let groupThread = thread as? TSGroupThread {
+                    guard groupThread.isStorySendEnabled(transaction: transaction.asAnyRead) else { continue }
+                }
+
                 threads.append(thread)
             }
         } catch {

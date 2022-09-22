@@ -24,9 +24,10 @@ typedef NS_CLOSED_ENUM(NSUInteger, TSThreadMentionNotificationMode) {
 };
 
 typedef NS_CLOSED_ENUM(NSUInteger, TSThreadStoryViewMode) {
-    TSThreadStoryViewMode_None = 0,
+    TSThreadStoryViewMode_Default = 0,
     TSThreadStoryViewMode_Explicit,
-    TSThreadStoryViewMode_BlockList
+    TSThreadStoryViewMode_BlockList,
+    TSThreadStoryViewMode_Disabled
 };
 
 /**

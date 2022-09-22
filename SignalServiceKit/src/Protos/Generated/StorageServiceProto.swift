@@ -1864,6 +1864,56 @@ extension StorageServiceProtoGroupV1RecordBuilder {
 
 #endif
 
+// MARK: - StorageServiceProtoGroupV2RecordStorySendMode
+
+public enum StorageServiceProtoGroupV2RecordStorySendMode: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case `default` // 0
+    case disabled // 1
+    case enabled // 2
+    case UNRECOGNIZED(Int)
+
+    public init() {
+        self = .`default`
+    }
+
+    public init?(rawValue: Int) {
+        switch rawValue {
+            case 0: self = .`default`
+            case 1: self = .disabled
+            case 2: self = .enabled
+            default: self = .UNRECOGNIZED(rawValue)
+        }
+    }
+
+    public var rawValue: Int {
+        switch self {
+            case .`default`: return 0
+            case .disabled: return 1
+            case .enabled: return 2
+            case .UNRECOGNIZED(let i): return i
+        }
+    }
+}
+
+private func StorageServiceProtoGroupV2RecordStorySendModeWrap(_ value: StorageServiceProtos_GroupV2Record.StorySendMode) -> StorageServiceProtoGroupV2RecordStorySendMode {
+    switch value {
+    case .default: return .default
+    case .disabled: return .disabled
+    case .enabled: return .enabled
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
+private func StorageServiceProtoGroupV2RecordStorySendModeUnwrap(_ value: StorageServiceProtoGroupV2RecordStorySendMode) -> StorageServiceProtos_GroupV2Record.StorySendMode {
+    switch value {
+    case .default: return .default
+    case .disabled: return .disabled
+    case .enabled: return .enabled
+    case .UNRECOGNIZED(let i): return .UNRECOGNIZED(i)
+    }
+}
+
 // MARK: - StorageServiceProtoGroupV2Record
 
 public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConvertible {
@@ -1914,10 +1964,21 @@ public struct StorageServiceProtoGroupV2Record: Codable, CustomDebugStringConver
         return true
     }
 
-    public var storySendEnabled: Bool {
-        return proto.storySendEnabled
+    public var storySendMode: StorageServiceProtoGroupV2RecordStorySendMode? {
+        guard hasStorySendMode else {
+            return nil
+        }
+        return StorageServiceProtoGroupV2RecordStorySendModeWrap(proto.storySendMode)
     }
-    public var hasStorySendEnabled: Bool {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    public var unwrappedStorySendMode: StorageServiceProtoGroupV2RecordStorySendMode {
+        if !hasStorySendMode {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: GroupV2Record.storySendMode.")
+        }
+        return StorageServiceProtoGroupV2RecordStorySendModeWrap(proto.storySendMode)
+    }
+    public var hasStorySendMode: Bool {
         return true
     }
 
@@ -1996,8 +2057,8 @@ extension StorageServiceProtoGroupV2Record {
         if hasHideStory {
             builder.setHideStory(hideStory)
         }
-        if hasStorySendEnabled {
-            builder.setStorySendEnabled(storySendEnabled)
+        if let _value = storySendMode {
+            builder.setStorySendMode(_value)
         }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
@@ -2051,8 +2112,8 @@ public struct StorageServiceProtoGroupV2RecordBuilder {
         proto.hideStory = valueParam
     }
 
-    public mutating func setStorySendEnabled(_ valueParam: Bool) {
-        proto.storySendEnabled = valueParam
+    public mutating func setStorySendMode(_ valueParam: StorageServiceProtoGroupV2RecordStorySendMode) {
+        proto.storySendMode = StorageServiceProtoGroupV2RecordStorySendModeUnwrap(valueParam)
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

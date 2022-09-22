@@ -399,7 +399,7 @@ class TypeInfo:
         elif value_name == 'mentionNotificationMode':
             value_statement = 'let %s: %s = TSThreadMentionNotificationMode(rawValue: %s) ?? .default' % ( value_name, "TSThreadMentionNotificationMode", value_expr, )
         elif value_name == 'storyViewMode':
-            value_statement = 'let %s: %s = TSThreadStoryViewMode(rawValue: %s) ?? .none' % ( value_name, "TSThreadStoryViewMode", value_expr, )
+            value_statement = 'let %s: %s = TSThreadStoryViewMode(rawValue: %s) ?? .default' % ( value_name, "TSThreadStoryViewMode", value_expr, )
         elif self.is_codable:
             value_statement = 'let %s: %s = %s' % ( value_name, initializer_param_type, value_expr, )
         elif self.should_use_blob:

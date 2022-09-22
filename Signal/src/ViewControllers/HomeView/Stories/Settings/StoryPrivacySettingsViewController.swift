@@ -81,13 +81,19 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         contents.addSection(myStoriesSection)
 
         let storyItems = databaseStorage.read { transaction -> [StoryConversationItem] in
-            StoryConversationItem
-                .allItems(transaction: transaction)
-                .sorted { lhs, rhs in
-                    if case .privateStory(let item) = lhs.backingItem, item.isMyStory { return true }
-                    if case .privateStory(let item) = rhs.backingItem, item.isMyStory { return false }
-                    return lhs.title(transaction: transaction).localizedCaseInsensitiveCompare(rhs.title(transaction: transaction)) == .orderedAscending
-                }
+            let items = StoryConversationItem
+                .allItems(includeImplicitGroupThreads: false, transaction: transaction)
+
+            var itemTitles = [String: String]()
+            for item in items {
+                itemTitles[item.threadId] = item.title(transaction: transaction)
+            }
+
+            return items.sorted { lhs, rhs in
+                if case .privateStory(let item) = lhs.backingItem, item.isMyStory { return true }
+                if case .privateStory(let item) = rhs.backingItem, item.isMyStory { return false }
+                return itemTitles[lhs.threadId]!.localizedCaseInsensitiveCompare(itemTitles[rhs.threadId]!) == .orderedAscending
+            }
         }
 
         for item in storyItems {
