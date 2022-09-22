@@ -192,13 +192,11 @@ static void uncaughtExceptionHandler(NSException *exception)
     // This *must* happen before we try and access or verify the database, since we
     // may be in a state where the database has been partially restored from transfer
     // (e.g. the key was replaced, but the database files haven't been moved into place)
-    __block BOOL deviceTransferRestoreFailed = NO;
+    __block BOOL didDeviceTransferRestoreSucceed = YES;
     [BenchManager benchWithTitle:@"Slow device transfer service launch"
                  logIfLongerThan:0.01
                  logInProduction:YES
-                           block:^{
-                               deviceTransferRestoreFailed = ![DeviceTransferService.shared launchCleanup];
-                           }];
+                           block:^{ didDeviceTransferRestoreSucceed = [DeviceTransferService.shared launchCleanup]; }];
 
     // XXX - careful when moving this. It must happen before we load GRDB.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
@@ -209,24 +207,8 @@ static void uncaughtExceptionHandler(NSException *exception)
 
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access the database, files on disk, or NSUserDefaults.
-    LaunchFailure launchFailure = LaunchFailureNone;
-    NSInteger launchAttemptFailureThreshold = SSKDebugFlags.betaLogging ? 2 : 3;
-
-    if (![self checkSomeDiskSpaceAvailable]) {
-        launchFailure = LaunchFailureLowStorageSpaceAvailable;
-    } else if (deviceTransferRestoreFailed) {
-        launchFailure = LaunchFailureCouldNotRestoreTransferredData;
-    } else if (StorageCoordinator.hasInvalidDatabaseVersion) {
-        // Prevent:
-        // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
-        launchFailure = LaunchFailureUnknownDatabaseVersion;
-    } else if ([SSKPreferences hasGrdbDatabaseCorruption]) {
-        launchFailure = LaunchFailureDatabaseUnrecoverablyCorrupted;
-    } else if ([AppVersion.shared.lastAppVersion isEqual:AppVersion.shared.currentAppReleaseVersion] &&
-        [[CurrentAppContext() appUserDefaults] integerForKey:kAppLaunchesAttemptedKey]
-            >= launchAttemptFailureThreshold) {
-        launchFailure = LaunchFailureLastAppLaunchCrashed;
-    }
+    LaunchFailure launchFailure =
+        [self launchFailureWithDidDeviceTransferRestoreSucceed:didDeviceTransferRestoreSucceed];
 
     if (launchFailure != LaunchFailureNone) {
         [InstrumentsMonitor stopSpanWithCategory:@"appstart" hash:monitorId];

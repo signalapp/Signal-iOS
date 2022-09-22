@@ -35,7 +35,6 @@ enum LaunchFailure: UInt, CustomStringConvertible {
 }
 
 extension AppDelegate {
-    @objc(checkSomeDiskSpaceAvailable)
     func checkSomeDiskSpaceAvailable() -> Bool {
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
             .appendingPathComponent(UUID().uuidString)
@@ -173,6 +172,39 @@ extension AppDelegate {
     }
 
     // MARK: - Launch failures
+
+    @objc
+    func launchFailure(didDeviceTransferRestoreSucceed: Bool) -> LaunchFailure {
+        guard checkSomeDiskSpaceAvailable() else {
+            return .lowStorageSpaceAvailable
+        }
+
+        guard didDeviceTransferRestoreSucceed else {
+            return .couldNotRestoreTransferredData
+        }
+
+        // Prevent:
+        // * Users with an unknown GRDB schema revert to using an earlier GRDB schema.
+        guard !StorageCoordinator.hasInvalidDatabaseVersion else {
+            return .unknownDatabaseVersion
+        }
+
+        guard !SSKPreferences.hasGrdbDatabaseCorruption() else {
+            return .databaseUnrecoverablyCorrupted
+        }
+
+        let appVersion = AppVersion.shared()
+        let userDefaults = CurrentAppContext().appUserDefaults()
+        let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
+        if
+            appVersion.lastAppVersion == appVersion.currentAppReleaseVersion,
+            userDefaults.integer(forKey: kAppLaunchesAttemptedKey) >= launchAttemptFailureThreshold
+        {
+            return .lastAppLaunchCrashed
+        }
+
+        return .none
+    }
 
     @objc(showUIForLaunchFailure:)
     func showUI(forLaunchFailure launchFailure: LaunchFailure) {
