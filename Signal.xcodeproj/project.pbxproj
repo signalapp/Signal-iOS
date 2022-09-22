@@ -1187,7 +1187,6 @@
 		F942627E289B1B5600460798 /* SignalRecipientTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426213289B1B5500460798 /* SignalRecipientTest.swift */; };
 		F942627F289B1B5600460798 /* TSThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426214289B1B5500460798 /* TSThreadTest.m */; };
 		F9426280289B1B5600460798 /* PhoneNumberTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426215289B1B5500460798 /* PhoneNumberTest.m */; };
-		F9426281289B1B5600460798 /* TSContactThreadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9426216289B1B5500460798 /* TSContactThreadTest.m */; };
 		F9426282289B1B5600460798 /* ContactDiscoveryTaskTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426217289B1B5500460798 /* ContactDiscoveryTaskTest.swift */; };
 		F9426283289B1B5600460798 /* BlockingManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426218289B1B5500460798 /* BlockingManagerTests.swift */; };
 		F9426284289B1B5600460798 /* UUIDBackfillTaskTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */; };
@@ -1220,9 +1219,10 @@
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
+		F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */; };
 		F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */; };
 		F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */; };
-		F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */; };
+		F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180128DCFDF100113D9F /* TSContactThreadTest.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
@@ -3594,7 +3594,6 @@
 		F9426213289B1B5500460798 /* SignalRecipientTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipientTest.swift; sourceTree = "<group>"; };
 		F9426214289B1B5500460798 /* TSThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThreadTest.m; sourceTree = "<group>"; };
 		F9426215289B1B5500460798 /* PhoneNumberTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneNumberTest.m; sourceTree = "<group>"; };
-		F9426216289B1B5500460798 /* TSContactThreadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSContactThreadTest.m; sourceTree = "<group>"; };
 		F9426217289B1B5500460798 /* ContactDiscoveryTaskTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTaskTest.swift; sourceTree = "<group>"; };
 		F9426218289B1B5500460798 /* BlockingManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManagerTests.swift; sourceTree = "<group>"; };
 		F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UUIDBackfillTaskTest.swift; sourceTree = "<group>"; };
@@ -3628,9 +3627,10 @@
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
+		F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFileSystemTest.swift; sourceTree = "<group>"; };
 		F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigratorTest.swift; sourceTree = "<group>"; };
 		F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTestHelpers.swift; sourceTree = "<group>"; };
-		F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFileSystemTest.swift; sourceTree = "<group>"; };
+		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
@@ -7011,7 +7011,7 @@
 				F9426207289B1B5500460798 /* PhoneNumberUtilTest.m */,
 				F942620C289B1B5500460798 /* PhoneNumberUtilTest.swift */,
 				F9426213289B1B5500460798 /* SignalRecipientTest.swift */,
-				F9426216289B1B5500460798 /* TSContactThreadTest.m */,
+				F972180128DCFDF100113D9F /* TSContactThreadTest.swift */,
 				F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */,
 				F9426214289B1B5500460798 /* TSThreadTest.m */,
 				F9426219289B1B5500460798 /* UUIDBackfillTaskTest.swift */,
@@ -11221,7 +11221,7 @@
 				884BF73D28D37D5F00D94636 /* SystemStoryManagerTest.swift in Sources */,
 				F9426249289B1B5500460798 /* TestModelTests.swift in Sources */,
 				F9426288289B1B5600460798 /* TestProtocolRunnerTest.swift in Sources */,
-				F9426281289B1B5600460798 /* TSContactThreadTest.m in Sources */,
+				F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */,
 				F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */,
 				D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */,
 				F9426258289B1B5500460798 /* TSMessageStorageTests.m in Sources */,
