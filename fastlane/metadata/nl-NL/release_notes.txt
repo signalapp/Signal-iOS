@@ -1,3 +1,2 @@
-• Scherm-in-scherm van videogesprek wordt tijdens typen zichtbaar boven het toetsenbord
-• Verbeterde betrouwbaarheid van groepsmetadata en afhandeling van fouten
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

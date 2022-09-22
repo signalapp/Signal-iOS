@@ -1,3 +1,2 @@
-• Yazı yazarken Görüntülü Arama sırasındaki Resim İçinde Resim, klavyenin üzerine çıkar
-• Grup meta veri güncelleme güvenilirliğini ve hata işlemeyi iyileştir
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

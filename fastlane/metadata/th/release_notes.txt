@@ -1,3 +1,2 @@
-• วิดีโอคอลแบบหน้าต่างย่อย (Picture in Picture) ที่จะลอยเหนือแป้นพิมพ์ระหว่างพิมพ์
-• ปรับปรุงความน่าเชื่อถือในการอัปเดตข้อมูลเมตาของกลุ่มและการแก้ปัญหาต่างๆ
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

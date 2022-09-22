@@ -1,3 +1,2 @@
-• En las videollamadas, la función Picture-in-Picture se elevará por encima del teclado cuando teclees
-• Mejora de la fiabilidad de los metadatos de grupo y la gestión de errores
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

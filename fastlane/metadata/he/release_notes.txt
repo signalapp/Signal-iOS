@@ -1,3 +1,2 @@
-• שיחת וידאו עם ׳תמונה בתוך תמונה׳ עולה מעל המקלדת בזמן ההקלדה
-• שיפור אמינות עדכון נתונים בקבוצה וטיפול בשגיאות
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

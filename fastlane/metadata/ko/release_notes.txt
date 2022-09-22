@@ -1,3 +1,2 @@
-• 화상 통화 PIP(Picture-in-Picture)가 키보드 입력 시 키보드 위로 올라갑니다.
-• 그룹 메타데이터 업데이트 안정성과 오류 처리가 개선됩니다.
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

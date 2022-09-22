@@ -1,3 +1,2 @@
-• Gépelés közben a billentyűzet fölé emelkedik a kép a képben funckiót biztosító videohívás lehetősége
-• Jobbá tettük a csoport metaadat-frissítésének megbízhatóságát és hibakezelését
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

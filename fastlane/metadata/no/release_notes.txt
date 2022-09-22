@@ -1,3 +1,2 @@
-• Bilde-i-bilde under videosamtaler flyttes over tastaturet når man skriver
-• Mer pålitelige oppdateringer av metadata for grupper og bedre feilretting
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

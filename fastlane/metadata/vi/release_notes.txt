@@ -1,3 +1,2 @@
-• Cuộc Gọi Video Hình trong hình sẽ dịch chuyển lên phía trên bàn phím khi bạn gõ phím
-• Cải thiện việc cập nhật thông tin nhóm & sửa lỗi liên quan đến nhóm
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

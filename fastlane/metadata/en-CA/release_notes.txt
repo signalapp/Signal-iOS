@@ -1,3 +1,2 @@
-• Video Call Picture-in-Picture rises above the keyboard when typing
-• Improve group metadata update reliability & error handling
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

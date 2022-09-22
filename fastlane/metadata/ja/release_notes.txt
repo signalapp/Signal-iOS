@@ -1,3 +1,2 @@
-• 入力時にビデオ通話のピクチャ・イン・ピクチャはキーボードの上部に配置されます
-• グループメタデータ更新の信頼性とエラー処理の向上
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

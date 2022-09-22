@@ -1,3 +1,2 @@
-• Chamada de vídeo Picture-in-picture aparece acima do teclado ao escrever.
-• Melhorar a atualização dos metadados do grupo sobre fiabilidade e resolução de bugs
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups

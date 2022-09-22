@@ -1,3 +1,2 @@
-• Videoanruf Bild-in-Bild erscheint beim Tippen über der Tastatur
-• Zuverlässigkeit bei der Aktualisierung von Gruppenmetadaten und Fehlerbehebung verbessern
-
+• Improvements to keep the app running smoothly on iPhone 14
+• Various fixes for groups
