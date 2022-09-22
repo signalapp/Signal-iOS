@@ -19,7 +19,7 @@ desc 'Build, Archive, and Upload to ASC'
 lane :release do |options|
   is_nightly = options[:nightly].to_i > 0
 
-  xcversion(version: '13.2')
+  xcversion(version: '14.0')
 
   app_identifier = ENV['APP_IDENTIFIER']
   scheme = ENV['SCHEME']
