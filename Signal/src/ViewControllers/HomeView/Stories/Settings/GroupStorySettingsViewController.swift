@@ -78,12 +78,13 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         viewersSection.separatorInsetLeading = NSNumber(value: Float(Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing))
         contents.addSection(viewersSection)
 
-        let totalViewersCount = thread.groupMembership.fullMembers.count
+        let fullMembers = thread.groupMembership.fullMembers.filter { !$0.isLocalAddress }
+        let totalViewersCount = fullMembers.count
         let maxViewersToShow = 6
 
         var viewersToRender = databaseStorage.read {
             self.contactsManagerImpl.sortSignalServiceAddresses(
-                Array(thread.groupMembership.fullMembers),
+                Array(fullMembers),
                 transaction: $0
             )
         }
