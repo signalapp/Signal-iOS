@@ -41,7 +41,12 @@ jobs:
             exit 1
           }
 
-          bundle exec fastlane scan --scheme Signal --output_types junit || formatFailures
+          bundle exec fastlane scan \
+            --scheme Signal \
+            --output_types junit \
+            --skip_package_dependencies_resolution \
+            --disable_package_automatic_updates \
+            || formatFailures
 
       - name: Upload build logs
         uses: actions/upload-artifact@v3
