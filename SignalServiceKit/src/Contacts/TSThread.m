@@ -342,19 +342,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     }];
 }
 
-/**
- * Useful for tests and debugging. In production use an enumeration method.
- */
-- (NSArray<TSInteraction *> *)allInteractions
-{
-    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    [self enumerateRecentInteractionsUsingBlock:^(TSInteraction *interaction) {
-        [interactions addObject:interaction];
-    }];
-
-    return [interactions copy];
-}
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 - (NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *)receivedMessagesForInvalidKey:(NSData *)key
