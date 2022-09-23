@@ -19,6 +19,9 @@ jobs:
 
     runs-on: macos-12
 
+    env:
+      FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 7
+
     steps:
       - uses: actions/checkout@v3
 
