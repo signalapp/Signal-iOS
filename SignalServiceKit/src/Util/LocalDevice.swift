@@ -110,11 +110,11 @@ public class LocalDevice: NSObject {
         let warnThreshold: UInt64 = 5 * 1024 * 1024
         let criticalThreshold = UInt64(1.5 * 1024 * 1024)
 
-        switch (freeBytes, CurrentAppContext().isNSE) {
-        case (..<criticalThreshold, true):
-            return "\(currentFootprint) ⚠️⚠️⚠️ \(freeBytes) remaining — mallocUsage: \(mallocUsage) / \(mallocAllocations)"
-        case (..<warnThreshold, _):
-            return "\(currentFootprint) — \(freeBytes) remaining — mallocUsage: \(mallocUsage) / \(mallocAllocations)"
+        switch freeBytes {
+        case ..<criticalThreshold:
+            return "\(currentFootprint) - CRITICAL - \(freeBytes) remaining — mallocUsage: \(mallocUsage) / \(mallocAllocations)"
+        case ..<warnThreshold:
+            return "\(currentFootprint) — WARNING  - \(freeBytes) remaining — mallocUsage: \(mallocUsage) / \(mallocAllocations)"
         default:
             return "\(currentFootprint)"
         }
