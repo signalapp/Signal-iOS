@@ -309,7 +309,10 @@ fileprivate extension SDSCodableModel {
             recordCopy.id = grdbId
             try recordCopy.update(transaction.database)
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Update failed: \(error.grdbErrorForLogging)")
         }
     }
@@ -318,7 +321,10 @@ fileprivate extension SDSCodableModel {
         do {
             try self.insert(transaction.database)
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Insert failed: \(error.grdbErrorForLogging)")
         }
     }
@@ -338,7 +344,10 @@ fileprivate extension SDSCodableModel {
             statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Write failed: \(error.grdbErrorForLogging)")
         }
     }

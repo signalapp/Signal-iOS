@@ -1223,6 +1223,8 @@
 		F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */; };
 		F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */; };
 		F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180128DCFDF100113D9F /* TSContactThreadTest.swift */; };
+		F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */; };
+		F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
@@ -3631,6 +3633,8 @@
 		F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigratorTest.swift; sourceTree = "<group>"; };
 		F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTestHelpers.swift; sourceTree = "<group>"; };
 		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
+		F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionState.swift; sourceTree = "<group>"; };
+		F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionStateTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
@@ -6927,6 +6931,7 @@
 			isa = PBXGroup;
 			children = (
 				F97217FC28DCBC4100113D9F /* Database */,
+				F97217F928DCA35F00113D9F /* Database */,
 				F94261DE289B1B5400460798 /* InteractionFinderTest.swift */,
 				F94261DD289B1B5400460798 /* ModelReadCacheTest.swift */,
 				F94261D9289B1B5400460798 /* OWSIdentityManagerTests.swift */,
@@ -7079,9 +7084,10 @@
 			path = Accessibility;
 			sourceTree = "<group>";
 		};
-		F97217FC28DCBC4100113D9F /* Database */ = {
+		F97217F928DCA35F00113D9F /* Database */ = {
 			isa = PBXGroup;
 			children = (
+				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
 				F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */,
 				F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */,
 			);
@@ -7766,6 +7772,7 @@
 			children = (
 				F9C5CA35289453B100548EEE /* Records */,
 				F9C5CA3C289453B100548EEE /* Snapshots */,
+				F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */,
 				F9C5CA48289453B100548EEE /* DeepCopy.swift */,
 				F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */,
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
@@ -10629,6 +10636,7 @@
 				F93999F828C8204800E34899 /* Data+MessagePadding.swift in Sources */,
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
 				F9C5CD1D289453B300548EEE /* DatabaseChangeObserver.swift in Sources */,
+				F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */,
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
@@ -11148,6 +11156,7 @@
 				F9426282289B1B5600460798 /* ContactDiscoveryTaskTest.swift in Sources */,
 				F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
+				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,
 				F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,

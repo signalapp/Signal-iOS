@@ -75,7 +75,9 @@ public extension DebugUIMisc {
             proceedTitle: "Corrupt my database",
             proceedStyle: .destructive
         ) { _ in
-            SSKPreferences.setHasGrdbDatabaseCorruption(true)
+            DatabaseCorruptionState.flagDatabaseAsCorrupted(
+                userDefaults: CurrentAppContext().appUserDefaults()
+            )
             owsFail("Crashing due to (intentional) database corruption")
         }
     }

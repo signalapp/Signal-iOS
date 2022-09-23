@@ -316,6 +316,9 @@ public extension GRDB.Database {
 // MARK: -
 
 private func handleFatalDatabaseError(_ error: Error) -> Never {
-    SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+    DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+        userDefaults: CurrentAppContext().appUserDefaults(),
+        error: error
+    )
     owsFail("Error: \(error)")
 }

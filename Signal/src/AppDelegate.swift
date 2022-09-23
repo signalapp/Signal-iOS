@@ -189,12 +189,17 @@ extension AppDelegate {
             return .unknownDatabaseVersion
         }
 
-        guard !SSKPreferences.hasGrdbDatabaseCorruption() else {
+        let userDefaults = CurrentAppContext().appUserDefaults()
+
+        let databaseCorruptionStatus = DatabaseCorruptionState.databaseCorruptionStatus(userDefaults: userDefaults)
+        switch databaseCorruptionStatus {
+        case .notCorrupted:
+            break
+        case .corrupted:
             return .databaseUnrecoverablyCorrupted
         }
 
         let appVersion = AppVersion.shared()
-        let userDefaults = CurrentAppContext().appUserDefaults()
         let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
         if
             appVersion.lastAppVersion == appVersion.currentAppReleaseVersion,

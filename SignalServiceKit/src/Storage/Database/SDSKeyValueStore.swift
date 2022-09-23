@@ -699,7 +699,10 @@ public class SDSKeyValueStore: NSObject {
         do {
             try statement.execute()
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             throw error
         }
     }

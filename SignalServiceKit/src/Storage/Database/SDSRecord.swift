@@ -83,7 +83,10 @@ public extension SDSRecord {
             statement.setUncheckedArguments(arguments)
             try statement.execute()
         } catch {
-            SSKPreferences.flagDatabaseCorruptionIfNecessary(error: error)
+            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
+                userDefaults: CurrentAppContext().appUserDefaults(),
+                error: error
+            )
             owsFail("Write failed: \(error.grdbErrorForLogging)")
         }
     }
