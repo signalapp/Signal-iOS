@@ -12,13 +12,9 @@ import SignalServiceKit
 ///     2. The `NotificationActionHandler` handles the users interactions with these
 ///        notifications.
 ///
-/// The NotificationPresenter is driven by the adapter pattern to provide a unified interface to
-/// presenting notifications on iOS9, which uses UINotifications vs iOS10+ which supports
-/// UNUserNotifications.
-///
-/// The `NotificationActionHandler`s also need slightly different integrations for UINotifications
-/// vs. UNUserNotifications, but because they are integrated at separate system defined callbacks,
-/// there is no need for an Adapter, and instead the appropriate NotificationActionHandler is
+/// Our `NotificationActionHandler`s need slightly different integrations for UINotifications (iOS 9)
+/// vs. UNUserNotifications (iOS 10+), but because they are integrated at separate system defined callbacks,
+/// there is no need for an adapter pattern, and instead the appropriate NotificationActionHandler is
 /// wired directly into the appropriate callback point.
 
 public enum AppNotificationCategory: CaseIterable {
@@ -162,51 +158,12 @@ extension AppNotificationAction {
     }
 }
 
-// Delay notification of incoming messages when it's likely to be read by a linked device to
-// avoid notifying a user on their phone while a conversation is actively happening on desktop.
-let kNotificationDelayForRemoteRead: TimeInterval = 20
-
 let kAudioNotificationsThrottleCount = 2
 let kAudioNotificationsThrottleInterval: TimeInterval = 5
 
-typealias NotificationCompletion = () -> Void
-
-protocol NotificationPresenterAdaptee: AnyObject {
-
-    func registerNotificationSettings() -> Promise<Void>
-
-    func notify(category: AppNotificationCategory,
-                title: String?,
-                body: String,
-                threadIdentifier: String?,
-                userInfo: [AnyHashable: Any],
-                interaction: INInteraction?,
-                sound: OWSSound?,
-                completion: NotificationCompletion?)
-
-    func notify(category: AppNotificationCategory,
-                title: String?,
-                body: String,
-                threadIdentifier: String?,
-                userInfo: [AnyHashable: Any],
-                interaction: INInteraction?,
-                sound: OWSSound?,
-                replacingIdentifier: String?,
-                completion: NotificationCompletion?)
-
-    func postGenericIncomingMessageNotification() -> Promise<Void>
-
-    func cancelNotifications(threadId: String)
-    func cancelNotifications(messageId: String)
-    func cancelNotifications(reactionId: String)
-    func clearAllNotifications()
-
-    var hasReceivedSyncMessageRecently: Bool { get }
-}
-
 // MARK: -
 
-extension NotificationPresenterAdaptee {
+extension UserNotificationPresenter {
     var hasReceivedSyncMessageRecently: Bool {
         return OWSDeviceManager.shared().hasReceivedSyncMessage(inLastSeconds: 60)
     }
@@ -216,12 +173,10 @@ extension NotificationPresenterAdaptee {
 
 @objc(OWSNotificationPresenter)
 public class NotificationPresenter: NSObject, NotificationsProtocol {
-    private let adaptee: NotificationPresenterAdaptee
+    private let presenter = UserNotificationPresenter()
 
     @objc
     public override init() {
-        self.adaptee = UserNotificationPresenterAdaptee()
-
         super.init()
 
         SwiftSingletons.register(self)
@@ -235,11 +190,13 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         return previewType == .namePreview
     }
 
-    // MARK: - Presenting Notifications
+    // MARK: - Notifications Permissions
 
     public func registerNotificationSettings() -> Promise<Void> {
-        return adaptee.registerNotificationSettings()
+        return presenter.registerNotificationSettings()
     }
+
+    // MARK: - Calls
 
     public func presentIncomingCall(_ call: CallNotificationInfo,
                                     caller: SignalServiceAddress) {
@@ -276,8 +233,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyAsync { completion in
-            self.adaptee.notify(category: .incomingCall,
+        performNotificationActionAsync { completion in
+            self.presenter.notify(category: .incomingCall,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -401,9 +358,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyAsync { completion in
+        performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: category,
+            self.presenter.notify(category: category,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -435,9 +392,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
-        notifyAsync { completion in
+        performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .missedCallFromNoLongerVerifiedIdentity,
+            self.presenter.notify(category: .missedCallFromNoLongerVerifiedIdentity,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -470,9 +427,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         let category: AppNotificationCategory = (shouldShowActions
             ? .missedCallWithActions
             : .missedCallWithoutActions)
-        notifyAsync { completion in
+        performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: category,
+            self.presenter.notify(category: category,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -496,6 +453,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
         return userInfo
     }
+
+    // MARK: - Notify
 
     public func isThreadMuted(_ thread: TSThread, transaction: SDSAnyReadTransaction) -> Bool {
         ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction).isMuted
@@ -646,9 +605,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyAsync { completion in
+        performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: category,
+            self.presenter.notify(category: category,
                                 title: notificationTitle,
                                 body: notificationBody ?? "",
                                 threadIdentifier: threadIdentifier,
@@ -656,44 +615,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                 interaction: interaction,
                                 sound: sound,
                                 completion: completion)
-        }
-    }
-
-    public static var notifyOnMainThread: Bool {
-        // The NSE can safely post notifications off the main thread;
-        // the main app cannot.
-        !CurrentAppContext().isNSE
-    }
-    public static let serialQueue = DispatchQueue(label: "org.signal.notificationPresenter")
-    public static var notificationQueue: DispatchQueue { notifyOnMainThread ? .main : serialQueue }
-    private var notificationQueue: DispatchQueue { Self.notificationQueue }
-
-    private static let pendingTasks = PendingTasks(label: "Notifications")
-
-    public static func pendingNotificationsPromise() -> Promise<Void> {
-        // This promise blocks on all pending notifications already in flight,
-        // but will not block on new notifications enqueued after this promise
-        // is created. That's intentional to ensure that NotificationService
-        // instances complete in a timely way.
-        pendingTasks.pendingTasksPromise()
-    }
-
-    private func notifyAsync(_ block: @escaping (@escaping NotificationCompletion) -> Void) {
-        let pendingTask = Self.pendingTasks.buildPendingTask(label: "Notification")
-        notificationQueue.async {
-            block {
-                pendingTask.complete()
-            }
-        }
-    }
-
-    private func notifyInAsyncCompletion(transaction: SDSAnyWriteTransaction,
-                                         _ block: @escaping (@escaping NotificationCompletion) -> Void) {
-        let pendingTask = Self.pendingTasks.buildPendingTask(label: "Notification")
-        transaction.addAsyncCompletion(queue: notificationQueue) {
-            block {
-                pendingTask.complete()
-            }
         }
     }
 
@@ -799,9 +720,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             interaction = wrapper
         }
 
-        notifyAsync { completion in
+        performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(
+            self.presenter.notify(
                 category: category,
                 title: notificationTitle,
                 body: notificationBody,
@@ -829,9 +750,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.threadId: threadId
         ]
 
-        notifyAsync { completion in
+        performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .infoOrErrorMessage,
+            self.presenter.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: nil, // show ungrouped
@@ -853,8 +774,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                                               comment: "Format string for an error alert notification message. Embeds {{ error string }}")
         let message = String(format: messageFormat, errorString)
 
-        notifyAsync { completion in
-            self.adaptee.notify(
+        performNotificationActionAsync { completion in
+            self.presenter.notify(
                 category: .internalError,
                 title: title,
                 body: message,
@@ -884,9 +805,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             AppNotificationUserInfoKey.defaultAction: AppNotificationAction.showCallLobby.rawValue
         ]
 
-        notifyAsync { completion in
+        performNotificationActionAsync { completion in
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .infoOrErrorMessage,
+            self.presenter.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: nil, // show ungrouped
@@ -992,9 +913,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             }
         }
 
-        notifyInAsyncCompletion(transaction: transaction) { completion in
+        performNotificationActionInAsyncCompletion(transaction: transaction) { completion in
             let sound = wantsSound ? self.requestSound(thread: thread) : nil
-            self.adaptee.notify(category: .infoOrErrorMessage,
+            self.presenter.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
@@ -1009,8 +930,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                            transaction: SDSAnyWriteTransaction) {
         let notificationBody = errorMessage.previewText(transaction: transaction)
 
-        notifyInAsyncCompletion(transaction: transaction) { completion in
-            self.adaptee.notify(category: .threadlessErrorMessage,
+        performNotificationActionInAsyncCompletion(transaction: transaction) { completion in
+            self.presenter.notify(category: .threadlessErrorMessage,
                                 title: nil,
                                 body: notificationBody,
                                 threadIdentifier: nil,
@@ -1021,29 +942,85 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
     }
 
-    // This method is thread-safe.
+    /// Note that this method is not serialized with other notifications
+    /// actions.
     public func postGenericIncomingMessageNotification() -> Promise<Void> {
-        adaptee.postGenericIncomingMessageNotification()
+        presenter.postGenericIncomingMessageNotification()
     }
+
+    // MARK: - Cancellation
 
     @objc
     public func cancelNotifications(threadId: String) {
-        adaptee.cancelNotifications(threadId: threadId)
+        performNotificationActionAsync { completion in
+            self.presenter.cancelNotifications(threadId: threadId, completion: completion)
+        }
     }
 
     @objc
     public func cancelNotifications(messageId: String) {
-        adaptee.cancelNotifications(messageId: messageId)
+        performNotificationActionAsync { completion in
+            self.presenter.cancelNotifications(messageId: messageId, completion: completion)
+        }
     }
 
     @objc
     public func cancelNotifications(reactionId: String) {
-        adaptee.cancelNotifications(reactionId: reactionId)
+        performNotificationActionAsync { completion in
+            self.presenter.cancelNotifications(reactionId: reactionId, completion: completion)
+        }
     }
 
     @objc
     public func clearAllNotifications() {
-        adaptee.clearAllNotifications()
+        presenter.clearAllNotifications()
+    }
+
+    // MARK: - Serialization
+
+    private static let serialQueue = DispatchQueue(label: "org.signal.notificationActions")
+    private static var notificationQueue: DispatchQueue {
+        // The NSE can safely post notifications off the main thread, but the
+        // main app cannot.
+        if CurrentAppContext().isNSE {
+            return serialQueue
+        }
+
+        return .main
+    }
+    private var notificationQueue: DispatchQueue { Self.notificationQueue }
+
+    private static let pendingTasks = PendingTasks(label: "Notifications")
+
+    public static func pendingNotificationsPromise() -> Promise<Void> {
+        // This promise blocks on all pending notifications already in flight,
+        // but will not block on new notifications enqueued after this promise
+        // is created. That's intentional to ensure that NotificationService
+        // instances complete in a timely way.
+        pendingTasks.pendingTasksPromise()
+    }
+
+    private func performNotificationActionAsync(
+        _ block: @escaping (@escaping UserNotificationPresenter.NotificationActionCompletion) -> Void
+    ) {
+        let pendingTask = Self.pendingTasks.buildPendingTask(label: "NotificationAction")
+        notificationQueue.async {
+            block {
+                pendingTask.complete()
+            }
+        }
+    }
+
+    private func performNotificationActionInAsyncCompletion(
+        transaction: SDSAnyWriteTransaction,
+        _ block: @escaping (@escaping UserNotificationPresenter.NotificationActionCompletion) -> Void
+    ) {
+        let pendingTask = Self.pendingTasks.buildPendingTask(label: "NotificationAction")
+        transaction.addAsyncCompletion(queue: notificationQueue) {
+            block {
+                pendingTask.complete()
+            }
+        }
     }
 
     // MARK: -

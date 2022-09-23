@@ -228,11 +228,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
     [OWSReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
 
-    // We don't want to wait until the transaction finishes to cancel the notification,
-    // because it's important it happens as part of "message processing" in the NSE.
-    // Since we wait for message processing to finish with a promise on the main
-    // queue, dispatching to main here *before* it's finished ensures that it always
-    // happens before the processing promise completes.
     [SSKEnvironment.shared.notificationPresenter cancelNotificationsForMessageId:self.uniqueId];
 }
 

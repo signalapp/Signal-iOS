@@ -125,12 +125,16 @@ public class UserNotificationConfig {
 
 // MARK: -
 
-class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
+class UserNotificationPresenter: Dependencies {
+    typealias NotificationActionCompletion = () -> Void
 
     private static var notificationCenter: UNUserNotificationCenter { UNUserNotificationCenter.current() }
 
-    override init() {
-        super.init()
+    // Delay notification of incoming messages when it's likely to be read by a linked device to
+    // avoid notifying a user on their phone while a conversation is actively happening on desktop.
+    let kNotificationDelayForRemoteRead: TimeInterval = 20
+
+    init() {
         SwiftSingletons.register(self)
     }
 
@@ -157,17 +161,17 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     // MARK: - Notify
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?,
-                completion: NotificationCompletion?) {
-        assertOnQueue(NotificationPresenter.notificationQueue)
-
-        notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, interaction: interaction, sound: sound, replacingIdentifier: nil, completion: completion)
-    }
-
-    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], interaction: INInteraction?, sound: OWSSound?, replacingIdentifier: String?,
-                completion: NotificationCompletion?) {
-        assertOnQueue(NotificationPresenter.notificationQueue)
-
+    func notify(
+        category: AppNotificationCategory,
+        title: String?,
+        body: String,
+        threadIdentifier: String?,
+        userInfo: [AnyHashable: Any],
+        interaction: INInteraction?,
+        sound: OWSSound?,
+        replacingIdentifier: String? = nil,
+        completion: NotificationActionCompletion?
+    ) {
         guard tsAccountManager.isOnboarded() else {
             Logger.info("suppressing notification since user hasn't yet completed onboarding.")
             completion?()
@@ -294,8 +298,6 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
     }
 
     private func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
-        assertOnQueue(NotificationPresenter.notificationQueue)
-
         switch category {
         case .incomingMessageFromNoLongerVerifiedIdentity,
              .threadlessErrorMessage,
@@ -359,105 +361,90 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
     // MARK: - Cancellation
 
-    public static let cancelQueue = DispatchQueue(label: "org.signal.notifications.cancelQueue")
+    func cancelNotifications(threadId: String, completion: @escaping NotificationActionCompletion) {
+        cancel(cancellation: .threadId(threadId), completion: completion)
+    }
 
-    private enum PendingCancellation: Equatable, Hashable {
+    func cancelNotifications(messageId: String, completion: @escaping NotificationActionCompletion) {
+        cancel(cancellation: .messageId(messageId), completion: completion)
+    }
+
+    func cancelNotifications(reactionId: String, completion: @escaping NotificationActionCompletion) {
+        cancel(cancellation: .reactionId(reactionId), completion: completion)
+    }
+
+    func clearAllNotifications() {
+        Logger.warn("Clearing all notifications")
+
+        Self.notificationCenter.removeAllPendingNotificationRequests()
+        Self.notificationCenter.removeAllDeliveredNotifications()
+    }
+
+    private enum CancellationType: Equatable, Hashable {
         case threadId(String)
         case messageId(String)
         case reactionId(String)
     }
 
-    private let pendingCancellations = AtomicSet<PendingCancellation>()
-    private let isDrainCancellationInFlight = AtomicBool(false)
-
-    // This method is thread-safe.
-    private func enqueue(pendingCancellation: PendingCancellation) {
-        pendingCancellations.insert(pendingCancellation)
-        Self.cancelQueue.async {
-            self.drainCancellations()
-        }
-    }
-
-    private func drainCancellations() {
-        assertOnQueue(Self.cancelQueue)
-
-        guard !pendingCancellations.isEmpty else {
-            return
-        }
-        guard isDrainCancellationInFlight.tryToSetFlag() else {
-            return
-        }
-
-        firstly {
-            self.getNotificationRequests()
-        }.map(on: Self.cancelQueue) { notificationRequests in
-            self.drainCancellations(notificationRequests: notificationRequests)
-        }.ensure(on: Self.cancelQueue) {
-            self.isDrainCancellationInFlight.set(false)
-            self.drainCancellations()
-        }.catch(on: .global()) { error in
-            owsFailDebug("Error: \(error)")
-        }
-    }
-
-    private func getNotificationRequests() -> Promise<[UNNotificationRequest]> {
-        assertOnQueue(Self.cancelQueue)
-
-        return firstly {
-            Guarantee { resolve in
-                Self.notificationCenter.getDeliveredNotifications { resolve($0) }
-            }
-        }.then(on: Self.cancelQueue) { delivered in
-            firstly {
-                Guarantee { resolve in
-                    Self.notificationCenter.getPendingNotificationRequests { resolve($0) }
-                }
-            }.map(on: Self.cancelQueue) { pending in
-                pending + delivered.map { $0.request }
+    private func getNotificationsRequests(completion: @escaping ([UNNotificationRequest]) -> Void) {
+        Self.notificationCenter.getDeliveredNotifications { delivered in
+            Self.notificationCenter.getPendingNotificationRequests { pending in
+                completion(delivered.map { $0.request } + pending)
             }
         }
     }
 
-    private func drainCancellations(notificationRequests: [UNNotificationRequest]) {
-        assertOnQueue(Self.cancelQueue)
-
-        let cancellations = pendingCancellations.removeAllValues()
-        guard !cancellations.isEmpty else {
-            return
+    private func cancel(
+        cancellation: CancellationType,
+        completion: @escaping NotificationActionCompletion
+    ) {
+        getNotificationsRequests { requests in
+            self.cancelSync(notificationRequests: requests, matching: cancellation)
+            completion()
         }
+    }
 
-        var cancelledThreadIds = Set<String>()
-        var cancelledMessageIds = Set<String>()
-        var cancelledReactionIds = Set<String>()
-        for cancellation in cancellations {
-            switch cancellation {
+    private func cancelSync(
+        notificationRequests: [UNNotificationRequest],
+        matching cancellationType: CancellationType
+    ) {
+        let requestMatchesPredicate: (UNNotificationRequest) -> Bool = { request in
+            switch cancellationType {
             case .threadId(let threadId):
-                cancelledThreadIds.insert(threadId)
+                if
+                    let requestThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String,
+                    requestThreadId == threadId
+                {
+                    return true
+                }
             case .messageId(let messageId):
-                cancelledMessageIds.insert(messageId)
+                if
+                    let requestMessageId = request.content.userInfo[AppNotificationUserInfoKey.messageId] as? String,
+                    requestMessageId == messageId
+                {
+                    return true
+                }
             case .reactionId(let reactionId):
-                cancelledReactionIds.insert(reactionId)
+                if
+                    let requestReactionId = request.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String,
+                    requestReactionId == reactionId
+                {
+                    return true
+                }
             }
+
+            return false
         }
 
-        var identifiersToCancel = [String]()
-        for request in notificationRequests {
-            if let requestThreadId = request.content.userInfo[AppNotificationUserInfoKey.threadId] as? String,
-               cancelledThreadIds.contains(requestThreadId) {
-                identifiersToCancel.append(request.identifier)
-            }
-            if let requestMessageId = request.content.userInfo[AppNotificationUserInfoKey.messageId] as? String,
-               cancelledMessageIds.contains(requestMessageId) {
-                identifiersToCancel.append(request.identifier)
-            }
-            if let requestReactionId = request.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String,
-               cancelledReactionIds.contains(requestReactionId) {
-                identifiersToCancel.append(request.identifier)
-            }
-        }
+        let identifiersToCancel: [String] = {
+            notificationRequests.compactMap { request in
+                if requestMatchesPredicate(request) {
+                    return request.identifier
+                }
 
-        // De-duplicate.
-        identifiersToCancel = Array(Set(identifiersToCancel))
+                return nil
+            }
+        }()
 
         guard !identifiersToCancel.isEmpty else {
             return
@@ -475,29 +462,6 @@ class UserNotificationPresenterAdaptee: NSObject, NotificationPresenterAdaptee {
 
         Self.notificationCenter.removeDeliveredNotifications(withIdentifiers: [identifier])
         Self.notificationCenter.removePendingNotificationRequests(withIdentifiers: [identifier])
-    }
-
-    // This method is thread-safe.
-    func cancelNotifications(threadId: String) {
-        enqueue(pendingCancellation: .threadId(threadId))
-    }
-
-    func cancelNotifications(messageId: String) {
-        enqueue(pendingCancellation: .messageId(messageId))
-    }
-
-    // This method is thread-safe.
-    func cancelNotifications(reactionId: String) {
-        enqueue(pendingCancellation: .reactionId(reactionId))
-    }
-
-    // This method is thread-safe.
-    func clearAllNotifications() {
-        Logger.warn("Clearing all notifications")
-
-        pendingCancellations.removeAllValues()
-        Self.notificationCenter.removeAllPendingNotificationRequests()
-        Self.notificationCenter.removeAllDeliveredNotifications()
     }
 }
 
