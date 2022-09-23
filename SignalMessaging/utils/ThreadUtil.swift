@@ -104,8 +104,8 @@ extension ThreadUtil {
             }
 
             TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
-            TSAttachment.anyRemoveAllWithInstantation(transaction: transaction)
             StoryMessage.anyRemoveAllWithInstantiation(transaction: transaction)
+            TSAttachment.anyRemoveAllWithInstantation(transaction: transaction)
 
             // Deleting attachments above should be enough to remove any gallery items, but
             // we redunantly clean up *all* gallery items to be safe.
