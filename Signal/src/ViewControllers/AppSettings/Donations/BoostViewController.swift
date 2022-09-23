@@ -541,7 +541,11 @@ extension BoostViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        let request = DonationUtilities.newPaymentRequest(for: donationAmount, currencyCode: currencyCode)
+        let request = DonationUtilities.newPaymentRequest(
+            for: donationAmount,
+            currencyCode: currencyCode,
+            isRecurring: false
+        )
 
         SubscriptionManager.terminateTransactionIfPossible = false
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)

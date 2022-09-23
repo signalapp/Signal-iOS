@@ -93,16 +93,36 @@ public class DonationUtilities: NSObject {
         }
     }
 
-    public static func newPaymentRequest(for amount: NSDecimalNumber, currencyCode: String) -> PKPaymentRequest {
+    private static func donationToSignal() -> String {
+        OWSLocalizedString(
+            "DONATION_VIEW_DONATION_TO_SIGNAL",
+            comment: "Text describing to the user that they're going to pay a donation to Signal"
+        )
+    }
+
+    private static func monthlyDonationToSignal() -> String {
+        OWSLocalizedString(
+            "DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL",
+            comment: "Text describing to the user that they're going to pay a monthly donation to Signal"
+        )
+    }
+
+    public static func newPaymentRequest(for amount: NSDecimalNumber, currencyCode: String, isRecurring: Bool) -> PKPaymentRequest {
+        let paymentSummaryItem: PKPaymentSummaryItem
+        if isRecurring {
+            if #available(iOS 15, *) {
+                let recurringSummaryItem = PKRecurringPaymentSummaryItem(label: donationToSignal(), amount: amount)
+                recurringSummaryItem.intervalUnit = .month
+                recurringSummaryItem.intervalCount = 1  // once per month
+                paymentSummaryItem = recurringSummaryItem
+            } else {
+                paymentSummaryItem = PKPaymentSummaryItem(label: monthlyDonationToSignal(), amount: amount)
+            }
+        } else {
+            paymentSummaryItem = PKPaymentSummaryItem(label: donationToSignal(), amount: amount)
+        }
         let request = PKPaymentRequest()
-        request.paymentSummaryItems = [PKPaymentSummaryItem(
-            label: OWSLocalizedString(
-                "DONATION_VIEW_DONATION_TO_SIGNAL",
-                comment: "Text describing to the user that they're going to pay a donation to Signal"
-            ),
-            amount: amount,
-            type: .final
-        )]
+        request.paymentSummaryItems = [paymentSummaryItem]
         request.merchantIdentifier = "merchant." + Bundle.main.merchantId
         request.merchantCapabilities = .capability3DS
         request.countryCode = "US"

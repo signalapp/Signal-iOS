@@ -787,7 +787,11 @@ extension SubscriptionViewController: PKPaymentAuthorizationControllerDelegate {
             return
         }
 
-        let request = DonationUtilities.newPaymentRequest(for: subscriptionAmount, currencyCode: currencyCode)
+        let request = DonationUtilities.newPaymentRequest(
+            for: subscriptionAmount,
+            currencyCode: currencyCode,
+            isRecurring: true
+        )
 
         let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
         paymentController.delegate = self

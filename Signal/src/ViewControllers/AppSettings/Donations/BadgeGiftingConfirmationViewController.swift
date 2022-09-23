@@ -173,7 +173,11 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
             Logger.info("[Gifting] Requesting Apple Pay...")
 
-            let request = DonationUtilities.newPaymentRequest(for: NSDecimalNumber(value: self.price), currencyCode: self.currencyCode)
+            let request = DonationUtilities.newPaymentRequest(
+                for: NSDecimalNumber(value: self.price),
+                currencyCode: self.currencyCode,
+                isRecurring: false
+            )
 
             let paymentController = PKPaymentAuthorizationController(paymentRequest: request)
             paymentController.delegate = self

@@ -1828,6 +1828,9 @@
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Manage Subscription";
 
+/* Text describing to the user that they're going to pay a monthly donation to Signal */
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Monthly Donation to Signal";
+
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "More";
 
