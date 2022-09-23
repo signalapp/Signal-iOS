@@ -225,7 +225,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         var interaction: INInteraction?
-        if #available(iOS 15, *),
+        if #available(iOS 13, *),
             previewType != .noNameNoPreview,
             let intent = thread.generateStartCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
@@ -350,7 +350,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             : .missedCallWithoutActions)
 
         var interaction: INInteraction?
-        if #available(iOS 15, *),
+        if #available(iOS 13, *),
             previewType != .noNameNoPreview,
             let intent = thread.generateStartCallIntent(callerAddress: caller) {
             let wrapper = INInteraction(intent: intent, response: nil)
@@ -905,8 +905,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 default:
                     break
                 }
-            } else if #available(iOS 15, *),
-                      let callMessage = previewableInteraction as? OWSGroupCallMessage,
+            } else if let callMessage = previewableInteraction as? OWSGroupCallMessage,
                       let callCreator = callMessage.creatorAddress,
                       let intent = thread.generateSendMessageIntent(context: .senderAddress(callCreator), transaction: transaction) {
                 wrapIntent(intent)
