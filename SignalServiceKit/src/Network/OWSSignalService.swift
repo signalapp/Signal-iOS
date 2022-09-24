@@ -55,6 +55,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
             isCensorshipCircumventionManuallyActivatedLock.withLock {
                 writeIsCensorshipCircumventionManuallyActivated(newValue)
             }
+            updateIsCensorshipCircumventionActive()
         }
     }
 
@@ -72,6 +73,7 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
             isCensorshipCircumventionManuallyDisabledLock.withLock {
                 writeIsCensorshipCircumventionManuallyDisabled(newValue)
             }
+            updateIsCensorshipCircumventionActive()
         }
     }
 
@@ -251,7 +253,6 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
                 transaction: transaction
             )
         }
-        updateIsCensorshipCircumventionActive()
     }
 
     private func readIsCensorshipCircumventionManuallyDisabled() -> Bool {
@@ -272,7 +273,6 @@ public class OWSSignalService: NSObject, OWSSignalServiceProtocol {
                 transaction: transaction
             )
         }
-        updateIsCensorshipCircumventionActive()
     }
 
     private func readCensorshipCircumventionCountryCode() -> String? {
