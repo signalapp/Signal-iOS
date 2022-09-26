@@ -1717,6 +1717,9 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Dangos y bathodynnau ar y proffil";
 
+/* Title for the proxy confirmation */
+"DO_YOU_WANT_TO_USE_PROXY" = "Ydych chi am ddefnyddio'r cyfeiriad dirprwyol hwn?";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lleoliad Osgoi Sensoriaeth";
 
@@ -3178,6 +3181,9 @@
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ffeil sain annilys.";
 
+/* The provided proxy host address is not valid */
+"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Gallwch chi alluogi mynediad i'ch cysylltiadau yn app Gosodiadau iOS i wahodd eich ffrindiau i ymuno â Signal.";
 
@@ -3399,6 +3405,9 @@
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Agor Dolen";
+
+/* Label for button to open a signal proxy. */
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Gweld Pecyn Sticeri";
@@ -4756,6 +4765,21 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Proffil";
 
+/* The title for the address of the signal proxy */
+"PROXY_ADDRESS" = "Proxy Address";
+
+/* The provided proxy connected successfully */
+"PROXY_CONNECTED_SUCCESSFULLY" = "Rydych wedi cysylltu â'r dirprwy. Gallwch ddiffodd y dirprwy ar unrhyw adeg o Gosodiadau.";
+
+/* The provided proxy couldn't connect */
+"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+
+/* Placeholder text for signal proxy host */
+"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+
+/* Title for the signal proxy settings */
+"PROXY_SETTINGS_TITLE" = "Dirprwy";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Marcio wedi'i Ddarllen";
 
@@ -5894,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Osgoi sesnoriaeth, trosgwlyddo galwadau a gosodiadau anfonwyr dan sel.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Gosodiadau Uwch";
@@ -6681,6 +6705,12 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Methwyd diweddaru grŵp. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.";
+
+/* Button to activate the signal proxy */
+"USE_PROXY_BUTTON" = "Use Proxy";
+
+/* Explanation of when you should use a signal proxy */
+"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Mae enwau defnyddwyr ar Signal yn ddewisol. Os dewiswch greu enw defnyddiwr, bydd defnyddwyr Signal eraill yn gallu dod o hyd i chi yn ôl yr enw defnyddiwr hwn a chysylltu â chi heb wybod eich rhif ffôn.";

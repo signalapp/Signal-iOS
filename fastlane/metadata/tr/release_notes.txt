@@ -1,2 +1,2 @@
-• Improvements to keep the app running smoothly on iPhone 14
-• Various fixes for groups
+• Uygulamanın iPhone 14'te sorunsuz çalışmasını sağlayan iyileştirmeler
+• Gruplar için çeşitli düzeltmeler

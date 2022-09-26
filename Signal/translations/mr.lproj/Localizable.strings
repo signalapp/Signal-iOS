@@ -1717,6 +1717,9 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "बॅज प्रोफाइलवर दाखवा";
 
+/* Title for the proxy confirmation */
+"DO_YOU_WANT_TO_USE_PROXY" = "आपण हा प्रॉक्सी पत्ता वापरू इच्छिता?";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "सेंसॉरशिप सर्कंवेंशन स्थान";
 
@@ -3178,6 +3181,9 @@
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "अवैध ऑडिओ फाईल.";
 
+/* The provided proxy host address is not valid */
+"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Signal मध्ये सामील होण्यासाठी आपल्या मित्रांना आमंत्रित करण्यासाठी आपण iOS सेटिंग अॅप मध्ये संपर्क अॅक्सेस सक्षम करू शकता.";
 
@@ -3399,6 +3405,9 @@
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "लिंक उघडा";
+
+/* Label for button to open a signal proxy. */
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "स्टिकर पॅक पहा";
@@ -4756,6 +4765,21 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "प्रोफाईल";
 
+/* The title for the address of the signal proxy */
+"PROXY_ADDRESS" = "Proxy Address";
+
+/* The provided proxy connected successfully */
+"PROXY_CONNECTED_SUCCESSFULLY" = "आपण प्रॉक्सी शी कनेक्ट आहात. आपण सेटिंग मधून कोणत्याही वेळी प्रॉक्सी बंद करू शकता.";
+
+/* The provided proxy couldn't connect */
+"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+
+/* Placeholder text for signal proxy host */
+"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+
+/* Title for the signal proxy settings */
+"PROXY_SETTINGS_TITLE" = "प्रॉक्सी";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "वाचले म्हणून चिन्हांकित करा";
 
@@ -5894,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "सेंसॉरशिप सर्कंवेंशन, कॉल रिले करणे आणि सील केलेले प्रेषक सेटिंग.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "प्रगत";
@@ -6293,7 +6317,7 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "ही स्टोरी पाठवली जाऊ शकत नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "ही स्टोरी काही लोकांना पाठवली जाऊ शकत नाही. आपले कनेक्शन तपासा आणि पुन्हा प्रयत्न करा";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "फक्त यांच्यासह शेअर करा...";
@@ -6308,13 +6332,13 @@
 "STORY_SEND_FAILED_RETRY" = "पुन्हा प्रयत्न करण्यासाठी टॅप करा";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "पाठवणे अयशस्वी झाले. पुन्हा प्रयत्न करण्यासाठी टॅप करा";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "अंशतः पाठवले";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "अंशतः पाठवले. तपशीलांसाठी टॅप करा";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "पाठवत आहे...";
@@ -6326,7 +6350,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "ही स्टोरी कोण पाहू शकते";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "स्टोरीज कडे पाठवले जाणारे व्हिडिओ %ds क्लिप मध्ये ट्रिम केले आणि एकाधिक स्टोरीज म्हणून पाठवले जाऊ शकतात.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "पुढे जाण्यासाठी टॅप करा";
@@ -6681,6 +6705,12 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "गट अद्यतनित केला जाऊ शकला नाही. आपले इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
+
+/* Button to activate the signal proxy */
+"USE_PROXY_BUTTON" = "Use Proxy";
+
+/* Explanation of when you should use a signal proxy */
+"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal वर वापरकर्तानाव पर्यायी आहेत. जर आपण वापरकर्तानाव तयार करायचे ठरवले तर इतर Signal वापरकर्ते आपल्याला आपल्या वापरकर्तानावाद्वारे शोधू शकतील आणि आपला फोन नंबर न जाणता देखील आपल्याला संपर्क साधू शकतील.";

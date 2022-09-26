@@ -1717,6 +1717,9 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "在個人資料上顯示徽章";
 
+/* Title for the proxy confirmation */
+"DO_YOU_WANT_TO_USE_PROXY" = "你要使用此代理伺服器位址嗎？";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "審查規避地點";
 
@@ -3178,6 +3181,9 @@
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "無效的音訊檔";
 
+/* The provided proxy host address is not valid */
+"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "你可以在 iOS設定中允許取用聯絡資訊來邀請你的朋友加入 Signal。";
 
@@ -3399,6 +3405,9 @@
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "開啟連結";
+
+/* Label for button to open a signal proxy. */
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "查看貼圖包";
@@ -4756,6 +4765,21 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "個人資訊";
 
+/* The title for the address of the signal proxy */
+"PROXY_ADDRESS" = "Proxy Address";
+
+/* The provided proxy connected successfully */
+"PROXY_CONNECTED_SUCCESSFULLY" = "你已連接到代理伺服器。你可以隨時透過“設定”關閉代理伺服器。";
+
+/* The provided proxy couldn't connect */
+"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+
+/* Placeholder text for signal proxy host */
+"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+
+/* Title for the signal proxy settings */
+"PROXY_SETTINGS_TITLE" = "代理伺服器";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "標記為已讀";
 
@@ -4784,10 +4808,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "找不到原始訊息。";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to your own story. */
-"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "對你的限時動態表達了心情";
+"QUOTED_REPLY_REACTION_TO_OWN_STORY" = "已回應你的限動";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "回應給 %@的限時動態";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "已回應 %@ 的限動";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · 限時動態";
@@ -4814,40 +4838,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "所有。%@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "到%@檢視你的訊息";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "已用 %@ 回應你的訊息";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "到%@檢視你的相簿";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "已用 %@ 回應你的相簿";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "到%@檢視你的語音";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "已用 %@ 回應你的音訊";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "到%@檢視你的聯絡人分享";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "已用 %@ 回應你分享的聯絡人";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "到%@檢視你的個人資訊";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "已用 %@ 回應你的檔案";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "到%@檢視你的GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "已用 %@ 回應你的 GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "到%@檢視你的照片";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "已用 %@ 回應你的照片";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "到%@檢視你的貼圖";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "已用 %@ 回應你的貼圖";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%@對檢視:\"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "已用 %@ 回應：「%@」";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "到%@檢視你的影片";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "已用 %@ 回應你的影片";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "到%@檢視你的一次性多媒體檔案";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "已用 %@ 回應你的一次性多媒體內容";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "到%@檢視你的語音訊息";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "已用 %@ 回應你的語音訊息";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "已讀";
@@ -5894,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN 碼";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "審查規避，轉發通話和密封發件人設定。";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "進階";
@@ -6281,7 +6305,7 @@
 "STORY_REPLY_BUTTON" = "回覆";
 
 /* Text indicating a story has been reacted to */
-"STORY_REPLY_REACTION" = "以對此限時動態做出回應";
+"STORY_REPLY_REACTION" = "已回應限動";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "回覆";
@@ -6290,10 +6314,10 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "回覆給群組";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "無法傳送此限動。請查看連線，並再試一次";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "無法傳送此限動。請檢查連線，並再試一次";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "無法將此限動傳送給某些使用者。請檢查連線，並再試一次";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "僅分享給…";
@@ -6308,13 +6332,13 @@
 "STORY_SEND_FAILED_RETRY" = "點擊以重試";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "無法傳送，請點選以重試";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "未完全送出";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "未完全送出；點選以取得詳情";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "傳送中...";
@@ -6326,7 +6350,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "誰能瀏覽此則限動";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "發布至限動的影片將剪輯成 %d 秒短片，並分成多個限動來傳送。";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "點選以便繼續";
@@ -6681,6 +6705,12 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "群組無法更新。 檢查你的網路連接，然後重試。";
+
+/* Button to activate the signal proxy */
+"USE_PROXY_BUTTON" = "Use Proxy";
+
+/* Explanation of when you should use a signal proxy */
+"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal上的使用者名稱是選則性的。 如果你選擇創建使用者名稱，其他Signal 使用者將能透過使用者名稱找到你，並在不知道你的電話號碼的情況下與你聯繫。";

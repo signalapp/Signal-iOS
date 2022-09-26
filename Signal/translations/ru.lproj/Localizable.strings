@@ -1717,6 +1717,9 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Показывать значки в профиле";
 
+/* Title for the proxy confirmation */
+"DO_YOU_WANT_TO_USE_PROXY" = "Вы хотите использовать этот адрес прокси?";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Местоположение обхода цензуры";
 
@@ -3178,6 +3181,9 @@
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Недействительный аудиофайл.";
 
+/* The provided proxy host address is not valid */
+"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Вы можете разрешить доступ к контактам в приложении «Настройки», чтобы приглашать своих друзей в Signal.";
 
@@ -3399,6 +3405,9 @@
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Открыть ссылку";
+
+/* Label for button to open a signal proxy. */
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Просмотреть набор стикеров";
@@ -4756,6 +4765,21 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Профиль";
 
+/* The title for the address of the signal proxy */
+"PROXY_ADDRESS" = "Proxy Address";
+
+/* The provided proxy connected successfully */
+"PROXY_CONNECTED_SUCCESSFULLY" = "Вы подключены к прокси. Вы можете отключить прокси в любое время в настройках.";
+
+/* The provided proxy couldn't connect */
+"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+
+/* Placeholder text for signal proxy host */
+"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+
+/* Title for the signal proxy settings */
+"PROXY_SETTINGS_TITLE" = "Прокси";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Прочитано";
 
@@ -5894,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "PIN-код Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Настройки обхода цензуры, ретрансляции звонков и запечатанного отправителя.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Расширенные";
@@ -6293,7 +6317,7 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Не удалось отправить историю. Проверьте ваше подключение к интернету и попробуйте ещё раз";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Не удалось отправить историю некоторым людям. Проверьте ваше подключение к интернету и попробуйте ещё раз";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Поделиться только с...";
@@ -6308,13 +6332,13 @@
 "STORY_SEND_FAILED_RETRY" = "Нажмите, чтобы попробовать ещё раз";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Отправка не удалась. Нажмите для повторной попытки";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "Отправлено не полностью";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Частично отправлено. Подробнее…";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Отправляем…";
@@ -6326,7 +6350,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Кто может просматривать эту историю";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Видео, отправленные в Истории, будут сокращены до %d-секундных клипов и отправлены в виде нескольких историй.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Нажать, чтобы перейти к следующей истории";
@@ -6681,6 +6705,12 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Не удалось обновить группу. Проверьте ваше подключение к интернету и попробуйте ещё раз.";
+
+/* Button to activate the signal proxy */
+"USE_PROXY_BUTTON" = "Use Proxy";
+
+/* Explanation of when you should use a signal proxy */
+"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Имена пользователей в Signal необязательны. Если вы решите создать имя пользователя, другие пользователи Signal смогут найти вас по этому имени пользователя и связаться с вами, не зная ваш номер телефона.";

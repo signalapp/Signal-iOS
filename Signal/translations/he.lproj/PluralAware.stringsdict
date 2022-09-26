@@ -508,7 +508,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>כל חברי Signal · 1 לא יכול/ה לראות</string>
+			<string>כל חברי Signal · 1 לא יכולים לראות</string>
 			<key>two</key>
 			<string>כל חברי Signal · %d לא יכולים לראות</string>
 			<key>many</key>

@@ -1,2 +1,2 @@
-• Improvements to keep the app running smoothly on iPhone 14
-• Various fixes for groups
+• 系統效能優化，讓 App 可在 iPhone 14 更順利地運作
+• 修復多項群組功能

@@ -1,2 +1,2 @@
-• Improvements to keep the app running smoothly on iPhone 14
-• Various fixes for groups
+• Các thay đổi nâng cấp để ứng dụng chạy mượt trên iPhone 14
+• Sửa các lỗi cho nhóm

@@ -1717,6 +1717,9 @@
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "പ്രൊഫൈലിൽ ബാഡ്ജുകൾ പ്രദർശിപ്പിക്കുക";
 
+/* Title for the proxy confirmation */
+"DO_YOU_WANT_TO_USE_PROXY" = "ഈ പ്രോക്സി വിലാസം നിങ്ങൾക്ക് ഉപയോഗിക്കണോ?";
+
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "സെൻസർഷിപ്പ് സർക്കംവെൻഷൻ ലൊക്കേഷൻ";
 
@@ -3178,6 +3181,9 @@
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "അസാധുവായ ഓഡിയോ ഫയൽ.";
 
+/* The provided proxy host address is not valid */
+"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "നിങ്ങളുടെ സുഹൃത്തുക്കളെ Signal ലിൽ ചേരുന്നതിനായി ക്ഷണിക്കുന്നതിന് വേണ്ടി നിങ്ങൾക്ക് iOS സെറ്റിംഗ്സ് ആപ്പിൽ കോൺടാക്സ് അക്സസ് പ്രാപ്തമാക്കാവുന്നതാണ്.";
 
@@ -3399,6 +3405,9 @@
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "ലിങ്ക് തുറക്കുക";
+
+/* Label for button to open a signal proxy. */
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "സ്റ്റിക്കർ പായ്ക്ക് കാണുക";
@@ -4756,6 +4765,21 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "പ്രൊഫൈൽ";
 
+/* The title for the address of the signal proxy */
+"PROXY_ADDRESS" = "Proxy Address";
+
+/* The provided proxy connected successfully */
+"PROXY_CONNECTED_SUCCESSFULLY" = "നിങ്ങൾ പ്രോക്സിയുമായ് കണക്ട് ചെയ്തിരിക്കുന്നു . പ്രോക്സി ഓഫ് ചെയ്യണമെങ്കിൽ ക്രമീകരണങ്ങളിൽ പോവുക ";
+
+/* The provided proxy couldn't connect */
+"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+
+/* Placeholder text for signal proxy host */
+"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+
+/* Title for the signal proxy settings */
+"PROXY_SETTINGS_TITLE" = "പ്രോക്സി";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "വായിച്ചതായി അടയാളപ്പെടുത്തുക";
 
@@ -5894,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "സെൻസർഷിപ്പ് മറികടക്കൽ, റിലേ കോളുകൾ, സീൽ ചെയ്ത അയയ്ക്കുന്നക്രമീകരണങ്ങൾ.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "വിപുലമായ";
@@ -6681,6 +6705,12 @@
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്യാനായില്ല. നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.";
+
+/* Button to activate the signal proxy */
+"USE_PROXY_BUTTON" = "Use Proxy";
+
+/* Explanation of when you should use a signal proxy */
+"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal ൽ യൂസർ പേര് ഓപ്ഷണൽ ആണ്.  നിങ്ങൾ ഒരു യൂസർ പേര് സൃഷ്ടിക്കുകയാണെങ്കിൽ, മറ്റ് Signal യൂസർമാർക്ക് നിങ്ങളുടെ ഈ യൂസർ പേര് വച്ച് നിങ്ങളെ കണ്ടുപിടിക്കാനും നിങ്ങളുടെ ഫോൺ നമ്പർ അറിയാതെ തന്നെ നിങ്ങളെ ബന്ധപ്പെടാനും സാധിക്കും.";
