@@ -21,6 +21,14 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
     }
 
     private func updateNavigationBar() {
+        if navigationController?.viewControllers.count == 1 {
+            navigationItem.leftBarButtonItem = .init(
+                barButtonSystemItem: .cancel,
+                target: self,
+                action: #selector(didTapCancel)
+            )
+        }
+
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             barButtonSystemItem: .save,
             target: self,
@@ -113,7 +121,22 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         databaseStorage.write { transaction in
             SignalProxy.setProxyHost(host: self.hostTextField.text, useProxy: self.useProxy, transaction: transaction)
         }
-        navigationController?.popViewController(animated: true)
+        if navigationController?.viewControllers.count == 1 {
+            dismiss(animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
+    }
+
+    @objc
+    private func didTapCancel() {
+        if hasPendingChanges {
+            OWSActionSheets.showPendingChangesActionSheet { [weak self] in
+                self?.dismiss(animated: true)
+            }
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     func shouldCancelNavigationBack() -> Bool {
