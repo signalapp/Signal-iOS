@@ -150,6 +150,13 @@ extension ConversationViewController {
                                                     style: .default) { [weak self] _ in
                 self?.cvc_didTapGroupInviteLink(url: dataItem.url)
             })
+        } else if SignalProxy.isValidProxyLink(dataItem.url) {
+            actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_PROXY",
+                                                                             comment: "Label for button to open a signal proxy."),
+                                                    accessibilityIdentifier: "link_open_proxy",
+                                                    style: .default) { [weak self] _ in
+                self?.cvc_didTapProxyLink(url: dataItem.url)
+            })
         } else {
             actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_ACTION_LINK_OPEN_LINK",
                                                                              comment: "Label for button to open a link."),
@@ -319,6 +326,8 @@ extension ConversationViewController {
             cvc_didTapStickerPack(stickerPackInfo)
         } else if GroupManager.isPossibleGroupInviteLink(dataItem.url) {
             cvc_didTapGroupInviteLink(url: dataItem.url)
+        } else if SignalProxy.isValidProxyLink(dataItem.url) {
+            cvc_didTapProxyLink(url: dataItem.url)
         } else if SignalMe.isPossibleUrl(dataItem.url) {
             cvc_didTapSignalMeLink(url: dataItem.url)
         } else if isMailtoUrl(dataItem.url) {

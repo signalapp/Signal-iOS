@@ -97,6 +97,8 @@ public protocol CVComponentDelegate: AnyObject {
 
     func cvc_didTapGroupInviteLink(url: URL)
 
+    func cvc_didTapProxyLink(url: URL)
+
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl)
 
     func cvc_prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl)

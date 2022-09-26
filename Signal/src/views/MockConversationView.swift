@@ -351,6 +351,8 @@ extension MockConversationView: CVComponentDelegate {
 
     func cvc_didTapGroupInviteLink(url: URL) {}
 
+    func cvc_didTapProxyLink(url: URL) {}
+
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 
     // Never wrap gifts on the mock conversation view

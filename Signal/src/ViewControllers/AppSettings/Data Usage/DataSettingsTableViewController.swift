@@ -25,6 +25,12 @@ class DataSettingsTableViewController: OWSTableViewController2 {
             name: CallService.callServicePreferencesDidChange,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(preferencesDidChange),
+            name: .isSignalProxyReadyDidChange,
+            object: nil
+        )
     }
 
     func updateTableContents() {
@@ -141,6 +147,22 @@ class DataSettingsTableViewController: OWSTableViewController2 {
         ))
 
         contents.addSection(callsSection)
+
+        let proxySection = OWSTableSection()
+        proxySection.headerTitle = NSLocalizedString(
+            "SETTINGS_PROXY_SECTION_HEADER",
+            comment: "Section header for the proxy section in data settings"
+        )
+
+        proxySection.add(.disclosureItem(
+            withText: NSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
+            detailText: SignalProxy.isEnabled ? CommonStrings.switchOn : CommonStrings.switchOff,
+            actionBlock: { [weak self] in
+                self?.showProxySettings()
+            }
+        ))
+
+        contents.addSection(proxySection)
     }
 
     // MARK: - Events
@@ -179,6 +201,11 @@ class DataSettingsTableViewController: OWSTableViewController2 {
     private func showMediaDownloadView(forMediaDownloadType value: MediaDownloadType) {
         let view = MediaDownloadSettingsViewController(mediaDownloadType: value)
         navigationController?.pushViewController(view, animated: true)
+    }
+
+    private func showProxySettings() {
+        let vc = ProxySettingsViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
 
     @objc

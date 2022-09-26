@@ -1073,6 +1073,8 @@ extension MessageDetailViewController: CVComponentDelegate {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
 
+    func cvc_didTapProxyLink(url: URL) {}
+
     func cvc_didTapShowMessageDetail(_ itemViewModel: CVItemViewModelImpl) {}
 
     // Never wrap gifts on the message details screen
