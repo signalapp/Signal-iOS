@@ -535,12 +535,20 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (SignalProxy.isEnabled) {
         UIImage *proxyStatusImage;
         UIColor *tintColor;
-        if (self.socketManager.isAnySocketOpen) {
-            proxyStatusImage = [UIImage imageNamed:@"proxy_connected_24"];
-            tintColor = UIColor.ows_accentGreenColor;
-        } else {
-            proxyStatusImage = [UIImage imageNamed:@"proxy_failed_24"];
-            tintColor = UIColor.ows_accentRedColor;
+
+        switch ([self.socketManager socketStateForType:OWSWebSocketTypeIdentified]) {
+            case OWSWebSocketStateOpen:
+                proxyStatusImage = [UIImage imageNamed:@"proxy_connected_24"];
+                tintColor = UIColor.ows_accentGreenColor;
+                break;
+            case OWSWebSocketStateClosed:
+                proxyStatusImage = [UIImage imageNamed:@"proxy_failed_24"];
+                tintColor = UIColor.ows_accentRedColor;
+                break;
+            case OWSWebSocketStateConnecting:
+                proxyStatusImage = [UIImage imageNamed:@"proxy_failed_24"];
+                tintColor = Theme.middleGrayColor;
+                break;
         }
 
         UIBarButtonItem *proxy = [[UIBarButtonItem alloc] initWithImage:proxyStatusImage
