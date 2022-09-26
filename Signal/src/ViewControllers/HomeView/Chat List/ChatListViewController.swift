@@ -356,6 +356,7 @@ public enum ShowAppSettingsMode {
     case avatarBuilder
     case subscriptions
     case boost
+    case proxy
 }
 
 // MARK: -
@@ -440,6 +441,11 @@ public extension ChatListViewController {
     }
 
     @objc
+    func showAppSettingsInProxyMode() {
+        showAppSettings(mode: .proxy)
+    }
+
+    @objc
     func showAppSettingsInAvatarBuilderMode() {
         showAppSettings(mode: .avatarBuilder)
     }
@@ -484,6 +490,8 @@ public extension ChatListViewController {
         case .boost:
             let boost = BoostViewController()
             viewControllers += [ boost ]
+        case .proxy:
+            viewControllers += [ DataSettingsTableViewController(), ProxySettingsViewController() ]
         }
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true, completion: completion)

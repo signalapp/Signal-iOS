@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension Notification.Name {
+public extension Notification.Name {
     static let isSignalProxyReadyDidChange = Self(SignalProxy.isSignalProxyReadyDidChangeNotificationName)
 }
 
@@ -13,7 +13,10 @@ public class SignalProxy: NSObject {
     @objc
     public static let isSignalProxyReadyDidChangeNotificationName = "isSignalProxyReadyDidChange"
 
-    public static var isEnabled: Bool { host != nil }
+    @objc
+    public static var isEnabled: Bool { useProxy && host != nil }
+
+    @objc
     public static var isEnabledAnReady: Bool { isEnabled && relayServer.isReady }
 
     public static var connectionProxyDictionary: [AnyHashable: Any]? { relayServer.connectionProxyDictionary }
@@ -21,29 +24,33 @@ public class SignalProxy: NSObject {
     @Atomic
     public private(set) static var host: String?
 
+    @Atomic
+    public private(set) static var useProxy = false
+
     private static let relayServer = RelayServer()
 
     private static let keyValueStore = SDSKeyValueStore(collection: "SignalProxy")
-    private static let proxyUrlHostKey = "proxyUrlHostKey"
+    private static let proxyHostKey = "proxyHostKey"
+    private static let proxyUseKey = "proxyUseKey"
 
-    public static func setProxyUrl(url: URL?, transaction: SDSAnyWriteTransaction) {
-        let newHost: String?
+    public static func setProxyHost(host: String?, useProxy: Bool, transaction: SDSAnyWriteTransaction) {
+        let hostToStore = host?.nilIfEmpty
+        let useProxyToStore = hostToStore == nil ? false : useProxy
+        owsAssertDebug(useProxyToStore == useProxy)
 
-        if let host = url?.host {
-            keyValueStore.setString(host, key: proxyUrlHostKey, transaction: transaction)
-
-            newHost = host
-        } else {
-            keyValueStore.removeAll(transaction: transaction)
-
-            newHost = nil
-        }
+        keyValueStore.setString(hostToStore, key: proxyHostKey, transaction: transaction)
+        keyValueStore.setBool(useProxyToStore, key: proxyUseKey, transaction: transaction)
 
         transaction.addSyncCompletion {
-            self.host = newHost
+            self.host = hostToStore
+            self.useProxy = useProxyToStore
 
             if isEnabled {
-                relayServer.start()
+                if relayServer.isStarted {
+                    relayServer.restart()
+                } else {
+                    relayServer.start()
+                }
             } else {
                 relayServer.stop()
             }
@@ -54,10 +61,16 @@ public class SignalProxy: NSObject {
     public class func warmCaches() {
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             databaseStorage.read { transaction in
-                host = keyValueStore.getString(proxyUrlHostKey, transaction: transaction)
+                host = keyValueStore.getString(proxyHostKey, transaction: transaction)
+                useProxy = keyValueStore.getBool(proxyUseKey, defaultValue: false, transaction: transaction)
             }
 
             if isEnabled { relayServer.start() }
         }
+    }
+
+    @objc
+    public class func isValidProxyLink(_ url: URL) -> Bool {
+        (url.scheme.map { ["https", "sgnl"].contains($0) } ?? false) && url.host == "signal.tube" && url.fragment != nil
     }
 }

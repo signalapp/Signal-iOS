@@ -326,6 +326,12 @@ extension ConversationViewController: CVComponentDelegate {
         GroupInviteLinksUI.openGroupInviteLink(url, fromViewController: self)
     }
 
+    public func cvc_didTapProxyLink(url: URL) {
+        AssertIsOnMainThread()
+        guard let vc = ProxyLinkSheetViewController(url: url) else { return }
+        present(vc, animated: true)
+    }
+
     public func cvc_willWrapGift(_ messageUniqueId: String) -> Bool { willWrapGift(messageUniqueId) }
 
     public func cvc_willShakeGift(_ messageUniqueId: String) -> Bool { willShakeGift(messageUniqueId) }

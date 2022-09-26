@@ -417,6 +417,8 @@ static void uncaughtExceptionHandler(NSException *exception)
         return [self tryToShowStickerPackView:stickerPackInfo];
     } else if ([GroupManager isPossibleGroupInviteLink:url]) {
         return [self tryToShowGroupInviteLinkUI:url];
+    } else if ([SignalProxy isValidProxyLink:url]) {
+        return [self tryToShowProxyLinkUI:url];
     } else if ([url.scheme isEqualToString:kURLSchemeSGNLKey]) {
         if ([url.host hasPrefix:kURLHostVerifyPrefix] && ![self.tsAccountManager isRegistered]) {
             if (!AppReadiness.isAppReady) {
@@ -584,6 +586,27 @@ static void uncaughtExceptionHandler(NSException *exception)
                                                    }];
         } else {
             [GroupInviteLinksUI openGroupInviteLink:url fromViewController:rootViewController];
+        }
+    });
+    return YES;
+}
+
+- (BOOL)tryToShowProxyLinkUI:(NSURL *)url
+{
+    OWSAssertDebug(!self.didAppLaunchFail);
+
+    AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
+        ProxyLinkSheetViewController *proxySheet = [[ProxyLinkSheetViewController alloc] initWithUrl:url];
+        UIViewController *rootViewController = self.window.rootViewController;
+        if (rootViewController.presentedViewController) {
+            [rootViewController dismissViewControllerAnimated:NO
+                                                   completion:^{
+                                                       [rootViewController presentViewController:proxySheet
+                                                                                        animated:YES
+                                                                                      completion:nil];
+                                                   }];
+        } else {
+            [rootViewController presentViewController:proxySheet animated:YES completion:nil];
         }
     });
     return YES;

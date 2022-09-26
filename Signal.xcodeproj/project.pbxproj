@@ -1049,6 +1049,8 @@
 		88DF819928E1157400F8BA80 /* SignalProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819828E1157400F8BA80 /* SignalProxy.swift */; };
 		88DF819B28E1158800F8BA80 /* SignalProxy+RelayClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819A28E1158800F8BA80 /* SignalProxy+RelayClient.swift */; };
 		88DF819D28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819C28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift */; };
+		88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF81A028E1538000F8BA80 /* ProxyLinkSheetViewController.swift */; };
+		88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */; };
 		88E34F2722F269E900966CC2 /* StorageServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2622F269E900966CC2 /* StorageServiceManager.swift */; };
 		88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */; };
 		88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */; };
@@ -3414,6 +3416,8 @@
 		88DF819828E1157400F8BA80 /* SignalProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalProxy.swift; sourceTree = "<group>"; };
 		88DF819A28E1158800F8BA80 /* SignalProxy+RelayClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalProxy+RelayClient.swift"; sourceTree = "<group>"; };
 		88DF819C28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalProxy+ProxyClient.swift"; sourceTree = "<group>"; };
+		88DF81A028E1538000F8BA80 /* ProxyLinkSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyLinkSheetViewController.swift; sourceTree = "<group>"; };
+		88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxySettingsViewController.swift; sourceTree = "<group>"; };
 		88E1EACA26BB283D00AD0C2D /* bn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bn; path = translations/bn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88E1EACB26BB285700AD0C2D /* gu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gu; path = translations/gu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88E1EACC26BB286F00AD0C2D /* kn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kn; path = translations/kn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -5577,6 +5581,7 @@
 				887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */,
 				881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */,
 				881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */,
+				88DF81A028E1538000F8BA80 /* ProxyLinkSheetViewController.swift */,
 				342FFE7D271EF5B1000AC89F /* ReturnToCallViewController.swift */,
 				346EAA1125013CDF00E8AB6F /* SendMessageFlow.swift */,
 				3434AE1B22AEDE7D002EE04E /* ViewOnceMessageViewController.swift */,
@@ -6347,6 +6352,7 @@
 				346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */,
 				346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */,
 				329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */,
+				88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */,
 				8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */,
 			);
 			path = "Data Usage";
@@ -10448,6 +10454,8 @@
 				8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
 				4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */,
+				88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */,
+				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */,
 				3470C8742554926200F5847C /* QuotedMessageView.swift in Sources */,

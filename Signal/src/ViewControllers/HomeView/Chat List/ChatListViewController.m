@@ -509,6 +509,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.navigationItem.leftBarButtonItem = settingsButton;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
 
+    NSMutableArray *rightBarButtonItems = [@[] mutableCopy];
+
     UIBarButtonItem *compose = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCompose24]
                                                                 style:UIBarButtonItemStylePlain
                                                                target:self
@@ -518,6 +520,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     compose.accessibilityHint = NSLocalizedString(
         @"COMPOSE_BUTTON_HINT", @"Accessibility hint describing what you can do with the compose button");
     compose.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"compose");
+    [rightBarButtonItems addObject:compose];
 
     UIBarButtonItem *camera = [[UIBarButtonItem alloc] initWithImage:[Theme iconImage:ThemeIconCameraButton]
                                                                style:UIBarButtonItemStylePlain
@@ -527,8 +530,28 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     camera.accessibilityHint = NSLocalizedString(
         @"CAMERA_BUTTON_HINT", @"Accessibility hint describing what you can do with the camera button");
     camera.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"camera");
+    [rightBarButtonItems addObject:camera];
 
-    self.navigationItem.rightBarButtonItems = @[ compose, camera ];
+    if (SignalProxy.isEnabled) {
+        UIImage *proxyStatusImage;
+        UIColor *tintColor;
+        if (self.socketManager.isAnySocketOpen) {
+            proxyStatusImage = [UIImage imageNamed:@"proxy_connected_24"];
+            tintColor = UIColor.ows_accentGreenColor;
+        } else {
+            proxyStatusImage = [UIImage imageNamed:@"proxy_failed_24"];
+            tintColor = UIColor.ows_accentRedColor;
+        }
+
+        UIBarButtonItem *proxy = [[UIBarButtonItem alloc] initWithImage:proxyStatusImage
+                                                                  style:UIBarButtonItemStylePlain
+                                                                 target:self
+                                                                 action:@selector(showAppSettingsInProxyMode)];
+        proxy.tintColor = tintColor;
+        [rightBarButtonItems addObject:proxy];
+    }
+
+    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
 }
 
 - (void)showNewConversationView

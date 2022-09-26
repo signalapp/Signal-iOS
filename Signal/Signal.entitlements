@@ -7,6 +7,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:signal.art</string>
+		<string>applinks:signal.tube</string>
 		<string>applinks:signal.group</string>
 		<string>applinks:signal.me</string>
 	</array>

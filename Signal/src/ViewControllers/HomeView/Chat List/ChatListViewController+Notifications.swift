@@ -72,6 +72,24 @@ extension ChatListViewController {
                                                selector: #selector(clearSearch),
                                                name: ReactionManager.localUserReacted,
                                                object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateBarButtonItems),
+            name: .isSignalProxyReadyDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateBarButtonItems),
+            name: OWSWebSocket.webSocketStateDidChange,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateBarButtonItems),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil
+        )
 
         databaseStorage.appendDatabaseChangeDelegate(self)
     }
