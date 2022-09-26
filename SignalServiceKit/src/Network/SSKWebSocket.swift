@@ -153,7 +153,8 @@ public class SSKWebSocketNative: SSKWebSocket {
     private let request: URLRequest
     private let session = OWSURLSession(
         securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
-        configuration: OWSURLSession.defaultConfigurationWithoutCaching
+        configuration: OWSURLSession.defaultConfigurationWithoutCaching,
+        canUseSignalProxy: true
     )
     private let callbackQueue: DispatchQueue
 

@@ -258,6 +258,10 @@ public class OWSWebSocket: NSObject {
                                                name: .isCensorshipCircumventionActiveDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
+                                               selector: #selector(isSignalProxyReadyDidChange),
+                                               name: .isSignalProxyReadyDidChange,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
                                                selector: #selector(deviceListUpdateModifiedDeviceList),
                                                name: OWSDevicesService.deviceListUpdateModifiedDeviceList,
                                                object: nil)
@@ -750,6 +754,15 @@ public class OWSWebSocket: NSObject {
             return .closed(reason: "isCensorshipCircumventionActive")
         }
 
+        if SignalProxy.isEnabled {
+            if #available(iOS 13, *) {
+                // All good, native websockets support the proxy
+            } else {
+                // Starscream doesn't support the proxy
+                return .closed(reason: "signalProxyIsEnabled")
+            }
+        }
+
         if let currentWebSocket = self.currentWebSocket,
            currentWebSocket.hasPendingRequests {
             return .open(reason: "hasPendingRequests")
@@ -1073,6 +1086,17 @@ public class OWSWebSocket: NSObject {
 
     @objc
     private func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        if Self.verboseLogging {
+            Logger.info("\(self.logPrefix)")
+        }
+
+        applyDesiredSocketState()
+    }
+
+    @objc
+    private func isSignalProxyReadyDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         if Self.verboseLogging {
