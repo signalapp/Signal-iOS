@@ -67,7 +67,14 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         defer { self.contents = contents }
 
         let useProxySection = OWSTableSection()
-        useProxySection.footerTitle = NSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy")
+        useProxySection.footerAttributedTitle = .composed(of: [
+            NSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
+            " ",
+            CommonStrings.learnMore.styled(with: .link(URL(string: "https://support.signal.org/hc/en-us/articles/360056052052-Proxy-Support")!))
+        ]).styled(
+            with: .font(.ows_dynamicTypeCaption1Clamped),
+            .color(Theme.secondaryTextAndIconColor)
+        )
         useProxySection.add(.switch(
             withText: NSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
             isOn: { [weak self] in
