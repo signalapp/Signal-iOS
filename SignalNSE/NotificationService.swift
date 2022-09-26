@@ -207,6 +207,19 @@ class NotificationService: UNNotificationServiceExtension {
             return completeSilently(logger: logger)
         }
 
+        if SignalProxy.isEnabled {
+            if !SignalProxy.isEnabledAnReady {
+                Logger.info("Waiting for signal proxy to be ready for message fetch.")
+                NotificationCenter.default.observe(once: .isSignalProxyReadyDidChange)
+                    .done { [weak self] _ in
+                        self?.fetchAndProcessMessages(logger: logger)
+                    }
+                return
+            }
+
+            Logger.info("Using signal proxy for message fetch.")
+        }
+
         environment.processingMessageCounter.increment()
 
         logger.info("Beginning message fetch.")
