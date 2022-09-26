@@ -6,15 +6,17 @@ import SessionUIKit
 final class ScanQRCodeWrapperVC: BaseVC {
     var delegate: (UIViewController & QRScannerDelegate)? = nil
     var isPresentedModally = false
-    private let message: String
+    
+    private let message: String?
     private let scanQRCodeVC = QRCodeScanningViewController()
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask { return .portrait }
     
     // MARK: - Lifecycle
     
-    init(message: String) {
+    init(message: String?) {
         self.message = message
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -43,27 +45,34 @@ final class ScanQRCodeWrapperVC: BaseVC {
         scanQRCodeVCView.pin(.leading, to: .leading, of: view)
         scanQRCodeVCView.pin(.trailing, to: .trailing, of: view)
         scanQRCodeVCView.autoPinEdge(.top, to: .top, of: view)
-        scanQRCodeVCView.autoPinToSquareAspectRatio()
         
-        // Set up bottom view
-        let bottomView = UIView()
-        view.addSubview(bottomView)
-        bottomView.pin(.top, to: .bottom, of: scanQRCodeVCView)
-        bottomView.pin(.leading, to: .leading, of: view)
-        bottomView.pin(.trailing, to: .trailing, of: view)
-        bottomView.pin(.bottom, to: .bottom, of: view)
-        
-        // Set up explanation label
-        let explanationLabel = UILabel()
-        explanationLabel.text = message
-        explanationLabel.themeTextColor = .textPrimary
-        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.numberOfLines = 0
-        bottomView.addSubview(explanationLabel)
-        explanationLabel.autoPinWidthToSuperview(withMargin: 32)
-        explanationLabel.autoPinHeightToSuperview(withMargin: 32)
+        if let message = message {
+            scanQRCodeVCView.autoPinToSquareAspectRatio()
+            
+            // Set up bottom view
+            let bottomView = UIView()
+            view.addSubview(bottomView)
+            bottomView.pin(.top, to: .bottom, of: scanQRCodeVCView)
+            bottomView.pin(.leading, to: .leading, of: view)
+            bottomView.pin(.trailing, to: .trailing, of: view)
+            bottomView.pin(.bottom, to: .bottom, of: view)
+            
+            // Set up explanation label
+            let explanationLabel: UILabel = UILabel()
+            explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+            explanationLabel.text = message
+            explanationLabel.themeTextColor = .textPrimary
+            explanationLabel.textAlignment = .center
+            explanationLabel.lineBreakMode = .byWordWrapping
+            explanationLabel.numberOfLines = 0
+            bottomView.addSubview(explanationLabel)
+            
+            explanationLabel.autoPinWidthToSuperview(withMargin: 32)
+            explanationLabel.autoPinHeightToSuperview(withMargin: 32)
+        }
+        else {
+            scanQRCodeVCView.autoPinEdge(.bottom, to: .bottom, of: view)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

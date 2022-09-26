@@ -1025,6 +1025,7 @@ extension ConversationVC:
     }
     
     func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?) {
+        guard viewModel.threadData.canWrite else { return }
         guard SessionId.Prefix(from: sessionId) == .blinded else {
             Storage.shared.write { db in
                 try SessionThread.fetchOrCreate(db, id: sessionId, variant: .contact)
@@ -1463,7 +1464,7 @@ extension ConversationVC:
                         attributes: [ .font: UIFont.boldSystemFont(ofSize: Values.smallFontSize) ],
                         range: (message as NSString).range(of: finalName)
                     ),
-                confirmTitle: "Join",
+                confirmTitle: "JOIN_COMMUNITY_BUTTON_TITLE".localized(),
                 onConfirm: { modal in
                     guard let presentingViewController: UIViewController = modal.presentingViewController else {
                         return

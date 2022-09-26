@@ -198,7 +198,7 @@ final class QuoteView: UIView {
         bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
         
         ThemeManager.onThemeChange(observer: bodyLabel) { [weak bodyLabel] theme, primaryColor in
-            guard let textColor: UIColor = theme.colors[targetThemeColor] else { return }
+            guard let textColor: UIColor = theme.color(for: targetThemeColor) else { return }
             
             bodyLabel?.attributedText = body
                 .map {

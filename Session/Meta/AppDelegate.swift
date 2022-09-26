@@ -633,7 +633,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
         
-        homeViewController.createNewDMFromDeepLink(sessionID: sessionId)
+        homeViewController.createNewDMFromDeepLink(sessionId: sessionId)
     }
         
     // MARK: - Call handling

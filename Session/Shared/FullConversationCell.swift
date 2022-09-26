@@ -253,7 +253,7 @@ public final class FullConversationCell: UITableViewCell {
         bottomLabelStackView.isHidden = false
         
         ThemeManager.onThemeChange(observer: displayNameLabel) { [weak displayNameLabel] theme, _ in
-            guard let textColor: UIColor = theme.colors[.textPrimary] else { return }
+            guard let textColor: UIColor = theme.color(for: .textPrimary) else { return }
                 
             displayNameLabel?.attributedText = NSMutableAttributedString(
                 string: cellViewModel.displayName,
@@ -262,7 +262,7 @@ public final class FullConversationCell: UITableViewCell {
         }
         
         ThemeManager.onThemeChange(observer: displayNameLabel) { [weak self, weak snippetLabel] theme, _ in
-            guard let textColor: UIColor = theme.colors[.textPrimary] else { return }
+            guard let textColor: UIColor = theme.color(for: .textPrimary) else { return }
             
             snippetLabel?.attributedText = self?.getHighlightedSnippet(
                 content: Interaction.previewText(
@@ -302,7 +302,7 @@ public final class FullConversationCell: UITableViewCell {
         timestampLabel.isHidden = true
         
         ThemeManager.onThemeChange(observer: displayNameLabel) { [weak self, weak displayNameLabel] theme, _ in
-            guard let textColor: UIColor = theme.colors[.textPrimary] else { return }
+            guard let textColor: UIColor = theme.color(for: .textPrimary) else { return }
             
             displayNameLabel?.attributedText = self?.getHighlightedSnippet(
                 content: cellViewModel.displayName,
@@ -321,7 +321,7 @@ public final class FullConversationCell: UITableViewCell {
                 bottomLabelStackView.isHidden = (cellViewModel.threadMemberNames ?? "").isEmpty
         
                 ThemeManager.onThemeChange(observer: displayNameLabel) { [weak self, weak snippetLabel] theme, _ in
-                    guard let textColor: UIColor = theme.colors[.textPrimary] else { return }
+                    guard let textColor: UIColor = theme.color(for: .textPrimary) else { return }
                     if cellViewModel.threadVariant == .closedGroup {
                         snippetLabel?.attributedText = self?.getHighlightedSnippet(
                             content: (cellViewModel.threadMemberNames ?? ""),
@@ -393,7 +393,7 @@ public final class FullConversationCell: UITableViewCell {
             typingIndicatorView.stopAnimation()
             
             ThemeManager.onThemeChange(observer: snippetLabel) { [weak self, weak snippetLabel] theme, _ in
-                guard let textColor: UIColor = theme.colors[.textPrimary] else { return }
+                guard let textColor: UIColor = theme.color(for: .textPrimary) else { return }
                 
                 snippetLabel?.attributedText = self?.getSnippet(
                     cellViewModel: cellViewModel,

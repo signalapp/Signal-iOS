@@ -43,7 +43,7 @@ public enum ThemeManager {
             
             // Only trigger the UI update if the primary colour wasn't changed (otherwise we'd be doing
             // an extra UI update
-            if let defaultPrimaryColor: Theme.PrimaryColor = Theme.PrimaryColor(color: currentTheme.colors[.defaultPrimary]) {
+            if let defaultPrimaryColor: Theme.PrimaryColor = Theme.PrimaryColor(color: currentTheme.color(for: .defaultPrimary)) {
                 guard primaryColor == defaultPrimaryColor else {
                     ThemeManager.primaryColor = defaultPrimaryColor
                     return
@@ -122,17 +122,17 @@ public enum ThemeManager {
     }
     
     public static func applyNavigationStyling() {
-        let textPrimary: UIColor = (ThemeManager.currentTheme.colors[.textPrimary] ?? .white)
+        let textPrimary: UIColor = (ThemeManager.currentTheme.color(for: .textPrimary) ?? .white)
         
         // Set the `mainWindow.tintColor` for system screens to use the right colour for text
         ThemeManager.mainWindow?.tintColor = textPrimary
         ThemeManager.mainWindow?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
         
-        // Update the nav bars to use the right colours
-        UINavigationBar.appearance().barTintColor = ThemeManager.currentTheme.colors[.backgroundPrimary]
+        // Update the nav bars to use the right colours (we default to the 'primary' value)
+        UINavigationBar.appearance().barTintColor = ThemeManager.currentTheme.color(for: .backgroundPrimary)
         UINavigationBar.appearance().isTranslucent = false
         UINavigationBar.appearance().tintColor = textPrimary
-        UINavigationBar.appearance().shadowImage = ThemeManager.currentTheme.colors[.backgroundPrimary]?.toImage()
+        UINavigationBar.appearance().shadowImage = ThemeManager.currentTheme.color(for: .backgroundPrimary)?.toImage()
         UINavigationBar.appearance().titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: textPrimary
         ]
@@ -144,7 +144,7 @@ public enum ThemeManager {
         UIBarButtonItem.appearance().tintColor = textPrimary
 
         // Update toolbars to use the right colours
-        UIToolbar.appearance().barTintColor = ThemeManager.currentTheme.colors[.backgroundPrimary]
+        UIToolbar.appearance().barTintColor = ThemeManager.currentTheme.color(for: .backgroundPrimary)
         UIToolbar.appearance().isTranslucent = false
         UIToolbar.appearance().tintColor = textPrimary
         
@@ -154,8 +154,8 @@ public enum ThemeManager {
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = ThemeManager.currentTheme.colors[.backgroundPrimary]
-            appearance.shadowImage = ThemeManager.currentTheme.colors[.backgroundPrimary]?.toImage()
+            appearance.backgroundColor = ThemeManager.currentTheme.color(for: .backgroundPrimary)
+            appearance.shadowImage = ThemeManager.currentTheme.color(for: .backgroundPrimary)?.toImage()
             appearance.titleTextAttributes = [
                 NSAttributedString.Key.foregroundColor: textPrimary
             ]
@@ -178,47 +178,88 @@ public enum ThemeManager {
         }
         
         // Note: 'UINavigationBar.appearance' only affects newly created nav bars so we need
-        // to force-update the current navigation bar (unfortunately the only way to do this
+        // to force-update any current navigation bar (unfortunately the only way to do this
         // is to remove the nav controller from the view hierarchy and then re-add it)
-        let currentNavController: UINavigationController? = {
-            var targetViewController: UIViewController? = ThemeManager.mainWindow?.rootViewController
-            
-            while targetViewController?.presentedViewController != nil {
-                targetViewController = targetViewController?.presentedViewController
+        func updateIfNeeded(viewController: UIViewController?) {
+            guard let viewController: UIViewController = viewController else { return }
+            guard
+                let navController: UINavigationController = ((viewController as? UINavigationController) ?? viewController.navigationController),
+                let superview: UIView = navController.view.superview,
+                !navController.isNavigationBarHidden
+            else {
+                updateIfNeeded(viewController:
+                    viewController.presentedViewController ??
+                    viewController.navigationController?.presentedViewController
+                )
+                return
             }
             
-            return (
-                (targetViewController as? UINavigationController) ??
-                targetViewController?.navigationController
-            )
-        }()
-        
-        if
-            let navController: UINavigationController = currentNavController,
-            let superview: UIView = navController.view.superview,
-            !navController.isNavigationBarHidden
-        {
+            // Apply non-primary styling if needed
+            applyNavigationStylingIfNeeded(to: viewController)
+            
+            // Re-attach to the UI
             navController.view.removeFromSuperview()
             superview.addSubview(navController.view)
             navController.topViewController?.setNeedsStatusBarAppearanceUpdate()
+            
+            // Recurse through the rest of the UI
+            updateIfNeeded(viewController:
+                viewController.presentedViewController ??
+                viewController.navigationController?.presentedViewController
+            )
+        }
+        
+        updateIfNeeded(viewController: ThemeManager.mainWindow?.rootViewController)
+    }
+    
+    public static func applyNavigationStylingIfNeeded(to viewController: UIViewController) {
+        // Will use the 'primary' style for all other cases
+        guard
+            let navController: UINavigationController = ((viewController as? UINavigationController) ?? viewController.navigationController),
+            (navController.viewControllers.first as? ThemedNavigation)?.navigationStyle == .secondary
+        else { return }
+        
+        navController.navigationBar.barTintColor = ThemeManager.currentTheme.color(for: .backgroundSecondary)
+        navController.navigationBar.shadowImage = ThemeManager.currentTheme.color(for: .backgroundSecondary)?.toImage()
+        
+        // Note: Looks like there were changes to the appearance behaviour in iOS 15, unfortunately
+        // this breaks parts of the old 'UINavigationBar.appearance()' logic so we need to do everything
+        // again using the new API...
+        if #available(iOS 15.0, *) {
+            let textPrimary: UIColor = (ThemeManager.currentTheme.color(for: .textPrimary) ?? .white)
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = ThemeManager.currentTheme.color(for: .backgroundSecondary)
+            appearance.shadowImage = ThemeManager.currentTheme.color(for: .backgroundSecondary)?.toImage()
+            appearance.titleTextAttributes = [
+                NSAttributedString.Key.foregroundColor: textPrimary
+            ]
+            appearance.largeTitleTextAttributes = [
+                NSAttributedString.Key.foregroundColor: textPrimary
+            ]
+            
+            navController.navigationBar.standardAppearance = appearance
+            navController.navigationBar.scrollEdgeAppearance = appearance
         }
     }
     
     public static func applyWindowStyling() {
         mainWindow?.overrideUserInterfaceStyle = {
+            guard !ThemeManager.matchSystemNightModeSetting else { return .unspecified }
+            
             switch ThemeManager.currentTheme.interfaceStyle {
                 case .light: return .light
                 case .dark, .unspecified: return .dark
                 @unknown default: return .dark
             }
         }()
-        mainWindow?.backgroundColor = ThemeManager.currentTheme.colors[.backgroundPrimary]
+        mainWindow?.backgroundColor = ThemeManager.currentTheme.color(for: .backgroundPrimary)
     }
     
     public static func onThemeChange(observer: AnyObject, callback: @escaping (Theme, Theme.PrimaryColor) -> ()) {
         ThemeManager.uiRegistry.setObject(
             ThemeApplier(
-                existingApplier: nil,
+                existingApplier: ThemeManager.get(for: observer),
                 info: []
             ) { theme in callback(theme, ThemeManager.primaryColor) },
             forKey: observer
@@ -262,7 +303,7 @@ public enum ThemeManager {
                     return
                 }
 
-                view?[keyPath: keyPath] = ThemeManager.resolvedColor(theme.colors[value])
+                view?[keyPath: keyPath] = ThemeManager.resolvedColor(theme.color(for: value))
             },
             forKey: view
         )
@@ -284,7 +325,7 @@ public enum ThemeManager {
                     return
                 }
                 
-                view?[keyPath: keyPath] = ThemeManager.resolvedColor(theme.colors[value])?.cgColor
+                view?[keyPath: keyPath] = ThemeManager.resolvedColor(theme.color(for: value))?.cgColor
             },
             forKey: view
         )
@@ -339,7 +380,7 @@ internal class ThemeApplier {
             .filter { $0.info != info }
         
         // Automatically apply the theme immediately
-        self.apply(theme: ThemeManager.currentTheme)
+        self.apply(theme: ThemeManager.currentTheme, isInitialApplication: true)
     }
     
     // MARK: - Functions
@@ -350,8 +391,12 @@ internal class ThemeApplier {
         return self
     }
     
-    fileprivate func apply(theme: Theme) {
+    fileprivate func apply(theme: Theme, isInitialApplication: Bool = false) {
         self.applyTheme(theme)
+        
+        // For the initial application of a ThemeApplier we don't want to apply the other
+        // appliers (they should have already been applied so doing so is redundant
+        guard !isInitialApplication else { return }
         
         // If there are otherAppliers stored against this one then trigger those as well
         self.otherAppliers?.forEach { applier in

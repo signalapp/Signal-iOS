@@ -39,7 +39,7 @@ class VideoPreviewVC: UIViewController, CameraManagerDelegate {
         result.set(.height, to: height)
         
         ThemeManager.onThemeChange(observer: result) { [weak layer] theme, _ in
-            guard let backgroundPrimary: UIColor = theme.colors[.backgroundPrimary] else { return }
+            guard let backgroundPrimary: UIColor = theme.color(for: .backgroundPrimary) else { return }
             
             layer?.colors = [
                 backgroundPrimary.withAlphaComponent(0.4).cgColor,

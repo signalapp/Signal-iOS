@@ -2,6 +2,7 @@
 
 import UIKit
 import GRDB
+import DifferenceKit
 import PromiseKit
 import SessionUIKit
 import SessionMessagingKit
@@ -21,23 +22,117 @@ private final class TableView: UITableView {
 }
 
 final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate, TableViewTouchDelegate, UITextFieldDelegate, UIScrollViewDelegate {
+    private enum Section: Int, Differentiable, Equatable, Hashable {
+        case contacts
+    }
+    
     private let contactProfiles: [Profile] = Profile.fetchAllContactProfiles(excludeCurrentUser: true)
+    private lazy var data: [ArraySection<Section, Profile>] = [
+        ArraySection(model: .contacts, elements: contactProfiles)
+    ]
     private var selectedContacts: Set<String> = []
+    private var searchText: String = ""
     
     // MARK: - Components
     
-    private lazy var nameTextField = TextField(
-        placeholder: "vc_create_closed_group_text_field_hint".localized()
-    )
+    private static let textFieldHeight: CGFloat = 50
+    private static let searchBarHeight: CGFloat = (36 + (Values.mediumSpacing * 2))
+    
+    private lazy var nameTextField: TextField = {
+        let result = TextField(
+            placeholder: "vc_create_closed_group_text_field_hint".localized(),
+            usesDefaultHeight: false,
+            customHeight: NewClosedGroupVC.textFieldHeight
+        )
+        result.set(.height, to: NewClosedGroupVC.textFieldHeight)
+        result.themeBorderColor = .borderSeparator
+        result.layer.cornerRadius = 13
+        result.delegate = self
+        
+        return result
+    }()
+    
+    private lazy var searchBar: ContactsSearchBar = {
+        let result = ContactsSearchBar()
+        result.themeTintColor = .textPrimary
+        result.themeBackgroundColor = .clear
+        result.delegate = self
+        result.set(.height, to: NewClosedGroupVC.searchBarHeight)
+
+        return result
+    }()
+    
+    private lazy var headerView: UIView = {
+        let result: UIView = UIView(
+            frame: CGRect(
+                x: 0, y: 0,
+                width: UIScreen.main.bounds.width,
+                height: (
+                    Values.mediumSpacing +
+                    NewClosedGroupVC.textFieldHeight +
+                    NewClosedGroupVC.searchBarHeight
+                )
+            )
+        )
+        result.addSubview(nameTextField)
+        result.addSubview(searchBar)
+        
+        nameTextField.pin(.top, to: .top, of: result, withInset: Values.mediumSpacing)
+        nameTextField.pin(.leading, to: .leading, of: result, withInset: Values.largeSpacing)
+        nameTextField.pin(.trailing, to: .trailing, of: result, withInset: -Values.largeSpacing)
+        
+        // Note: The top & bottom padding is built into the search bar
+        searchBar.pin(.top, to: .bottom, of: nameTextField)
+        searchBar.pin(.leading, to: .leading, of: result, withInset: Values.largeSpacing)
+        searchBar.pin(.trailing, to: .trailing, of: result, withInset: -Values.largeSpacing)
+        searchBar.pin(.bottom, to: .bottom, of: result)
+        
+        return result
+    }()
 
     private lazy var tableView: TableView = {
         let result: TableView = TableView()
         result.separatorStyle = .none
         result.themeBackgroundColor = .clear
+        result.showsVerticalScrollIndicator = false
+        result.tableHeaderView = headerView
+        result.contentInset = UIEdgeInsets(
+            top: 0,
+            leading: 0,
+            bottom: Values.footerGradientHeight(window: UIApplication.shared.keyWindow),
+            trailing: 0
+        )
         result.register(view: UserCell.self)
         result.touchDelegate = self
         result.dataSource = self
         result.delegate = self
+        if #available(iOS 15.0, *) {
+            result.sectionHeaderTopPadding = 0
+        }
+        
+        return result
+    }()
+    
+    private lazy var fadeView: GradientView = {
+        let result: GradientView = GradientView()
+        result.themeBackgroundGradient = [
+            .value(.backgroundSecondary, alpha: 0), // Want this to take up 20% (~25pt)
+            .backgroundSecondary,
+            .backgroundSecondary,
+            .backgroundSecondary,
+            .backgroundSecondary
+        ]
+        result.set(.height, to: Values.footerGradientHeight(window: UIApplication.shared.keyWindow))
+        
+        return result
+    }()
+    
+    private lazy var createGroupButton: OutlineButton = {
+        let result = OutlineButton(style: .regular, size: .large)
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.setTitle("CREATE_GROUP_BUTTON_TITLE".localized(), for: .normal)
+        result.addTarget(self, action: #selector(createClosedGroup), for: .touchUpInside)
+        result.set(.width, to: 160)
         
         return result
     }()
@@ -47,17 +142,14 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.themeBackgroundColor = .backgroundSecondary
+        
         let customTitleFontSize = Values.largeFontSize
         setNavBarTitle("vc_create_closed_group_title".localized(), customFontSize: customTitleFontSize)
         
-        // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.themeTintColor = .textPrimary
-        navigationItem.leftBarButtonItem = closeButton
-        
-        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(createClosedGroup))
-        doneButton.themeTintColor = .textPrimary
-        navigationItem.rightBarButtonItem = doneButton
+        navigationItem.rightBarButtonItem = closeButton
         
         // Set up content
         setUpViewHierarchy()
@@ -90,38 +182,36 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             return
         }
         
-        let nameTextFieldContainer: UIView = UIView()
-        view.addSubview(nameTextFieldContainer)
-        nameTextFieldContainer.pin(.top, to: .top, of: view)
-        nameTextFieldContainer.pin(.leading, to: .leading, of: view)
-        nameTextFieldContainer.pin(.trailing, to: .trailing, of: view)
-        
-        nameTextFieldContainer.addSubview(nameTextField)
-        nameTextField.pin(.top, to: .top, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
-        nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.largeSpacing)
-        nameTextField.pin(.trailing, to: .trailing, of: nameTextFieldContainer, withInset: -Values.largeSpacing)
-        nameTextField.pin(.bottom, to: .bottom, of: nameTextFieldContainer, withInset: -Values.largeSpacing)
-        
         view.addSubview(tableView)
-        tableView.pin(.top, to: .bottom, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
+        tableView.pin(.top, to: .top, of: view)
         tableView.pin(.leading, to: .leading, of: view)
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
+        
+        view.addSubview(fadeView)
+        fadeView.pin(.leading, to: .leading, of: view)
+        fadeView.pin(.trailing, to: .trailing, of: view)
+        fadeView.pin(.bottom, to: .bottom, of: view)
+        
+        view.addSubview(createGroupButton)
+        createGroupButton.center(.horizontal, in: view)
+        createGroupButton.pin(.bottom, to: .bottom, of: view.safeAreaLayoutGuide, withInset: -Values.smallSpacing)
     }
     
     // MARK: - Table View Data Source
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return contactProfiles.count
+        return data[section].elements.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let profile: Profile = data[indexPath.section].elements[indexPath.row]
         let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
         cell.update(
-            with: contactProfiles[indexPath.row].id,
-            profile: contactProfiles[indexPath.row],
+            with: profile.id,
+            profile: profile,
             isZombie: false,
-            accessory: .tick(isSelected: selectedContacts.contains(contactProfiles[indexPath.row].id))
+            accessory: .tick(isSelected: selectedContacts.contains(profile.id))
         )
         
         return cell
@@ -138,11 +228,13 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if !selectedContacts.contains(contactProfiles[indexPath.row].id) {
-            selectedContacts.insert(contactProfiles[indexPath.row].id)
+        let profileId: String = data[indexPath.section].elements[indexPath.row].id
+        
+        if !selectedContacts.contains(profileId) {
+            selectedContacts.insert(profileId)
         }
         else {
-            selectedContacts.remove(contactProfiles[indexPath.row].id)
+            selectedContacts.remove(profileId)
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
@@ -151,11 +243,24 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let nameTextFieldCenterY = nameTextField.convert(nameTextField.bounds.center, to: scrollView).y
-        let tableViewOriginY = tableView.convert(tableView.bounds.origin, to: scrollView).y
-        let titleLabelAlpha = 1 - (scrollView.contentOffset.y - nameTextFieldCenterY) / (tableViewOriginY - nameTextFieldCenterY)
-        let crossfadeLabelAlpha = 1 - titleLabelAlpha
-        navBarTitleLabel.alpha = titleLabelAlpha
-        crossfadeLabel.alpha = crossfadeLabelAlpha
+        let shouldShowGroupNameInTitle: Bool = (scrollView.contentOffset.y > nameTextFieldCenterY)
+        let groupNameLabelVisible: Bool = (crossfadeLabel.alpha >= 1)
+        
+        switch (shouldShowGroupNameInTitle, groupNameLabelVisible) {
+            case (true, false):
+                UIView.animate(withDuration: 0.2) {
+                    self.navBarTitleLabel.alpha = 0
+                    self.crossfadeLabel.alpha = 1
+                }
+                
+            case (false, true):
+                UIView.animate(withDuration: 0.2) {
+                    self.navBarTitleLabel.alpha = 1
+                    self.crossfadeLabel.alpha = 0
+                }
+                
+            default: break
+        }
     }
     
     // MARK: - Interaction
@@ -179,14 +284,23 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     
     @objc private func createClosedGroup() {
         func showError(title: String, message: String = "") {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-            presentAlert(alert)
+            let modal: ConfirmationModal = ConfirmationModal(
+                info: ConfirmationModal.Info(
+                    title: title,
+                    explanation: message,
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .textPrimary
+                )
+            )
+            present(modal, animated: true)
         }
-        guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
+        guard
+            let name: String = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+            name.count > 0
+        else {
             return showError(title: "vc_create_closed_group_group_name_missing_error".localized())
         }
-        guard name.count < 64 else {
+        guard name.count < 30 else {
             return showError(title: "vc_create_closed_group_group_name_too_long_error".localized())
         }
         guard selectedContacts.count >= 1 else {
@@ -227,5 +341,52 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         presentingViewController?.dismiss(animated: true, completion: nil)
         
         SessionApp.homeViewController.wrappedValue?.createNewDM()
+    }
+}
+
+extension NewClosedGroupVC: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        self.searchText = searchText
+        
+        let changeset: StagedChangeset<[ArraySection<Section, Profile>]> = StagedChangeset(
+            source: data,
+            target: [
+                ArraySection(
+                    model: .contacts,
+                    elements: (searchText.isEmpty ?
+                        contactProfiles :
+                        contactProfiles
+                            .filter { $0.displayName().range(of: searchText, options: [.caseInsensitive]) != nil }
+                    )
+                )
+            ]
+        )
+        
+        self.tableView.reload(
+            using: changeset,
+            deleteSectionsAnimation: .none,
+            insertSectionsAnimation: .none,
+            reloadSectionsAnimation: .none,
+            deleteRowsAnimation: .none,
+            insertRowsAnimation: .none,
+            reloadRowsAnimation: .none,
+            interrupt: { $0.changeCount > 100 }
+        ) { [weak self] updatedData in
+            self?.data = updatedData
+        }
+    }
+    
+    func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.setShowsCancelButton(true, animated: true)
+        return true
+    }
+    
+    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        searchBar.setShowsCancelButton(false, animated: true)
+        return true
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }

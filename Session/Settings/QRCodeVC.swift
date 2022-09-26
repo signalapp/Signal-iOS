@@ -10,7 +10,6 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
-    private var tabBarTopConstraint: NSLayoutConstraint!
     
     // MARK: - Components
     
@@ -57,40 +56,30 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
         
         setNavBarTitle("vc_qr_code_title".localized())
         
+        // Set up tab bar
+        view.addSubview(tabBar)
+        tabBar.pin(.top, to: .top, of: view.safeAreaLayoutGuide)
+        tabBar.pin(.leading, to: .leading, of: view)
+        tabBar.pin(.trailing, to: .trailing, of: view)
+        
         // Set up page VC
+        let containerView: UIView = UIView()
+        view.addSubview(containerView)
+        containerView.pin(.top, to: .bottom, of: tabBar)
+        containerView.pin(.leading, to: .leading, of: view)
+        containerView.pin(.trailing, to: .trailing, of: view)
+        containerView.pin(.bottom, to: .bottom, of: view)
+        
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ viewMyQRCodeVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
         pageVC.setViewControllers([ viewMyQRCodeVC ], direction: .forward, animated: false, completion: nil)
+        addChild(pageVC)
+        containerView.addSubview(pageVC.view)
         
-        // Set up tab bar
-        view.addSubview(tabBar)
-        tabBar.pin(.leading, to: .leading, of: view)
-        tabBarTopConstraint = tabBar.autoPinEdge(toSuperviewSafeArea: .top)
-        view.pin(.trailing, to: .trailing, of: tabBar)
-        
-        // Set up page VC constraints
-        let pageVCView = pageVC.view!
-        view.addSubview(pageVCView)
-        
-        pageVCView.pin(.leading, to: .leading, of: view)
-        pageVCView.pin(.top, to: .bottom, of: tabBar)
-        view.pin(.trailing, to: .trailing, of: pageVCView)
-        view.pin(.bottom, to: .bottom, of: pageVCView)
-        
-        let screen = UIScreen.main.bounds
-        pageVCView.set(.width, to: screen.width)
-        
-        let height: CGFloat = ((navigationController?.view.bounds.height ?? 0) - (navigationController?.navigationBar.height() ?? 0) - TabBar.snHeight)
-        pageVCView.set(.height, to: height)
-        viewMyQRCodeVC.constrainHeight(to: height)
-        scanQRCodePlaceholderVC.constrainHeight(to: height)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        tabBarTopConstraint.constant = navigationController!.navigationBar.height()
+        pageVC.view.pin(to: containerView)
+        pageVC.didMove(toParent: self)
     }
     
     // MARK: - General
@@ -157,7 +146,6 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
 
 private final class ViewMyQRCodeVC : UIViewController {
     weak var qrCodeVC: QRCodeVC!
-    private var bottomConstraint: NSLayoutConstraint!
     
     // MARK: - Lifecycle
     
@@ -180,8 +168,11 @@ private final class ViewMyQRCodeVC : UIViewController {
             image: QRCode.generate(for: getUserHexEncodedPublicKey(), hasBackground: false)
                 .withRenderingMode(.alwaysTemplate)
         )
-        qrCodeImageView.set(.height, to: isIPhone5OrSmaller ? 180 : 240)
-        qrCodeImageView.set(.width, to: isIPhone5OrSmaller ? 180 : 240)
+        qrCodeImageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        qrCodeImageView.set(.width, to: .height, of: qrCodeImageView)
+        qrCodeImageView.heightAnchor
+            .constraint(lessThanOrEqualToConstant: (isIPhone5OrSmaller ? 180 : 240))
+            .isActive = true
         
 #if targetEnvironment(simulator)
 #else
@@ -198,15 +189,15 @@ private final class ViewMyQRCodeVC : UIViewController {
             withInset: 5    // The QRCode image has about 6pt of padding and we want 11 in total
         )
         
-        ThemeManager.onThemeChange(observer: qrCodeImageView) { theme, _ in
+        ThemeManager.onThemeChange(observer: qrCodeImageView) { [weak qrCodeImageView, weak qrCodeImageViewBackgroundView] theme, _ in
             switch theme.interfaceStyle {
                 case .light:
-                    qrCodeImageView.themeTintColorForced = .theme(theme, color: .textPrimary)
-                    qrCodeImageViewBackgroundView.themeBackgroundColorForced = nil
+                    qrCodeImageView?.themeTintColorForced = .theme(theme, color: .textPrimary)
+                    qrCodeImageViewBackgroundView?.themeBackgroundColorForced = nil
                     
                 default:
-                    qrCodeImageView.themeTintColorForced = .theme(theme, color: .backgroundPrimary)
-                    qrCodeImageViewBackgroundView.themeBackgroundColorForced = .color(.white)
+                    qrCodeImageView?.themeTintColorForced = .theme(theme, color: .backgroundPrimary)
+                    qrCodeImageViewBackgroundView?.themeBackgroundColorForced = .color(.white)
             }
             
         }
@@ -237,33 +228,35 @@ private final class ViewMyQRCodeVC : UIViewController {
         // Set up share button container
         let shareButtonContainer = UIView()
         shareButtonContainer.addSubview(shareButton)
-        shareButton.pin(.leading, to: .leading, of: shareButtonContainer, withInset: 80)
         shareButton.pin(.top, to: .top, of: shareButtonContainer)
-        shareButtonContainer.pin(.trailing, to: .trailing, of: shareButton, withInset: 80)
-        shareButtonContainer.pin(.bottom, to: .bottom, of: shareButton, withInset: isIPhone6OrSmaller ? Values.largeSpacing : Values.onboardingButtonBottomOffset)
-        let spacing = isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing
+        shareButton.pin(.leading, to: .leading, of: shareButtonContainer, withInset: 80)
+        shareButton.pin(.trailing, to: .trailing, of: shareButtonContainer, withInset: -80)
+        shareButton.pin(.bottom, to: .bottom, of: shareButtonContainer)
         
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.spacer(withHeight: spacing), qrCodeImageViewContainer, UIView.spacer(withHeight: spacing),
-            explanationLabel, UIView.vStretchingSpacer(), shareButtonContainer ])
+        let spacing = (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
+        let stackView = UIStackView(
+            arrangedSubviews: [
+                titleLabel,
+                UIView.spacer(withHeight: spacing),
+                qrCodeImageViewContainer,
+                UIView.spacer(withHeight: spacing),
+                explanationLabel,
+                UIView.vStretchingSpacer(),
+                shareButtonContainer
+            ]
+        )
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: 0, right: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(
+            top: Values.largeSpacing,
+            left: Values.largeSpacing,
+            bottom: Values.smallSpacing,
+            right: Values.largeSpacing
+        )
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
-        stackView.pin(.leading, to: .leading, of: view)
-        stackView.pin(.top, to: .top, of: view)
-        view.pin(.trailing, to: .trailing, of: stackView)
-        bottomConstraint = view.pin(.bottom, to: .bottom, of: stackView)
-        
-        // Set up width constraint
-        view.set(.width, to: UIScreen.main.bounds.width)
-    }
-    
-    // MARK: - General
-    
-    func constrainHeight(to height: CGFloat) {
-        view.set(.height, to: height)
+        stackView.pin(to: view)
     }
     
     // MARK: - Interaction
@@ -311,25 +304,15 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         stackView.alignment = .center
         
         // Set up constraints
-        view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
-        view.pin(.trailing, to: .trailing, of: stackView, withInset: Values.massiveSpacing)
-        let verticalCenteringConstraint = stackView.center(.vertical, in: view)
-        verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
-    }
-    
-    func constrainHeight(to height: CGFloat) {
-        view.set(.height, to: height)
+        stackView.pin(.trailing, to: .trailing, of: view, withInset: -Values.massiveSpacing)
+        stackView.center(.vertical, in: view, withInset: -16) // Makes things appear centered visually
     }
     
     @objc private func requestCameraAccess() {
-        ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
-            if hasCameraAccess {
-                self?.qrCodeVC.handleCameraAccessGranted()
-            } else {
-                // Do nothing
-            }
-        })
+        Permissions.requestCameraPermissionIfNeeded { [weak self] in
+            self?.qrCodeVC.handleCameraAccessGranted()
+        }
     }
 }

@@ -110,7 +110,7 @@ final class ConversationTitleView: UIView {
         )
         
         ThemeManager.onThemeChange(observer: self.subtitleLabel) { [weak subtitleLabel] theme, _ in
-            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
             //subtitleLabel?.attributedText = subtitle
             guard Date().timeIntervalSince1970 > (mutedUntilTimestamp ?? 0) else {
                 subtitleLabel?.attributedText = NSAttributedString(

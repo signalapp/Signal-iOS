@@ -56,7 +56,7 @@ public final class TextField: UITextField {
                 default: self?.keyboardAppearance = .dark
             }
             
-            if let textSecondary: UIColor = theme.colors[.textSecondary], let placeholder: String = self?.placeholder {
+            if let textSecondary: UIColor = theme.color(for: .textSecondary), let placeholder: String = self?.placeholder {
                 self?.attributedPlaceholder = NSAttributedString(
                     string: placeholder,
                     attributes: [ .foregroundColor: textSecondary]

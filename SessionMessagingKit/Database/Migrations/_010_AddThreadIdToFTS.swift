@@ -6,7 +6,7 @@ import SessionUtilitiesKit
 
 /// This migration recreates the interaction FTS table and adds the threadId so we can do a performant in-conversation
 /// searh (currently it's much slower than the global search)
-enum _009_AddThreadIdToFTS: Migration {
+enum _010_AddThreadIdToFTS: Migration {
     static let target: TargetMigrations.Identifier = .messagingKit
     static let identifier: String = "AddThreadIdToFTS"
     static let needsConfigSync: Bool = false

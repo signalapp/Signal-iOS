@@ -30,7 +30,7 @@ final class PathVC: BaseVC {
         result.set(.height, to: 64)
         
         ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
-            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
             
             result?.color = textPrimary
         }
@@ -96,7 +96,12 @@ final class PathVC: BaseVC {
         let mainStackView = UIStackView(arrangedSubviews: [ explanationLabel, topSpacer, pathStackViewContainer, bottomSpacer, learnMoreButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
-        mainStackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
+        mainStackView.layoutMargins = UIEdgeInsets(
+            top: Values.largeSpacing,
+            left: Values.largeSpacing,
+            bottom: Values.smallSpacing,
+            right: Values.largeSpacing
+        )
         mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
         mainStackView.pin(to: view)

@@ -22,15 +22,6 @@ public enum Theme: String, CaseIterable, Codable, EnumStringSetting {
         }
     }
     
-    public var colors: [ThemeValue: UIColor] {
-        switch self {
-            case .classicDark: return Theme_ClassicDark.theme
-            case .classicLight: return Theme_ClassicLight.theme
-            case .oceanDark: return Theme_OceanDark.theme
-            case .oceanLight: return Theme_OceanLight.theme
-        }
-    }
-    
     public var interfaceStyle: UIUserInterfaceStyle {
         switch self {
             case .classicDark, .oceanDark: return .dark
@@ -44,6 +35,22 @@ public enum Theme: String, CaseIterable, Codable, EnumStringSetting {
             case .classicLight, .oceanLight: return .darkContent
         }
     }
+    
+    private var colors: [ThemeValue: UIColor] {
+        switch self {
+            case .classicDark: return Theme_ClassicDark.theme
+            case .classicLight: return Theme_ClassicLight.theme
+            case .oceanDark: return Theme_OceanDark.theme
+            case .oceanLight: return Theme_OceanLight.theme
+        }
+    }
+    
+    public func color(for value: ThemeValue) -> UIColor? {
+        switch value {
+            case .value(let value, let alpha): return color(for: value)?.withAlphaComponent(alpha)
+            default: return colors[value]
+        }
+    }
 }
 
 // MARK: - ThemeColors
@@ -52,9 +59,22 @@ public protocol ThemeColors {
     static var theme: [ThemeValue: UIColor] { get }
 }
 
+// MARK: - ThemedNavigation
+
+public enum ThemedNavigationStyle {
+    case primary
+    case secondary
+}
+
+public protocol ThemedNavigation {
+    var navigationStyle: ThemedNavigationStyle { get }
+}
+
 // MARK: - ThemeValue
 
-public enum ThemeValue {
+public indirect enum ThemeValue: Hashable {
+    case value(ThemeValue, alpha: CGFloat)
+    
     // General
     case white
     case black

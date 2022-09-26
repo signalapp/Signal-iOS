@@ -33,6 +33,7 @@ public class BaseVC: UIViewController {
         
         navigationItem.backButtonTitle = ""
         view.themeBackgroundColor = .backgroundPrimary
+        ThemeManager.applyNavigationStylingIfNeeded(to: self)
         
         setNeedsStatusBarAppearanceUpdate()
     }

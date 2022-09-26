@@ -38,15 +38,18 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     private lazy var tableView: UITableView = {
         let result: UITableView = UITableView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.themeBackgroundColor = .clear
         result.separatorStyle = .none
+        result.themeBackgroundColor = .clear
+        result.showsVerticalScrollIndicator = false
+        result.contentInset = UIEdgeInsets(
+            top: 0,
+            left: 0,
+            bottom: Values.footerGradientHeight(window: UIApplication.shared.keyWindow),
+            right: 0
+        )
         result.register(view: FullConversationCell.self)
         result.dataSource = self
         result.delegate = self
-
-        let bottomInset = Values.newConversationButtonBottomOffset + NewConversationButtonSet.expandedButtonSize + Values.largeSpacing + NewConversationButtonSet.collapsedButtonSize
-        result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
-        result.showsVerticalScrollIndicator = false
         
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
@@ -66,6 +69,20 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         result.numberOfLines = 0
         result.isHidden = true
 
+        return result
+    }()
+    
+    private lazy var fadeView: GradientView = {
+        let result: GradientView = GradientView()
+        result.themeBackgroundGradient = [
+            .value(.backgroundPrimary, alpha: 0), // Want this to take up 20% (~25pt)
+            .backgroundPrimary,
+            .backgroundPrimary,
+            .backgroundPrimary,
+            .backgroundPrimary
+        ]
+        result.set(.height, to: Values.footerGradientHeight(window: UIApplication.shared.keyWindow))
+        
         return result
     }()
 
@@ -93,6 +110,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         // the dataSource has the correct data)
         view.addSubview(tableView)
         view.addSubview(emptyStateLabel)
+        view.addSubview(fadeView)
         view.addSubview(clearAllButton)
         setupLayout()
 
@@ -153,13 +171,16 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             emptyStateLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.mediumSpacing),
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
+            fadeView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            fadeView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            fadeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
             clearAllButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             clearAllButton.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: -Values.largeSpacing
+                constant: -Values.smallSpacing
             ),
-            clearAllButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth),
-            clearAllButton.heightAnchor.constraint(equalToConstant: NewConversationButtonSet.collapsedButtonSize)
+            clearAllButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth)
         ])
     }
     

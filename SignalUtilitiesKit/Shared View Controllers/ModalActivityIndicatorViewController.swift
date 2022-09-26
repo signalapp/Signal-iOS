@@ -39,7 +39,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         result.set(.height, to: 64)
         
         ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
-            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
             
             result?.color = textPrimary
         }

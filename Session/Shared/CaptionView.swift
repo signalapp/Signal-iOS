@@ -109,7 +109,15 @@ private class CaptionView: UIView {
         return textView
     }()
 
-    let scrollFadeView = GradientView(from: .clear, to: .black)
+    let scrollFadeView: GradientView = {
+        let result: GradientView = GradientView()
+        result.themeBackgroundGradient = [
+            .clear,
+            .black
+        ]
+        
+        return result
+    }()
 
     // MARK: Initializers
 

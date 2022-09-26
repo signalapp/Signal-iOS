@@ -51,11 +51,23 @@ final class CallMessageCell: MessageCell {
     private lazy var container: UIView = {
         let result: UIView = UIView()
         result.themeBackgroundColor = .backgroundSecondary
-        result.set(.height, to: 50)
         result.layer.cornerRadius = 18
         result.addSubview(label)
         
-        label.autoCenterInSuperview()
+        label.pin(.top, to: .top, of: result, withInset: CallMessageCell.inset)
+        label.pin(
+            .left,
+            to: .left,
+            of: result,
+            withInset: ((CallMessageCell.inset * 2) + infoImageView.bounds.size.width)
+        )
+        label.pin(
+            .right,
+            to: .right,
+            of: result,
+            withInset: -((CallMessageCell.inset * 2) + infoImageView.bounds.size.width)
+        )
+        label.pin(.bottom, to: .bottom, of: result, withInset: -CallMessageCell.inset)
         result.addSubview(iconImageView)
         
         iconImageView.autoVCenterInSuperview()

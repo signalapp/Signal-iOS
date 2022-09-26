@@ -86,7 +86,7 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NoNav, NotificationS
                                         NSAttributedString(
                                             string: "NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION_2".localized(),
                                             attributes: [
-                                                .foregroundColor: (theme.colors[.textPrimary] ?? .white)
+                                                .foregroundColor: (theme.color(for: .textPrimary) ?? .white)
                                             ]
                                         )
                                     )

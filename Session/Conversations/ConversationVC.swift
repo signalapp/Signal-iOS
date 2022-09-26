@@ -68,10 +68,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     }
 
     override var inputAccessoryView: UIView? {
-        guard
-            viewModel.threadData.threadVariant != .closedGroup ||
-            viewModel.threadData.currentUserIsClosedGroupMember == true
-        else { return nil }
+        guard viewModel.threadData.canWrite else { return nil }
         
         return (isShowingSearchUI ? searchController.resultsBar : snInputView)
     }
@@ -141,10 +138,11 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         result.showsVerticalScrollIndicator = false
         result.contentInsetAdjustmentBehavior = .never
         result.keyboardDismissMode = .interactive
+        let bottomInset: CGFloat = viewModel.threadData.canWrite ? Values.mediumSpacing : Values.mediumSpacing + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         result.contentInset = UIEdgeInsets(
             top: 0,
             leading: 0,
-            bottom: Values.mediumSpacing,
+            bottom: bottomInset,
             trailing: 0
         )
         result.registerHeaderFooterView(view: UITableViewHeaderFooterView.self)

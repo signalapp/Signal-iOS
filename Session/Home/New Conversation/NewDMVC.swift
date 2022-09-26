@@ -10,6 +10,7 @@ import SessionUtilitiesKit
 import SignalUtilitiesKit
 
 final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, QRScannerDelegate {
+    private var shouldShowBackButton: Bool = true
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var targetVCIndex: Int?
@@ -39,22 +40,29 @@ final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControlle
     }()
     
     private lazy var scanQRCodePlaceholderVC: ScanQRCodePlaceholderVC = {
-        let result = ScanQRCodePlaceholderVC()
+        let result: ScanQRCodePlaceholderVC = ScanQRCodePlaceholderVC()
         result.newDMVC = self
         
         return result
     }()
     
     private lazy var scanQRCodeWrapperVC: ScanQRCodeWrapperVC = {
-        let message = "vc_create_private_chat_scan_qr_code_explanation".localized()
-        let result = ScanQRCodeWrapperVC(message: message)
+        let result: ScanQRCodeWrapperVC = ScanQRCodeWrapperVC(message: nil)
         result.delegate = self
+        
         return result
     }()
     
-    init(sessionID: String) {
+    // MARK: - Initialization
+    
+    init(sessionId: String? = nil, shouldShowBackButton: Bool = true) {
+        self.shouldShowBackButton = shouldShowBackButton
+        
         super.init(nibName: nil, bundle: nil)
-        enterPublicKeyVC.setSessionID(to: sessionID)
+        
+        if let sessionId: String = sessionId {
+            enterPublicKeyVC.setSessionId(to: sessionId)
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -71,42 +79,43 @@ final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControlle
         super.viewDidLoad()
         
         setNavBarTitle("vc_create_private_chat_title".localized())
-        let navigationBar = navigationController!.navigationBar
+        view.themeBackgroundColor = .backgroundSecondary
         
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.themeTintColor = .textPrimary
-        navigationItem.leftBarButtonItem = closeButton
+        
+        if shouldShowBackButton {
+            navigationItem.rightBarButtonItem = closeButton
+        }
+        else {
+            navigationItem.leftBarButtonItem = closeButton
+        }
+        
+        // Set up tab bar
+        view.addSubview(tabBar)
+        tabBar.pin(.top, to: .top, of: view)
+        tabBar.pin(.leading, to: .leading, of: view)
+        tabBar.pin(.trailing, to: .trailing, of: view)
         
         // Set up page VC
+        let containerView: UIView = UIView()
+        view.addSubview(containerView)
+        containerView.pin(.top, to: .bottom, of: tabBar)
+        containerView.pin(.leading, to: .leading, of: view)
+        containerView.pin(.trailing, to: .trailing, of: view)
+        containerView.pin(.bottom, to: .bottom, of: view)
+        
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ enterPublicKeyVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
         pageVC.setViewControllers([ enterPublicKeyVC ], direction: .forward, animated: false, completion: nil)
+        addChild(pageVC)
+        containerView.addSubview(pageVC.view)
         
-        // Set up tab bar
-        let tabBarInset: CGFloat = (UIDevice.current.isIPad ? navigationBar.height() + 20 : navigationBar.height())
-        view.addSubview(tabBar)
-        tabBar.pin(.leading, to: .leading, of: view)
-        tabBar.pin(.top, to: .top, of: view, withInset: tabBarInset)
-        view.pin(.trailing, to: .trailing, of: tabBar)
-        
-        // Set up page VC constraints
-        let pageVCView = pageVC.view!
-        view.addSubview(pageVCView)
-        pageVCView.pin(.leading, to: .leading, of: view)
-        pageVCView.pin(.top, to: .bottom, of: tabBar)
-        view.pin(.trailing, to: .trailing, of: pageVCView)
-        view.pin(.bottom, to: .bottom, of: pageVCView)
-        
-        let screen = UIScreen.main.bounds
-        let height: CGFloat = (navigationController!.view.bounds.height - navigationBar.height() - TabBar.snHeight)
-        pageVCView.set(.width, to: screen.width)
-        pageVCView.set(.height, to: height)
-        
-        enterPublicKeyVC.constrainHeight(to: height)
-        scanQRCodePlaceholderVC.constrainHeight(to: height)
+        pageVC.view.pin(to: containerView)
+        pageVC.didMove(toParent: self)
     }
     
     // MARK: - General
@@ -218,9 +227,124 @@ private final class EnterPublicKeyVC: UIViewController {
     private let bottomMargin: CGFloat = UIDevice.current.isIPad ? Values.largeSpacing : 0
     
     // MARK: - Components
+    
     private lazy var publicKeyTextView: TextView = {
-        let result = TextView(placeholder: "vc_enter_public_key_text_field_hint".localized())
+        let result = TextView(placeholder: "vc_enter_public_key_text_field_hint".localized()) { [weak self] text in
+            self?.nextButton.isEnabled = (SessionId(from: text) != nil)
+        }
         result.autocapitalizationType = .none
+        
+        return result
+    }()
+    
+    private lazy var explanationLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.setContentHuggingPriority(.required, for: .vertical)
+        result.setContentCompressionResistancePriority(.required, for: .vertical)
+        result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        result.text = "vc_enter_public_key_explanation".localized()
+        result.themeTextColor = .textSecondary
+        result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
+    private lazy var spacer1 = UIView.spacer(withHeight: Values.largeSpacing)
+    private lazy var spacer2 = UIView.spacer(withHeight: Values.largeSpacing)
+    private lazy var spacer3 = UIView.spacer(withHeight: Values.largeSpacing)
+    private lazy var spacer4 = UIView.spacer(withHeight: Values.largeSpacing)
+    
+    private lazy var separator = Separator(title: "your_session_id".localized())
+    
+    private lazy var qrCodeView: UIView = {
+        let result: UIView = UIView()
+        result.layer.cornerRadius = 8
+        
+        let qrCodeImageView: UIImageView = UIImageView()
+        qrCodeImageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        qrCodeImageView.image = QRCode.generate(for: getUserHexEncodedPublicKey(), hasBackground: false)
+            .withRenderingMode(.alwaysTemplate)
+        qrCodeImageView.set(.width, to: .height, of: qrCodeImageView)
+        qrCodeImageView.heightAnchor
+            .constraint(lessThanOrEqualToConstant: (isIPhone5OrSmaller ? 160 : 220))
+            .isActive = true
+
+#if targetEnvironment(simulator)
+#else
+        // Note: For some reason setting this seems to stop the QRCode from rendering on the
+        // simulator so only doing it on device
+        qrCodeImageView.contentMode = .scaleAspectFit
+#endif
+        
+        result.addSubview(qrCodeImageView)
+        qrCodeImageView.pin(
+            to: result,
+            withInset: 5    // The QRCode image has about 6pt of padding and we want 11 in total
+        )
+        
+        ThemeManager.onThemeChange(observer: qrCodeImageView) { [weak qrCodeImageView, weak result] theme, _ in
+            switch theme.interfaceStyle {
+                case .light:
+                    qrCodeImageView?.themeTintColorForced = .theme(theme, color: .textPrimary)
+                    result?.themeBackgroundColorForced = nil
+
+                default:
+                    qrCodeImageView?.themeTintColorForced = .theme(theme, color: .backgroundPrimary)
+                    result?.themeBackgroundColorForced = .color(.white)
+            }
+
+        }
+        
+        return result
+    }()
+    
+    private lazy var qrCodeImageViewContainer: UIView = {
+        let result: UIView = UIView()
+        result.accessibilityLabel = "Your QR code"
+        result.isAccessibilityElement = true
+        result.addSubview(qrCodeView)
+        qrCodeView.center(.horizontal, in: result)
+        qrCodeView.pin(.top, to: .top, of: result)
+        qrCodeView.pin(.bottom, to: .bottom, of: result)
+        
+        return result
+    }()
+    
+    private lazy var userPublicKeyLabel: SRCopyableLabel = {
+        let result: SRCopyableLabel = SRCopyableLabel()
+        result.setContentCompressionResistancePriority(.required, for: .vertical)
+        result.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
+        result.text = getUserHexEncodedPublicKey()
+        result.themeTextColor = .textPrimary
+        result.textAlignment = .center
+        result.lineBreakMode = .byCharWrapping
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
+    private lazy var userPublicKeyContainer: UIView = {
+        let result: UIView = UIView(
+            wrapping: userPublicKeyLabel,
+            withInsets: .zero,
+            shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth
+        )
+        
+        return result
+    }()
+    
+    private lazy var buttonContainer: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ copyButton, shareButton ])
+        result.axis = .horizontal
+        result.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
+        result.distribution = .fillEqually
+        
+        if (UIDevice.current.isIPad) {
+            result.layoutMargins = UIEdgeInsets(top: 0, left: Values.iPadButtonContainerMargin, bottom: 0, right: Values.iPadButtonContainerMargin)
+            result.isLayoutMarginsRelativeArrangement = true
+        }
         
         return result
     }()
@@ -241,43 +365,23 @@ private final class EnterPublicKeyVC: UIViewController {
         return result
     }()
     
+    private lazy var nextButtonContainer: UIView = {
+        let result = UIView(
+            wrapping: nextButton,
+            withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80),
+            shouldAdaptForIPadWithWidth: Values.iPadButtonWidth
+        )
+        result.alpha = (isKeyboardShowing ? 1 : 0)
+        result.isHidden = !isKeyboardShowing
+        
+        return result
+    }()
+    
     private lazy var nextButton: OutlineButton = {
         let result = OutlineButton(style: .regular, size: .large)
         result.setTitle("next".localized(), for: .normal)
+        result.isEnabled = false
         result.addTarget(self, action: #selector(startNewDMIfPossible), for: .touchUpInside)
-        result.alpha = 0
-        
-        return result
-    }()
-    
-    private lazy var userPublicKeyLabel: UILabel = {
-        let result = UILabel()
-        result.font = Fonts.spaceMono(ofSize: Values.mediumFontSize)
-        result.text = getUserHexEncodedPublicKey()
-        result.themeTextColor = .textPrimary
-        result.textAlignment = .center
-        result.lineBreakMode = .byCharWrapping
-        result.numberOfLines = 0
-        
-        return result
-    }()
-    
-    private lazy var spacer1 = UIView.spacer(withHeight: Values.largeSpacing)
-    private lazy var spacer2 = UIView.spacer(withHeight: Values.largeSpacing)
-    private lazy var spacer3 = UIView.spacer(withHeight: Values.largeSpacing)
-    
-    private lazy var separator = Separator(title: "your_session_id".localized())
-    
-    private lazy var buttonContainer: UIStackView = {
-        let result = UIStackView()
-        result.axis = .horizontal
-        result.spacing = UIDevice.current.isIPad ? Values.iPadButtonSpacing : Values.mediumSpacing
-        result.distribution = .fillEqually
-        
-        if (UIDevice.current.isIPad) {
-            result.layoutMargins = UIEdgeInsets(top: 0, left: Values.iPadButtonContainerMargin, bottom: 0, right: Values.iPadButtonContainerMargin)
-            result.isLayoutMarginsRelativeArrangement = true
-        }
         
         return result
     }()
@@ -288,46 +392,37 @@ private final class EnterPublicKeyVC: UIViewController {
         // Remove background color
         view.themeBackgroundColor = .clear
         
-        // User session id container
-        let userPublicKeyContainer = UIView(
-            wrapping: userPublicKeyLabel,
-            withInsets: .zero,
-            shouldAdaptForIPadWithWidth: Values.iPadUserSessionIdContainerWidth
-        )
-        
-        // Explanation label
-        let explanationLabel = UILabel()
-        explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        explanationLabel.text = "vc_enter_public_key_explanation".localized()
-        explanationLabel.themeTextColor = .textSecondary
-        explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.numberOfLines = 0
-        
-        // Button container
-        buttonContainer.addArrangedSubview(copyButton)
-        buttonContainer.addArrangedSubview(shareButton)
-
-        let nextButtonContainer = UIView(
-            wrapping: nextButton,
-            withInsets: UIEdgeInsets(top: 0, leading: 80, bottom: 0, trailing: 80),
-            shouldAdaptForIPadWithWidth: Values.iPadButtonWidth
-        )
-        
         // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ publicKeyTextView, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel, spacer1, separator, spacer2, userPublicKeyContainer, spacer3, buttonContainer, UIView.vStretchingSpacer(), nextButtonContainer ])
+        let mainStackView = UIStackView(arrangedSubviews: [
+            publicKeyTextView,
+            UIView.spacer(withHeight: Values.smallSpacing),
+            explanationLabel,
+            spacer1,
+            separator,
+            spacer2,
+            qrCodeImageViewContainer,
+            spacer3,
+            userPublicKeyContainer,
+            spacer4,
+            buttonContainer,
+            UIView.vStretchingSpacer(),
+            nextButtonContainer
+        ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
-        mainStackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
+        mainStackView.layoutMargins = UIEdgeInsets(
+            top: Values.largeSpacing,
+            left: Values.largeSpacing,
+            bottom: Values.smallSpacing,
+            right: Values.largeSpacing
+        )
         mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
-        mainStackView.pin(.leading, to: .leading, of: view)
-        mainStackView.pin(.top, to: .top, of: view)
-        view.pin(.trailing, to: .trailing, of: mainStackView)
-        bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView, withInset: bottomMargin)
         
-        // Width constraint
-        view.set(.width, to: UIScreen.main.bounds.width)
+        mainStackView.pin(.top, to: .top, of: view)
+        mainStackView.pin(.leading, to: .leading, of: view)
+        mainStackView.pin(.trailing, to: .trailing, of: view)
+        bottomConstraint = mainStackView.pin(.bottom, to: .bottom, of: view, withInset: -bottomMargin)
         
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -345,12 +440,8 @@ private final class EnterPublicKeyVC: UIViewController {
     
     // MARK: - General
     
-    func setSessionID(to sessionID: String){
-        publicKeyTextView.insertText(sessionID)
-    }
-
-    func constrainHeight(to height: CGFloat) {
-        view.set(.height, to: height)
+    func setSessionId(to sessionId: String) {
+        publicKeyTextView.insertText(sessionId)
     }
     
     @objc private func dismissKeyboard() {
@@ -381,15 +472,41 @@ private final class EnterPublicKeyVC: UIViewController {
         
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         
-        bottomConstraint.constant = newHeight + bottomMargin
+        let duration = max(0.25, ((notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval) ?? 0))
+        let viewsToHide: [UIView] = [ self.spacer1, self.separator, self.spacer2, self.qrCodeImageViewContainer, self.spacer3, self.userPublicKeyContainer, self.spacer4, self.buttonContainer ]
         
-        UIView.animate(withDuration: 0.25) {
-            [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
-                $0.alpha = 0
-                $0.isHidden = true
-            }
-            self.nextButton.alpha = 1
-            self.view.layoutIfNeeded()
+        // We dispatch to the next run loop to prevent the animation getting stuck within the
+        // keyboard appearance animation (which would make the second animation start once the
+        // keyboard finishes appearing)
+        DispatchQueue.main.async {
+            UIView.animate(
+                withDuration: (duration / 2),
+                delay: 0,
+                options: .curveEaseOut,
+                animations: {
+                    viewsToHide.forEach { $0.alpha = 0 }
+                },
+                completion: { [weak self] _ in
+                    UIView.performWithoutAnimation {
+                        viewsToHide.forEach { $0.isHidden = true }
+                        
+                        self?.nextButtonContainer.alpha = 0
+                        self?.nextButtonContainer.isHidden = false
+                        self?.bottomConstraint.constant = -(newHeight + (self?.bottomMargin ?? 0))
+                        self?.view.layoutIfNeeded()
+                    }
+                    
+                    UIView.animate(
+                        withDuration: (duration / 2),
+                        delay: 0,
+                        options: .curveEaseIn,
+                        animations: {
+                            self?.nextButtonContainer.alpha = 1
+                        },
+                        completion: nil
+                    )
+                }
+            )
         }
     }
     
@@ -404,16 +521,44 @@ private final class EnterPublicKeyVC: UIViewController {
         guard isKeyboardShowing else { return }
         #endif
         
+        let duration = max(0.25, ((notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval) ?? 0))
+        let viewsToShow: [UIView] = [ self.spacer1, self.separator, self.spacer2, self.qrCodeImageViewContainer, self.spacer3, self.userPublicKeyContainer, self.spacer4, self.buttonContainer ]
         isKeyboardShowing = false
-        bottomConstraint.constant = bottomMargin
         
-        UIView.animate(withDuration: 0.25) {
-            [ self.spacer1, self.separator, self.spacer2, self.userPublicKeyLabel, self.spacer3, self.buttonContainer ].forEach {
-                $0.alpha = 1
-                $0.isHidden = false
-            }
-            self.nextButton.alpha = (self.publicKeyTextView.text.isEmpty ? 0 : 1)
-            self.view.layoutIfNeeded()
+        // We dispatch to the next run loop to prevent the animation getting stuck within the
+        // keyboard hide animation (which would make the second animation start once the keyboard
+        // finishes disappearing)
+        DispatchQueue.main.async {
+            UIView.animate(
+                withDuration: (duration / 2),
+                delay: 0,
+                options: .curveEaseOut,
+                animations: { [weak self] in
+                    self?.nextButtonContainer.alpha = 0
+                },
+                completion: { [weak self] _ in
+                    UIView.performWithoutAnimation {
+                        viewsToShow.forEach {
+                            $0.alpha = 0
+                            $0.isHidden = false
+                        }
+                        
+                        self?.nextButtonContainer.isHidden = true
+                        self?.bottomConstraint.constant = -(self?.bottomMargin ?? 0)
+                        self?.view.layoutIfNeeded()
+                    }
+                    
+                    UIView.animate(
+                        withDuration: (duration / 2),
+                        delay: 0,
+                        options: .curveEaseIn,
+                        animations: {
+                            viewsToShow.forEach { $0.alpha = 1 }
+                        },
+                        completion: nil
+                    )
+                }
+            )
         }
     }
     
@@ -481,21 +626,14 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
         stackView.alignment = .center
         
         // Set up constraints
-        view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
-        view.pin(.trailing, to: .trailing, of: stackView, withInset: Values.massiveSpacing)
-        
-        let verticalCenteringConstraint = stackView.center(.vertical, in: view)
-        verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
-    }
-    
-    func constrainHeight(to height: CGFloat) {
-        view.set(.height, to: height)
+        stackView.pin(.trailing, to: .trailing, of: view, withInset: -Values.massiveSpacing)
+        stackView.center(.vertical, in: view, withInset: -16) // Makes things appear centered visually
     }
     
     @objc private func requestCameraAccess() {
-        Permissions.requestLibraryPermissionIfNeeded { [weak self] in
+        Permissions.requestCameraPermissionIfNeeded { [weak self] in
             self?.newDMVC.handleCameraAccessGranted()
         }
     }

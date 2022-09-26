@@ -6,6 +6,7 @@ public final class TextView : UITextView, UITextViewDelegate {
     private let horizontalInset: CGFloat
     private let verticalInset: CGFloat
     private let placeholder: String
+    private let onTextChange: ((String) -> Void)?
 
     public override var contentSize: CGSize { didSet { centerTextVertically() } }
 
@@ -22,13 +23,15 @@ public final class TextView : UITextView, UITextViewDelegate {
         usesDefaultHeight: Bool = true,
         customHeight: CGFloat? = nil,
         customHorizontalInset: CGFloat? = nil,
-        customVerticalInset: CGFloat? = nil
+        customVerticalInset: CGFloat? = nil,
+        onTextChange: ((String) -> Void)? = nil
     ) {
         self.usesDefaultHeight = usesDefaultHeight
         self.height = customHeight ?? TextField.height
         self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
         self.verticalInset = customVerticalInset ?? (isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing)
         self.placeholder = placeholder
+        self.onTextChange = onTextChange
         
         super.init(frame: CGRect.zero, textContainer: nil)
         self.delegate = self
@@ -80,6 +83,7 @@ public final class TextView : UITextView, UITextViewDelegate {
 
     public func textViewDidChange(_ textView: UITextView) {
         placeholderLabel.isHidden = !text.isEmpty
+        onTextChange?(textView.text ?? "")
     }
 
     private func centerTextVertically() {

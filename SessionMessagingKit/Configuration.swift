@@ -23,7 +23,8 @@ public enum SNMessagingKit { // Just to make the external API nice
                 ],
                 [
                     _008_EmojiReacts.self,
-                    _009_AddThreadIdToFTS.self
+                    _009_OpenGroupPermission.self,
+                    _010_AddThreadIdToFTS.self
                 ]
             ]
         )

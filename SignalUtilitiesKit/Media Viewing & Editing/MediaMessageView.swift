@@ -147,7 +147,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         result.isHidden = true
         
         ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
-            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
             
             result?.color = textPrimary
         }

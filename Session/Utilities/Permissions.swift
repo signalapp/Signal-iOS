@@ -6,11 +6,15 @@ import PhotosUI
 import SessionUtilitiesKit
 
 public enum Permissions {
-    public static func requestCameraPermissionIfNeeded(
-        presentingViewController: UIViewController? = nil
+    @discardableResult public static func requestCameraPermissionIfNeeded(
+        presentingViewController: UIViewController? = nil,
+        onAuthorized: (() -> Void)? = nil
     ) -> Bool {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .authorized: return true
+            case .authorized:
+                onAuthorized?()
+                return true
+            
             case .denied, .restricted:
                 guard let presentingViewController: UIViewController = (presentingViewController ?? CurrentAppContext().frontmostViewController()) else { return false }
                 
@@ -33,7 +37,9 @@ public enum Permissions {
                 return false
                 
             case .notDetermined:
-                AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in })
+                AVCaptureDevice.requestAccess(for: .video, completionHandler: { _ in
+                    onAuthorized?()
+                })
                 return false
                 
             default: return false

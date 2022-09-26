@@ -495,8 +495,7 @@
 "vc_create_private_chat_title" = "新しい Session";
 "vc_create_private_chat_enter_session_id_tab_title" = "Session ID を入力してください";
 "vc_create_private_chat_scan_qr_code_tab_title" = "QR コードをスキャンする";
-"vc_create_private_chat_scan_qr_code_explanation" = "ユーザーの QR コードをスキャンして、Session を開始します。QR コードは、アカウント設定の QR コードアイコンをタップすると見つかります。";
-"vc_enter_public_key_explanation" = "ユーザーは、アカウント設定に移動して「Session ID を共有」をタップするか、QR コードを共有することで、Session ID を共有できます。";
+"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session で QR コードをスキャンするにはカメラへのアクセスが必要です";
 "vc_scan_qr_code_grant_camera_access_button_title" = "カメラへのアクセスを許可する";
 "vc_create_closed_group_title" = "新しいクローズドグループ";
@@ -509,7 +508,6 @@
 "vc_join_public_chat_title" = "公開グループに参加する";
 "vc_join_public_chat_enter_group_url_tab_title" = "グループの URL を開く";
 "vc_join_public_chat_scan_qr_code_tab_title" = "QR コードをスキャンする";
-"vc_join_public_chat_scan_qr_code_explanation" = "参加したい公開グループの QR コードをスキャンする";
 "vc_enter_chat_url_text_field_hint" = "公開グループの URL を入力する";
 "vc_settings_title" = "設定";
 "vc_group_settings_title" = "Group Settings";
@@ -707,6 +705,10 @@
 "EMOJI_REACTS_NOTIFICATION" = "%@ reacts to a message with %@.";
 "EMOJI_REACTS_MORE_REACTORS_ONE" = "And 1 other has reacted %@ to this message.";
 "EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted %@ to this message.";
+/* New conversation screen*/
+"vc_new_conversation_title" = "New Conversation";
+"CREATE_GROUP_BUTTON_TITLE" = "Create";
+"JOIN_COMMUNITY_BUTTON_TITLE" = "Join";
 "PRIVACY_TITLE" = "Privacy";
 "PRIVACY_SECTION_SCREEN_SECURITY" = "Screen Security";
 "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "Lock Session";

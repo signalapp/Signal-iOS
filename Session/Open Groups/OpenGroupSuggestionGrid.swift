@@ -4,6 +4,7 @@ import SessionMessagingKit
 import SessionUIKit
 
 final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    private let itemsPerSection: Int = (UIDevice.current.isIPad ? 4 : 2)
     private let maxWidth: CGFloat
     private var rooms: [OpenGroupAPI.Room] = [] { didSet { update() } }
     private var heightConstraint: NSLayoutConstraint!
@@ -46,7 +47,7 @@ final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UIColle
         result.set(.height, to: OpenGroupSuggestionGrid.cellHeight)
         
         ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
-            guard let textPrimary: UIColor = theme.colors[.textPrimary] else { return }
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
             
             result?.color = textPrimary
         }
@@ -196,7 +197,7 @@ final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UIColle
     // MARK: - Interaction
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let room = rooms[indexPath.item]
+        let room = rooms[indexPath.section * itemsPerSection + indexPath.item]
         delegate?.join(room)
     }
 }
@@ -218,7 +219,8 @@ extension OpenGroupSuggestionGrid {
                 imageSize +
                 itemPadding +
                 NSAttributedString(string: title, attributes: [ .font: labelFont ]).size().width +
-                contentRightPadding
+                contentRightPadding +
+                1   // Not sure why this is needed but it seems things are sometimes truncated without it
             )
         }
         
@@ -270,7 +272,9 @@ extension OpenGroupSuggestionGrid {
         }
         
         private func setUpViewHierarchy() {
-            themeBackgroundColor = .backgroundPrimary
+            backgroundView = UIView()
+            backgroundView?.themeBackgroundColor = .backgroundPrimary
+            backgroundView?.layer.cornerRadius = Cell.contentViewCornerRadius
             
             selectedBackgroundView = UIView()
             selectedBackgroundView?.themeBackgroundColor = .backgroundSecondary

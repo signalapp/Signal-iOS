@@ -4,12 +4,19 @@ import UIKit
 
 public extension UIView {
     var themeBackgroundColor: ThemeValue? {
-        set { ThemeManager.set(self, keyPath: \.backgroundColor, to: newValue) }
+        set {
+            // First we should remove any gradient that had been added
+            self.layer.sublayers?.first(where: { $0 is CAGradientLayer })?.removeFromSuperlayer()
+            ThemeManager.set(self, keyPath: \.backgroundColor, to: newValue)
+        }
         get { return nil }
     }
     
     var themeBackgroundColorForced: ForcedThemeValue? {
         set {
+            // First we should remove any gradient that had been added
+            self.layer.sublayers?.first(where: { $0 is CAGradientLayer })?.removeFromSuperlayer()
+            
             switch newValue {
                 case .color(let color): backgroundColor = color
                 case .primary(let value, let alpha):
@@ -22,11 +29,11 @@ public extension UIView {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        backgroundColor = theme.colors[value]
+                        backgroundColor = theme.color(for: value)
                         return
                     }
                     
-                    backgroundColor = theme.colors[value]?.withAlphaComponent(alpha)
+                    backgroundColor = theme.color(for: value)?.withAlphaComponent(alpha)
                     
                 case .none: backgroundColor = nil
             }
@@ -53,11 +60,11 @@ public extension UIView {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        tintColor = theme.colors[value]
+                        tintColor = theme.color(for: value)
                         return
                     }
                     
-                    tintColor = theme.colors[value]?.withAlphaComponent(alpha)
+                    tintColor = theme.color(for: value)?.withAlphaComponent(alpha)
                     
                 case .none: tintColor = nil
             }
@@ -84,11 +91,11 @@ public extension UIView {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        layer.borderColor = theme.colors[value]?.cgColor
+                        layer.borderColor = theme.color(for: value)?.cgColor
                         return
                     }
                     
-                    layer.borderColor = theme.colors[value]?.withAlphaComponent(alpha).cgColor
+                    layer.borderColor = theme.color(for: value)?.withAlphaComponent(alpha).cgColor
                     
                 case .none: layer.borderColor = nil
             }
@@ -115,11 +122,11 @@ public extension UIView {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        layer.shadowColor = theme.colors[value]?.cgColor
+                        layer.shadowColor = theme.color(for: value)?.cgColor
                         return
                     }
                     
-                    layer.shadowColor = theme.colors[value]?.withAlphaComponent(alpha).cgColor
+                    layer.shadowColor = theme.color(for: value)?.withAlphaComponent(alpha).cgColor
                     
                 case .none: layer.shadowColor = nil
             }
@@ -148,11 +155,11 @@ public extension UILabel {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        textColor = theme.colors[value]
+                        textColor = theme.color(for: value)
                         return
                     }
                     
-                    textColor = theme.colors[value]?.withAlphaComponent(alpha)
+                    textColor = theme.color(for: value)?.withAlphaComponent(alpha)
                     
                 case .none: textColor = nil
             }
@@ -181,11 +188,11 @@ public extension UITextView {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        textColor = theme.colors[value]
+                        textColor = theme.color(for: value)
                         return
                     }
                     
-                    textColor = theme.colors[value]?.withAlphaComponent(alpha)
+                    textColor = theme.color(for: value)?.withAlphaComponent(alpha)
                     
                 case .none: textColor = nil
             }
@@ -214,11 +221,11 @@ public extension UITextField {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        textColor = theme.colors[value]
+                        textColor = theme.color(for: value)
                         return
                     }
                     
-                    textColor = theme.colors[value]?.withAlphaComponent(alpha)
+                    textColor = theme.color(for: value)?.withAlphaComponent(alpha)
                     
                 case .none: textColor = nil
             }
@@ -242,7 +249,7 @@ public extension UIButton {
             ) { [weak self] theme in
                 guard
                     let value: ThemeValue = value,
-                    let color: UIColor = ThemeManager.resolvedColor(theme.colors[value])
+                    let color: UIColor = ThemeManager.resolvedColor(theme.color(for: value))
                 else {
                     self?.setBackgroundImage(nil, for: state)
                     return
@@ -266,11 +273,11 @@ public extension UIButton {
                 
             case .theme(let theme, let value, let alpha):
                 guard let alpha: CGFloat = alpha else {
-                    self.setBackgroundImage(theme.colors[value]?.toImage(), for: state)
+                    self.setBackgroundImage(theme.color(for: value)?.toImage(), for: state)
                     return
                 }
 
-                self.setBackgroundImage(theme.colors[value]?.withAlphaComponent(alpha).toImage(), for: state)
+                self.setBackgroundImage(theme.color(for: value)?.withAlphaComponent(alpha).toImage(), for: state)
             
             case .none: self.setBackgroundImage(nil, for: state)
         }
@@ -294,7 +301,7 @@ public extension UIButton {
                 }
                 
                 self?.setTitleColor(
-                    ThemeManager.resolvedColor(theme.colors[value]),
+                    ThemeManager.resolvedColor(theme.color(for: value)),
                     for: state
                 )
             }
@@ -314,11 +321,11 @@ public extension UIButton {
                 
             case .theme(let theme, let value, let alpha):
                 guard let alpha: CGFloat = alpha else {
-                    self.setTitleColor(theme.colors[value], for: state)
+                    self.setTitleColor(theme.color(for: value), for: state)
                     return
                 }
 
-                self.setTitleColor(theme.colors[value]?.withAlphaComponent(alpha), for: state)
+                self.setTitleColor(theme.color(for: value)?.withAlphaComponent(alpha), for: state)
             
             case .none: self.setTitleColor(nil, for: state)
         }
@@ -359,11 +366,11 @@ public extension UIProgressView {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        progressTintColor = theme.colors[value]
+                        progressTintColor = theme.color(for: value)
                         return
                     }
 
-                    progressTintColor = theme.colors[value]?.withAlphaComponent(alpha)
+                    progressTintColor = theme.color(for: value)?.withAlphaComponent(alpha)
                 
                 case .none: progressTintColor = nil
             }
@@ -403,6 +410,38 @@ public extension UIContextualAction {
     }
 }
 
+public extension GradientView {
+    var themeBackgroundGradient: [ThemeValue]? {
+        set {
+            let keyPath: KeyPath<UIView, UIColor?> = \.backgroundColor
+            
+            ThemeManager.set(
+                self,
+                to: ThemeApplier(
+                    existingApplier: ThemeManager.get(for: self),
+                    info: [keyPath]
+                ) { [weak self] theme in
+                    // First we should remove any gradient that had been added
+                    self?.layer.sublayers?.first(where: { $0 is CAGradientLayer })?.removeFromSuperlayer()
+                    
+                    let maybeColors: [CGColor]? = newValue?.compactMap { theme.color(for: $0)?.cgColor }
+                    
+                    guard let colors: [CGColor] = maybeColors, colors.count == newValue?.count else {
+                        self?.backgroundColor = nil
+                        return
+                    }
+                    
+                    let layer: CAGradientLayer = CAGradientLayer()
+                    layer.frame = (self?.bounds ?? .zero)
+                    layer.colors = colors
+                    self?.layer.insertSublayer(layer, at: 0)
+                }
+            )
+        }
+        get { return nil }
+    }
+}
+
 public extension CAShapeLayer {
     var themeStrokeColor: ThemeValue? {
         set { ThemeManager.set(self, keyPath: \.strokeColor, to: newValue) }
@@ -423,11 +462,11 @@ public extension CAShapeLayer {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        strokeColor = theme.colors[value]?.cgColor
+                        strokeColor = theme.color(for: value)?.cgColor
                         return
                     }
 
-                    strokeColor = theme.colors[value]?.withAlphaComponent(alpha).cgColor
+                    strokeColor = theme.color(for: value)?.withAlphaComponent(alpha).cgColor
                 
                 case .none: strokeColor = nil
             }
@@ -454,11 +493,11 @@ public extension CAShapeLayer {
                 
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        fillColor = theme.colors[value]?.cgColor
+                        fillColor = theme.color(for: value)?.cgColor
                         return
                     }
 
-                    fillColor = theme.colors[value]?.withAlphaComponent(alpha).cgColor
+                    fillColor = theme.color(for: value)?.withAlphaComponent(alpha).cgColor
                 
                 case .none: fillColor = nil
             }
@@ -487,11 +526,11 @@ public extension CALayer {
                     
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        backgroundColor = theme.colors[value]?.cgColor
+                        backgroundColor = theme.color(for: value)?.cgColor
                         return
                     }
                     
-                    backgroundColor = theme.colors[value]?.withAlphaComponent(alpha).cgColor
+                    backgroundColor = theme.color(for: value)?.withAlphaComponent(alpha).cgColor
                     
                 case .none: backgroundColor = nil
             }
@@ -530,11 +569,11 @@ public extension CATextLayer {
                     
                 case .theme(let theme, let value, let alpha):
                     guard let alpha: CGFloat = alpha else {
-                        foregroundColor = theme.colors[value]?.cgColor
+                        foregroundColor = theme.color(for: value)?.cgColor
                         return
                     }
 
-                    foregroundColor = theme.colors[value]?.withAlphaComponent(alpha).cgColor
+                    foregroundColor = theme.color(for: value)?.withAlphaComponent(alpha).cgColor
                 
                 case .none: foregroundColor = nil
             }

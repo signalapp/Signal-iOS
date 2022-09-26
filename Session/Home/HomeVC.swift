@@ -7,8 +7,9 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
+final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedReminderViewDelegate {
     private static let loadingHeaderHeight: CGFloat = 40
+    public static let newConversationButtonSize: CGFloat = 60
     
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?
@@ -78,10 +79,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
             top: 0,
             left: 0,
             bottom: (
-                Values.newConversationButtonBottomOffset +
-                NewConversationButtonSet.expandedButtonSize +
                 Values.largeSpacing +
-                NewConversationButtonSet.collapsedButtonSize
+                HomeVC.newConversationButtonSize +
+                Values.smallSpacing +
+                (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
             ),
             right: 0
         )
@@ -97,11 +98,77 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
         return result
     }()
-
-    private lazy var newConversationButtonSet: NewConversationButtonSet = {
-        let result = NewConversationButtonSet()
-        result.delegate = self
+    
+    private lazy var newConversationButton: UIButton = {
+        let result = UIButton(type: .system)
+        result.clipsToBounds = false
+        result.setImage(
+            UIImage(named: "Plus")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.contentMode = .center
+        result.themeBackgroundColor = .menuButton_background
+        result.themeTintColor = .menuButton_icon
+        result.contentEdgeInsets = UIEdgeInsets(
+            top: ((HomeVC.newConversationButtonSize - 24) / 2),
+            leading: ((HomeVC.newConversationButtonSize - 24) / 2),
+            bottom: ((HomeVC.newConversationButtonSize - 24) / 2),
+            trailing: ((HomeVC.newConversationButtonSize - 24) / 2)
+        )
+        result.layer.cornerRadius = (HomeVC.newConversationButtonSize / 2)
+        result.addTarget(self, action: #selector(createNewConversation), for: .touchUpInside)
+        result.set(.width, to: HomeVC.newConversationButtonSize)
+        result.set(.height, to: HomeVC.newConversationButtonSize)
         
+        // Add the outer shadow
+        result.themeShadowColor = .menuButton_outerShadow
+        result.layer.shadowRadius = 15
+        result.layer.shadowOpacity = 0.3
+        result.layer.shadowOffset = .zero
+        result.layer.cornerRadius = (HomeVC.newConversationButtonSize / 2)
+        result.layer.shadowPath = UIBezierPath(
+            ovalIn: CGRect(
+                origin: CGPoint.zero,
+                size: CGSize(
+                    width: HomeVC.newConversationButtonSize,
+                    height: HomeVC.newConversationButtonSize
+                )
+            )
+        ).cgPath
+        
+        // Add the inner shadow
+        let innerShadowLayer: CALayer = CALayer()
+        innerShadowLayer.masksToBounds = true
+        innerShadowLayer.themeShadowColor = .menuButton_innerShadow
+        innerShadowLayer.position = CGPoint(
+            x: (HomeVC.newConversationButtonSize / 2),
+            y: (HomeVC.newConversationButtonSize / 2)
+        )
+        innerShadowLayer.bounds = CGRect(
+            x: 0,
+            y: 0,
+            width: HomeVC.newConversationButtonSize,
+            height: HomeVC.newConversationButtonSize
+        )
+        innerShadowLayer.cornerRadius = (HomeVC.newConversationButtonSize / 2)
+        innerShadowLayer.shadowOffset = .zero
+        innerShadowLayer.shadowOpacity = 0.4
+        innerShadowLayer.shadowRadius = 2
+
+        let cutout: UIBezierPath = UIBezierPath(
+            roundedRect: innerShadowLayer.bounds
+                .insetBy(dx: innerShadowLayer.shadowRadius, dy: innerShadowLayer.shadowRadius),
+            cornerRadius: (HomeVC.newConversationButtonSize / 2)
+        ).reversing()
+        let path: UIBezierPath = UIBezierPath(
+            roundedRect: innerShadowLayer.bounds,
+            cornerRadius: (HomeVC.newConversationButtonSize / 2)
+        )
+        path.append(cutout)
+        innerShadowLayer.shadowPath = path.cgPath
+        result.layer.addSublayer(innerShadowLayer)
+
         return result
     }()
     
@@ -175,10 +242,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         let verticalCenteringConstraint = emptyStateView.center(.vertical, in: view)
         verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
         
-        // New conversation button set
-        view.addSubview(newConversationButtonSet)
-        newConversationButtonSet.center(.horizontal, in: view)
-        newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
+        // New conversation button
+        view.addSubview(newConversationButton)
+        newConversationButton.center(.horizontal, in: view)
+        newConversationButton.pin(.bottom, to: .bottom, of: view.safeAreaLayoutGuide, withInset: -Values.smallSpacing)
         
         // Notifications
         NotificationCenter.default.addObserver(
@@ -690,42 +757,33 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         self.navigationController?.setViewControllers([ self, searchController ], animated: true)
     }
     
-    @objc func joinOpenGroup() {
-        let joinOpenGroupVC: JoinOpenGroupVC = JoinOpenGroupVC()
-        let navigationController: OWSNavigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
-        
+    @objc func createNewConversation() {
+        let newConversationVC = NewConversationVC()
+        let navigationController = OWSNavigationController(rootViewController: newConversationVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
-        
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
     
     @objc func createNewDM() {
-        let newDMVC = NewDMVC()
+        let newDMVC = NewDMVC(shouldShowBackButton: false)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc(createNewDMFromDeepLink:)
-    func createNewDMFromDeepLink(sessionID: String) {
-        let newDMVC = NewDMVC(sessionID: sessionID)
+    func createNewDMFromDeepLink(sessionId: String) {
+        let newDMVC = NewDMVC(sessionId: sessionId, shouldShowBackButton: false)
         let navigationController = OWSNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
-        present(navigationController, animated: true, completion: nil)
-    }
-    
-    @objc func createClosedGroup() {
-        let newClosedGroupVC = NewClosedGroupVC()
-        let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
-        if UIDevice.current.isIPad {
-            navigationController.modalPresentationStyle = .fullScreen
-        }
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
 }

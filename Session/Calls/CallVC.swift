@@ -58,7 +58,7 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         result.set(.height, to: height)
         
         ThemeManager.onThemeChange(observer: result) { [weak layer] theme, _ in
-            guard let backgroundPrimary: UIColor = theme.colors[.backgroundPrimary] else { return }
+            guard let backgroundPrimary: UIColor = theme.color(for: .backgroundPrimary) else { return }
             
             layer?.colors = [
                 backgroundPrimary.withAlphaComponent(0.4).cgColor,
@@ -410,7 +410,7 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         // Response Panel
         view.addSubview(responsePanel)
         responsePanel.center(.horizontal, in: view)
-        responsePanel.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset)
+        responsePanel.pin(.bottom, to: .bottom, of: view.safeAreaLayoutGuide, withInset: -Values.smallSpacing)
         
         // Operation Panel
         view.addSubview(operationPanel)

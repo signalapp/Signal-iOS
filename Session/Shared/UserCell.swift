@@ -53,7 +53,7 @@ final class UserCell: UITableViewCell {
         
         return result
     }()
-
+    
     private lazy var separator: UIView = {
         let result: UIView = UIView()
         result.themeBackgroundColor = .borderSeparator

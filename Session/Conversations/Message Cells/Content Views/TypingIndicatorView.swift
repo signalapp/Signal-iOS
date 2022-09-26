@@ -134,7 +134,7 @@ import SessionUIKit
         fileprivate func startAnimation() {
             stopAnimation()
 
-            let baseColor: UIColor = (ThemeManager.currentTheme.colors[.messageBubble_incomingText] ?? .white)
+            let baseColor: UIColor = (ThemeManager.currentTheme.color(for: .messageBubble_incomingText) ?? .white)
             let timeIncrement: CFTimeInterval = 0.15
             var colorValues = [CGColor]()
             var pathValues = [CGPath]()

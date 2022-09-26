@@ -1021,9 +1021,9 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         ThemeManager.onThemeChange(observer: result) { [weak result] theme, primaryColor in
             guard
-                let actualTextColor: UIColor = theme.colors[textColor],
-                let backgroundPrimaryColor: UIColor = theme.colors[.backgroundPrimary],
-                let textPrimaryColor: UIColor = theme.colors[.textPrimary]
+                let actualTextColor: UIColor = theme.color(for: textColor),
+                let backgroundPrimaryColor: UIColor = theme.color(for: .backgroundPrimary),
+                let textPrimaryColor: UIColor = theme.color(for: .textPrimary)
             else { return }
             
             let hasPreviousSetText: Bool = ((result?.attributedText?.length ?? 0) > 0)
