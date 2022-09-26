@@ -147,6 +147,28 @@ public class RegistrationPhoneNumberViewController: OnboardingBaseViewController
         view.addSubview(primaryView)
         primaryView.autoPinEdgesToSuperviewEdges()
 
+        let proxyButton = ContextMenuButton(contextMenu: .init([
+            .init(
+                title: NSLocalizedString(
+                    "USE_PROXY_BUTTON",
+                    comment: "Button to activate the signal proxy"
+                ),
+                handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    let vc = ProxySettingsViewController()
+                    self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
+                }
+            )
+        ]))
+        proxyButton.showsContextMenuAsPrimaryAction = true
+        proxyButton.setImage(Theme.iconImage(.more24), for: .normal)
+        proxyButton.tintColor = Theme.primaryIconColor
+        proxyButton.autoSetDimensions(to: .square(40))
+
+        view.addSubview(proxyButton)
+        proxyButton.autoPinEdge(toSuperviewMargin: .trailing)
+        proxyButton.autoPinEdge(toSuperviewMargin: .top)
+
         // Setup subviews and stack views
         let titleString = (Self.tsAccountManager.isReregistering
                            ? NSLocalizedString(
