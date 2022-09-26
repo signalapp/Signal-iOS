@@ -166,6 +166,7 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
             var observer: NSObjectProtocol?
             func unregisterObserver() {
                 observer.map { NotificationCenter.default.removeObserver($0) }
+                observer = nil
             }
 
             // Wait to see if we can establish a websocket connection via the new proxy
