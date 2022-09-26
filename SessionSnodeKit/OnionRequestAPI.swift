@@ -108,7 +108,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         else {
             SNLog("Populating guard snode cache.")
             // Sync on LokiAPI.workQueue
-            var unusedSnodes = SnodeAPI.snodePool.subtracting(reusableGuardSnodes)
+            var unusedSnodes = SnodeAPI.snodePool.wrappedValue.subtracting(reusableGuardSnodes)
             let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
             
             guard unusedSnodes.count >= (targetGuardSnodeCount - reusableGuardSnodeCount) else {
@@ -156,7 +156,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         let reusableGuardSnodes = reusablePaths.map { $0[0] }
         let promise: Promise<[[Snode]]> = getGuardSnodes(reusing: reusableGuardSnodes)
             .map2 { guardSnodes -> [[Snode]] in
-                var unusedSnodes = SnodeAPI.snodePool
+                var unusedSnodes = SnodeAPI.snodePool.wrappedValue
                     .subtracting(guardSnodes)
                     .subtracting(reusablePaths.flatMap { $0 })
                 let reusableGuardSnodeCount = UInt(reusableGuardSnodes.count)
@@ -285,7 +285,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
         var path = oldPaths[pathIndex]
         guard let snodeIndex = path.firstIndex(of: snode) else { return }
         path.remove(at: snodeIndex)
-        let unusedSnodes = SnodeAPI.snodePool.subtracting(oldPaths.flatMap { $0 })
+        let unusedSnodes = SnodeAPI.snodePool.wrappedValue.subtracting(oldPaths.flatMap { $0 })
         guard !unusedSnodes.isEmpty else { throw OnionRequestAPIError.insufficientSnodes }
         // randomElement() uses the system's default random generator, which is cryptographically secure
         path.append(unusedSnodes.randomElement()!)
@@ -672,7 +672,7 @@ public enum OnionRequestAPI: OnionRequestAPIType {
                         
                         if let timestamp = body["t"] as? Int64 {
                             let offset = timestamp - Int64(floor(Date().timeIntervalSince1970 * 1000))
-                            SnodeAPI.clockOffset = offset
+                            SnodeAPI.clockOffset.mutate { $0 = offset }
                         }
                         
                         guard 200...299 ~= statusCode else {

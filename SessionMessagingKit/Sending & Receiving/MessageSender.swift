@@ -202,7 +202,7 @@ public final class MessageSender {
             recipient: message.recipient!,
             data: base64EncodedData,
             ttl: message.ttl,
-            timestampMs: UInt64(messageSendTimestamp + SnodeAPI.clockOffset)
+            timestampMs: UInt64(messageSendTimestamp + SnodeAPI.clockOffset.wrappedValue)
         )
         
         SnodeAPI
