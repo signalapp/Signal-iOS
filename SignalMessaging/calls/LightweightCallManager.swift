@@ -229,7 +229,8 @@ extension LightweightCallManager: HTTPDelegate {
 
         let session = OWSURLSession(
             securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
-            configuration: OWSURLSession.defaultConfigurationWithoutCaching
+            configuration: OWSURLSession.defaultConfigurationWithoutCaching,
+            canUseSignalProxy: true
         )
         session.require2xxOr3xx = false
         session.allowRedirects = true

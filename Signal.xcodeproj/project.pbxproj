@@ -1045,6 +1045,10 @@
 		88D7BA9E266809F50088D1C2 /* CallMessageRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */; };
 		88DBDFB9263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */; };
 		88DBDFBB2638FFBD00C2101C /* audio-played-dot.json in Resources */ = {isa = PBXBuildFile; fileRef = 88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */; };
+		88DF819528E1130900F8BA80 /* SignalProxy+RelayServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819428E1130900F8BA80 /* SignalProxy+RelayServer.swift */; };
+		88DF819928E1157400F8BA80 /* SignalProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819828E1157400F8BA80 /* SignalProxy.swift */; };
+		88DF819B28E1158800F8BA80 /* SignalProxy+RelayClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819A28E1158800F8BA80 /* SignalProxy+RelayClient.swift */; };
+		88DF819D28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88DF819C28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift */; };
 		88E34F2722F269E900966CC2 /* StorageServiceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2622F269E900966CC2 /* StorageServiceManager.swift */; };
 		88E34F2922F26CC100966CC2 /* StorageServiceProto+Sync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E34F2822F26CC100966CC2 /* StorageServiceProto+Sync.swift */; };
 		88E728FF25F0241100A2E4A4 /* AccountSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88E728FE25F0241100A2E4A4 /* AccountSettingsViewController.swift */; };
@@ -1220,6 +1224,12 @@
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
+		F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */; };
+		F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */; };
+		F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */; };
+		F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */; };
+		F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */; };
+		F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180128DCFDF100113D9F /* TSContactThreadTest.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
@@ -3401,6 +3411,10 @@
 		88D7BA9D266809F50088D1C2 /* CallMessageRelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallMessageRelay.swift; sourceTree = "<group>"; };
 		88DBDFB8263731C800C2101C /* DefaultDisappearingMessageTimerInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultDisappearingMessageTimerInteraction.swift; sourceTree = "<group>"; };
 		88DBDFBA2638FFBC00C2101C /* audio-played-dot.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "audio-played-dot.json"; sourceTree = "<group>"; };
+		88DF819428E1130900F8BA80 /* SignalProxy+RelayServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalProxy+RelayServer.swift"; sourceTree = "<group>"; };
+		88DF819828E1157400F8BA80 /* SignalProxy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalProxy.swift; sourceTree = "<group>"; };
+		88DF819A28E1158800F8BA80 /* SignalProxy+RelayClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalProxy+RelayClient.swift"; sourceTree = "<group>"; };
+		88DF819C28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalProxy+ProxyClient.swift"; sourceTree = "<group>"; };
 		88E1EACA26BB283D00AD0C2D /* bn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bn; path = translations/bn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88E1EACB26BB285700AD0C2D /* gu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gu; path = translations/gu.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		88E1EACC26BB286F00AD0C2D /* kn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kn; path = translations/kn.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -3625,6 +3639,12 @@
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
+		F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFileSystemTest.swift; sourceTree = "<group>"; };
+		F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionState.swift; sourceTree = "<group>"; };
+		F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionStateTest.swift; sourceTree = "<group>"; };
+		F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigratorTest.swift; sourceTree = "<group>"; };
+		F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTestHelpers.swift; sourceTree = "<group>"; };
+		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
@@ -6582,6 +6602,17 @@
 			path = Signaling;
 			sourceTree = "<group>";
 		};
+		88DF819328E112F600F8BA80 /* Signal Proxy */ = {
+			isa = PBXGroup;
+			children = (
+				88DF819C28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift */,
+				88DF819A28E1158800F8BA80 /* SignalProxy+RelayClient.swift */,
+				88DF819428E1130900F8BA80 /* SignalProxy+RelayServer.swift */,
+				88DF819828E1157400F8BA80 /* SignalProxy.swift */,
+			);
+			path = "Signal Proxy";
+			sourceTree = "<group>";
+		};
 		88E34F2522F269B600966CC2 /* Storage Service */ = {
 			isa = PBXGroup;
 			children = (
@@ -7915,6 +7946,7 @@
 			children = (
 				F9C5CAD3289453B200548EEE /* API */,
 				F9C5CAC9289453B200548EEE /* Receiving */,
+				88DF819328E112F600F8BA80 /* Signal Proxy */,
 				F9C5CAB4289453B200548EEE /* Spam */,
 				F9C5CAC2289453B200548EEE /* WebSockets */,
 				F9C5CAF7289453B200548EEE /* ContentProxy.swift */,
@@ -10967,6 +10999,10 @@
 				F9C5CC8F289453B300548EEE /* SignalIOS.pb.swift in Sources */,
 				F9C5CC9E289453B300548EEE /* SignalIOSProto.swift in Sources */,
 				F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */,
+				88DF819D28E11C8700F8BA80 /* SignalProxy+ProxyClient.swift in Sources */,
+				88DF819B28E1158800F8BA80 /* SignalProxy+RelayClient.swift in Sources */,
+				88DF819528E1130900F8BA80 /* SignalProxy+RelayServer.swift in Sources */,
+				88DF819928E1157400F8BA80 /* SignalProxy.swift in Sources */,
 				F9C5CCB7289453B300548EEE /* SignalRecipient+SDS.swift in Sources */,
 				F9C5CCB6289453B300548EEE /* SignalRecipient.m in Sources */,
 				F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */,

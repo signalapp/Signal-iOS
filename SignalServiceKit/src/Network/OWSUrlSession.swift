@@ -102,7 +102,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         securityPolicy: OWSHTTPSecurityPolicy,
         configuration: URLSessionConfiguration,
         extraHeaders: [String: String],
-        maxResponseSize: Int?
+        maxResponseSize: Int?,
+        canUseSignalProxy: Bool
     ) {
         self.baseUrl = baseUrl
         self.frontingInfo = frontingInfo
@@ -110,8 +111,19 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         self.configuration = configuration
         self.extraHeaders = extraHeaders
         self.maxResponseSize = maxResponseSize
+        self.canUseSignalProxy = canUseSignalProxy
 
         super.init()
+
+        if canUseSignalProxy {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(isSignalProxyReadyDidChange),
+                name: .isSignalProxyReadyDidChange,
+                object: nil
+            )
+            isSignalProxyReadyDidChange()
+        }
 
         // Ensure this is set so that we don't try to create it in deinit().
         _ = self.delegateBox
@@ -123,7 +135,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
         frontingInfo: OWSUrlFrontingInfo? = nil,
         securityPolicy: OWSHTTPSecurityPolicy,
         configuration: URLSessionConfiguration,
-        extraHeaders: [String: String] = [:]
+        extraHeaders: [String: String] = [:],
+        canUseSignalProxy: Bool = false
     ) {
         self.init(
             baseUrl: baseUrl,
@@ -131,8 +144,15 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
             securityPolicy: securityPolicy,
             configuration: configuration,
             extraHeaders: extraHeaders,
-            maxResponseSize: nil
+            maxResponseSize: nil,
+            canUseSignalProxy: canUseSignalProxy
         )
+    }
+
+    @objc
+    private func isSignalProxyReadyDidChange() {
+        configuration.connectionProxyDictionary = SignalProxy.connectionProxyDictionary
+        session.getAllTasks { $0.forEach { $0.cancel() } }
     }
 
     // MARK: Request Building
@@ -310,6 +330,8 @@ public class OWSURLSession: NSObject, OWSURLSessionProtocol {
     }()
 
     private let maxResponseSize: Int?
+
+    private let canUseSignalProxy: Bool
 
     // MARK: Deinit
 
@@ -888,7 +910,11 @@ extension OWSURLSession: URLSessionWebSocketDelegate {
 
     @available(iOS 13, *)
     public func webSocketTask(request: URLRequest, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (SSKWebSocketNativeError) -> Void) -> URLSessionWebSocketTask {
-        let task = session.webSocketTask(with: request)
+        // For some reason, `URLSessionWebSocketTask` will only respect the proxy configuration
+        // if started with a URL and not a URLRequest. As a temporary workaround, port over
+        // any header information from the request to the session.
+        session.configuration.httpAdditionalHeaders = request.allHTTPHeaderFields
+        let task = session.webSocketTask(with: request.url!)
         addTask(task, taskState: WebSocketTaskState(openBlock: didOpenBlock, closeBlock: didCloseBlock))
         return task
     }

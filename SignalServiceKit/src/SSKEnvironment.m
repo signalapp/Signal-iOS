@@ -281,6 +281,8 @@ static SSKEnvironment *sharedSSKEnvironment;
 - (void)warmCaches
 {
     NSArray *specs = @[
+        @"signalProxy",
+        ^{ [SignalProxy warmCaches]; },
         @"tsAccountManager",
         ^{ [self.tsAccountManager warmCaches]; },
         @"signalServiceAddressCache",

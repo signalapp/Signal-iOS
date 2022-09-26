@@ -1,14 +1,17 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc
 public extension OWSOperation {
-    static func retryIntervalForExponentialBackoff(failureCount: UInt) -> TimeInterval {
+    static func retryIntervalForExponentialBackoff(
+        failureCount: UInt,
+        maxBackoff: TimeInterval = 15 * kMinuteInterval
+    ) -> TimeInterval {
         // Arbitrary backoff factor...
-        // With backOffFactor of 1.9
+        // With backOffFactor of 1.9 and maxBackoff of 15m
         // retry 1 delay:  0.10s
         // retry 2 delay:  0.19s
         // ...
@@ -21,7 +24,6 @@ public extension OWSOperation {
         //
         // 110 retries will yield ~24 hours of retry.
         let backoffFactor = 1.9
-        let maxBackoff = 15 * kMinuteInterval
 
         let seconds = min(maxBackoff, 0.1 * pow(backoffFactor, Double(failureCount)))
         return seconds

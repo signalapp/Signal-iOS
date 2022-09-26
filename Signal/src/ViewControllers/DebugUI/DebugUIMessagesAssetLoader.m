@@ -66,7 +66,8 @@ typedef void (^OWSImageDrawBlock)(CGContextRef context);
                                   frontingInfo:nil
                                 securityPolicy:OWSURLSession.defaultSecurityPolicy
                                  configuration:NSURLSessionConfiguration.ephemeralSessionConfiguration
-                                  extraHeaders:[NSDictionary new]];
+                                  extraHeaders:[NSDictionary new]
+                             canUseSignalProxy:NO];
     [urlSession dataTask:fileUrl
         method:HTTPMethodGet
         headers:nil
