@@ -64,7 +64,53 @@ public class SignalProxy: NSObject {
 
     @objc
     public class func isValidProxyLink(_ url: URL) -> Bool {
-        (url.scheme.map { ["https", "sgnl"].contains($0) } ?? false) && url.host == "signal.tube" && url.fragment != nil
+        guard url.user == nil, url.password == nil, url.port == nil else {
+            return false
+        }
+
+        guard url.host?.caseInsensitiveCompare("signal.tube") == .orderedSame else {
+            return false
+        }
+
+        guard let scheme = url.scheme else {
+            return false
+        }
+        let isValidScheme = (
+            scheme.caseInsensitiveCompare("https") == .orderedSame ||
+            scheme.caseInsensitiveCompare("sgnl") == .orderedSame
+        )
+        guard isValidScheme else {
+            return false
+        }
+
+        guard
+            let fragment = url.fragment,
+            // To quote [RFC 1034][0]: "the total number of octets that represent a domain name
+            // [...] is limited to 255." To be extra careful, we set a maximum of 2048.
+            // [0]: https://tools.ietf.org/html/rfc1034
+            fragment.utf8.count <= 2048,
+            let proxyUrl = URL(string: "fake-protocol://\(fragment)"),
+            proxyUrl.scheme == "fake-protocol",
+            proxyUrl.user == nil,
+            proxyUrl.password == nil,
+            proxyUrl.path.isEmpty,
+            proxyUrl.query == nil,
+            proxyUrl.fragment == nil,
+            let proxyHost = proxyUrl.host
+        else {
+            return false
+        }
+
+        // There must be at least 2 domain labels, and none of them can be empty.
+        let labels = proxyHost.split(separator: ".", omittingEmptySubsequences: false)
+        guard labels.count >= 2 else {
+            return false
+        }
+        guard labels.allSatisfy({ !$0.isEmpty }) else {
+            return false
+        }
+
+        return true
     }
 
     @objc
