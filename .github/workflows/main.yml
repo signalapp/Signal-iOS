@@ -46,6 +46,7 @@ jobs:
             --output_types junit \
             --skip_package_dependencies_resolution \
             --disable_package_automatic_updates \
+            --xcargs '-test-timeouts-enabled YES -maximum-test-execution-time-allowance 60' \
             || formatFailures
 
       - name: Upload build logs
