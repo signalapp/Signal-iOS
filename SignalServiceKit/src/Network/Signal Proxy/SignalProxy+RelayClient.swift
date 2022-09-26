@@ -26,7 +26,7 @@ extension SignalProxy {
             guard !isStarted else { return }
             isStarted = true
 
-            Logger.verbose("Relay client \(id) starting...")
+            Logger.debug("Relay client \(id) starting...")
 
             connection.stateUpdateHandler = stateDidChange
             receive()
@@ -40,7 +40,7 @@ extension SignalProxy {
             if let error = error {
                 owsFailDebug("Relay client \(id) did fail with error \(error)")
             } else {
-                Logger.verbose("Relay client \(id) did stop")
+                Logger.debug("Relay client \(id) did stop")
             }
 
             proxyClient.didStopCallback = nil
@@ -63,15 +63,13 @@ extension SignalProxy {
                     self.stop(error: error)
                     return
                 }
-
-                Logger.verbose("Relay client \(self.id) did send data")
             }))
         }
 
         private func stateDidChange(to state: NWConnection.State) {
             switch state {
             case .ready:
-                Logger.verbose("Relay client \(id) ready!")
+                Logger.debug("Relay client \(id) ready!")
             case .failed(let error), .waiting(let error):
                 stop(error: error)
             default:
