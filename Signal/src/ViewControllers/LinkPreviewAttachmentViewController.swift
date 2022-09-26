@@ -126,19 +126,8 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
                                                           verticalFittingPriority: .fittingSizeLevel)
         if sheetHeight != sheetSize.height {
             sheetHeight = sheetSize.height
-            heightConstraint.constant = sheetHeight
-            maxHeightConstraint.constant = sheetHeight
+            minimizedHeight = max(0, sheetHeight)
         }
-    }
-
-    override var minHeight: CGFloat {
-        guard sheetHeight > 0 else { return super.minHeight }
-        return sheetHeight
-    }
-
-    override var maximizedHeight: CGFloat {
-        guard sheetHeight > 0 else { return super.maximizedHeight }
-        return sheetHeight
     }
 
     private func updateUIOnLinkPreviewStateChange() {

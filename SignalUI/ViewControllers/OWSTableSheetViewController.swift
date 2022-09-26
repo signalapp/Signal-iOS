@@ -13,6 +13,19 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
     }
 
+    open var bottomSafeAreaContentPadding: CGFloat {
+        var padding = view.safeAreaInsets.bottom
+        if padding == 0 {
+            // For home button devices, add generous bottom padding
+            // so it isn't right up on the edge.
+            padding = 36
+        } else {
+            // For other devices, just add a touch extra.
+            padding += 12
+        }
+        return padding
+    }
+
     private var contentSizeHeight: CGFloat {
         let tableView = tableViewController.tableView
         // The `adjustedContentInset` property diverges from its stable value during
@@ -20,19 +33,26 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         // Instead, compute the height using `view.safeAreaInsets`, which remains stable
         // during animations. (Note that `.top` isn't considered here since
         // `maximumHeight` prevents the view's height from extending into top safe area.)
-        return tableView.contentSize.height + tableView.contentInset.totalHeight + view.safeAreaInsets.bottom
+        return tableView.contentSize.height
+            + tableView.contentInset.totalHeight
+            + bottomSafeAreaContentPadding
     }
-    public override var minimizedHeight: CGFloat {
-        return min(contentSizeHeight, maximizedHeight)
-    }
-    public override var maximizedHeight: CGFloat {
-        min(contentSizeHeight, CurrentAppContext().frame.height - (view.safeAreaInsets.top + 32))
-    }
+
+    private var contentSizeObservation: NSKeyValueObservation?
 
     public required init() {
         super.init()
 
         tableViewController.shouldDeferInitialLoad = false
+
+        contentSizeObservation = tableViewController.tableView.observe(\.contentSize, changeHandler: { [weak self] (_, _) in
+            guard let self = self else { return }
+            self.minimizedHeight = self.contentSizeHeight
+        })
+    }
+
+    deinit {
+        contentSizeObservation?.invalidate()
     }
 
     public override func viewDidLoad() {
@@ -41,6 +61,8 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         addChild(tableViewController)
         contentView.addSubview(tableViewController.view)
         tableViewController.view.autoPinEdgesToSuperviewEdges()
+
+        minimizedHeight = contentSizeHeight
 
         updateViewState()
     }
@@ -61,15 +83,6 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         // The table view might not have its final size when this method is called.
         // Run a layout pass so that we compute the correct height constraints.
         self.tableViewController.tableView.layoutIfNeeded()
-        // This comparison isn't redundant: assigning same value to `heightConstraint.constant`
-        // triggers a layout cycle and therefore this method, where height being reset to a previous value,
-        // killing interactive dismiss.
-        let minimizedHeight = minimizedHeight
-        if minimizedHeight != previousMinimizedHeight {
-            heightConstraint.constant = minimizedHeight
-            previousMinimizedHeight = minimizedHeight
-        }
-        maxHeightConstraint.constant = maximizedHeight
     }
 
     public override func themeDidChange() {

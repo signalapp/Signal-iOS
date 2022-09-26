@@ -15,7 +15,6 @@ class ReactionsDetailSheet: InteractiveSheetViewController {
     let emojiCountsCollectionView = EmojiCountsCollectionView()
 
     override var interactiveScrollViews: [UIScrollView] { emojiReactorsViews }
-    override var handlePosition: HandlePosition { .outside }
 
     private var emojiCounts: [InteractionReactionState.EmojiCount] {
         reactionState.emojiCounts

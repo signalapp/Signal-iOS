@@ -8,7 +8,6 @@ import SignalServiceKit
 
 class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
     override var interactiveScrollViews: [UIScrollView] { [groupReplyViewController.tableView] }
-    override var minHeight: CGFloat { maximizedHeight }
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
     weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
@@ -31,6 +30,8 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        minimizedHeight = super.maximizedHeight
 
         addChild(groupReplyViewController)
         contentView.addSubview(groupReplyViewController.view)

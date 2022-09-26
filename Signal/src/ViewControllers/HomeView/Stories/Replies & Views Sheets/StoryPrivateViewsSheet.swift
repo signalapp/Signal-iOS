@@ -7,7 +7,6 @@ import SignalUI
 
 class StoryPrivateViewsSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [viewsViewController.tableView] }
-    override var minHeight: CGFloat { CurrentAppContext().frame.height * 0.6 }
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
     var dismissHandler: (() -> Void)?
@@ -25,6 +24,8 @@ class StoryPrivateViewsSheet: InteractiveSheetViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        minimizedHeight = CurrentAppContext().frame.height * 0.6
 
         addChild(viewsViewController)
         contentView.addSubview(viewsViewController.view)

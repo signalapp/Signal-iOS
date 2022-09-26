@@ -9,7 +9,6 @@ import SignalMessaging
 @objc
 class GroupCallMemberSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [tableView] }
-    override var handlePosition: HandlePosition { .outside }
 
     let tableView = UITableView(frame: .zero, style: .grouped)
     let call: SignalCall

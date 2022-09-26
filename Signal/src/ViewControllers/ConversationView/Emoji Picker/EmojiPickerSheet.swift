@@ -9,7 +9,6 @@ import SignalServiceKit
 @objc
 class EmojiPickerSheet: InteractiveSheetViewController {
     override var interactiveScrollViews: [UIScrollView] { [collectionView] }
-    override var handlePosition: HandlePosition { .outside }
 
     let completionHandler: (EmojiWithSkinTones?) -> Void
 
@@ -117,16 +116,6 @@ class EmojiPickerSheet: InteractiveSheetViewController {
 
     }
 
-    private func expandSheetAnimated() {
-        guard heightConstraint.constant != maximizedHeight else { return }
-
-        UIView.animate(withDuration: maxAnimationDuration, delay: 0, options: .curveEaseOut, animations: {
-            self.heightConstraint.constant = self.maximizedHeight
-            self.view.layoutIfNeeded()
-            self.backdropView?.alpha = 1
-        })
-    }
-
     @objc
     private func didSelectConfigureButton(sender: UIButton) {
         let configVC = EmojiReactionPickerConfigViewController()
@@ -150,7 +139,7 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
             collectionView.scrollToSectionHeader(section, animated: false)
         }
 
-        expandSheetAnimated()
+        maximizeHeight()
     }
 
     func emojiPickerSectionToolbarShouldShowRecentsSection(_ sectionToolbar: EmojiPickerSectionToolbar) -> Bool {
@@ -175,7 +164,7 @@ extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
 
 extension EmojiPickerSheet: UISearchBarDelegate {
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        expandSheetAnimated()
+        maximizeHeight()
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

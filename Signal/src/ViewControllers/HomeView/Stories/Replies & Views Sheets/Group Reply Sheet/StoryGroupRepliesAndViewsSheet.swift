@@ -9,12 +9,7 @@ import SignalUI
 
 class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroupReplier {
     override var interactiveScrollViews: [UIScrollView] { [groupReplyViewController.tableView, viewsViewController.tableView] }
-    override var minHeight: CGFloat {
-        switch focusedTab {
-        case .views: return CurrentAppContext().frame.height * 0.6
-        case .replies: return maximizedHeight
-        }
-    }
+
     override var sheetBackgroundColor: UIColor { .ows_gray90 }
 
     weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
@@ -58,6 +53,11 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        switch focusedTab {
+        case .views: minimizedHeight = CurrentAppContext().frame.height * 0.6
+        case .replies: minimizedHeight = super.maximizedHeight
+        }
 
         let vStack = UIStackView()
         vStack.axis = .vertical

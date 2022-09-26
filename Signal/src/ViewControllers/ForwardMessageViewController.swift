@@ -45,6 +45,8 @@ class ForwardMessageViewController: InteractiveSheetViewController {
         let placeholderText = NSLocalizedString("FORWARD_MESSAGE_TEXT_PLACEHOLDER",
                                                 comment: "Indicates that the user can add a text message to forwarded messages.")
         pickerVC.approvalTextMode = .active(placeholderText: placeholderText)
+
+        minimizedHeight = 576
     }
 
     required init() {
@@ -162,8 +164,6 @@ class ForwardMessageViewController: InteractiveSheetViewController {
 
         forwardMessageDelegate?.forwardMessageFlowDidCancel()
     }
-
-    override var minHeight: CGFloat { 576 }
 }
 
 // MARK: - Sending
