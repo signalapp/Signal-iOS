@@ -53,10 +53,11 @@ public final class SnodeAPI {
     private static func loadSnodePoolIfNeeded() {
         guard !hasLoadedSnodePool.wrappedValue else { return }
         
-        Storage.shared.read { db in
-            snodePool.mutate { $0 = ((try? Snode.fetchSet(db)) ?? Set()) }
-        }
+        let fetchedSnodePool: Set<Snode> = Storage.shared
+            .read { db in try Snode.fetchSet(db) }
+            .defaulting(to: [])
         
+        snodePool.mutate { $0 = fetchedSnodePool }
         hasLoadedSnodePool.mutate { $0 = true }
     }
     
