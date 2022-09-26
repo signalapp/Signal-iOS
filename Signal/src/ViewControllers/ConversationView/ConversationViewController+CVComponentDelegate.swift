@@ -282,6 +282,11 @@ extension ConversationViewController: CVComponentDelegate {
             return
         }
 
+        if SignalProxy.isValidProxyLink(url) {
+            cvc_didTapProxyLink(url: url)
+            return
+        }
+
         if SignalMe.isPossibleUrl(url) { return cvc_didTapSignalMeLink(url: url) }
 
         UIApplication.shared.open(url, options: [:], completionHandler: nil)
