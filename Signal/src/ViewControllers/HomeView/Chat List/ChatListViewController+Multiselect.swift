@@ -67,10 +67,19 @@ extension ChatListViewController {
             tbc.autoPinWidthToSuperview()
             tbc.autoPinEdge(toSuperviewEdge: .bottom)
             viewState.multiSelectState.toolbar = tbc
-            UIView.animate(withDuration: 0.25, animations: {
-                tbc.alpha = 1
-            }) { [weak self] (_) in
-                self?.tableView.contentSize.height += tbc.height
+            let animateToolbar = {
+                UIView.animate(withDuration: 0.25, animations: {
+                    tbc.alpha = 1
+                }) { [weak self] (_) in
+                    self?.tableView.contentSize.height += tbc.height
+                }
+            }
+            if StoryManager.areStoriesEnabled, let tabController = self.tabBarController as? HomeTabBarController {
+                tabController.setTabBarHidden(true, animated: true) { _ in
+                    animateToolbar()
+                }
+            } else {
+                animateToolbar()
             }
         }
         updateCaptions()
@@ -163,6 +172,9 @@ extension ChatListViewController {
             } completion: { [weak self] (_) in
                 toolbar.removeFromSuperview()
                 self?.viewState.multiSelectState.toolbar = nil
+            }
+            if StoryManager.areStoriesEnabled, let tabController = self.tabBarController as? HomeTabBarController {
+                tabController.setTabBarHidden(false, animated: true)
             }
         }
     }

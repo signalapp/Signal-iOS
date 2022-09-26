@@ -34,14 +34,6 @@ class HomeTabBarController: UITabBarController {
         set { selectedIndex = newValue.rawValue }
     }
 
-    var tabBarHidden: Bool {
-        get { tabBar.isHidden }
-        set {
-            tabBar.isHidden = newValue
-            chatListViewController.extendedLayoutIncludesOpaqueBars = newValue
-        }
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -73,7 +65,8 @@ class HomeTabBarController: UITabBarController {
         // We read directly from the database here, as the cache may not have been warmed by the time
         // this view is loaded (since it's the very first thing to load). Otherwise, there can be a
         // small window where the tab bar is in the wrong state at app launch.
-        tabBarHidden = !databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
+        let shouldHideTabBar = !databaseStorage.read { StoryManager.areStoriesEnabled(transaction: $0) }
+        setTabBarHidden(shouldHideTabBar, animated: false)
     }
 
     @objc
@@ -84,9 +77,9 @@ class HomeTabBarController: UITabBarController {
     @objc
     func storiesEnabledStateDidChange() {
         if StoryManager.areStoriesEnabled {
-            tabBarHidden = false
+            setTabBarHidden(false, animated: false)
         } else {
-            tabBarHidden = true
+            setTabBarHidden(true, animated: false)
             selectedTab = .chatList
         }
     }
@@ -110,6 +103,61 @@ class HomeTabBarController: UITabBarController {
             InteractionFinder.unreadCountInAllThreads(transaction: transaction.unwrapGrdbRead)
         }
         chatListTabBarItem.badgeValue = unreadMessageCount > 0 ? "\(unreadMessageCount)" : nil
+    }
+
+    // MARK: - Hiding the tab bar
+
+    private var isTabBarHidden: Bool = false
+
+    /// Hides or displays the tab bar, resizing `selectedViewController` to fill the space remaining.
+    public func setTabBarHidden(
+        _ hidden: Bool,
+        animated: Bool = true,
+        completion: ((Bool) -> Void)? = nil
+    ) {
+        defer {
+            isTabBarHidden = hidden
+        }
+
+        guard isTabBarHidden != hidden else {
+            tabBar.isHidden = hidden
+            completion?(true)
+            return
+        }
+
+        let oldFrame = self.tabBar.frame
+        let containerHeight = tabBar.superview?.bounds.height ?? 0
+        let newMinY = hidden ? containerHeight : containerHeight - oldFrame.height
+        let additionalSafeArea = hidden
+            ? (-oldFrame.height + view.safeAreaInsets.bottom)
+            : (oldFrame.height - view.safeAreaInsets.bottom)
+
+        let animations = {
+            self.tabBar.frame = self.tabBar.frame.offsetBy(dx: 0, dy: newMinY - oldFrame.y)
+            if let vc = self.selectedViewController {
+                var additionalSafeAreaInsets = vc.additionalSafeAreaInsets
+                additionalSafeAreaInsets.bottom += additionalSafeArea
+                vc.additionalSafeAreaInsets = additionalSafeAreaInsets
+            }
+
+            self.view.setNeedsDisplay()
+            self.view.layoutIfNeeded()
+        }
+
+        if animated {
+            let animator = UIViewPropertyAnimator(duration: 0.15, curve: .easeOut) {
+                animations()
+            }
+            animator.addCompletion({
+                self.tabBar.isHidden = hidden
+                completion?($0 == .end)
+            })
+            animator.startAnimation()
+        } else {
+            animations()
+            self.tabBar.isHidden = hidden
+            completion?(true)
+        }
     }
 }
 
