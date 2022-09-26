@@ -28,14 +28,21 @@ extension SignalProxy {
 
             Logger.verbose("Proxy client \(id) starting...")
 
-            guard let proxyHost = SignalProxy.host else {
+            guard let proxyHostComponents = SignalProxy.host?.components(separatedBy: ":"), let proxyHost = proxyHostComponents[safe: 0] else {
                 return stop(error: OWSAssertionError("Unexpectedly missing proxy host!"))
+            }
+
+            let proxyPort: UInt16
+            if let portString = proxyHostComponents[safe: 1], let port = UInt16(portString) {
+                proxyPort = port
+            } else {
+                proxyPort = 443
             }
 
             connection = NWConnection(
                 to: NWEndpoint.hostPort(
                     host: NWEndpoint.Host(proxyHost),
-                    port: NWEndpoint.Port(443)
+                    port: NWEndpoint.Port(integerLiteral: proxyPort)
                 ),
                 using: .tls
             )
