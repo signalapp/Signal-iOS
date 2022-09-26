@@ -6,6 +6,7 @@ import Foundation
 import Network
 
 extension SignalProxy {
+    /// Establishes a connection to a Signal TLS Proxy and relays transmitted data via the provided `RelayClient`
     class ProxyClient {
         @Atomic
         private(set) var isStarted = false
