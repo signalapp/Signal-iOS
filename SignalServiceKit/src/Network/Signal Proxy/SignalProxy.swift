@@ -83,8 +83,14 @@ public class SignalProxy: NSObject {
             return false
         }
 
+        guard isValidProxyFragment(url.fragment) else { return false }
+
+        return true
+    }
+
+    public class func isValidProxyFragment(_ fragment: String?) -> Bool {
         guard
-            let fragment = url.fragment,
+            let fragment = fragment?.nilIfEmpty,
             // To quote [RFC 1034][0]: "the total number of octets that represent a domain name
             // [...] is limited to 255." To be extra careful, we set a maximum of 2048.
             // [0]: https://tools.ietf.org/html/rfc1034

@@ -150,8 +150,8 @@ class DataSettingsTableViewController: OWSTableViewController2 {
 
         let proxySection = OWSTableSection()
         proxySection.headerTitle = NSLocalizedString(
-            "SETTINGS_PROXY_SECTION_HEADER",
-            comment: "Section header for the proxy section in data settings"
+            "PROXY_SETTINGS_TITLE",
+            comment: "Title for the signal proxy settings"
         )
 
         proxySection.add(.disclosureItem(

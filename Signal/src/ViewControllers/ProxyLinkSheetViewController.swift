@@ -37,8 +37,19 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
             imageView.image = UIImage(named: "proxy_avatar_96")
             imageView.autoSetDimension(.height, toSize: 96)
 
-            cell.contentView.addSubview(imageView)
-            imageView.autoPinEdgesToSuperviewMargins()
+            let titleLabel = UILabel()
+            titleLabel.font = .ows_dynamicTypeHeadline
+            titleLabel.text = "Proxy Server"
+            titleLabel.textColor = Theme.primaryTextColor
+            titleLabel.textAlignment = .center
+
+            let stackView = UIStackView(arrangedSubviews: [imageView, titleLabel])
+            stackView.axis = .vertical
+            stackView.spacing = 12
+            stackView.alignment = .center
+
+            cell.contentView.addSubview(stackView)
+            stackView.autoPinEdgesToSuperviewMargins()
 
             return cell
         }))
@@ -89,7 +100,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
     private func button(title: String, titleColor: UIColor, touchHandler: @escaping () -> Void) -> OWSFlatButton {
         let flatButton = OWSFlatButton()
         flatButton.setTitle(title: title, font: UIFont.ows_dynamicTypeBodyClamped.ows_semibold, titleColor: titleColor)
-        flatButton.setBackgroundColors(upColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05)
+        flatButton.setBackgroundColors(upColor: tableViewController.cellBackgroundColor)
         flatButton.setPressedBlock(touchHandler)
         flatButton.useDefaultCornerRadius()
         flatButton.autoSetDimension(.height, toSize: 48)

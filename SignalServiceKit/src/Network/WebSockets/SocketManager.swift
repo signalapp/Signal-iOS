@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -154,6 +154,7 @@ public class SocketManager: NSObject {
         OWSWebSocketType.allCases.contains { socketState(forType: $0) == .open }
     }
 
+    @objc
     public func socketState(forType webSocketType: OWSWebSocketType) -> OWSWebSocketState {
         webSocket(ofType: webSocketType).currentState
     }

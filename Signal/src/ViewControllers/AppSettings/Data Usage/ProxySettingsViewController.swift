@@ -10,14 +10,21 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = NSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy")
+        title = NSLocalizedString(
+            "PROXY_SETTINGS_TITLE",
+            comment: "Title for the signal proxy settings"
+        )
 
         updateTableContents()
         updateNavigationBar()
     }
 
     private var hasPendingChanges: Bool {
-        useProxy != SignalProxy.useProxy || hostTextField.text != SignalProxy.host
+        useProxy != SignalProxy.useProxy || host != SignalProxy.host
+    }
+
+    private var host: String? {
+        hostTextField.text?.nilIfEmpty
     }
 
     private func updateNavigationBar() {
@@ -97,7 +104,8 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share"),
                 actionBlock: { [weak self] in
                     guard let self = self else { return }
-                    AttachmentSharing.showShareUI(for: URL(string: "https://signal.tube#\(self.hostTextField.text ?? "")")!, sender: self.view)
+                    guard !self.notifyForInvalidHostIfNecessary() else { return }
+                    AttachmentSharing.showShareUI(for: URL(string: "https://signal.tube#\(self.host ?? "")")!, sender: self.view)
                 }))
             contents.addSection(shareSection)
 
@@ -116,15 +124,60 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         updateNavigationBar()
     }
 
+    private func notifyForInvalidHostIfNecessary() -> Bool {
+        guard !SignalProxy.isValidProxyFragment(host) else { return false }
+
+        presentToast(text: NSLocalizedString("INVALID_PROXY_HOST_ERROR", comment: "The provided proxy host address is not valid"))
+
+        return true
+    }
+
     @objc
     private func didTapSave() {
+        guard !notifyForInvalidHostIfNecessary() else { return }
+
         databaseStorage.write { transaction in
-            SignalProxy.setProxyHost(host: self.hostTextField.text, useProxy: self.useProxy, transaction: transaction)
+            SignalProxy.setProxyHost(host: self.host, useProxy: self.useProxy, transaction: transaction)
         }
-        if navigationController?.viewControllers.count == 1 {
-            dismiss(animated: true)
-        } else {
-            navigationController?.popViewController(animated: true)
+
+        var hasTransitionedToConnecting = false
+
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+            var observer: NSObjectProtocol?
+            func unregisterObserver() {
+                observer.map { NotificationCenter.default.removeObserver($0) }
+            }
+
+            // Wait to see if we can establish a websocket connection via the new proxy
+            observer = NotificationCenter.default.addObserver(forName: OWSWebSocket.webSocketStateDidChange, object: nil, queue: nil) { _ in
+                switch self.socketManager.socketState(forType: .identified) {
+                case .closed:
+                    // Ignore closed state until we start connecting, it's expected that old sockets will close
+                    guard hasTransitionedToConnecting else { break }
+
+                    unregisterObserver()
+                    modal.dismiss {
+                        self.presentToast(text: NSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
+                        Self.databaseStorage.write { transaction in
+                            SignalProxy.setProxyHost(host: self.host, useProxy: false, transaction: transaction)
+                        }
+                        self.updateTableContents()
+                    }
+                case .connecting:
+                    hasTransitionedToConnecting = true
+                case .open:
+                    unregisterObserver()
+                    modal.dismiss {
+                        if self.navigationController?.viewControllers.count == 1 {
+                            self.presentingViewController?.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
+                            self.dismiss(animated: true)
+                        } else {
+                            self.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
+                            self.updateNavigationBar()
+                        }
+                    }
+                }
+            }
         }
     }
 
