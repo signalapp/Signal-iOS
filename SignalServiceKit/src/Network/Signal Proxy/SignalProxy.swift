@@ -44,16 +44,7 @@ public class SignalProxy: NSObject {
         transaction.addSyncCompletion {
             self.host = hostToStore
             self.useProxy = useProxyToStore
-
-            if isEnabled {
-                if relayServer.isStarted {
-                    relayServer.restart()
-                } else {
-                    relayServer.start()
-                }
-            } else {
-                relayServer.stop()
-            }
+            self.ensureProxyState()
         }
     }
 
@@ -65,12 +56,27 @@ public class SignalProxy: NSObject {
                 useProxy = keyValueStore.getBool(proxyUseKey, defaultValue: false, transaction: transaction)
             }
 
-            if isEnabled { relayServer.start() }
+            NotificationCenter.default.addObserver(self, selector: #selector(ensureProxyState), name: .OWSApplicationDidBecomeActive, object: nil)
+
+            ensureProxyState()
         }
     }
 
     @objc
     public class func isValidProxyLink(_ url: URL) -> Bool {
         (url.scheme.map { ["https", "sgnl"].contains($0) } ?? false) && url.host == "signal.tube" && url.fragment != nil
+    }
+
+    @objc
+    private class func ensureProxyState() {
+        if isEnabled {
+            if relayServer.isStarted {
+                relayServer.restart(ignoreBackoff: true)
+            } else {
+                relayServer.start()
+            }
+        } else {
+            relayServer.stop()
+        }
     }
 }
