@@ -6,6 +6,7 @@ import Foundation
 import Network
 
 extension SignalProxy {
+    /// An HTTP Proxy server that relays traffic to a Signal TLS Proxy
     class RelayServer {
         @Atomic
         private(set) var isStarted = false
@@ -62,7 +63,7 @@ extension SignalProxy {
 
                 restartFailureCount = 0
             } catch {
-                restart(error: error)
+                restartIfNeeded(error: error)
             }
         }
 
@@ -96,7 +97,7 @@ extension SignalProxy {
         @Atomic
         private var restartBackoffTimer: Timer?
 
-        func restart(error: Error? = nil, ignoreBackoff: Bool = false) {
+        func restartIfNeeded(error: Error? = nil, ignoreBackoff: Bool = false) {
             guard isStarted else { return }
 
             restartBackoffTimer?.invalidate()
@@ -129,7 +130,7 @@ extension SignalProxy {
                 Logger.info("Relay server ready.")
                 isReady = true
             case .failed(let error):
-                restart(error: error)
+                restartIfNeeded(error: error)
             default:
                 break
             }

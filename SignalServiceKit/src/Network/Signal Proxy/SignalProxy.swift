@@ -44,7 +44,7 @@ public class SignalProxy: NSObject {
         transaction.addSyncCompletion {
             self.host = hostToStore
             self.useProxy = useProxyToStore
-            self.ensureProxyState()
+            self.ensureProxyState(restartIfNeeded: true)
         }
     }
 
@@ -56,7 +56,7 @@ public class SignalProxy: NSObject {
                 useProxy = keyValueStore.getBool(proxyUseKey, defaultValue: false, transaction: transaction)
             }
 
-            NotificationCenter.default.addObserver(self, selector: #selector(ensureProxyState), name: .OWSApplicationDidBecomeActive, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive), name: .OWSApplicationDidBecomeActive, object: nil)
 
             ensureProxyState()
         }
@@ -120,10 +120,14 @@ public class SignalProxy: NSObject {
     }
 
     @objc
-    private class func ensureProxyState() {
+    private class func applicationDidBecomeActive() {
+        ensureProxyState()
+    }
+
+    private class func ensureProxyState(restartIfNeeded: Bool = false) {
         if isEnabled {
-            if relayServer.isStarted {
-                relayServer.restart(ignoreBackoff: true)
+            if restartIfNeeded && relayServer.isStarted {
+                relayServer.restartIfNeeded(ignoreBackoff: true)
             } else {
                 relayServer.start()
             }

@@ -6,6 +6,7 @@ import Foundation
 import Network
 
 extension SignalProxy {
+    /// Represents a connection to the `RelayServer`. Establishes a `ProxyClient` to interact with the signal service.
     class RelayClient {
         @Atomic
         private(set) var isStarted = false
