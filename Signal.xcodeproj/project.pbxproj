@@ -6930,7 +6930,6 @@
 		F94261D7289B1B5400460798 /* Storage */ = {
 			isa = PBXGroup;
 			children = (
-				F97217FC28DCBC4100113D9F /* Database */,
 				F97217F928DCA35F00113D9F /* Database */,
 				F94261DE289B1B5400460798 /* InteractionFinderTest.swift */,
 				F94261DD289B1B5400460798 /* ModelReadCacheTest.swift */,
