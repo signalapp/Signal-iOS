@@ -491,7 +491,7 @@ public extension ChatListViewController {
             let boost = BoostViewController()
             viewControllers += [ boost ]
         case .proxy:
-            viewControllers += [ DataSettingsTableViewController(), ProxySettingsViewController() ]
+            viewControllers += [ PrivacySettingsViewController(), AdvancedPrivacySettingsViewController(), ProxySettingsViewController() ]
         }
         navigationController.setViewControllers(viewControllers, animated: false)
         presentFormSheet(navigationController, animated: true, completion: completion)
