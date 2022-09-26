@@ -17,8 +17,6 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
 
         updateTableContents()
         updateNavigationBar()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(updateTableContents), name: OWSWebSocket.webSocketStateDidChange, object: nil)
     }
 
     private var hasPendingChanges: Bool {
@@ -65,13 +63,8 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         return textField
     }()
 
-    private var willEditTextField = false
-    private var isEditingTextField = false
-
     @objc
     func updateTableContents() {
-        guard !isEditingTextField && !isSaving else { return }
-
         let contents = OWSTableContents()
         defer { self.contents = contents }
 
@@ -98,30 +91,6 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
 
             let proxyAddressSection = OWSTableSection()
             proxyAddressSection.headerTitle = NSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy")
-
-            if SignalProxy.isEnabledAnReady && !(hasPendingChanges || willEditTextField || isEditingTextField) {
-                switch socketManager.socketState(forType: .identified) {
-                case .open:
-                    proxyAddressSection.footerAttributedTitle = NSLocalizedString(
-                        "PROXY_CONNECTED",
-                        comment: "Text indicating the proxy is connected"
-                    ).styled(with: .font(.ows_dynamicTypeCaption1Clamped), .color(.ows_accentGreen))
-                case .connecting:
-                    proxyAddressSection.footerAttributedTitle = NSLocalizedString(
-                        "PROXY_CONNECTING",
-                        comment: "Text indicating the proxy is connecting"
-                    ).styled(with: .font(.ows_dynamicTypeCaption1Clamped), .color(Theme.middleGrayColor))
-                case .closed:
-                    proxyAddressSection.footerAttributedTitle = NSLocalizedString(
-                        "PROXY_FAILED",
-                        comment: "Text indicating the proxy failed to connect"
-                    ).styled(with: .font(.ows_dynamicTypeCaption1Clamped), .color(.ows_accentRed))
-                }
-            } else {
-                // Empty footer to preserve spacing
-                proxyAddressSection.footerTitle = " "
-            }
-
             proxyAddressSection.add(.init(
                 customCellBlock: { [weak self] in
                     let cell = OWSTableItem.newCell()
@@ -161,7 +130,6 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
 
     @objc
     private func textFieldDidChange() {
-        updateTableContents()
         updateNavigationBar()
     }
 
@@ -173,26 +141,20 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         return true
     }
 
-    private var isSaving = false
-
     @objc
     private func didTapSave() {
         hostTextField.resignFirstResponder()
 
         guard !notifyForInvalidHostIfNecessary() else { return }
 
-        isSaving = true
-
         databaseStorage.write { transaction in
             SignalProxy.setProxyHost(host: self.host, useProxy: self.useProxy, transaction: transaction)
         }
 
         guard useProxy else {
-            isSaving = false
             if navigationController?.viewControllers.count == 1 {
                 dismiss(animated: true)
             } else {
-                updateTableContents()
                 updateNavigationBar()
             }
             return
@@ -215,7 +177,6 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
 
                     unregisterObserver()
                     modal.dismiss {
-                        self.isSaving = false
                         self.presentToast(text: NSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
                         Self.databaseStorage.write { transaction in
                             SignalProxy.setProxyHost(host: self.host, useProxy: false, transaction: transaction)
@@ -227,13 +188,11 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
                 case .open:
                     unregisterObserver()
                     modal.dismiss {
-                        self.isSaving = false
                         if self.navigationController?.viewControllers.count == 1 {
                             self.presentingViewController?.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
                             self.dismiss(animated: true)
                         } else {
                             self.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
-                            self.updateTableContents()
                             self.updateNavigationBar()
                         }
                     }
@@ -273,18 +232,5 @@ extension ProxySettingsViewController: UITextFieldDelegate {
             textField.resignFirstResponder()
         }
         return false
-    }
-
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        willEditTextField = true
-        updateTableContents()
-        willEditTextField = false
-        isEditingTextField = true
-        return true
-    }
-
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        isEditingTextField = false
-        updateTableContents()
     }
 }
