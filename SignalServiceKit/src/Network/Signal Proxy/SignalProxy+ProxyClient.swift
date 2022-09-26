@@ -27,7 +27,7 @@ extension SignalProxy {
             guard !isStarted else { return }
             isStarted = true
 
-            Logger.verbose("Proxy client \(id) starting...")
+            Logger.debug("Proxy client \(id) starting...")
 
             guard let proxyHostComponents = SignalProxy.host?.components(separatedBy: ":"), let proxyHost = proxyHostComponents[safe: 0] else {
                 return stop(error: OWSAssertionError("Unexpectedly missing proxy host!"))
@@ -59,7 +59,7 @@ extension SignalProxy {
             if let error = error {
                 owsFailDebug("Proxy client \(id) did fail with error \(error)")
             } else {
-                Logger.verbose("Proxy client \(id) did stop")
+                Logger.debug("Proxy client \(id) did stop")
             }
 
             connection?.stateUpdateHandler = nil
@@ -79,15 +79,13 @@ extension SignalProxy {
                     self.stop(error: error)
                     return
                 }
-
-                Logger.verbose("Proxy client \(self.id) did send data")
             }))
         }
 
         private func stateDidChange(to state: NWConnection.State) {
             switch state {
             case .ready:
-                Logger.verbose("Proxy client \(id) ready!")
+                Logger.debug("Proxy client \(id) ready!")
                 relayClient?.send("HTTP/1.1 200\r\n\r\n".data(using: .utf8)!)
             case .failed(let error), .waiting(let error):
                 relayClient?.send("HTTP/1.1 503\r\n\r\n".data(using: .utf8)!)
