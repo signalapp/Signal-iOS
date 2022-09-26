@@ -36,11 +36,21 @@ extension SignalProxy {
         @Atomic
         private var clients = [UUID: RelayClient]()
 
+        @Atomic
+        private var backgroundTask: OWSBackgroundTask?
+
         private let queue = DispatchQueue(label: "SignalProxy.RelayServer", attributes: .concurrent)
 
         func start() {
             guard !isStarted else { return }
+            guard SignalProxy.isEnabled else { return }
+
             isStarted = true
+
+            backgroundTask = OWSBackgroundTask(label: "RelayServer") { [weak self] status in
+                guard status == .expired else { return }
+                self?.stop(error: OWSAssertionError("Background time expired"))
+            }
 
             Logger.info("Relay server starting...")
 
@@ -60,6 +70,7 @@ extension SignalProxy {
             guard isStarted else { return }
             isStarted = false
             isReady = false
+            backgroundTask = nil
 
             listener?.stateUpdateHandler = nil
             listener?.newConnectionHandler = nil
@@ -85,7 +96,7 @@ extension SignalProxy {
         @Atomic
         private var restartBackoffTimer: Timer?
 
-        func restart(error: Error? = nil) {
+        func restart(error: Error? = nil, ignoreBackoff: Bool = false) {
             guard isStarted else { return }
 
             restartBackoffTimer?.invalidate()
@@ -95,7 +106,7 @@ extension SignalProxy {
             stop(error: error)
 
             restartBackoffTimer = .scheduledTimer(
-                withTimeInterval: OWSOperation.retryIntervalForExponentialBackoff(
+                withTimeInterval: ignoreBackoff ? 0 : OWSOperation.retryIntervalForExponentialBackoff(
                     failureCount: restartFailureCount,
                     maxBackoff: 15
                 ),
