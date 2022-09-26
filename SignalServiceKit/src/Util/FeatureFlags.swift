@@ -222,10 +222,11 @@ public class DebugFlags: BaseFlags {
 
     @objc
     public static let reduceLogChatter: Bool = {
+        // This is a little verbose to make it easy to change while developing.
         if CurrentAppContext().isRunningTests {
             return true
         }
-        return false && build.includes(.dev)
+        return false
     }()
 
     @objc
