@@ -29,7 +29,7 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    public class func buildMemberProto(profileKeyCredential: ProfileKeyCredential,
+    public class func buildMemberProto(profileKeyCredential: ExpiringProfileKeyCredential,
                                        role: GroupsProtoMemberRole,
                                        groupV2Params: GroupV2Params) throws -> GroupsProtoMember {
         var builder = GroupsProtoMember.builder()
@@ -60,7 +60,7 @@ public class GroupsV2Protos {
         return try builder.build()
     }
 
-    public class func buildRequestingMemberProto(profileKeyCredential: ProfileKeyCredential,
+    public class func buildRequestingMemberProto(profileKeyCredential: ExpiringProfileKeyCredential,
                                                  groupV2Params: GroupV2Params) throws -> GroupsProtoRequestingMember {
         var builder = GroupsProtoRequestingMember.builder()
         let presentationData = try self.presentationData(profileKeyCredential: profileKeyCredential,
@@ -78,7 +78,7 @@ public class GroupsV2Protos {
         return try builder.build()
     }
 
-    public class func presentationData(profileKeyCredential: ProfileKeyCredential,
+    public class func presentationData(profileKeyCredential: ExpiringProfileKeyCredential,
                                        groupV2Params: GroupV2Params) throws -> Data {
 
         let serverPublicParams = try self.serverPublicParams()
@@ -88,12 +88,10 @@ public class GroupsV2Protos {
         return presentation.serialize().asData
     }
 
-    public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
-
     public class func buildNewGroupProto(groupModel: TSGroupModelV2,
                                          disappearingMessageToken: DisappearingMessageToken,
                                          groupV2Params: GroupV2Params,
-                                         profileKeyCredentialMap: ProfileKeyCredentialMap,
+                                         profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap,
                                          localUuid: UUID) throws -> GroupsProtoGroup {
 
         // Collect credential for self.

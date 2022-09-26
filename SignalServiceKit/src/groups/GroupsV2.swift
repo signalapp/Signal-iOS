@@ -31,6 +31,10 @@ public enum GroupsV2Error: Error {
     case groupBlocked
     case newMemberMissingAnnouncementOnlyCapability
     case localUserBlockedFromJoining
+
+    /// We hit a 400 while making a service request, but believe it may be
+    /// recoverable.
+    case serviceRequestHitRecoverable400
 }
 
 // MARK: -
@@ -92,7 +96,7 @@ public protocol GroupsV2: AnyObject {
 
 public protocol GroupsV2Swift: GroupsV2 {
 
-    typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
+    typealias ProfileKeyCredentialMap = [UUID: ExpiringProfileKeyCredential]
 
     func createNewGroupOnService(groupModel: TSGroupModelV2,
                                  disappearingMessageToken: DisappearingMessageToken) -> Promise<Void>
@@ -221,8 +225,11 @@ public protocol GroupsV2OutgoingChanges: AnyObject {
 
     func setShouldUpdateLocalProfileKey()
 
-    func buildGroupChangeProto(currentGroupModel: TSGroupModelV2,
-                               currentDisappearingMessageToken: DisappearingMessageToken) -> Promise<GroupsProtoGroupChangeActions>
+    func buildGroupChangeProto(
+        currentGroupModel: TSGroupModelV2,
+        currentDisappearingMessageToken: DisappearingMessageToken,
+        forceRefreshProfileKeyCredentials: Bool
+    ) -> Promise<GroupsProtoGroupChangeActions>
 }
 
 // MARK: -

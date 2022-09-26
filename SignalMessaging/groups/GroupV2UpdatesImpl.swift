@@ -1202,6 +1202,8 @@ extension GroupsV2Error: IsRetryableProvider {
                 .groupBlocked,
                 .localUserBlockedFromJoining:
             return false
+        case .serviceRequestHitRecoverable400:
+            return false
         }
     }
 }

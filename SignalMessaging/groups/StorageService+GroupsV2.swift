@@ -22,8 +22,6 @@ public struct GroupsV2Request {
 
 public extension StorageService {
 
-    typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
-
     static func buildNewGroupRequest(groupProto: GroupsProtoGroup,
                                      groupV2Params: GroupV2Params,
                                      authCredential: AuthCredentialWithPni) throws -> GroupsV2Request {

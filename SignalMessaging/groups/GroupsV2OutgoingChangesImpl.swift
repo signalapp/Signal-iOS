@@ -242,7 +242,8 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
     // See comments on buildGroupChangeProto() below.
     public func buildGroupChangeProto(
         currentGroupModel: TSGroupModelV2,
-        currentDisappearingMessageToken: DisappearingMessageToken
+        currentDisappearingMessageToken: DisappearingMessageToken,
+        forceRefreshProfileKeyCredentials: Bool
     ) -> Promise<GroupsProtoGroupChangeActions> {
         guard groupId == currentGroupModel.groupId else {
             return Promise(error: OWSAssertionError("Mismatched groupId."))
@@ -268,7 +269,10 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         }
 
         return firstly(on: .global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
-            self.groupsV2Swift.loadProfileKeyCredentials(for: Array(newUserUuids), forceRefresh: false)
+            self.groupsV2Swift.loadProfileKeyCredentials(
+                for: Array(newUserUuids),
+                forceRefresh: forceRefreshProfileKeyCredentials
+            )
         }.map(on: .global()) { (profileKeyCredentialMap: GroupsV2Swift.ProfileKeyCredentialMap) throws -> GroupsProtoGroupChangeActions in
             try self.buildGroupChangeProto(
                 currentGroupModel: currentGroupModel,

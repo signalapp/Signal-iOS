@@ -52,8 +52,10 @@ public protocol VersionedProfilesSwift: VersionedProfiles {
                               visibleBadgeIds: [String],
                               unsavedRotatedProfileKey: OWSAES256Key?) -> Promise<VersionedProfileUpdate>
 
-    func profileKeyCredential(for address: SignalServiceAddress,
-                              transaction: SDSAnyReadTransaction) throws -> ProfileKeyCredential?
+    func validProfileKeyCredential(
+        for address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) throws -> ExpiringProfileKeyCredential?
 }
 
 // MARK: -
@@ -83,8 +85,8 @@ public class MockVersionedProfiles: NSObject, VersionedProfilesSwift, VersionedP
         owsFail("Not implemented.")
     }
 
-    public func profileKeyCredential(for address: SignalServiceAddress,
-                                     transaction: SDSAnyReadTransaction) throws -> ProfileKeyCredential? {
+    public func validProfileKeyCredential(for address: SignalServiceAddress,
+                                          transaction: SDSAnyReadTransaction) throws -> ExpiringProfileKeyCredential? {
         owsFail("Not implemented")
     }
 }

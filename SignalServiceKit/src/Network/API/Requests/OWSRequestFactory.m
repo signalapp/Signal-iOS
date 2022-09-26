@@ -136,7 +136,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     // GET /v1/profile/{uuid}/{version}/{profile_key_credential_request}
     NSString *path;
     if (profileKeyVersion.length > 0 && credentialRequest.length > 0) {
-        path = [NSString stringWithFormat:@"v1/profile/%@/%@/%@",
+        path = [NSString stringWithFormat:@"v1/profile/%@/%@/%@?credentialType=expiringProfileKey",
                          uuidParam,
                          profileKeyVersionParam,
                          credentialRequestParam];
