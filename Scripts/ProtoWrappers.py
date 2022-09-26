@@ -12,6 +12,19 @@ git_repo_path = os.path.abspath(
     subprocess.check_output(["git", "rev-parse", "--show-toplevel"], text=True).strip()
 )
 
+enum_item_regex = re.compile(r'^(.+?)\s*=\s*(\d+?)\s*;$')
+enum_regex = re.compile(r'^enum\s+(.+?)\s+\{$')
+message_item_regex = re.compile(r'^(optional|required|repeated)?\s*([\w\d\.]+?\s)\s*([\w\d]+?)\s*=\s*(\d+?)\s*(\[default = (.+)\])?;$')
+message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
+multiline_comment_regex = re.compile(r'/\*.*?\*/', re.MULTILINE|re.DOTALL)
+oneof_item_regex = re.compile(r'^(.+?)\s*([\w\d]+?)\s*=\s*(\d+?)\s*;$')
+oneof_regex = re.compile(r'^oneof\s+(.+?)\s+\{$')
+option_regex = re.compile(r'^option ')
+package_regex = re.compile(r'^package\s+(.+);')
+reserved_regex = re.compile(r'^reserved\s+(?:/*[^*]*\*/)?\s*\d+;$')
+syntax_regex = re.compile(r'^syntax\s+=\s+"(.+)";')
+validation_start_regex = re.compile(r'// MARK: - Begin Validation Logic for ([^ ]+) -')
+
 proto_syntax = None
 
 def lower_camel_case(name):
@@ -1612,8 +1625,10 @@ def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
             parent_context.enums.append(context)
             return
 
-        item_regex = re.compile(r'^(.+?)\s*=\s*(\d+?)\s*;$')
-        item_match = item_regex.search(line)
+        if reserved_regex.search(line):
+            continue
+
+        item_match = enum_item_regex.search(line)
         if item_match:
             item_name = item_match.group(1).strip()
             item_index = item_match.group(2).strip()
@@ -1657,8 +1672,7 @@ def parse_oneof(args, proto_file_path, parser, parent_context, oneof_name):
         if line == '}':
             break
 
-        item_regex = re.compile(r'^(.+?)\s*([\w\d]+?)\s*=\s*(\d+?)\s*;$')
-        item_match = item_regex.search(line)
+        item_match = oneof_item_regex.search(line)
         if item_match:
             item_type = item_match.group(1).strip()
             item_name = item_match.group(2).strip()
@@ -1713,14 +1727,12 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             parent_context.messages.append(context)
             return
 
-        enum_regex = re.compile(r'^enum\s+(.+?)\s+\{$')
         enum_match = enum_regex.search(line)
         if enum_match:
             enum_name = enum_match.group(1).strip()
             parse_enum(args, proto_file_path, parser, context, enum_name)
             continue
 
-        message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
         message_match = message_regex.search(line)
         if message_match:
             message_name = message_match.group(1).strip()
@@ -1728,7 +1740,6 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             continue
 
         if proto_syntax == 'proto3':
-            oneof_regex = re.compile(r'^oneof\s+(.+?)\s+\{$')
             oneof_match = oneof_regex.search(line)
             if oneof_match:
                 oneof_name = oneof_match.group(1).strip()
@@ -1739,14 +1750,16 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 sort_index = sort_index + 1
                 continue
 
+        if reserved_regex.search(line):
+            continue
+
         # Examples:
         #
         # optional bytes  id          = 1;
         # optional bool              isComplete = 2 [default = false];
         #
         # NOTE: optional and required are not valid in proto3.
-        item_regex = re.compile(r'^(optional|required|repeated)?\s*([\w\d\.]+?\s)\s*([\w\d]+?)\s*=\s*(\d+?)\s*(\[default = (.+)\])?;$')
-        item_match = item_regex.search(line)
+        item_match = message_item_regex.search(line)
         if item_match:
             # print 'item_rules:', item_match.groups()
             item_rules = optional_match_group(item_match, 1)
@@ -1812,7 +1825,6 @@ def preserve_validation_logic(args, proto_file_path, dst_file_path):
     if os.path.exists(dst_file_path):
         with open(dst_file_path, 'rt') as f:
             old_text = f.read()
-        validation_start_regex = re.compile(r'// MARK: - Begin Validation Logic for ([^ ]+) -')
         for match in validation_start_regex.finditer(old_text):
             # print 'match'
             name = match.group(1)
@@ -1849,12 +1861,7 @@ def process_proto_file(args, proto_file_path, dst_file_path):
     with open(proto_file_path, 'rt') as f:
         text = f.read()
 
-    multiline_comment_regex = re.compile(r'/\*.*?\*/', re.MULTILINE|re.DOTALL)
     text = multiline_comment_regex.sub('', text)
-
-    syntax_regex = re.compile(r'^syntax\s+=\s+"(.+)";')
-    package_regex = re.compile(r'^package\s+(.+);')
-    option_regex = re.compile(r'^option ')
 
     parser = LineParser(text)
 
@@ -1891,7 +1898,6 @@ def process_proto_file(args, proto_file_path, dst_file_path):
                 print('# package:', args.package)
             continue
 
-        message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
         message_match = message_regex.search(line)
         if message_match:
             message_name = message_match.group(1).strip()

@@ -64,7 +64,6 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `destinationUuid`. Subsequent reads from it will return its default value.
   mutating func clearDestinationUuid() {self._destinationUuid = nil}
 
-  /// 3 is reserved (formerly `relay`)
   /// @required
   var timestamp: UInt64 {
     get {return _timestamp ?? 0}
@@ -3230,7 +3229,6 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `typingIndicators`. Subsequent reads from it will return its default value.
     mutating func clearTypingIndicators() {self._typingIndicators = nil}
 
-    /// 4 is reserved
     var provisioningVersion: UInt32 {
       get {return _provisioningVersion ?? 0}
       set {_provisioningVersion = newValue}
@@ -3860,8 +3858,6 @@ struct SignalServiceProtos_AttachmentPointer {
     typealias RawValue = Int
     case voiceMessage // = 1
     case borderless // = 2
-
-    /// 4 is reserved
     case gif // = 8
 
     init() {
@@ -4008,7 +4004,6 @@ struct SignalServiceProtos_GroupContext {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// skip 1, formerly uuid
     var e164: String {
       get {return _e164 ?? String()}
       set {_e164 = newValue}
@@ -4361,7 +4356,6 @@ struct SignalServiceProtos_GroupDetails {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// skip 1, formerly uuid
     var e164: String {
       get {return _e164 ?? String()}
       set {_e164 = newValue}
