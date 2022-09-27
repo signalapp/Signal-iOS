@@ -1174,6 +1174,16 @@ extension PhotoCaptureViewController: UITextViewDelegate {
         updateTextEditorUI(animated: true)
     }
 
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        // Truncate the replacement to fit.
+        return TextViewHelper.textView(
+            textView,
+            shouldChangeTextIn: range,
+            replacementText: text,
+            maxGlyphCount: 700
+        )
+    }
+
     func textViewDidChange(_ textView: UITextView) {
         adjustFontSizeIfNecessary()
         updateTextEditorUI(animated: false)
