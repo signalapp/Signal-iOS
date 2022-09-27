@@ -24,8 +24,6 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         return label
     }()
 
-    private lazy var contextMenu = ContextMenuInteraction(delegate: self)
-
     private lazy var dataSource = StoryListDataSource(delegate: self)
 
     private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self)
@@ -63,8 +61,6 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         tableView.estimatedRowHeight = 116
 
         updateNavigationBar()
-
-        tableView.addInteraction(contextMenu)
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
     }
@@ -127,8 +123,6 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         super.applyTheme()
 
         emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
-
-        contextMenu.dismissMenu(animated: true) {}
 
         for indexPath in self.tableView.indexPathsForVisibleRows ?? [] {
             switch Section(rawValue: indexPath.section) {
@@ -324,15 +318,12 @@ extension StoriesViewController: UITableViewDelegate {
         }
     }
 
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         switch Section(rawValue: indexPath.section) {
         case .hiddenStories, .visibleStories:
             guard
                 let model = model(for: indexPath),
-                let action = StoryContextMenuGenerator.hideTableRowContextualAction(
-                    for: model,
-                    from: self
-                )
+                let action = contextMenuGenerator.goToChatContextualAction(for: model)
             else {
                 return nil
             }
@@ -340,6 +331,39 @@ extension StoriesViewController: UITableViewDelegate {
         case .myStory, .none:
             return nil
         }
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        switch Section(rawValue: indexPath.section) {
+        case .hiddenStories, .visibleStories:
+            guard
+                let model = model(for: indexPath),
+                let action = contextMenuGenerator.hideTableRowContextualAction(for: model)
+            else {
+                return nil
+            }
+            return .init(actions: [action])
+        case .myStory, .none:
+            return nil
+        }
+    }
+
+    @available(iOS 13, *)
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard
+            let model = model(for: indexPath),
+            let cell = tableView.cellForRow(at: indexPath)
+        else {
+            return nil
+        }
+
+        return .init(identifier: indexPath as NSCopying, previewProvider: nil, actionProvider: { [weak self] _ in
+            let actions = self?.contextMenuGenerator.nativeContextMenuActions(
+                for: model,
+                sourceView: cell
+            ) ?? []
+            return .init(children: actions)
+        })
     }
 }
 
@@ -441,60 +465,4 @@ extension StoriesViewController: StoryPageViewControllerDataSource {
     func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
         return dataSource.threadSafeStoryContexts
     }
-}
-
-extension StoriesViewController: ContextMenuInteractionDelegate {
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
-        guard
-            let indexPath = tableView.indexPathForRow(at: location),
-            let model = model(for: indexPath),
-            let cell = tableView.cellForRow(at: indexPath)
-        else {
-            return nil
-        }
-
-        return .init(identifier: indexPath as NSCopying) { [weak self] _ in
-            let actions = self?.contextMenuGenerator.contextMenuActions(
-                for: model,
-                sourceView: cell
-            ) ?? []
-            return .init(actions)
-        }
-    }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
-        guard let indexPath = configuration.identifier as? IndexPath else { return nil }
-
-        guard let cell = tableView.cellForRow(at: indexPath) as? StoryCell,
-            let cellSnapshot = cell.contentHStackView.snapshotView(afterScreenUpdates: false) else { return nil }
-
-        // Build a custom preview that wraps the cell contents in a bubble.
-        // Normally, our context menus just present the cell row full width.
-
-        let previewView = UIView()
-        previewView.frame = cell.contentView
-            .convert(cell.contentHStackView.frame, to: cell.superview)
-            .insetBy(dx: -12, dy: -12)
-        previewView.layer.cornerRadius = 18
-        previewView.backgroundColor = Theme.backgroundColor
-        previewView.clipsToBounds = true
-
-        previewView.addSubview(cellSnapshot)
-        cellSnapshot.frame.origin = CGPoint(x: 12, y: 12)
-
-        let preview = ContextMenuTargetedPreview(
-            view: cell,
-            previewView: previewView,
-            alignment: .leading,
-            accessoryViews: []
-        )
-        preview.alignmentOffset = CGPoint(x: 12, y: 12)
-        return preview
-    }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {}
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
 }

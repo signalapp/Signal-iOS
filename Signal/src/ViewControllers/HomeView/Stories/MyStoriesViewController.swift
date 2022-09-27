@@ -26,8 +26,6 @@ class MyStoriesViewController: OWSViewController {
         return label
     }()
 
-    private lazy var contextMenu = ContextMenuInteraction(delegate: self)
-
     private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self)
 
     override init() {
@@ -51,7 +49,6 @@ class MyStoriesViewController: OWSViewController {
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 116
-        tableView.addInteraction(contextMenu)
 
         reloadStories()
 
@@ -69,8 +66,6 @@ class MyStoriesViewController: OWSViewController {
         super.applyTheme()
 
         emptyStateLabel.textColor = Theme.secondaryTextAndIconColor
-
-        contextMenu.dismissMenu(animated: true) {}
 
         tableView.reloadData()
 
@@ -158,18 +153,49 @@ extension MyStoriesViewController: UITableViewDelegate {
         return true
     }
 
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard
+            let item = item(for: indexPath),
+            let action = contextMenuGenerator.goToChatContextualAction(thread: item.thread)
+        else {
+            return nil
+        }
+        return .init(actions: [action])
+    }
+
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard
             let item = item(for: indexPath),
-            let action = StoryContextMenuGenerator.deleteTableRowContextualAction(
+            let action = contextMenuGenerator.deleteTableRowContextualAction(
                 for: item.message,
-                thread: item.thread,
-                from: self
+                thread: item.thread
             )
         else {
             return nil
         }
         return .init(actions: [action])
+    }
+
+    @available(iOS 13, *)
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard
+            let item = item(for: indexPath),
+            let cell = tableView.cellForRow(at: indexPath) as? SentStoryCell
+        else {
+            return nil
+        }
+
+        let actions = Self.databaseStorage.read { transaction in
+            return self.contextMenuGenerator.nativeContextMenuActions(
+                for: item.message,
+                in: item.thread,
+                attachment: item.attachment,
+                sourceView: cell,
+                transaction: transaction
+            )
+        }
+
+        return .init(identifier: indexPath as NSCopying, previewProvider: nil) { _ in .init(children: actions) }
     }
 }
 
@@ -234,15 +260,16 @@ extension MyStoriesViewController: DatabaseChangeDelegate {
     }
 }
 
-extension MyStoriesViewController: ContextMenuInteractionDelegate {
-    fileprivate func contextMenu(
-        for cell: SentStoryCell,
-        at indexPath: IndexPath
-    ) -> ContextMenu? {
-        guard let item = item(for: indexPath) else {
+extension MyStoriesViewController: ContextMenuButtonDelegate {
+
+    func contextMenuConfiguration(for contextMenuButton: DelegatingContextMenuButton) -> ContextMenuConfiguration? {
+        guard
+            let indexPath = (contextMenuButton as? IndexPathContextMenuButton)?.indexPath,
+            let cell = tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath) as? SentStoryCell,
+            let item = self.item(for: indexPath)
+        else {
             return nil
         }
-
         let actions = Self.databaseStorage.read { transaction in
             return self.contextMenuGenerator.contextMenuActions(
                 for: item.message,
@@ -252,70 +279,8 @@ extension MyStoriesViewController: ContextMenuInteractionDelegate {
                 transaction: transaction
             )
         }
-
-        return .init(actions)
-    }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
-        guard
-            let indexPath = tableView.indexPathForRow(at: location),
-            let cell = tableView.cellForRow(at: indexPath) as? SentStoryCell,
-            let contextMenu = contextMenu(for: cell, at: indexPath)
-        else {
-            return nil
-        }
-        return .init(identifier: indexPath as NSCopying) { _ in contextMenu }
-    }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
-        guard let indexPath = configuration.identifier as? IndexPath else { return nil }
-
-        guard let cell = tableView.cellForRow(at: indexPath) as? SentStoryCell,
-            let cellSnapshot = cell.contentHStackView.snapshotView(afterScreenUpdates: false) else { return nil }
-
-        // Build a custom preview that wraps the cell contents in a bubble.
-        // Normally, our context menus just present the cell row full width.
-
-        let previewView = UIView()
-        previewView.frame = cell.contentView
-            .convert(cell.contentHStackView.frame, to: cell.superview)
-            .insetBy(dx: -12, dy: -12)
-        previewView.layer.cornerRadius = 18
-        previewView.backgroundColor = Theme.backgroundColor
-        previewView.clipsToBounds = true
-
-        previewView.addSubview(cellSnapshot)
-        cellSnapshot.frame.origin = CGPoint(x: 12, y: 12)
-
-        let preview = ContextMenuTargetedPreview(
-            view: cell,
-            previewView: previewView,
-            alignment: .leading,
-            accessoryViews: []
-        )
-        preview.alignmentOffset = CGPoint(x: 12, y: 12)
-        return preview
-    }
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willDisplayMenuForConfiguration: ContextMenuConfiguration) {}
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, willEndForConfiguration: ContextMenuConfiguration) {}
-
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction, didEndForConfiguration configuration: ContextMenuConfiguration) {}
-}
-
-extension MyStoriesViewController: ContextMenuButtonDelegate {
-
-    func contextMenuConfiguration(for contextMenuButton: DelegatingContextMenuButton) -> ContextMenuConfiguration? {
-        guard
-            let indexPath = (contextMenuButton as? IndexPathContextMenuButton)?.indexPath,
-            let cell = tableView.dequeueReusableCell(withIdentifier: SentStoryCell.reuseIdentifier, for: indexPath) as? SentStoryCell,
-            let contextMenu = self.contextMenu(for: cell, at: indexPath)
-        else {
-            return nil
-        }
         return .init(identifier: nil, actionProvider: { _ in
-            return contextMenu
+            return .init(actions)
         })
     }
 }
