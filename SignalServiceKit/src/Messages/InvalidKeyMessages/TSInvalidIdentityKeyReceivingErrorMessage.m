@@ -231,16 +231,6 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
     return result;
 }
 
-- (NSString *)theirSignalId
-{
-    if (self.authorId) {
-        return self.authorId;
-    } else {
-        // for existing messages before we were storing author id.
-        return self.envelope.sourceE164;
-    }
-}
-
 - (SignalServiceAddress *)theirSignalAddress
 {
     OWSAssertDebug(self.envelope.sourceAddress != nil);
