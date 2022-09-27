@@ -142,6 +142,9 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
            updateStorageService:(BOOL)updateStorageService
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
+    if ([self isMyStory]) {
+        [StoryManager setHasSetMyStoriesPrivacyWithTransaction:transaction shouldUpdateStorageService:YES];
+    }
     [self anyUpdatePrivateStoryThreadWithTransaction:transaction
                                                block:^(TSPrivateStoryThread *thread) {
                                                    thread.storyViewMode = storyViewMode;

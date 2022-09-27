@@ -592,7 +592,13 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._keepMutedChatsArchived = newValue}
   }
 
-  /// reserved 26
+  /// Removed 'has' prefix on spec definition to avoid name conflict.
+  var myStoryPrivacyHasBeenSet: Bool {
+    get {return _storage._myStoryPrivacyHasBeenSet}
+    set {_uniqueStorage()._myStoryPrivacyHasBeenSet = newValue}
+  }
+
+  /// Removed 'has' prefix on spec definition to avoid name conflict.
   var viewedOnboardingStory: Bool {
     get {return _storage._viewedOnboardingStory}
     set {_uniqueStorage()._viewedOnboardingStory = newValue}
@@ -1504,6 +1510,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     23: .same(proto: "displayBadgesOnProfile"),
     24: .same(proto: "subscriptionManuallyCancelled"),
     25: .same(proto: "keepMutedChatsArchived"),
+    26: .same(proto: "myStoryPrivacyHasBeenSet"),
     27: .same(proto: "viewedOnboardingStory"),
     28: .same(proto: "storiesDisabled"),
   ]
@@ -1533,6 +1540,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     var _displayBadgesOnProfile: Bool = false
     var _subscriptionManuallyCancelled: Bool = false
     var _keepMutedChatsArchived: Bool = false
+    var _myStoryPrivacyHasBeenSet: Bool = false
     var _viewedOnboardingStory: Bool = false
     var _storiesDisabled: Bool = false
 
@@ -1565,6 +1573,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       _displayBadgesOnProfile = source._displayBadgesOnProfile
       _subscriptionManuallyCancelled = source._subscriptionManuallyCancelled
       _keepMutedChatsArchived = source._keepMutedChatsArchived
+      _myStoryPrivacyHasBeenSet = source._myStoryPrivacyHasBeenSet
       _viewedOnboardingStory = source._viewedOnboardingStory
       _storiesDisabled = source._storiesDisabled
     }
@@ -1609,6 +1618,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 23: try { try decoder.decodeSingularBoolField(value: &_storage._displayBadgesOnProfile) }()
         case 24: try { try decoder.decodeSingularBoolField(value: &_storage._subscriptionManuallyCancelled) }()
         case 25: try { try decoder.decodeSingularBoolField(value: &_storage._keepMutedChatsArchived) }()
+        case 26: try { try decoder.decodeSingularBoolField(value: &_storage._myStoryPrivacyHasBeenSet) }()
         case 27: try { try decoder.decodeSingularBoolField(value: &_storage._viewedOnboardingStory) }()
         case 28: try { try decoder.decodeSingularBoolField(value: &_storage._storiesDisabled) }()
         default: break
@@ -1695,6 +1705,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       if _storage._keepMutedChatsArchived != false {
         try visitor.visitSingularBoolField(value: _storage._keepMutedChatsArchived, fieldNumber: 25)
       }
+      if _storage._myStoryPrivacyHasBeenSet != false {
+        try visitor.visitSingularBoolField(value: _storage._myStoryPrivacyHasBeenSet, fieldNumber: 26)
+      }
       if _storage._viewedOnboardingStory != false {
         try visitor.visitSingularBoolField(value: _storage._viewedOnboardingStory, fieldNumber: 27)
       }
@@ -1734,6 +1747,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._displayBadgesOnProfile != rhs_storage._displayBadgesOnProfile {return false}
         if _storage._subscriptionManuallyCancelled != rhs_storage._subscriptionManuallyCancelled {return false}
         if _storage._keepMutedChatsArchived != rhs_storage._keepMutedChatsArchived {return false}
+        if _storage._myStoryPrivacyHasBeenSet != rhs_storage._myStoryPrivacyHasBeenSet {return false}
         if _storage._viewedOnboardingStory != rhs_storage._viewedOnboardingStory {return false}
         if _storage._storiesDisabled != rhs_storage._storiesDisabled {return false}
         return true

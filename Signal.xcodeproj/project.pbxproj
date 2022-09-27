@@ -789,6 +789,8 @@
 		66AF4D7328D1377E008A156E /* SignalAttachment+VideoSegmenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */; };
 		66B8B28028C94C0F005EAFE0 /* DelegatingContextMenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */; };
 		66BE544D28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */; };
+		66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */; };
+		66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
 		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
@@ -921,7 +923,6 @@
 		8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8871B17025F0139D00D4E070 /* ProfileNameViewController.swift */; };
 		8876CE4A26A914B8002217ED /* SentMediaQualitySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */; };
 		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
-		8878B2D6286636D8008368F2 /* MyStorySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8878B2D5286636D8008368F2 /* MyStorySettingsViewController.swift */; };
 		887B380825F0355700685845 /* ChatsSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380725F0355700685845 /* ChatsSettingsViewController.swift */; };
 		887B380A25F0427F00685845 /* NotificationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380925F0427F00685845 /* NotificationSettingsViewController.swift */; };
 		887B380D25F042BE00685845 /* NotificationSettingsContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */; };
@@ -965,7 +966,6 @@
 		889DFA10264EE76F00D03921 /* GroupNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889DFA0F264EE76F00D03921 /* GroupNameViewController.swift */; };
 		889DFA12264EE77C00D03921 /* GroupDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889DFA11264EE77C00D03921 /* GroupDescriptionViewController.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
-		88A47171286646B3001A3065 /* SelectMyStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A47170286646B3001A3065 /* SelectMyStoryRecipientsViewController.swift */; };
 		88A4CC10246CE2760082211F /* TransferProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC0F246CE2760082211F /* TransferProgressView.swift */; };
 		88A4CC12246CE2F50082211F /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC11246CE2F50082211F /* QRCodeView.swift */; };
 		88A4CC17246CE6190082211F /* DeviceTransferNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC16246CE6190082211F /* DeviceTransferNavigationController.swift */; };
@@ -3077,6 +3077,8 @@
 		66AF4D7228D1377E008A156E /* SignalAttachment+VideoSegmenting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SignalAttachment+VideoSegmenting.swift"; sourceTree = "<group>"; };
 		66B8B27F28C94C0F005EAFE0 /* DelegatingContextMenuButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DelegatingContextMenuButton.swift; sourceTree = "<group>"; };
 		66BE544C28CA4EC10021AFF1 /* StoryContextOnboardingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryContextOnboardingOverlayView.swift; sourceTree = "<group>"; };
+		66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
+		66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMyStoryRecipientsViewController.swift; sourceTree = "<group>"; };
 		70377AAA1918450100CAF501 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -3239,7 +3241,6 @@
 		887889A7247718DE001B5FCF /* af */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = af; path = translations/af.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889A8247718F7001B5FCF /* jv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = jv; path = translations/jv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889AB247E09B7001B5FCF /* kk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kk; path = translations/kk.lproj/Localizable.strings; sourceTree = "<group>"; };
-		8878B2D5286636D8008368F2 /* MyStorySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStorySettingsViewController.swift; sourceTree = "<group>"; };
 		887B380725F0355700685845 /* ChatsSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatsSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380925F0427F00685845 /* NotificationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsViewController.swift; sourceTree = "<group>"; };
 		887B380C25F042BE00685845 /* NotificationSettingsContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsContentViewController.swift; sourceTree = "<group>"; };
@@ -3343,7 +3344,6 @@
 		88A358262364020B009D6B9A /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = translations/uk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A3582723640240009D6B9A /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = translations/vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A35828236402D3009D6B9A /* hi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hi; path = translations/bn.lproj/Localizable.strings; sourceTree = "<group>"; };
-		88A47170286646B3001A3065 /* SelectMyStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectMyStoryRecipientsViewController.swift; sourceTree = "<group>"; };
 		88A4717228664DE3001A3065 /* BaseMemberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMemberViewController.swift; sourceTree = "<group>"; };
 		88A4CC0F246CE2760082211F /* TransferProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferProgressView.swift; sourceTree = "<group>"; };
 		88A4CC11246CE2F50082211F /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
@@ -6267,11 +6267,13 @@
 		8868A087287F44F3000E74A5 /* Stories */ = {
 			isa = PBXGroup;
 			children = (
+				66FBC4E028DA820900BD9E8B /* MyStorySettingsViewController.swift */,
 				88B986F3287F5B6500F8C74D /* NewGroupStoryViewController.swift */,
 				88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */,
 				88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */,
 				880FB3F228CC161800FA1C10 /* NewStoryHeaderView.swift */,
 				8868A088287F4514000E74A5 /* NewStorySheet.swift */,
+				66FBC4E228DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift */,
 			);
 			path = Stories;
 			sourceTree = "<group>";
@@ -6294,11 +6296,9 @@
 			isa = PBXGroup;
 			children = (
 				880FB40328CC251A00FA1C10 /* GroupStorySettingsViewController.swift */,
-				8878B2D5286636D8008368F2 /* MyStorySettingsViewController.swift */,
 				880B969C2880D90600718C6D /* PrivateStoryAddRecipientsSettingsViewController.swift */,
 				880B969E2880DFDF00718C6D /* PrivateStoryNameSettingsViewController.swift */,
 				880B969A2880C23E00718C6D /* PrivateStorySettingsViewController.swift */,
-				88A47170286646B3001A3065 /* SelectMyStoryRecipientsViewController.swift */,
 				88B22349283F290400A25048 /* StoryPrivacySettingsViewController.swift */,
 			);
 			path = Settings;
@@ -9801,6 +9801,7 @@
 				3465F4D927287677001663AF /* MobileCoinAPI.swift in Sources */,
 				34BB78B7272C51B600DA0D04 /* MobileCoinHelperSDK.swift in Sources */,
 				3402AA44271D9DCD0084CBAE /* ModalActivityIndicatorViewController.swift in Sources */,
+				66FBC4E128DA820900BD9E8B /* MyStorySettingsViewController.swift in Sources */,
 				34A955BD271B560000B05242 /* NameCollisionFinder.swift in Sources */,
 				88B986F4287F5B6500F8C74D /* NewGroupStoryViewController.swift in Sources */,
 				88B98701288088BC00F8C74D /* NewMembersBar.swift in Sources */,
@@ -9854,6 +9855,7 @@
 				88B987022880890800F8C74D /* SafetyNumberConfirmationSheet.swift in Sources */,
 				88B9870928808A8A00F8C74D /* ScanQRCodeViewController.swift in Sources */,
 				3402AA3A271D9DCD0084CBAE /* ScreenLockViewController.m in Sources */,
+				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,
 				34A954CB271B4BE600B05242 /* ShareViewDelegate.swift in Sources */,
 				3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */,
 				34A954AC271A471300B05242 /* SignalUI.docc in Sources */,
@@ -10374,7 +10376,6 @@
 				8829883C25B9FD9E00DEE1E3 /* MockConversationView.swift in Sources */,
 				8840B6E2283F16650036BA4C /* MyStoriesViewController.swift in Sources */,
 				886292122835606D00AA0C3B /* MyStoryCell.swift in Sources */,
-				8878B2D6286636D8008368F2 /* MyStorySettingsViewController.swift in Sources */,
 				8862921028355B8000AA0C3B /* MyStoryViewModel.swift in Sources */,
 				32CBF07D258C939800D56903 /* NameCollisionResolutionViewController.swift in Sources */,
 				3236FCC42592B67B006D33B9 /* NameCollisionReviewCell.swift in Sources */,
@@ -10481,7 +10482,6 @@
 				4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */,
 				4C30E226234FB033009558B7 /* SecondaryLinkingQRCodeViewController.swift in Sources */,
 				4C2EBB7F2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift in Sources */,
-				88A47171286646B3001A3065 /* SelectMyStoryRecipientsViewController.swift in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */,
 				346EAA1225013CDF00E8AB6F /* SendMessageFlow.swift in Sources */,

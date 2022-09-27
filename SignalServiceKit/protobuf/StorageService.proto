@@ -173,7 +173,7 @@ message AccountRecord {
            bool                   displayBadgesOnProfile        = 23;
            bool                   subscriptionManuallyCancelled = 24;
            bool                   keepMutedChatsArchived        = 25;
-           // reserved 26
+           bool                   myStoryPrivacyHasBeenSet      = 26; // Removed 'has' prefix on spec definition to avoid name conflict.
            bool                   viewedOnboardingStory         = 27; // Removed 'has' prefix on spec definition to avoid name conflict.
            bool                   storiesDisabled               = 28;
 }

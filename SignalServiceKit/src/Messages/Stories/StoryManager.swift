@@ -157,6 +157,28 @@ public class StoryManager: NSObject {
         return NSNumber(value: timestamp + storyLifetimeMillis)
     }
 
+    private static let hasSetMyStoriesPrivacyKey = "hasSetMyStoriesPrivacyKey"
+
+    @objc
+    public class func hasSetMyStoriesPrivacy(transaction: SDSAnyReadTransaction) -> Bool {
+        return keyValueStore.getBool(hasSetMyStoriesPrivacyKey, defaultValue: false, transaction: transaction)
+    }
+
+    @objc
+    public class func setHasSetMyStoriesPrivacy(
+        transaction: SDSAnyWriteTransaction,
+        shouldUpdateStorageService: Bool = true
+    ) {
+        guard !hasSetMyStoriesPrivacy(transaction: transaction) else {
+            // Don't trigger account record updates unneccesarily!
+            return
+        }
+        keyValueStore.setBool(true, key: hasSetMyStoriesPrivacyKey, transaction: transaction)
+        if shouldUpdateStorageService {
+            Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+    }
+
     private static let perContextAutomaticDownloadLimit = 3
     private static let recentContextAutomaticDownloadLimit: UInt = 20
 

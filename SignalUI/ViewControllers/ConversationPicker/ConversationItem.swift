@@ -288,7 +288,7 @@ public struct StoryConversationItem {
 
 // MARK: -
 
-extension StoryConversationItem: ConversationItem {
+extension StoryConversationItem: ConversationItem, Dependencies {
     public var outgoingMessageClass: TSOutgoingMessage.Type { OutgoingStoryMessage.self }
 
     public var limitsVideoAttachmentLengthForStories: Bool { return true }
@@ -299,6 +299,15 @@ extension StoryConversationItem: ConversationItem {
 
     public var messageRecipient: MessageRecipient {
         unwrapped.messageRecipient
+    }
+
+    public var isMyStory: Bool {
+        switch backingItem {
+        case .groupStory:
+            return false
+        case .privateStory(let item):
+            return item.isMyStory
+        }
     }
 
     public func title(transaction: SDSAnyReadTransaction) -> String {
@@ -315,6 +324,11 @@ extension StoryConversationItem: ConversationItem {
         switch backingItem {
         case .privateStory(let item):
             if item.isMyStory {
+                guard StoryManager.hasSetMyStoriesPrivacy(transaction: transaction) else {
+                    return OWSLocalizedString(
+                        "MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE",
+                        comment: "Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings.")
+                }
                 switch thread.storyViewMode {
                 case .blockList:
                     guard let thread = thread as? TSPrivateStoryThread else {
@@ -332,7 +346,7 @@ extension StoryConversationItem: ConversationItem {
                             "MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d",
                             tableName: "PluralAware",
                             comment: "Format string representing the excluded viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of excluded viewers }}.")
-                        return String.localizedStringWithFormat(format, recipientCount)
+                        return String.localizedStringWithFormat(format, thread.addresses.count)
                     }
                 case .explicit:
                     let format = OWSLocalizedString(

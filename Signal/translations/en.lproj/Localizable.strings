@@ -3736,6 +3736,12 @@
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "My Story";
 
+/* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choose who can view your story";
+
+/* Title for the my story settings sheet */
+"MY_STORY_SETTINGS_SHEET_TITLE" = "My Story Privacy";
+
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "My Story";
 
