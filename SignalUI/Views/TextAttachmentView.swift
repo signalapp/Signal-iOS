@@ -204,17 +204,8 @@ public class TextAttachmentView: UIView {
                 thumbnailImageView.tintColor = Theme.lightThemePrimaryColor
             }
 
-            switch layout {
-            case .regular:
-                // Display image above the text with the fixed height and all available width.
-                axis = .vertical
-                alignment = .fill
-
-            default:
-                // Display image and text side by side.
-                axis = .horizontal
-                alignment = .center
-            }
+            alignment = .fill
+            axis = layout == .regular ? .vertical : .horizontal
 
             switch layout {
             case .regular:
@@ -224,12 +215,16 @@ public class TextAttachmentView: UIView {
 
             case .compact:
                 backgroundView.layer.cornerRadius = 18
-                thumbnailImageView.autoSetDimensions(to: CGSize(square: 88))
+                thumbnailImageView.autoSetDimension(.width, toSize: 88)
+                // Allow thumbnail to grow vertically with the text.
+                thumbnailImageView.autoSetDimension(.height, toSize: 88, relation: .greaterThanOrEqual)
                 thumbnailImageView.layer.maskedCorners = [ .layerMinXMinYCorner, .layerMinXMaxYCorner ]
 
             case .draft:
                 backgroundView.layer.cornerRadius = 8
-                thumbnailImageView.autoSetDimensions(to: CGSize(square: 76))
+                thumbnailImageView.autoSetDimension(.width, toSize: 76)
+                // Allow thumbnail to grow vertically with the text.
+                thumbnailImageView.autoSetDimension(.height, toSize: 76, relation: .greaterThanOrEqual)
                 thumbnailImageView.layer.maskedCorners = .all
 
             case .domainOnly:
