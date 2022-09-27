@@ -11,10 +11,28 @@ public class AudioActivity: NSObject {
 
     let behavior: OWSAudioBehavior
 
+    public var requiresRecordingPermissions: Bool {
+        switch behavior {
+        case .playAndRecord, .call:
+            return true
+        case .playback, .playbackMixWithOthers, .audioMessagePlayback, .unknown:
+            return false
+        @unknown default:
+            return false
+        }
+    }
+
     @objc
     public var supportsBackgroundPlayback: Bool {
-        // Currently, only audio messages support background playback
-        return [.audioMessagePlayback, .call].contains(behavior)
+        // Currently, only audio messages and calls support background playback
+        switch behavior {
+        case .audioMessagePlayback, .call:
+            return true
+        case .playback, .playbackMixWithOthers, .playAndRecord, .unknown:
+            return false
+        @unknown default:
+            return false
+        }
     }
 
     @objc
@@ -101,6 +119,14 @@ public class OWSAudioSession: NSObject {
 
         unfairLock.lock()
         defer { unfairLock.unlock() }
+
+        if
+            audioActivity.requiresRecordingPermissions,
+            avAudioSession.recordPermission != .granted
+        {
+            Logger.warn("Attempting to start audio activity that requires recording permissions, but they are not granted!")
+            return false
+        }
 
         self.currentActivities.append(Weak(value: audioActivity))
 

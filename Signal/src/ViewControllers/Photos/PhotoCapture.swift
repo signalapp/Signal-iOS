@@ -128,22 +128,36 @@ class PhotoCapture: NSObject {
 
     let session: AVCaptureSession
 
-    func startAudioCapture() throws {
+    func startAudioCapture() -> Bool {
         assertIsOnSessionQueue()
 
+        // This check will fail if we do not have recording permissions.
         guard audioSession.startAudioActivity(recordingAudioActivity) else {
-            throw PhotoCaptureError.assertionError(description: "unable to capture audio activity")
+            Logger.warn("Unable to start recording audio activity!")
+            return false
         }
 
-        let audioDevice = AVCaptureDevice.default(for: .audio)
-        // verify works without audio permissions
-        let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
-        if session.canAddInput(audioDeviceInput) {
+        guard let audioDevice = AVCaptureDevice.default(for: .audio) else {
+            Logger.warn("Missing audio capture device!")
+            return false
+        }
+
+        do {
+            let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
+
+            guard session.canAddInput(audioDeviceInput) else {
+                owsFailDebug("Could not add audio device input to the session")
+                return false
+            }
+
             session.addInput(audioDeviceInput)
             self.audioDeviceInput = audioDeviceInput
-        } else {
-            owsFailDebug("Could not add audio device input to the session")
+        } catch let error {
+            Logger.warn("Failed to create audioDeviceInput: \(error)")
+            return false
         }
+
+        return true
     }
 
     func stopAudioCapture() {
@@ -153,9 +167,10 @@ class PhotoCapture: NSObject {
         defer { self.session.commitConfiguration() }
 
         guard let audioDeviceInput = self.audioDeviceInput else {
-            owsFailDebug("audioDevice was unexpectedly nil")
+            Logger.warn("audioDeviceInput was nil - recording permissions may have been disabled?")
             return
         }
+
         session.removeInput(audioDeviceInput)
         self.audioDeviceInput = nil
         audioSession.endAudioActivity(recordingAudioActivity)
@@ -737,9 +752,14 @@ class PhotoCapture: NSObject {
                 self.session.beginConfiguration()
                 defer { self.session.commitConfiguration() }
 
-                self.shouldHaveAudioCapture = true
                 self.setTorchMode(self.flashMode.toTorchMode)
-                return try self.captureOutput.beginMovie(delegate: self, aspectRatio: aspectRatio)
+
+                let audioCaptureStartedSuccessfully = self.startAudioCapture()
+                return try self.captureOutput.beginMovie(
+                    delegate: self,
+                    aspectRatio: aspectRatio,
+                    includeAudio: audioCaptureStartedSuccessfully
+                )
             }.done(on: self.captureOutput.movieRecordingQueue) { movieRecording in
                 movieRecordingBox.set(movieRecording)
             }.done {
@@ -784,7 +804,7 @@ class PhotoCapture: NSObject {
 
             self.sessionQueue.async {
                 self.setTorchMode(.off)
-                self.shouldHaveAudioCapture = false
+                self.stopAudioCapture()
             }
 
             // Inform UI that capture is stopping.
@@ -804,7 +824,7 @@ class PhotoCapture: NSObject {
         }
         self.sessionQueue.async {
             self.setTorchMode(.off)
-            self.shouldHaveAudioCapture = false
+            self.stopAudioCapture()
         }
         self.videoRecordingState = .stopped
         self.delegate?.photoCapture(self, didFailProcessing: error)
@@ -823,39 +843,13 @@ class PhotoCapture: NSObject {
 
             self.sessionQueue.async {
                 self.setTorchMode(.off)
-                self.shouldHaveAudioCapture = false
+                self.stopAudioCapture()
             }
 
             self.videoRecordingState = .stopped
             self.delegate?.photoCaptureDidCancelRecording(self)
         }.catch { error in
             self.handleMovieCaptureError(error)
-        }
-    }
-
-    private var _shouldHaveAudioCapture = false
-    private var shouldHaveAudioCapture: Bool {
-        get {
-            assertOnQueue(sessionQueue)
-            return _shouldHaveAudioCapture
-        }
-        set {
-            assertOnQueue(sessionQueue)
-            guard _shouldHaveAudioCapture != newValue else {
-                return
-            }
-            _shouldHaveAudioCapture = newValue
-
-            if newValue {
-                do {
-                    try self.startAudioCapture()
-                } catch {
-                    owsFailDebug("Error: \(error)")
-                    _shouldHaveAudioCapture = false
-                }
-            } else {
-                self.stopAudioCapture()
-            }
         }
     }
 
@@ -1218,7 +1212,11 @@ class CaptureOutput: NSObject {
 
     // MARK: - Movie Output
 
-    func beginMovie(delegate: CaptureOutputDelegate, aspectRatio: CGFloat) throws -> MovieRecording {
+    func beginMovie(
+        delegate: CaptureOutputDelegate,
+        aspectRatio: CGFloat,
+        includeAudio: Bool
+    ) throws -> MovieRecording {
         Logger.verbose("")
 
         delegate.assertIsOnSessionQueue()
@@ -1269,13 +1267,17 @@ class CaptureOutput: NSObject {
         videoInput.expectsMediaDataInRealTime = true
         assetWriter.add(videoInput)
 
-        let audioSettings: [String: Any]? = self.audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mp4)
-        let audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
-        audioInput.expectsMediaDataInRealTime = true
-        if audioSettings != nil {
-            assetWriter.add(audioInput)
+        var audioInput: AVAssetWriterInput?
+        if includeAudio {
+            if let audioSettings = self.audioDataOutput.recommendedAudioSettingsForAssetWriter(writingTo: .mp4) {
+                audioInput = AVAssetWriterInput(mediaType: .audio, outputSettings: audioSettings)
+                audioInput!.expectsMediaDataInRealTime = true
+                assetWriter.add(audioInput!)
+            } else {
+                owsFailDebug("audioSettings was unexpectedly nil!")
+            }
         } else {
-            owsFailDebug("audioSettings was unexpectedly nil")
+            Logger.info("Not including audio.")
         }
 
         return MovieRecording(assetWriter: assetWriter, videoInput: videoInput, audioInput: audioInput)
@@ -1319,14 +1321,14 @@ class MovieRecording {
 
     let assetWriter: AVAssetWriter
     let videoInput: AVAssetWriterInput
-    let audioInput: AVAssetWriterInput
+    let audioInput: AVAssetWriterInput?
 
     enum State {
         case unstarted, recording, finished
     }
     private(set) var state: State = .unstarted
 
-    init(assetWriter: AVAssetWriter, videoInput: AVAssetWriterInput, audioInput: AVAssetWriterInput) {
+    init(assetWriter: AVAssetWriter, videoInput: AVAssetWriterInput, audioInput: AVAssetWriterInput?) {
         self.assetWriter = assetWriter
         self.videoInput = videoInput
         self.audioInput = audioInput
@@ -1353,7 +1355,7 @@ class MovieRecording {
         switch state {
         case .recording:
             state = .finished
-            audioInput.markAsFinished()
+            audioInput?.markAsFinished()
             videoInput.markAsFinished()
             return Promise<URL> { future -> Void in
                 let assetWriter = self.assetWriter
@@ -1409,10 +1411,13 @@ extension CaptureOutput: AVCaptureVideoDataOutputSampleBufferDelegate, AVCapture
                 }
             } else if output == self.audioDataOutput {
                 movieRecordingQueue.async {
-                    if movieRecording.audioInput.isReadyForMoreMediaData {
-                        movieRecording.audioInput.append(sampleBuffer)
+                    if
+                        let audioInput = movieRecording.audioInput,
+                        audioInput.isReadyForMoreMediaData
+                    {
+                        audioInput.append(sampleBuffer)
                     } else {
-                        Logger.verbose("audioInput was not ready for more data")
+                        Logger.verbose("audioInput was not present or ready for more data")
                     }
                 }
             } else {
