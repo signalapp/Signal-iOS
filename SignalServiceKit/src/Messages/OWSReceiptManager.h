@@ -79,11 +79,6 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
                                                               readTimestamp:(uint64_t)readTimestamp
                                                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)markAsReadOnLinkedDevice:(TSMessage *)message
-                          thread:(TSThread *)thread
-                   readTimestamp:(uint64_t)readTimestamp
-                     transaction:(SDSAnyWriteTransaction *)transaction;
-
 /// Returns an array of receipts that had missing messages.
 - (NSArray<SSKProtoSyncMessageViewed *> *)processViewedReceiptsFromLinkedDevice:
                                               (NSArray<SSKProtoSyncMessageViewed *> *)viewedReceiptProtos

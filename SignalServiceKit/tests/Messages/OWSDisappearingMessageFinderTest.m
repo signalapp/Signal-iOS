@@ -99,11 +99,13 @@ NS_ASSUME_NONNULL_BEGIN
             [message markAsReadAtTimestamp:expireStartedAt
                                     thread:thread
                               circumstance:OWSReceiptCircumstanceOnLinkedDevice
+                  shouldClearNotifications:YES
                                transaction:transaction];
         } else if (markAsRead) {
             [message markAsReadAtTimestamp:self.now - 1000
                                     thread:thread
                               circumstance:OWSReceiptCircumstanceOnLinkedDevice
+                  shouldClearNotifications:YES
                                transaction:transaction];
         }
     }];

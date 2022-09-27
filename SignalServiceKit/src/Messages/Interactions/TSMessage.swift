@@ -225,6 +225,6 @@ public extension TSMessage {
     private func markMessageAsRemotelyDeleted(transaction: SDSAnyWriteTransaction) {
         updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
 
-        Self.notificationsManager?.cancelNotifications(messageId: self.uniqueId)
+        Self.notificationsManager?.cancelNotifications(messageIds: [self.uniqueId])
     }
 }

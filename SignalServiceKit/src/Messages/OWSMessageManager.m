@@ -2267,6 +2267,7 @@ NS_ASSUME_NONNULL_BEGIN
                           circumstance:hasPendingMessageRequest
                               ? OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest
                               : OWSReceiptCircumstanceOnLinkedDevice
+              shouldClearNotifications:NO // not required, since no notifications if sent by local
                            transaction:transaction];
     }
 

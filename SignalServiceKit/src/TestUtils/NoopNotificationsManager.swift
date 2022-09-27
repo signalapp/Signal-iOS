@@ -46,8 +46,12 @@ public class NoopNotificationsManager: NSObject, NotificationsProtocol {
         Logger.warn("clearAllNotifications")
     }
 
-    public func cancelNotifications(messageId: String) {
-        Logger.warn("cancelNotifications for messageId: \(messageId)")
+    public func cancelNotifications(threadId: String) {
+        Logger.warn("cancelNotifications for threadId: \(threadId)")
+    }
+
+    public func cancelNotifications(messageIds: [String]) {
+        Logger.warn("cancelNotifications for messageIds: \(messageIds)")
     }
 
     public func cancelNotifications(reactionId: String) {

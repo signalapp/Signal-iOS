@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,7 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearAllNotifications;
 
-- (void)cancelNotificationsForMessageId:(NSString *)uniqueMessageId NS_SWIFT_NAME(cancelNotifications(messageId:));
+- (void)cancelNotificationsForThreadId:(NSString *)uniqueMessageId NS_SWIFT_NAME(cancelNotifications(threadId:));
+- (void)cancelNotificationsForMessageIds:(NSArray<NSString *> *)uniqueMessageIds
+    NS_SWIFT_NAME(cancelNotifications(messageIds:));
 - (void)cancelNotificationsForReactionId:(NSString *)uniqueReactionId NS_SWIFT_NAME(cancelNotifications(reactionId:));
 
 @end

@@ -192,14 +192,16 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     // We want to do this without triggering sending read receipts, so we pretend it was
     // read on a linked device.
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
-                         thread:[self threadWithTransaction:transaction]
-                   circumstance:OWSReceiptCircumstanceOnLinkedDevice
-                    transaction:transaction];
+                          thread:[self threadWithTransaction:transaction]
+                    circumstance:OWSReceiptCircumstanceOnLinkedDevice
+        shouldClearNotifications:YES
+                     transaction:transaction];
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
                        thread:(TSThread *)thread
                  circumstance:(OWSReceiptCircumstance)circumstance
+     shouldClearNotifications:(BOOL)shouldClearNotifications
                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -228,7 +230,9 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
     [OWSReceiptManager.shared messageWasRead:self thread:thread circumstance:circumstance transaction:transaction];
 
-    [SSKEnvironment.shared.notificationPresenter cancelNotificationsForMessageId:self.uniqueId];
+    if (shouldClearNotifications) {
+        [SSKEnvironment.shared.notificationPresenter cancelNotificationsForMessageIds:@[ self.uniqueId ]];
+    }
 }
 
 - (void)markAsViewedAtTimestamp:(uint64_t)viewedTimestamp

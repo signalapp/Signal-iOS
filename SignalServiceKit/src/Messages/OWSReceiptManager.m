@@ -391,42 +391,6 @@ NSString *const OWSReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsEnabl
     return [receiptsMissingMessage copy];
 }
 
-- (void)markAsReadOnLinkedDevice:(TSMessage *)message
-                          thread:(TSThread *)thread
-                   readTimestamp:(uint64_t)readTimestamp
-                     transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(message);
-    OWSAssertDebug(thread);
-    OWSAssertDebug(transaction);
-
-    if ([message isKindOfClass:[TSIncomingMessage class]]) {
-        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-        BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
-        OWSReceiptCircumstance circumstance = hasPendingMessageRequest
-            ? OWSReceiptCircumstanceOnLinkedDeviceWhilePendingMessageRequest
-            : OWSReceiptCircumstanceOnLinkedDevice;
-
-        // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
-        [incomingMessage markAsReadAtTimestamp:readTimestamp
-                                        thread:thread
-                                  circumstance:circumstance
-                                   transaction:transaction];
-
-        // Also mark any unread messages appearing earlier in the thread as read as well.
-        [self markAsReadBeforeSortId:incomingMessage.sortId
-                              thread:thread
-                       readTimestamp:readTimestamp
-                        circumstance:circumstance
-                         transaction:transaction];
-    } else if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-        // Outgoing messages are always "read", but if we get a receipt
-        // from our linked device about one that indicates that any reactions
-        // we received on this message should also be marked read.
-        [message markUnreadReactionsAsReadWithTransaction:transaction];
-    }
-}
-
 - (NSArray<SSKProtoSyncMessageViewed *> *)processViewedReceiptsFromLinkedDevice:
                                               (NSArray<SSKProtoSyncMessageViewed *> *)viewedReceiptProtos
                                                                 viewedTimestamp:(uint64_t)viewedTimestamp

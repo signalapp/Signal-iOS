@@ -949,21 +949,18 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     // MARK: - Cancellation
 
-    @objc
     public func cancelNotifications(threadId: String) {
         performNotificationActionAsync { completion in
             self.presenter.cancelNotifications(threadId: threadId, completion: completion)
         }
     }
 
-    @objc
-    public func cancelNotifications(messageId: String) {
+    public func cancelNotifications(messageIds: [String]) {
         performNotificationActionAsync { completion in
-            self.presenter.cancelNotifications(messageId: messageId, completion: completion)
+            self.presenter.cancelNotifications(messageIds: messageIds, completion: completion)
         }
     }
 
-    @objc
     public func cancelNotifications(reactionId: String) {
         performNotificationActionAsync { completion in
             self.presenter.cancelNotifications(reactionId: reactionId, completion: completion)

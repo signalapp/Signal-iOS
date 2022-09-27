@@ -304,6 +304,7 @@ public extension TSThread {
                     atTimestamp: Date.ows_millisecondTimestamp(),
                     thread: self,
                     circumstance: circumstance,
+                    shouldClearNotifications: true,
                     transaction: transaction
                 )
             }

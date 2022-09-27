@@ -239,6 +239,8 @@ public extension OWSReceiptManager {
         }
     }
 
+    // MARK: - Mark as read
+
     func markAsReadLocally(beforeSortId sortId: UInt64,
                            thread: TSThread,
                            hasPendingMessageRequest: Bool,
@@ -287,6 +289,7 @@ public extension OWSReceiptManager {
                             readItem.markAsRead(atTimestamp: readTimestamp,
                                                 thread: thread,
                                                 circumstance: circumstance,
+                                                shouldClearNotifications: true,
                                                 transaction: transaction)
                             batchQuotaRemaining -= 1
                         }
@@ -346,8 +349,11 @@ public extension OWSReceiptManager {
                     thread: TSThread,
                     readTimestamp: UInt64,
                     circumstance: OWSReceiptCircumstance,
-                    transaction: SDSAnyWriteTransaction) {
+                    shouldClearNotifications: Bool,
+                    transaction: SDSAnyWriteTransaction) -> [String] {
         owsAssertDebug(sortId > 0)
+
+        var readUniqueIds = [String]()
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
         var cursor = interactionFinder.fetchUnreadMessages(beforeSortId: sortId,
                                                            transaction: transaction.unwrapGrdbRead)
@@ -356,11 +362,66 @@ public extension OWSReceiptManager {
                 readItem.markAsRead(atTimestamp: readTimestamp,
                                     thread: thread,
                                     circumstance: circumstance,
+                                    shouldClearNotifications: shouldClearNotifications,
                                     transaction: transaction)
+                readUniqueIds.append(readItem.uniqueId)
             }
         } catch {
             owsFailDebug("unexpected failure fetching unread messages: \(error)")
+            return []
         }
+
+        return readUniqueIds
     }
 
+    func markAsReadOnLinkedDevice(
+        _ message: TSMessage,
+        thread: TSThread,
+        readTimestamp: UInt64,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        if let incomingMessage = message as? TSIncomingMessage {
+            let circumstance: OWSReceiptCircumstance
+            if thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead) {
+                circumstance = .onLinkedDeviceWhilePendingMessageRequest
+            } else {
+                circumstance = .onLinkedDevice
+            }
+
+            // Always re-mark the message as read to ensure any earlier read
+            // time is applied to disappearing messages. Also mark any unread
+            // messages appearing earlier in the thread as read as well.
+            //
+            // Do not automatically clear notifications, as we will do so
+            // manually below.
+
+            incomingMessage.markAsRead(
+                atTimestamp: readTimestamp,
+                thread: thread,
+                circumstance: circumstance,
+                shouldClearNotifications: false,
+                transaction: transaction
+            )
+
+            let markedAsReadIds = self.markAsRead(
+                beforeSortId: incomingMessage.sortId,
+                thread: thread,
+                readTimestamp: readTimestamp,
+                circumstance: circumstance,
+                shouldClearNotifications: false,
+                transaction: transaction
+            )
+
+            // Manually clear notifications for all the now-marked-read messages
+            // in one batch.
+            notificationPresenter?.cancelNotifications(messageIds: [incomingMessage.uniqueId] + markedAsReadIds)
+        } else if let outgoingMessage = message as? TSOutgoingMessage {
+            // Outgoing messages are always "read", but if we get a receipt
+            // from our linked device about one that indicates that any reactions
+            // we received on this message should also be marked read.
+            outgoingMessage.markUnreadReactionsAsRead(transaction: transaction)
+        } else {
+            owsFailDebug("Message was neither incoming nor outgoing!")
+        }
+    }
 }

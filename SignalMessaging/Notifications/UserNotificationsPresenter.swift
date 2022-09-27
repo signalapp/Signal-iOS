@@ -365,8 +365,8 @@ class UserNotificationPresenter: Dependencies {
         cancel(cancellation: .threadId(threadId), completion: completion)
     }
 
-    func cancelNotifications(messageId: String, completion: @escaping NotificationActionCompletion) {
-        cancel(cancellation: .messageId(messageId), completion: completion)
+    func cancelNotifications(messageIds: [String], completion: @escaping NotificationActionCompletion) {
+        cancel(cancellation: .messageIds(Set(messageIds)), completion: completion)
     }
 
     func cancelNotifications(reactionId: String, completion: @escaping NotificationActionCompletion) {
@@ -382,7 +382,7 @@ class UserNotificationPresenter: Dependencies {
 
     private enum CancellationType: Equatable, Hashable {
         case threadId(String)
-        case messageId(String)
+        case messageIds(Set<String>)
         case reactionId(String)
     }
 
@@ -417,10 +417,10 @@ class UserNotificationPresenter: Dependencies {
                 {
                     return true
                 }
-            case .messageId(let messageId):
+            case .messageIds(let messageIds):
                 if
                     let requestMessageId = request.content.userInfo[AppNotificationUserInfoKey.messageId] as? String,
-                    requestMessageId == messageId
+                    messageIds.contains(requestMessageId)
                 {
                     return true
                 }
