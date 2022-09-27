@@ -3,6 +3,7 @@
 import Foundation
 import GRDB
 import DifferenceKit
+import SessionUIKit
 import SessionUtilitiesKit
 
 fileprivate typealias ViewModel = MessageViewModel
@@ -44,12 +45,6 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public static let quoteAttachmentString: String = CodingKeys.quoteAttachment.stringValue
     public static let linkPreviewString: String = CodingKeys.linkPreview.stringValue
     public static let linkPreviewAttachmentString: String = CodingKeys.linkPreviewAttachment.stringValue
-    
-    public enum Position: Int, Decodable, Equatable, Hashable, DatabaseValueConvertible {
-        case top
-        case middle
-        case bottom
-    }
     
     public enum CellType: Int, Decodable, Equatable, Hashable, DatabaseValueConvertible {
         case textOnlyMessage

@@ -14,7 +14,7 @@ import UIKit
 import SignalUtilitiesKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, AppModeManagerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var window: UIWindow?
     var backgroundSnapshotBlockerWindow: UIWindow?
     var appStartupWindow: UIWindow?
@@ -31,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         SetCurrentAppContext(MainAppContext())
         verifyDBKeysAvailableBeforeBackgroundLaunch()
 
-        AppModeManager.configure(delegate: self)
         Cryptography.seedRandom()
         AppVersion.sharedInstance()
 
@@ -571,39 +570,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
         ClosedGroupPoller.shared.stopAllPollers()
         OpenGroupManager.shared.stopPolling()
-    }
-    
-    // MARK: - App Mode
-
-    private func adapt(appMode: AppMode) {
-        // FIXME: Need to update this when an appropriate replacement is added (see https://teng.pub/technical/2021/11/9/uiapplication-key-window-replacement)
-        guard let window: UIWindow = UIApplication.shared.keyWindow else { return }
-        
-        switch (appMode) {
-            case .light:
-                window.overrideUserInterfaceStyle = .light
-                window.backgroundColor = .white
-            
-            case .dark:
-                window.overrideUserInterfaceStyle = .dark
-                window.backgroundColor = .black
-        }
-        
-        if LKAppModeUtilities.isSystemDefault {
-            window.overrideUserInterfaceStyle = .unspecified
-        }
-        
-        NotificationCenter.default.post(name: .appModeChanged, object: nil)
-    }
-    
-    func setCurrentAppMode(to appMode: AppMode) {
-        UserDefaults.standard[.appMode] = appMode.rawValue
-        adapt(appMode: appMode)
-    }
-    
-    func setAppModeToSystemDefault() {
-        UserDefaults.standard.removeObject(forKey: SNUserDefaults.Int.appMode.rawValue)
-        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
     }
     
     // MARK: - App Link

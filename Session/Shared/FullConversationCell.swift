@@ -606,7 +606,7 @@ public final class FullConversationCell: UITableViewCell {
                 
                 let authorPrefix: NSAttributedString = NSAttributedString(
                     string: "\(authorName): ...",
-                    attributes: [ .foregroundColor: Colors.text ]
+                    attributes: [ .foregroundColor: textColor ]
                 )
                 
                 return authorPrefix

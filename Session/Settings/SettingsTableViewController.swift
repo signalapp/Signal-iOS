@@ -204,6 +204,25 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
             }
             .store(in: &disposables)
         
+        viewModel.transitionToScreen
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewController, transitionType in
+                switch transitionType {
+                    case .push:
+                        self?.navigationController?.pushViewController(viewController, animated: true)
+                    
+                    case .present:
+                        if UIDevice.current.isIPad {
+                            viewController.popoverPresentationController?.permittedArrowDirections = []
+                            viewController.popoverPresentationController?.sourceView = self?.view
+                            viewController.popoverPresentationController?.sourceRect = (self?.view.bounds ?? UIScreen.main.bounds)
+                        }
+                        
+                        self?.present(viewController, animated: true)
+                }
+            }
+            .store(in: &disposables)
+        
         viewModel.leftNavItems
             .receiveOnMain(immediately: true)
             .sink { [weak self] maybeItems in
@@ -215,6 +234,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
 
                             buttonItem.tapPublisher
                                 .map { _ in item.id }
+                                .handleEvents(receiveOutput: { _ in item.action?() })
                                 .sink(into: self?.viewModel.navItemTapped)
                                 .store(in: &buttonItem.disposables)
 
@@ -237,6 +257,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
 
                             buttonItem.tapPublisher
                                 .map { _ in item.id }
+                                .handleEvents(receiveOutput: { _ in item.action?() })
                                 .sink(into: self?.viewModel.navItemTapped)
                                 .store(in: &buttonItem.disposables)
 
@@ -276,22 +297,18 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
         let settingInfo: SettingInfo<SettingItem> = section.elements[indexPath.row]
         
         switch settingInfo.action {
-            case .threadInfo(let threadViewModel, let style, let createAvatarTapDestination, let titleTapped, let titleChanged):
+            case .threadInfo(let threadViewModel, let style, let avatarTapped, let titleTapped, let titleChanged):
                 let cell: SettingsAvatarCell = tableView.dequeue(type: SettingsAvatarCell.self, for: indexPath)
                 cell.update(
                     threadViewModel: threadViewModel,
-                    style: style
+                    style: style,
+                    viewController: self
                 )
                 cell.update(isEditing: self.isEditing, animated: false)
                 
                 cell.profilePictureTapPublisher
-                    .sink(receiveValue: { [weak self] _ in
-                        guard let viewController: UIViewController = createAvatarTapDestination?() else {
-                            return
-                        }
-                        
-                        self?.present(viewController, animated: true, completion: nil)
-                    })
+                    .filter { _ in threadViewModel.threadVariant == .contact }
+                    .sink(receiveValue: { _ in avatarTapped?() })
                     .store(in: &cell.disposables)
                 
                 cell.displayNameTapPublisher
@@ -319,8 +336,15 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
                     action: settingInfo.action,
                     extraActionTitle: settingInfo.extraActionTitle,
                     onExtraAction: settingInfo.onExtraAction,
-                    isFirstInSection: (indexPath.row == 0),
-                    isLastInSection: (indexPath.row == (section.elements.count - 1))
+                    position: {
+                        guard section.elements.count > 1 else { return .individual }
+                        
+                        switch indexPath.row {
+                            case 0: return .top
+                            case (section.elements.count - 1): return .bottom
+                            default: return .middle
+                        }
+                    }()
                 )
                 cell.update(isEditing: self.isEditing, animated: false)
                 
@@ -338,7 +362,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
             case .padding, .title:
                 let result: SettingHeaderView = tableView.dequeueHeaderFooterView(type: SettingHeaderView.self)
                 result.update(
-                    with: section.model.title,
+                    title: section.model.title,
                     hasSeparator: (section.elements.first?.action.shouldHaveBackground != false)
                 )
                 
@@ -466,7 +490,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
                 let viewController: UIViewController = createDestination()
                 navigationController?.pushViewController(viewController, animated: true)
                 
-            case .present(let createDestination):
+            case .present(_, let createDestination):
                 let viewController: UIViewController = createDestination()
                 
                 if UIDevice.current.isIPad {
@@ -527,8 +551,15 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
                 action: settingInfo.action,
                 extraActionTitle: settingInfo.extraActionTitle,
                 onExtraAction: settingInfo.onExtraAction,
-                isFirstInSection: (indexPath.row == 0),
-                isLastInSection: (indexPath.row == (section.elements.count - 1))
+                position: {
+                    guard section.elements.count > 1 else { return .individual }
+                    
+                    switch indexPath.row {
+                        case 0: return .top
+                        case (section.elements.count - 1): return .bottom
+                        default: return .middle
+                    }
+                }()
             )
         }
         else {

@@ -5,14 +5,46 @@ import GRDB
 import SessionUIKit
 
 class SettingsCell: UITableViewCell {
+    public static let cornerRadius: CGFloat = 17
+    
+    enum Style {
+        case rounded
+        case edgeToEdge
+    }
+    
     /// This value is here to allow the theming update callback to be released when preparing for reuse
     private var instanceView: UIView = UIView()
+    private var position: Position?
     private var subtitleExtraView: UIView?
     private var onExtraAction: (() -> Void)?
     
     // MARK: - UI
     
+    private var backgroundLeftConstraint: NSLayoutConstraint = NSLayoutConstraint()
+    private var backgroundRightConstraint: NSLayoutConstraint = NSLayoutConstraint()
+    private var topSeparatorLeftConstraint: NSLayoutConstraint = NSLayoutConstraint()
+    private var topSeparatorRightConstraint: NSLayoutConstraint = NSLayoutConstraint()
+    private var botSeparatorLeftConstraint: NSLayoutConstraint = NSLayoutConstraint()
+    private var botSeparatorRightConstraint: NSLayoutConstraint = NSLayoutConstraint()
     private lazy var stackViewImageHeightConstraint: NSLayoutConstraint = contentStackView.heightAnchor.constraint(equalTo: iconImageView.heightAnchor)
+    
+    private let cellBackgroundView: UIView = {
+        let result: UIView = UIView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
+        result.themeBackgroundColor = .settings_tabBackground
+        
+        return result
+    }()
+    
+    private let cellSelectedBackgroundView: UIView = {
+        let result: UIView = UIView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.themeBackgroundColor = .settings_tabHighlight
+        result.alpha = 0
+        
+        return result
+    }()
     
     private let topSeparator: UIView = {
         let result: UIView = UIView.separator()
@@ -52,6 +84,8 @@ class SettingsCell: UITableViewCell {
         result.axis = .vertical
         result.distribution = .equalSpacing
         result.alignment = .fill
+        result.setCompressionResistanceHorizontalLow()
+        result.setContentHuggingLow()
         
         return result
     }()
@@ -62,6 +96,8 @@ class SettingsCell: UITableViewCell {
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.themeTextColor = .textPrimary
         result.numberOfLines = 0
+        result.setCompressionResistanceHorizontalLow()
+        result.setContentHuggingLow()
         
         return result
     }()
@@ -73,14 +109,19 @@ class SettingsCell: UITableViewCell {
         result.themeTextColor = .textPrimary
         result.numberOfLines = 0
         result.isHidden = true
+        result.setCompressionResistanceHorizontalLow()
+        result.setContentHuggingLow()
         
         return result
     }()
+    
+    private lazy var extraActionTopSpacingView: UIView = UIView.spacer(withHeight: Values.smallSpacing)
     
     private lazy var extraActionButton: UIButton = {
         let result: UIButton = UIButton()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.titleLabel?.font = .boldSystemFont(ofSize: Values.smallFontSize)
+        result.titleLabel?.numberOfLines = 0
         result.contentHorizontalAlignment = .left
         result.contentEdgeInsets = UIEdgeInsets(
             top: 8,
@@ -91,13 +132,12 @@ class SettingsCell: UITableViewCell {
         result.addTarget(self, action: #selector(extraActionTapped), for: .touchUpInside)
         result.isHidden = true
         
-        return result
-    }()
-    
-    private let actionContainerView: UIView = {
-        let result: UIView = UIView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.isHidden = true
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: result?.setThemeTitleColor(.textPrimary, for: .normal)
+                default: result?.setThemeTitleColor(.primary, for: .normal)
+            }
+        }
         
         return result
     }()
@@ -107,6 +147,8 @@ class SettingsCell: UITableViewCell {
         result.translatesAutoresizingMaskIntoConstraints = false
         result.themeTintColor = .textPrimary
         result.isHidden = true
+        result.setContentHuggingHigh()
+        result.setCompressionResistanceHigh()
         
         return result
     }()
@@ -117,6 +159,20 @@ class SettingsCell: UITableViewCell {
         result.isUserInteractionEnabled = false // Triggered by didSelectCell instead
         result.themeOnTintColor = .primary
         result.isHidden = true
+        result.setContentHuggingHigh()
+        result.setCompressionResistanceHigh()
+        
+        return result
+    }()
+    
+    private let dropDownStackView: UIStackView = {
+        let result: UIStackView = UIStackView()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.axis = .horizontal
+        result.distribution = .fill
+        result.alignment = .center
+        result.spacing = Values.verySmallSpacing
+        result.isHidden = true
         
         return result
     }()
@@ -125,7 +181,8 @@ class SettingsCell: UITableViewCell {
         let result: UIImageView = UIImageView(image: UIImage(systemName: "arrowtriangle.down.fill"))
         result.translatesAutoresizingMaskIntoConstraints = false
         result.themeTintColor = .textPrimary
-        result.isHidden = true
+        result.set(.width, to: 10)
+        result.set(.height, to: 10)
         
         return result
     }()
@@ -135,7 +192,8 @@ class SettingsCell: UITableViewCell {
         result.translatesAutoresizingMaskIntoConstraints = false
         result.font = .systemFont(ofSize: Values.smallFontSize, weight: .medium)
         result.themeTextColor = .textPrimary
-        result.isHidden = true
+        result.setContentHuggingHigh()
+        result.setCompressionResistanceHigh()
         
         return result
     }()
@@ -145,6 +203,8 @@ class SettingsCell: UITableViewCell {
         result.translatesAutoresizingMaskIntoConstraints = false
         result.themeTintColor = .primary
         result.isHidden = true
+        result.setContentHuggingHigh()
+        result.setCompressionResistanceHigh()
         
         return result
     }()
@@ -164,6 +224,8 @@ class SettingsCell: UITableViewCell {
         result.translatesAutoresizingMaskIntoConstraints = false
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
         result.themeTextColor = .textPrimary
+        result.setContentHuggingHigh()
+        result.setCompressionResistanceHigh()
         
         return result
     }()
@@ -191,24 +253,30 @@ class SettingsCell: UITableViewCell {
     }
 
     private func setupViewHierarchy() {
-        contentView.addSubview(topSeparator)
-        contentView.addSubview(contentStackView)
-        contentView.addSubview(botSeparator)
+        self.themeBackgroundColor = .clear
+        self.selectedBackgroundView = UIView()
+        
+        contentView.addSubview(cellBackgroundView)
+        cellBackgroundView.addSubview(cellSelectedBackgroundView)
+        cellBackgroundView.addSubview(topSeparator)
+        cellBackgroundView.addSubview(contentStackView)
+        cellBackgroundView.addSubview(botSeparator)
         
         contentStackView.addArrangedSubview(iconImageView)
         contentStackView.addArrangedSubview(titleStackView)
-        contentStackView.addArrangedSubview(actionContainerView)
         contentStackView.addArrangedSubview(pushChevronImageView)
         contentStackView.addArrangedSubview(toggleSwitch)
         contentStackView.addArrangedSubview(tickImageView)
+        contentStackView.addArrangedSubview(dropDownStackView)
+        contentStackView.addArrangedSubview(rightActionButtonContainerView)
         
         titleStackView.addArrangedSubview(titleLabel)
         titleStackView.addArrangedSubview(subtitleLabel)
+        titleStackView.addArrangedSubview(extraActionTopSpacingView)
         titleStackView.addArrangedSubview(extraActionButton)
         
-        actionContainerView.addSubview(dropDownImageView)
-        actionContainerView.addSubview(dropDownLabel)
-        actionContainerView.addSubview(rightActionButtonContainerView)
+        dropDownStackView.addArrangedSubview(dropDownImageView)
+        dropDownStackView.addArrangedSubview(dropDownLabel)
         
         rightActionButtonContainerView.addSubview(rightActionButtonLabel)
         
@@ -216,50 +284,24 @@ class SettingsCell: UITableViewCell {
     }
     
     private func setupLayout() {
-        topSeparator.pin(.top, to: .top, of: contentView)
-        topSeparator.pin(.left, to: .left, of: contentView)
-        topSeparator.pin(.right, to: .right, of: contentView)
+        cellBackgroundView.pin(.top, to: .top, of: contentView)
+        backgroundLeftConstraint = cellBackgroundView.pin(.leading, to: .leading, of: contentView)
+        backgroundRightConstraint = cellBackgroundView.pin(.trailing, to: .trailing, of: contentView)
+        cellBackgroundView.pin(.bottom, to: .bottom, of: contentView)
         
-        contentStackView.pin(to: contentView)
+        cellSelectedBackgroundView.pin(to: cellBackgroundView)
         
-        titleLabel.setCompressionResistanceHorizontalLow()
-        subtitleLabel.setCompressionResistanceHorizontalLow()
+        topSeparator.pin(.top, to: .top, of: cellBackgroundView)
+        topSeparatorLeftConstraint = topSeparator.pin(.left, to: .left, of: cellBackgroundView)
+        topSeparatorRightConstraint = topSeparator.pin(.right, to: .right, of: cellBackgroundView)
+        contentStackView.pin(to: cellBackgroundView)
         
-        pushChevronImageView.setContentHuggingHigh()
-        pushChevronImageView.setCompressionResistanceHigh()
-        
-        toggleSwitch.setContentHuggingHigh()
-        toggleSwitch.setCompressionResistanceHigh()
-        
-        tickImageView.setContentHuggingHigh()
-        tickImageView.setCompressionResistanceHigh()
-        
-        actionContainerView.setContentHuggingHigh()
-        actionContainerView.setCompressionResistanceHigh()
-        actionContainerView.set(.height, to: .height, of: contentStackView)
-        
-        dropDownImageView.center(.vertical, in: actionContainerView)
-        dropDownImageView.pin(.left, to: .left, of: actionContainerView)
-        dropDownImageView.set(.width, to: 10)
-        dropDownImageView.set(.height, to: 10)
-        
-        dropDownLabel.setContentHuggingHigh()
-        dropDownLabel.setCompressionResistanceHigh()
-        dropDownLabel.center(.vertical, in: actionContainerView)
-        dropDownLabel.pin(.left, to: .right, of: dropDownImageView, withInset: Values.verySmallSpacing)
-        dropDownLabel.pin(.right, to: .right, of: actionContainerView)
-        
-        rightActionButtonContainerView.center(.vertical, in: actionContainerView)
-        rightActionButtonContainerView.pin(.left, to: .left, of: actionContainerView)
-        rightActionButtonContainerView.pin(.right, to: .right, of: actionContainerView)
-        
-        rightActionButtonLabel.setContentHuggingHigh()
-        rightActionButtonLabel.setCompressionResistanceHigh()
+        rightActionButtonContainerView.center(.vertical, in: contentStackView)
         rightActionButtonLabel.pin(to: rightActionButtonContainerView, withInset: Values.smallSpacing)
         
-        botSeparator.pin(.left, to: .left, of: contentView)
-        botSeparator.pin(.right, to: .right, of: contentView)
-        botSeparator.pin(.bottom, to: .bottom, of: contentView)
+        botSeparatorLeftConstraint = botSeparator.pin(.left, to: .left, of: cellBackgroundView)
+        botSeparatorRightConstraint = botSeparator.pin(.right, to: .right, of: cellBackgroundView)
+        botSeparator.pin(.bottom, to: .bottom, of: cellBackgroundView)
     }
     
     override func layoutSubviews() {
@@ -324,15 +366,15 @@ class SettingsCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        self.themeBackgroundColor = nil
-        self.selectedBackgroundView = nil
         self.instanceView = UIView()
+        self.position = nil
         self.onExtraAction = nil
         self.accessibilityIdentifier = nil
         
         stackViewImageHeightConstraint.isActive = false
         iconImageView.removeConstraints(iconImageView.constraints)
         iconImageView.image = nil
+        iconImageView.themeTintColor = .textPrimary
         titleLabel.text = ""
         titleLabel.themeTextColor = .textPrimary
         subtitleLabel.text = ""
@@ -341,12 +383,12 @@ class SettingsCell: UITableViewCell {
         topSeparator.isHidden = true
         iconImageView.isHidden = true
         subtitleLabel.isHidden = true
+        extraActionTopSpacingView.isHidden = true
+        extraActionButton.setTitle("", for: .normal)
         extraActionButton.isHidden = true
-        actionContainerView.isHidden = true
         pushChevronImageView.isHidden = true
         toggleSwitch.isHidden = true
-        dropDownImageView.isHidden = true
-        dropDownLabel.isHidden = true
+        dropDownStackView.isHidden = true
         tickImageView.isHidden = true
         tickImageView.alpha = 1
         rightActionButtonContainerView.isHidden = true
@@ -357,6 +399,7 @@ class SettingsCell: UITableViewCell {
     }
     
     public func update(
+        style: Style = .rounded,
         icon: UIImage?,
         iconSize: IconSize,
         iconSetter: ((UIImageView) -> Void)?,
@@ -366,19 +409,19 @@ class SettingsCell: UITableViewCell {
         accessibilityIdentifier: String?,
         subtitleExtraViewGenerator: (() -> UIView)?,
         action: SettingsAction,
-        extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString)?,
+        extraActionTitle: String?,
         onExtraAction: (() -> Void)?,
-        isFirstInSection: Bool,
-        isLastInSection: Bool
+        position: Position
     ) {
         self.instanceView = UIView()
+        self.position = position
         self.subtitleExtraView = subtitleExtraViewGenerator?()
         self.onExtraAction = onExtraAction
         self.accessibilityIdentifier = accessibilityIdentifier
         
         stackViewImageHeightConstraint.isActive = {
             switch iconSize {
-                case .small: return false
+                case .small, .medium: return false
                 case .large: return true   // Edge-to-edge in this case
             }
         }()
@@ -386,7 +429,7 @@ class SettingsCell: UITableViewCell {
             top: Values.mediumSpacing,
             leading: {
                 switch iconSize {
-                    case .small: return Values.largeSpacing
+                    case .small, .medium: return Values.largeSpacing
                     case .large: return 0   // Edge-to-edge in this case
                 }
             }(),
@@ -403,29 +446,51 @@ class SettingsCell: UITableViewCell {
         titleLabel.textAlignment = alignment
         subtitleLabel.text = subtitle
         subtitleLabel.isHidden = (subtitle == nil)
+        extraActionTopSpacingView.isHidden = (extraActionTitle == nil)
+        extraActionButton.setTitle(extraActionTitle, for: .normal)
         extraActionButton.isHidden = (extraActionTitle == nil)
         
         // Call the iconSetter closure if provided to set the icon
         iconSetter?(iconImageView)
         
-        // Separator/background Visibility
-        if action.shouldHaveBackground {
-            self.themeBackgroundColor = .settings_tabBackground
-            
-            topSeparator.isHidden = isFirstInSection
-            botSeparator.isHidden = !isLastInSection
-        }
-        else {
-            self.themeBackgroundColor = nil
-            
-            topSeparator.isHidden = true
-            botSeparator.isHidden = true
-        }
+        // Styling and positioning
+        cellBackgroundView.themeBackgroundColor = (action.shouldHaveBackground ?
+            .settings_tabBackground :
+            nil
+        )
+        cellSelectedBackgroundView.isHidden = !action.shouldHaveBackground
+        backgroundLeftConstraint.constant = (style == .rounded ? Values.largeSpacing : 0)
+        backgroundRightConstraint.constant = (style == .rounded ? -Values.largeSpacing : 0)
+        topSeparatorLeftConstraint.constant = (style == .rounded ? Values.mediumSpacing : 0)
+        topSeparatorRightConstraint.constant = (style == .rounded ? -Values.mediumSpacing : 0)
+        botSeparatorLeftConstraint.constant = (style == .rounded ? Values.mediumSpacing : 0)
+        botSeparatorRightConstraint.constant = (style == .rounded ? -Values.mediumSpacing : 0)
+        cellBackgroundView.layer.cornerRadius = (style == .rounded ? SettingsCell.cornerRadius : 0)
         
-        // Highlight
-        let selectedBackgroundView = UIView()
-        selectedBackgroundView.themeBackgroundColor = .settings_tabHighlight
-        self.selectedBackgroundView = selectedBackgroundView
+        switch position {
+            case .top:
+                cellBackgroundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+                topSeparator.isHidden = true
+                botSeparator.isHidden = false
+                
+            case .middle:
+                cellBackgroundView.layer.maskedCorners = []
+                topSeparator.isHidden = true
+                botSeparator.isHidden = false
+                
+            case .bottom:
+                cellBackgroundView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+                botSeparator.isHidden = false
+                botSeparator.isHidden = true
+                
+            case .individual:
+                cellBackgroundView.layer.maskedCorners = [
+                    .layerMinXMinYCorner, .layerMaxXMinYCorner,
+                    .layerMinXMaxYCorner, .layerMaxXMaxYCorner
+                ]
+                topSeparator.isHidden = true
+                botSeparator.isHidden = true
+        }
         
         // Action Behaviours
         switch action {
@@ -436,9 +501,7 @@ class SettingsCell: UITableViewCell {
                 toggleSwitch.isEnabled = isEnabled
                 
                 // Remove the selection view if the setting is disabled
-                if !isEnabled {
-                    self.selectedBackgroundView = UIView()
-                }
+                cellSelectedBackgroundView.isHidden = !isEnabled
                 
                 let newValue: Bool = defaults.bool(forKey: key)
                 
@@ -451,9 +514,7 @@ class SettingsCell: UITableViewCell {
                 toggleSwitch.isEnabled = isEnabled
                 
                 // Remove the selection view if the setting is disabled
-                if !isEnabled {
-                    self.selectedBackgroundView = UIView()
-                }
+                cellSelectedBackgroundView.isHidden = !isEnabled
                 
                 let newValue: Bool = Storage.shared[key]
                 
@@ -466,18 +527,14 @@ class SettingsCell: UITableViewCell {
                 toggleSwitch.isEnabled = isEnabled
                 
                 // Remove the selection view if the setting is disabled
-                if !isEnabled {
-                    self.selectedBackgroundView = UIView()
-                }
+                cellSelectedBackgroundView.isHidden = !isEnabled
                 
                 if value != toggleSwitch.isOn {
                     toggleSwitch.setOn(value, animated: true)
                 }
 
             case .settingEnum(_, let value, _), .generalEnum(let value, _):
-                actionContainerView.isHidden = false
-                dropDownImageView.isHidden = false
-                dropDownLabel.isHidden = false
+                dropDownStackView.isHidden = false
                 dropDownLabel.text = value
                 
             case .listSelection(let isSelected, let storedSelection, _, _):
@@ -487,26 +544,18 @@ class SettingsCell: UITableViewCell {
             case .trigger(let showChevron, _):
                 pushChevronImageView.isHidden = !showChevron
             
-            case .push(let showChevron, let textColor, _, _):
-                titleLabel.themeTextColor = textColor
+            case .push(let showChevron, let tintColor, _, _):
+                titleLabel.themeTextColor = tintColor
+                iconImageView.themeTintColor = tintColor
                 pushChevronImageView.isHidden = !showChevron
                 
-            case .present(_): break
+            case .present(let tintColor, _):
+                titleLabel.themeTextColor = tintColor
+                iconImageView.themeTintColor = tintColor
             
             case .rightButtonAction(let title, _):
-                actionContainerView.isHidden = false
                 rightActionButtonContainerView.isHidden = false
                 rightActionButtonLabel.text = title
-        }
-        
-        // Extra action
-        if let extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString) = extraActionTitle {
-            ThemeManager.onThemeChange(observer: instanceView) { [weak extraActionButton] theme, primaryColor in
-                extraActionButton?.setAttributedTitle(
-                    extraActionTitle(theme, primaryColor),
-                    for: .normal
-                )
-            }
         }
     }
     
@@ -516,7 +565,14 @@ class SettingsCell: UITableViewCell {
     
     override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
+        
+        // If the 'cellSelectedBackgroundView' is hidden then there is no background so we
+        // should update the titleLabel to indicate the highlighted state
+        if cellSelectedBackgroundView.isHidden {
+            titleLabel.alpha = (highlighted ? 0.8 : 1)
+        }
 
+        cellSelectedBackgroundView.alpha = (highlighted ? 1 : 0)
         rightActionButtonContainerView.themeBackgroundColor = (highlighted ?
             .solidButton_highlight :
             .solidButton_background

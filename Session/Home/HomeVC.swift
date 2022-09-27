@@ -743,8 +743,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     }
     
     @objc private func openSettings() {
-        let settingsVC = SettingsVC()
-        let navigationController = OWSNavigationController(rootViewController: settingsVC)
+        let settingsViewController: SettingsTableViewController = SettingsTableViewController(
+            viewModel: SettingsViewModel()
+        )
+        let navigationController = OWSNavigationController(rootViewController: settingsViewController)
         navigationController.modalPresentationStyle = .fullScreen
         present(navigationController, animated: true, completion: nil)
     }

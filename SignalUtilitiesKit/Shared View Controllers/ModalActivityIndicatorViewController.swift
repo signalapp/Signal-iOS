@@ -10,7 +10,9 @@ import NVActivityIndicatorView
 public class ModalActivityIndicatorViewController: OWSViewController {
     let canCancel: Bool
     let message: String?
+    private let onAppear: (ModalActivityIndicatorViewController) -> Void
 
+    private var hasAppeared: Bool = false
     public var wasCancelled: Bool = false
     
     lazy var dimmingView: UIView = {
@@ -56,33 +58,36 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         notImplemented()
     }
 
-    public required init(canCancel: Bool = false, message: String? = nil) {
+    public required init(
+        canCancel: Bool = false,
+        message: String? = nil,
+        onAppear: @escaping (ModalActivityIndicatorViewController) -> Void
+    ) {
         self.canCancel = canCancel
         self.message = message
+        self.onAppear = onAppear
+        
         super.init(nibName: nil, bundle: nil)
+        
+        // Present this modal _over_ the current view contents.
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
     }
 
     public class func present(
         fromViewController: UIViewController?,
         canCancel: Bool = false,
         message: String? = nil,
-        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+        onAppear: @escaping (ModalActivityIndicatorViewController) -> Void
     ) {
         guard let fromViewController: UIViewController = fromViewController else { return }
         
         AssertIsOnMainThread()
-
-        let view = ModalActivityIndicatorViewController(canCancel: canCancel, message: message)
         
-        // Present this modal _over_ the current view contents.
-        view.modalPresentationStyle = .overFullScreen
-        view.modalTransitionStyle = .crossDissolve
-        
-        fromViewController.present(view, animated: false) {
-            DispatchQueue.global().async {
-                backgroundBlock(view)
-            }
-        }
+        fromViewController.present(
+            ModalActivityIndicatorViewController(canCancel: canCancel, message: message, onAppear: onAppear),
+            animated: false
+        )
     }
 
     public func dismiss(completion: @escaping () -> Void) {
@@ -160,6 +165,18 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         // Fade in the modal
         UIView.animate(withDuration: 0.35) {
             self.view.layer.opacity = 1.0
+        }
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !self.hasAppeared {
+            self.hasAppeared = true
+            
+            DispatchQueue.global().async {
+                self.onAppear(self)
+            }
         }
     }
 

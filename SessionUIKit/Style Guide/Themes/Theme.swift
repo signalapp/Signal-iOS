@@ -36,6 +36,13 @@ public enum Theme: String, CaseIterable, Codable, EnumStringSetting {
         }
     }
     
+    public var keyboardAppearance: UIKeyboardAppearance {
+        switch self {
+            case .classicDark, .oceanDark: return .dark
+            case .classicLight, .oceanLight: return .default
+        }
+    }
+    
     private var colors: [ThemeValue: UIColor] {
         switch self {
             case .classicDark: return Theme_ClassicDark.theme

@@ -126,13 +126,16 @@ class AttachmentCaptionToolbar: UIView, UITextViewDelegate {
     private func buildTextView() -> UITextView {
         let textView = AttachmentTextView()
 
-        textView.keyboardAppearance = isLightMode ? .default : .dark
         textView.themeBackgroundColor = .clear
         textView.themeTintColor = .textPrimary
 
         textView.font = UIFont.ows_dynamicTypeBody
         textView.themeTextColor = .textPrimary
         textView.textContainerInset = UIEdgeInsets(top: 7, left: 7, bottom: 7, right: 7)
+        
+        ThemeManager.onThemeChange(observer: textView) { [weak textView] theme, _ in
+            textView?.keyboardAppearance = theme.keyboardAppearance
+        }
 
         return textView
     }

@@ -743,7 +743,10 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             .black :
             .primary
         )
-        let opacity: Float = (isLightMode ? 0.5 : 1)
+        let opacity: Float = (ThemeManager.currentTheme.interfaceStyle == .light ?
+            0.5 :
+            1
+        )
         
         DispatchQueue.main.async { [weak self] in
             let oldMasksToBounds: Bool = (self?.layer.masksToBounds ?? false)

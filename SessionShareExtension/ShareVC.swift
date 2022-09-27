@@ -6,7 +6,7 @@ import PromiseKit
 import SignalUtilitiesKit
 import SessionUIKit
 
-final class ShareVC: UINavigationController, ShareViewDelegate, AppModeManagerDelegate {
+final class ShareVC: UINavigationController, ShareViewDelegate {
     private var areVersionMigrationsComplete = false
     public static var attachmentPrepPromise: Promise<[SignalAttachment]>?
     
@@ -163,18 +163,9 @@ final class ShareVC: UINavigationController, ShareViewDelegate, AppModeManagerDe
         // we can't easily clean up.
         ExitShareExtension()
     }
-
-    // MARK: - App Mode
-
-    public func setCurrentAppMode(to appMode: AppMode) {
-        return // Not applicable to share extensions
-    }
     
-    public func setAppModeToSystemDefault() {
-        return // Not applicable to share extensions
-    }
+    // MARK: - Updating
     
-    // MARK: Updating
     private func showLockScreenOrMainContent() {
         if Storage.shared[.isScreenLockEnabled] {
             showLockScreen()

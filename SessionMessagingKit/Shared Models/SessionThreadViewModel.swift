@@ -236,6 +236,8 @@ public extension SessionThreadViewModel {
     init(
         threadId: String? = nil,
         threadVariant: SessionThread.Variant? = nil,
+        threadIsNoteToSelf: Bool = false,
+        contactProfile: Profile? = nil,
         currentUserIsClosedGroupMember: Bool? = nil,
         unreadCount: UInt = 0
     ) {
@@ -245,7 +247,7 @@ public extension SessionThreadViewModel {
         self.threadCreationDateTimestamp = 0
         self.threadMemberNames = nil
         
-        self.threadIsNoteToSelf = false
+        self.threadIsNoteToSelf = threadIsNoteToSelf
         self.threadIsMessageRequest = false
         self.threadRequiresApproval = false
         self.threadShouldBeVisible = false
@@ -261,7 +263,7 @@ public extension SessionThreadViewModel {
         
         // Thread display info
         
-        self.contactProfile = nil
+        self.contactProfile = contactProfile
         self.closedGroupProfileFront = nil
         self.closedGroupProfileBack = nil
         self.closedGroupProfileBackFallback = nil

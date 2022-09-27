@@ -169,8 +169,7 @@ final class DisplayNameVC: BaseVC {
             queue: DispatchQueue.global(qos: .default),
             profileName: displayName,
             image: nil,
-            imageFilePath: nil,
-            requiredSync: false
+            imageFilePath: nil
         )
         let pnModeVC = PNModeVC()
         navigationController?.pushViewController(pnModeVC, animated: true)

@@ -73,7 +73,8 @@ internal extension UIColor {
     static let oceanDark3: UIColor = #colorLiteral(red: 0.168627451, green: 0.1764705882, blue: 0.2509803922, alpha: 1)         // #2B2D40
     static let oceanDark4: UIColor = #colorLiteral(red: 0.2392156863, green: 0.2901960784, blue: 0.3647058824, alpha: 1)         // #3D4A5D
     static let oceanDark5: UIColor = #colorLiteral(red: 0.6509803922, green: 0.662745098, blue: 0.8078431373, alpha: 1)         // #A6A9CE
-    static let oceanDark6: UIColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)         // #FFFFFF
+    static let oceanDark6: UIColor = #colorLiteral(red: 0.3607843137, green: 0.6666666667, blue: 0.8, alpha: 1)         // #5CAACC
+    static let oceanDark7: UIColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)         // #FFFFFF
     
     static let oceanLight0: UIColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)        // #000000
     static let oceanLight1: UIColor = #colorLiteral(red: 0.09803921569, green: 0.2039215686, blue: 0.3647058824, alpha: 1)        // #19345D

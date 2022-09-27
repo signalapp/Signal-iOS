@@ -6,10 +6,9 @@ import YYImage
 import SessionUIKit
 import SessionMessagingKit
 
-@objc(LKProfilePictureView)
 public final class ProfilePictureView: UIView {
     private var hasTappableProfilePicture: Bool = false
-    @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
+    public var size: CGFloat = 0
     
     // Constraints
     private var imageViewWidthConstraint: NSLayoutConstraint!

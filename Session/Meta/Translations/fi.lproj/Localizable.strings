@@ -733,14 +733,13 @@
 "NOTIFICATIONS_SECTION_STRATEGY" = "Notification Strategy";
 "NOTIFICATIONS_STRATEGY_FAST_MODE_TITLE" = "Use Fast Mode";
 "NOTIFICATIONS_STRATEGY_FAST_MODE_DESCRIPTION" = "You'll be notified of new message reliably and immediately using Apple's notification servers.";
-"NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION_1" = "Go to ";
-"NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION_2" = "device notification settings";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION" = "Go to device notification settings";
 "NOTIFICATIONS_SECTION_STYLE" = "Notification Style";
 "NOTIFICATIONS_STYLE_SOUND_TITLE" = "Sound";
 "NOTIFICATIONS_STYLE_SOUND_WHEN_OPEN_TITLE" = "Sound When App is Open";
 "NOTIFICATIONS_STYLE_CONTENT_TITLE" = "Notification Content";
 "NOTIFICATIONS_STYLE_CONTENT_DESCRIPTION" = "The information shown in notifications.";
-"NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT" = "Name and Content";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT" = "Name & Content";
 "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_ONLY" = "Name Only";
 "NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT" = "No Name or Content";
 "CONVERSATION_SETTINGS_TITLE" = "Conversations";
@@ -792,4 +791,6 @@
 "modal_permission_microphone" = "microphone";
 "modal_permission_library" = "library";
 "DISAPPEARING_MESSAGES_OFF" = "Off";
+"DISAPPEARING_MESSAGES_SUBTITLE_OFF" = "Off";
+"DISAPPEARING_MESSAGES_SUBTITLE_DISAPPEAR_AFTER" = "Disappear After: %@";
 "COPY_GROUP_URL" = "Copy Group URL";

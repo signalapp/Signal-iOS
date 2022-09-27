@@ -190,7 +190,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private func buildTextView() -> UITextView {
         let textView = AttachmentTextView()
 
-        textView.keyboardAppearance = isLightMode ? .default : .dark
         textView.themeBackgroundColor = .clear
         textView.themeTintColor = .textPrimary
 
@@ -198,6 +197,10 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         textView.themeTextColor = .textPrimary
         textView.showsVerticalScrollIndicator = false
         textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        
+        ThemeManager.onThemeChange(observer: textView) { [weak textView] theme, _ in
+            textView?.keyboardAppearance = theme.keyboardAppearance
+        }
 
         return textView
     }

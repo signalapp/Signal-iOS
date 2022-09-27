@@ -7,7 +7,7 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.NavButton, PrivacySettingsViewModel.Section, PrivacySettingsViewModel.Section> {
+class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.NavButton, PrivacySettingsViewModel.Section, PrivacySettingsViewModel.Item> {
     // MARK: - Initialization
     
     init(shouldShowCloseButton: Bool = false) {
@@ -21,8 +21,7 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
     }
     
     public enum Section: SettingSection {
-        case screenLock
-        case screenshotNotifications
+        case screenSecurity
         case readReceipts
         case typingIndicators
         case linkPreviews
@@ -30,8 +29,7 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
         
         var title: String? {
             switch self {
-                case .screenLock: return "PRIVACY_SECTION_SCREEN_SECURITY".localized()
-                case .screenshotNotifications: return nil
+                case .screenSecurity: return "PRIVACY_SECTION_SCREEN_SECURITY".localized()
                 case .readReceipts: return "PRIVACY_SECTION_READ_RECEIPTS".localized()
                 case .typingIndicators: return "PRIVACY_SECTION_TYPING_INDICATORS".localized()
                 case .linkPreviews: return "PRIVACY_SECTION_LINK_PREVIEWS".localized()
@@ -39,12 +37,16 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
             }
         }
         
-        var style: SettingSectionHeaderStyle {
-            switch self {
-                case .screenshotNotifications: return .padding
-                default: return .title
-            }
-        }
+        var style: SettingSectionHeaderStyle { return .title }
+    }
+    
+    public enum Item: Differentiable {
+        case screenLock
+        case screenshotNotifications
+        case readReceipts
+        case typingIndicators
+        case linkPreviews
+        case calls
     }
     
     // MARK: - Content
@@ -67,19 +69,14 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
         .trackingConstantRegion { db -> [SectionModel] in
             return [
                 SectionModel(
-                    model: .screenLock,
+                    model: .screenSecurity,
                     elements: [
                         SettingInfo(
                             id: .screenLock,
                             title: "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE".localized(),
                             subtitle: "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION".localized(),
                             action: .settingBool(key: .isScreenLockEnabled)
-                        )
-                    ]
-                ),
-                SectionModel(
-                    model: .screenshotNotifications,
-                    elements: [
+                        ),
                         SettingInfo(
                             id: .screenshotNotifications,
                             title: "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE".localized(),

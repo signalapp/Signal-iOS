@@ -194,7 +194,8 @@ class SettingsAvatarCell: UITableViewCell {
     
     func update(
         threadViewModel: SessionThreadViewModel,
-        style: ThreadInfoStyle
+        style: ThreadInfoStyle,
+        viewController: UIViewController
     ) {
         profilePictureView.update(
             publicKey: threadViewModel.threadId,
@@ -245,7 +246,7 @@ class SettingsAvatarCell: UITableViewCell {
             result.setTitle(action.title, for: UIControl.State.normal)
             result.tapPublisher
                 .receive(on: DispatchQueue.main)
-                .sink(receiveValue: { _ in action.run() })
+                .sink(receiveValue: { [weak result] _ in action.run(result) })
                 .store(in: &self.disposables)
             
             descriptionActionStackView.addArrangedSubview(result)

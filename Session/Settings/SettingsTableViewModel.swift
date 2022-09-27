@@ -29,6 +29,10 @@ class SettingsTableViewModel<NavItemId: Equatable, Section: SettingSection, Sett
         .removeDuplicates()
         .shareReplay(1)
     
+    private let _transitionToScreen: PassthroughSubject<(UIViewController, TransitionType), Never> = PassthroughSubject()
+    lazy var transitionToScreen: AnyPublisher<(UIViewController, TransitionType), Never> = _transitionToScreen
+        .shareReplay(0)
+    
     // MARK: - Navigation
     
     open var leftNavItems: AnyPublisher<[NavItem]?, Never> {
@@ -71,6 +75,10 @@ class SettingsTableViewModel<NavItemId: Equatable, Section: SettingSection, Sett
     func setIsEditing(_ isEditing: Bool) {
         _isEditing.send(isEditing)
     }
+    
+    func transitionToScreen(_ viewController: UIViewController, transitionType: TransitionType = .push) {
+        _transitionToScreen.send((viewController, transitionType))
+    }
 }
 
 // MARK: - NavItem
@@ -84,32 +92,37 @@ extension SettingsTableViewModel {
         let style: UIBarButtonItem.Style
         let systemItem: UIBarButtonItem.SystemItem?
         let accessibilityIdentifier: String
+        let action: (() -> Void)?
         
         // MARK: - Initialization
         
         public init(
             id: NavItemId,
             systemItem: UIBarButtonItem.SystemItem?,
-            accessibilityIdentifier: String
+            accessibilityIdentifier: String,
+            action: (() -> Void)? = nil
         ) {
             self.id = id
             self.image = nil
             self.style = .plain
             self.systemItem = systemItem
             self.accessibilityIdentifier = accessibilityIdentifier
+            self.action = action
         }
         
         public init(
             id: NavItemId,
             image: UIImage?,
             style: UIBarButtonItem.Style,
-            accessibilityIdentifier: String
+            accessibilityIdentifier: String,
+            action: (() -> Void)? = nil
         ) {
             self.id = id
             self.image = image
             self.style = style
             self.systemItem = nil
             self.accessibilityIdentifier = accessibilityIdentifier
+            self.action = action
         }
         
         // MARK: - Functions
@@ -159,14 +172,23 @@ extension SettingSection {
 
 public enum IconSize: Differentiable {
     case small
+    case medium
     case large
     
     var size: CGFloat {
         switch self {
             case .small: return 24
+            case .medium: return 32
             case .large: return 80
         }
     }
+}
+
+// MARK: - TransitionType
+
+public enum TransitionType {
+    case push
+    case present
 }
 
 // MARK: - SettingInfo
@@ -182,7 +204,7 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
     let accessibilityIdentifier: String?
     let action: SettingsAction
     let subtitleExtraViewGenerator: (() -> UIView)?
-    let extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString)?
+    let extraActionTitle: String?
     let onExtraAction: (() -> Void)?
     
     // MARK: - Initialization
@@ -198,7 +220,7 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
         accessibilityIdentifier: String? = nil,
         subtitleExtraViewGenerator: (() -> UIView)? = nil,
         action: SettingsAction,
-        extraActionTitle: ((Theme, Theme.PrimaryColor) -> NSAttributedString)? = nil,
+        extraActionTitle: String? = nil,
         onExtraAction: (() -> Void)? = nil
     ) {
         self.id = id
@@ -228,6 +250,7 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
         alignment.hash(into: &hasher)
         accessibilityIdentifier.hash(into: &hasher)
         action.hash(into: &hasher)
+        extraActionTitle.hash(into: &hasher)
     }
     
     static func == (lhs: SettingInfo<ID>, rhs: SettingInfo<ID>) -> Bool {
@@ -239,7 +262,8 @@ struct SettingInfo<ID: Hashable & Differentiable>: Equatable, Hashable, Differen
             lhs.subtitle == rhs.subtitle &&
             lhs.alignment == rhs.alignment &&
             lhs.accessibilityIdentifier == rhs.accessibilityIdentifier &&
-            lhs.action == rhs.action
+            lhs.action == rhs.action &&
+            lhs.extraActionTitle == rhs.extraActionTitle
         )
     }
     
@@ -267,7 +291,7 @@ public enum SettingsAction: Hashable, Equatable {
     case threadInfo(
         threadViewModel: SessionThreadViewModel,
         style: ThreadInfoStyle = ThreadInfoStyle(),
-        createAvatarTapDestination: (() -> UIViewController?)? = nil,
+        avatarTapped: (() -> Void)? = nil,
         titleTapped: (() -> Void)? = nil,
         titleChanged: ((String) -> Void)? = nil
     )
@@ -304,11 +328,14 @@ public enum SettingsAction: Hashable, Equatable {
     )
     case push(
         showChevron: Bool = true,
-        textColor: ThemeValue = .textPrimary,
+        tintColor: ThemeValue = .textPrimary,
         shouldHaveBackground: Bool = true,
         createDestination: () -> UIViewController
     )
-    case present(createDestination: () -> UIViewController)
+    case present(
+        tintColor: ThemeValue = .textPrimary,
+        createDestination: () -> UIViewController
+    )
     case listSelection(
         isSelected: () -> Bool,
         storedSelection: Bool,
@@ -413,12 +440,13 @@ public enum SettingsAction: Hashable, Equatable {
             case .trigger(let showChevron, _):
                 showChevron.hash(into: &hasher)
                 
-            case .push(let showChevron, let textColor, let shouldHaveBackground, _):
+            case .push(let showChevron, let tintColor, let shouldHaveBackground, _):
                 showChevron.hash(into: &hasher)
-                textColor.hash(into: &hasher)
+                tintColor.hash(into: &hasher)
                 shouldHaveBackground.hash(into: &hasher)
                 
-            case .present(_): break
+            case .present(let tintColor, _):
+                tintColor.hash(into: &hasher)
                 
             case .listSelection(let isSelected, let storedSelection, let shouldAutoSave, _):
                 isSelected().hash(into: &hasher)
@@ -470,14 +498,15 @@ public enum SettingsAction: Hashable, Equatable {
             case (.trigger(let lhsShowChevron, _), .trigger(let rhsShowChevron, _)):
                 return (lhsShowChevron == rhsShowChevron)
                 
-            case (.push(let lhsShowChevron, let lhsTextColor, let lhsHasBackground, _), .push(let rhsShowChevron, let rhsTextColor, let rhsHasBackground, _)):
+            case (.push(let lhsShowChevron, let lhsTintColor, let lhsHasBackground, _), .push(let rhsShowChevron, let rhsTintColor, let rhsHasBackground, _)):
                 return (
                     lhsShowChevron == rhsShowChevron &&
-                    lhsTextColor == rhsTextColor &&
+                    lhsTintColor == rhsTintColor &&
                     lhsHasBackground == rhsHasBackground
                 )
                 
-            case (.present(_), .present(_)): return true
+            case (.present(let lhsTintColor, _), .present(let rhsTintColor, _)):
+                return (lhsTintColor == rhsTintColor)
                 
             case (.listSelection(let lhsIsSelected, let lhsStoredSelection, let lhsShouldAutoSave, _), .listSelection(let rhsIsSelected, let rhsStoredSelection, let rhsShouldAutoSave, _)):
                 return (
@@ -505,7 +534,7 @@ public struct ThreadInfoStyle: Hashable, Equatable {
     
     public struct Action: Hashable, Equatable {
         let title: String
-        let run: () -> ()
+        let run: (OutlineButton?) -> ()
         
         public func hash(into hasher: inout Hasher) {
             title.hash(into: &hasher)

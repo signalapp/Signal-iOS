@@ -94,7 +94,7 @@ final class TypingIndicatorCell: MessageCell {
             case .top: return [ .topLeft, .topRight, .bottomRight ]
             case .middle: return [ .topRight, .bottomRight ]
             case .bottom: return [ .topRight, .bottomRight, .bottomLeft ]
-            case .none: return .allCorners
+            case .none, .individual: return .allCorners
         }
     }
 }

@@ -24,6 +24,7 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
     }
     
     public enum Section: SettingSection {
+        case conversationInfo
         case content
     }
     
@@ -222,42 +223,25 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
             
             return [
                 SectionModel(
-                    model: .content,
+                    model: .conversationInfo,
                     elements: [
                         SettingInfo(
                             id: .threadInfo,
                             title: threadViewModel.displayName,
                             action: .threadInfo(
                                 threadViewModel: threadViewModel,
-                                createAvatarTapDestination: { [weak self] in
-                                    guard
-                                        threadVariant == .contact,
-                                        let profileData: Data = ProfileManager.profileAvatar(id: threadId)
-                                    else { return nil }
-                                    
-                                    let format: ImageFormat = profileData.guessedImageFormat
-                                    let navController: UINavigationController = UINavigationController(
-                                        rootViewController: ProfilePictureVC(
-                                            image: (format == .gif || format == .webp ?
-                                                nil :
-                                                UIImage(data: profileData)
-                                            ),
-                                            animatedImage: (format != .gif && format != .webp ?
-                                                nil :
-                                                YYImage(data: profileData)
-                                            ),
-                                            title: threadViewModel.displayName
-                                        )
-                                    )
-                                    navController.modalPresentationStyle = .fullScreen
-                                    
-                                    return navController
+                                avatarTapped: { [weak self] in
+                                    self?.updateProfilePicture(threadViewModel: threadViewModel)
                                 },
                                 titleTapped: { [weak self] in self?.setIsEditing(true) },
                                 titleChanged: { [weak self] text in self?.editedDisplayName = text }
                             )
-                        ),
-                        
+                        )
+                    ]
+                ),
+                SectionModel(
+                    model: .content,
+                    elements: [
                         (threadVariant == .closedGroup ? nil :
                             SettingInfo(
                                 id: .copyThreadId,
@@ -328,38 +312,22 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                                     )
                                 )?.withRenderingMode(.alwaysTemplate),
                                 title: "DISAPPEARING_MESSAGES".localized(),
-                                subtitle: {
-                                    guard threadId != userPublicKey else {
-                                        return "When enabled, messages will disappear after they have been seen."
-                                    }
-
-                                    let customDisplayName: String = {
-                                        switch threadVariant {
-                                            case .closedGroup, .openGroup: return "the group"
-                                            case .contact: return threadViewModel.displayName
-                                        }
-                                    }()
-
-                                    return String(
-                                        format: "When enabled, messages between you and %@ will disappear after they have been seen.",
-                                        arguments: [customDisplayName]
-                                    )
-                                }(),
+                                subtitle: (disappearingMessagesConfig.isEnabled ?
+                                    String(
+                                        format: "DISAPPEARING_MESSAGES_SUBTITLE_DISAPPEAR_AFTER".localized(),
+                                        arguments: [disappearingMessagesConfig.durationString]
+                                    ) :
+                                    "DISAPPEARING_MESSAGES_SUBTITLE_OFF".localized()
+                                ),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).disappearing_messages",
-                                action: .generalEnum(
-                                    title: (disappearingMessagesConfig.isEnabled ?
-                                        disappearingMessagesConfig.durationString :
-                                        "DISAPPEARING_MESSAGES_OFF".localized()
-                                    ),
-                                    createUpdateScreen: {
-                                        SettingsTableViewController(
-                                            viewModel: ThreadDisappearingMessagesViewModel(
-                                                threadId: threadId,
-                                                config: disappearingMessagesConfig
-                                            )
+                                action: .push(showChevron: false) {
+                                    SettingsTableViewController(
+                                        viewModel: ThreadDisappearingMessagesViewModel(
+                                            threadId: threadId,
+                                            config: disappearingMessagesConfig
                                         )
-                                    }
-                                )
+                                    )
+                                }
                             )
                         ),
                         
@@ -537,6 +505,32 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
 
     public override func updateSettings(_ updatedSettings: [SectionModel]) {
         self._settingsData = updatedSettings
+    }
+    
+    private func updateProfilePicture(threadViewModel: SessionThreadViewModel) {
+        guard
+            threadViewModel.threadVariant == .contact,
+            let profile: Profile = threadViewModel.profile,
+            let profileData: Data = ProfileManager.profileAvatar(profile: profile)
+        else { return }
+        
+        let format: ImageFormat = profileData.guessedImageFormat
+        let navController: UINavigationController = UINavigationController(
+            rootViewController: ProfilePictureVC(
+                image: (format == .gif || format == .webp ?
+                    nil :
+                    UIImage(data: profileData)
+                ),
+                animatedImage: (format != .gif && format != .webp ?
+                    nil :
+                    YYImage(data: profileData)
+                ),
+                title: threadViewModel.displayName
+            )
+        )
+        navController.modalPresentationStyle = .fullScreen
+        
+        self.transitionToScreen(navController, transitionType: .present)
     }
     
     private func addUsersToOpenGoup(selectedUsers: Set<String>) {

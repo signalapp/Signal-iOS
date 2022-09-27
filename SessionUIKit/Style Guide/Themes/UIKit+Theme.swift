@@ -14,7 +14,10 @@ public extension UIView {
     
     var themeBackgroundColorForced: ForcedThemeValue? {
         set {
-            // First we should remove any gradient that had been added
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.backgroundColor)
+            
+            // Then we should remove any gradient that had been added
             self.layer.sublayers?.first(where: { $0 is CAGradientLayer })?.removeFromSuperlayer()
             
             switch newValue {
@@ -48,6 +51,9 @@ public extension UIView {
     
     var themeTintColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.tintColor)
+            
             switch newValue {
                 case .color(let color): tintColor = color
                 case .primary(let value, let alpha):
@@ -79,6 +85,9 @@ public extension UIView {
     
     var themeBorderColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.layer.borderColor)
+            
             switch newValue {
                 case .color(let color): layer.borderColor = color.cgColor
                 case .primary(let value, let alpha):
@@ -110,6 +119,9 @@ public extension UIView {
     
     var themeShadowColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.layer.shadowColor)
+            
             switch newValue {
                 case .color(let color): layer.shadowColor = color.cgColor
                 case .primary(let value, let alpha):
@@ -143,6 +155,9 @@ public extension UILabel {
     
     var themeTextColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.textColor)
+            
             switch newValue {
                 case .color(let color): textColor = color
                 case .primary(let value, let alpha):
@@ -176,6 +191,9 @@ public extension UITextView {
     
     var themeTextColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.textColor)
+            
             switch newValue {
                 case .color(let color): textColor = color
                 case .primary(let value, let alpha):
@@ -209,6 +227,9 @@ public extension UITextField {
     
     var themeTextColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.textColor)
+            
             switch newValue {
                 case .color(let color): textColor = color
                 case .primary(let value, let alpha):
@@ -261,6 +282,15 @@ public extension UIButton {
     }
     
     func setThemeBackgroundColorForced(_ newValue: ForcedThemeValue?, for state: UIControl.State) {
+        let keyPath: KeyPath<UIButton, UIImage?> = \.imageView?.image
+        
+        // First we should clear out any dynamic setting
+        ThemeManager.set(
+            self,
+            to: ThemeManager.get(for: self)?
+                .removing(allWith: keyPath)
+        )
+        
         switch newValue {
             case .color(let color): self.setBackgroundImage(color.toImage(), for: state)
             case .primary(let value, let alpha):
@@ -309,6 +339,15 @@ public extension UIButton {
     }
     
     func setThemeTitleColorForced(_ newValue: ForcedThemeValue?, for state: UIControl.State) {
+        let keyPath: KeyPath<UIButton, UIColor?> = \.titleLabel?.textColor
+        
+        // First we should clear out any dynamic setting
+        ThemeManager.set(
+            self,
+            to: ThemeManager.get(for: self)?
+                .removing(allWith: keyPath)
+        )
+        
         switch newValue {
             case .color(let color): self.setTitleColor(color, for: state)
             case .primary(let value, let alpha):
@@ -354,6 +393,9 @@ public extension UIProgressView {
     
     var themeProgressTintColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.progressTintColor)
+            
             switch newValue {
                 case .color(let color): progressTintColor = color
                 case .primary(let value, let alpha):
@@ -415,6 +457,9 @@ public extension GradientView {
         set {
             let keyPath: KeyPath<UIView, UIColor?> = \.backgroundColor
             
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.backgroundColor)
+            
             ThemeManager.set(
                 self,
                 to: ThemeApplier(
@@ -450,6 +495,9 @@ public extension CAShapeLayer {
     
     var themeStrokeColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.strokeColor)
+            
             switch newValue {
                 case .color(let color): strokeColor = color.cgColor
                 case .primary(let value, let alpha):
@@ -481,6 +529,9 @@ public extension CAShapeLayer {
     
     var themeFillColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.fillColor)
+            
             switch newValue {
                 case .color(let color): fillColor = color.cgColor
                 case .primary(let value, let alpha):
@@ -514,6 +565,9 @@ public extension CALayer {
     
     var themeBackgroundColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.backgroundColor)
+            
             switch newValue {
                 case .color(let color): backgroundColor = color.cgColor
                 case .primary(let value, let alpha):
@@ -557,6 +611,9 @@ public extension CATextLayer {
     
     var themeForegroundColorForced: ForcedThemeValue? {
         set {
+            // First we should clear out any dynamic setting
+            ThemeManager.remove(self, keyPath: \.foregroundColor)
+            
             switch newValue {
                 case .color(let color): foregroundColor = color.cgColor
                 case .primary(let value, let alpha):

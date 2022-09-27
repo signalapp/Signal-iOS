@@ -65,7 +65,7 @@ internal enum Theme_ClassicLight: ThemeColors {
         .solidButton_highlight: .classicLight4,
         
         // Settings
-        .settings_tabBackground: .classicLight6,
+        .settings_tabBackground: .classicLight5,
         .settings_tabHighlight: .classicLight3,
         
         // AppearanceButton

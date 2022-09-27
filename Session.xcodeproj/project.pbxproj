@@ -148,7 +148,6 @@
 		7BAF54D327ACCF01003D12F8 /* ShareAppExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54D127ACCF01003D12F8 /* ShareAppExtensionContext.swift */; };
 		7BAF54D427ACCF01003D12F8 /* SAEScreenLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54D227ACCF01003D12F8 /* SAEScreenLockViewController.swift */; };
 		7BAF54D827ACD0E3003D12F8 /* ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54D527ACD0E2003D12F8 /* ReusableView.swift */; };
-		7BAF54DC27ACD12B003D12F8 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54DB27ACD12B003D12F8 /* UIColor+Extensions.swift */; };
 		7BB92B3F28C825FD0082762F /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB92B3E28C825FD0082762F /* NewConversationViewModel.swift */; };
 		7BBBDC44286EAD2D00747E59 /* TappableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBBDC43286EAD2D00747E59 /* TappableLabel.swift */; };
 		7BBBDC462875600700747E59 /* DocumentTitleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBBDC452875600700747E59 /* DocumentTitleViewController.swift */; };
@@ -304,14 +303,10 @@
 		C32C6018256E07F9003C73A2 /* NSUserDefaults+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FDB51255A580D00E217F9 /* NSUserDefaults+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33100092558FF6D00070591 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C31D1DDC25217014005D4DA8 /* UserCell.swift */; };
 		C33100282559000A00070591 /* UIView+Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = C33100272559000A00070591 /* UIView+Rendering.swift */; };
-		C3310033255900A400070591 /* Notification+AppMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3310032255900A400070591 /* Notification+AppMode.swift */; };
 		C331FF1F2558F9D300070591 /* SessionUIKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C331FF1D2558F9D300070591 /* SessionUIKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C331FF222558F9D300070591 /* SessionUIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C331FF1B2558F9D300070591 /* SessionUIKit.framework */; };
 		C331FF232558F9D300070591 /* SessionUIKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C331FF1B2558F9D300070591 /* SessionUIKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C331FF962558FA6B00070591 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB829F238F322400BA5194 /* Colors.swift */; };
 		C331FF972558FA6B00070591 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82BD2394D4CE00BA5194 /* Fonts.swift */; };
-		C331FF982558FA6B00070591 /* AppMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C9689023FA1401005F64E0 /* AppMode.swift */; };
-		C331FF992558FA6B00070591 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C39DD28724F3318C008590FC /* Colors.xcassets */; };
 		C331FF9A2558FA6B00070591 /* Values.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82A1238F356100BA5194 /* Values.swift */; };
 		C331FFB82558FA8D00070591 /* DeviceUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8544E3023D16CA500299F14 /* DeviceUtilities.swift */; };
 		C331FFB92558FA8D00070591 /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */; };
@@ -324,7 +319,6 @@
 		C331FFF32558FF0300070591 /* PathStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B879D44A247E1D9200DB3608 /* PathStatusView.swift */; };
 		C331FFF42558FF0300070591 /* PNOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C353F8F8244809150011121A /* PNOptionView.swift */; };
 		C331FFFE2558FF3B00070591 /* FullConversationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8BB82AA238F669C00BA5194 /* FullConversationCell.swift */; };
-		C33FD4E9255A149100E217F9 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C39DD28724F3318C008590FC /* Colors.xcassets */; };
 		C33FD9AF255A548A00E217F9 /* SignalUtilitiesKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C33FD9AD255A548A00E217F9 /* SignalUtilitiesKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C33FD9B3255A548A00E217F9 /* SignalUtilitiesKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C33FD9AB255A548A00E217F9 /* SignalUtilitiesKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C33FD9C2255A54EF00E217F9 /* SessionMessagingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A6F025539DE700C340D1 /* SessionMessagingKit.framework */; };
@@ -432,14 +426,10 @@
 		C38EF3C5255B6DE7007E1867 /* OWSViewController+ImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3B5255B6DE6007E1867 /* OWSViewController+ImageEditor.swift */; };
 		C38EF3C6255B6DE7007E1867 /* ImageEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3B6255B6DE6007E1867 /* ImageEditorModel.swift */; };
 		C38EF3C7255B6DE7007E1867 /* ImageEditorCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3B7255B6DE6007E1867 /* ImageEditorCanvasView.swift */; };
-		C38EF3F5255B6DF7007E1867 /* OWSTextField.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF3D7255B6DF0007E1867 /* OWSTextField.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		C38EF3F6255B6DF7007E1867 /* OWSTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF3D8255B6DF0007E1867 /* OWSTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF3F7255B6DF7007E1867 /* OWSNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3D9255B6DF1007E1867 /* OWSNavigationBar.swift */; };
 		C38EF3F9255B6DF7007E1867 /* OWSLayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3DB255B6DF1007E1867 /* OWSLayerView.swift */; };
 		C38EF3FA255B6DF7007E1867 /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3DC255B6DF1007E1867 /* DirectionalPanGestureRecognizer.swift */; };
 		C38EF3FB255B6DF7007E1867 /* UIAlertController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3DD255B6DF1007E1867 /* UIAlertController+OWS.swift */; };
-		C38EF3FD255B6DF7007E1867 /* OWSTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3DF255B6DF2007E1867 /* OWSTextView.m */; };
-		C38EF3FE255B6DF7007E1867 /* OWSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E0255B6DF3007E1867 /* OWSTextField.m */; };
 		C38EF3FF255B6DF7007E1867 /* TappableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E1255B6DF3007E1867 /* TappableView.swift */; };
 		C38EF400255B6DF7007E1867 /* GalleryRailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E2255B6DF3007E1867 /* GalleryRailView.swift */; };
 		C38EF401255B6DF7007E1867 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3E3255B6DF4007E1867 /* VideoPlayerView.swift */; };
@@ -498,7 +488,6 @@
 		C3CA3ABE255CDB0D00F4C6D4 /* portuguese.txt in Resources */ = {isa = PBXBuildFile; fileRef = C3CA3ABD255CDB0D00F4C6D4 /* portuguese.txt */; };
 		C3CA3AC8255CDB2900F4C6D4 /* spanish.txt in Resources */ = {isa = PBXBuildFile; fileRef = C3CA3AC7255CDB2900F4C6D4 /* spanish.txt */; };
 		C3D0972B2510499C00F6E3E4 /* BackgroundPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D0972A2510499C00F6E3E4 /* BackgroundPoller.swift */; };
-		C3D90A1125773888002C9DF5 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C39DD28724F3318C008590FC /* Colors.xcassets */; };
 		C3D90A5C25773A25002C9DF5 /* SessionUtilitiesKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2A679255388CC00C340D1 /* SessionUtilitiesKit.framework */; };
 		C3D9E35525675EE10040E4F3 /* MIMETypeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDB41255A580C00E217F9 /* MIMETypeUtil.m */; };
 		C3D9E35E25675F640040E4F3 /* OWSFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = C33FDA8E255A57FD00E217F9 /* OWSFileSystem.m */; };
@@ -708,6 +697,8 @@
 		FD71162028D97ABC00B47552 /* UIImage+Tinting.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71161F28D97ABC00B47552 /* UIImage+Tinting.swift */; };
 		FD71162228D983ED00B47552 /* QRCodeScanningViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71162128D983ED00B47552 /* QRCodeScanningViewController.swift */; };
 		FD71162A28DA83DF00B47552 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3EE255B6DF6007E1867 /* GradientView.swift */; };
+		FD71162C28E1451400B47552 /* Position.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71162B28E1451400B47552 /* Position.swift */; };
+		FD71162E28E168C700B47552 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71162D28E168C700B47552 /* SettingsViewModel.swift */; };
 		FD7162DB281B6C440060647B /* TypedTableAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7162DA281B6C440060647B /* TypedTableAlias.swift */; };
 		FD716E6428502DDD00C96BF4 /* CallManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD716E6328502DDD00C96BF4 /* CallManagerProtocol.swift */; };
 		FD716E6628502EE200C96BF4 /* CurrentCallProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD716E6528502EE200C96BF4 /* CurrentCallProtocol.swift */; };
@@ -1212,7 +1203,6 @@
 		7BAF54D127ACCF01003D12F8 /* ShareAppExtensionContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShareAppExtensionContext.swift; sourceTree = "<group>"; };
 		7BAF54D227ACCF01003D12F8 /* SAEScreenLockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAEScreenLockViewController.swift; sourceTree = "<group>"; };
 		7BAF54D527ACD0E2003D12F8 /* ReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReusableView.swift; sourceTree = "<group>"; };
-		7BAF54DB27ACD12B003D12F8 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 		7BB92B3E28C825FD0082762F /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewModel.swift; sourceTree = "<group>"; };
 		7BBBDC43286EAD2D00747E59 /* TappableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableLabel.swift; sourceTree = "<group>"; };
 		7BBBDC452875600700747E59 /* DocumentTitleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTitleViewController.swift; sourceTree = "<group>"; };
@@ -1313,7 +1303,6 @@
 		B8BAC75B2695645400EA1759 /* hr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = hr; path = hr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8BAC75C2695648500EA1759 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		B8BAC75D2695649000EA1759 /* th */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/Localizable.strings; sourceTree = "<group>"; };
-		B8BB829F238F322400BA5194 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		B8BB82A1238F356100BA5194 /* Values.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Values.swift; sourceTree = "<group>"; };
 		B8BB82A4238F627000BA5194 /* HomeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeVC.swift; sourceTree = "<group>"; };
 		B8BB82AA238F669C00BA5194 /* FullConversationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullConversationCell.swift; sourceTree = "<group>"; };
@@ -1324,7 +1313,6 @@
 		B8BC00BF257D90E30032E807 /* General.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = General.swift; sourceTree = "<group>"; };
 		B8BF43B926CC95FB007828D1 /* WebRTC+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebRTC+Utilities.swift"; sourceTree = "<group>"; };
 		B8C2B2C72563685C00551B4D /* CircleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleView.swift; sourceTree = "<group>"; };
-		B8C9689023FA1401005F64E0 /* AppMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppMode.swift; sourceTree = "<group>"; };
 		B8CCF6342396005F0091D419 /* SpaceMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SpaceMono-Regular.ttf"; sourceTree = "<group>"; };
 		B8CCF63623961D6D0091D419 /* NewDMVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewDMVC.swift; sourceTree = "<group>"; };
 		B8CCF638239721E20091D419 /* TabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBar.swift; sourceTree = "<group>"; };
@@ -1368,7 +1356,6 @@
 		C328255125CA64470062D0A7 /* ContextMenuVC+ActionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContextMenuVC+ActionView.swift"; sourceTree = "<group>"; };
 		C32C5A87256DBCF9003C73A2 /* MessageReceiver+ClosedGroups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageReceiver+ClosedGroups.swift"; sourceTree = "<group>"; };
 		C33100272559000A00070591 /* UIView+Rendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Rendering.swift"; sourceTree = "<group>"; };
-		C3310032255900A400070591 /* Notification+AppMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+AppMode.swift"; sourceTree = "<group>"; };
 		C331FF1B2558F9D300070591 /* SessionUIKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SessionUIKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C331FF1D2558F9D300070591 /* SessionUIKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionUIKit.h; sourceTree = "<group>"; };
 		C331FF1E2558F9D300070591 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1530,14 +1517,10 @@
 		C38EF3B5255B6DE6007E1867 /* OWSViewController+ImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "OWSViewController+ImageEditor.swift"; path = "SignalUtilitiesKit/Media Viewing & Editing/OWSViewController+ImageEditor.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3B6255B6DE6007E1867 /* ImageEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorModel.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/Image Editing/ImageEditorModel.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3B7255B6DE6007E1867 /* ImageEditorCanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorCanvasView.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/Image Editing/ImageEditorCanvasView.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF3D7255B6DF0007E1867 /* OWSTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSTextField.h; path = "SignalUtilitiesKit/Shared Views/OWSTextField.h"; sourceTree = SOURCE_ROOT; };
-		C38EF3D8255B6DF0007E1867 /* OWSTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSTextView.h; path = "SignalUtilitiesKit/Shared Views/OWSTextView.h"; sourceTree = SOURCE_ROOT; };
 		C38EF3D9255B6DF1007E1867 /* OWSNavigationBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSNavigationBar.swift; path = "SignalUtilitiesKit/Shared Views/OWSNavigationBar.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3DB255B6DF1007E1867 /* OWSLayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSLayerView.swift; path = "SignalUtilitiesKit/Shared Views/OWSLayerView.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3DC255B6DF1007E1867 /* DirectionalPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DirectionalPanGestureRecognizer.swift; path = SignalUtilitiesKit/Utilities/DirectionalPanGestureRecognizer.swift; sourceTree = SOURCE_ROOT; };
 		C38EF3DD255B6DF1007E1867 /* UIAlertController+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIAlertController+OWS.swift"; path = "SignalUtilitiesKit/Utilities/UIAlertController+OWS.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF3DF255B6DF2007E1867 /* OWSTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSTextView.m; path = "SignalUtilitiesKit/Shared Views/OWSTextView.m"; sourceTree = SOURCE_ROOT; };
-		C38EF3E0255B6DF3007E1867 /* OWSTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSTextField.m; path = "SignalUtilitiesKit/Shared Views/OWSTextField.m"; sourceTree = SOURCE_ROOT; };
 		C38EF3E1255B6DF3007E1867 /* TappableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TappableView.swift; path = "SignalUtilitiesKit/Shared Views/TappableView.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3E2255B6DF3007E1867 /* GalleryRailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GalleryRailView.swift; path = "SignalUtilitiesKit/Shared Views/GalleryRailView.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3E3255B6DF4007E1867 /* VideoPlayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoPlayerView.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/VideoPlayerView.swift"; sourceTree = SOURCE_ROOT; };
@@ -1551,7 +1534,6 @@
 		C396469D2509D3F400B0B9F5 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		C396469E2509D40400B0B9F5 /* vi-VN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "vi-VN"; path = "vi-VN.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		C396469F2509D41100B0B9F5 /* id-ID */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "id-ID"; path = "id-ID.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		C39DD28724F3318C008590FC /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		C3A01E02261D24C400290BEB /* public-loki-foundation.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = "public-loki-foundation.der"; sourceTree = "<group>"; };
 		C3A01E03261D24C400290BEB /* storage-seed-1.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = "storage-seed-1.der"; sourceTree = "<group>"; };
 		C3A01E04261D24C400290BEB /* storage-seed-3.der */ = {isa = PBXFileReference; lastKnownFileType = file; path = "storage-seed-3.der"; sourceTree = "<group>"; };
@@ -1794,6 +1776,8 @@
 		FD71161D28D9772700B47552 /* UIViewController+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+OWS.swift"; sourceTree = "<group>"; };
 		FD71161F28D97ABC00B47552 /* UIImage+Tinting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Tinting.swift"; sourceTree = "<group>"; };
 		FD71162128D983ED00B47552 /* QRCodeScanningViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScanningViewController.swift; sourceTree = "<group>"; };
+		FD71162B28E1451400B47552 /* Position.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Position.swift; sourceTree = "<group>"; };
+		FD71162D28E168C700B47552 /* SettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		FD7162DA281B6C440060647B /* TypedTableAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedTableAlias.swift; sourceTree = "<group>"; };
 		FD716E6328502DDD00C96BF4 /* CallManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManagerProtocol.swift; sourceTree = "<group>"; };
 		FD716E6528502EE200C96BF4 /* CurrentCallProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCallProtocol.swift; sourceTree = "<group>"; };
@@ -2799,11 +2783,7 @@
 			isa = PBXGroup;
 			children = (
 				FD37E9C428A1C701003AE748 /* Themes */,
-				B8C9689023FA1401005F64E0 /* AppMode.swift */,
 				FD37E9C228A1C6F3003AE748 /* ThemeManager.swift */,
-				C3310032255900A400070591 /* Notification+AppMode.swift */,
-				B8BB829F238F322400BA5194 /* Colors.swift */,
-				C39DD28724F3318C008590FC /* Colors.xcassets */,
 				B8BB82BD2394D4CE00BA5194 /* Fonts.swift */,
 				B8BB82A1238F356100BA5194 /* Values.swift */,
 			);
@@ -2818,6 +2798,7 @@
 				B885D5F52334A32100EE0D8E /* UIView+Constraints.swift */,
 				C33100272559000A00070591 /* UIView+Rendering.swift */,
 				FD71161F28D97ABC00B47552 /* UIImage+Tinting.swift */,
+				FD71162B28E1451400B47552 /* Position.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2911,6 +2892,7 @@
 				B886B4A62398B23E00211ABE /* QRCodeVC.swift */,
 				FD37EA0828AA2D27003AE748 /* SettingsTableViewModel.swift */,
 				FD37EA0628AA2CCA003AE748 /* SettingsTableViewController.swift */,
+				FD71162D28E168C700B47552 /* SettingsViewModel.swift */,
 				FD52090428B4915F006098F6 /* PrivacySettingsViewModel.swift */,
 				FD37EA0428AA00C1003AE748 /* NotificationSettingsViewModel.swift */,
 				FD37EA1828AC5CCA003AE748 /* NotificationSoundViewModel.swift */,
@@ -3107,10 +3089,6 @@
 				C38EF3E7255B6DF5007E1867 /* OWSButton.swift */,
 				C38EF3DB255B6DF1007E1867 /* OWSLayerView.swift */,
 				C38EF3D9255B6DF1007E1867 /* OWSNavigationBar.swift */,
-				C38EF3D7255B6DF0007E1867 /* OWSTextField.h */,
-				C38EF3E0255B6DF3007E1867 /* OWSTextField.m */,
-				C38EF3D8255B6DF0007E1867 /* OWSTextView.h */,
-				C38EF3DF255B6DF2007E1867 /* OWSTextView.m */,
 				C38EF3E9255B6DF6007E1867 /* Toast.swift */,
 				C38EF3E2255B6DF3007E1867 /* GalleryRailView.swift */,
 				C38EF3ED255B6DF6007E1867 /* TappableStackView.swift */,
@@ -3316,7 +3294,6 @@
 			children = (
 				FD848B9B284435D7000E298B /* AppSetup.swift */,
 				FDCDB8DD2810F73B00352A0C /* Differentiable+Utilities.swift */,
-				7BAF54DB27ACD12B003D12F8 /* UIColor+Extensions.swift */,
 				C38EF3DC255B6DF1007E1867 /* DirectionalPanGestureRecognizer.swift */,
 				C38EF240255B6D67007E1867 /* UIView+OWS.swift */,
 				FD71161D28D9772700B47552 /* UIViewController+OWS.swift */,
@@ -4172,14 +4149,12 @@
 				C33FDDD0255A582000E217F9 /* FunctionalUtil.h in Headers */,
 				C33FDD5B255A582000E217F9 /* OWSOperation.h in Headers */,
 				C33FDD7C255A582000E217F9 /* SSKAsserts.h in Headers */,
-				C38EF3F6255B6DF7007E1867 /* OWSTextView.h in Headers */,
 				C38EF24C255B6D67007E1867 /* NSAttributedString+OWS.h in Headers */,
 				C38EF32B255B6DBF007E1867 /* OWSFormat.h in Headers */,
 				C33FDDCC255A582000E217F9 /* TSConstants.h in Headers */,
 				C33FDDBD255A582000E217F9 /* ByteParser.h in Headers */,
 				C38EF35D255B6DCC007E1867 /* OWSNavigationController.h in Headers */,
 				C38EF249255B6D67007E1867 /* UIColor+OWS.h in Headers */,
-				C38EF3F5255B6DF7007E1867 /* OWSTextField.h in Headers */,
 				C33FDDB3255A582000E217F9 /* OWSError.h in Headers */,
 				C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */,
 				C38EF246255B6D67007E1867 /* UIFont+OWS.h in Headers */,
@@ -4633,7 +4608,6 @@
 				347850551FD749C0007B8332 /* Localizable.strings in Resources */,
 				B8D07406265C683A00F77E07 /* ElegantIcons.ttf in Resources */,
 				3478504C1FD7496D007B8332 /* Images.xcassets in Resources */,
-				C3D90A1125773888002C9DF5 /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4649,7 +4623,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C331FF992558FA6B00070591 /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4712,7 +4685,6 @@
 				C3A01E06261D24C400290BEB /* storage-seed-1.der in Resources */,
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
-				C33FD4E9255A149100E217F9 /* Colors.xcassets in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
@@ -5141,10 +5113,9 @@
 				FD37EA0128A60473003AE748 /* UIKit+Theme.swift in Sources */,
 				FD37E9CF28A1EB1B003AE748 /* Theme.swift in Sources */,
 				C331FFB92558FA8D00070591 /* UIView+Constraints.swift in Sources */,
-				C331FF962558FA6B00070591 /* Colors.swift in Sources */,
 				FD37E9F628A5F106003AE748 /* Configuration.swift in Sources */,
 				C331FFE02558FB0000070591 /* SearchBar.swift in Sources */,
-				C331FF982558FA6B00070591 /* AppMode.swift in Sources */,
+				FD71162C28E1451400B47552 /* Position.swift in Sources */,
 				FD52090328B4680F006098F6 /* RadioButton.swift in Sources */,
 				C331FFE82558FB0000070591 /* TextView.swift in Sources */,
 				FD71162028D97ABC00B47552 /* UIImage+Tinting.swift in Sources */,
@@ -5155,7 +5126,6 @@
 				C331FF9A2558FA6B00070591 /* Values.swift in Sources */,
 				FD37E9C628A1D4EC003AE748 /* Theme+ClassicDark.swift in Sources */,
 				C331FFE42558FB0000070591 /* OutlineButton.swift in Sources */,
-				C3310033255900A400070591 /* Notification+AppMode.swift in Sources */,
 				C331FFE92558FB0000070591 /* Separator.swift in Sources */,
 				C33100282559000A00070591 /* UIView+Rendering.swift in Sources */,
 				FD37E9CA28A1E4BD003AE748 /* Theme+ClassicLight.swift in Sources */,
@@ -5166,7 +5136,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C38EF3FD255B6DF7007E1867 /* OWSTextView.m in Sources */,
 				C38EF3C6255B6DE7007E1867 /* ImageEditorModel.swift in Sources */,
 				C38EF3C3255B6DE7007E1867 /* ImageEditorTextItem.swift in Sources */,
 				C33FDC7D255A582000E217F9 /* OWSDispatch.m in Sources */,
@@ -5210,7 +5179,6 @@
 				C38EF3BA255B6DE7007E1867 /* ImageEditorItem.swift in Sources */,
 				C38EF3F7255B6DF7007E1867 /* OWSNavigationBar.swift in Sources */,
 				C33FDD3A255A582000E217F9 /* Notification+Loki.swift in Sources */,
-				7BAF54DC27ACD12B003D12F8 /* UIColor+Extensions.swift in Sources */,
 				C38EF370255B6DCC007E1867 /* OWSNavigationController.m in Sources */,
 				C38EF24E255B6D67007E1867 /* Collection+OWS.swift in Sources */,
 				C33FDCFA255A582000E217F9 /* SignalIOSProto.swift in Sources */,
@@ -5229,7 +5197,6 @@
 				FD52090B28B59BB4006098F6 /* ScreenLockViewController.swift in Sources */,
 				C38EF401255B6DF7007E1867 /* VideoPlayerView.swift in Sources */,
 				B8856D60256F129B001CE70E /* OWSAlerts.swift in Sources */,
-				C38EF3FE255B6DF7007E1867 /* OWSTextField.m in Sources */,
 				C38EF3BD255B6DE7007E1867 /* ImageEditorTransform.swift in Sources */,
 				C38EF24F255B6D67007E1867 /* UIColor+OWS.m in Sources */,
 				C33FDC9A255A582000E217F9 /* ByteParser.m in Sources */,
@@ -5774,6 +5741,7 @@
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
 				C33100092558FF6D00070591 /* UserCell.swift in Sources */,
 				B8269D2925C7A4B400488AB4 /* InputView.swift in Sources */,
+				FD71162E28E168C700B47552 /* SettingsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

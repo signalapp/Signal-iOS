@@ -63,20 +63,33 @@ class SettingHeaderView: UITableViewHeaderFooterView {
     
     // MARK: - Content
     
-    public func update(with title: String?, hasSeparator: Bool) {
+    public func update(
+        style: SettingsCell.Style = .rounded,
+        title: String?,
+        hasSeparator: Bool
+    ) {
         let titleIsEmpty: Bool = (title ?? "").isEmpty
+        let edgePadding: CGFloat = {
+            switch style {
+                case .rounded:
+                    // Align to the start of the text in the cell
+                    return (Values.largeSpacing + Values.mediumSpacing)
+                
+                case .edgeToEdge: return Values.largeSpacing
+            }
+        }()
         
         titleLabel.text = title
         titleLabel.isHidden = titleIsEmpty
         stackView.layoutMargins = UIEdgeInsets(
             top: (titleIsEmpty ? Values.verySmallSpacing : Values.mediumSpacing),
-            left: Values.largeSpacing,
+            left: edgePadding,
             bottom: (titleIsEmpty ? Values.verySmallSpacing : Values.mediumSpacing),
-            right: Values.largeSpacing
+            right: edgePadding
         )
         emptyHeightConstraint.isActive = titleIsEmpty
         filledHeightConstraint.isActive = !titleIsEmpty
-        separator.isHidden = !hasSeparator
+        separator.isHidden = (style == .rounded || !hasSeparator)
         
         self.layoutIfNeeded()
     }

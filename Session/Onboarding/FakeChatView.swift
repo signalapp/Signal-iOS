@@ -68,8 +68,8 @@ final class FakeChatView: UIView {
         bubbleView.set(.width, to: FakeChatView.bubbleWidth)
         bubbleView.themeShadowColor = .black
         bubbleView.layer.cornerRadius = FakeChatView.bubbleCornerRadius
-        bubbleView.layer.shadowRadius = isLightMode ? 4 : 8
-        bubbleView.layer.shadowOpacity = isLightMode ? 0.16 : 0.24
+        bubbleView.layer.shadowRadius = (ThemeManager.currentTheme.interfaceStyle == .light ? 4 : 8)
+        bubbleView.layer.shadowOpacity = (ThemeManager.currentTheme.interfaceStyle == .light ? 0.16 : 0.24)
         bubbleView.layer.shadowOffset = CGSize.zero
         
         bubbleView.themeBackgroundColor = (wasSentByCurrentUser ?

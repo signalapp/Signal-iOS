@@ -237,7 +237,6 @@ public struct ProfileManager {
         profileName: String,
         image: UIImage?,
         imageFilePath: String?,
-        requiredSync: Bool,
         success: ((Database, Profile) throws -> ())? = nil,
         failure: ((ProfileManagerError) -> ())? = nil
     ) {
@@ -296,7 +295,7 @@ public struct ProfileManager {
                     failure?(profileManagerError)
                 }
                 return
-            }
+            } 
             
             guard let data: Data = avatarImageData else {
                 // If we have no image then we need to make sure to remove it from the profile

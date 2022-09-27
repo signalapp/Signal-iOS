@@ -38,18 +38,14 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     private lazy var tableView: UITableView = {
         let result: UITableView = UITableView()
         result.translatesAutoresizingMaskIntoConstraints = false
+        result.clipsToBounds = true
         result.separatorStyle = .none
         result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
-        result.contentInset = UIEdgeInsets(
-            top: 0,
-            left: 0,
-            bottom: Values.footerGradientHeight(window: UIApplication.shared.keyWindow),
-            right: 0
-        )
         result.register(view: BlockedContactCell.self)
         result.dataSource = self
         result.delegate = self
+        result.layer.cornerRadius = SettingsCell.cornerRadius
         
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
@@ -75,11 +71,11 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     private lazy var fadeView: GradientView = {
         let result: GradientView = GradientView()
         result.themeBackgroundGradient = [
-            .value(.backgroundSecondary, alpha: 0), // Want this to take up 20% (~25pt)
-            .backgroundSecondary,
-            .backgroundSecondary,
-            .backgroundSecondary,
-            .backgroundSecondary
+            .value(.backgroundPrimary, alpha: 0), // Want this to take up 20% (~25pt)
+            .backgroundPrimary,
+            .backgroundPrimary,
+            .backgroundPrimary,
+            .backgroundPrimary
         ]
         result.set(.height, to: Values.footerGradientHeight(window: UIApplication.shared.keyWindow))
         
@@ -99,6 +95,8 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.themeBackgroundColor = .backgroundPrimary
 
         ViewControllerUtilities.setUpDefaultSessionStyle(
             for: self,
@@ -162,9 +160,9 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     private func setupLayout() {
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.smallSpacing),
-            tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.largeSpacing),
+            tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.largeSpacing),
+            tableView.bottomAnchor.constraint(equalTo: unblockButton.topAnchor, constant: -Values.largeSpacing),
 
             emptyStateLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.massiveSpacing),
             emptyStateLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.mediumSpacing),

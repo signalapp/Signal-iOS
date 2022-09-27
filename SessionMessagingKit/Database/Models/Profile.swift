@@ -246,7 +246,7 @@ public extension Profile {
     private static func defaultFor(_ id: String) -> Profile {
         return Profile(
             id: id,
-            name: id,
+            name: "",
             nickname: nil,
             profilePictureUrl: nil,
             profilePictureFileName: nil,

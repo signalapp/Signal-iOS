@@ -72,25 +72,7 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NoNav, NotificationS
                                     SyncPushTokensJob.run(uploadOnlyIfStale: false)
                                 }
                             ),
-                            extraActionTitle: { theme, primaryColor in
-                                NSMutableAttributedString()
-                                    .appending(
-                                        NSAttributedString(
-                                            string: "NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION_1".localized(),
-                                            attributes: [
-                                                .foregroundColor: primaryColor.color
-                                            ]
-                                        )
-                                    )
-                                    .appending(
-                                        NSAttributedString(
-                                            string: "NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION_2".localized(),
-                                            attributes: [
-                                                .foregroundColor: (theme.color(for: .textPrimary) ?? .white)
-                                            ]
-                                        )
-                                    )
-                            },
+                            extraActionTitle: "NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION".localized(),
                             onExtraAction: { UIApplication.shared.openSystemSettings() }
                         )
                     ]

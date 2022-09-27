@@ -87,7 +87,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
     }
     
     private func setUpViewHierarchy() {
-        buttonStackViewContainer.backgroundColor = Colors.cellBackground
+        buttonStackViewContainer.themeBackgroundColor = .backgroundSecondary
         
         let headerView = UIView(
             frame: CGRect(
@@ -249,7 +249,7 @@ private final class NewConversationButton: UIView {
         
         let iconImageView = UIImageView(image: self.icon)
         iconImageView.contentMode = .center
-        iconImageView.tintColor = Colors.text
+        iconImageView.themeTintColor = .textPrimary
         iconImageView.set(.width, to: NewConversationButton.iconSize)
         
         let titleLable: UILabel = UILabel()

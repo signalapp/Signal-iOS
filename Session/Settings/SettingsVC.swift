@@ -382,7 +382,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
                 profileName: (name ?? ""),
                 image: profilePicture,
                 imageFilePath: imageFilePath,
-                requiredSync: true,
                 success: { db, updatedProfile in
                     if displayNameToBeUploaded != nil {
                         userDefaults[.lastDisplayNameUpdate] = Date()
@@ -429,29 +428,6 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     
     @objc private func close() {
         dismiss(animated: true, completion: nil)
-    }
-
-    @objc private func switchAppMode() {
-        let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-        let systemModeAction = UIAlertAction.init(title: NSLocalizedString("system_mode_theme", comment: ""), style: .default) { _ in
-            AppModeManager.shared.setAppModeToSystemDefault()
-        }
-        alertVC.addAction(systemModeAction)
-        
-        let darkModeAction = UIAlertAction.init(title: NSLocalizedString("dark_mode_theme", comment: ""), style: .default) { _ in
-            AppModeManager.shared.setCurrentAppMode(to: .dark)
-        }
-        alertVC.addAction(darkModeAction)
-        
-        let lightModeAction = UIAlertAction.init(title: NSLocalizedString("light_mode_theme", comment: ""), style: .default) { _ in
-            AppModeManager.shared.setCurrentAppMode(to: .light)
-        }
-        alertVC.addAction(lightModeAction)
-        
-        let cancelAction = UIAlertAction.init(title: NSLocalizedString("TXT_CANCEL_TITLE", comment: ""), style: .cancel) {_ in }
-        alertVC.addAction(cancelAction)
-        
-        self.presentAlert(alertVC)
     }
 
     @objc private func showQRCode() {

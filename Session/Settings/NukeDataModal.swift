@@ -7,6 +7,19 @@ import SessionMessagingKit
 import SignalUtilitiesKit
 
 final class NukeDataModal: Modal {
+    // MARK: - Initialization
+    
+    override init(afterClosed: (() -> ())? = nil) {
+        super.init(afterClosed: afterClosed)
+        
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Components
     
     private lazy var titleLabel: UILabel = {

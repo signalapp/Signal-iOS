@@ -14,6 +14,19 @@ final class SeedModal: Modal {
         return Mnemonic.encode(hexEncodedString: Identity.fetchUserPrivateKey()!.toHexString())
     }()
     
+    // MARK: - Initialization
+    
+    override init(afterClosed: (() -> ())? = nil) {
+        super.init(afterClosed: afterClosed)
+        
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Components
     
     private let titleLabel: UILabel = {

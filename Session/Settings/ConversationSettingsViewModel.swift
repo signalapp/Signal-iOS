@@ -80,7 +80,7 @@ class ConversationSettingsViewModel: SettingsTableViewModel<NoNav, ConversationS
                             title: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE".localized(),
                             action: .push(
                                 showChevron: false,
-                                textColor: .danger,
+                                tintColor: .danger,
                                 shouldHaveBackground: false
                             ) { BlockedContactsViewController() }
                         )

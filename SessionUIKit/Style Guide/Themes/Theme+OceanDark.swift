@@ -14,7 +14,7 @@ internal enum Theme_OceanDark: ThemeColors {
         .disabled: .disabledDark,
         .backgroundPrimary: .oceanDark2,
         .backgroundSecondary: .oceanDark1,
-        .textPrimary: .oceanDark6,
+        .textPrimary: .oceanDark7,
         .textSecondary: .oceanDark5,
         .borderSeparator: .oceanDark4,
         
@@ -32,27 +32,27 @@ internal enum Theme_OceanDark: ThemeColors {
         .messageBubble_outgoingBackground: .primary,
         .messageBubble_incomingBackground: .oceanDark4,
         .messageBubble_outgoingText: .oceanDark0,
-        .messageBubble_incomingText: .oceanDark6,
+        .messageBubble_incomingText: .oceanDark7,
         .messageBubble_overlay: .black_06,
 
         // MenuButton
         .menuButton_background: .primary,
-        .menuButton_icon: .oceanDark6,
+        .menuButton_icon: .oceanDark7,
         .menuButton_outerShadow: .primary,
-        .menuButton_innerShadow: .oceanDark6,
+        .menuButton_innerShadow: .oceanDark7,
         
         // RadioButton
         .radioButton_selectedBackground: .primary,
         .radioButton_unselectedBackground: .clear,
-        .radioButton_selectedBorder: .oceanDark6,
-        .radioButton_unselectedBorder: .oceanDark6,
+        .radioButton_selectedBorder: .oceanDark7,
+        .radioButton_unselectedBorder: .oceanDark7,
         
         // OutlineButton
         .outlineButton_text: .primary,
         .outlineButton_background: .clear,
-        .outlineButton_highlight: .oceanDark6.withAlphaComponent(0.3),
+        .outlineButton_highlight: .oceanDark7.withAlphaComponent(0.3),
         .outlineButton_border: .primary,
-        .outlineButton_filledText: .oceanDark6,
+        .outlineButton_filledText: .oceanDark7,
         .outlineButton_filledBackground: .oceanDark1,
         .outlineButton_filledHighlight: .oceanDark3,
         .outlineButton_destructiveText: .dangerDark,
@@ -74,7 +74,7 @@ internal enum Theme_OceanDark: ThemeColors {
         .appearance_buttonHighlight: .oceanDark4,
         
         // Alert
-        .alert_text: .oceanDark6,
+        .alert_text: .oceanDark7,
         .alert_background: .oceanDark3,
         .alert_buttonBackground: .oceanDark3,
         .alert_buttonHighlight: .oceanDark4,
@@ -97,7 +97,7 @@ internal enum Theme_OceanDark: ThemeColors {
         // ContextMenu
         .contextMenu_background: .oceanDark2,
         .contextMenu_highlight: .primary,
-        .contextMenu_text: .oceanDark6,
+        .contextMenu_text: .oceanDark7,
         .contextMenu_textHighlight: .oceanDark0,
         
         // Call

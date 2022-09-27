@@ -361,9 +361,11 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
                 .retainUntilComplete()
         }
 
-        ModalActivityIndicatorViewController.present(fromViewController: self,
-                                                     canCancel: false,
-                                                     backgroundBlock: backgroundBlock)
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            onAppear: backgroundBlock
+        )
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool {

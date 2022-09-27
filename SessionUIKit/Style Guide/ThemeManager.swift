@@ -290,8 +290,7 @@ public enum ThemeManager {
     internal static func set<T: AnyObject>(
         _ view: T,
         keyPath: ReferenceWritableKeyPath<T, UIColor?>,
-        to value: ThemeValue?,
-        for state: UIControl.State = .normal
+        to value: ThemeValue?
     ) {
         ThemeManager.uiRegistry.setObject(
             ThemeApplier(
@@ -309,11 +308,23 @@ public enum ThemeManager {
         )
     }
     
+    internal static func remove<T: AnyObject>(
+        _ view: T,
+        keyPath: ReferenceWritableKeyPath<T, UIColor?>
+    ) {
+        // Note: Need to explicitly remove (setting to 'nil' won't actually remove it)
+        guard let updatedApplier: ThemeApplier = ThemeManager.get(for: view)?.removing(allWith: keyPath) else {
+            ThemeManager.uiRegistry.removeObject(forKey: view)
+            return
+        }
+        
+        ThemeManager.uiRegistry.setObject(updatedApplier, forKey: view)
+    }
+    
     internal static func set<T: AnyObject>(
         _ view: T,
         keyPath: ReferenceWritableKeyPath<T, CGColor?>,
-        to value: ThemeValue?,
-        for state: UIControl.State = .normal
+        to value: ThemeValue?
     ) {
         ThemeManager.uiRegistry.setObject(
             ThemeApplier(
@@ -331,10 +342,20 @@ public enum ThemeManager {
         )
     }
     
+    internal static func remove<T: AnyObject>(
+        _ view: T,
+        keyPath: ReferenceWritableKeyPath<T, CGColor?>
+    ) {
+        ThemeManager.uiRegistry.setObject(
+            ThemeManager.get(for: view)?
+                .removing(allWith: keyPath),
+            forKey: view
+        )
+    }
+    
     internal static func set<T: AnyObject>(
         _ view: T,
-        to applier: ThemeApplier,
-        for state: UIControl.State = .normal
+        to applier: ThemeApplier?
     ) {
         ThemeManager.uiRegistry.setObject(applier, forKey: view)
     }
@@ -384,6 +405,25 @@ internal class ThemeApplier {
     }
     
     // MARK: - Functions
+    
+    public func removing(allWith info: AnyHashable) -> ThemeApplier? {
+        let remainingAppliers: [ThemeApplier] = [self]
+            .appending(contentsOf: self.otherAppliers)
+            .filter { applier in !applier.info.contains(info) }
+        
+        guard !remainingAppliers.isEmpty else { return nil }
+        guard remainingAppliers.count != ((self.otherAppliers ?? []).count + 1) else { return self }
+        
+        // Remove the 'otherAppliers' references on self
+        self.otherAppliers = nil
+        
+        // Attach the 'otherAppliers' to the new first remaining applier (just in case self
+        // was removed)
+        let firstApplier: ThemeApplier? = remainingAppliers.first
+        firstApplier?.otherAppliers = Array(remainingAppliers.suffix(from: 1))
+        
+        return firstApplier
+    }
     
     private func clearingOtherAppliers() -> ThemeApplier {
         self.otherAppliers = nil
