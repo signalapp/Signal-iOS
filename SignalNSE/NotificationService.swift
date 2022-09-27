@@ -208,12 +208,13 @@ class NotificationService: UNNotificationServiceExtension {
         }
 
         if SignalProxy.isEnabled {
-            if !SignalProxy.isEnabledAnReady {
-                Logger.info("Waiting for signal proxy to be ready for message fetch.")
+            if !SignalProxy.isEnabledAndReady {
+                Logger.info("Waiting for signal proxy to become ready for message fetch.")
                 NotificationCenter.default.observe(once: .isSignalProxyReadyDidChange)
                     .done { [weak self] _ in
                         self?.fetchAndProcessMessages(logger: logger)
                     }
+                SignalProxy.startRelayServer()
                 return
             }
 
@@ -277,6 +278,7 @@ class NotificationService: UNNotificationServiceExtension {
             return processingCompletePromise
         }.ensure(on: .global()) { [weak self] in
             logger.info("Message fetch completed.")
+            SignalProxy.stopRelayServer()
             environment.processingMessageCounter.decrementOrZero()
             self?.completeSilently(logger: logger)
         }.catch(on: .global()) { error in

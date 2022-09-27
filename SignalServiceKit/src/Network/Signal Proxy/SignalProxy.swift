@@ -17,7 +17,7 @@ public class SignalProxy: NSObject {
     public static var isEnabled: Bool { useProxy && host != nil }
 
     @objc
-    public static var isEnabledAnReady: Bool { isEnabled && relayServer.isReady }
+    public static var isEnabledAndReady: Bool { isEnabled && relayServer.isReady }
 
     public static var connectionProxyDictionary: [AnyHashable: Any]? { relayServer.connectionProxyDictionary }
 
@@ -125,6 +125,9 @@ public class SignalProxy: NSObject {
     }
 
     private class func ensureProxyState(restartIfNeeded: Bool = false) {
+        // The NSE manages the proxy relay itself
+        guard !CurrentAppContext().isNSE else { return }
+
         if isEnabled {
             if restartIfNeeded && relayServer.isStarted {
                 relayServer.restartIfNeeded(ignoreBackoff: true)
@@ -134,5 +137,17 @@ public class SignalProxy: NSObject {
         } else {
             relayServer.stop()
         }
+    }
+
+    public class func startRelayServer() {
+        guard isEnabled else { return }
+        Logger.info("Starting the proxy relay server...")
+        relayServer.start()
+    }
+
+    public class func stopRelayServer() {
+        guard isEnabled else { return }
+        Logger.info("Stopping the proxy relay server...")
+        relayServer.stop()
     }
 }
