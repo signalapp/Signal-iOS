@@ -635,10 +635,10 @@ public extension Interaction {
             timestampMs: timestampMs,
             receivedAtTimestampMs: receivedAtTimestampMs,
             wasRead: (wasRead || !Variant.standardIncomingDeleted.canBeUnread),
-            hasMention: hasMention,
+            hasMention: false,
             expiresInSeconds: expiresInSeconds,
             expiresStartedAtMs: expiresStartedAtMs,
-            linkPreviewUrl: linkPreviewUrl,
+            linkPreviewUrl: nil,
             openGroupServerMessageId: openGroupServerMessageId,
             openGroupWhisperMods: openGroupWhisperMods,
             openGroupWhisperTo: openGroupWhisperTo
