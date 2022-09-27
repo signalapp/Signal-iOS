@@ -299,12 +299,12 @@ extension StoriesViewController: UITableViewDelegate {
             // to page through unviewed contexts.
             let filterViewed = model.hasUnviewedMessages
             // If we tap on a non-hidden story, we only want the viewer to page through
-            // non-hidden contexts.
-            let filterHidden = !model.isHidden
+            // non-hidden contexts, and vice versa.
+            let startedFromHidden = model.isHidden
             let viewableContexts: [StoryContext] = dataSource.allStories
                 .lazy
                 .filter { !filterViewed || $0.hasUnviewedMessages }
-                .filter { !filterHidden || !$0.isHidden }
+                .filter { startedFromHidden == $0.isHidden }
                 .map(\.context)
 
             let vc = StoryPageViewController(context: model.context, viewableContexts: viewableContexts)
@@ -312,6 +312,33 @@ extension StoriesViewController: UITableViewDelegate {
             presentFullScreen(vc, animated: true)
         case .none:
             owsFailDebug("Unexpected section \(indexPath.section)")
+        }
+    }
+
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        switch Section(rawValue: indexPath.section) {
+        case .hiddenStories, .visibleStories:
+            return true
+        case .myStory, .none:
+            return false
+        }
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        switch Section(rawValue: indexPath.section) {
+        case .hiddenStories, .visibleStories:
+            guard
+                let model = model(for: indexPath),
+                let action = StoryContextMenuGenerator.hideTableRowContextualAction(
+                    for: model,
+                    from: self
+                )
+            else {
+                return nil
+            }
+            return .init(actions: [action])
+        case .myStory, .none:
+            return nil
         }
     }
 }

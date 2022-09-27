@@ -71,6 +71,84 @@ class StoryContextMenuGenerator: Dependencies {
             goToChatAction(thread: thread)
         ].compactMap({ $0 })
     }
+
+    public static func hideTableRowContextualAction(
+        for model: StoryViewModel,
+        from presentingController: UIViewController
+    ) -> UIContextualAction? {
+        let thread = Self.databaseStorage.read {
+            return model.context.thread(transaction: $0)
+        }
+        let shouldHide = !model.isHidden
+        let title: String
+        let image: UIImage?
+        if model.isHidden {
+            title = NSLocalizedString(
+                "STORIES_UNHIDE_STORY_ACTION_SHORT",
+                comment: "Short context menu action to unhide the selected story"
+            )
+            image = Theme.iconImage(.checkCircle24, isDarkThemeEnabled: true) // force dark theme
+        } else {
+            title = NSLocalizedString(
+                "STORIES_HIDE_STORY_ACTION_SHORT",
+                comment: "Short context menu action to hide the selected story"
+            )
+            image = Theme.iconImage(.hide24, isDarkThemeEnabled: true) // force dark theme
+        }
+
+        let action = UIContextualAction(
+            style: .normal,
+            title: title,
+            handler: { [weak presentingController] _, _, completion in
+                guard let presentingController = presentingController else {
+                    owsFailDebug("Presenting controller deallocated")
+                    completion(false)
+                    return
+                }
+                StoryContextMenuGenerator.showHidingActionSheetIfNeeded(
+                    for: model.latestMessage,
+                    in: thread,
+                    shouldHide: shouldHide,
+                    from: presentingController,
+                    completion: completion
+                )
+            }
+        )
+        action.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray45 : .ows_gray25
+        action.image = image
+        return action
+    }
+
+    public static func deleteTableRowContextualAction(
+        for message: StoryMessage,
+        thread: TSThread,
+        from presentingController: UIViewController
+    ) -> UIContextualAction? {
+        guard message.authorAddress.isLocalAddress else {
+            return nil
+        }
+        let action = UIContextualAction(
+            style: .destructive,
+            title: NSLocalizedString(
+                "STORIES_DELETE_STORY_ACTION",
+                comment: "Context menu action to delete the selected story"
+            ),
+            handler: { _, _, completion in
+                Self.tryToDelete(
+                    message,
+                    in: thread,
+                    from: presentingController,
+                    willDelete: { $0() },
+                    didDelete: { success in
+                        completion(success)
+                    }
+                )
+            }
+        )
+        action.backgroundColor = .ows_accentRed
+        action.image = Theme.iconImage(.trash24, isDarkThemeEnabled: true) // force dark theme so we get the filled icon.
+        return action
+    }
 }
 
 // MARK: - Hide Action
@@ -105,13 +183,13 @@ extension StoryContextMenuGenerator {
                 "STORIES_UNHIDE_STORY_ACTION",
                 comment: "Context menu action to unhide the selected story"
             )
-            image = Theme.iconImage(.checkCircle)
+            image = Theme.iconImage(.checkCircle24)
         } else {
             title = NSLocalizedString(
                 "STORIES_HIDE_STORY_ACTION",
                 comment: "Context menu action to hide the selected story"
             )
-            image = Theme.iconImage(.xCircle24)
+            image = Theme.iconImage(.hide24)
         }
         return .init(
             title: title,
@@ -129,9 +207,31 @@ extension StoryContextMenuGenerator {
         in thread: TSThread?,
         shouldHide: Bool
     ) {
+        guard let presentingController = presentingController else {
+            owsFailDebug("Presenting controller deallocated")
+            return
+        }
+        isDisplayingFollowup = true
+        Self.showHidingActionSheetIfNeeded(
+            for: message,
+            in: thread,
+            shouldHide: shouldHide,
+            from: presentingController,
+            completion: { [weak self] _ in
+                self?.isDisplayingFollowup = false
+            })
+    }
+
+    private static func showHidingActionSheetIfNeeded(
+        for message: StoryMessage,
+        in thread: TSThread?,
+        shouldHide: Bool,
+        from presentingController: UIViewController,
+        completion: @escaping (Bool) -> Void
+    ) {
         guard shouldHide else {
             // No need to show anything if unhiding, hide right away
-            setHideStateAndShowToast(for: message, in: thread, shouldHide: shouldHide)
+            setHideStateAndShowToast(for: message, in: thread, shouldHide: shouldHide, from: presentingController)
             return
         }
 
@@ -153,22 +253,26 @@ extension StoryContextMenuGenerator {
         actionSheet.addAction(ActionSheetAction(
             title: actionTitle,
             style: .default,
-            handler: { [weak self] _ in
-                self?.setHideStateAndShowToast(for: message, in: thread, shouldHide: shouldHide)
-                self?.isDisplayingFollowup = false
+            handler: { [weak presentingController] _ in
+                guard let presentingController = presentingController else {
+                    owsFailDebug("Presenting controller deallocated")
+                    completion(false)
+                    return
+                }
+                Self.setHideStateAndShowToast(for: message, in: thread, shouldHide: shouldHide, from: presentingController)
+                completion(true)
             }
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel
-        ) { [weak self] _ in
-            self?.isDisplayingFollowup = false
+        ) { _ in
+            completion(false)
         })
-        isDisplayingFollowup = true
-        presentingController?.presentActionSheet(actionSheet)
+        presentingController.presentActionSheet(actionSheet)
     }
 
-    private func createHidingActionSheetWithSneakyTransaction(context: StoryContext) -> ActionSheetController {
+    private static func createHidingActionSheetWithSneakyTransaction(context: StoryContext) -> ActionSheetController {
         return ActionSheetController(
             title: NSLocalizedString(
                 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE",
@@ -186,7 +290,7 @@ extension StoryContextMenuGenerator {
         )
     }
 
-    private func loadThreadDisplayNameWithSneakyTransaction(context: StoryContext) -> String? {
+    private static func loadThreadDisplayNameWithSneakyTransaction(context: StoryContext) -> String? {
         return Self.databaseStorage.read { transaction -> String? in
             switch context {
             case .groupId(let groupId):
@@ -214,10 +318,11 @@ extension StoryContextMenuGenerator {
 
     // MARK: Issuing hide changes
 
-    private func setHideStateAndShowToast(
+    private static func setHideStateAndShowToast(
         for message: StoryMessage,
         in thread: TSThread?,
-        shouldHide: Bool
+        shouldHide: Bool,
+        from presentingController: UIViewController
     ) {
         Self.databaseStorage.write { transaction in
             guard !message.authorAddress.isSystemStoryAddress else {
@@ -248,7 +353,7 @@ extension StoryContextMenuGenerator {
                 comment: "Toast shown when a story is successfuly unhidden"
             )
         }
-        presentingController?.presentToast(text: toastText)
+        presentingController.presentToast(text: toastText)
     }
 }
 
@@ -349,15 +454,38 @@ extension StoryContextMenuGenerator {
             ),
             image: Theme.iconImage(.trash24),
             attributes: .destructive,
-            handler: { [weak self] _ in
-                self?.tryToDelete(message, in: thread)
+            handler: { [weak self, weak presentingController] _ in
+                guard let presentingController = presentingController else {
+                    owsFailDebug("Unretained presenting controller")
+                    return
+                }
+                self?.isDisplayingFollowup = true
+                Self.tryToDelete(
+                    message,
+                    in: thread,
+                    from: presentingController,
+                    willDelete: { [weak self] completion in
+                        self?.isDisplayingFollowup = false
+                        if let delegate = self?.delegate {
+                            delegate.storyContextMenuWillDelete(completion)
+                        } else {
+                            completion()
+                        }
+                    },
+                    didDelete: { [weak self] _ in
+                        self?.isDisplayingFollowup = false
+                    }
+                )
             }
         )
     }
 
-    private func tryToDelete(
+    private static func tryToDelete(
         _ message: StoryMessage,
-        in thread: TSThread
+        in thread: TSThread,
+        from presentingController: UIViewController,
+        willDelete: @escaping(@escaping () -> Void) -> Void,
+        didDelete: @escaping (Bool) -> Void
     ) {
         let actionSheet = ActionSheetController(
             message: NSLocalizedString(
@@ -365,28 +493,21 @@ extension StoryContextMenuGenerator {
                 comment: "Title asking the user if they are sure they want to delete their story"
             )
         )
-        actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { [weak self] _ in
-            let performDelete = { [weak self] in
-                self?.isDisplayingFollowup = false
+        actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
+            willDelete {
                 Self.databaseStorage.write { transaction in
                     message.remotelyDelete(for: thread, transaction: transaction)
                 }
-            }
-
-            if let delegate = self?.delegate {
-                delegate.storyContextMenuWillDelete(performDelete)
-            } else {
-                performDelete()
+                didDelete(true)
             }
         }))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel
-        ) { [weak self] _ in
-            self?.isDisplayingFollowup = false
+        ) { _ in
+            didDelete(false)
         })
-        isDisplayingFollowup = true
-        presentingController?.presentActionSheet(actionSheet, animated: true)
+        presentingController.presentActionSheet(actionSheet, animated: true)
     }
 }
 
@@ -412,7 +533,7 @@ extension StoryContextMenuGenerator {
                 "STORIES_SAVE_STORY_ACTION",
                 comment: "Context menu action to save the selected story"
             ),
-            image: Theme.iconImage(.messageActionSave),
+            image: Theme.iconImage(.messageActionSave24),
             handler: { _ in attachment.save() }
         )
     }

@@ -153,6 +153,24 @@ extension MyStoriesViewController: UITableViewDelegate {
         vc.contextDataSource = self
         present(vc, animated: true)
     }
+
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard
+            let item = item(for: indexPath),
+            let action = StoryContextMenuGenerator.deleteTableRowContextualAction(
+                for: item.message,
+                thread: item.thread,
+                from: self
+            )
+        else {
+            return nil
+        }
+        return .init(actions: [action])
+    }
 }
 
 extension MyStoriesViewController: UITableViewDataSource {
@@ -461,7 +479,7 @@ class SentStoryCell: UITableViewCell {
         }
 
         saveButton.tintColor = Theme.primaryIconColor
-        saveButton.setImage(Theme.iconImage(.messageActionSave), for: .normal)
+        saveButton.setImage(Theme.iconImage(.messageActionSave20), for: .normal)
         saveButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
 
         if item.attachment.isSaveable {
@@ -473,7 +491,7 @@ class SentStoryCell: UITableViewCell {
         }
 
         contextButton.tintColor = Theme.primaryIconColor
-        contextButton.setImage(Theme.iconImage(.more24), for: .normal)
+        contextButton.setImage(Theme.iconImage(.more16), for: .normal)
         contextButton.setBackgroundImage(UIImage(color: Theme.secondaryBackgroundColor), for: .normal)
         contextButton.delegate = contextMenuButtonDelegate
         contextButton.indexPath = indexPath

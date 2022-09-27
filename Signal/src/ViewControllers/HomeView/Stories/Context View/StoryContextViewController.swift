@@ -753,6 +753,10 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             : transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
     }
 
+    func willHandleInteractivePanGesture(_ gestureRecognizer: UIPanGestureRecognizer) -> Bool {
+        return currentItemMediaView?.willHandlePanGesture(gestureRecognizer) == true
+    }
+
     @objc
     func handleLongPress() {
         switch pauseGestureRecognizer.state {
@@ -950,23 +954,26 @@ extension StoryContextViewController: StoryItemMediaViewDelegate {
         case .text(let textAttachment):
             attachment = .text(textAttachment)
         }
-        return .init(identifier: nil, actionProvider: { [weak self, weak contextMenuButton] _ in
-            guard
-                let self  = self,
-                let contextMenuButton = contextMenuButton
-            else {
-                return .init([])
+        return .init(
+            identifier: nil,
+            actionProvider: { [weak self, weak contextMenuButton] _ in
+                guard
+                    let self  = self,
+                    let contextMenuButton = contextMenuButton
+                else {
+                    return .init([])
+                }
+                return Self.databaseStorage.read {
+                    return ContextMenu(self.contextMenuGenerator.contextMenuActions(
+                        for: item.message,
+                        in: self.context.thread(transaction: $0),
+                        attachment: attachment,
+                        sourceView: contextMenuButton,
+                        transaction: $0
+                    ))
+                }
             }
-            return Self.databaseStorage.read {
-                return ContextMenu(self.contextMenuGenerator.contextMenuActions(
-                    for: item.message,
-                    in: self.context.thread(transaction: $0),
-                    attachment: attachment,
-                    sourceView: contextMenuButton,
-                    transaction: $0
-                ))
-            }
-        })
+        )
     }
 
     func storyItemMediaViewWantsToPlay(_ storyItemMediaView: StoryItemMediaView) {

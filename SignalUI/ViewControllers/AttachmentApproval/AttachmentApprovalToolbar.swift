@@ -400,7 +400,7 @@ private class MediaToolbar: UIView {
     let penToolButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-tool-pen"), backgroundStyle: .solid(buttonBackgroundColor))
     let cropToolButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-tool-crop"), backgroundStyle: .solid(buttonBackgroundColor))
     let mediaQualityButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-quality"), backgroundStyle: .solid(buttonBackgroundColor))
-    let saveMediaButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-save"), backgroundStyle: .solid(buttonBackgroundColor))
+    let saveMediaButton: UIButton = RoundMediaButton(image: #imageLiteral(resourceName: "save-outline-24"), backgroundStyle: .solid(buttonBackgroundColor))
     let sendButton: UIButton = {
         let button = RoundMediaButton(image: #imageLiteral(resourceName: "send-solid-24"), backgroundStyle: .solid(.ows_accentBlue))
         button.accessibilityLabel = MessageStrings.sendButton

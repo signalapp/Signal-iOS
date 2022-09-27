@@ -300,7 +300,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     // MARK: Bar Buttons
 
     lazy var shareBarButton: UIBarButtonItem = {
-        let image = #imageLiteral(resourceName: "share-ios-24")
+        let image = #imageLiteral(resourceName: "share-outline-24")
         let shareBarButton = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(didPressShare))
         shareBarButton.tintColor = Theme.darkThemePrimaryColor
         return shareBarButton

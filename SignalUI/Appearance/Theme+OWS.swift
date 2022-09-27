@@ -70,7 +70,8 @@ public enum ThemeIcon: UInt {
     case messageActionCopy
     case messageActionShare
     case messageActionDelete
-    case messageActionSave
+    case messageActionSave20
+    case messageActionSave24
     case messageActionSelect
 
     case contextMenuSelect
@@ -96,9 +97,10 @@ public enum ThemeIcon: UInt {
     case cancel24
     case xCircle24
     case open24
+    case more16
     case more24
 
-    case checkCircle
+    case checkCircle24
     case message
     case audioCall
     case videoCall
@@ -152,6 +154,8 @@ public enum ThemeIcon: UInt {
     case empty
 
     case profilePlaceholder
+
+    case hide24
 }
 
 // MARK: - Colors
@@ -315,23 +319,23 @@ public extension Theme {
         case .messageActionCopy:
             return isDarkThemeEnabled ? "copy-solid-24" : "ic_copy"
         case .messageActionShare:
-            // There is no separate dark theme version of this icon, by design.
-            return "share-ios-24"
+            return isDarkThemeEnabled ? "share-solid-24" : "share-outline-24"
         case .messageActionSpeak:
             return "speaker-solid-28"
         case .messageActionStopSpeaking:
             return "pause-filled-24"
         case .messageActionDelete:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
-        case .messageActionSave:
-            // There is no separate dark theme version of this icon, by design.
-            return "save-24"
+        case .messageActionSave20:
+            return isDarkThemeEnabled ? "save-solid-20" : "save-outline-20"
+        case .messageActionSave24:
+            return isDarkThemeEnabled ? "save-solid-24" : "save-outline-24"
         case .messageActionSelect:
             return "select-24"
         case .contextMenuSelect:
-            return "check-circle-outline-24"
+            return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"
         case .contextMenuInfo:
-            return "info-outline-24"
+            return isDarkThemeEnabled ? "info-solid-24" : "info-outline-24"
         case .compose24:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
         case .composeNewGroup:
@@ -357,7 +361,9 @@ public extension Theme {
         case .xCircle24:
             return isDarkThemeEnabled ? "x-circle-solid-24" : "x-circle-outline-24"
         case .open24:
-            return "open-24"
+            return isDarkThemeEnabled ? "open-solid-24" : "open-outline-24"
+        case .more16:
+            return "more-horiz-16"
         case .more24:
             return "more-horiz-24"
 
@@ -370,7 +376,7 @@ public extension Theme {
         case .text24:
             return "text-24"
 
-        case .checkCircle:
+        case .checkCircle24:
             return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"
         case .message:
             return isDarkThemeEnabled ? "message-solid-24" : "message-outline-24"
@@ -473,6 +479,9 @@ public extension Theme {
 
         case .profilePlaceholder:
             return isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56"
+
+        case .hide24:
+            return isDarkThemeEnabled ? "hide-solid-24" : "hide-outline-24"
         }
     }
 }

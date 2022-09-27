@@ -30,12 +30,7 @@ class MyStoryCell: UITableViewCell {
 
         titleLabel.text = NSLocalizedString("MY_STORIES_TITLE", comment: "Title for the 'My Stories' view")
 
-        let chevronImage: UIImage
-        if #available(iOS 13, *) {
-            chevronImage = CurrentAppContext().isRTL ? UIImage(systemName: "chevron.left")! : UIImage(systemName: "chevron.right")!
-        } else {
-            chevronImage = CurrentAppContext().isRTL ? UIImage(named: "chevron-left-20")! : UIImage(named: "chevron-right-20")!
-        }
+        let chevronImage = CurrentAppContext().isRTL ? UIImage(named: "chevron-left-20")! : UIImage(named: "chevron-right-20")!
 
         titleChevron.image = chevronImage.withRenderingMode(.alwaysTemplate)
 

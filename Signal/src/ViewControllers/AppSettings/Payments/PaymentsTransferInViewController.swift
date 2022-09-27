@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,7 +16,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "share-ios-24"),
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "share-outline-24"),
                                                             landscapeImagePhone: nil,
                                                             style: .plain,
                                                             target: self,

@@ -124,6 +124,14 @@ class StoryItemMediaView: UIView {
         return false
     }
 
+    func willHandlePanGesture(_ gesture: UIPanGestureRecognizer) -> Bool {
+        if contextButton.bounds.contains(gesture.location(in: contextButton)) {
+            return true
+        }
+
+        return false
+    }
+
     // MARK: - Playback
 
     func pause(hideChrome: Bool = false, animateAlongside: (() -> Void)? = nil) {

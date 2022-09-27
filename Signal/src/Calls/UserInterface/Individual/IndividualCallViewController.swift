@@ -496,7 +496,7 @@ class IndividualCallViewController: OWSViewController, CallObserver, CallAudioSe
 
             // create checkmark for active audio source.
             if currentAudioSource == audioSource {
-                routeAudioAction.trailingIcon = .checkCircle
+                routeAudioAction.trailingIcon = .checkCircle24
             }
 
             actionSheetController.addAction(routeAudioAction)
