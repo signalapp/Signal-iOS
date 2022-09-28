@@ -476,6 +476,11 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         stopObservingChanges()
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        tableView.reloadData()
+    }
+    
     // MARK: - Updating
     
     private func startObservingChanges(didReturnFromBackground: Bool = false) {
