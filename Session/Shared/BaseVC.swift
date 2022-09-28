@@ -28,6 +28,13 @@ class BaseVC : UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(appDidBecomeActive(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        if hasGradient {
+            let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+            setUpGradientBackground(frame: frame)
+        }
+    }
+    
     internal func ensureWindowBackground() {
         let appMode = AppModeManager.shared.currentAppMode
         switch appMode {
@@ -38,11 +45,11 @@ class BaseVC : UIViewController {
         }
     }
 
-    internal func setUpGradientBackground() {
+    internal func setUpGradientBackground(frame: CGRect = UIScreen.main.bounds) {
         hasGradient = true
         view.backgroundColor = .clear
         let gradient = Gradients.defaultBackground
-        view.setGradient(gradient)
+        view.setGradient(gradient, frame: frame)
     }
 
     internal func setUpNavBarStyle() {

@@ -16,9 +16,9 @@ public final class Gradient : NSObject {
 
 @objc public extension UIView {
 
-    @objc func setGradient(_ gradient: Gradient) {
+    @objc func setGradient(_ gradient: Gradient, frame: CGRect = UIScreen.main.bounds) {
         let layer = CAGradientLayer()
-        layer.frame = UIScreen.main.bounds
+        layer.frame = frame
         layer.colors = [ gradient.start.cgColor, gradient.end.cgColor ]
         if let existingSublayer = self.layer.sublayers?[0], existingSublayer is CAGradientLayer {
             self.layer.replaceSublayer(existingSublayer, with: layer)

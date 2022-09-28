@@ -46,12 +46,12 @@ final class FakeChatView : UIView {
         stackView.axis = .vertical
         stackView.spacing = spacing
         stackView.alignment = .fill
-        stackView.set(.width, to: UIScreen.main.bounds.width)
         let vInset = Values.smallSpacing
         stackView.layoutMargins = UIEdgeInsets(top: vInset, leading: Values.veryLargeSpacing, bottom: vInset, trailing: Values.veryLargeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         scrollView.addSubview(stackView)
         stackView.pin(to: scrollView)
+        stackView.set(.width, to: .width, of: scrollView)
         addSubview(scrollView)
         scrollView.pin(to: self)
         let height = chatBubbles.reduce(0) { $0 + $1.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize).height } + CGFloat(chatBubbles.count - 1) * spacing + 2 * vInset
