@@ -22,7 +22,7 @@ final class FakeChatView : UIView {
         return result
     }()
     
-    private static let bubbleWidth = CGFloat(224)
+    private static let bubbleWidth = UIDevice.current.isIPad ? CGFloat(468) : CGFloat(224)
     private static let bubbleCornerRadius = CGFloat(10)
     private static let startDelay: TimeInterval = 1
     private static let animationDuration: TimeInterval = 0.4
@@ -61,7 +61,7 @@ final class FakeChatView : UIView {
     private func getChatBubble(withText text: String, wasSentByCurrentUser: Bool) -> UIView {
         let result = UIView()
         let bubbleView = UIView()
-        bubbleView.set(.width, to: FakeChatView.bubbleWidth)
+        bubbleView.set(.width, lessThanOrEqualTo: FakeChatView.bubbleWidth)
         bubbleView.layer.cornerRadius = FakeChatView.bubbleCornerRadius
         bubbleView.layer.shadowColor = UIColor.black.cgColor
         bubbleView.layer.shadowRadius = isLightMode ? 4 : 8

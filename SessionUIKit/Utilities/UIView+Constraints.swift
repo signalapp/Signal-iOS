@@ -127,4 +127,17 @@ public extension UIView {
         constraint.isActive = true
         return constraint
     }
+    
+    @discardableResult
+    func set(_ dimension: Dimension, lessThanOrEqualTo size: CGFloat) -> NSLayoutConstraint {
+        translatesAutoresizingMaskIntoConstraints = false
+        let constraint: NSLayoutConstraint = {
+            switch dimension {
+            case .width: return widthAnchor.constraint(lessThanOrEqualToConstant: size)
+            case .height: return heightAnchor.constraint(lessThanOrEqualToConstant: size)
+            }
+        }()
+        constraint.isActive = true
+        return constraint
+    }
 }
