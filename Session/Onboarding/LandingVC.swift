@@ -14,16 +14,16 @@ final class LandingVC: BaseVC {
         return result
     }()
     
-    private lazy var registerButton: OutlineButton = {
-        let result = OutlineButton(style: .filled, size: .large)
+    private lazy var registerButton: SessionButton = {
+        let result = SessionButton(style: .filled, size: .large)
         result.setTitle("vc_landing_register_button_title".localized(), for: .normal)
         result.addTarget(self, action: #selector(register), for: .touchUpInside)
         
         return result
     }()
     
-    private lazy var restoreButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .large)
+    private lazy var restoreButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .large)
         result.setTitle("vc_landing_restore_button_title".localized(), for: .normal)
         result.addTarget(self, action: #selector(restore), for: .touchUpInside)
         

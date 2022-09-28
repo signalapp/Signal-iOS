@@ -659,8 +659,8 @@ public class ImageEditorCanvasView: UIView {
         }
 
         CATransaction.commit()
-
-        let image = view.renderAsImage(opaque: !hasAlpha, scale: dstScale)
+        
+        let image = view.toImage(isOpaque: !hasAlpha, scale: dstScale)
         return image
     }
 

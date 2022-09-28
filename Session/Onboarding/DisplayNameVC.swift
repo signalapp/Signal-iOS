@@ -55,7 +55,7 @@ final class DisplayNameVC: BaseVC {
         registerButtonBottomOffsetConstraint = registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         
         // Set up register button
-        let registerButton = OutlineButton(style: .filled, size: .large)
+        let registerButton = SessionButton(style: .filled, size: .large)
         registerButton.setTitle("continue_2".localized(), for: UIControl.State.normal)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         

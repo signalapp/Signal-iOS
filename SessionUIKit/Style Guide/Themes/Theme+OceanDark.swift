@@ -47,18 +47,18 @@ internal enum Theme_OceanDark: ThemeColors {
         .radioButton_selectedBorder: .oceanDark7,
         .radioButton_unselectedBorder: .oceanDark7,
         
-        // OutlineButton
-        .outlineButton_text: .primary,
-        .outlineButton_background: .clear,
-        .outlineButton_highlight: .oceanDark7.withAlphaComponent(0.3),
-        .outlineButton_border: .primary,
-        .outlineButton_filledText: .oceanDark7,
-        .outlineButton_filledBackground: .oceanDark1,
-        .outlineButton_filledHighlight: .oceanDark3,
-        .outlineButton_destructiveText: .dangerDark,
-        .outlineButton_destructiveBackground: .clear,
-        .outlineButton_destructiveHighlight: .dangerDark.withAlphaComponent(0.3),
-        .outlineButton_destructiveBorder: .dangerDark,
+        // SessionButton
+        .sessionButton_text: .primary,
+        .sessionButton_background: .clear,
+        .sessionButton_highlight: .oceanDark7.withAlphaComponent(0.3),
+        .sessionButton_border: .primary,
+        .sessionButton_filledText: .oceanDark7,
+        .sessionButton_filledBackground: .oceanDark1,
+        .sessionButton_filledHighlight: .oceanDark3,
+        .sessionButton_destructiveText: .dangerDark,
+        .sessionButton_destructiveBackground: .clear,
+        .sessionButton_destructiveHighlight: .dangerDark.withAlphaComponent(0.3),
+        .sessionButton_destructiveBorder: .dangerDark,
         
         // SolidButton
         .solidButton_background: .oceanDark2,

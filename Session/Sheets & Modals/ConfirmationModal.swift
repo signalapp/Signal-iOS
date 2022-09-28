@@ -177,7 +177,7 @@ public class ConfirmationModal: Modal {
     
     // MARK: - Lifecycle
     
-    init(info: Info) {
+    init(targetView: UIView? = nil, info: Info) {
         self.internalOnConfirm = { viewController in
             if info.dismissOnConfirm {
                 viewController.dismiss(animated: true)
@@ -186,7 +186,7 @@ public class ConfirmationModal: Modal {
             info.onConfirm?(viewController)
         }
         
-        super.init(afterClosed: info.afterClosed)
+        super.init(targetView: targetView, afterClosed: info.afterClosed)
         
         self.modalPresentationStyle = .overFullScreen
         self.modalTransitionStyle = .crossDissolve

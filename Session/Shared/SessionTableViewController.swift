@@ -8,14 +8,14 @@ import SessionUIKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-protocol SettingsViewModelAccessible {
+protocol SessionViewModelAccessible {
     var viewModelType: AnyObject.Type { get }
 }
 
-class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection, SettingItem: Hashable & Differentiable>: BaseVC, UITableViewDataSource, UITableViewDelegate, SettingsViewModelAccessible {
-    typealias SectionModel = SettingsTableViewModel<NavItemId, Section, SettingItem>.SectionModel
+class SessionTableViewController<NavItemId: Equatable, Section: SessionTableSection, SettingItem: Hashable & Differentiable>: BaseVC, UITableViewDataSource, UITableViewDelegate, SessionViewModelAccessible {
+    typealias SectionModel = SessionTableViewModel<NavItemId, Section, SettingItem>.SectionModel
     
-    private let viewModel: SettingsTableViewModel<NavItemId, Section, SettingItem>
+    private let viewModel: SessionTableViewModel<NavItemId, Section, SettingItem>
     private var hasLoadedInitialSettingsData: Bool = false
     private var dataStreamJustFailed: Bool = false
     private var dataChangeCancellable: AnyCancellable?
@@ -32,9 +32,9 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
         result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.showsHorizontalScrollIndicator = false
-        result.register(view: SettingsAvatarCell.self)
-        result.register(view: SettingsCell.self)
-        result.registerHeaderFooterView(view: SettingHeaderView.self)
+        result.register(view: SessionAvatarCell.self)
+        result.register(view: SessionCell.self)
+        result.registerHeaderFooterView(view: SessionHeaderView.self)
         result.dataSource = self
         result.delegate = self
         
@@ -47,7 +47,7 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
     
     // MARK: - Initialization
     
-    init(viewModel: SettingsTableViewModel<NavItemId, Section, SettingItem>) {
+    init(viewModel: SessionTableViewModel<NavItemId, Section, SettingItem>) {
         self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
@@ -192,10 +192,10 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
                 
                 self?.tableView.visibleCells.forEach { cell in
                     switch cell {
-                        case let settingsCell as SettingsCell:
-                            settingsCell.update(isEditing: isEditing, animated: true)
+                        case let cell as SessionCell:
+                            cell.update(isEditing: isEditing, animated: true)
                             
-                        case let avatarCell as SettingsAvatarCell:
+                        case let avatarCell as SessionAvatarCell:
                             avatarCell.update(isEditing: isEditing, animated: true)
                             
                         default: break
@@ -269,15 +269,26 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
             }
             .store(in: &disposables)
         
-        viewModel.closeScreen
+        viewModel.dismissScreen
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] shouldDismiss in
-                guard shouldDismiss else {
-                    self?.navigationController?.popViewController(animated: true)
-                    return
+            .sink { [weak self] dismissType in
+                switch dismissType {
+                    case .auto:
+                        guard
+                            let viewController: UIViewController = self,
+                            (self?.navigationController?.viewControllers
+                                .firstIndex(of: viewController))
+                                .defaulting(to: 0) > 0
+                        else {
+                            self?.dismiss(animated: true)
+                            return
+                        }
+                        
+                        self?.navigationController?.popViewController(animated: true)
+                        
+                    case .dismiss: self?.dismiss(animated: true)
+                    case .pop: self?.navigationController?.popViewController(animated: true)
                 }
-                
-                self?.navigationController?.dismiss(animated: true)
             }
             .store(in: &disposables)
     }
@@ -294,11 +305,11 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let section: SectionModel = viewModel.settingsData[indexPath.section]
-        let settingInfo: SettingInfo<SettingItem> = section.elements[indexPath.row]
+        let info: SessionCell.Info<SettingItem> = section.elements[indexPath.row]
         
-        switch settingInfo.action {
+        switch info.leftAccessory {
             case .threadInfo(let threadViewModel, let style, let avatarTapped, let titleTapped, let titleChanged):
-                let cell: SettingsAvatarCell = tableView.dequeue(type: SettingsAvatarCell.self, for: indexPath)
+                let cell: SessionAvatarCell = tableView.dequeue(type: SessionAvatarCell.self, for: indexPath)
                 cell.update(
                     threadViewModel: threadViewModel,
                     style: style,
@@ -323,28 +334,11 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
                 return cell
                 
             default:
-                let cell: SettingsCell = tableView.dequeue(type: SettingsCell.self, for: indexPath)
+                let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
                 cell.update(
-                    icon: settingInfo.icon,
-                    iconSize: settingInfo.iconSize,
-                    iconSetter: settingInfo.iconSetter,
-                    title: settingInfo.title,
-                    subtitle: settingInfo.subtitle,
-                    alignment: settingInfo.alignment,
-                    accessibilityIdentifier: settingInfo.accessibilityIdentifier,
-                    subtitleExtraViewGenerator: settingInfo.subtitleExtraViewGenerator,
-                    action: settingInfo.action,
-                    extraActionTitle: settingInfo.extraActionTitle,
-                    onExtraAction: settingInfo.onExtraAction,
-                    position: {
-                        guard section.elements.count > 1 else { return .individual }
-                        
-                        switch indexPath.row {
-                            case 0: return .top
-                            case (section.elements.count - 1): return .bottom
-                            default: return .middle
-                        }
-                    }()
+                    with: info,
+                    style: .rounded,
+                    position: Position.with(indexPath.row, count: section.elements.count)
                 )
                 cell.update(isEditing: self.isEditing, animated: false)
                 
@@ -360,10 +354,10 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
                 return UIView()
             
             case .padding, .title:
-                let result: SettingHeaderView = tableView.dequeueHeaderFooterView(type: SettingHeaderView.self)
+                let result: SessionHeaderView = tableView.dequeueHeaderFooterView(type: SessionHeaderView.self)
                 result.update(
                     title: section.model.title,
-                    hasSeparator: (section.elements.first?.action.shouldHaveBackground != false)
+                    hasSeparator: (section.elements.first?.shouldHaveBackground != false)
                 )
                 
                 return result
@@ -393,173 +387,86 @@ class SettingsTableViewController<NavItemId: Equatable, Section: SettingSection,
         tableView.deselectRow(at: indexPath, animated: true)
         
         let section: SectionModel = self.viewModel.settingsData[indexPath.section]
-        let settingInfo: SettingInfo<SettingItem> = section.elements[indexPath.row]
-
-        switch settingInfo.action {
-            case .threadInfo: break
+        let info: SessionCell.Info<SettingItem> = section.elements[indexPath.row]
+        
+        // Do nothing if the item is disabled
+        guard info.isEnabled else { return }
+        
+        // Get the view that was tapped (for presenting on iPad)
+        let tappedView: UIView? = {
+            guard let cell: SessionCell = tableView.cellForRow(at: indexPath) as? SessionCell else {
+                return nil
+            }
             
-            case .trigger(_, let action):
-                action()
-                
-            case .rightButtonAction(_, let action):
-                guard let cell: SettingsCell = tableView.cellForRow(at: indexPath) as? SettingsCell else {
-                    return
-                }
-                
-                action(cell.rightActionButtonContainerView)
-                
-            case .userDefaultsBool(let defaults, let key, let isEnabled, let onChange):
-                guard isEnabled else { return }
-                
-                defaults.set(!defaults.bool(forKey: key), forKey: key)
-                manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
-                onChange?()
-                
-            case .settingBool(let key, let confirmationInfo, let isEnabled):
-                guard isEnabled else { return }
-                guard
-                    let confirmationInfo: ConfirmationModal.Info = confirmationInfo,
-                    confirmationInfo.stateToShow.shouldShow(for: Storage.shared[key])
-                else {
-                    Storage.shared.write { db in db[key] = !db[key] }
-                    manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
-                    return
-                }
-                
-                // Show a confirmation modal before continuing
-                let confirmationModal: ConfirmationModal = ConfirmationModal(
-                    info: confirmationInfo
-                        .with(onConfirm: { [weak self] _ in
-                            Storage.shared.write { db in db[key] = !db[key] }
-                            self?.manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
-                            self?.dismiss(animated: true)
-                        })
-                )
-                present(confirmationModal, animated: true, completion: nil)
-            
-            case .customToggle(let value, let isEnabled, let confirmationInfo, let onChange):
-                guard isEnabled else { return }
-                
-                let updatedValue: Bool = !value
-                let performChange: () -> () = { [weak self] in
-                    self?.manuallyReload(
-                        indexPath: indexPath,
-                        section: section,
-                        settingInfo: settingInfo
-                            .with(
-                                action: .customToggle(
-                                    value: updatedValue,
-                                    isEnabled: isEnabled,
-                                    onChange: onChange
-                                )
-                            )
-                    )
-                    onChange?(updatedValue)
+            switch (info.leftAccessory, info.rightAccessory) {
+                case (_, .highlightingBackgroundLabel(_)):
+                    return (!cell.rightAccessoryView.isHidden ? cell.rightAccessoryView : cell)
                     
-                    // In this case we need to restart the database observation to force a re-query as
-                    // the change here might not actually trigger a database update so the content wouldn't
-                    // be updated
-                    self?.stopObservingChanges()
-                    self?.startObservingChanges()
-                }
+                case (.highlightingBackgroundLabel(_), _):
+                    return (!cell.leftAccessoryView.isHidden ? cell.leftAccessoryView : cell)
                 
-                guard
-                    let confirmationInfo: ConfirmationModal.Info = confirmationInfo,
-                    confirmationInfo.stateToShow.shouldShow(for: value)
-                else {
-                    performChange()
-                    return
+                default:
+                    return cell
+            }
+        }()
+        let maybeOldSelection: (Int, SessionCell.Info<SettingItem>)? = section.elements
+            .enumerated()
+            .first(where: { index, info in
+                switch (info.leftAccessory, info.rightAccessory) {
+                    case (_, .radio(_, let isSelected, _)): return isSelected()
+                    case (.radio(_, let isSelected, _), _): return isSelected()
+                    default: return false
                 }
-                
-                // Show a confirmation modal before continuing
-                let confirmationModal: ConfirmationModal = ConfirmationModal(
-                    info: confirmationInfo
-                        .with(onConfirm: { [weak self] _ in
-                            performChange()
-                            
-                            self?.dismiss(animated: true) {
-                                guard let strongSelf: UIViewController = self else { return }
-                                
-                                confirmationInfo.onConfirm?(strongSelf)
-                            }
-                        })
-                )
-                present(confirmationModal, animated: true, completion: nil)
+            })
+        
+        let performAction: () -> Void = { [weak self, weak tappedView] in
+            info.onTap?(tappedView)
+            self?.manuallyReload(indexPath: indexPath, section: section, info: info)
             
-            case .push(_, _, _, let createDestination), .settingEnum(_, _, let createDestination), .generalEnum(_, let createDestination):
-                let viewController: UIViewController = createDestination()
-                navigationController?.pushViewController(viewController, animated: true)
-                
-            case .present(_, let createDestination):
-                let viewController: UIViewController = createDestination()
-                
-                if UIDevice.current.isIPad {
-                    viewController.popoverPresentationController?.permittedArrowDirections = []
-                    viewController.popoverPresentationController?.sourceView = self.view
-                    viewController.popoverPresentationController?.sourceRect = self.view.bounds
-                }
-                
-                navigationController?.present(viewController, animated: true)
-                
-            case .listSelection(_, _, let shouldAutoSave, let selectValue):
-                let maybeOldSelection: (Int, SettingInfo<SettingItem>)? = section.elements
-                    .enumerated()
-                    .first(where: { index, info in
-                        switch info.action {
-                            case .listSelection(let isSelected, _, _, _): return isSelected()
-                            default: return false
-                        }
-                    })
-                
-                selectValue()
-                manuallyReload(indexPath: indexPath, section: section, settingInfo: settingInfo)
-                
-                // Update the old selection as well
-                if let oldSelection: (index: Int, info: SettingInfo<SettingItem>) = maybeOldSelection {
-                    manuallyReload(
-                        indexPath: IndexPath(
-                            row: oldSelection.index,
-                            section: indexPath.section
-                        ),
-                        section: section,
-                        settingInfo: oldSelection.info
-                    )
-                }
-                
-                guard shouldAutoSave else { return }
-                
-                navigationController?.popViewController(animated: true)
+            // Update the old selection as well
+            if let oldSelection: (index: Int, info: SessionCell.Info<SettingItem>) = maybeOldSelection {
+                self?.manuallyReload(
+                    indexPath: IndexPath(
+                        row: oldSelection.index,
+                        section: indexPath.section
+                    ),
+                    section: section,
+                    info: oldSelection.info
+                )
+            }
         }
+        
+        guard
+            let confirmationInfo: ConfirmationModal.Info = info.confirmationInfo,
+            confirmationInfo.stateToShow.shouldShow(for: info.currentBoolValue)
+        else {
+            performAction()
+            return
+        }
+
+        // Show a confirmation modal before continuing
+        let confirmationModal: ConfirmationModal = ConfirmationModal(
+            targetView: tappedView,
+            info: confirmationInfo
+                .with(onConfirm: { [weak self] _ in
+                    performAction()
+                    self?.dismiss(animated: true)
+                })
+        )
+        present(confirmationModal, animated: true, completion: nil)
     }
     
     private func manuallyReload(
         indexPath: IndexPath,
         section: SectionModel,
-        settingInfo: SettingInfo<SettingItem>
+        info: SessionCell.Info<SettingItem>
     ) {
         // Try update the existing cell to have a nice animation instead of reloading the cell
-        if let existingCell: SettingsCell = tableView.cellForRow(at: indexPath) as? SettingsCell {
+        if let existingCell: SessionCell = tableView.cellForRow(at: indexPath) as? SessionCell {
             existingCell.update(
-                icon: settingInfo.icon,
-                iconSize: settingInfo.iconSize,
-                iconSetter: settingInfo.iconSetter,
-                title: settingInfo.title,
-                subtitle: settingInfo.subtitle,
-                alignment: settingInfo.alignment,
-                accessibilityIdentifier: settingInfo.accessibilityIdentifier,
-                subtitleExtraViewGenerator: settingInfo.subtitleExtraViewGenerator,
-                action: settingInfo.action,
-                extraActionTitle: settingInfo.extraActionTitle,
-                onExtraAction: settingInfo.onExtraAction,
-                position: {
-                    guard section.elements.count > 1 else { return .individual }
-                    
-                    switch indexPath.row {
-                        case 0: return .top
-                        case (section.elements.count - 1): return .bottom
-                        default: return .middle
-                    }
-                }()
+                with: info,
+                style: .rounded,
+                position: Position.with(indexPath.row, count: section.elements.count)
             )
         }
         else {

@@ -24,8 +24,8 @@ final class RegisterVC : BaseVC {
         return result
     }()
     
-    private lazy var copyPublicKeyButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .large)
+    private lazy var copyPublicKeyButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .large)
         result.setTitle("copy".localized(), for: .normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: .touchUpInside)
         
@@ -85,7 +85,7 @@ final class RegisterVC : BaseVC {
         let bottomSpacer = UIView.vStretchingSpacer()
         
         // Set up register button
-        let registerButton = OutlineButton(style: .filled, size: .large)
+        let registerButton = SessionButton(style: .filled, size: .large)
         registerButton.setTitle("continue_2".localized(), for: .normal)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         

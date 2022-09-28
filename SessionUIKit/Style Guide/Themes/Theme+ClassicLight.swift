@@ -48,17 +48,17 @@ internal enum Theme_ClassicLight: ThemeColors {
         .radioButton_unselectedBorder: .classicLight0,
         
         // OutlineButton
-        .outlineButton_text: .classicLight0,
-        .outlineButton_background: .clear,
-        .outlineButton_highlight: .classicLight0.withAlphaComponent(0.1),
-        .outlineButton_border: .classicLight0,
-        .outlineButton_filledText: .classicLight6,
-        .outlineButton_filledBackground: .classicLight0,
-        .outlineButton_filledHighlight: .classicLight1,
-        .outlineButton_destructiveText: .dangerLight,
-        .outlineButton_destructiveBackground: .clear,
-        .outlineButton_destructiveHighlight: .dangerLight.withAlphaComponent(0.3),
-        .outlineButton_destructiveBorder: .dangerLight,
+        .sessionButton_text: .classicLight0,
+        .sessionButton_background: .clear,
+        .sessionButton_highlight: .classicLight0.withAlphaComponent(0.1),
+        .sessionButton_border: .classicLight0,
+        .sessionButton_filledText: .classicLight6,
+        .sessionButton_filledBackground: .classicLight0,
+        .sessionButton_filledHighlight: .classicLight1,
+        .sessionButton_destructiveText: .dangerLight,
+        .sessionButton_destructiveBackground: .clear,
+        .sessionButton_destructiveHighlight: .dangerLight.withAlphaComponent(0.3),
+        .sessionButton_destructiveBorder: .dangerLight,
         
         // SolidButton
         .solidButton_background: .classicLight3,

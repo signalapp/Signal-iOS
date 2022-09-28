@@ -42,10 +42,10 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         result.separatorStyle = .none
         result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
-        result.register(view: BlockedContactCell.self)
+        result.register(view: SessionCell.self)
         result.dataSource = self
         result.delegate = self
-        result.layer.cornerRadius = SettingsCell.cornerRadius
+        result.layer.cornerRadius = SessionCell.cornerRadius
         
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
@@ -82,8 +82,8 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         return result
     }()
     
-    private lazy var unblockButton: OutlineButton = {
-        let result: OutlineButton = OutlineButton(style: .destructive, size: .large)
+    private lazy var unblockButton: SessionButton = {
+        let result: SessionButton = SessionButton(style: .destructive, size: .large)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setTitle("CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK".localized(), for: .normal)
         result.addTarget(self, action: #selector(unblockTapped), for: .touchUpInside)
@@ -104,8 +104,6 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                hasCustomBackButton: false
         )
 
-        // Add the UI (MUST be done after the thread freeze so the 'tableView' creation and setting
-        // the dataSource has the correct data)
         view.addSubview(tableView)
         view.addSubview(emptyStateLabel)
         view.addSubview(fadeView)
@@ -162,7 +160,10 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.smallSpacing),
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.largeSpacing),
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.largeSpacing),
-            tableView.bottomAnchor.constraint(equalTo: unblockButton.topAnchor, constant: -Values.largeSpacing),
+            tableView.bottomAnchor.constraint(
+                equalTo: unblockButton.topAnchor,
+                constant: -Values.largeSpacing
+            ),
 
             emptyStateLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.massiveSpacing),
             emptyStateLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.mediumSpacing),
@@ -288,11 +289,12 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         switch section.model {
             case .contacts:
-                let cellViewModel: BlockedContactsViewModel.DataModel = section.elements[indexPath.row]
-                let cell: BlockedContactCell = tableView.dequeue(type: BlockedContactCell.self, for: indexPath)
+                let info: SessionCell.Info<Profile> = section.elements[indexPath.row]
+                let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
                 cell.update(
-                    with: cellViewModel,
-                    isSelected: viewModel.selectedContactIds.contains(cellViewModel.id)
+                    with: info,
+                    style: .roundedEdgeToEdge,
+                    position: Position.with(indexPath.row, count: section.elements.count)
                 )
                 
                 return cell
@@ -364,13 +366,58 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         
         switch section.model {
             case .contacts:
-                let cellViewModel: BlockedContactsViewModel.DataModel = section.elements[indexPath.row]
+                let info: SessionCell.Info<Profile> = section.elements[indexPath.row]
                 
-                self.viewModel.toggleSelection(contactId: cellViewModel.id)
-                self.tableView.reloadRows(at: [indexPath], with: .none)
+                // Do nothing if the item is disabled
+                guard info.isEnabled else { return }
+                
+                // Get the view that was tapped (for presenting on iPad)
+                let tappedView: UIView? = tableView.cellForRow(at: indexPath)
+                let maybeOldSelection: (Int, SessionCell.Info<Profile>)? = section.elements
+                    .enumerated()
+                    .first(where: { index, info in
+                        switch (info.leftAccessory, info.rightAccessory) {
+                            case (_, .radio(_, let isSelected, _)): return isSelected()
+                            case (.radio(_, let isSelected, _), _): return isSelected()
+                            default: return false
+                        }
+                    })
+                
+                info.onTap?(tappedView)
+                self.manuallyReload(indexPath: indexPath, section: section, info: info)
                 self.unblockButton.isEnabled = !self.viewModel.selectedContactIds.isEmpty
                 
+                // Update the old selection as well
+                if let oldSelection: (index: Int, info: SessionCell.Info<Profile>) = maybeOldSelection {
+                    self.manuallyReload(
+                        indexPath: IndexPath(
+                            row: oldSelection.index,
+                            section: indexPath.section
+                        ),
+                        section: section,
+                        info: oldSelection.info
+                    )
+                }
+                
             default: break
+        }
+    }
+    
+    private func manuallyReload(
+        indexPath: IndexPath,
+        section: BlockedContactsViewModel.SectionModel,
+        info: SessionCell.Info<Profile>
+    ) {
+        // Try update the existing cell to have a nice animation instead of reloading the cell
+        if let existingCell: SessionCell = tableView.cellForRow(at: indexPath) as? SessionCell {
+            existingCell.update(
+                with: info,
+                style: .roundedEdgeToEdge,
+                position: Position.with(indexPath.row, count: section.elements.count)
+            )
+        }
+        else {
+            tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
 
@@ -385,11 +432,11 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 guard
                     let section: BlockedContactsViewModel.SectionModel = self.viewModel.contactData
                         .first(where: { section in section.model == .contacts }),
-                    let viewModel: BlockedContactsViewModel.DataModel = section.elements
-                        .first(where: { model in model.id == contactId })
+                    let info: SessionCell.Info<Profile> = section.elements
+                        .first(where: { info in info.id.id == contactId })
                 else { return contactId }
                 
-                return viewModel.profile.displayName()
+                return info.title
             }
         let confirmationTitle: String = {
             guard contactNames.count > 1 else {

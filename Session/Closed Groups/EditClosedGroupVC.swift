@@ -2,13 +2,14 @@
 
 import UIKit
 import GRDB
+import DifferenceKit
 import PromiseKit
 import SessionUIKit
 import SessionMessagingKit
 import SignalUtilitiesKit
 
 final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate {
-    private struct GroupMemberDisplayInfo: FetchableRecord, Decodable {
+    private struct GroupMemberDisplayInfo: FetchableRecord, Equatable, Hashable, Decodable, Differentiable {
         let profileId: String
         let role: GroupMember.Role
         let profile: Profile?
@@ -44,8 +45,8 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         return result
     }()
 
-    private lazy var addMembersButton: OutlineButton = {
-        let result: OutlineButton = OutlineButton(style: .regular, size: .medium)
+    private lazy var addMembersButton: SessionButton = {
+        let result: SessionButton = SessionButton(style: .bordered, size: .medium)
         result.setTitle("Add Members", for: UIControl.State.normal)
         result.addTarget(self, action: #selector(addMembers), for: UIControl.Event.touchUpInside)
         result.contentEdgeInsets = UIEdgeInsets(top: 0, leading: Values.mediumSpacing, bottom: 0, trailing: Values.mediumSpacing)
@@ -60,7 +61,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         result.separatorStyle = .none
         result.themeBackgroundColor = .clear
         result.isScrollEnabled = false
-        result.register(view: UserCell.self)
+        result.register(view: SessionCell.self)
         
         return result
     }()
@@ -200,15 +201,26 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
+        let displayInfo: GroupMemberDisplayInfo = membersAndZombies[indexPath.row]
         cell.update(
-            with: membersAndZombies[indexPath.row].profileId,
-            profile: membersAndZombies[indexPath.row].profile,
-            isZombie: (membersAndZombies[indexPath.row].role == .zombie),
-            accessory: (adminIds.contains(userPublicKey) ?
-                .none :
-                .lock
-            )
+            with: SessionCell.Info(
+                id: displayInfo,
+                leftAccessory: .profile(displayInfo.profileId, displayInfo.profile),
+                title: (
+                    displayInfo.profile?.displayName() ??
+                    Profile.truncated(id: displayInfo.profileId, threadVariant: .contact)
+                ),
+                rightAccessory: (adminIds.contains(userPublicKey) ? nil :
+                    .icon(
+                        UIImage(named: "ic_lock_outline")?
+                            .withRenderingMode(.alwaysTemplate),
+                        customTint: .textSecondary
+                    )
+                 )
+            ),
+            style: .edgeToEdge,
+            position: Position.with(indexPath.row, count: membersAndZombies.count)
         )
         
         return cell

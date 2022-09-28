@@ -223,7 +223,7 @@ private final class RecoveryPhraseVC: UIViewController {
         restoreButtonBottomOffsetConstraint = restoreButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         
         // Continue button
-        let continueButton = OutlineButton(style: .filled, size: .large)
+        let continueButton = SessionButton(style: .filled, size: .large)
         continueButton.setTitle("continue_2".localized(), for: UIControl.State.normal)
         continueButton.addTarget(self, action: #selector(handleContinueButtonTapped), for: UIControl.Event.touchUpInside)
         

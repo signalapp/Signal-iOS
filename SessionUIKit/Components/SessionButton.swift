@@ -2,9 +2,9 @@
 
 import UIKit
 
-public final class OutlineButton: UIButton {
+public final class SessionButton: UIButton {
     public enum Style {
-        case regular
+        case bordered
         case borderless
         case destructive
         case destructiveBorderless
@@ -25,7 +25,7 @@ public final class OutlineButton: UIButton {
                 setThemeTitleColor(
                     {
                         switch style {
-                            case .regular, .borderless, .destructive,
+                            case .bordered, .borderless, .destructive,
                                 .destructiveBorderless:
                                 return .disabled
                             
@@ -37,7 +37,7 @@ public final class OutlineButton: UIButton {
                 setThemeBackgroundColor(
                     {
                         switch style {
-                            case .regular, .borderless, .destructive,
+                            case .bordered, .borderless, .destructive,
                                 .destructiveBorderless:
                                 return .clear
                             
@@ -50,7 +50,7 @@ public final class OutlineButton: UIButton {
                 
                 themeBorderColor = {
                     switch style {
-                        case .regular, .destructive: return .disabled
+                        case .bordered, .destructive: return .disabled
                         case .filled, .borderless, .destructiveBorderless: return nil
                     }
                 }()
@@ -114,9 +114,9 @@ public final class OutlineButton: UIButton {
         setThemeTitleColor(
             {
                 switch style {
-                    case .regular, .borderless: return .outlineButton_text
-                    case .destructive, .destructiveBorderless: return .outlineButton_destructiveText
-                    case .filled: return .outlineButton_filledText
+                    case .bordered, .borderless: return .sessionButton_text
+                    case .destructive, .destructiveBorderless: return .sessionButton_destructiveText
+                    case .filled: return .sessionButton_filledText
                 }
             }(),
             for: .normal
@@ -125,9 +125,9 @@ public final class OutlineButton: UIButton {
         setThemeBackgroundColor(
             {
                 switch style {
-                    case .regular, .borderless: return .outlineButton_background
-                    case .destructive, .destructiveBorderless: return .outlineButton_destructiveBackground
-                    case .filled: return .outlineButton_filledBackground
+                    case .bordered, .borderless: return .sessionButton_background
+                    case .destructive, .destructiveBorderless: return .sessionButton_destructiveBackground
+                    case .filled: return .sessionButton_filledBackground
                 }
             }(),
             for: .normal
@@ -135,9 +135,9 @@ public final class OutlineButton: UIButton {
         setThemeBackgroundColor(
             {
                 switch style {
-                    case .regular, .borderless: return .outlineButton_highlight
-                    case .destructive, .destructiveBorderless: return .outlineButton_destructiveHighlight
-                    case .filled: return .outlineButton_filledHighlight
+                    case .bordered, .borderless: return .sessionButton_highlight
+                    case .destructive, .destructiveBorderless: return .sessionButton_destructiveHighlight
+                    case .filled: return .sessionButton_filledHighlight
                 }
             }(),
             for: .highlighted
@@ -151,8 +151,8 @@ public final class OutlineButton: UIButton {
         }()
         themeBorderColor = {
             switch style {
-                case .regular: return .outlineButton_border
-                case .destructive: return .outlineButton_destructiveBorder
+                case .bordered: return .sessionButton_border
+                case .destructive: return .sessionButton_destructiveBorder
                 case .filled, .borderless, .destructiveBorderless: return nil
             }
         }()

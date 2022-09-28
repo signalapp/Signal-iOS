@@ -34,6 +34,18 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
     
     // MARK: - UI
+    
+    private lazy var loadingConversationsLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = "LOADING_CONVERSATIONS".localized()
+        result.themeTextColor = .textSecondary
+        result.textAlignment = .center
+        result.numberOfLines = 0
+        
+        return result
+    }()
 
     private lazy var tableView: UITableView = {
         let result: UITableView = UITableView()
@@ -86,8 +98,8 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         return result
     }()
 
-    private lazy var clearAllButton: OutlineButton = {
-        let result: OutlineButton = OutlineButton(style: .destructive, size: .large)
+    private lazy var clearAllButton: SessionButton = {
+        let result: SessionButton = SessionButton(style: .destructive, size: .large)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setTitle("MESSAGE_REQUESTS_CLEAR_ALL".localized(), for: .normal)
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
@@ -108,6 +120,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
         // Add the UI (MUST be done after the thread freeze so the 'tableView' creation and setting
         // the dataSource has the correct data)
+        view.addSubview(loadingConversationsLabel)
         view.addSubview(tableView)
         view.addSubview(emptyStateLabel)
         view.addSubview(fadeView)
@@ -161,6 +174,10 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
     private func setupLayout() {
         NSLayoutConstraint.activate([
+            loadingConversationsLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.veryLargeSpacing),
+            loadingConversationsLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.massiveSpacing),
+            loadingConversationsLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.massiveSpacing),
+            
             tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.smallSpacing),
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
@@ -207,6 +224,9 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             UIView.performWithoutAnimation { handleThreadUpdates(updatedData, initialLoad: true) }
             return
         }
+        
+        // Hide the 'loading conversations' label (now that we have received conversation data)
+        loadingConversationsLabel.isHidden = true
         
         // Show the empty state if there is no data
         clearAllButton.isHidden = updatedData.isEmpty

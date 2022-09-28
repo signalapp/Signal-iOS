@@ -54,7 +54,7 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
     
     // MARK: - Lifecycle
     
-    public init(afterClosed: (() -> ())? = nil) {
+    public init(targetView: UIView? = nil, afterClosed: (() -> ())? = nil) {
         self.afterClosed = afterClosed
         
         super.init(nibName: nil, bundle: nil)
@@ -62,8 +62,8 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
         // Ensure the modal doesn't crash on iPad when being presented
         if UIDevice.current.isIPad {
             self.popoverPresentationController?.permittedArrowDirections = []
-            self.popoverPresentationController?.sourceView = self.view
-            self.popoverPresentationController?.sourceRect = self.view.bounds
+            self.popoverPresentationController?.sourceView = (targetView ?? self.view)
+            self.popoverPresentationController?.sourceRect = (targetView ?? self.view).bounds
         }
     }
     

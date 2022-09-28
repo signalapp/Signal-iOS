@@ -102,10 +102,11 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             bottom: Values.footerGradientHeight(window: UIApplication.shared.keyWindow),
             trailing: 0
         )
-        result.register(view: UserCell.self)
+        result.register(view: SessionCell.self)
         result.touchDelegate = self
         result.dataSource = self
         result.delegate = self
+        
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
         }
@@ -127,8 +128,8 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         return result
     }()
     
-    private lazy var createGroupButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .large)
+    private lazy var createGroupButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .large)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setTitle("CREATE_GROUP_BUTTON_TITLE".localized(), for: .normal)
         result.addTarget(self, action: #selector(createClosedGroup), for: .touchUpInside)
@@ -165,7 +166,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             explanationLabel.lineBreakMode = .byWordWrapping
             explanationLabel.numberOfLines = 0
             
-            let createNewPrivateChatButton: OutlineButton = OutlineButton(style: .regular, size: .medium)
+            let createNewPrivateChatButton: SessionButton = SessionButton(style: .bordered, size: .medium)
             createNewPrivateChatButton.setTitle("vc_create_closed_group_empty_state_button_title".localized(), for: .normal)
             createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: .touchUpInside)
             createNewPrivateChatButton.set(.width, to: 196)
@@ -205,13 +206,19 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
         let profile: Profile = data[indexPath.section].elements[indexPath.row]
-        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
         cell.update(
-            with: profile.id,
-            profile: profile,
-            isZombie: false,
-            accessory: .tick(isSelected: selectedContacts.contains(profile.id))
+            with: SessionCell.Info(
+                id: profile,
+                leftAccessory: .profile(profile.id, profile),
+                title: profile.displayName(),
+                rightAccessory: .radio(isSelected: { [weak self] in
+                    self?.selectedContacts.contains(profile.id) == true
+                })
+            ),
+            style: .edgeToEdge,
+            position: Position.with(indexPath.row, count: data[indexPath.section].elements.count)
         )
         
         return cell

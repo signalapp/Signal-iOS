@@ -256,7 +256,7 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         view.themeBackgroundColor = .clear
         
         // Next button
-        let joinButton = OutlineButton(style: .regular, size: .large)
+        let joinButton = SessionButton(style: .bordered, size: .large)
         joinButton.setTitle("JOIN_COMMUNITY_BUTTON_TITLE".localized(), for: UIControl.State.normal)
         joinButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         

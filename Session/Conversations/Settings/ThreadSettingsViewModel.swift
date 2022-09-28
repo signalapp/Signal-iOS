@@ -9,7 +9,7 @@ import SessionMessagingKit
 import SignalUtilitiesKit
 import SessionUtilitiesKit
 
-class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.NavButton, ThreadSettingsViewModel.Section, ThreadSettingsViewModel.Setting> {
+class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.NavButton, ThreadSettingsViewModel.Section, ThreadSettingsViewModel.Setting> {
     // MARK: - Config
     
     enum NavState {
@@ -23,7 +23,7 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
         case done
     }
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case conversationInfo
         case content
     }
@@ -225,17 +225,18 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                 SectionModel(
                     model: .conversationInfo,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .threadInfo,
-                            title: threadViewModel.displayName,
-                            action: .threadInfo(
+                            leftAccessory: .threadInfo(
                                 threadViewModel: threadViewModel,
                                 avatarTapped: { [weak self] in
                                     self?.updateProfilePicture(threadViewModel: threadViewModel)
                                 },
                                 titleTapped: { [weak self] in self?.setIsEditing(true) },
                                 titleChanged: { [weak self] text in self?.editedDisplayName = text }
-                            )
+                            ),
+                            title: threadViewModel.displayName,
+                            shouldHaveBackground: false
                         )
                     ]
                 ),
@@ -243,74 +244,88 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                     model: .content,
                     elements: [
                         (threadVariant == .closedGroup ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .copyThreadId,
-                                icon: UIImage(named: "ic_copy")?
-                                    .withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(named: "ic_copy")?
+                                        .withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: (threadVariant == .openGroup ?
                                     "COPY_GROUP_URL".localized() :
                                     "vc_conversation_settings_copy_session_id_button_title".localized()
                                 ),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).copy_thread_id",
-                                action: .trigger(showChevron: false) {
+                                onTap: {
                                     UIPasteboard.general.string = threadId
                                 }
                             )
                         ),
                         
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .allMedia,
-                            icon: UIImage(named: "actionsheet_camera_roll_black")?
-                                .withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "actionsheet_camera_roll_black")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: MediaStrings.allMedia,
                             accessibilityIdentifier: "\(ThreadSettingsViewModel.self).all_media",
-                            action: .push(showChevron: false) {
-                                return MediaGalleryViewModel.createAllMediaViewController(
-                                    threadId: threadId,
-                                    threadVariant: threadVariant,
-                                    focusedAttachmentId: nil
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(
+                                    MediaGalleryViewModel.createAllMediaViewController(
+                                        threadId: threadId,
+                                        threadVariant: threadVariant,
+                                        focusedAttachmentId: nil
+                                    )
                                 )
                             }
                         ),
                         
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .searchConversation,
-                            icon: UIImage(named: "conversation_settings_search")?
-                                .withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "conversation_settings_search")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "CONVERSATION_SETTINGS_SEARCH".localized(),
                             accessibilityIdentifier: "\(ThreadSettingsViewModel.self).search",
-                            action: .trigger(showChevron: false) { [weak self] in
+                            onTap: { [weak self] in
                                 self?.didTriggerSearch()
                             }
                         ),
                         
                         (threadVariant != .openGroup ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .addToOpenGroup,
-                                icon: UIImage(named: "ic_plus_24")?
-                                    .withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(named: "ic_plus_24")?
+                                        .withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: "vc_conversation_settings_invite_button_title".localized(),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).add_to_open_group",
-                                action: .push(showChevron: false) {
-                                    return UserSelectionVC(
-                                        with: "vc_conversation_settings_invite_button_title".localized(),
-                                        excluding: Set()
-                                    ) { [weak self] selectedUsers in
-                                        self?.addUsersToOpenGoup(selectedUsers: selectedUsers)
-                                    }
+                                onTap: { [weak self] in
+                                    self?.transitionToScreen(
+                                        UserSelectionVC(
+                                            with: "vc_conversation_settings_invite_button_title".localized(),
+                                            excluding: Set()
+                                        ) { [weak self] selectedUsers in
+                                            self?.addUsersToOpenGoup(selectedUsers: selectedUsers)
+                                        }
+                                    )
                                 }
                             )
                         ),
                         
                         (threadVariant == .openGroup || threadViewModel.threadIsBlocked == true ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .disappearingMessages,
-                                icon: UIImage(
-                                    named: (disappearingMessagesConfig.isEnabled ?
-                                        "ic_timer" :
-                                        "ic_timer_disabled"
-                                    )
-                                )?.withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(
+                                        named: (disappearingMessagesConfig.isEnabled ?
+                                            "ic_timer" :
+                                            "ic_timer_disabled"
+                                        )
+                                    )?.withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: "DISAPPEARING_MESSAGES".localized(),
                                 subtitle: (disappearingMessagesConfig.isEnabled ?
                                     String(
@@ -320,11 +335,13 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                                     "DISAPPEARING_MESSAGES_SUBTITLE_OFF".localized()
                                 ),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).disappearing_messages",
-                                action: .push(showChevron: false) {
-                                    SettingsTableViewController(
-                                        viewModel: ThreadDisappearingMessagesViewModel(
-                                            threadId: threadId,
-                                            config: disappearingMessagesConfig
+                                onTap: { [weak self] in
+                                    self?.transitionToScreen(
+                                        SessionTableViewController(
+                                            viewModel: ThreadDisappearingMessagesViewModel(
+                                                threadId: threadId,
+                                                config: disappearingMessagesConfig
+                                            )
                                         )
                                     )
                                 }
@@ -332,84 +349,95 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                         ),
                         
                         (!currentUserIsClosedGroupMember ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .editGroup,
-                                icon: UIImage(named: "table_ic_group_edit")?
-                                    .withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(named: "table_ic_group_edit")?
+                                        .withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: "EDIT_GROUP_ACTION".localized(),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).edit_group",
-                                action: .push(showChevron: false) {
-                                    EditClosedGroupVC(threadId: threadId)
+                                onTap: { [weak self] in
+                                    self?.transitionToScreen(EditClosedGroupVC(threadId: threadId))
                                 }
                             )
                         ),
 
                         (!currentUserIsClosedGroupMember ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .leaveGroup,
-                                icon: UIImage(named: "table_ic_group_leave")?
-                                    .withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(named: "table_ic_group_leave")?
+                                        .withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: "LEAVE_GROUP_ACTION".localized(),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).leave_group",
-                                action: .present {
-                                    ConfirmationModal(
-                                        info: ConfirmationModal.Info(
-                                            title: "CONFIRM_LEAVE_GROUP_TITLE".localized(),
-                                            explanation: (currentUserIsClosedGroupMember ?
-                                                "Because you are the creator of this group it will be deleted for everyone. This cannot be undone." :
-                                                "CONFIRM_LEAVE_GROUP_DESCRIPTION".localized()
-                                            ),
-                                            confirmTitle: "LEAVE_BUTTON_TITLE".localized(),
-                                            confirmStyle: .danger,
-                                            cancelStyle: .textPrimary
-                                        ) { _ in
-                                            Storage.shared.writeAsync { db in
-                                                try MessageSender.leave(db, groupPublicKey: threadId)
-                                            }
-                                        }
-                                    )
+                                confirmationInfo: ConfirmationModal.Info(
+                                    title: "CONFIRM_LEAVE_GROUP_TITLE".localized(),
+                                    explanation: (currentUserIsClosedGroupMember ?
+                                        "Because you are the creator of this group it will be deleted for everyone. This cannot be undone." :
+                                        "CONFIRM_LEAVE_GROUP_DESCRIPTION".localized()
+                                    ),
+                                    confirmTitle: "LEAVE_BUTTON_TITLE".localized(),
+                                    confirmStyle: .danger,
+                                    cancelStyle: .textPrimary
+                                ),
+                                onTap: { [weak self] in
+                                    Storage.shared.writeAsync { db in
+                                        try MessageSender.leave(db, groupPublicKey: threadId)
+                                    }
                                 }
                             )
                         ),
                          
                         (threadViewModel.threadIsNoteToSelf ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .notificationSound,
-                                icon: UIImage(named: "table_ic_notification_sound")?
-                                    .withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(named: "table_ic_notification_sound")?
+                                        .withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: "SETTINGS_ITEM_NOTIFICATION_SOUND".localized(),
-                                action: .generalEnum(
-                                    title: notificationSound.displayName,
-                                    createUpdateScreen: {
-                                        SettingsTableViewController(
+                                rightAccessory: .dropDown(
+                                    .dynamicString { notificationSound.displayName }
+                                ),
+                                onTap: { [weak self] in
+                                    self?.transitionToScreen(
+                                        SessionTableViewController(
                                             viewModel: NotificationSoundViewModel(threadId: threadId)
                                         )
-                                    }
-                                )
+                                    )
+                                }
                             )
                         ),
                         
                         (threadVariant == .contact ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .notificationMentionsOnly,
-                                icon: UIImage(named: "NotifyMentions")?
-                                    .withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(named: "NotifyMentions")?
+                                        .withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: "vc_conversation_settings_notify_for_mentions_only_title".localized(),
                                 subtitle: "vc_conversation_settings_notify_for_mentions_only_explanation".localized(),
+                                rightAccessory: .toggle(
+                                    .boolValue(threadViewModel.threadOnlyNotifyForMentions == true)
+                                ),
+                                isEnabled: (
+                                    threadViewModel.threadVariant != .closedGroup ||
+                                    currentUserIsClosedGroupMember
+                                ),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).notify_for_mentions_only",
-                                action: .customToggle(
-                                    value: (threadViewModel.threadOnlyNotifyForMentions == true),
-                                    isEnabled: (
-                                        threadViewModel.threadVariant != .closedGroup ||
-                                        currentUserIsClosedGroupMember
-                                    )
-                                ) { newValue in
+                                onTap: {
+                                    let newValue: Bool = !(threadViewModel.threadOnlyNotifyForMentions == true)
+                                    
                                     Storage.shared.writeAsync { db in
                                         try SessionThread
                                             .filter(id: threadId)
                                             .updateAll(
                                                 db,
-                                                SessionThread.Columns.onlyNotifyForMentions.set(to: newValue)
+                                                SessionThread.Columns.onlyNotifyForMentions
+                                                    .set(to: newValue)
                                             )
                                     }
                                 }
@@ -417,19 +445,24 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                         ),
                         
                         (threadViewModel.threadIsNoteToSelf ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .notificationMute,
-                                icon: UIImage(named: "Mute")?
-                                    .withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(named: "Mute")?
+                                        .withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: "CONVERSATION_SETTINGS_MUTE_LABEL".localized(),
+                                rightAccessory: .toggle(
+                                    .boolValue(threadViewModel.threadMutedUntilTimestamp != nil)
+                                ),
+                                isEnabled: (
+                                    threadViewModel.threadVariant != .closedGroup ||
+                                    currentUserIsClosedGroupMember
+                                ),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).mute",
-                                action: .customToggle(
-                                    value: (threadViewModel.threadMutedUntilTimestamp != nil),
-                                    isEnabled: (
-                                        threadViewModel.threadVariant != .closedGroup ||
-                                        currentUserIsClosedGroupMember
-                                    )
-                                ) { newValue in
+                                onTap: {
+                                    let newValue: Bool = !(threadViewModel.threadMutedUntilTimestamp != nil)
+                                    
                                     Storage.shared.writeAsync { db in
                                         try SessionThread
                                             .filter(id: threadId)
@@ -448,50 +481,52 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                         ),
                         
                         (threadViewModel.threadIsNoteToSelf || threadVariant != .contact ? nil :
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: .blockUser,
-                                icon: UIImage(named: "table_ic_block")?
-                                    .withRenderingMode(.alwaysTemplate),
+                                leftAccessory: .icon(
+                                    UIImage(named: "table_ic_block")?
+                                        .withRenderingMode(.alwaysTemplate)
+                                ),
                                 title: "CONVERSATION_SETTINGS_BLOCK_THIS_USER".localized(),
+                                rightAccessory: .toggle(
+                                    .boolValue(threadViewModel.threadIsBlocked == true)
+                                ),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).block",
-                                action: .customToggle(
-                                    value: (threadViewModel.threadIsBlocked == true),
-                                    confirmationInfo: ConfirmationModal.Info(
-                                        title: {
-                                            guard threadViewModel.threadIsBlocked == true else {
-                                                return String(
-                                                    format: "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT".localized(),
-                                                    threadViewModel.displayName
-                                                )
-                                            }
-                                            
+                                confirmationInfo: ConfirmationModal.Info(
+                                    title: {
+                                        guard threadViewModel.threadIsBlocked == true else {
                                             return String(
-                                                format: "BLOCK_LIST_UNBLOCK_TITLE_FORMAT".localized(),
+                                                format: "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT".localized(),
                                                 threadViewModel.displayName
                                             )
-                                        }(),
-                                        explanation: (threadViewModel.threadIsBlocked == true ?
-                                            nil :
-                                            "BLOCK_USER_BEHAVIOR_EXPLANATION".localized()
-                                        ),
-                                        confirmTitle: (threadViewModel.threadIsBlocked == true ?
-                                            "BLOCK_LIST_UNBLOCK_BUTTON".localized() :
-                                            "BLOCK_LIST_BLOCK_BUTTON".localized()
-                                        ),
-                                        confirmStyle: .danger,
-                                        cancelStyle: .textPrimary
-                                    ) { viewController in
-                                        let isBlocked: Bool = (threadViewModel.threadIsBlocked == true)
+                                        }
                                         
-                                        self?.updateBlockedState(
-                                            from: isBlocked,
-                                            isBlocked: !isBlocked,
-                                            threadId: threadId,
-                                            displayName: threadViewModel.displayName,
-                                            viewController: viewController
+                                        return String(
+                                            format: "BLOCK_LIST_UNBLOCK_TITLE_FORMAT".localized(),
+                                            threadViewModel.displayName
                                         )
-                                    }
-                                )
+                                    }(),
+                                    explanation: (threadViewModel.threadIsBlocked == true ?
+                                        nil :
+                                        "BLOCK_USER_BEHAVIOR_EXPLANATION".localized()
+                                    ),
+                                    confirmTitle: (threadViewModel.threadIsBlocked == true ?
+                                        "BLOCK_LIST_UNBLOCK_BUTTON".localized() :
+                                        "BLOCK_LIST_BLOCK_BUTTON".localized()
+                                    ),
+                                    confirmStyle: .danger,
+                                    cancelStyle: .textPrimary
+                                ),
+                                onTap: {
+                                    let isBlocked: Bool = (threadViewModel.threadIsBlocked == true)
+                                    
+                                    self?.updateBlockedState(
+                                        from: isBlocked,
+                                        isBlocked: !isBlocked,
+                                        threadId: threadId,
+                                        displayName: threadViewModel.displayName
+                                    )
+                                }
                             )
                         )
                     ].compactMap { $0 }
@@ -579,8 +614,7 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
         from oldBlockedState: Bool,
         isBlocked: Bool,
         threadId: String,
-        displayName: String,
-        viewController: UIViewController
+        displayName: String
     ) {
         guard oldBlockedState != isBlocked else { return }
         
@@ -591,7 +625,7 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                     .with(isBlocked: .updateTo(isBlocked))
                     .save(db)
             },
-            completion: { db, _ in
+            completion: { [weak self] db, _ in
                 try MessageSender.syncConfiguration(db, forceSyncNow: true).retainUntilComplete()
                 
                 DispatchQueue.main.async {
@@ -615,7 +649,8 @@ class ThreadSettingsViewModel: SettingsTableViewModel<ThreadSettingsViewModel.Na
                             cancelStyle: .textPrimary
                         )
                     )
-                    viewController.present(modal, animated: true)
+                    
+                    self?.transitionToScreen(modal, transitionType: .present)
                 }
             }
         )

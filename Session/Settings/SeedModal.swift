@@ -16,8 +16,8 @@ final class SeedModal: Modal {
     
     // MARK: - Initialization
     
-    override init(afterClosed: (() -> ())? = nil) {
-        super.init(afterClosed: afterClosed)
+    override init(targetView: UIView? = nil, afterClosed: (() -> ())? = nil) {
+        super.init(targetView: targetView, afterClosed: afterClosed)
         
         self.modalPresentationStyle = .overFullScreen
         self.modalTransitionStyle = .crossDissolve

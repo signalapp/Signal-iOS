@@ -7,17 +7,17 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class HelpViewModel: SettingsTableViewModel<NoNav, HelpViewModel.Section, HelpViewModel.Section> {
+class HelpViewModel: SessionTableViewModel<NoNav, HelpViewModel.Section, HelpViewModel.Section> {
     // MARK: - Section
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case report
         case translate
         case feedback
         case faq
         case support
         
-        var style: SettingSectionHeaderStyle { .padding }
+        var style: SessionTableSectionStyle { .padding }
     }
     
     // MARK: - Content
@@ -42,78 +42,98 @@ class HelpViewModel: SettingsTableViewModel<NoNav, HelpViewModel.Section, HelpVi
                 SectionModel(
                     model: .report,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .report,
                             title: "HELP_REPORT_BUG_TITLE".localized(),
                             subtitle: "HELP_REPORT_BUG_DESCRIPTION".localized(),
-                            action: .rightButtonAction(
-                                title: "HELP_REPORT_BUG_ACTION_TITLE".localized(),
-                                action: { HelpViewModel.shareLogs(targetView: $0) }
-                            )
+                            rightAccessory: .highlightingBackgroundLabel(
+                                title: "HELP_REPORT_BUG_ACTION_TITLE".localized()
+                            ),
+                            onTap: { HelpViewModel.shareLogs(targetView: $0) }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .translate,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .translate,
                             title: "HELP_TRANSLATE_TITLE".localized(),
-                            action: .trigger(action: {
+                            rightAccessory: .icon(
+                                UIImage(named: "icon_link")?
+                                    .withRenderingMode(.alwaysTemplate),
+                                size: .fit
+                            ),
+                            onTap: {
                                 guard let url: URL = URL(string: "https://crowdin.com/project/session-ios") else {
                                     return
                                 }
                                 
                                 UIApplication.shared.open(url)
-                            })
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .feedback,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .feedback,
                             title: "HELP_FEEDBACK_TITLE".localized(),
-                            action: .trigger(action: {
+                            rightAccessory: .icon(
+                                UIImage(named: "icon_link")?
+                                    .withRenderingMode(.alwaysTemplate),
+                                size: .fit
+                            ),
+                            onTap: {
                                 guard let url: URL = URL(string: "https://getsession.org/survey") else {
                                     return
                                 }
                                 
                                 UIApplication.shared.open(url)
-                            })
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .faq,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .faq,
                             title: "HELP_FAQ_TITLE".localized(),
-                            action: .trigger(action: {
+                            rightAccessory: .icon(
+                                UIImage(named: "icon_link")?
+                                    .withRenderingMode(.alwaysTemplate),
+                                size: .fit
+                            ),
+                            onTap: {
                                 guard let url: URL = URL(string: "https://getsession.org/faq") else {
                                     return
                                 }
                                 
                                 UIApplication.shared.open(url)
-                            })
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .support,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .support,
                             title: "HELP_SUPPORT_TITLE".localized(),
-                            action: .trigger(action: {
+                            rightAccessory: .icon(
+                                UIImage(named: "icon_link")?
+                                    .withRenderingMode(.alwaysTemplate),
+                                size: .fit
+                            ),
+                            onTap: {
                                 guard let url: URL = URL(string: "https://sessionapp.zendesk.com/hc/en-us") else {
                                     return
                                 }
                                 
                                 UIApplication.shared.open(url)
-                            })
+                            }
                         )
                     ]
                 )

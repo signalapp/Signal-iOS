@@ -55,8 +55,8 @@ final class SeedVC: BaseVC {
         return result
     }()
     
-    private lazy var copyButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .large)
+    private lazy var copyButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .large)
         result.setTitle("copy".localized(), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(copyMnemonic), for: UIControl.Event.touchUpInside)
         

@@ -6,7 +6,7 @@ import DifferenceKit
 import SignalUtilitiesKit
 
 public class BlockedContactsViewModel {
-    public typealias SectionModel = ArraySection<Section, DataModel>
+    public typealias SectionModel = ArraySection<Section, SessionCell.Info<Profile>>
     
     // MARK: - Section
     
@@ -118,6 +118,26 @@ public class BlockedContactsViewModel {
                         .sorted { lhs, rhs -> Bool in
                             lhs.profile.displayName() > rhs.profile.displayName()
                         }
+                        .map { model -> SessionCell.Info<Profile> in
+                            SessionCell.Info(
+                                id: model.profile,
+                                leftAccessory: .profile(model.profile.id, model.profile),
+                                title: model.profile.displayName(),
+                                rightAccessory: .radio(
+                                    isSelected: { [weak self] in
+                                        self?.selectedContactIds.contains(model.profile.id) == true
+                                    }
+                                ),
+                                onTap: { [weak self] in
+                                    guard self?.selectedContactIds.contains(model.profile.id) == true else {
+                                        self?.selectedContactIds.insert(model.profile.id)
+                                        return
+                                    }
+                                    
+                                    self?.selectedContactIds.remove(model.profile.id)
+                                }
+                            )
+                        }
                 )
             ],
             (!data.isEmpty && (pageInfo.pageOffset + pageInfo.currentCount) < pageInfo.totalCount ?
@@ -129,15 +149,6 @@ public class BlockedContactsViewModel {
     
     public func updateContactData(_ updatedData: [SectionModel]) {
         self.contactData = updatedData
-    }
-    
-    public func toggleSelection(contactId: String) {
-        guard selectedContactIds.contains(contactId) else {
-            selectedContactIds.insert(contactId)
-            return
-        }
-        
-        selectedContactIds.remove(contactId)
     }
     
     // MARK: - DataModel

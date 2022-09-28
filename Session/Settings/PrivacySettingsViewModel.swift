@@ -1,17 +1,22 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import Combine
 import GRDB
 import DifferenceKit
 import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.NavButton, PrivacySettingsViewModel.Section, PrivacySettingsViewModel.Item> {
+class PrivacySettingsViewModel: SessionTableViewModel<PrivacySettingsViewModel.NavButton, PrivacySettingsViewModel.Section, PrivacySettingsViewModel.Item> {
+    private let shouldShowCloseButton: Bool
+    
     // MARK: - Initialization
     
     init(shouldShowCloseButton: Bool = false) {
-        super.init(closeNavItemId: (shouldShowCloseButton ? NavButton.close : nil))
+        self.shouldShowCloseButton = shouldShowCloseButton
+        
+        super.init()
     }
     
     // MARK: - Config
@@ -20,7 +25,7 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
         case close
     }
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case screenSecurity
         case readReceipts
         case typingIndicators
@@ -37,7 +42,7 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
             }
         }
         
-        var style: SettingSectionHeaderStyle { return .title }
+        var style: SessionTableSectionStyle { return .title }
     }
     
     public enum Item: Differentiable {
@@ -47,6 +52,24 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
         case typingIndicators
         case linkPreviews
         case calls
+    }
+    
+    // MARK: - Navigation
+    
+    override var leftNavItems: AnyPublisher<[NavItem]?, Never> {
+        guard self.shouldShowCloseButton else { return Just([]).eraseToAnyPublisher() }
+        
+        return Just([
+            NavItem(
+                id: .close,
+                image: UIImage(named: "X")?
+                    .withRenderingMode(.alwaysTemplate),
+                style: .plain,
+                accessibilityIdentifier: "Close Button"
+            ) { [weak self] in
+                self?.dismissScreen()
+            }
+        ]).eraseToAnyPublisher()
     }
     
     // MARK: - Content
@@ -71,35 +94,50 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
                 SectionModel(
                     model: .screenSecurity,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .screenLock,
                             title: "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE".localized(),
                             subtitle: "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION".localized(),
-                            action: .settingBool(key: .isScreenLockEnabled)
+                            rightAccessory: .toggle(.settingBool(key: .isScreenLockEnabled)),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.isScreenLockEnabled] = !db[.isScreenLockEnabled]
+                                }
+                            }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .screenshotNotifications,
                             title: "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE".localized(),
                             subtitle: "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION".localized(),
-                            action: .settingBool(key: .showScreenshotNotifications)
+                            rightAccessory: .toggle(.settingBool(key: .showScreenshotNotifications)),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.showScreenshotNotifications] = !db[.showScreenshotNotifications]
+                                }
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .readReceipts,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .readReceipts,
                             title: "PRIVACY_READ_RECEIPTS_TITLE".localized(),
                             subtitle: "PRIVACY_READ_RECEIPTS_DESCRIPTION".localized(),
-                            action: .settingBool(key: .areReadReceiptsEnabled)
+                            rightAccessory: .toggle(.settingBool(key: .areReadReceiptsEnabled)),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.areReadReceiptsEnabled] = !db[.areReadReceiptsEnabled]
+                                }
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .typingIndicators,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .typingIndicators,
                             title: "PRIVACY_TYPING_INDICATORS_TITLE".localized(),
                             subtitle: "PRIVACY_TYPING_INDICATORS_DESCRIPTION".localized(),
@@ -129,38 +167,52 @@ class PrivacySettingsViewModel: SettingsTableViewModel<PrivacySettingsViewModel.
                                 
                                 return result
                             },
-                            action: .settingBool(key: .typingIndicatorsEnabled)
+                            rightAccessory: .toggle(.settingBool(key: .typingIndicatorsEnabled)),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.typingIndicatorsEnabled] = !db[.typingIndicatorsEnabled]
+                                }
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .linkPreviews,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .linkPreviews,
                             title: "PRIVACY_LINK_PREVIEWS_TITLE".localized(),
                             subtitle: "PRIVACY_LINK_PREVIEWS_DESCRIPTION".localized(),
-                            action: .settingBool(key: .areLinkPreviewsEnabled)
+                            rightAccessory: .toggle(.settingBool(key: .areLinkPreviewsEnabled)),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.areLinkPreviewsEnabled] = !db[.areLinkPreviewsEnabled]
+                                }
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .calls,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .calls,
                             title: "PRIVACY_CALLS_TITLE".localized(),
                             subtitle: "PRIVACY_CALLS_DESCRIPTION".localized(),
-                            action: .settingBool(
-                                key: .areCallsEnabled,
-                                confirmationInfo: ConfirmationModal.Info(
-                                    title: "PRIVACY_CALLS_WARNING_TITLE".localized(),
-                                    explanation: "PRIVACY_CALLS_WARNING_DESCRIPTION".localized(),
-                                    stateToShow: .whenDisabled,
-                                    confirmTitle: "continue_2".localized(),
-                                    confirmStyle: .textPrimary
-                                ) { _ in Permissions.requestMicrophonePermissionIfNeeded() }
-                            )
+                            rightAccessory: .toggle(.settingBool(key: .areCallsEnabled)),
+                            confirmationInfo: ConfirmationModal.Info(
+                                title: "PRIVACY_CALLS_WARNING_TITLE".localized(),
+                                explanation: "PRIVACY_CALLS_WARNING_DESCRIPTION".localized(),
+                                stateToShow: .whenDisabled,
+                                confirmTitle: "continue_2".localized(),
+                                confirmStyle: .textPrimary,
+                                onConfirm: { _ in Permissions.requestMicrophonePermissionIfNeeded() }
+                            ),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.areCallsEnabled] = !db[.areCallsEnabled]
+                                }
+                            }
                         )
                     ]
                 )

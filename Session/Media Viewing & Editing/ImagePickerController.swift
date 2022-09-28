@@ -406,7 +406,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     var isShowingCollectionPickerController: Bool = false
     
-    lazy var collectionPickerController: SettingsTableViewController = SettingsTableViewController(
+    lazy var collectionPickerController: SessionTableViewController = SessionTableViewController(
         viewModel: PhotoCollectionPickerViewModel(library: library) { [weak self] collection in
             guard self?.photoCollection != collection else {
                 self?.hideCollectionPicker()

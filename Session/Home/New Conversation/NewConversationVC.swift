@@ -62,7 +62,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
         result.dataSource = self
         result.separatorStyle = .none
         result.themeBackgroundColor = .backgroundSecondary
-        result.register(view: UserCell.self)
+        result.register(view: SessionCell.self)
         
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
@@ -119,13 +119,19 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
         let profile = newConversationViewModel.sectionData[indexPath.section].contacts[indexPath.row]
-        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
         cell.update(
-            with: profile.id,
-            profile: profile,
-            isZombie: false,
-            accessory: .none
+            with: SessionCell.Info(
+                id: profile,
+                leftAccessory: .profile(profile.id, profile),
+                title: profile.displayName()
+            ),
+            style: .edgeToEdge,
+            position: Position.with(
+                indexPath.row,
+                count: newConversationViewModel.sectionData[indexPath.section].contacts.count
+            )
         )
         
         return cell

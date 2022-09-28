@@ -79,8 +79,8 @@ final class ReactionListSheet: BaseVC {
         return result
     }()
     
-    private lazy var clearAllButton: OutlineButton = {
-        let result: OutlineButton = OutlineButton(style: .destructiveBorderless, size: .small)
+    private lazy var clearAllButton: SessionButton = {
+        let result: SessionButton = SessionButton(style: .destructiveBorderless, size: .small)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setTitle("MESSAGE_REQUESTS_CLEAR_ALL".localized(), for: .normal)
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
@@ -93,7 +93,7 @@ final class ReactionListSheet: BaseVC {
         let result: UITableView = UITableView()
         result.dataSource = self
         result.delegate = self
-        result.register(view: UserCell.self)
+        result.register(view: SessionCell.self)
         result.register(view: FooterCell.self)
         result.separatorStyle = .none
         result.themeBackgroundColor = .clear
@@ -425,18 +425,31 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
             return footerCell
         }
         
-        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
         let cellViewModel: MessageViewModel.ReactionInfo = self.selectedReactionUserList[indexPath.row]
+        let authorId: String = cellViewModel.reaction.authorId
         cell.update(
-            with: cellViewModel.reaction.authorId,
-            profile: cellViewModel.profile,
-            isZombie: false,
-            mediumFont: true,
-            accessory: (cellViewModel.reaction.authorId == self.messageViewModel.currentUserPublicKey ?
-                .x :
-                .none
+            with: SessionCell.Info(
+                id: cellViewModel,
+                leftAccessory: .profile(authorId, cellViewModel.profile),
+                title: (
+                    cellViewModel.profile?.displayName() ??
+                    Profile.truncated(
+                        id: authorId,
+                        threadVariant: self.messageViewModel.threadVariant
+                    )
+                ),
+                rightAccessory: (authorId != self.messageViewModel.currentUserPublicKey ? nil :
+                    .icon(
+                        UIImage(named: "X")?
+                            .withRenderingMode(.alwaysTemplate),
+                        size: .fit
+                    )
+                ),
+                isEnabled: (authorId == self.messageViewModel.currentUserPublicKey)
             ),
-            themeBackgroundColor: .backgroundSecondary
+            style: .edgeToEdge,
+            position: Position.with(indexPath.row, count: self.selectedReactionUserList.count)
         )
         
         return cell

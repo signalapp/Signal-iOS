@@ -86,7 +86,7 @@ final class RestoreVC: BaseVC {
         restoreButtonBottomOffsetConstraint = restoreButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         
         // Set up restore button
-        let restoreButton = OutlineButton(style: .filled, size: .large)
+        let restoreButton = SessionButton(style: .filled, size: .large)
         restoreButton.setTitle("continue_2".localized(), for: UIControl.State.normal)
         restoreButton.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
         

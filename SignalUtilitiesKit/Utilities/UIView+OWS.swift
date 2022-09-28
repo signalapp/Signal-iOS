@@ -49,47 +49,6 @@ public extension UINavigationController {
 
 @objc
 public extension UIView {
-    func renderAsImage() -> UIImage? {
-        return renderAsImage(opaque: false, scale: UIScreen.main.scale)
-    }
-
-    func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage? {
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = scale
-        format.opaque = opaque
-        let renderer = UIGraphicsImageRenderer(bounds: self.bounds,
-                                               format: format)
-        return renderer.image { (context) in
-            self.layer.render(in: context.cgContext)
-        }
-    }
-
-    class func spacer(withWidth width: CGFloat) -> UIView {
-        let view = UIView()
-        view.autoSetDimension(.width, toSize: width)
-        return view
-    }
-
-    class func spacer(withHeight height: CGFloat) -> UIView {
-        let view = UIView()
-        view.autoSetDimension(.height, toSize: height)
-        return view
-    }
-
-    class func hStretchingSpacer() -> UIView {
-        let view = UIView()
-        view.setContentHuggingHorizontalLow()
-        view.setCompressionResistanceHorizontalLow()
-        return view
-    }
-
-    class func vStretchingSpacer() -> UIView {
-        let view = UIView()
-        view.setContentHuggingVerticalLow()
-        view.setCompressionResistanceVerticalLow()
-        return view
-    }
-
     func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
         guard subviews.contains(subview) else {
             owsFailDebug("Not a subview.")

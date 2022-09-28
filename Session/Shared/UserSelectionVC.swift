@@ -25,7 +25,7 @@ final class UserSelectionVC: BaseVC, UITableViewDataSource, UITableViewDelegate 
         result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.alwaysBounceVertical = false
-        result.register(view: UserCell.self)
+        result.register(view: SessionCell.self)
         
         return result
     }()
@@ -60,12 +60,19 @@ final class UserSelectionVC: BaseVC, UITableViewDataSource, UITableViewDelegate 
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
+        let profile: Profile = users[indexPath.row]
         cell.update(
-            with: users[indexPath.row].id,
-            profile: users[indexPath.row],
-            isZombie: false,
-            accessory: .tick(isSelected: selectedUsers.contains(users[indexPath.row].id))
+            with: SessionCell.Info(
+                id: profile,
+                leftAccessory: .profile(profile.id, profile),
+                title: profile.displayName(),
+                rightAccessory: .radio(isSelected: { [weak self] in
+                    self?.selectedUsers.contains(profile.id) == true
+                })
+            ),
+            style: .edgeToEdge,
+            position: Position.with(indexPath.row, count: users.count)
         )
         
         return cell

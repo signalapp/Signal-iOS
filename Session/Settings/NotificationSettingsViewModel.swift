@@ -7,10 +7,10 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class NotificationSettingsViewModel: SettingsTableViewModel<NoNav, NotificationSettingsViewModel.Section, NotificationSettingsViewModel.Setting> {
+class NotificationSettingsViewModel: SessionTableViewModel<NoNav, NotificationSettingsViewModel.Section, NotificationSettingsViewModel.Setting> {
     // MARK: - Config
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case strategy
         case style
         case content
@@ -23,7 +23,7 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NoNav, NotificationS
             }
         }
         
-        var style: SettingSectionHeaderStyle {
+        var style: SessionTableSectionStyle {
             switch self {
                 case .content: return .padding
                 default: return .title
@@ -60,62 +60,79 @@ class NotificationSettingsViewModel: SettingsTableViewModel<NoNav, NotificationS
                 SectionModel(
                     model: .strategy,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .strategyUseFastMode,
                             title: "NOTIFICATIONS_STRATEGY_FAST_MODE_TITLE".localized(),
                             subtitle: "NOTIFICATIONS_STRATEGY_FAST_MODE_DESCRIPTION".localized(),
-                            action: .userDefaultsBool(
-                                defaults: UserDefaults.standard,
-                                key: "isUsingFullAPNs",
-                                onChange: {
-                                    // Force sync the push tokens on change
-                                    SyncPushTokensJob.run(uploadOnlyIfStale: false)
-                                }
+                            rightAccessory: .toggle(
+                                .userDefaults(UserDefaults.standard, key: "isUsingFullAPNs")
                             ),
-                            extraActionTitle: "NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION".localized(),
-                            onExtraAction: { UIApplication.shared.openSystemSettings() }
+                            extraAction: SessionCell.ExtraAction(
+                                title: "NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION".localized(),
+                                onTap: { UIApplication.shared.openSystemSettings() }
+                            ),
+                            onTap: {
+                                UserDefaults.standard.set(
+                                    !UserDefaults.standard.bool(forKey: "isUsingFullAPNs"),
+                                    forKey: "isUsingFullAPNs"
+                                )
+                                
+                                // Force sync the push tokens on change
+                                SyncPushTokensJob.run(uploadOnlyIfStale: false)
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .style,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .styleSound,
                             title: "NOTIFICATIONS_STYLE_SOUND_TITLE".localized(),
-                            action: .settingEnum(
-                                db,
-                                type: Preferences.Sound.self,
-                                key: .defaultNotificationSound,
-                                titleGenerator: { $0.defaulting(to: .defaultNotificationSound).displayName },
-                                createUpdateScreen: {
-                                    SettingsTableViewController(viewModel: NotificationSoundViewModel())
-                                }
-                            )
+                            rightAccessory: .dropDown(
+                                .dynamicString(
+                                    type: Preferences.Sound.self,
+                                    key: .defaultNotificationSound,
+                                    value: { $0.defaulting(to: .defaultNotificationSound).displayName }
+                                )
+                            ),
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(
+                                    SessionTableViewController(viewModel: NotificationSoundViewModel())
+                                )
+                            }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .styleSoundWhenAppIsOpen,
                             title: "NOTIFICATIONS_STYLE_SOUND_WHEN_OPEN_TITLE".localized(),
-                            action: .settingBool(key: .playNotificationSoundInForeground)
+                            rightAccessory: .toggle(.settingBool(key: .playNotificationSoundInForeground)),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.playNotificationSoundInForeground] = !db[.playNotificationSoundInForeground]
+                                }
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .content,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .content,
                             title: "NOTIFICATIONS_STYLE_CONTENT_TITLE".localized(),
                             subtitle: "NOTIFICATIONS_STYLE_CONTENT_DESCRIPTION".localized(),
-                            action: .settingEnum(
-                                db,
-                                type: Preferences.NotificationPreviewType.self,
-                                key: .preferencesNotificationPreviewType,
-                                titleGenerator: { $0.defaulting(to: .defaultPreviewType).name },
-                                createUpdateScreen: {
-                                    SettingsTableViewController(viewModel: NotificationContentViewModel())
-                                }
-                            )
+                            rightAccessory: .dropDown(
+                                .dynamicString(
+                                    type: Preferences.NotificationPreviewType.self,
+                                    key: .preferencesNotificationPreviewType,
+                                    value: { $0.defaulting(to: .defaultPreviewType).name }
+                                )
+                            ),
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(
+                                    SessionTableViewController(viewModel: NotificationContentViewModel())
+                                )
+                            }
                         )
                     ]
                 )

@@ -47,18 +47,18 @@ internal enum Theme_ClassicDark: ThemeColors {
         .radioButton_selectedBorder: .classicDark6,
         .radioButton_unselectedBorder: .classicDark6,
         
-        // OutlineButton
-        .outlineButton_text: .primary,
-        .outlineButton_background: .clear,
-        .outlineButton_highlight: .classicDark6.withAlphaComponent(0.3),
-        .outlineButton_border: .primary,
-        .outlineButton_filledText: .classicDark6,
-        .outlineButton_filledBackground: .classicDark1,
-        .outlineButton_filledHighlight: .classicDark3,
-        .outlineButton_destructiveText: .dangerDark,
-        .outlineButton_destructiveBackground: .clear,
-        .outlineButton_destructiveHighlight: .dangerDark.withAlphaComponent(0.3),
-        .outlineButton_destructiveBorder: .dangerDark,
+        // SessionButton
+        .sessionButton_text: .primary,
+        .sessionButton_background: .clear,
+        .sessionButton_highlight: .classicDark6.withAlphaComponent(0.3),
+        .sessionButton_border: .primary,
+        .sessionButton_filledText: .classicDark6,
+        .sessionButton_filledBackground: .classicDark1,
+        .sessionButton_filledHighlight: .classicDark3,
+        .sessionButton_destructiveText: .dangerDark,
+        .sessionButton_destructiveBackground: .clear,
+        .sessionButton_destructiveHighlight: .dangerDark.withAlphaComponent(0.3),
+        .sessionButton_destructiveBorder: .dangerDark,
         
         // SolidButton
         .solidButton_background: .classicDark3,

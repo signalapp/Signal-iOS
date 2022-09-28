@@ -2,13 +2,16 @@
 
 import UIKit
 import GRDB
+import DifferenceKit
 import SessionUIKit
+import SessionUtilitiesKit
 
-class SettingsCell: UITableViewCell {
+public class SessionCell: UITableViewCell {
     public static let cornerRadius: CGFloat = 17
     
-    enum Style {
+    public enum Style {
         case rounded
+        case roundedEdgeToEdge
         case edgeToEdge
     }
     
@@ -16,7 +19,7 @@ class SettingsCell: UITableViewCell {
     private var instanceView: UIView = UIView()
     private var position: Position?
     private var subtitleExtraView: UIView?
-    private var onExtraAction: (() -> Void)?
+    private var onExtraActionTap: (() -> Void)?
     
     // MARK: - UI
     
@@ -26,7 +29,8 @@ class SettingsCell: UITableViewCell {
     private var topSeparatorRightConstraint: NSLayoutConstraint = NSLayoutConstraint()
     private var botSeparatorLeftConstraint: NSLayoutConstraint = NSLayoutConstraint()
     private var botSeparatorRightConstraint: NSLayoutConstraint = NSLayoutConstraint()
-    private lazy var stackViewImageHeightConstraint: NSLayoutConstraint = contentStackView.heightAnchor.constraint(equalTo: iconImageView.heightAnchor)
+    private lazy var leftAccessoryFillConstraint: NSLayoutConstraint = contentStackView.set(.height, to: .height, of: leftAccessoryView)
+    private lazy var rightAccessoryFillConstraint: NSLayoutConstraint = contentStackView.set(.height, to: .height, of: rightAccessoryView)// .heightAnchor.constraint(equalTo: iconImageView.heightAnchor)
     
     private let cellBackgroundView: UIView = {
         let result: UIView = UIView()
@@ -66,13 +70,8 @@ class SettingsCell: UITableViewCell {
         return result
     }()
     
-    private let iconImageView: UIImageView = {
-        let result: UIImageView = UIImageView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.contentMode = .scaleAspectFit
-        result.themeTintColor = .textPrimary
-        result.layer.minificationFilter = .trilinear
-        result.layer.magnificationFilter = .trilinear
+    public let leftAccessoryView: AccessoryView = {
+        let result: AccessoryView = AccessoryView()
         result.isHidden = true
         
         return result
@@ -142,90 +141,9 @@ class SettingsCell: UITableViewCell {
         return result
     }()
     
-    private let pushChevronImageView: UIImageView = {
-        let result: UIImageView = UIImageView(image: UIImage(systemName: "chevron.right"))
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.themeTintColor = .textPrimary
+    public let rightAccessoryView: AccessoryView = {
+        let result: AccessoryView = AccessoryView()
         result.isHidden = true
-        result.setContentHuggingHigh()
-        result.setCompressionResistanceHigh()
-        
-        return result
-    }()
-    
-    private let toggleSwitch: UISwitch = {
-        let result: UISwitch = UISwitch()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.isUserInteractionEnabled = false // Triggered by didSelectCell instead
-        result.themeOnTintColor = .primary
-        result.isHidden = true
-        result.setContentHuggingHigh()
-        result.setCompressionResistanceHigh()
-        
-        return result
-    }()
-    
-    private let dropDownStackView: UIStackView = {
-        let result: UIStackView = UIStackView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.axis = .horizontal
-        result.distribution = .fill
-        result.alignment = .center
-        result.spacing = Values.verySmallSpacing
-        result.isHidden = true
-        
-        return result
-    }()
-    
-    private let dropDownImageView: UIImageView = {
-        let result: UIImageView = UIImageView(image: UIImage(systemName: "arrowtriangle.down.fill"))
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.themeTintColor = .textPrimary
-        result.set(.width, to: 10)
-        result.set(.height, to: 10)
-        
-        return result
-    }()
-    
-    private let dropDownLabel: UILabel = {
-        let result: UILabel = UILabel()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = .systemFont(ofSize: Values.smallFontSize, weight: .medium)
-        result.themeTextColor = .textPrimary
-        result.setContentHuggingHigh()
-        result.setCompressionResistanceHigh()
-        
-        return result
-    }()
-    
-    private let tickImageView: UIImageView = {
-        let result: UIImageView = UIImageView(image: UIImage(systemName: "checkmark"))
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.themeTintColor = .primary
-        result.isHidden = true
-        result.setContentHuggingHigh()
-        result.setCompressionResistanceHigh()
-        
-        return result
-    }()
-    
-    public lazy var rightActionButtonContainerView: UIView = {
-        let result: UIView = UIView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.themeBackgroundColor = .solidButton_background
-        result.layer.cornerRadius = 5
-        result.isHidden = true
-        
-        return result
-    }()
-    
-    private lazy var rightActionButtonLabel: UILabel = {
-        let result: UILabel = UILabel()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.themeTextColor = .textPrimary
-        result.setContentHuggingHigh()
-        result.setCompressionResistanceHigh()
         
         return result
     }()
@@ -262,23 +180,14 @@ class SettingsCell: UITableViewCell {
         cellBackgroundView.addSubview(contentStackView)
         cellBackgroundView.addSubview(botSeparator)
         
-        contentStackView.addArrangedSubview(iconImageView)
+        contentStackView.addArrangedSubview(leftAccessoryView)
         contentStackView.addArrangedSubview(titleStackView)
-        contentStackView.addArrangedSubview(pushChevronImageView)
-        contentStackView.addArrangedSubview(toggleSwitch)
-        contentStackView.addArrangedSubview(tickImageView)
-        contentStackView.addArrangedSubview(dropDownStackView)
-        contentStackView.addArrangedSubview(rightActionButtonContainerView)
+        contentStackView.addArrangedSubview(rightAccessoryView)
         
         titleStackView.addArrangedSubview(titleLabel)
         titleStackView.addArrangedSubview(subtitleLabel)
         titleStackView.addArrangedSubview(extraActionTopSpacingView)
         titleStackView.addArrangedSubview(extraActionButton)
-        
-        dropDownStackView.addArrangedSubview(dropDownImageView)
-        dropDownStackView.addArrangedSubview(dropDownLabel)
-        
-        rightActionButtonContainerView.addSubview(rightActionButtonLabel)
         
         setupLayout()
     }
@@ -294,17 +203,15 @@ class SettingsCell: UITableViewCell {
         topSeparator.pin(.top, to: .top, of: cellBackgroundView)
         topSeparatorLeftConstraint = topSeparator.pin(.left, to: .left, of: cellBackgroundView)
         topSeparatorRightConstraint = topSeparator.pin(.right, to: .right, of: cellBackgroundView)
-        contentStackView.pin(to: cellBackgroundView)
         
-        rightActionButtonContainerView.center(.vertical, in: contentStackView)
-        rightActionButtonLabel.pin(to: rightActionButtonContainerView, withInset: Values.smallSpacing)
+        contentStackView.pin(to: cellBackgroundView)
         
         botSeparatorLeftConstraint = botSeparator.pin(.left, to: .left, of: cellBackgroundView)
         botSeparatorRightConstraint = botSeparator.pin(.right, to: .right, of: cellBackgroundView)
         botSeparator.pin(.bottom, to: .bottom, of: cellBackgroundView)
     }
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         
         // Need to force the contentStackView to layout if needed as it might not have updated it's
@@ -363,109 +270,125 @@ class SettingsCell: UITableViewCell {
     
     // MARK: - Content
     
-    override func prepareForReuse() {
+    public override func prepareForReuse() {
         super.prepareForReuse()
         
         self.instanceView = UIView()
         self.position = nil
-        self.onExtraAction = nil
+        self.onExtraActionTap = nil
         self.accessibilityIdentifier = nil
         
-        stackViewImageHeightConstraint.isActive = false
-        iconImageView.removeConstraints(iconImageView.constraints)
-        iconImageView.image = nil
-        iconImageView.themeTintColor = .textPrimary
+        leftAccessoryView.prepareForReuse()
+        leftAccessoryFillConstraint.isActive = false
         titleLabel.text = ""
         titleLabel.themeTextColor = .textPrimary
         subtitleLabel.text = ""
-        dropDownLabel.text = ""
+        subtitleLabel.themeTextColor = .textPrimary
+        rightAccessoryView.prepareForReuse()
+        rightAccessoryFillConstraint.isActive = false
         
         topSeparator.isHidden = true
-        iconImageView.isHidden = true
         subtitleLabel.isHidden = true
         extraActionTopSpacingView.isHidden = true
         extraActionButton.setTitle("", for: .normal)
         extraActionButton.isHidden = true
-        pushChevronImageView.isHidden = true
-        toggleSwitch.isHidden = true
-        dropDownStackView.isHidden = true
-        tickImageView.isHidden = true
-        tickImageView.alpha = 1
-        rightActionButtonContainerView.isHidden = true
         botSeparator.isHidden = true
         
         subtitleExtraView?.removeFromSuperview()
         subtitleExtraView = nil
     }
     
-    public func update(
-        style: Style = .rounded,
-        icon: UIImage?,
-        iconSize: IconSize,
-        iconSetter: ((UIImageView) -> Void)?,
-        title: String,
-        subtitle: String?,
-        alignment: NSTextAlignment,
-        accessibilityIdentifier: String?,
-        subtitleExtraViewGenerator: (() -> UIView)?,
-        action: SettingsAction,
-        extraActionTitle: String?,
-        onExtraAction: (() -> Void)?,
+    public func update<ID: Hashable & Differentiable>(
+        with info: Info<ID>,
+        style: Style,
         position: Position
     ) {
         self.instanceView = UIView()
         self.position = position
-        self.subtitleExtraView = subtitleExtraViewGenerator?()
-        self.onExtraAction = onExtraAction
-        self.accessibilityIdentifier = accessibilityIdentifier
+        self.subtitleExtraView = info.subtitleExtraViewGenerator?()
+        self.onExtraActionTap = info.extraAction?.onTap
+        self.accessibilityIdentifier = info.accessibilityIdentifier
         
-        stackViewImageHeightConstraint.isActive = {
-            switch iconSize {
-                case .small, .medium: return false
-                case .large: return true   // Edge-to-edge in this case
-            }
-        }()
+        let leftFitToEdge: Bool = (info.leftAccessory?.shouldFitToEdge == true)
+        let rightFitToEdge: Bool = (!leftFitToEdge && info.rightAccessory?.shouldFitToEdge == true)
+        leftAccessoryFillConstraint.isActive = leftFitToEdge
+        leftAccessoryView.update(
+            with: info.leftAccessory,
+            tintColor: info.tintColor,
+            isEnabled: info.isEnabled
+        )
+        rightAccessoryView.update(
+            with: info.rightAccessory,
+            tintColor: info.tintColor,
+            isEnabled: info.isEnabled
+        )
+        rightAccessoryFillConstraint.isActive = rightFitToEdge
         contentStackView.layoutMargins = UIEdgeInsets(
-            top: Values.mediumSpacing,
-            leading: {
-                switch iconSize {
-                    case .small, .medium: return Values.largeSpacing
-                    case .large: return 0   // Edge-to-edge in this case
-                }
-            }(),
-            bottom: Values.mediumSpacing,
-            trailing: Values.largeSpacing
+            top: (leftFitToEdge || rightFitToEdge ? 0 : Values.mediumSpacing),
+            left: (leftFitToEdge ? 0 : Values.largeSpacing),
+            bottom: (leftFitToEdge || rightFitToEdge ? 0 : Values.mediumSpacing),
+            right: (rightFitToEdge ? 0 : Values.largeSpacing)
         )
         
-        // Left content
-        iconImageView.set(.width, to: iconSize.size)
-        iconImageView.set(.height, to: iconSize.size)
-        iconImageView.image = icon
-        iconImageView.isHidden = (icon == nil && iconSetter == nil)
-        titleLabel.text = title
-        titleLabel.textAlignment = alignment
-        subtitleLabel.text = subtitle
-        subtitleLabel.isHidden = (subtitle == nil)
-        extraActionTopSpacingView.isHidden = (extraActionTitle == nil)
-        extraActionButton.setTitle(extraActionTitle, for: .normal)
-        extraActionButton.isHidden = (extraActionTitle == nil)
-        
-        // Call the iconSetter closure if provided to set the icon
-        iconSetter?(iconImageView)
+        titleLabel.text = info.title
+        titleLabel.themeTextColor = info.tintColor
+        subtitleLabel.text = info.subtitle
+        subtitleLabel.themeTextColor = info.tintColor
+        subtitleLabel.isHidden = (info.subtitle == nil)
+        extraActionTopSpacingView.isHidden = (info.extraAction == nil)
+        extraActionButton.setTitle(info.extraAction?.title, for: .normal)
+        extraActionButton.isHidden = (info.extraAction == nil)
         
         // Styling and positioning
-        cellBackgroundView.themeBackgroundColor = (action.shouldHaveBackground ?
+        let defaultEdgePadding: CGFloat
+        cellBackgroundView.themeBackgroundColor = (info.shouldHaveBackground ?
             .settings_tabBackground :
             nil
         )
-        cellSelectedBackgroundView.isHidden = !action.shouldHaveBackground
-        backgroundLeftConstraint.constant = (style == .rounded ? Values.largeSpacing : 0)
-        backgroundRightConstraint.constant = (style == .rounded ? -Values.largeSpacing : 0)
-        topSeparatorLeftConstraint.constant = (style == .rounded ? Values.mediumSpacing : 0)
-        topSeparatorRightConstraint.constant = (style == .rounded ? -Values.mediumSpacing : 0)
-        botSeparatorLeftConstraint.constant = (style == .rounded ? Values.mediumSpacing : 0)
-        botSeparatorRightConstraint.constant = (style == .rounded ? -Values.mediumSpacing : 0)
-        cellBackgroundView.layer.cornerRadius = (style == .rounded ? SettingsCell.cornerRadius : 0)
+        cellSelectedBackgroundView.isHidden = (!info.isEnabled || !info.shouldHaveBackground)
+        
+        switch style {
+            case .rounded:
+                defaultEdgePadding = Values.mediumSpacing
+                backgroundLeftConstraint.constant = Values.largeSpacing
+                backgroundRightConstraint.constant = -Values.largeSpacing
+                cellBackgroundView.layer.cornerRadius = SessionCell.cornerRadius
+                
+            case .edgeToEdge:
+                defaultEdgePadding = 0
+                backgroundLeftConstraint.constant = 0
+                backgroundRightConstraint.constant = 0
+                cellBackgroundView.layer.cornerRadius = 0
+                
+            case .roundedEdgeToEdge:
+                defaultEdgePadding = Values.mediumSpacing
+                backgroundLeftConstraint.constant = 0
+                backgroundRightConstraint.constant = 0
+                cellBackgroundView.layer.cornerRadius = SessionCell.cornerRadius
+        }
+        
+        let fittedEdgePadding: CGFloat = {
+            func targetSize(accessory: Accessory?) -> CGFloat {
+                switch accessory {
+                    case .icon(_, let iconSize, _, _), .iconAsync(let iconSize, _, _, _):
+                        return iconSize.size
+                        
+                    default: return defaultEdgePadding
+                }
+            }
+            
+            guard leftFitToEdge else {
+                guard rightFitToEdge else { return defaultEdgePadding }
+                
+                return targetSize(accessory: info.rightAccessory)
+            }
+            
+            return targetSize(accessory: info.leftAccessory)
+        }()
+        topSeparatorLeftConstraint.constant = (leftFitToEdge ? fittedEdgePadding : defaultEdgePadding)
+        topSeparatorRightConstraint.constant = (rightFitToEdge ? -fittedEdgePadding : -defaultEdgePadding)
+        botSeparatorLeftConstraint.constant = (leftFitToEdge ? fittedEdgePadding : defaultEdgePadding)
+        botSeparatorRightConstraint.constant = (rightFitToEdge ? -fittedEdgePadding : -defaultEdgePadding)
         
         switch position {
             case .top:
@@ -491,79 +414,13 @@ class SettingsCell: UITableViewCell {
                 topSeparator.isHidden = true
                 botSeparator.isHidden = true
         }
-        
-        // Action Behaviours
-        switch action {
-            case .threadInfo: break
-            
-            case .userDefaultsBool(let defaults, let key, let isEnabled, _):
-                toggleSwitch.isHidden = false
-                toggleSwitch.isEnabled = isEnabled
-                
-                // Remove the selection view if the setting is disabled
-                cellSelectedBackgroundView.isHidden = !isEnabled
-                
-                let newValue: Bool = defaults.bool(forKey: key)
-                
-                if newValue != toggleSwitch.isOn {
-                    toggleSwitch.setOn(newValue, animated: true)
-                }
-            
-            case .settingBool(let key, _, let isEnabled):
-                toggleSwitch.isHidden = false
-                toggleSwitch.isEnabled = isEnabled
-                
-                // Remove the selection view if the setting is disabled
-                cellSelectedBackgroundView.isHidden = !isEnabled
-                
-                let newValue: Bool = Storage.shared[key]
-                
-                if newValue != toggleSwitch.isOn {
-                    toggleSwitch.setOn(newValue, animated: true)
-                }
-                
-            case .customToggle(let value, let isEnabled, _, _):
-                toggleSwitch.isHidden = false
-                toggleSwitch.isEnabled = isEnabled
-                
-                // Remove the selection view if the setting is disabled
-                cellSelectedBackgroundView.isHidden = !isEnabled
-                
-                if value != toggleSwitch.isOn {
-                    toggleSwitch.setOn(value, animated: true)
-                }
-
-            case .settingEnum(_, let value, _), .generalEnum(let value, _):
-                dropDownStackView.isHidden = false
-                dropDownLabel.text = value
-                
-            case .listSelection(let isSelected, let storedSelection, _, _):
-                tickImageView.isHidden = (!isSelected() && !storedSelection)
-                tickImageView.alpha = (!isSelected() && storedSelection ? 0.3 : 1)
-                
-            case .trigger(let showChevron, _):
-                pushChevronImageView.isHidden = !showChevron
-            
-            case .push(let showChevron, let tintColor, _, _):
-                titleLabel.themeTextColor = tintColor
-                iconImageView.themeTintColor = tintColor
-                pushChevronImageView.isHidden = !showChevron
-                
-            case .present(let tintColor, _):
-                titleLabel.themeTextColor = tintColor
-                iconImageView.themeTintColor = tintColor
-            
-            case .rightButtonAction(let title, _):
-                rightActionButtonContainerView.isHidden = false
-                rightActionButtonLabel.text = title
-        }
     }
     
     public func update(isEditing: Bool, animated: Bool) {}
     
     // MARK: - Interaction
     
-    override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+    public override func setHighlighted(_ highlighted: Bool, animated: Bool) {
         super.setHighlighted(highlighted, animated: animated)
         
         // If the 'cellSelectedBackgroundView' is hidden then there is no background so we
@@ -573,34 +430,18 @@ class SettingsCell: UITableViewCell {
         }
 
         cellSelectedBackgroundView.alpha = (highlighted ? 1 : 0)
-        rightActionButtonContainerView.themeBackgroundColor = (highlighted ?
-            .solidButton_highlight :
-            .solidButton_background
-        )
+        leftAccessoryView.setHighlighted(highlighted, animated: animated)
+        rightAccessoryView.setHighlighted(highlighted, animated: animated)
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
+    public override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         
-        // Note: When initially triggering a selection we will be coming from the highlighted
-        // state but will have already set highlighted to false at this stage, as a result we
-        // need to swap back into the "highlighted" state so we can properly unhighlight within
-        // the "deselect" animation
-        guard !selected else {
-            rightActionButtonContainerView.themeBackgroundColor = .solidButton_highlight
-            return
-        }
-        guard animated else {
-            rightActionButtonContainerView.themeBackgroundColor = .solidButton_background
-            return
-        }
-        
-        UIView.animate(withDuration: 0.4) { [weak self] in
-            self?.rightActionButtonContainerView.themeBackgroundColor = .solidButton_background
-        }
+        leftAccessoryView.setSelected(selected, animated: animated)
+        rightAccessoryView.setSelected(selected, animated: animated)
     }
     
     @objc private func extraActionTapped() {
-        onExtraAction?()
+        onExtraActionTap?()
     }
 }

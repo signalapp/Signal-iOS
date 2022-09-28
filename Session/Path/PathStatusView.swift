@@ -4,6 +4,25 @@ import UIKit
 import SessionUIKit
 
 final class PathStatusView: UIView {
+    enum Size {
+        case small
+        case large
+        
+        var pointSize: CGFloat {
+            switch self {
+                case .small: return 8
+                case .large: return 16
+            }
+        }
+        
+        func offset(for interfaceStyle: UIUserInterfaceStyle) -> CGFloat {
+            switch self {
+                case .small: return (interfaceStyle == .light ? 6 : 8)
+                case .large: return (interfaceStyle == .light ? 6 : 8)
+            }
+        }
+    }
+    
     enum Status {
         case unknown
         case connecting
@@ -20,37 +39,49 @@ final class PathStatusView: UIView {
         }
     }
     
-    static let size: CGFloat = 8
+    // MARK: - Initialization
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    private let size: Size
+    
+    init(size: Size = .small) {
+        self.size = size
+        
+        super.init(frame: .zero)
         
         setUpViewHierarchy()
         registerObservers()
     }
 
     required init?(coder: NSCoder) {
+        self.size = .small
+        
         super.init(coder: coder)
         
         setUpViewHierarchy()
         registerObservers()
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - Layout
+    
     private func setUpViewHierarchy() {
-        layer.cornerRadius = (PathStatusView.size / 2)
+        layer.cornerRadius = (self.size.pointSize / 2)
         layer.masksToBounds = false
+        self.set(.width, to: self.size.pointSize)
+        self.set(.height, to: self.size.pointSize)
         
         setStatus(to: (!OnionRequestAPI.paths.isEmpty ? .connected : .connecting))
     }
+    
+    // MARK: - Functions
 
     private func registerObservers() {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleBuildingPathsNotification), name: .buildingPaths, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handlePathsBuiltNotification), name: .pathsBuilt, object: nil)
-    }
-
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 
     private func setStatus(to status: Status) {
@@ -60,13 +91,13 @@ final class PathStatusView: UIView {
         layer.shadowPath = UIBezierPath(
             ovalIn: CGRect(
                 origin: CGPoint.zero,
-                size: CGSize(width: PathStatusView.size, height: PathStatusView.size)
+                size: CGSize(width: self.size.pointSize, height: self.size.pointSize)
             )
         ).cgPath
         
         ThemeManager.onThemeChange(observer: self) { [weak self] theme, _ in
             self?.layer.shadowOpacity = (theme.interfaceStyle == .light ? 0.4 : 1)
-            self?.layer.shadowRadius = (theme.interfaceStyle == .light ? 6 : 8)
+            self?.layer.shadowRadius = (self?.size.offset(for: theme.interfaceStyle) ?? 0)
         }
     }
 

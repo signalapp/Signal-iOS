@@ -7,7 +7,7 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSettingsViewModel.Section, Preferences.NotificationPreviewType> {
+class NotificationContentViewModel: SessionTableViewModel<NoNav, NotificationSettingsViewModel.Section, Preferences.NotificationPreviewType> {
     private let storage: Storage
     
     // MARK: - Initialization
@@ -18,7 +18,7 @@ class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSe
     
     // MARK: - Section
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case content
     }
     
@@ -48,19 +48,20 @@ class NotificationContentViewModel: SettingsTableViewModel<NoNav, NotificationSe
                     model: .content,
                     elements: Preferences.NotificationPreviewType.allCases
                         .map { previewType in
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: previewType,
                                 title: previewType.name,
-                                action: .listSelection(
+                                rightAccessory: .radio(
                                     isSelected: { (currentSelection == previewType) },
-                                    storedSelection: (currentSelection == previewType),
-                                    shouldAutoSave: true,
-                                    selectValue: {
-                                        storage.write { db in
-                                            db[.preferencesNotificationPreviewType] = previewType
-                                        }
+                                    storedSelection: (currentSelection == previewType)
+                                ),
+                                onTap: { [weak self] in
+                                    storage.writeAsync { db in
+                                        db[.preferencesNotificationPreviewType] = previewType
                                     }
-                                )
+                                    
+                                    self?.dismissScreen()
+                                }
                             )
                         }
                 )

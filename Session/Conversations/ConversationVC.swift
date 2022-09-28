@@ -232,7 +232,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     }()
 
     private lazy var messageRequestAcceptButton: UIButton = {
-        let result: OutlineButton = OutlineButton(style: .regular, size: .medium)
+        let result: SessionButton = SessionButton(style: .bordered, size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setTitle("TXT_DELETE_ACCEPT".localized(), for: .normal)
         result.addTarget(self, action: #selector(acceptMessageRequest), for: .touchUpInside)
@@ -241,7 +241,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     }()
 
     private lazy var messageRequestDeleteButton: UIButton = {
-        let result: OutlineButton = OutlineButton(style: .destructive, size: .medium)
+        let result: SessionButton = SessionButton(style: .destructive, size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setTitle("TXT_DECLINE_TITLE".localized(), for: .normal)
         result.addTarget(self, action: #selector(deleteMessageRequest), for: .touchUpInside)

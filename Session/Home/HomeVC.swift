@@ -3,6 +3,7 @@
 import UIKit
 import GRDB
 import DifferenceKit
+import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
@@ -62,9 +63,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     
     private lazy var loadingConversationsLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = .systemFont(ofSize: Values.smallFontSize)
         result.text = "LOADING_CONVERSATIONS".localized()
-        result.themeTextColor = .textPrimary
+        result.themeTextColor = .textSecondary
         result.textAlignment = .center
         result.numberOfLines = 0
         
@@ -181,7 +183,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.numberOfLines = 0
         
-        let createNewPrivateChatButton = OutlineButton(style: .regular, size: .large)
+        let createNewPrivateChatButton = SessionButton(style: .bordered, size: .large)
         createNewPrivateChatButton.setTitle("vc_home_empty_state_button_title".localized(), for: .normal)
         createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: .touchUpInside)
         createNewPrivateChatButton.set(.width, to: Values.iPadButtonWidth)
@@ -460,8 +462,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         // Path status indicator
         let pathStatusView = PathStatusView()
         pathStatusView.accessibilityLabel = "Current onion routing path indicator"
-        pathStatusView.set(.width, to: PathStatusView.size)
-        pathStatusView.set(.height, to: PathStatusView.size)
         
         // Container view
         let profilePictureViewContainer = UIView()
@@ -743,7 +743,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     }
     
     @objc private func openSettings() {
-        let settingsViewController: SettingsTableViewController = SettingsTableViewController(
+        let settingsViewController: SessionTableViewController = SessionTableViewController(
             viewModel: SettingsViewModel()
         )
         let navigationController = OWSNavigationController(rootViewController: settingsViewController)

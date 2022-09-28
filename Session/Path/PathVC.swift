@@ -38,8 +38,8 @@ final class PathVC: BaseVC {
         return result
     }()
 
-    private lazy var learnMoreButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .large)
+    private lazy var learnMoreButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .large)
         result.setTitle("vc_path_learn_more_button_title".localized(), for: UIControl.State.normal)
         result.addTarget(self, action: #selector(learnMore), for: UIControl.Event.touchUpInside)
         

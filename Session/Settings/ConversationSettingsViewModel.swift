@@ -7,10 +7,10 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class ConversationSettingsViewModel: SettingsTableViewModel<NoNav, ConversationSettingsViewModel.Section, ConversationSettingsViewModel.Section> {
+class ConversationSettingsViewModel: SessionTableViewModel<NoNav, ConversationSettingsViewModel.Section, ConversationSettingsViewModel.Section> {
     // MARK: - Section
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case messageTrimming
         case audioMessages
         case blockedContacts
@@ -23,7 +23,7 @@ class ConversationSettingsViewModel: SettingsTableViewModel<NoNav, ConversationS
             }
         }
         
-        var style: SettingSectionHeaderStyle {
+        var style: SessionTableSectionStyle {
             switch self {
                 case .blockedContacts: return .padding
                 default: return .title
@@ -53,36 +53,50 @@ class ConversationSettingsViewModel: SettingsTableViewModel<NoNav, ConversationS
                 SectionModel(
                     model: .messageTrimming,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .messageTrimming,
                             title: "CONVERSATION_SETTINGS_MESSAGE_TRIMMING_TITLE".localized(),
                             subtitle: "CONVERSATION_SETTINGS_MESSAGE_TRIMMING_DESCRIPTION".localized(),
-                            action: .settingBool(key: .trimOpenGroupMessagesOlderThanSixMonths)
+                            rightAccessory: .toggle(
+                                .settingBool(key: .trimOpenGroupMessagesOlderThanSixMonths)
+                            ),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.trimOpenGroupMessagesOlderThanSixMonths] = !db[.trimOpenGroupMessagesOlderThanSixMonths]
+                                }
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .audioMessages,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .audioMessages,
                             title: "CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_TITLE".localized(),
                             subtitle: "CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_DESCRIPTION".localized(),
-                            action: .settingBool(key: .shouldAutoPlayConsecutiveAudioMessages)
+                            rightAccessory: .toggle(
+                                .settingBool(key: .shouldAutoPlayConsecutiveAudioMessages)
+                            ),
+                            onTap: {
+                                Storage.shared.writeAsync { db in
+                                    db[.shouldAutoPlayConsecutiveAudioMessages] = !db[.shouldAutoPlayConsecutiveAudioMessages]
+                                }
+                            }
                         )
                     ]
                 ),
                 SectionModel(
                     model: .blockedContacts,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .blockedContacts,
                             title: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE".localized(),
-                            action: .push(
-                                showChevron: false,
-                                tintColor: .danger,
-                                shouldHaveBackground: false
-                            ) { BlockedContactsViewController() }
+                            tintColor: .danger,
+                            shouldHaveBackground: false,
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(BlockedContactsViewController())
+                            }
                         )
                     ]
                 )

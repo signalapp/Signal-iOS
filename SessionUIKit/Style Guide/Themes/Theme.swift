@@ -125,18 +125,18 @@ public indirect enum ThemeValue: Hashable {
     case radioButton_selectedBorder
     case radioButton_unselectedBorder
     
-    // OutlineButton
-    case outlineButton_text
-    case outlineButton_background
-    case outlineButton_highlight
-    case outlineButton_border
-    case outlineButton_filledText
-    case outlineButton_filledBackground
-    case outlineButton_filledHighlight
-    case outlineButton_destructiveText
-    case outlineButton_destructiveBackground
-    case outlineButton_destructiveHighlight
-    case outlineButton_destructiveBorder
+    // SessionButton
+    case sessionButton_text
+    case sessionButton_background
+    case sessionButton_highlight
+    case sessionButton_border
+    case sessionButton_filledText
+    case sessionButton_filledBackground
+    case sessionButton_filledHighlight
+    case sessionButton_destructiveText
+    case sessionButton_destructiveBackground
+    case sessionButton_destructiveHighlight
+    case sessionButton_destructiveBorder
     
     // SolidButton
     case solidButton_background

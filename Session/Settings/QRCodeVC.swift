@@ -221,7 +221,7 @@ private final class ViewMyQRCodeVC : UIViewController {
         explanationLabel.numberOfLines = 0
         
         // Set up share button
-        let shareButton = OutlineButton(style: .regular, size: .large)
+        let shareButton = SessionButton(style: .bordered, size: .large)
         shareButton.setTitle("share".localized(), for: .normal)
         shareButton.addTarget(self, action: #selector(shareQRCode), for: .touchUpInside)
         

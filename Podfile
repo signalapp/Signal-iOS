@@ -93,8 +93,10 @@ abstract_target 'GlobalDependencies' do
     end
   end
   
-  # No extra dependencies for this
-  target 'SessionUIKit'
+  target 'SessionUIKit' do
+    pod 'GRDB.swift/SQLCipher'
+    pod 'DifferenceKit'
+  end
 end
 
 # Actions to perform post-install

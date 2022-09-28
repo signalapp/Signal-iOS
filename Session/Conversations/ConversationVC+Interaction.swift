@@ -29,7 +29,7 @@ extension ConversationVC:
     }
 
     @objc func openSettings() {
-        let viewController: SettingsTableViewController = SettingsTableViewController(
+        let viewController: SessionTableViewController = SessionTableViewController(
             viewModel: ThreadSettingsViewModel(
                 threadId: self.viewModel.threadData.threadId,
                 threadVariant: self.viewModel.threadData.threadVariant,
@@ -73,7 +73,7 @@ extension ConversationVC:
                 ) { [weak self] _ in
                     self?.dismiss(animated: true) {
                         let navController: OWSNavigationController = OWSNavigationController(
-                            rootViewController: SettingsTableViewController(
+                            rootViewController: SessionTableViewController(
                                 viewModel: PrivacySettingsViewModel(
                                     shouldShowCloseButton: true
                                 )

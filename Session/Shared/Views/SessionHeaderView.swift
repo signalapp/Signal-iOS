@@ -3,7 +3,7 @@
 import UIKit
 import SessionUIKit
 
-class SettingHeaderView: UITableViewHeaderFooterView {
+class SessionHeaderView: UITableViewHeaderFooterView {
     private lazy var emptyHeightConstraint: NSLayoutConstraint = self.heightAnchor
         .constraint(equalToConstant: (Values.verySmallSpacing * 2))
     private lazy var filledHeightConstraint: NSLayoutConstraint = self.heightAnchor
@@ -64,7 +64,7 @@ class SettingHeaderView: UITableViewHeaderFooterView {
     // MARK: - Content
     
     public func update(
-        style: SettingsCell.Style = .rounded,
+        style: SessionCell.Style = .rounded,
         title: String?,
         hasSeparator: Bool
     ) {
@@ -75,7 +75,7 @@ class SettingHeaderView: UITableViewHeaderFooterView {
                     // Align to the start of the text in the cell
                     return (Values.largeSpacing + Values.mediumSpacing)
                 
-                case .edgeToEdge: return Values.largeSpacing
+                case .edgeToEdge, .roundedEdgeToEdge: return Values.largeSpacing
             }
         }()
         

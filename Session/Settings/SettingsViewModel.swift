@@ -9,7 +9,7 @@ import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-class SettingsViewModel: SettingsTableViewModel<SettingsViewModel.NavButton, SettingsViewModel.Section, SettingsViewModel.Item> {
+class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, SettingsViewModel.Section, SettingsViewModel.Item> {
     // MARK: - Config
     
     enum NavState {
@@ -24,7 +24,7 @@ class SettingsViewModel: SettingsTableViewModel<SettingsViewModel.NavButton, Set
         case done
     }
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case profileInfo
         case menus
         case footer
@@ -53,11 +53,11 @@ class SettingsViewModel: SettingsTableViewModel<SettingsViewModel.NavButton, Set
     
     // MARK: - Initialization
     
-    init() {
+    override init() {
         self.userSessionId = getUserHexEncodedPublicKey()
         self.oldDisplayName = Profile.fetchOrCreateCurrentUser().name
         
-        super.init(closeNavItemId: .close)
+        super.init()
     }
     
     // MARK: - Navigation
@@ -140,7 +140,7 @@ class SettingsViewModel: SettingsTableViewModel<SettingsViewModel.NavButton, Set
                                     .withRenderingMode(.alwaysTemplate),
                                 style: .plain,
                                 accessibilityIdentifier: "Close button"
-                            )
+                            ) { [weak self] in self?.dismissScreen() }
                        ]
                        
                    case .editing:
@@ -212,26 +212,25 @@ class SettingsViewModel: SettingsTableViewModel<SettingsViewModel.NavButton, Set
                 SectionModel(
                     model: .profileInfo,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .profileInfo,
-                            title: profile.displayName(),
-                            action: .threadInfo(
+                            leftAccessory: .threadInfo(
                                 threadViewModel: SessionThreadViewModel(
                                     threadId: profile.id,
                                     threadIsNoteToSelf: true,
                                     contactProfile: profile
                                 ),
-                                style: ThreadInfoStyle(
+                                style: SessionCell.Accessory.ThreadInfoStyle(
                                     separatorTitle: "your_session_id".localized(),
                                     descriptionStyle: .monoLarge,
                                     descriptionActions: [
-                                        ThreadInfoStyle.Action(
+                                        SessionCell.Accessory.ThreadInfoStyle.Action(
                                             title: "copy".localized(),
                                             run: { [weak self] button in
                                                 self?.copySessionId(profile.id, button: button)
                                             }
                                         ),
-                                        ThreadInfoStyle.Action(
+                                        SessionCell.Accessory.ThreadInfoStyle.Action(
                                             title: "share".localized(),
                                             run: { [weak self] _ in
                                                 self?.shareSessionId(profile.id)
@@ -242,90 +241,147 @@ class SettingsViewModel: SettingsTableViewModel<SettingsViewModel.NavButton, Set
                                 avatarTapped: { [weak self] in self?.updateProfilePicture() },
                                 titleTapped: { [weak self] in self?.setIsEditing(true) },
                                 titleChanged: { [weak self] text in self?.editedDisplayName = text }
-                            )
+                            ),
+                            title: profile.displayName(),
+                            shouldHaveBackground: false
                         )
                     ]
                 ),
                 SectionModel(
                     model: .menus,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
+                            id: .path,
+                            leftAccessory: .customView {
+                                // Need to ensure this view is the same size as the icons so
+                                // wrap it in a larger view
+                                let result: UIView = UIView()
+                                let pathView: PathStatusView = PathStatusView(size: .large)
+                                result.addSubview(pathView)
+                                
+                                result.set(.width, to: IconSize.small.size)
+                                result.set(.height, to: IconSize.small.size)
+                                pathView.center(in: result)
+                                
+                                return result
+                            },
+                            title: "vc_path_title".localized(),
+                            onTap: { [weak self] in self?.transitionToScreen(PathVC()) }
+                        ),
+                        SessionCell.Info(
                             id: .privacy,
-                            icon: UIImage(named: "icon_privacy")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_privacy")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "vc_settings_privacy_button_title".localized(),
-                            action: .push(showChevron: false) {
-                                SettingsTableViewController(viewModel: PrivacySettingsViewModel())
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(
+                                    SessionTableViewController(viewModel: PrivacySettingsViewModel())
+                                )
                             }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .notifications,
-                            icon: UIImage(named: "icon_speaker")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_speaker")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "vc_settings_notifications_button_title".localized(),
-                            action: .push(showChevron: false) {
-                                SettingsTableViewController(viewModel: NotificationSettingsViewModel())
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(
+                                    SessionTableViewController(viewModel: NotificationSettingsViewModel())
+                                )
                             }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .conversations,
-                            icon: UIImage(named: "icon_msg")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_msg")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "CONVERSATION_SETTINGS_TITLE".localized(),
-                            action: .push(showChevron: false) {
-                                SettingsTableViewController(viewModel: ConversationSettingsViewModel())
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(
+                                    SessionTableViewController(viewModel: ConversationSettingsViewModel())
+                                )
                             }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .messageRequests,
-                            icon: UIImage(named: "icon_msg_req")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_msg_req")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "MESSAGE_REQUESTS_TITLE".localized(),
-                            action: .push(showChevron: false) {
-                                MessageRequestsViewController()
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(MessageRequestsViewController())
                             }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .appearance,
-                            icon: UIImage(named: "icon_apperance")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_apperance")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "APPEARANCE_TITLE".localized(),
-                            action: .push(showChevron: false) {
-                                AppearanceViewController()
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(AppearanceViewController())
                             }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .inviteAFriend,
-                            icon: UIImage(named: "icon_invite")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_invite")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "vc_settings_invite_a_friend_button_title".localized(),
-                            action: .present {
+                            onTap: { [weak self] in
                                 let invitation: String = "Hey, I've been using Session to chat with complete privacy and security. Come join me! Download it at https://getsession.org/. My Session ID is \(profile.id) !"
                                 
-                                return UIActivityViewController(
-                                    activityItems: [ invitation ],
-                                    applicationActivities: nil
+                                self?.transitionToScreen(
+                                    UIActivityViewController(
+                                        activityItems: [ invitation ],
+                                        applicationActivities: nil
+                                    ),
+                                    transitionType: .present
                                 )
                             }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .recoveryPhrase,
-                            icon: UIImage(named: "icon_recovery")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_recovery")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "vc_settings_recovery_phrase_button_title".localized(),
-                            action: .present {
-                                SeedModal()
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(SeedModal(), transitionType: .present)
                             }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .help,
-                            icon: UIImage(named: "icon_help")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_help")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "HELP_TITLE".localized(),
-                            action: .push(showChevron: false) {
-                                SettingsTableViewController(
-                                    viewModel: HelpViewModel()
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(
+                                    SessionTableViewController(viewModel: HelpViewModel())
                                 )
                             }
                         ),
-                        SettingInfo(
+                        SessionCell.Info(
                             id: .clearData,
-                            icon: UIImage(named: "icon_bin")?.withRenderingMode(.alwaysTemplate),
+                            leftAccessory: .icon(
+                                UIImage(named: "icon_bin")?
+                                    .withRenderingMode(.alwaysTemplate)
+                            ),
                             title: "vc_settings_clear_all_data_button_title".localized(),
-                            action: .present(tintColor: .danger) {
-                                NukeDataModal()
+                            tintColor: .danger,
+                            onTap: { [weak self] in
+                                self?.transitionToScreen(NukeDataModal(), transitionType: .present)
                             }
                         )
                     ]
@@ -437,10 +493,10 @@ class SettingsViewModel: SettingsTableViewModel<SettingsViewModel.NavButton, Set
         self.transitionToScreen(viewController, transitionType: .present)
     }
     
-    private func copySessionId(_ sessionId: String, button: OutlineButton?) {
+    private func copySessionId(_ sessionId: String, button: SessionButton?) {
         UIPasteboard.general.string = sessionId
         
-        guard let button: OutlineButton = button else { return }
+        guard let button: SessionButton = button else { return }
         
         // Ensure we are on the main thread just in case
         DispatchQueue.main.async {

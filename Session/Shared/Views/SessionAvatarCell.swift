@@ -3,10 +3,11 @@
 import UIKit
 import Combine
 import SessionUIKit
+import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-class SettingsAvatarCell: UITableViewCell {
+class SessionAvatarCell: UITableViewCell {
     var disposables: Set<AnyCancellable> = Set()
     private var originalInputValue: String?
     
@@ -194,7 +195,7 @@ class SettingsAvatarCell: UITableViewCell {
     
     func update(
         threadViewModel: SessionThreadViewModel,
-        style: ThreadInfoStyle,
+        style: SessionCell.Accessory.ThreadInfoStyle,
         viewController: UIViewController
     ) {
         profilePictureView.update(
@@ -242,7 +243,7 @@ class SettingsAvatarCell: UITableViewCell {
         descriptionSeparator.isHidden = (style.separatorTitle == nil)
         
         style.descriptionActions.forEach { action in
-            let result: OutlineButton = OutlineButton(style: .regular, size: .medium)
+            let result: SessionButton = SessionButton(style: .bordered, size: .medium)
             result.setTitle(action.title, for: UIControl.State.normal)
             result.tapPublisher
                 .receive(on: DispatchQueue.main)
@@ -282,7 +283,7 @@ class SettingsAvatarCell: UITableViewCell {
 
 // MARK: - Compose
 
-extension CombineCompatible where Self: SettingsAvatarCell {
+extension CombineCompatible where Self: SessionAvatarCell {
     var textPublisher: AnyPublisher<String, Never> {
         return self.displayNameTextField.publisher(for: .editingChanged)
             .map { textField -> String in (textField.text ?? "") }

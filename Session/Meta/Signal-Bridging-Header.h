@@ -7,7 +7,6 @@
 #import <SessionUIKit/SessionUIKit.h>
 
 // Separate iOS Frameworks from other imports.
-#import "AvatarViewHelper.h"
 #import "AVAudioSession+OWS.h"
 #import "OWSAudioPlayer.h"
 #import "OWSBezierPathView.h"

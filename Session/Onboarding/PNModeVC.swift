@@ -68,7 +68,7 @@ final class PNModeVC: BaseVC, OptionViewDelegate {
         registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         
         // Set up register button
-        let registerButton = OutlineButton(style: .filled, size: .large)
+        let registerButton = SessionButton(style: .filled, size: .large)
         registerButton.setTitle("continue_2".localized(), for: .normal)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         

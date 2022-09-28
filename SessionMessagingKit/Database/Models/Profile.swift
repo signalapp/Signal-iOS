@@ -319,12 +319,12 @@ public extension Profile {
     }
     
     /// A standardised mechanism for truncating a user id for a given thread
-    static func truncated(id: String, threadVariant: SessionThread.Variant = .contact) -> String {
+    static func truncated(id: String, threadVariant: SessionThread.Variant) -> String {
         return truncated(id: id, truncating: .middle)
     }
     
     /// A standardised mechanism for truncating a user id
-    static func truncated(id: String, truncating: Truncation = .middle) -> String {
+    static func truncated(id: String, truncating: Truncation) -> String {
         guard id.count > 8 else { return id }
         
         switch truncating {

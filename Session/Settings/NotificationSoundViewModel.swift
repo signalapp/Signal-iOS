@@ -8,7 +8,7 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewModel.NavButton, NotificationSettingsViewModel.Section, Preferences.Sound> {
+class NotificationSoundViewModel: SessionTableViewModel<NotificationSoundViewModel.NavButton, NotificationSettingsViewModel.Section, Preferences.Sound> {
     // MARK: - Config
     
     enum NavButton: Equatable {
@@ -16,7 +16,7 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewMo
         case save
     }
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case content
     }
     
@@ -45,7 +45,9 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewMo
                 id: .cancel,
                 systemItem: .cancel,
                 accessibilityIdentifier: "Cancel button"
-            )
+            ) { [weak self] in
+                self?.dismissScreen()
+            }
         ]).eraseToAnyPublisher()
     }
 
@@ -61,23 +63,13 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewMo
                         id: .save,
                         systemItem: .save,
                         accessibilityIdentifier: "Save button"
-                    )
+                    ) { [weak self] in
+                        self?.saveChanges()
+                        self?.dismissScreen()
+                    }
                 ]
             }
            .eraseToAnyPublisher()
-    }
-    
-    override var closeScreen: AnyPublisher<Bool, Never> {
-        navItemTapped
-            .handleEvents(receiveOutput: { [weak self] navItemId in
-                switch navItemId {
-                    case .save: self?.saveChanges()
-                    default: break
-                }
-                self?.setIsEditing(true)
-            })
-            .map { _ in false }
-            .eraseToAnyPublisher()
     }
     
     // MARK: - Content
@@ -121,7 +113,7 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewMo
                     model: .content,
                     elements: Preferences.Sound.notificationSounds
                         .map { sound in
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: sound,
                                 title: {
                                     guard sound != .note else {
@@ -133,26 +125,25 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewMo
                                     
                                     return sound.displayName
                                 }(),
-                                action: .listSelection(
+                                rightAccessory: .radio(
                                     isSelected: { (self?.currentSelection.value == sound) },
-                                    storedSelection: (self?.storedSelection == sound),
-                                    shouldAutoSave: false,
-                                    selectValue: {
-                                        self?.currentSelection.send(sound)
-                                        
-                                        // Play the sound (to prevent UI lag we dispatch this to the next
-                                        // run loop
-                                        DispatchQueue.main.async {
-                                            self?.audioPlayer?.stop()
-                                            self?.audioPlayer = Preferences.Sound.audioPlayer(
-                                                for: sound,
-                                                behavior: .playback
-                                            )
-                                            self?.audioPlayer?.isLooping = false
-                                            self?.audioPlayer?.play()
-                                        }
+                                    storedSelection: (self?.storedSelection == sound)
+                                ),
+                                onTap: {
+                                    self?.currentSelection.send(sound)
+                                    
+                                    // Play the sound (to prevent UI lag we dispatch this to the next
+                                    // run loop
+                                    DispatchQueue.main.async {
+                                        self?.audioPlayer?.stop()
+                                        self?.audioPlayer = Preferences.Sound.audioPlayer(
+                                            for: sound,
+                                            behavior: .playback
+                                        )
+                                        self?.audioPlayer?.isLooping = false
+                                        self?.audioPlayer?.play()
                                     }
-                                )
+                                }
                             )
                         }
                 )
@@ -172,7 +163,7 @@ class NotificationSoundViewModel: SettingsTableViewModel<NotificationSoundViewMo
 
         let threadId: String? = self.threadId
         
-        Storage.shared.write { db in
+        Storage.shared.writeAsync { db in
             guard let threadId: String = threadId else {
                 db[.defaultNotificationSound] = currentSelection
                 return

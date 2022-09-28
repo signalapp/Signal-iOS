@@ -8,7 +8,7 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class ThreadDisappearingMessagesViewModel: SettingsTableViewModel<ThreadDisappearingMessagesViewModel.NavButton, ThreadDisappearingMessagesViewModel.Section, ThreadDisappearingMessagesViewModel.Item> {
+class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappearingMessagesViewModel.NavButton, ThreadDisappearingMessagesViewModel.Section, ThreadDisappearingMessagesViewModel.Item> {
     // MARK: - Config
     
     enum NavButton: Equatable {
@@ -16,7 +16,7 @@ class ThreadDisappearingMessagesViewModel: SettingsTableViewModel<ThreadDisappea
         case save
     }
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case content
     }
     
@@ -50,7 +50,7 @@ class ThreadDisappearingMessagesViewModel: SettingsTableViewModel<ThreadDisappea
                 id: .cancel,
                 systemItem: .cancel,
                 accessibilityIdentifier: "Cancel button"
-            )
+            ) { [weak self] in self?.dismissScreen() }
         ]).eraseToAnyPublisher()
     }
 
@@ -66,23 +66,13 @@ class ThreadDisappearingMessagesViewModel: SettingsTableViewModel<ThreadDisappea
                         id: .save,
                         systemItem: .save,
                         accessibilityIdentifier: "Save button"
-                    )
+                    ) { [weak self] in
+                        self?.saveChanges()
+                        self?.dismissScreen()
+                    }
                 ]
             }
            .eraseToAnyPublisher()
-    }
-    
-    override var closeScreen: AnyPublisher<Bool, Never> {
-        navItemTapped
-            .handleEvents(receiveOutput: { [weak self] navItemId in
-                switch navItemId {
-                    case .save: self?.saveChanges()
-                    default: break
-                }
-                self?.setIsEditing(true)
-            })
-            .map { _ in false }
-            .eraseToAnyPublisher()
     }
     
     // MARK: - Content
@@ -107,15 +97,14 @@ class ThreadDisappearingMessagesViewModel: SettingsTableViewModel<ThreadDisappea
                 SectionModel(
                     model: .content,
                     elements: [
-                        SettingInfo(
+                        SessionCell.Info(
                             id: Item(title: "DISAPPEARING_MESSAGES_OFF".localized()),
                             title: "DISAPPEARING_MESSAGES_OFF".localized(),
-                            action: .listSelection(
+                            rightAccessory: .radio(
                                 isSelected: { (self?.currentSelection.value == 0) },
-                                storedSelection: (self?.config.isEnabled == false),
-                                shouldAutoSave: false,
-                                selectValue: { self?.currentSelection.send(0) }
-                            )
+                                storedSelection: (self?.config.isEnabled == false)
+                            ),
+                            onTap: { self?.currentSelection.send(0) }
                         )
                     ].appending(
                         contentsOf: DisappearingMessagesConfiguration.validDurationsSeconds
@@ -125,15 +114,14 @@ class ThreadDisappearingMessagesViewModel: SettingsTableViewModel<ThreadDisappea
                                     useShortFormat: false
                                 )
                                 
-                                return SettingInfo(
+                                return SessionCell.Info(
                                     id: Item(title: title),
                                     title: title,
-                                    action: .listSelection(
+                                    rightAccessory: .radio(
                                         isSelected: { (self?.currentSelection.value == duration) },
-                                        storedSelection: (self?.config.durationSeconds == duration),
-                                        shouldAutoSave: false,
-                                        selectValue: { self?.currentSelection.send(duration) }
-                                    )
+                                        storedSelection: (self?.config.durationSeconds == duration)
+                                    ),
+                                    onTap: { self?.currentSelection.send(duration) }
                                 )
                             }
                     )

@@ -47,18 +47,18 @@ internal enum Theme_OceanLight: ThemeColors {
         .radioButton_selectedBorder: .oceanLight1,
         .radioButton_unselectedBorder: .oceanLight3,
         
-        // OutlineButton
-        .outlineButton_text: .oceanLight1,
-        .outlineButton_background: .clear,
-        .outlineButton_highlight: .oceanLight1.withAlphaComponent(0.1),
-        .outlineButton_border: .oceanLight1,
-        .outlineButton_filledText: .oceanLight7,
-        .outlineButton_filledBackground: .oceanLight1,
-        .outlineButton_filledHighlight: .oceanLight2,
-        .outlineButton_destructiveText: .dangerLight,
-        .outlineButton_destructiveBackground: .clear,
-        .outlineButton_destructiveHighlight: .dangerLight.withAlphaComponent(0.3),
-        .outlineButton_destructiveBorder: .dangerLight,
+        // SessionButton
+        .sessionButton_text: .oceanLight1,
+        .sessionButton_background: .clear,
+        .sessionButton_highlight: .oceanLight1.withAlphaComponent(0.1),
+        .sessionButton_border: .oceanLight1,
+        .sessionButton_filledText: .oceanLight7,
+        .sessionButton_filledBackground: .oceanLight1,
+        .sessionButton_filledHighlight: .oceanLight2,
+        .sessionButton_destructiveText: .dangerLight,
+        .sessionButton_destructiveBackground: .clear,
+        .sessionButton_destructiveHighlight: .dangerLight.withAlphaComponent(0.3),
+        .sessionButton_destructiveBorder: .dangerLight,
         
         // SolidButton
         .solidButton_background: .oceanLight5,

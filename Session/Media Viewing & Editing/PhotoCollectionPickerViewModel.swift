@@ -8,10 +8,10 @@ import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 
-class PhotoCollectionPickerViewModel: SettingsTableViewModel<NoNav, PhotoCollectionPickerViewModel.Section, PhotoCollectionPickerViewModel.Item> {
+class PhotoCollectionPickerViewModel: SessionTableViewModel<NoNav, PhotoCollectionPickerViewModel.Section, PhotoCollectionPickerViewModel.Item> {
     // MARK: - Config
     
-    public enum Section: SettingSection {
+    public enum Section: SessionTableSection {
         case content
     }
     
@@ -48,14 +48,16 @@ class PhotoCollectionPickerViewModel: SettingsTableViewModel<NoNav, PhotoCollect
                         elements: collections.map { collection in
                             let contents: PhotoCollectionContents = collection.contents()
                             let photoMediaSize: PhotoMediaSize = PhotoMediaSize(
-                                thumbnailSize: CGSize(width: IconSize.large.size, height: IconSize.large.size)
+                                thumbnailSize: CGSize(
+                                    width: IconSize.veryLarge.size,
+                                    height: IconSize.veryLarge.size
+                                )
                             )
                             let lastAssetItem: PhotoPickerAssetItem? = contents.lastAssetItem(photoMediaSize: photoMediaSize)
                             
-                            return SettingInfo(
+                            return SessionCell.Info(
                                 id: Item(id: collection.id),
-                                iconSize: .large,
-                                iconSetter: { imageView in
+                                leftAccessory: .iconAsync(size: .veryLarge, shouldFill: true) { imageView in
                                     // Note: We need to capture 'lastAssetItem' otherwise it'll be released and we won't
                                     // be able to load the thumbnail
                                     lastAssetItem?.asyncThumbnail { [weak imageView] image in
@@ -64,7 +66,7 @@ class PhotoCollectionPickerViewModel: SettingsTableViewModel<NoNav, PhotoCollect
                                 },
                                 title: collection.localizedTitle(),
                                 subtitle: "\(contents.assetCount)",
-                                action: .trigger(showChevron: false) { [weak self] in
+                                onTap: { [weak self] in
                                     self?.onCollectionSelected(collection)
                                 }
                             )

@@ -33,8 +33,8 @@ open class ScreenLockViewController: UIViewController {
         return result
     }()
     
-    public lazy var unlockButton: OutlineButton = {
-        let result: OutlineButton = OutlineButton(style: .regular, size: .medium)
+    public lazy var unlockButton: SessionButton = {
+        let result: SessionButton = SessionButton(style: .bordered, size: .medium)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setTitle("Unlock Session", for: .normal)
         result.addTarget(self, action: #selector(showUnlockUI), for: .touchUpInside)

@@ -349,16 +349,16 @@ private final class EnterPublicKeyVC: UIViewController {
         return result
     }()
     
-    private lazy var copyButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .small)
+    private lazy var copyButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .small)
         result.setTitle("copy".localized(), for: .normal)
         result.addTarget(self, action: #selector(copyPublicKey), for: .touchUpInside)
         
         return result
     }()
     
-    private lazy var shareButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .small)
+    private lazy var shareButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .small)
         result.setTitle("share".localized(), for: .normal)
         result.addTarget(self, action: #selector(sharePublicKey), for: .touchUpInside)
         
@@ -377,8 +377,8 @@ private final class EnterPublicKeyVC: UIViewController {
         return result
     }()
     
-    private lazy var nextButton: OutlineButton = {
-        let result = OutlineButton(style: .regular, size: .large)
+    private lazy var nextButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .large)
         result.setTitle("next".localized(), for: .normal)
         result.isEnabled = false
         result.addTarget(self, action: #selector(startNewDMIfPossible), for: .touchUpInside)
