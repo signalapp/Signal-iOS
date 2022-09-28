@@ -1069,29 +1069,6 @@ static void uncaughtExceptionHandler(NSException *exception)
     [self checkIfAppIsReady];
 }
 
-- (void)registrationStateDidChange
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogInfo(@"registrationStateDidChange");
-
-    [self enableBackgroundRefreshIfNecessary];
-
-    if ([self.tsAccountManager isRegisteredAndReady]) {
-        AppReadinessRunNowOrWhenAppDidBecomeReadySync(^{
-            OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
-
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                [ExperienceUpgradeFinder markAllCompleteForNewUserWithTransaction:transaction.unwrapGrdbWrite];
-            });
-
-            // Start running the disappearing messages job in case the newly registered user
-            // enables this feature
-            [self.disappearingMessagesJob startIfNecessary];
-        });
-    }
-}
-
 - (void)registrationLockDidChange:(NSNotification *)notification
 {
     [self enableBackgroundRefreshIfNecessary];

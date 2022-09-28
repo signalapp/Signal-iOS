@@ -383,6 +383,32 @@ extension AppDelegate {
 
         return .notHandled
     }
+
+    // MARK: - Events
+
+    @objc
+    func registrationStateDidChange() {
+        AssertIsOnMainThread()
+
+        Logger.info("registrationStateDidChange")
+
+        enableBackgroundRefreshIfNecessary()
+
+        if tsAccountManager.isRegisteredAndReady {
+            AppReadiness.runNowOrWhenAppDidBecomeReadySync {
+                self.databaseStorage.write { transaction in
+                    let localAddress = self.tsAccountManager.localAddress(with: transaction)
+                    Logger.info("localAddress: \(String(describing: localAddress))")
+
+                    ExperienceUpgradeFinder.markAllCompleteForNewUser(transaction: transaction.unwrapGrdbWrite)
+                }
+
+                // Start running the disappearing messages job in case the newly registered user
+                // enables this feature
+                self.disappearingMessagesJob.startIfNecessary()
+            }
+        }
+    }
 }
 
 // MARK: - UNUserNotificationCenterDelegate
