@@ -956,6 +956,7 @@
 		888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
+		888CC15928E3CE8100A13493 /* ProxyConnectionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88928A44263A2781009C9B30 /* state-change_confirm-down.caf in Resources */ = {isa = PBXBuildFile; fileRef = 88928A42263A2781009C9B30 /* state-change_confirm-down.caf */; };
 		88928A45263A2781009C9B30 /* state-change_confirm-up.caf in Resources */ = {isa = PBXBuildFile; fileRef = 88928A43263A2781009C9B30 /* state-change_confirm-up.caf */; };
@@ -1226,12 +1227,6 @@
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
-		F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */; };
-		F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */; };
-		F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */; };
-		F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */; };
-		F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */; };
-		F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180128DCFDF100113D9F /* TSContactThreadTest.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
@@ -3313,6 +3308,7 @@
 		888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Wallpaper.swift"; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
+		888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyConnectionChecker.swift; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
 		88928A42263A2781009C9B30 /* state-change_confirm-down.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "state-change_confirm-down.caf"; sourceTree = "<group>"; };
 		88928A43263A2781009C9B30 /* state-change_confirm-up.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "state-change_confirm-up.caf"; sourceTree = "<group>"; };
@@ -3644,12 +3640,6 @@
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
-		F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFileSystemTest.swift; sourceTree = "<group>"; };
-		F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionState.swift; sourceTree = "<group>"; };
-		F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseCorruptionStateTest.swift; sourceTree = "<group>"; };
-		F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigratorTest.swift; sourceTree = "<group>"; };
-		F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTestHelpers.swift; sourceTree = "<group>"; };
-		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
@@ -6011,6 +6001,7 @@
 				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
 				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
 				34067EAA2710D61A000407C3 /* Pastelog.swift */,
+				888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */,
 				34E5DC8020D8050D00C08145 /* RegistrationUtils.h */,
 				34E5DC8120D8050D00C08145 /* RegistrationUtils.m */,
 				3440426A273AB186008C9FA4 /* RegistrationUtils.swift */,
@@ -6327,6 +6318,7 @@
 				88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */,
 				88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */,
 				887B381025F05F3100685845 /* PrivacySettingsViewController.swift */,
+				88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */,
 			);
 			path = Privacy;
 			sourceTree = "<group>";
@@ -6356,7 +6348,6 @@
 				346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */,
 				346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */,
 				329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */,
-				88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */,
 				8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */,
 			);
 			path = "Data Usage";
@@ -10446,6 +10437,7 @@
 				8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
 				4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */,
+				888CC15928E3CE8100A13493 /* ProxyConnectionChecker.swift in Sources */,
 				88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */,
 				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,

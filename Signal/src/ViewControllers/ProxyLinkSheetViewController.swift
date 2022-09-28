@@ -84,6 +84,19 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
                         Self.databaseStorage.write {
                             SignalProxy.setProxyHost(host: proxyHost, useProxy: true, transaction: $0)
                         }
+
+                        let presentingVC = self?.presentingViewController
+                        ProxyConnectionChecker.checkConnectionAndNotify { connected in
+                            if connected {
+                                presentingVC?.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
+                            } else {
+                                presentingVC?.presentToast(text: NSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
+                                Self.databaseStorage.write { transaction in
+                                    SignalProxy.setProxyHost(host: proxyHost, useProxy: false, transaction: transaction)
+                                }
+                            }
+                        }
+
                         self?.dismiss(animated: true)
                     })
             ])
