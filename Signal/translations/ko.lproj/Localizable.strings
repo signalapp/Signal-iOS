@@ -1718,7 +1718,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "프로필에 배지 표시";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "이 프록시 주소를 사용하시겠습니까?";
+"DO_YOU_WANT_TO_USE_PROXY" = "이 프록시 주소를 사용하시겠어요?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "검열 우회 위치";
@@ -3182,7 +3182,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "잘못된 음성 파일입니다.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "입력한 프록시 주소가 올바르지 않습니다. 주소를 확인하고 다시 시도해 주세요.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "iOS 설정 앱에서 연락처 권한을 허용하면 Signal에 친구를 초대할 수 있습니다.";
@@ -3407,7 +3407,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "링크 열기";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Signal 프록시 열기";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "스티커 팩 보기";
@@ -4766,16 +4766,16 @@
 "PROFILE_VIEW_TITLE" = "프로필";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "프록시 주소";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "프록시에 연결됐습니다. 설정에서 언제든 프록시 연결을 종료할 수 있습니다.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "프록시에 연결했습니다. 설정에서 언제든지 프록시 연결을 종료할 수 있습니다.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "프록시에 연결할 수 없습니다. 프록시 주소를 확인하고 다시 시도해 주세요.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "프록시 주소 입력";
 
 /* Title for the signal proxy settings */
 "PROXY_SETTINGS_TITLE" = "프록시";
@@ -5918,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "Signal 번호";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "검열 우회, 프록시, 중계 통화, 보낸 사람 감추기 설정.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "고급";
@@ -6317,7 +6317,7 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "이 스토리를 보낼 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "이 스토리를 일부 사람들에게 전송할 수 없습니다. 연결을 확인하고 다시 시도하세요.";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "다음 사용자와만 공유...";
@@ -6332,13 +6332,13 @@
 "STORY_SEND_FAILED_RETRY" = "탭하여 다시 시도";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "전송 실패. 탭하여 다시 시도해 주세요.";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "부분 전송됨";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "부분 전송됨. 탭하여 자세한 내용을 확인하세요.";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "보내는 중…";
@@ -6350,7 +6350,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "이 스토리를 볼 수 있는 사용자";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "스토리로 전송된 동영상이 %d초 클립으로 편집되어 여러 개의 스토리로 전송됩니다.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "탭하여 계속하기";
@@ -6707,10 +6707,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "그룹을 업데이트할 수 없습니다. 인터넷 연결을 확인한 후 다시 시도해 주세요.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "프록시 사용";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "모바일 데이터나 Wi-Fi로 Signal에 연결할 수 없는 경우에만 프록시를 사용합니다.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal 사용자 이름은 선택 사항입니다. 사용자 이름을 만든다면 다른 Signal 사용자들이 사용자 이름으로 나를 찾을 수 있으며, 전화번호를 몰라도 연락할 수 있습니다.";

@@ -288,7 +288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>呢個通話已經到咗 %d 個參與人數嘅上限。請稍候再試。</string>
+			<string>呢個通話已經到咗 %d 個參與人數嘅上限。請遲啲再試過啦。</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>

@@ -407,7 +407,7 @@
 "BADGE_GIFTING_ADDITIONAL_MESSAGE_PLACEHOLDER" = "寫返句訊息";
 
 /* Error message indicating that you can't send the gift badge for some reason. */
-"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "傳送唔到饋贈徽章。請檢查網絡連線，然後再試一次。";
+"BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_BODY" = "傳送唔到饋贈徽章。請檢查網絡連線，然後再試過啦。";
 
 /* Title for error message dialog indicating that you can't send the gift badge for some reason. */
 "BADGE_GIFTING_CANNOT_SEND_TO_RECIPIENT_GENERIC_ERROR_TITLE" = "傳送唔到饋贈徽章";
@@ -449,7 +449,7 @@
 "BADGE_GIFTING_PAYMENT_DESCRIPTION" = "單次捐款";
 
 /* Text in the action sheet when you try to send a gift badge but the payment failed. Tells the user that they have not been charged */
-"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "系統處理唔到您嘅付款，付款仲未成功。請您再試一次。";
+"BADGE_GIFTING_PAYMENT_FAILED_BODY" = "系統處理唔到您嘅付款，付款仲未成功。請您再試過啦。";
 
 /* Title for the action sheet when you try to send a gift badge but the payment failed */
 "BADGE_GIFTING_PAYMENT_FAILED_TITLE" = "付款失敗";
@@ -1718,7 +1718,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "喺個人資料度展示襟章";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "您係咪要用呢個代理伺服器位址？";
+"DO_YOU_WANT_TO_USE_PROXY" = "你係咪要用呢個代理伺服器位址？";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "封網迴避位置";
@@ -1739,31 +1739,31 @@
 "DONATION_PAYMENT_ERROR_AUTHENTICATION_REQUIRED" = "試下轉另一個付款方法，又或者聯絡返您間銀行問清楚。";
 
 /* Donation payment error for decline failures where the user may need to contact their card or bank. */
-"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "請到 Apple Pay 檢查吓您嘅付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試一次。如果仲有問題，請聯絡您嘅銀行。";
+"DONATION_PAYMENT_ERROR_CALL_ISSUER" = "請到 Apple Pay 檢查吓您嘅付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試過啦。如果仲有問題，請聯絡您嘅銀行。";
 
 /* Donation payment error for decline failures where the card is not supported. */
 "DONATION_PAYMENT_ERROR_CARD_NOT_SUPPORTED" = "你嘅付款卡唔支援呢類交易。請嘗試其他付款方法，或者聯絡你嘅銀行了解詳情。";
 
 /* Donation payment error for decline failures where the card has expired. */
-"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "您嘅信用卡已經過期。請到 Apple Pay 檢查吓您嘅付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_EXPIRED_CARD" = "您嘅信用卡已經過期。請到 Apple Pay 檢查吓您嘅付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試過啦。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "您嘅信用卡號碼有錯。請到 Apple Pay 檢查吓您輸入嘅付款方法係咪正確。如果有錯，請更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_NUMBER" = "您嘅信用卡號碼有錯。請到 Apple Pay 檢查吓您輸入嘅付款方法係咪正確。如果有錯，請更新資料，然後再試過啦。";
 
 /* Donation payment error for decline failures where the card verification code (often called CVV or CVC) is incorrect. */
-"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "你嘅安全碼 (CVC) 有錯。請檢查您喺 Apple Pay 輸入嘅安全碼係咪正確。如果唔啱嘅話請先更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "你嘅安全碼 (CVC) 有錯。請檢查您喺 Apple Pay 輸入嘅安全碼係咪正確。如果唔啱嘅話請先更新資料，然後再試過啦。";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
 "DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "您無足夠嘅信用卡資金去完成呢次購買。請您試吓其他付款方法，或者聯絡您嘅銀行了解詳情。";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "您付款方法嘅到期月份有錯。請到 Apple Pay 更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "您付款方法嘅到期月份有錯。請到 Apple Pay 更新資料，然後再試過啦。";
 
 /* Donation payment error for decline failures where the expiration year on the payment method is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "您付款方法嘅到期年份有錯。請到 Apple Pay 更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_INVALID_EXPIRY_YEAR" = "您付款方法嘅到期年份有錯。請到 Apple Pay 更新資料，然後再試過啦。";
 
 /* Donation payment error for decline failures where the card number is incorrect. */
-"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "你嘅付款卡號碼有錯。請喺 Apple Pay 更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_INVALID_NUMBER" = "你嘅付款卡號碼有錯。請喺 Apple Pay 更新資料，然後再試過啦。";
 
 /* Donation payment error for \"issuer not available\" decline failures. The user should try again or contact their card/bank. */
 "DONATION_PAYMENT_ERROR_ISSUER_NOT_AVAILABLE" = "請再試下完成呢次付款，又或者聯絡返您間銀行問清楚。";
@@ -1772,7 +1772,7 @@
 "DONATION_PAYMENT_ERROR_OTHER" = "試下轉另一個付款方法，又或者聯絡返您間銀行問清楚。";
 
 /* Donation payment error for decline failures where the payment cannot be authorized. */
-"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "請檢查 Apple Pay 嘅付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試一次。";
+"DONATION_PAYMENT_ERROR_PAYMENT_CANNOT_BE_AUTHORIZED" = "請檢查 Apple Pay 嘅付款方法係咪仍然有效。如果已經過期，請先更新資料，然後再試過啦。";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "金額";
@@ -3182,7 +3182,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "音訊檔案無效。";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "你輸入嘅代理伺服器位址無效。請你檢查位址，然後再試過啦。";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "您可以喺 iOS 設定 app 度啟用聯絡人存取，以便邀請您嘅好友加入 Signal。";
@@ -3407,7 +3407,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "開啟條拎";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "打開 Signal 代理伺服器";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "睇下貼圖包";
@@ -3710,7 +3710,7 @@
 "MULTIDEVICE_PAIRING_MAX_DESC" = "無法連結更多裝置。";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "你目前可以連結至帳戶嘅裝置數量已經到咗上限。請移除裝置，然後再試一次。";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "你目前可以連結至帳戶嘅裝置數量已經到咗上限。請移除裝置，然後再試過啦。";
 
 /* Badge indicating that the user is muted. */
 "MUTED_BADGE" = "已避靜";
@@ -3746,7 +3746,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "飛過";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "請檢查互聯網連線，然後再試一次。";
+"NETWORK_ERROR_RECOVERY" = "請檢查互聯網連線，然後再試過啦。";
 
 /* String representing only the cellular interface */
 "NETWORK_INTERFACE_SET_CELLULAR" = "淨係流動數據";
@@ -4766,16 +4766,16 @@
 "PROFILE_VIEW_TITLE" = "個人資料";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "代理伺服器位址";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "您已連咗線去代理伺服器。您可以隨時喺 [設定] 度閂咗代理伺服器。";
+"PROXY_CONNECTED_SUCCESSFULLY" = "你已經連接咗代理伺服器。你可以隨時喺「設定」入面閂咗個代理伺服器。";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "連接唔到代理伺服器。請你檢查代理伺服器位址，然後再試過啦。";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "輸入代理伺服器位址";
 
 /* Title for the signal proxy settings */
 "PROXY_SETTINGS_TITLE" = "代理伺服器";
@@ -4985,7 +4985,7 @@
 "REJECT_CALL_BUTTON_TITLE" = "拒絕接聽";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "你嘗試註冊嘅電話號碼已經喺另一個伺服器度註冊咗喇。請先喺嗰度取消註冊，然後再試一次。";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "你嘗試註冊嘅電話號碼已經喺另一個伺服器度註冊咗喇。請先喺嗰度取消註冊，然後再試過啦。";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "剷走個預覽";
@@ -5108,7 +5108,7 @@
 "SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "唔支援呢個版本";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "你另一部裝置用緊嘅舊版 Signal 唔支援掃描 iPad 二維碼呢個功能。請安裝最新版本嘅 Signal，然後再試一次。";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "你另一部裝置用緊嘅舊版 Signal 唔支援掃描 iPad 二維碼呢個功能。請安裝最新版本嘅 Signal，然後再試過啦。";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "更新掃緊嗰部機";
@@ -5168,7 +5168,7 @@
 "SEND_FAILED_NOTIFICATION_BODY" = "您個訊息傳送唔到。";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "無法傳送邀請，請稍候再試。";
+"SEND_INVITE_FAILURE" = "無法傳送邀請，請遲啲再試過啦。";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "你邀請咗朋友用 Signal！";
@@ -5918,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN 碼";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "審查規避、代理伺服器、轉駁通話同埋加密傳送者設定。";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "進階";
@@ -6707,10 +6707,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "個谷更新唔到。請檢查您嘅連線，然後再試下啦。";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "用代理伺服器";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "請你喺用唔到流動數據或者 Wi-Fi 連接 Signal 嘅時候，先至用代理伺服器。";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "喺 Signal 唔係事必要整個使用者名稱嘅。若果您揀去整個使用者名稱嘅話，咁其他 Signal 使用者就唔使知您個電話冧把，都可以用您呢個使用者名稱去搵到您、同您聯絡囉。";

@@ -1718,7 +1718,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Mostra les insígnies en el perfil";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Voleu usar aquesta adreça intermediària?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Vols utilitzar aquesta adreça de servidor intermediari?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Ubicació per a l'elusió de la censura";
@@ -3182,7 +3182,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Fitxer d'àudio no vàlid.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "L'adreça de servidor intermediari que has indicat no és vàlida. Comprova que l'adreça sigui correcte i torna-ho a intentar.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Podeu activar l'accés als contactes a la Configuració de l'iOS per convidar les amistats al  Signal.";
@@ -3407,7 +3407,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Obre l'enllaç";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Obrir el servidor intermediari de Signal";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Mostra el paquet d'adhesius";
@@ -4766,16 +4766,16 @@
 "PROFILE_VIEW_TITLE" = "Perfil";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "Adreça de servidor intermediari";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "Esteu connectat amb l'intermediari. Podeu desactivar-lo en qualsevol moment des de la configuració.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "Signal està connectada amb el servidor intermediari. Pots desactivar-lo en qualsevol moment des dels Ajustos.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "No s'ha pogut connectar al servidor intermediari. Comprova l'adreça de proxy i torna-ho a intentar.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "Introdueix la direcció Proxy";
 
 /* Title for the signal proxy settings */
 "PROXY_SETTINGS_TITLE" = "Servidor intermediari";
@@ -5918,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "PIN del Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Ajustos per eludir censura, servidor intermediari, retransmissió de trucades i remitent privat.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avançada";
@@ -6707,10 +6707,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "No s'ha pogut actualitzar el grup. Comproveu la connexió a Internet i torneu-ho a provar.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "Utilitzar servidor intermediari";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "Utilitza un servidor intermediari només quan no puguis connectar-te a Signal a través de les dades del teu telèfon o amb una xarxa Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Els noms d’usuari al Signal són opcionals. Si trieu crear un nom d’usuari, altres usuaris de Signal us podran trobar per aquest nom d’usuari i contactar sense saber el vostre número de telèfon.";

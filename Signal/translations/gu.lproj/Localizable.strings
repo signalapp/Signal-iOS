@@ -3182,7 +3182,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "અમાન્ય ઓડિયો ફાઇલ.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "તમે દાખલ કરેલું પ્રૉક્સી એડ્રેસ અમાન્ય છે, કૃપા કરીને એડ્રેસ ચકાસો અને ફરી પ્રયાસ કરો.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Signal માં જોડાવા માટે તમારા મિત્રોને આમંત્રણ આપવા માટે તમે iOS સેટિંગ્સ એપ્લિકેશનમાં સંપર્કોની એક્સેસને સક્ષમ કરી શકો છો.";
@@ -3407,7 +3407,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "લિંક ઓપન કરો";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Signal પ્રૉક્સી ખોલો";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "સ્ટીકર પેક જુઓ";
@@ -4766,16 +4766,16 @@
 "PROFILE_VIEW_TITLE" = "પ્રોફાઇલ";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "પ્રૉક્સી એડ્રેસ";
 
 /* The provided proxy connected successfully */
 "PROXY_CONNECTED_SUCCESSFULLY" = "તમે પ્રોક્સી સાથે જોડાયેલા છો. તમે સેટિંગ્સમાંથી કોઈપણ સમયે પ્રોક્સી બંધ કરી શકો છો.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "પ્રૉક્સી સાથે કનેક્ટ ન કરી શક્યા. પ્રૉક્સી એડ્રેસ ચકાસો અને ફરી પ્રયાસ કરો.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "પ્રૉક્સી એડ્રેસ દાખલ કરો";
 
 /* Title for the signal proxy settings */
 "PROXY_SETTINGS_TITLE" = "પ્રોક્સી";
@@ -5918,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "Signal PIN";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "સેન્સરશીપ બાયપાસ, પ્રૉક્સી, રિલે કૉલ અને ગુપ્ત પ્રેષક સેટિંગ્સ.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "વધુ";
@@ -6707,10 +6707,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ગ્રુપ અપડેટ કરી શકાયું નથી. તમારું ઇન્ટરનેટ કનેક્શન તપાસો અને ફરીથી પ્રયાસ કરો.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "પ્રૉક્સીનો ઉપયોગ કરો";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "પ્રૉક્સીનો ઉપયોગ ફક્ત તો જ કરો જો તમે મોબાઇલ ડેટા અથવા વાઇ-ફાઇથી Signal સાથે જોડાઈ ન શકતા હો.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal પરના વપરાશકર્તાનામો વૈકલ્પિક છે. જો તમે વપરાશકર્તા નામ બનાવવાનું પસંદ કરો છો તો અન્ય Signal વપરાશકર્તાઓ તમને આ વપરાશકર્તાનામ દ્વારા શોધી શકશે અને તમારો ફોન નંબર જાણ્યા વગર તમારો સંપર્ક કરશે.";

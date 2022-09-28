@@ -3182,7 +3182,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Niepoprawny plik dźwiękowy.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "Wprowadzony adres proxy jest nieprawidłowy. Sprawdź adres i spróbuj ponownie.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Aby zaprosić znajomych, musisz pozwolić Signal na dostęp do Twoich kontaktów w Ustawieniach iOS.";
@@ -3407,7 +3407,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Otwórz link";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Otwórz Signal w serwerze proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Zobacz pakiet naklejek";
@@ -4766,16 +4766,16 @@
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "Adres proxy";
 
 /* The provided proxy connected successfully */
 "PROXY_CONNECTED_SUCCESSFULLY" = "Zostałeś(aś) połączony(a) z serwerem proxy. W każdej chwili możesz wyłączyć proxy w Ustawieniach.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "Nie udało się połączyć z serwerem proxy. Sprawdź adres proxy i spróbuj ponownie.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "Wprowadź adres proxy";
 
 /* Title for the signal proxy settings */
 "PROXY_SETTINGS_TITLE" = "Proxy";
@@ -5918,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Ustawienia omijania cenzury, proxy, przekazywania połączeń i ukrytego nadawcy.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Zaawansowane";
@@ -6707,10 +6707,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Nie udało się zaktualizować grupy. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "Użyj proxy";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "Serwera proxy używaj tylko wtedy, kiedy nie jesteś w stanie połączyć się z Signal za pośrednictwem sieci komórkowej albo Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Nazwy użytkowników w Signal są opcjonalne. Jeśli postanowisz dodać nazwę użytkownika, inni użytkownicy Signal będą mogli Cię po niej znaleźć i skontaktować się z Tobą, nie znając Twojego numeru.";

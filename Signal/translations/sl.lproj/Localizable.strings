@@ -1718,7 +1718,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Prikaži značke na profilu";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Želite uporabljati ta naslov proksi?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Želite uporabiti ta proxy naslov?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lokacija za zaščito pred cenzuro";
@@ -3182,7 +3182,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Neveljavna zvočna datoteka";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "Vnesen proxy naslov je neveljaven, preverite naslov in poskusite znova.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Da bi lahko k uporabi aplikacije Signal povabili tudi prijatelje, lahko aplikaciji dovolite dostop do vašega telefonskega imenika v Nastavitvah iOS.";
@@ -3407,7 +3407,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Odpri povezavo";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Odpri Signalov proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Oglej si paket nalepk";
@@ -4766,19 +4766,19 @@
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "Proxy naslov";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "Povezani ste s proksijem. Povezavo lahko kadarkoli prekinete v Nastavitvah.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "Povezani ste s proxyjem. Povezavo lahko kadarkoli prekinete v Nastavitvah.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "Povezovanje s proxyjem ni uspelo. Preverite proxy naslov in poskusite znova.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "Vnesite proxy naslov";
 
 /* Title for the signal proxy settings */
-"PROXY_SETTINGS_TITLE" = "Proksi";
+"PROXY_SETTINGS_TITLE" = "Proxy";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Označi kot prebrano";
@@ -5918,7 +5918,7 @@
 "SETTINGS_PINS_TITLE" = "PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Izogibanje cenzuri, proxy, posredovanje klicev in nastavitve zapečatenega pošiljatelja.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Napredno";
@@ -6707,10 +6707,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Skupine ni bilo mogoče posodobiti. Preverite internetno povezavo in poskusite znova.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "Uporabi proxy";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "Proxy uporabite samo, če se ne morete povezati s Signalom preko mobilnega omrežja ali Wi-Fija.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Uporabniška imena Signal so neobvezna. Če si boste ustvarili uporabniško ime Signal, vas bodo drugi/e uporabniki/ce lahko našli/e po njem in vam pošiljali/e sporočila, ne da bi poznali/e vašo telefonsko številko.";
