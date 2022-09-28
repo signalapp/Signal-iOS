@@ -104,8 +104,7 @@ class LegacyGroupView: UIView {
             isUserInteractionEnabled = true
             addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                         action: #selector(didTapTooManyMembers)))
-        case .cantBeMigrated_MembersWithoutUuids,
-             .cantBeMigrated_MembersWithoutCapabilities:
+        case .cantBeMigrated_MembersWithoutUuids:
             configureCantUpgradeDueToMembersContents()
         case .cantBeMigrated_MembersWithoutProfileKey:
             owsFailDebug("Manual migrations should ignore missing profile keys.")

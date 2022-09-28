@@ -174,21 +174,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         contents.addSection(infoSection)
 
-        if DebugFlags.groupsV2memberStatusIndicators, let localAddress = tsAccountManager.localAddress {
-
-            let (hasGroupMigrationCapability, hasSenderKeyCapability) = databaseStorage.read {
-                (
-                    GroupManager.doesUserHaveGroupsV2MigrationCapability(address: localAddress, transaction: $0),
-                    GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: $0)
-                )
-            }
-
-            let memberStatusSection = OWSTableSection()
-            memberStatusSection.add(.label(withText: "Has Group Migration capability: \(hasGroupMigrationCapability)"))
-            memberStatusSection.add(.label(withText: "Has SenderKey capability: \(hasSenderKeyCapability)"))
-            contents.addSection(memberStatusSection)
-        }
-
         self.contents = contents
     }
 }

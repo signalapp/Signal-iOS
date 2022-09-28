@@ -62,22 +62,6 @@ public class ConversationInternalViewController: OWSTableViewController2 {
                                           value: identityKey?.hexadecimalString,
                                           accessibilityIdentifier: "identity_key"))
 
-                var groupCapabilities = [String]()
-                if GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address,
-                                                                        transaction: transaction) {
-                    groupCapabilities.append("migration")
-                }
-                if GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
-                                                                             transaction: transaction) {
-                    groupCapabilities.append("announcementGroup")
-                }
-                if GroupManager.doesUserHaveSenderKeyCapability(address: address,
-                                                                transaction: transaction) {
-                    groupCapabilities.append("senderKey")
-                }
-                section.add(.label(withText: String(format: "Group Capabilities: %@",
-                                                    groupCapabilities.joined(separator: ", "))))
-
                 var canReceiveGiftBadgesString: String
                 if let profile = profileManager.getUserProfile(for: address, transaction: transaction) {
                     canReceiveGiftBadgesString = profile.canReceiveGiftBadges ? "Yes" : "No"

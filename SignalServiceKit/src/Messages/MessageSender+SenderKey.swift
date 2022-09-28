@@ -121,11 +121,6 @@ extension MessageSender {
         intendedRecipients: [SignalServiceAddress],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
     ) -> SenderKeyStatus {
-        // Sender key requires GV2
-        guard let localAddress = self.tsAccountManager.localAddress else {
-            owsFailDebug("No local address. Sender key not supported")
-            return .init(fanoutOnlyParticipants: intendedRecipients)
-        }
         guard !RemoteConfig.senderKeyKillSwitch else {
             Logger.info("Sender key kill switch activated. No recipients support sender key.")
             return .init(fanoutOnlyParticipants: intendedRecipients)
@@ -136,11 +131,6 @@ extension MessageSender {
         }
 
         return databaseStorage.read { readTx in
-            guard GroupManager.doesUserHaveSenderKeyCapability(address: localAddress, transaction: readTx) else {
-                Logger.info("Local user does not have sender key capability. Sender key not supported.")
-                return .init(fanoutOnlyParticipants: intendedRecipients)
-            }
-
             let isCurrentKeyValid = senderKeyStore.isKeyValid(for: thread, readTx: readTx)
             let recipientsWithoutSenderKey = senderKeyStore.recipientsInNeedOfSenderKey(
                 for: thread,
@@ -157,9 +147,10 @@ extension MessageSender {
                 }
 
                 // Sender key requires that you're a full member of the group and you support UD
-                guard GroupManager.doesUserHaveSenderKeyCapability(address: candidate, transaction: readTx),
-                      threadRecipients.contains(candidate),
-                      [.enabled, .unrestricted].contains(udAccessMap[candidate]?.udAccess.udAccessMode) else {
+                guard
+                    threadRecipients.contains(candidate),
+                    [.enabled, .unrestricted].contains(udAccessMap[candidate]?.udAccess.udAccessMode)
+                else {
                     senderKeyStatus.participants[candidate] = .FanoutOnly
                     return
                 }

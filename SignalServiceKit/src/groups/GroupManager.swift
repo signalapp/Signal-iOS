@@ -1779,67 +1779,6 @@ public class GroupManager: NSObject {
         storageServiceManager.recordPendingUpdates(groupModel: groupModel)
     }
 
-    // MARK: - Capabilities
-
-    private static let groupsV2MigrationCapabilityStore = SDSKeyValueStore(collection: "GroupManager.groupsV2MigrationCapability")
-    private static let announcementOnlyGroupsCapabilityStore = SDSKeyValueStore(collection: "GroupManager.announcementOnlyGroupsCapability")
-    private static let senderKeyCapabilityStore = SDSKeyValueStore(collection: "GroupManager.senderKeyCapability")
-
-    @objc
-    public static func doesUserHaveGroupsV2MigrationCapability(address: SignalServiceAddress,
-                                                               transaction: SDSAnyReadTransaction) -> Bool {
-        if DebugFlags.groupsV2migrationsIgnoreMigrationCapability {
-            return true
-        }
-        guard let uuid = address.uuid else {
-            return false
-        }
-        return groupsV2MigrationCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
-    }
-
-    @objc
-    public static func doesUserHaveAnnouncementOnlyGroupsCapability(address: SignalServiceAddress,
-                                                                    transaction: SDSAnyReadTransaction) -> Bool {
-        guard let uuid = address.uuid else {
-            return false
-        }
-        return announcementOnlyGroupsCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
-    }
-
-    @objc
-    public static func doesUserHaveSenderKeyCapability(address: SignalServiceAddress,
-                                                       transaction: SDSAnyReadTransaction) -> Bool {
-        guard let uuid = address.uuid else {
-            return false
-        }
-        return senderKeyCapabilityStore.getBool(uuid.uuidString, defaultValue: false, transaction: transaction)
-    }
-
-    @objc
-    public static func setUserCapabilities(address: SignalServiceAddress,
-                                           hasGroupsV2MigrationCapability: Bool,
-                                           hasAnnouncementOnlyGroupsCapability: Bool,
-                                           hasSenderKeyCapability: Bool,
-                                           transaction: SDSAnyWriteTransaction) {
-        guard let uuid = address.uuid else {
-            Logger.warn("Address without uuid: \(address)")
-            return
-        }
-        let key = uuid.uuidString
-        groupsV2MigrationCapabilityStore.setBoolIfChanged(hasGroupsV2MigrationCapability,
-                                                          defaultValue: false,
-                                                          key: key,
-                                                          transaction: transaction)
-        announcementOnlyGroupsCapabilityStore.setBoolIfChanged(hasAnnouncementOnlyGroupsCapability,
-                                                               defaultValue: false,
-                                                               key: key,
-                                                               transaction: transaction)
-        senderKeyCapabilityStore.setBoolIfChanged(hasSenderKeyCapability,
-                                                  defaultValue: false,
-                                                  key: key,
-                                                  transaction: transaction)
-    }
-
     // MARK: - Profiles
 
     private static func autoWhitelistGroupIfNecessary(oldGroupModel: TSGroupModel?,

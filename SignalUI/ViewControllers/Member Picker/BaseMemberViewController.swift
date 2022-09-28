@@ -23,8 +23,6 @@ public protocol MemberViewDelegate: AnyObject {
 
     func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String?
 
-    func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState?
-
     func memberViewShouldShowMemberCount() -> Bool
 
     func memberViewShouldAllowBlockedSelection() -> Bool
@@ -294,12 +292,11 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             return .unknownError
         }
         return Self.databaseStorage.read { transaction -> RecipientPickerRecipientState in
-            if memberViewDelegate.memberViewIsPreExistingMember(recipient,
-                                                                transaction: transaction) {
+            if memberViewDelegate.memberViewIsPreExistingMember(
+                recipient,
+                transaction: transaction
+            ) {
                 return .duplicateGroupMember
-            }
-            if let state = memberViewDelegate.memberViewGetRecipientStateForRecipient(recipient, transaction: transaction) {
-                return state
             }
             return .canBeSelected
         }

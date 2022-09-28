@@ -10,7 +10,6 @@ public enum RecipientPickerRecipientState: Int {
     case duplicateGroupMember
     case userAlreadyInBlocklist
     case conversationAlreadyInBlocklist
-    case userLacksGroupCapability
     case unknownError
 }
 
@@ -165,9 +164,6 @@ extension RecipientPickerViewController {
             owsFailDebug("Unexpected value.")
             errorMessage = OWSLocalizedString("RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED",
                                               comment: "Error message indicating that a user can't be selected.")
-        case .userLacksGroupCapability:
-            errorMessage = OWSLocalizedString("RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT",
-                                              comment: "Error message indicating that a user can't be added to a group until they upgrade their app.")
         }
         OWSActionSheets.showErrorAlert(message: errorMessage)
         return

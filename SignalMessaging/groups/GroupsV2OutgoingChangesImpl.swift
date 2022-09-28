@@ -261,13 +261,6 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
         var newUserUuids: Set<UUID> = Set(membersToAdd.keys).union(invitedMembersToPromote)
         newUserUuids.insert(localUuid)
 
-        if isMissingAnnouncementOnlyCapability(
-            currentGroupModel: currentGroupModel,
-            newAddresses: newUserUuids.map { SignalServiceAddress(uuid: $0) }
-        ) {
-            return Promise(error: GroupsV2Error.newMemberMissingAnnouncementOnlyCapability)
-        }
-
         return firstly(on: .global()) { () -> Promise<GroupsV2Swift.ProfileKeyCredentialMap> in
             self.groupsV2Swift.loadProfileKeyCredentials(
                 for: Array(newUserUuids),
@@ -279,28 +272,6 @@ public class GroupsV2OutgoingChangesImpl: NSObject, GroupsV2OutgoingChanges {
                 currentDisappearingMessageToken: currentDisappearingMessageToken,
                 profileKeyCredentialMap: profileKeyCredentialMap
             )
-        }
-    }
-
-    private func isMissingAnnouncementOnlyCapability(currentGroupModel: TSGroupModelV2,
-                                                     newAddresses: [SignalServiceAddress]) -> Bool {
-        let shouldPreventNewMembersWithoutAnnouncementOnlyCapability: Bool = {
-            if let isAnnouncementsOnly = self.isAnnouncementsOnly {
-                return isAnnouncementsOnly
-            }
-            return currentGroupModel.isAnnouncementsOnly
-        }()
-        guard shouldPreventNewMembersWithoutAnnouncementOnlyCapability else {
-            return false
-        }
-        return databaseStorage.read { transaction in
-            for address in newAddresses {
-                guard GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
-                                                                                transaction: transaction) else {
-                    return true
-                }
-            }
-            return false
         }
     }
 

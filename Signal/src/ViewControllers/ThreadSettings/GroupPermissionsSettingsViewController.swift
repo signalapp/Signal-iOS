@@ -26,76 +26,15 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     private lazy var newAccessAttributes = oldAccessAttributes
     private lazy var newIsAnnouncementsOnly = oldIsAnnouncementsOnly
 
-    private enum AnnouncementOnlyCapabilityState: Equatable {
-        case enabled
-        case disabled(membersWithoutCapability: Set<SignalServiceAddress>)
-    }
-    private var announcementOnlyCapabilityState: AnnouncementOnlyCapabilityState {
-        didSet {
-            if oldValue != announcementOnlyCapabilityState,
-               isViewLoaded {
-                updateTableContents()
-                updateNavigation()
-            }
-        }
-    }
-
     init(threadViewModel: ThreadViewModel, delegate: GroupPermissionsSettingsDelegate) {
         owsAssertDebug(threadViewModel.threadRecord.isGroupV2Thread)
         self.threadViewModel = threadViewModel
         self.groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
         self.permissionsDelegate = delegate
-        self.announcementOnlyCapabilityState = Self.announcementOnlyCapabilityState(threadViewModel: threadViewModel)
 
         super.init()
 
         self.groupViewHelper.delegate = self
-
-        // We only show the "announcement-only" UI if all members of the
-        // group support this capability.  If some members don't, fetch their
-        // profiles; perhaps they have the capability and we just don't know
-        // it yet.
-        switch announcementOnlyCapabilityState {
-        case .enabled:
-            break
-        case .disabled(let membersWithoutCapability):
-            firstly(on: .global()) { () -> Promise<Void> in
-                let promises = membersWithoutCapability.map { address in
-                    ProfileFetcherJob.fetchProfilePromise(address: address, ignoreThrottling: true)
-                }
-                return Promise.when(resolved: promises).asVoid()
-            }.done { [weak self] in
-                self?.updateAnnouncementOnlyCapabilityState()
-            }.catch { error in
-                owsFailDebug("Error: \(error)")
-            }
-        }
-    }
-
-    private func updateAnnouncementOnlyCapabilityState() {
-        self.announcementOnlyCapabilityState = Self.announcementOnlyCapabilityState(threadViewModel: threadViewModel)
-    }
-
-    private static func announcementOnlyCapabilityState(threadViewModel: ThreadViewModel) -> AnnouncementOnlyCapabilityState {
-        guard let groupThread = threadViewModel.threadRecord as? TSGroupThread else {
-            owsFailDebug("Invalid group.")
-            return .disabled(membersWithoutCapability: Set())
-        }
-        let members = groupThread.groupMembership.allMembersOfAnyKind
-        return databaseStorage.read { transaction in
-            var membersWithoutCapability = Set<SignalServiceAddress>()
-            for member in members {
-                if !GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: member,
-                                                                              transaction: transaction) {
-                    membersWithoutCapability.insert(member)
-                }
-            }
-            if membersWithoutCapability.isEmpty {
-                return .enabled
-            } else {
-                return .disabled(membersWithoutCapability: membersWithoutCapability)
-            }
-        }
     }
 
     override func viewDidLoad() {
@@ -217,47 +156,40 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
 
         contents.addSection(accessAttributesSection)
 
-        // Always show the announcements-only UI if that option is
-        // already enabled.  If not, only show that UI if all group
-        // members support that capability and the remote config flag
-        // is enabled.
-        let canShowAnnouncementOnly = announcementOnlyCapabilityState == .enabled
-        if canShowAnnouncementOnly || newIsAnnouncementsOnly {
-            let isAnnouncementsOnly = self.newIsAnnouncementsOnly
+        let isAnnouncementsOnly = self.newIsAnnouncementsOnly
 
-            let announcementOnlySection = OWSTableSection()
-            announcementOnlySection.headerTitle = NSLocalizedString(
-                "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER",
-                comment: "Label for 'send messages' action in conversation settings permissions view."
-            )
-            announcementOnlySection.footerTitle = NSLocalizedString(
-                "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER",
-                comment: "Footer for the 'send messages' section in conversation settings permissions view."
-            )
+        let announcementOnlySection = OWSTableSection()
+        announcementOnlySection.headerTitle = NSLocalizedString(
+            "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER",
+            comment: "Label for 'send messages' action in conversation settings permissions view."
+        )
+        announcementOnlySection.footerTitle = NSLocalizedString(
+            "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_FOOTER",
+            comment: "Footer for the 'send messages' section in conversation settings permissions view."
+        )
 
-            announcementOnlySection.add(.init(
-                text: NSLocalizedString(
-                    "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS",
-                    comment: "Label for button that sets 'send messages permission' for a group to 'all members'."
-                ),
-                actionBlock: { [weak self] in
-                    self?.tryToSetIsAnnouncementsOnly(false)
-                },
-                accessoryType: !isAnnouncementsOnly ? .checkmark : .none
-            ))
-            announcementOnlySection.add(.init(
-                text: NSLocalizedString(
-                    "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS",
-                    comment: "Label for button that sets 'send messages permission' for a group to 'administrators only'."
-                ),
-                actionBlock: { [weak self] in
-                    self?.tryToSetIsAnnouncementsOnly(true)
-                },
-                accessoryType: isAnnouncementsOnly ? .checkmark : .none
-            ))
+        announcementOnlySection.add(.init(
+            text: NSLocalizedString(
+                "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ALL_MEMBERS",
+                comment: "Label for button that sets 'send messages permission' for a group to 'all members'."
+            ),
+            actionBlock: { [weak self] in
+                self?.tryToSetIsAnnouncementsOnly(false)
+            },
+            accessoryType: !isAnnouncementsOnly ? .checkmark : .none
+        ))
+        announcementOnlySection.add(.init(
+            text: NSLocalizedString(
+                "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS",
+                comment: "Label for button that sets 'send messages permission' for a group to 'administrators only'."
+            ),
+            actionBlock: { [weak self] in
+                self?.tryToSetIsAnnouncementsOnly(true)
+            },
+            accessoryType: isAnnouncementsOnly ? .checkmark : .none
+        ))
 
-            contents.addSection(announcementOnlySection)
-        }
+        contents.addSection(announcementOnlySection)
     }
 
     private func tryToSetAccessMembers(_ value: GroupV2Access) {

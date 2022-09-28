@@ -90,8 +90,6 @@ extension PrivateStoryAddRecipientsSettingsViewController: MemberViewDelegate {
 
     public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? { nil }
 
-    public func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? { nil }
-
     public func memberViewShouldShowMemberCount() -> Bool { false }
 
     public func memberViewShouldAllowBlockedSelection() -> Bool { false }

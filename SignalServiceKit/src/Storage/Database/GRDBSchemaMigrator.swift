@@ -239,10 +239,11 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_indexMultipleNameComponentsForReceipients
         case dataMigration_syncGroupStories
         case dataMigration_populateLastReceivedStoryTimestamp
+        case dataMigration_deleteOldGroupCapabilities
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 45
+    public static let grdbSchemaVersionLatest: UInt = 46
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -2350,6 +2351,19 @@ public class GRDBSchemaMigrator: NSObject {
                 for thread in message.threads(transaction: transaction.asAnyRead) {
                     thread.updateWithLastReceivedStoryTimestamp(NSNumber(value: message.timestamp), transaction: transaction.asAnyWrite)
                 }
+            }
+        }
+
+        migrator.registerMigration(.dataMigration_deleteOldGroupCapabilities) { db in
+            let sql = """
+                DELETE FROM \(SDSKeyValueStore.tableName)
+                WHERE \(SDSKeyValueStore.collectionColumn.columnName)
+                IN ("GroupManager.senderKeyCapability", "GroupManager.announcementOnlyGroupsCapability", "GroupManager.groupsV2MigrationCapability")
+            """
+            do {
+                try db.execute(sql: sql)
+            } catch {
+                owsFail("Error \(error)")
             }
         }
     }

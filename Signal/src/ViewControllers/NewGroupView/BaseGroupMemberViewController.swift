@@ -231,27 +231,6 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
     }
 
-    public func memberViewGetRecipientStateForRecipient(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> RecipientPickerRecipientState? {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
-            owsFailDebug("Missing delegate.")
-            return nil
-        }
-
-        if let groupThread = groupMemberViewDelegate.groupThreadForGroupMemberView,
-           groupThread.isAnnouncementOnlyGroupThread,
-           let address = recipient.address,
-           !GroupManager.doesUserHaveAnnouncementOnlyGroupsCapability(address: address,
-                                                                      transaction: transaction) {
-
-            // Re-fetch profile for this user.
-            ProfileFetcherJob.fetchProfile(address: address, ignoreThrottling: true)
-
-            return .userLacksGroupCapability
-        }
-
-        return nil
-    }
-
     public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? {
         return NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
                                  comment: "Indicates that a group member does not support New Groups.")

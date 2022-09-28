@@ -607,12 +607,6 @@ public class ProfileFetcherJob: NSObject {
                                       hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess)
 
         return databaseStorage.write(.promise) { transaction in
-            GroupManager.setUserCapabilities(address: address,
-                                             hasGroupsV2MigrationCapability: profile.supportsGroupsV2Migration,
-                                             hasAnnouncementOnlyGroupsCapability: profile.supportsAnnouncementOnlyGroups,
-                                             hasSenderKeyCapability: profile.supportsSenderKey,
-                                             transaction: transaction)
-
             self.verifyIdentityUpToDate(address: address,
                                         latestIdentityKey: profile.identityKey,
                                         transaction: transaction)
@@ -648,12 +642,6 @@ public class ProfileFetcherJob: NSObject {
             userProfileWriter: .profileFetch,
             transaction: transaction
         )
-
-        GroupManager.setUserCapabilities(address: address,
-                                         hasGroupsV2MigrationCapability: false,
-                                         hasAnnouncementOnlyGroupsCapability: false,
-                                         hasSenderKeyCapability: false,
-                                         transaction: transaction)
 
         self.paymentsHelper.setArePaymentsEnabled(for: address,
                                                      hasPaymentsEnabled: false,

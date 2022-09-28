@@ -239,8 +239,7 @@ public class GroupMigrationActionSheet: UIView {
         owsAssertDebug(isFullMemberOfGroup)
         if isFullMemberOfGroup {
             databaseStorage.read { transaction in
-                let membersToDrop = (migrationInfo.membersWithoutUuids +
-                                        migrationInfo.membersWithoutCapabilities)
+                let membersToDrop = migrationInfo.membersWithoutUuids
                 let membersToInvite = migrationInfo.membersWithoutProfileKeys
                 if !membersToInvite.isEmpty {
                     builder.addVerticalSpacer(height: 20)
@@ -646,9 +645,6 @@ public extension GroupMigrationActionSheet {
         Self.databaseStorage.read { transaction in
             for address in groupModel.droppedMembers {
                 guard address.uuid != nil else {
-                    continue
-                }
-                guard GroupManager.doesUserHaveGroupsV2MigrationCapability(address: address, transaction: transaction) else {
                     continue
                 }
                 addableMembers.insert(address)

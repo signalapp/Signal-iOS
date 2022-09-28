@@ -352,15 +352,8 @@ public class OWSMessageDecrypter: OWSMessageHandler {
 
         let errorMessage: TSErrorMessage?
         if envelope.hasSourceUuid {
-            let remoteUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
-                address: sourceAddress,
-                transaction: transaction)
-            let localUserSupportsSenderKey = GroupManager.doesUserHaveSenderKeyCapability(
-                address: sourceAddress,
-                transaction: transaction)
             let contentSupportsResend = envelopeContentSupportsResend(envelope: envelope, cipherType: cipherType, transaction: transaction)
-            let supportsModernResend =
-                (identity == .aci) && remoteUserSupportsSenderKey && localUserSupportsSenderKey && contentSupportsResend
+            let supportsModernResend = (identity == .aci) && contentSupportsResend
 
             if supportsModernResend && !RemoteConfig.messageResendKillSwitch {
                 Logger.info("Performing modern resend of \(contentHint) content with timestamp \(envelope.timestamp)")
