@@ -185,35 +185,10 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
             return
         }
 
-        var hasTransitionedToConnecting = false
-
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
-            var observer: NSObjectProtocol?
-            func unregisterObserver() {
-                observer.map { NotificationCenter.default.removeObserver($0) }
-                observer = nil
-            }
-
-            // Wait to see if we can establish a websocket connection via the new proxy
-            observer = NotificationCenter.default.addObserver(forName: OWSWebSocket.webSocketStateDidChange, object: nil, queue: nil) { _ in
-                switch self.socketManager.socketState(forType: .identified) {
-                case .closed:
-                    // Ignore closed state until we start connecting, it's expected that old sockets will close
-                    guard hasTransitionedToConnecting else { break }
-
-                    unregisterObserver()
-                    modal.dismiss {
-                        self.presentToast(text: NSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
-                        Self.databaseStorage.write { transaction in
-                            SignalProxy.setProxyHost(host: self.host, useProxy: false, transaction: transaction)
-                        }
-                        self.updateTableContents()
-                    }
-                case .connecting:
-                    hasTransitionedToConnecting = true
-                case .open:
-                    unregisterObserver()
-                    modal.dismiss {
+            ProxyConnectionChecker.checkConnectionAndNotify { connected in
+                modal.dismiss {
+                    if connected {
                         if self.navigationController?.viewControllers.count == 1 {
                             self.presentingViewController?.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
                             self.dismiss(animated: true)
@@ -221,6 +196,12 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
                             self.presentToast(text: NSLocalizedString("PROXY_CONNECTED_SUCCESSFULLY", comment: "The provided proxy connected successfully"))
                             self.updateNavigationBar()
                         }
+                    } else {
+                        self.presentToast(text: NSLocalizedString("PROXY_FAILED_TO_CONNECT", comment: "The provided proxy couldn't connect"))
+                        Self.databaseStorage.write { transaction in
+                            SignalProxy.setProxyHost(host: self.host, useProxy: false, transaction: transaction)
+                        }
+                        self.updateTableContents()
                     }
                 }
             }

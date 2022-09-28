@@ -957,6 +957,7 @@
 		888B6D4D25B2523800E2A662 /* ConversationViewController+Wallpaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
+		888CC15928E3CE8100A13493 /* ProxyConnectionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88928A44263A2781009C9B30 /* state-change_confirm-down.caf in Resources */ = {isa = PBXBuildFile; fileRef = 88928A42263A2781009C9B30 /* state-change_confirm-down.caf */; };
 		88928A45263A2781009C9B30 /* state-change_confirm-up.caf in Resources */ = {isa = PBXBuildFile; fileRef = 88928A43263A2781009C9B30 /* state-change_confirm-up.caf */; };
@@ -3313,6 +3314,7 @@
 		888B6D4C25B2523700E2A662 /* ConversationViewController+Wallpaper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Wallpaper.swift"; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
+		888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyConnectionChecker.swift; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
 		88928A42263A2781009C9B30 /* state-change_confirm-down.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "state-change_confirm-down.caf"; sourceTree = "<group>"; };
 		88928A43263A2781009C9B30 /* state-change_confirm-up.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "state-change_confirm-up.caf"; sourceTree = "<group>"; };
@@ -6009,6 +6011,7 @@
 				4579431C1E7C8CE9008ED0C0 /* Pastelog.h */,
 				4579431D1E7C8CE9008ED0C0 /* Pastelog.m */,
 				34067EAA2710D61A000407C3 /* Pastelog.swift */,
+				888CC15828E3CE8100A13493 /* ProxyConnectionChecker.swift */,
 				34E5DC8020D8050D00C08145 /* RegistrationUtils.h */,
 				34E5DC8120D8050D00C08145 /* RegistrationUtils.m */,
 				3440426A273AB186008C9FA4 /* RegistrationUtils.swift */,
@@ -6325,6 +6328,7 @@
 				88D1BCBA24F73C15009A1738 /* PhoneNumberDiscoverabilitySettingsTableViewController.swift */,
 				88D1BCB824F73C04009A1738 /* PhoneNumberSharingSettingsTableViewController.swift */,
 				887B381025F05F3100685845 /* PrivacySettingsViewController.swift */,
+				88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */,
 			);
 			path = Privacy;
 			sourceTree = "<group>";
@@ -6354,7 +6358,6 @@
 				346C19DE25ACDF0B00061D3A /* DataSettingsTableViewController.swift */,
 				346C19E025ACE9AE00061D3A /* MediaDownloadSettingsViewController.swift */,
 				329D42A625AE673400DCB449 /* NetworkInterfacePreferenceViewController.swift */,
-				88DF81A228E15D1600F8BA80 /* ProxySettingsViewController.swift */,
 				8876CE4926A914B7002217ED /* SentMediaQualitySettingsViewController.swift */,
 			);
 			path = "Data Usage";
@@ -10458,6 +10461,7 @@
 				8871B17125F0139D00D4E070 /* ProfileNameViewController.swift in Sources */,
 				8871B16F25F007DE00D4E070 /* ProfileSettingsViewController.swift in Sources */,
 				4C3A2BC72356620E004B3986 /* ProvisioningController.swift in Sources */,
+				888CC15928E3CE8100A13493 /* ProxyConnectionChecker.swift in Sources */,
 				88DF81A128E1538000F8BA80 /* ProxyLinkSheetViewController.swift in Sources */,
 				88DF81A328E15D1600F8BA80 /* ProxySettingsViewController.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
