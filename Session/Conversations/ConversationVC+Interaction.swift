@@ -262,29 +262,49 @@ extension ConversationVC:
         }
         catch {
             DispatchQueue.main.async { [weak self] in
-                let alert = UIAlertController(title: "Session", message: "An error occurred.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                
-                self?.present(alert, animated: true, completion: nil)
+                let modal: ConfirmationModal = ConfirmationModal(
+                    targetView: self?.view,
+                    info: ConfirmationModal.Info(
+                        title: "Session",
+                        explanation: "An error occurred.",
+                        cancelTitle: "BUTTON_OK".localized(),
+                        cancelStyle: .alert_text
+                    )
+                )
+                self?.present(modal, animated: true)
             }
             return
         }
         
         let type = urlResourceValues.typeIdentifier ?? (kUTTypeData as String)
         guard urlResourceValues.isDirectory != true else {
-            DispatchQueue.main.async {
-                OWSAlerts.showAlert(
-                    title: "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE".localized(),
-                    message: "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY".localized()
+            DispatchQueue.main.async { [weak self] in
+                let modal: ConfirmationModal = ConfirmationModal(
+                    targetView: self?.view,
+                    info: ConfirmationModal.Info(
+                        title: "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE".localized(),
+                        explanation: "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY".localized(),
+                        cancelTitle: "BUTTON_OK".localized(),
+                        cancelStyle: .alert_text
+                    )
                 )
+                self?.present(modal, animated: true)
             }
             return
         }
         
         let fileName = urlResourceValues.name ?? NSLocalizedString("ATTACHMENT_DEFAULT_FILENAME", comment: "")
         guard let dataSource = DataSourcePath.dataSource(with: url, shouldDeleteOnDeallocation: false) else {
-            DispatchQueue.main.async {
-                OWSAlerts.showAlert(title: "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE".localized())
+            DispatchQueue.main.async { [weak self] in
+                let modal: ConfirmationModal = ConfirmationModal(
+                    targetView: self?.view,
+                    info: ConfirmationModal.Info(
+                        title: "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE".localized(),
+                        cancelTitle: "BUTTON_OK".localized(),
+                        cancelStyle: .alert_text
+                    )
+                )
+                self?.present(modal, animated: true)
             }
             return
         }
@@ -364,7 +384,7 @@ extension ConversationVC:
                     explanation: "modal_send_seed_explanation".localized(),
                     confirmTitle: "modal_send_seed_send_button_title".localized(),
                     confirmStyle: .danger,
-                    cancelStyle: .textPrimary,
+                    cancelStyle: .alert_text,
                     onConfirm: { [weak self] _ in self?.sendMessage(hasPermissionToSendSeed: true) }
                 )
             )
@@ -487,7 +507,7 @@ extension ConversationVC:
                     explanation: "modal_send_seed_explanation".localized(),
                     confirmTitle: "modal_send_seed_send_button_title".localized(),
                     confirmStyle: .danger,
-                    cancelStyle: .textPrimary,
+                    cancelStyle: .alert_text,
                     onConfirm: { [weak self] _ in
                         self?.sendAttachments(attachments, with: text, hasPermissionToSendSeed: true, onComplete: onComplete)
                     }
@@ -1000,24 +1020,25 @@ extension ConversationVC:
         guard let url: URL = URL(string: urlString) else { return }
         
         // URLs can be unsafe, so always ask the user whether they want to open one
-        let alertVC = UIAlertController(
+        let actionSheet: UIAlertController = UIAlertController(
             title: "modal_open_url_title".localized(),
             message: String(format: "modal_open_url_explanation".localized(), url.absoluteString),
             preferredStyle: .actionSheet
         )
-        alertVC.addAction(UIAlertAction(title: "modal_open_url_button_title".localized(), style: .default) { [weak self] _ in
+        actionSheet.addAction(UIAlertAction(title: "modal_open_url_button_title".localized(), style: .default) { [weak self] _ in
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
             self?.showInputAccessoryView()
         })
-        alertVC.addAction(UIAlertAction(title: "modal_copy_url_button_title".localized(), style: .default) { [weak self] _ in
+        actionSheet.addAction(UIAlertAction(title: "modal_copy_url_button_title".localized(), style: .default) { [weak self] _ in
             UIPasteboard.general.string = url.absoluteString
             self?.showInputAccessoryView()
         })
-        alertVC.addAction(UIAlertAction(title: "cancel".localized(), style: .cancel) { [weak self] _ in
+        actionSheet.addAction(UIAlertAction(title: "cancel".localized(), style: .cancel) { [weak self] _ in
             self?.showInputAccessoryView()
         })
         
-        self.presentAlert(alertVC)
+        Modal.setupForIPadIfNeeded(actionSheet, targetView: self.view)
+        self.present(actionSheet, animated: true)
     }
     
     func handleReplyButtonTapped(for cellViewModel: MessageViewModel) {
@@ -1474,7 +1495,7 @@ extension ConversationVC:
                             info: ConfirmationModal.Info(
                                 title: "Couldn't Join",
                                 cancelTitle: "BUTTON_OK".localized(),
-                                cancelStyle: .textPrimary
+                                cancelStyle: .alert_text
                             )
                         )
                         
@@ -1502,7 +1523,7 @@ extension ConversationVC:
                                     title: "Couldn't Join",
                                     explanation: error.localizedDescription,
                                     cancelTitle: "BUTTON_OK".localized(),
-                                    cancelStyle: .textPrimary
+                                    cancelStyle: .alert_text
                                 )
                             )
                             
@@ -1746,8 +1767,8 @@ extension ConversationVC:
                     return
                 }
                 
-                let alertVC = UIAlertController.init(title: nil, message: nil, preferredStyle: .actionSheet)
-                alertVC.addAction(UIAlertAction(title: "delete_message_for_me".localized(), style: .destructive) { [weak self] _ in
+                let actionSheet: UIAlertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+                actionSheet.addAction(UIAlertAction(title: "delete_message_for_me".localized(), style: .destructive) { [weak self] _ in
                     Storage.shared.writeAsync { db in
                         _ = try Interaction
                             .filter(id: cellViewModel.id)
@@ -1765,7 +1786,7 @@ extension ConversationVC:
                     self?.showInputAccessoryView()
                 })
                 
-                alertVC.addAction(UIAlertAction(
+                actionSheet.addAction(UIAlertAction(
                     title: (cellViewModel.threadVariant == .closedGroup ?
                         "delete_message_for_everyone".localized() :
                         String(format: "delete_message_for_me_and_recipient".localized(), threadName)
@@ -1799,13 +1820,14 @@ extension ConversationVC:
                     }
                 })
 
-                alertVC.addAction(UIAlertAction.init(title: "TXT_CANCEL_TITLE".localized(), style: .cancel) { [weak self] _ in
+                actionSheet.addAction(UIAlertAction.init(title: "TXT_CANCEL_TITLE".localized(), style: .cancel) { [weak self] _ in
                     self?.showInputAccessoryView()
                 })
 
                 self.inputAccessoryView?.isHidden = true
                 self.inputAccessoryView?.alpha = 0
-                self.presentAlert(alertVC)
+                Modal.setupForIPadIfNeeded(actionSheet, targetView: self.view)
+                self.present(actionSheet, animated: true)
         }
     }
 
@@ -1871,78 +1893,98 @@ extension ConversationVC:
         guard cellViewModel.threadVariant == .openGroup else { return }
         
         let threadId: String = self.viewModel.threadData.threadId
-        let alert: UIAlertController = UIAlertController(
-            title: "Session",
-            message: "This will ban the selected user from this room. It won't ban them from other rooms.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-            Storage.shared
-                .read { db -> Promise<Void> in
-                    guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
-                        return Promise(error: StorageError.objectNotFound)
-                    }
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: self.view,
+            info: ConfirmationModal.Info(
+                title: "Session",
+                explanation: "This will ban the selected user from this room. It won't ban them from other rooms.",
+                confirmTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text,
+                onConfirm: { [weak self] _ in
+                    Storage.shared
+                        .read { db -> Promise<Void> in
+                            guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
+                                return Promise(error: StorageError.objectNotFound)
+                            }
+                            
+                            return OpenGroupAPI
+                                .userBan(
+                                    db,
+                                    sessionId: cellViewModel.authorId,
+                                    from: [openGroup.roomToken],
+                                    on: openGroup.server
+                                )
+                                .map { _ in () }
+                        }
+                        .catch(on: DispatchQueue.main) { _ in
+                            let modal: ConfirmationModal = ConfirmationModal(
+                                targetView: self?.view,
+                                info: ConfirmationModal.Info(
+                                    title: CommonStrings.errorAlertTitle,
+                                    explanation: "context_menu_ban_user_error_alert_message".localized(),
+                                    cancelTitle: "BUTTON_OK".localized(),
+                                    cancelStyle: .alert_text
+                                )
+                            )
+                            self?.present(modal, animated: true)
+                        }
+                        .retainUntilComplete()
                     
-                    return OpenGroupAPI
-                        .userBan(
-                            db,
-                            sessionId: cellViewModel.authorId,
-                            from: [openGroup.roomToken],
-                            on: openGroup.server
-                        )
-                        .map { _ in () }
-                }
-                .catch(on: DispatchQueue.main) { _ in
-                    OWSAlerts.showErrorAlert(message: "context_menu_ban_user_error_alert_message".localized())
-                }
-                .retainUntilComplete()
-            
-            self?.becomeFirstResponder()
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak self] _ in
-            self?.becomeFirstResponder()
-        }))
-        
-        present(alert, animated: true, completion: nil)
+                    self?.becomeFirstResponder()
+                },
+                afterClosed: { [weak self] in self?.becomeFirstResponder() }
+            )
+        )
+        self.present(modal, animated: true)
     }
 
     func banAndDeleteAllMessages(_ cellViewModel: MessageViewModel) {
         guard cellViewModel.threadVariant == .openGroup else { return }
         
         let threadId: String = self.viewModel.threadData.threadId
-        let alert: UIAlertController = UIAlertController(
-            title: "Session",
-            message: "This will ban the selected user from this room and delete all messages sent by them. It won't ban them from other rooms or delete the messages they sent there.",
-            preferredStyle: .alert
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: self.view,
+            info: ConfirmationModal.Info(
+                title: "Session",
+                explanation: "This will ban the selected user from this room and delete all messages sent by them. It won't ban them from other rooms or delete the messages they sent there.",
+                confirmTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text,
+                onConfirm: { [weak self] _ in
+                    Storage.shared
+                        .read { db -> Promise<Void> in
+                            guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
+                                return Promise(error: StorageError.objectNotFound)
+                            }
+                        
+                            return OpenGroupAPI
+                                .userBanAndDeleteAllMessages(
+                                    db,
+                                    sessionId: cellViewModel.authorId,
+                                    in: openGroup.roomToken,
+                                    on: openGroup.server
+                                )
+                                .map { _ in () }
+                        }
+                        .catch(on: DispatchQueue.main) { _ in
+                            let modal: ConfirmationModal = ConfirmationModal(
+                                targetView: self?.view,
+                                info: ConfirmationModal.Info(
+                                    title: CommonStrings.errorAlertTitle,
+                                    explanation: "context_menu_ban_user_error_alert_message".localized(),
+                                    cancelTitle: "BUTTON_OK".localized(),
+                                    cancelStyle: .alert_text
+                                )
+                            )
+                            self?.present(modal, animated: true)
+                        }
+                        .retainUntilComplete()
+                    
+                    self?.becomeFirstResponder()
+                },
+                afterClosed: { [weak self] in self?.becomeFirstResponder() }
+            )
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-            Storage.shared
-                .read { db -> Promise<Void> in
-                    guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else {
-                        return Promise(error: StorageError.objectNotFound)
-                    }
-                
-                    return OpenGroupAPI
-                        .userBanAndDeleteAllMessages(
-                            db,
-                            sessionId: cellViewModel.authorId,
-                            in: openGroup.roomToken,
-                            on: openGroup.server
-                        )
-                        .map { _ in () }
-                }
-                .catch(on: DispatchQueue.main) { _ in
-                    OWSAlerts.showErrorAlert(message: "context_menu_ban_user_error_alert_message".localized())
-                }
-                .retainUntilComplete()
-            
-            self?.becomeFirstResponder()
-        }))
-        alert.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { [weak self] _ in
-            self?.becomeFirstResponder()
-        }))
-        
-        present(alert, animated: true, completion: nil)
+        self.present(modal, animated: true)
     }
 
     // MARK: - VoiceMessageRecordingViewDelegate
@@ -2032,10 +2074,16 @@ extension ConversationVC:
         guard duration > 1 else {
             self.audioRecorder = nil
             
-            OWSAlerts.showAlert(
-                title: "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE".localized(),
-                message: "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE".localized()
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self.view,
+                info: ConfirmationModal.Info(
+                    title: "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE".localized(),
+                    explanation: "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE".localized(),
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
             )
+            self.present(modal, animated: true)
             return
         }
         
@@ -2096,13 +2144,17 @@ extension ConversationVC:
     // MARK: - Convenience
     
     func showErrorAlert(for attachment: SignalAttachment, onDismiss: (() -> ())?) {
-        OWSAlerts.showAlert(
-            title: "ATTACHMENT_ERROR_ALERT_TITLE".localized(),
-            message: (attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage),
-            buttonTitle: nil
-        ) { _ in
-            onDismiss?()
-        }
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: self.view,
+            info: ConfirmationModal.Info(
+                title: "ATTACHMENT_ERROR_ALERT_TITLE".localized(),
+                explanation: (attachment.localizedErrorDescription ?? SignalAttachment.missingDataErrorMessage),
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text,
+                afterClosed: onDismiss
+            )
+        )
+        self.present(modal, animated: true)
     }
 }
 

@@ -272,13 +272,17 @@ class ScreenLockUI {
     }
 
     private func showScreenLockFailureAlert(message: String) {
-        OWSAlerts.showAlert(
-            title: "SCREEN_LOCK_UNLOCK_FAILED".localized(),
-            message: message,
-            buttonTitle: nil,
-            buttonAction: { [weak self] _ in self?.ensureUI() }, // After the alert, update the UI
-            fromViewController: screenBlockingWindow.rootViewController
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: screenBlockingWindow.rootViewController?.view,
+            info: ConfirmationModal.Info(
+                title: "SCREEN_LOCK_UNLOCK_FAILED".localized(),
+                explanation: message,
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text,
+                afterClosed: { [weak self] in self?.ensureUI() } // After the alert, update the UI
+            )
         )
+        screenBlockingWindow.rootViewController?.present(modal, animated: true)
     }
 
     /// 'Screen Blocking' window obscures the app screen:

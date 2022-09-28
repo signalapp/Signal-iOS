@@ -222,11 +222,17 @@ final class ShareVC: UINavigationController, ShareViewDelegate {
             return
         }
         
-        let alert = UIAlertController(title: "Session", message: error.localizedDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: { _ in
-            self.extensionContext!.cancelRequest(withError: error)
-        }))
-        presentAlert(alert)
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: self.view,
+            info: ConfirmationModal.Info(
+                title: "Session",
+                explanation: error.localizedDescription,
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text,
+                afterClosed: { [weak self] in self?.extensionContext?.cancelRequest(withError: error) }
+            )
+        )
+        self.present(modal, animated: true)
     }
     
     // MARK: Attachment Prep

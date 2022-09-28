@@ -188,7 +188,7 @@ final class RestoreVC: BaseVC {
                     title: title,
                     explanation: message,
                     cancelTitle: "BUTTON_OK".localized(),
-                    cancelStyle: .textPrimary
+                    cancelStyle: .alert_text
                 )
             )
             present(modal, animated: true)

@@ -124,11 +124,16 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     
     fileprivate func startNewPrivateChatIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
-            let alert = UIAlertController(
-                title: "invalid_session_id".localized(),
-                message: "INVALID_SESSION_ID_MESSAGE".localized(), preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-            presentAlert(alert)
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self.view,
+                info: ConfirmationModal.Info(
+                    title: "invalid_session_id".localized(),
+                    explanation: "INVALID_SESSION_ID_MESSAGE".localized(),
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
+            )
+            self.present(modal, animated: true)
         }
         else {
             let maybeThread: SessionThread? = Storage.shared.write { db in

@@ -454,8 +454,15 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     // MARK: - Convenience
     
     private func showError(title: String, message: String = "") {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-        presentAlert(alert)
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: self.view,
+            info: ConfirmationModal.Info(
+                title: title,
+                explanation: message,
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text
+            )
+        )
+        self.present(modal, animated: true)
     }
 }

@@ -159,17 +159,17 @@ final class SAEScreenLockViewController: ScreenLockViewController {
     private func showScreenLockFailureAlert(message: String) {
         AssertIsOnMainThread()
         
-        OWSAlerts.showAlert(
-            // Title for alert indicating that screen lock could not be unlocked.
-            title: "SCREEN_LOCK_UNLOCK_FAILED".localized(),
-            message: message,
-            buttonTitle: nil,
-            buttonAction: { [weak self] action in
-                // After the alert, update the UI
-                self?.ensureUI()
-            },
-            fromViewController: self
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: self.view,
+            info: ConfirmationModal.Info(
+                title: "SCREEN_LOCK_UNLOCK_FAILED".localized(),
+                explanation: message,
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text,
+                afterClosed: { [weak self] in self?.ensureUI() } // After the alert, update the UI
+            )
         )
+        self.present(modal, animated: true)
     }
     
     func unlockButtonWasTapped() {

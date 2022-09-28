@@ -1,16 +1,15 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
-import SessionUIKit
 
 public class ConfirmationModal: Modal {
     public struct Info: Equatable, Hashable {
-        enum State {
+        public enum State {
             case whenEnabled
             case whenDisabled
             case always
             
-            func shouldShow(for value: Bool) -> Bool {
+            public func shouldShow(for value: Bool) -> Bool {
                 switch self {
                     case .whenEnabled: return (value == true)
                     case .whenDisabled: return (value == false)
@@ -22,7 +21,7 @@ public class ConfirmationModal: Modal {
         let title: String
         let explanation: String?
         let attributedExplanation: NSAttributedString?
-        let stateToShow: State
+        public let stateToShow: State
         let confirmTitle: String?
         let confirmStyle: ThemeValue
         let cancelTitle: String
@@ -33,7 +32,7 @@ public class ConfirmationModal: Modal {
         
         // MARK: - Initialization
         
-        init(
+        public init(
             title: String,
             explanation: String? = nil,
             attributedExplanation: NSAttributedString? = nil,
@@ -159,9 +158,9 @@ public class ConfirmationModal: Modal {
         result.isLayoutMarginsRelativeArrangement = true
         result.layoutMargins = UIEdgeInsets(
             top: Values.largeSpacing,
-            leading: Values.largeSpacing,
+            left: Values.largeSpacing,
             bottom: Values.verySmallSpacing,
-            trailing: Values.largeSpacing
+            right: Values.largeSpacing
         )
         
         return result
@@ -177,7 +176,7 @@ public class ConfirmationModal: Modal {
     
     // MARK: - Lifecycle
     
-    init(targetView: UIView? = nil, info: Info) {
+    public init(targetView: UIView? = nil, info: Info) {
         self.internalOnConfirm = { viewController in
             if info.dismissOnConfirm {
                 viewController.dismiss(animated: true)

@@ -132,19 +132,15 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     private func didTapCameraModeButton() {
-        self.ows_ask(forCameraPermissions: { granted in
-            if (granted) {
-                self.fadeTo(viewControllers: [self.captureViewController])
-            }
-        })
+        Permissions.requestCameraPermissionIfNeeded { [weak self] in
+            self?.fadeTo(viewControllers: ((self?.captureViewController).map { [$0] } ?? []))
+        }
     }
 
     private func didTapMediaLibraryModeButton() {
-        self.ows_ask(forMediaLibraryPermissions: { granted in
-            if (granted) {
-                self.fadeTo(viewControllers: [self.mediaLibraryViewController])
-            }
-        })
+        Permissions.requestLibraryPermissionIfNeeded { [weak self] in
+            self?.fadeTo(viewControllers: ((self?.mediaLibraryViewController).map { [$0] } ?? []))
+        }
     }
 
     // MARK: Views
@@ -265,7 +261,7 @@ class SendMediaNavigationController: OWSNavigationController {
                 title: "SEND_MEDIA_ABANDON_TITLE".localized(),
                 confirmTitle: "SEND_MEDIA_CONFIRM_ABANDON_ALBUM".localized(),
                 confirmStyle: .danger,
-                cancelStyle: .textPrimary,
+                cancelStyle: .alert_text,
                 onConfirm: { [weak self] _ in
                     self?.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
                 }
@@ -354,8 +350,16 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
                 }
                 .catch { error in
                     Logger.error("failed to prepare attachments. error: \(error)")
-                    modal.dismiss {
-                        OWSAlerts.showAlert(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
+                    modal.dismiss { [weak self] in
+                        let modal: ConfirmationModal = ConfirmationModal(
+                            targetView: self?.view,
+                            info: ConfirmationModal.Info(
+                                title: "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS".localized(),
+                                cancelTitle: "BUTTON_OK".localized(),
+                                cancelStyle: .alert_text
+                            )
+                        )
+                        self?.present(modal, animated: true)
                     }
                 }
                 .retainUntilComplete()

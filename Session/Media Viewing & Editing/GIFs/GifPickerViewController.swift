@@ -385,24 +385,20 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 strongSelf.delegate?.gifPickerDidSelect(attachment: attachment)
             }
         }.catch { [weak self] error in
-            guard let strongSelf = self else {
-                Logger.info("ignoring failure, since VC was dismissed before fetching finished.")
-                return
-            }
-
-            let alert = UIAlertController(
-                title: "GIF_PICKER_FAILURE_ALERT_TITLE".localized(),
-                message: error.localizedDescription,
-                preferredStyle: .alert
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self?.view,
+                info: ConfirmationModal.Info(
+                    title: "GIF_PICKER_FAILURE_ALERT_TITLE".localized(),
+                    explanation: error.localizedDescription,
+                    confirmTitle: CommonStrings.retryButton,
+                    cancelTitle: CommonStrings.dismissButton,
+                    cancelStyle: .alert_text,
+                    onConfirm: { _ in
+                        self?.getFileForCell(cell)
+                    }
+                )
             )
-            alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in
-                    strongSelf.getFileForCell(cell)
-            })
-            alert.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
-                strongSelf.dismiss(animated: true, completion: nil)
-            })
-
-            strongSelf.presentAlert(alert)
+            self?.present(modal, animated: true)
         }.retainUntilComplete()
     }
 
@@ -458,7 +454,16 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         guard let text: String = searchBar.text else {
             // Alert message shown when user tries to search for GIFs without entering any search terms
-            OWSAlerts.showErrorAlert(message: "GIF_PICKER_VIEW_MISSING_QUERY".localized())
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self.view,
+                info: ConfirmationModal.Info(
+                    title: CommonStrings.errorAlertTitle,
+                    explanation: "GIF_PICKER_VIEW_MISSING_QUERY".localized(),
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
+            )
+            self.present(modal, animated: true)
             return
         }
         

@@ -296,7 +296,7 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
                     title: title,
                     explanation: message,
                     cancelTitle: "BUTTON_OK".localized(),
-                    cancelStyle: .textPrimary
+                    cancelStyle: .alert_text
                 )
             )
             present(modal, animated: true)
@@ -334,11 +334,16 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
                 .catch(on: DispatchQueue.main) { [weak self] _ in
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                     
-                    let title = "Couldn't Create Group"
-                    let message = "Please check your internet connection and try again."
-                    let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-                    self?.presentAlert(alert)
+                    let modal: ConfirmationModal = ConfirmationModal(
+                        targetView: self?.view,
+                        info: ConfirmationModal.Info(
+                            title: "Couldn't Create Group",
+                            explanation: "Please check your internet connection and try again.",
+                            cancelTitle: "BUTTON_OK".localized(),
+                            cancelStyle: .alert_text
+                        )
+                    )
+                    self?.present(modal, animated: true)
                 }
                 .retainUntilComplete()
         }

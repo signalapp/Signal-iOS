@@ -89,7 +89,7 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
                                     info: ConfirmationModal.Info(
                                         title: "vc_settings_display_name_missing_error".localized(),
                                         cancelTitle: "BUTTON_OK".localized(),
-                                        cancelStyle: .textPrimary
+                                        cancelStyle: .alert_text
                                     )
                                 ),
                                 transitionType: .present
@@ -102,7 +102,7 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
                                     info: ConfirmationModal.Info(
                                         title: "vc_settings_display_name_too_long_error".localized(),
                                         cancelTitle: "BUTTON_OK".localized(),
-                                        cancelStyle: .textPrimary
+                                        cancelStyle: .alert_text
                                     )
                                 ),
                                 transitionType: .present
@@ -479,7 +479,7 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
                                             "Please check your internet connection and try again"
                                         ),
                                         cancelTitle: "BUTTON_OK".localized(),
-                                        cancelStyle: .textPrimary
+                                        cancelStyle: .alert_text
                                     )
                                 ),
                                 transitionType: .present

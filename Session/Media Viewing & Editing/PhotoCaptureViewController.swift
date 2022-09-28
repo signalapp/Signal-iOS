@@ -317,7 +317,7 @@ class PhotoCaptureViewController: OWSViewController {
                 title: CommonStrings.errorAlertTitle,
                 explanation: error.localizedDescription,
                 cancelTitle: CommonStrings.dismissButton,
-                cancelStyle: .textPrimary,
+                cancelStyle: .alert_text,
                 afterClosed: { [weak self] in self?.dismiss(animated: true) }
             )
         )

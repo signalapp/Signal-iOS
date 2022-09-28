@@ -196,9 +196,17 @@ final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControlle
                                     "Please check the Session ID or ONS name and try again"
                                 )
                             }()
-                            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-                            self?.presentAlert(alert)
+                            
+                            let modal: ConfirmationModal = ConfirmationModal(
+                                targetView: self?.view,
+                                info: ConfirmationModal.Info(
+                                    title: "Error",
+                                    explanation: message,
+                                    cancelTitle: "BUTTON_OK".localized(),
+                                    cancelStyle: .alert_text
+                                )
+                            )
+                            self?.present(modal, animated: true)
                         }
                     }
         }

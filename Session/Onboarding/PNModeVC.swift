@@ -115,10 +115,16 @@ final class PNModeVC: BaseVC, OptionViewDelegate {
 
     @objc private func register() {
         guard selectedOptionView != nil else {
-            let title = "vc_pn_mode_no_option_picked_modal_title".localized()
-            let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-            return presentAlert(alert)
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self.view,
+                info: ConfirmationModal.Info(
+                    title: "vc_pn_mode_no_option_picked_modal_title".localized(),
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
+            )
+            self.present(modal, animated: true)
+            return
         }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
         

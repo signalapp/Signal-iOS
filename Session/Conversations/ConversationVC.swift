@@ -1181,9 +1181,18 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                     with: cellViewModel,
                     mediaCache: mediaCache,
                     playbackInfo: viewModel.playbackInfo(for: cellViewModel) { updatedInfo, error in
-                        DispatchQueue.main.async {
+                        DispatchQueue.main.async { [weak self] in
                             guard error == nil else {
-                                OWSAlerts.showErrorAlert(message: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized())
+                                let modal: ConfirmationModal = ConfirmationModal(
+                                    targetView: self?.view,
+                                    info: ConfirmationModal.Info(
+                                        title: CommonStrings.errorAlertTitle,
+                                        explanation: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized(),
+                                        cancelTitle: "BUTTON_OK".localized(),
+                                        cancelStyle: .alert_text
+                                    )
+                                )
+                                self?.present(modal, animated: true)
                                 return
                             }
                             

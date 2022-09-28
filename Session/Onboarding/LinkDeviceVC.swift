@@ -143,7 +143,7 @@ final class LinkDeviceVC: BaseVC, UIPageViewControllerDataSource, UIPageViewCont
                     title: "invalid_recovery_phrase".localized(),
                     explanation: "INVALID_RECOVERY_PHRASE_MESSAGE".localized(),
                     cancelTitle: "BUTTON_OK".localized(),
-                    cancelStyle: .textPrimary,
+                    cancelStyle: .alert_text,
                     afterClosed: { [weak self] in
                         self?.scanQRCodeWrapperVC.startCapture()
                     }
@@ -308,9 +308,16 @@ private final class RecoveryPhraseVC: UIViewController {
     
     @objc private func handleContinueButtonTapped() {
         func showError(title: String, message: String = "") {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-            presentAlert(alert)
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self.view,
+                info: ConfirmationModal.Info(
+                    title: title,
+                    explanation: message,
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
+            )
+            self.present(modal, animated: true)
         }
         let mnemonic = mnemonicTextView.text!.lowercased()
         do {

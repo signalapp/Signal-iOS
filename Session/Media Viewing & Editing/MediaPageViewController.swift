@@ -584,10 +584,11 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
                     .deleteAll(db)
             }
         }
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel))
         actionSheet.addAction(deleteAction)
 
-        self.presentAlert(actionSheet)
+        Modal.setupForIPadIfNeeded(actionSheet, targetView: self.view)
+        self.present(actionSheet, animated: true)
     }
 
     // MARK: - Video interaction

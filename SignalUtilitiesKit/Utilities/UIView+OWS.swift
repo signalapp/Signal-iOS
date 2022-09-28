@@ -85,54 +85,6 @@ public extension UIView {
 
 // MARK: -
 
-@objc
-public extension UIViewController {
-    func presentAlert(_ alert: UIAlertController) {
-        self.presentAlert(alert, animated: true)
-    }
-
-    func presentAlert(_ alert: UIAlertController, animated: Bool) {
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async { [weak self] in
-                self?.presentAlert(alert, animated: animated)
-            }
-            return
-        }
-        
-        setupForIPadIfNeeded(alert: alert)
-        
-        self.present(alert, animated: animated) {
-            alert.applyAccessibilityIdentifiers()
-        }
-    }
-
-    func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async { [weak self] in
-                self?.presentAlert(alert, completion: completion)
-            }
-            return
-        }
-        
-        setupForIPadIfNeeded(alert: alert)
-        
-        self.present(alert, animated: true) {
-            alert.applyAccessibilityIdentifiers()
-            completion()
-        }
-    }
-    
-    private func setupForIPadIfNeeded(alert: UIAlertController) {
-        if UIDevice.current.isIPad {
-            alert.popoverPresentationController?.permittedArrowDirections = []
-            alert.popoverPresentationController?.sourceView = self.view
-            alert.popoverPresentationController?.sourceRect = self.view.bounds
-        }
-    }
-}
-
-// MARK: -
-
 public extension CGFloat {
     func clamp(_ minValue: CGFloat, _ maxValue: CGFloat) -> CGFloat {
         return CGFloatClamp(self, minValue, maxValue)

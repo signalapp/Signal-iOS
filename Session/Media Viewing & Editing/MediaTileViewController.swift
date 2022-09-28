@@ -708,9 +708,10 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
 
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         actionSheet.addAction(deleteAction)
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(UIAlertAction(title: "TXT_CANCEL_TITLE".localized(), style: .cancel))
 
-        presentAlert(actionSheet)
+        Modal.setupForIPadIfNeeded(actionSheet, targetView: self.view)
+        self.present(actionSheet, animated: true)
     }
 }
 

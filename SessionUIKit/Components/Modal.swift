@@ -1,16 +1,16 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
-import SessionUIKit
+import SessionUtilitiesKit
 
-public class Modal: BaseVC, UIGestureRecognizerDelegate {
+open class Modal: UIViewController, UIGestureRecognizerDelegate {
     private static let cornerRadius: CGFloat = 11
     
     private let afterClosed: (() -> ())?
     
     // MARK: - Components
     
-    lazy var dimmingView: UIView = {
+    private lazy var dimmingView: UIView = {
         let result = UIVisualEffectView()
         
         ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
@@ -37,7 +37,7 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
         return result
     }()
     
-    lazy var contentView: UIView = {
+    public lazy var contentView: UIView = {
         let result: UIView = UIView()
         result.clipsToBounds = true
         result.layer.cornerRadius = Modal.cornerRadius
@@ -45,7 +45,7 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
         return result
     }()
     
-    lazy var cancelButton: UIButton = {
+    public lazy var cancelButton: UIButton = {
         let result: UIButton = Modal.createButton(title: "cancel".localized(), titleColor: .textPrimary)
         result.addTarget(self, action: #selector(close), for: .touchUpInside)
                 
@@ -60,22 +60,21 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
         super.init(nibName: nil, bundle: nil)
         
         // Ensure the modal doesn't crash on iPad when being presented
-        if UIDevice.current.isIPad {
-            self.popoverPresentationController?.permittedArrowDirections = []
-            self.popoverPresentationController?.sourceView = (targetView ?? self.view)
-            self.popoverPresentationController?.sourceRect = (targetView ?? self.view).bounds
-        }
+        Modal.setupForIPadIfNeeded(self, targetView: (targetView ?? self.view))
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("Use init(afterClosed:) instead")
+    required public init?(coder: NSCoder) {
+        fatalError("Use init(targetView:afterClosed:) instead")
     }
     
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Need to remove the background color which is added by the BaseVC
+        navigationItem.backButtonTitle = ""
         view.themeBackgroundColor = .clear
+        ThemeManager.applyNavigationStylingIfNeeded(to: self)
+
+        setNeedsStatusBarAppearanceUpdate()
         
         view.addSubview(dimmingView)
         view.addSubview(containerView)
@@ -112,12 +111,12 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
     }
     
     /// To be overridden by subclasses.
-    func populateContentView() {
+    open func populateContentView() {
         preconditionFailure("populateContentView() is abstract and must be overridden.")
     }
     
-    static func createButton(title: String, titleColor: ThemeValue) -> UIButton {
-        let result: UIButton = UIButton()
+    public static func createButton(title: String, titleColor: ThemeValue) -> UIButton {
+        let result: UIButton = UIButton() // TODO: NEED to fix the font (looks bad)
         result.titleLabel?.font = .systemFont(ofSize: Values.mediumFontSize, weight: UIFont.Weight(600))
         result.setTitle(title, for: .normal)
         result.setThemeTitleColor(titleColor, for: .normal)
@@ -150,5 +149,17 @@ public class Modal: BaseVC, UIGestureRecognizerDelegate {
         let location: CGPoint = touch.location(in: contentView)
         
         return !contentView.point(inside: location, with: nil)
+    }
+}
+
+// MARK: - Convenience
+
+public extension Modal {
+    static func setupForIPadIfNeeded(_ viewController: UIViewController, targetView: UIView) {
+        if UIDevice.current.isIPad {
+            viewController.popoverPresentationController?.permittedArrowDirections = []
+            viewController.popoverPresentationController?.sourceView = targetView
+            viewController.popoverPresentationController?.sourceRect = targetView.bounds
+        }
     }
 }

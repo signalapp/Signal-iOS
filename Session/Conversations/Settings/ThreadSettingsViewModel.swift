@@ -380,7 +380,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                     ),
                                     confirmTitle: "LEAVE_BUTTON_TITLE".localized(),
                                     confirmStyle: .danger,
-                                    cancelStyle: .textPrimary
+                                    cancelStyle: .alert_text
                                 ),
                                 onTap: { [weak self] in
                                     Storage.shared.writeAsync { db in
@@ -515,7 +515,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                         "BLOCK_LIST_BLOCK_BUTTON".localized()
                                     ),
                                     confirmStyle: .danger,
-                                    cancelStyle: .textPrimary
+                                    cancelStyle: .alert_text
                                 ),
                                 onTap: {
                                     let isBlocked: Bool = (threadViewModel.threadIsBlocked == true)
@@ -646,7 +646,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                 nil
                             ),
                             cancelTitle: "BUTTON_OK".localized(),
-                            cancelStyle: .textPrimary
+                            cancelStyle: .alert_text
                         )
                     )
                     

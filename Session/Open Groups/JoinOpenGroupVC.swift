@@ -199,7 +199,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
                 title: title,
                 explanation: message,
                 cancelTitle: "BUTTON_OK".localized(),
-                cancelStyle: .textPrimary
+                cancelStyle: .alert_text
             )
         )
         self.navigationController?.present(confirmationModal, animated: true, completion: nil)

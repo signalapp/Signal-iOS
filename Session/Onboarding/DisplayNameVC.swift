@@ -152,16 +152,23 @@ final class DisplayNameVC: BaseVC {
     
     @objc private func register() {
         func showError(title: String, message: String = "") {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-            presentAlert(alert)
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self.view,
+                info: ConfirmationModal.Info(
+                    title: title,
+                    explanation: message,
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
+            )
+            self.present(modal, animated: true)
         }
         let displayName = displayNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         guard !displayName.isEmpty else {
-            return showError(title: NSLocalizedString("vc_display_name_display_name_missing_error", comment: ""))
+            return showError(title: "vc_display_name_display_name_missing_error".localized())
         }
         guard !ProfileManager.isToLong(profileName: displayName) else {
-            return showError(title: NSLocalizedString("vc_display_name_display_name_too_long_error", comment: ""))
+            return showError(title: "vc_display_name_display_name_too_long_error".localized())
         }
         
         // Try to save the user name but ignore the result

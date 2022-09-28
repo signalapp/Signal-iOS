@@ -138,7 +138,7 @@ final class NukeDataModal: Modal {
                 explanation: "modal_clear_all_data_explanation_2".localized(),
                 confirmTitle: "modal_clear_all_data_confirm".localized(),
                 confirmStyle: .danger,
-                cancelStyle: .textPrimary,
+                cancelStyle: .alert_text,
                 dismissOnConfirm: false
             ) { [weak self] confirmationModal in
                 self?.clearEntireAccount(presentedViewController: confirmationModal)
@@ -180,18 +180,31 @@ final class NukeDataModal: Modal {
                                 message = String(format: "dialog_clear_all_data_deletion_failed_2".localized(), String(potentiallyMaliciousSnodes.count), potentiallyMaliciousSnodes.joined(separator: ", "))
                             }
                             
-                            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-                            
-                            self?.presentAlert(alert)
+                            let modal: ConfirmationModal = ConfirmationModal(
+                                targetView: self?.view,
+                                info: ConfirmationModal.Info(
+                                    title: "Error",
+                                    explanation: message,
+                                    cancelTitle: "BUTTON_OK".localized(),
+                                    cancelStyle: .alert_text
+                                )
+                            )
+                            self?.present(modal, animated: true)
                         }
                     }
                     .catch(on: DispatchQueue.main) { error in
                         self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                         
-                        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-                        self?.presentAlert(alert)
+                        let modal: ConfirmationModal = ConfirmationModal(
+                            targetView: self?.view,
+                            info: ConfirmationModal.Info(
+                                title: "Error",
+                                explanation: error.localizedDescription,
+                                cancelTitle: "BUTTON_OK".localized(),
+                                cancelStyle: .alert_text
+                            )
+                        )
+                        self?.present(modal, animated: true)
                     }
             }
     }

@@ -623,7 +623,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
                             ),
                             confirmTitle: "TXT_DELETE_TITLE".localized(),
                             confirmStyle: .danger,
-                            cancelStyle: .textPrimary,
+                            cancelStyle: .alert_text,
                             dismissOnConfirm: true,
                             onConfirm: { [weak self] _ in
                                 self?.viewModel.delete(

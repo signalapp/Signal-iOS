@@ -14,7 +14,6 @@
 #import "OWSNavigationController.h"
 #import "OWSWindowManager.h"
 #import "MainAppContext.h"
-#import "UIViewController+Permissions.h"
 #import <PureLayout/PureLayout.h>
 #import <Reachability/Reachability.h>
 #import <SignalCoreKit/Cryptography.h>

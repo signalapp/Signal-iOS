@@ -649,7 +649,16 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
     
     public func showInvalidAudioFileAlert() {
-        OWSAlerts.showErrorAlert(message: NSLocalizedString("INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE", comment: "Message for the alert indicating that an audio file is invalid."))
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: CurrentAppContext().frontmostViewController()?.view,
+            info: ConfirmationModal.Info(
+                title: CommonStrings.errorAlertTitle,
+                explanation: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized(),
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text
+            )
+        )
+        CurrentAppContext().frontmostViewController()?.present(modal, animated: true)
     }
 
     public func audioPlayerDidFinishPlaying(_ player: OWSAudioPlayer, successfully flag: Bool) {

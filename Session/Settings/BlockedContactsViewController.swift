@@ -487,7 +487,7 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 title: confirmationTitle,
                 confirmTitle: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_ACTON".localized(),
                 confirmStyle: .danger,
-                cancelStyle: .textPrimary
+                cancelStyle: .alert_text
             ) { _ in
                 // Unblock the contacts
                 Storage.shared.write { db in
