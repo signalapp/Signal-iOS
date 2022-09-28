@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal د ضمیمه شویو رسنیو د پلي کولو لپاره د Apple Music کارولو ته اړتیا لري.";
-NSCameraUsageDescription = "Signal د انځورونو د اخیستلو او د ویډیوي اړیکو د نیولو په خاطر ستاسې کیمره کاروي.";
-NSContactsUsageDescription = "Signal ستاسې د مخاطبینو د لیست په کارولو سره هغه کاروونکي درته مومي چې تاسې یې پیژنئ. موږ ستاسې د مخاطبینو لیست په سرور کې نه زیرمه کوو.";
-NSFaceIDUsageDescription = "د Signal قفل شوی سکرین ستاسې د مخ ID  هم کاروي.";
-NSLocationWhenInUseUsageDescription = "Signal ستاسې موقعیت ته لاسرسی غواړي تر څو تاسې وکولای شئ چې خپل اوسنی موقعیت مو له نورو سره شریک کړئ.";
-NSMicrophoneUsageDescription = "Signal ستاسې مایکروفون ته اړتیا لري تر څو وکولای شئ ټلیفوني اړیکې ټینګې او تر لاسه کړئ او غږیز پیغامونه ثبت کړئ.";
-NSPhotoLibraryAddUsageDescription = "Signal به ستاسې انځورونه په ګالري کې ثبت کړي.";
-NSPhotoLibraryUsageDescription = "Signal به تاسې ته اجازه درکړي تر څو وټاکئ چې له ګالري څخه کوم انځور غواړئ ویې لیږئ.";
-NSLocalNetworkUsageDescription = "Signal د سیمه ایزې شبکې په کارولو سره تاسې ته اجازه درکوي چې خپل اکاونټ یوه نوي موبایل ته مخامخ ولیږئ. هغه به دا کار په خپل سر هېڅ و نه کړي، مګر دا چې تاسې یوې نوې وسیلې ته دا لیږد پیلول و نه ټاکئ.";

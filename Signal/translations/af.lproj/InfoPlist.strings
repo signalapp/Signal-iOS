@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal moet Apple Music gebruik om media aanhegsels te speel.";
-NSCameraUsageDescription = "Signal gebruik jou kamera om foto's te neem en om video-oproepe te maak.";
-NSContactsUsageDescription = "Signal gebruik jou kontaklys om gebruikers wat jy ken te vind. Ons stoor nie jou kontakte op die bediener nie.";
-NSFaceIDUsageDescription = "Signal se Skermslot gebruik Face ID.";
-NSLocationWhenInUseUsageDescription = "Signal benodig toegang tot jou ligging om jou huidige ligging te deel.";
-NSMicrophoneUsageDescription = "Signal benodig toegang tot jou mikrofoon om oproepe te maak en te ontvang en om stemboodskappe op te neem.";
-NSPhotoLibraryAddUsageDescription = "Signal sal foto's in jou biblioteek stoor.";
-NSPhotoLibraryUsageDescription = "Signal sal jou toelaat om te kies watter foto's uit jou bilioteek om te stuur.";
-NSLocalNetworkUsageDescription = "Signal gebruik die lokale netwerk om jou toe te laat om direk jou rekening oor te plaas tot 'n nuwe foon. Dit sal nie gebruik work tensy jy uitdruklik 'n oordrag tot 'n nuwe toestel kies nie.";

@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal треба да користи Apple Music за да ги пушти медиа прикачувањата.";
-NSCameraUsageDescription = "Signal ја користи вашата камера за да направи форографии и за видео повици.";
-NSContactsUsageDescription = "Signal ги користи вашите контакти за да пронајде корисници што ги познавате. Ние не ги складираме вашите контакти на серверот.";
-NSFaceIDUsageDescription = "Signal екранот за заклучување користи Идентификација на лице.";
-NSLocationWhenInUseUsageDescription = "На Signal му треба пристап до вашата локација за да може да ја сподели  вашата моментална локација.";
-NSMicrophoneUsageDescription = "На Signal му треба пристап до вашиот микрофон за да прави и прима телефонски повици и да снима гласовни пораки.";
-NSPhotoLibraryAddUsageDescription = "Signal ќе ги зачува фотографиите во вашата библиотека.";
-NSPhotoLibraryUsageDescription = "Signal ќе ви дозволи да одберете кои фотографии од вашата библиотека да ги испратите.";
-NSLocalNetworkUsageDescription = "Signal ја користи локалната мрежа за да ви овозможи директно да ја префрлите Вашата сметка на нов телефон. Нема да се користи освен ако не изберете експлицитно да започнете трансфер на нов уред. ";

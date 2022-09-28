@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal reikia naudoti Apple Music, kad atkurtų medijos priedus.";
-NSCameraUsageDescription = "Signal naudoja jūsų kamerą vaizdo skambučiams bei tam, kad fotografuotų.";
-NSContactsUsageDescription = "Signal naudoja jūsų adresatus, kad rastų jums žinomus naudotojus. Mes nekaupiame jūsų adresatus serveryje.";
-NSFaceIDUsageDescription = "Signal programėlės ekrano užraktas naudoja Face ID.";
-NSLocationWhenInUseUsageDescription = "Signal reikia prieigos prie jūsų buvimo vietos, kad galėtų bendrinti jūsų esamą buvimo vietą.";
-NSMicrophoneUsageDescription = "Signal reikia prieigos prie jūsų mikrofono, kad galėtų inicijuoti ir gauti telefoninius skambučius bei įrašinėti balso žinutes.";
-NSPhotoLibraryAddUsageDescription = "Signal įrašys nuotraukas į jūsų biblioteką.";
-NSPhotoLibraryUsageDescription = "Signal leis jums pasirinkti, kurias nuotraukas iš jūsų bibliotekos siųsti.";
-NSLocalNetworkUsageDescription = "Signal naudoja vietinį tinklą, kad leistų jums tiesiogiai perkelti savo paskyrą į naują telefoną. Tai nebus atlikta, nebent aiškiai pasirinksite inicijuoti perkėlimą į naują įrenginį.";

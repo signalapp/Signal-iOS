@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal inahitaji kutumia Apple Music kucheza viambatisho vya media.";
-NSCameraUsageDescription = "Signal itatumia kamera yako kupiga picha na simu za video.";
-NSContactsUsageDescription = "Signal hutumia anwani zako kupata watumiaji unaowajua. Hatutahifadhi anwani zako kwenye seva.";
-NSFaceIDUsageDescription = "Kifunga Skrini cha Signal kitatumia Kitambulisho cha Uso.";
-NSLocationWhenInUseUsageDescription = "Signal inahitaji kufikia eneo lako ili kushiriki maelezo ya eneo lako la sasa.";
-NSMicrophoneUsageDescription = "Signal inahitaji kutumia maikrofoni yako ili kupiga na kupokea simu na kurekodi ujumbe wa sauti.";
-NSPhotoLibraryAddUsageDescription = "Signal itahifadhi picha kwenye maktaba yako.";
-NSPhotoLibraryUsageDescription = "Signal itakuruhusu uchague picha kutoka maktaba yako uitumie.";
-NSLocalNetworkUsageDescription = "Signal hutumia mtandao wa karibu kukuwezesha kuhamisha akaunti yako moja kwa moja hadi katika simu mpya. Mtandao hautatumika isipokuwa ukichagua hasa kuanzisha mchakato wa kuhamisha hadi kifaa kipya.";

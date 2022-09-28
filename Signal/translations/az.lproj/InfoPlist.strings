@@ -1,9 +1,0 @@
-NSAppleMusicUsageDescription = "Signal-ın, media qoşmalarını oxutmaq üçün Apple Music istifadə etməsinə ehtiyacı var.";
-NSCameraUsageDescription = "Signal, foto çəkmək və görüntülü zənglər etmək üçün kameranızı istifadə edir.";
-NSContactsUsageDescription = "Signal, tanıdığınız istifadəçiləri tapmaq üçün əlaqələrinizi istifadə edir. Əlaqələrinizi serverdə saxlamırıq.";
-NSFaceIDUsageDescription = "Signal-ın ekran kilidi, Face ID istifadə edir.";
-NSLocationWhenInUseUsageDescription = "Signal-ın, hazırkı yerləşmənizi paylaşmaq üçün yerləşmənizə müraciətinə ehtiyacı var.";
-NSMicrophoneUsageDescription = "Signal-ın, telefon zəngləri etmək və almaq və səs yazmaq üçün mikrofonunuza müraciətinə ehtiyacı var.";
-NSPhotoLibraryAddUsageDescription = "Signal, fotoları kitabxananızda saxlayacaq.";
-NSPhotoLibraryUsageDescription = "Signal, kitabxananızdan hansı fotoların göndəriləcəyini seçməyinizə icazə verir.";
-NSLocalNetworkUsageDescription = "Signal, hesabınızı yeni telefona birbaşa köçürməyə icazə vermək üçün yerli şəbəkəni istifadə edir. Yeni bir cihaza köçürmə, bu prosesə başlamağı açıq şəkildə qərar vermədiyiniz müddətcə istifadə edilməyəcək.";

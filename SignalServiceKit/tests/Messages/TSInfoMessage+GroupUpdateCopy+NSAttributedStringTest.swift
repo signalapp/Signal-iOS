@@ -270,9 +270,9 @@ private extension NSAttributedString {
 
 private extension NSAttributedString {
     static let aliceSomethingBobWithInvertedNameOrder: NSAttributedString = {
-        let mutable = NSMutableAttributedString(string: "'\(user: .bob)'-യിലേക്ക് '\(user: .alice)' ചേർക്കുക?")
+        let mutable = NSMutableAttributedString(string: "“\(user: .bob)”-এ “\(user: .alice)” যোগ করবেন?")
         mutable.addAddress(.bob, toRange: NSRange(location: 1, length: 5))
-        mutable.addAddress(.alice, toRange: NSRange(location: 18, length: 7))
+        mutable.addAddress(.alice, toRange: NSRange(location: 11, length: 7))
 
         return mutable
     }()
@@ -281,7 +281,7 @@ private extension NSAttributedString {
     /// user, simply as a result of the format string.
     static func makeWithInvertedFormatArgOrder(firstUser: ReferencedUser, secondUser: ReferencedUser) -> NSAttributedString {
         make(
-            fromFormat: .addToGroupActionSheetMessage_Malayalam,
+            fromFormat: .addToGroupActionSheetMessage_Bangla,
             groupUpdateFormatArgs: [.name(firstUser.name, firstUser.address), .name(secondUser.name, secondUser.address)]
         )
     }
@@ -354,8 +354,8 @@ private extension String {
         try! localized(key: "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE", lang: lang)
     }
 
-    static let addToGroupActionSheetMessage_Malayalam: String = {
-        try! localized(key: "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT", lang: "ml")
+    static let addToGroupActionSheetMessage_Bangla: String = {
+        try! localized(key: "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT", lang: "bn")
     }()
 
     static func localized(
