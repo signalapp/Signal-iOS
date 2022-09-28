@@ -64,10 +64,18 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         return textField
     }()
 
+    override func applyTheme() {
+        super.applyTheme()
+
+        updateTableContents()
+    }
+
     @objc
     func updateTableContents() {
         let contents = OWSTableContents()
         defer { self.contents = contents }
+
+        let useProxy = self.useProxy
 
         let useProxySection = OWSTableSection()
         useProxySection.footerAttributedTitle = .composed(of: [
@@ -88,38 +96,51 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         ))
         contents.addSection(useProxySection)
 
-        if useProxy {
+        let proxyAddressSection = OWSTableSection()
+        proxyAddressSection.headerAttributedTitle = NSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy").styled(
+            with: .color((Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90).withAlphaComponent(useProxy ? 1 : 0.25)),
+            .font(UIFont.ows_dynamicTypeBodyClamped.ows_semibold)
+        )
+        proxyAddressSection.add(.init(
+            customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                cell.selectionStyle = .none
+                guard let self = self else { return cell }
 
-            let proxyAddressSection = OWSTableSection()
-            proxyAddressSection.headerTitle = NSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy")
-            proxyAddressSection.add(.init(
-                customCellBlock: { [weak self] in
-                    let cell = OWSTableItem.newCell()
-                    cell.selectionStyle = .none
-                    guard let self = self else { return cell }
+                cell.contentView.addSubview(self.hostTextField)
+                self.hostTextField.autoPinEdgesToSuperviewMargins()
 
-                    cell.contentView.addSubview(self.hostTextField)
-                    self.hostTextField.autoPinEdgesToSuperviewMargins()
+                if !useProxy {
+                    cell.isUserInteractionEnabled = false
+                    cell.contentView.alpha = 0.25
+                }
 
-                    return cell
-                },
-                actionBlock: {}
-            ))
-            contents.addSection(proxyAddressSection)
+                return cell
+            },
+            actionBlock: {}
+        ))
+        contents.addSection(proxyAddressSection)
 
-            let shareSection = OWSTableSection()
-            shareSection.add(.actionItem(
-                icon: .messageActionShare,
-                name: CommonStrings.shareButton,
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "share"),
-                actionBlock: { [weak self] in
-                    guard let self = self else { return }
-                    guard !self.notifyForInvalidHostIfNecessary() else { return }
-                    AttachmentSharing.showShareUI(for: URL(string: "https://signal.tube#\(self.host ?? "")")!, sender: self.view)
-                }))
-            contents.addSection(shareSection)
+        let shareSection = OWSTableSection()
+        shareSection.add(.init(
+            customCellBlock: {
+                let cell = OWSTableItem.buildImageNameCell(image: Theme.iconImage(.messageActionShare), itemName: CommonStrings.shareButton)
+                cell.selectionStyle = .none
 
-        }
+                if !useProxy {
+                    cell.isUserInteractionEnabled = false
+                    cell.contentView.alpha = 0.25
+                }
+
+                return cell
+            },
+            actionBlock: { [weak self] in
+                guard let self = self else { return }
+                guard !self.notifyForInvalidHostIfNecessary() else { return }
+                AttachmentSharing.showShareUI(for: URL(string: "https://signal.tube#\(self.host ?? "")")!, sender: self.view)
+            }
+        ))
+        contents.addSection(shareSection)
     }
 
     @objc
@@ -136,6 +157,9 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
 
     private func notifyForInvalidHostIfNecessary() -> Bool {
         guard !SignalProxy.isValidProxyFragment(host) else { return false }
+
+        // allow saving an empty host when the proxy is off
+        if !useProxy && host == nil { return false }
 
         presentToast(text: NSLocalizedString("INVALID_PROXY_HOST_ERROR", comment: "The provided proxy host address is not valid"))
 
