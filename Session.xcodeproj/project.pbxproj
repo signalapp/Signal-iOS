@@ -169,7 +169,6 @@
 		7BAF54D827ACD0E3003D12F8 /* ReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54D527ACD0E2003D12F8 /* ReusableView.swift */; };
 		7BAF54DC27ACD12B003D12F8 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAF54DB27ACD12B003D12F8 /* UIColor+Extensions.swift */; };
 		7BB92B3F28C825FD0082762F /* NewConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB92B3E28C825FD0082762F /* NewConversationViewModel.swift */; };
-		7BBBDC462875600700747E59 /* DocumentTitleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBBDC452875600700747E59 /* DocumentTitleViewController.swift */; };
 		7BBBDC44286EAD2D00747E59 /* TappableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBBDC43286EAD2D00747E59 /* TappableLabel.swift */; };
 		7BBBDC462875600700747E59 /* DocumentTitleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBBDC452875600700747E59 /* DocumentTitleViewController.swift */; };
 		7BC01A3E241F40AB00BC7C55 /* NotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BC01A3D241F40AB00BC7C55 /* NotificationServiceExtension.swift */; };
@@ -1217,7 +1216,6 @@
 		7BAF54D527ACD0E2003D12F8 /* ReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReusableView.swift; sourceTree = "<group>"; };
 		7BAF54DB27ACD12B003D12F8 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 		7BB92B3E28C825FD0082762F /* NewConversationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewModel.swift; sourceTree = "<group>"; };
-		7BBBDC452875600700747E59 /* DocumentTitleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTitleViewController.swift; sourceTree = "<group>"; };
 		7BBBDC43286EAD2D00747E59 /* TappableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TappableLabel.swift; sourceTree = "<group>"; };
 		7BBBDC452875600700747E59 /* DocumentTitleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentTitleViewController.swift; sourceTree = "<group>"; };
 		7BC01A3B241F40AB00BC7C55 /* SessionNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SessionNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };

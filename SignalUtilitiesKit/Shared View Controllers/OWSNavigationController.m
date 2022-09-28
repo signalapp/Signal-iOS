@@ -178,12 +178,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldAutorotate
 {
-    return NO;
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait;
+    return YES;
 }
 
 @end
