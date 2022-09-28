@@ -1,23 +1,23 @@
-Milions de persones utilitzen Signal cada dia per comunicar-se de forma gratuïta i instantània arreu del món. Envia i rep missatges d'alta fidelitat, participa en trucades de veu / vídeo d'alta definició i explora un munt de noves funcions que t'ajudarà a no perdre mai el contacte. La tecnologia avançada de control de privacitat de Signal romandrà sempre activa, perquè puguis compartir els moments més importants amb les persones que més t'estimes sense preocupacions.
+Milions de persones utilitzen el Signal cada dia per a una comunicació gratuïta i instantània a qualsevol part del món. Envieu i rebeu missatges d'alta fidelitat, participeu en trucades de veu / vídeo d'alta definició i exploreu un conjunt creixent de funcions noves que us ajudaran a estar connectat. La tecnologia avançada de preservació de la privadesa del Signal està sempre habilitada, de manera que us podeu concentrar a compartir els moments importants amb les persones que us importen.
 
-• No et tallis. L'encriptació d'extrem a extrem d’última generació (amb la força del protocol de codi obert de Signal) manté les converses segures. La privacitat no és un mode opcional, sinó la manera de funcionar per defecte de Signal. Igual per cada missatge i cada trucada.
+• Digueu el que vulgueu. L'encriptació d'extrem a extrem d’última generació (amb la força del protocol de codi obert del Signal) manté les converses segures. La privadesa no és un mode opcional, sinó la manera com funciona el Signal. Cada missatge, cada trucada, cada vegada.
 
-• Guanya rapidesa. Els missatges es lliuren de manera ràpida i fiable, fins i tot en les xarxes més lentes. Signal està optimitzat per funcionar en els entorns més congestionats.
+• Aneu de pressa. Els missatges es lliuren de manera ràpida i fiable, fins i tot en xarxes lentes. El Signal està optimitzat per funcionar en l’entorn més restringit possible.
 
-• Sense obligacions. Signal és independent i sense ànim de lucre. El desenvolupament compta amb ajuts i donacions de persones com tu. Ni anuncis, ni rastrejadors ni maldecaps.
+• Sentiu-vos lliures. El Signal és independent i no té ànim de lucre. El desenvolupament compta amb ajuts i donacions de persones com tu. Sense anuncis. Sense rastrejadors. Sense bromes.
 
-• Sigues tu mateix. Pots fer servir el número de telèfon i la teva llibreta d'adreces actual per comunicar-te amb seguretat amb les teves amistats.
+• Sigueu autèntics. Podeu usar el número de telèfon i la llibreta d'adreces per comunicar-vos amb seguretat amb les amistats.
 
-• Expressa't. Tant si viuen a l'altre costat de la ciutat com de l’oceà, la qualitat d’àudio i vídeo millorada de Signal farà que els amics i familiars se sentin més a prop.
+• Expresseu-vos. Tant si viuen a l'altre costat de la ciutat com de l’oceà, la qualitat d’àudio i vídeo millorada del Signal farà que els amics i familiars se sentin més a prop.
 
-• Converses a l'ombra. Canvia al tema fosc si no vols veure la llum.
+• Xiuxiuegeu a l'ombra. Canvieu al tema fosc si no voleu veure la llum.
 
-• Personalitza. Selecciona alertes personalitzades per a cada contacte o desactiva completament els sorolls. Simon & Garfunkel van escriure una cançó d'èxit el 1964 i ara pots experimentar el "so del silenci" sempre que vulguis si tries "Cap" com a to de notificació.
+• So familiar. Seleccioneu alertes personalitzades per a cada contacte o desactiveu-ne completament els sorolls. Simon i Garfunkel en van escriure una cançó d'èxit el 1964 i ara podeu experimentar el so del silenci quan vulgueu si trieu "Cap" com a to de notificació.
 
-• Imagina. Fes servir les funcions integrades d’edició d’imatges per esbossar, retallar i capgirar les fotografies que enviïs. Una imatge val més que 1000 paraules, però si et quedes curt, amb l'editor de text podràs escriure'n més.
+• Imagineu-vos-ho. Useu les funcions integrades d’edició d’imatges per esbossar, retallar i capgirar les fotografies que envieu. Fins i tot hi ha una eina de text per afegir més paraules a les 1.000 que ja val la imatge.
 
 
-Si necessites ajuda, tens preguntes o necessites més informació, ves a:
+Per obtenir assistència, per a preguntes o més informació, visiteu
 https://support.signal.org
 
 Codi font:

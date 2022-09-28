@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "جهة الاتصال";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "جهة الاِتصال لـ %@";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "جهة الاِتصال لـ %1$@";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "الوسائط";
@@ -68,13 +68,13 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE" = "إضافة عضو جديد";
 
 /* Text indicating your contact is already a member of the group on the 'add to group' view. */
-"ADD_TO_GROUP_ALREADY_A_MEMBER" = "إنه بالفعل عضو ";
+"ADD_TO_GROUP_ALREADY_A_MEMBER" = "إنه بالفعل عضو";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ بالفعل عضو في %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ بالفعل عضو في %2$@";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "تمت إضافة %@ إلى %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "تمت إضافة %1$@ إلى %2$@";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "إضافة إلى مجموعة";
@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "فهِمت";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة إليك في هذه المحادثة.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "لم يتمكن %1$@ من توصيل رسالة أو ملصق أو رد فعل أو وصل القراءة إليك في هذه المحادثة.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "هناك مشكل في التوصيل";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "لقد تعذر توصيل رسالة – نصية، ملصقة، رد فعل، وصل القراءة، أو وسيط – من %@. يُحتمَل أنها أُرسِلت إليك مباشرة أو أنها قد أُرسِلت في مجموعة.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "لقد تعذر توصيل رسالة – نصية، ملصقة، رد فعل، وصل القراءة، أو وسيط – من %1$@. يُحتمَل أنها أُرسِلت إليك مباشرة أو أنها قد أُرسِلت في مجموعة.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "تجاهل";
@@ -164,7 +164,7 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "ليس الآن";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "الإصدار %@ غير متاح في متجر App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "الإصدار %1$@ غير متاح في متجر App Store.";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "هناك إصدار Signal جديد متوفر";
@@ -183,6 +183,9 @@
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
+
+/* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
+"APPLICATION_SHORTCUT_NEW_MESSAGE" = "New Message";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "أرشفة";
@@ -203,10 +206,10 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "فشل الحفظ.";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "صنف الملف : %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "صنف الملف : %1$@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "الحجم : %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "الحجم : %1$@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "تم الحفظ";
@@ -245,7 +248,7 @@
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "حجم المُرفق كبير جدا.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "المُرفق يحتوي على بيانات غير صالحة. ";
+"ATTACHMENT_ERROR_INVALID_DATA" = "المُرفق يحتوي على بيانات غير صالحة.";
 
 /* Attachment error message for attachments with an invalid file format */
 "ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "صيغة الملف المرفق غير صالحة.";
@@ -356,7 +359,7 @@
 "BADGE_DETAILS_BECOME_A_SUSTAINER" = "كن من الداعمين";
 
 /* Text prompting the user to boost */
-"BADGE_DETAILS_GIVE_A_BOOST" = "دعم Signal ";
+"BADGE_DETAILS_GIVE_A_BOOST" = "دعم Signal";
 
 /* String explaining to the user that their boost badge has expired on the badge expiry sheet. */
 "BADGE_EXPIRED_BOOST_BODY" = "انتهت صلاحية شارة الدعم الخاصة بك ولم تعُد ظاهرة للآخرين على حسابك الشخصي.";
@@ -395,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "لقد تم إلغاء التبرعات الشهرية";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "لقد أهديت شارة إلى %@. عندما يقبلونها، سيكون لديهم الخيار بين إظهار الشارة أو إخفاءها.";
+"BADGE_GIFT_THANKS_BODY" = "لقد أهديت شارة إلى %1$@. عندما يقبلونها، سيكون لديهم الخيار بين إظهار الشارة أو إخفاءها.";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "شكراً لدعمك!";
@@ -479,7 +482,7 @@
 "BADGE_GIFTING_REDEEM_LATER" = "يمكنك استرجاع شارتك لاحقًا";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ أرسل لك هدية";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%1$@ أرسل لك هدية";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "تمّ قبول الهدية";
@@ -488,19 +491,19 @@
 "BADGE_GIFTING_REPLY" = "هدية";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "تدوم %@";
+"BADGE_GIFTING_ROW_DURATION" = "تدوم %1$@";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "إظهار";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "وصلتك شارة مُهداة من طرف %@. أظهر هذه الشارة على حسابك الشخصي لتُساهم في بناء التوعية للتبرع لصالح Signal.";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "وصلتك شارة مُهداة من طرف %1$@. أظهر هذه الشارة على حسابك الشخصي لتُساهم في بناء التوعية للتبرع لصالح Signal.";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "تمّ إلغاء تبرعك الشهري المُتكرر تلقائيًا. %@ شارتك %@ لم تعد مرئية في ملفك الشخصي.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "تمّ إلغاء تبرعك الشهري المُتكرر تلقائيًا. %1$@ شارتك %2$@ لم تعد مرئية في ملفك الشخصي.";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "لقد أُلغيَ تبرعك الشهري الدوري تلقائيا، بسبب طول غياب نشاطك لفترة طويلة. لن تظهر بعد ذلك شارة %@ في ملفك الشخصي.\n\nيمكنك الاستمرار في استخدام Signal لدعم التطبيق وإعادة تفعيل شارتك، يُرجى التجديد الآن.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "لقد أُلغيَ تبرعك الشهري الدوري تلقائيا، بسبب طول غياب نشاطك لفترة طويلة. لن تظهر بعد ذلك شارة %1$@ في ملفك الشخصي.\n\nيمكنك الاستمرار في استخدام Signal لدعم التطبيق وإعادة تفعيل شارتك، يُرجى التجديد الآن.";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "شكراً على الدعم!";
@@ -518,7 +521,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "عندما يكون لديك أكثر من شارة واحدة، يمكنك اختيار واحدة لتمييزها ليراها الآخرون في ملفك الشخصي.";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "لقد حصلت باستحقاق على شارة %@. يمكنك عرض هذه الشارة في حسابك لتحفيز الوعي بضرورة التبرع لـ Signal.";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "لقد حصلت باستحقاق على شارة %1$@. يمكنك عرض هذه الشارة في حسابك لتحفيز الوعي بضرورة التبرع لـ Signal.";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "إغلاق اللافتة";
@@ -530,10 +533,10 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "حَظر";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "حَظر ومُغادرة المجموعة \"%@\"؟";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "حَظر ومُغادرة المجموعة \"%1$@\"؟";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "حَظر %@؟";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "حَظر %1$@؟";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "المجموعات المحظورة";
@@ -563,13 +566,13 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "إلغاء حظر المجموعة؟";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "رفع حظر عن %@؟";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "رفع حظر عن %1$@؟";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "حظر";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "لقد تم حظر %@";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "لقد تم حظر %1$@";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "المستخدمون المحظورون";
@@ -584,7 +587,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "خطأ";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "تم رفع الحظر عن %@";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "تم رفع الحظر عن %1$@";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "يمكن للأعضاء الموجودين إضافتك للمجموعة مرة أُخرى.";
@@ -599,7 +602,7 @@
 "BOOST_VIEW_BODY" = "يُرجى التبرع مرة واحدة. سيمكنك ذلك من الحصول على شارة التعزيز لمدة 30 يوم.";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "ستنتهي صلاحية شارة الدعم الخاصة بك يوم %@.";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "ستنتهي صلاحية شارة الدعم الخاصة بك يوم %1$@.";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "إدخال مَبلَغ مُخَصَّص";
@@ -617,7 +620,7 @@
 "BOOST_VIEW_SELECT_AN_AMOUNT" = "يُرجى تحديد مبلغ للتبرع به";
 
 /* Title for the donate to signal view */
-"BOOST_VIEW_TITLE" = "دعم Signal ";
+"BOOST_VIEW_TITLE" = "دعم Signal";
 
 /* Label for the 'add' button. */
 "BUTTON_ADD" = "إضافة";
@@ -686,25 +689,25 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 مكالمة صوتية واردة...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة على الساعة %@";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة على الساعة %1$@";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 مكالمة صوتية فائتة";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة بتاريخ %@";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة بتاريخ %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة يوم %@";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞مكالمة صوتية فائتة يوم %1$@";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من خلال ‫تطبيق إعدادات iOS‬، للتمكن من إجراء مكالمات وإرسال رسائل صوتية في Signal. ";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "يُمكِنُك تفعيل الوصول للميكروفون من خلال ‫تطبيق إعدادات iOS‬، للتمكن من إجراء مكالمات وإرسال رسائل صوتية في Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "إذن استخدام الميكروفون ضروري";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ مُكالمة فائتة لأن رقم الأمان للمستخدم قد تغيّر. ";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ مُكالمة فائتة لأن رقم الأمان للمستخدم قد تغيّر.";
 
 /* Button to return to the current call */
 "CALL_RETURN_BUTTON" = "العودة للمكالمة";
@@ -713,13 +716,13 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "لم يتم الرد";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "‪Signal %@";
+"CALL_STATUS_FORMAT" = "‪Signal %1$@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "اتصل";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "هل تود الاتصال بـ %@؟";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "هل تود الاتصال بـ %1$@؟";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "أأتصل ؟";
@@ -728,16 +731,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة واردة...";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة على الساعة %@";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة على الساعة %1$@";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "‫📹 مكالمة بالصورة فائتة";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة بتاريخ %@";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة بتاريخ %1$@";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة يوم %@";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞مكالمة مرئية فائتة يوم %1$@";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "أجِب بلا فيديو";
@@ -758,7 +761,7 @@
 "CALL_VIEW_MUTE_LABEL" = "كتم";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "سيتلقى %@ طلبا للتراسل منك. ويُمكنك الاتصال عندما يقبل طلب التراسل معك.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "سيتلقى %1$@ طلبا للتراسل منك. ويُمكنك الاتصال عندما يقبل طلب التراسل معك.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "تغيير اتجاه الكاميرا";
@@ -785,7 +788,7 @@
 "CAMERA_BUTTON_LABEL" = "الكاميرا";
 
 /* VoiceOver label for -> button in text story composer. */
-"CAMERA_VO_ARROW_RIGHT_PROCEED" = "واصل";
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "تقدم";
 
 /* VoiceOver label for Flash button in camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "وضع الألبوم";
@@ -842,7 +845,7 @@
 "CAMERA_VO_ZOOM" = "قرّب";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@ مرات";
+"CAMERA_VO_ZOOM_LEVEL" = "%1$@ مرات";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "لا يمكن التحقق من هذا المستخدم حتى يتم تبادل الرسائل معه.";
@@ -941,13 +944,13 @@
 "CONFIRM_DELETE_DATA_TEXT" = "سَيُؤدِّي هَذَا إلى إعادة تَعيِين التَّطبيق عَن طَريق حَذف رَسائِلك. سَيَتِمّ إغلاق التَّطبيق بَعدَ اِكتِمال هَذِهِ العَمَليَّة.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = " هَل أنتَ مُتأكِد مِن رَغبَتك في حَذف جَميع البَيانات؟";
+"CONFIRM_DELETE_DATA_TITLE" = "هَل أنتَ مُتأكِد مِن رَغبَتك في حَذف جَميع البَيانات؟";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "هَذَا سوف يُعيد تعيِّين التَطبيق عبر حَذف جَميع الرَّسائل مِن هَذَا الجِهاز. يُمكِنُكَ دائمًا إعادة رَبط هاتفك مَرة أُخرى، لكن ذلك لن يستعيد رَسائلك المَحذوفة. سيُغلَق التَطبيق بعد اِنتهاء هَذه العَملية.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = " هَل أنتَ مُتأكِد مِن رَغبَتك في حَذف جَميع البَيانات؟";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "هَل أنتَ مُتأكِد مِن رَغبَتك في حَذف جَميع البَيانات؟";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "لن يصبح بإمكانك إرسال أو استلام الرسائل في هذه المجموعة.";
@@ -1148,7 +1151,7 @@
 "CONTEXT_MENU_COPY" = "نسخ";
 
 /* Context menu button title */
-"CONTEXT_MENU_DELETE_MESSAGE" = "حذف  ";
+"CONTEXT_MENU_DELETE_MESSAGE" = "حذف";
 
 /* Context menu button title */
 "CONTEXT_MENU_DETAILS" = "معلومات";
@@ -1286,7 +1289,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "اجعلهُ مُشرِفاً";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "سيستطيع %@ تعديل خصائص وأعضاء هذه المجموعة.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "سيستطيع %1$@ تعديل خصائص وأعضاء هذه المجموعة.";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "الطلبات و الدعوات";
@@ -1322,7 +1325,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "كتم";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "لم يُكتم ";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "لم يُكتم";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "يوم واحد";
@@ -1346,10 +1349,10 @@
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "مكتوم";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "حتى %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "حتى %1$@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "مكتوم حتى %@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "مكتوم حتى %1$@";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "إنشاء جهة اتصال جديدة";
@@ -1364,13 +1367,13 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "إزالة من المجموعة";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "إزالة %@ من المجموعة؟";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "إزالة %1$@ من المجموعة؟";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "إزالة مِنَ الإشراف";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "إزالة %@ مِنَ الإشراف عَلى المَجمُوعَة؟";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "إزالة %1$@ مِنَ الإشراف عَلى المَجمُوعَة؟";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "البحث";
@@ -1409,7 +1412,7 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "أضف إلى جهات الاتصال";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "إنَّ %@ قد أرسلَ:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "إنَّ %1$@ قد أرسلَ:";
 
 /* Format for sender info for outgoing messages. */
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "أنتَ قَد أرسلتَ:";
@@ -1427,7 +1430,7 @@
 "COPIED_TO_CLIPBOARD" = "تم النسخ إلى الحافظة";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "إعادة تعيين جلستك سيسمح لك باستقبال الرسائل الحديثة من %@, لكن لن تتمكن من استعادة أي من الرسائل التالفة.";
+"CORRUPTED_SESSION_DESCRIPTION" = "إعادة تعيين جلستك سيسمح لك باستقبال الرسائل الحديثة من %1$@, لكن لن تتمكن من استعادة أي من الرسائل التالفة.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "اختر رمز الدولة";
@@ -1562,10 +1565,10 @@
 "DEREGISTRATION_WARNING" = "لم يعُد الجِّهاز مُسَجلاً. قَد يَكُونُ رَقم هاتفَك مُسجلاً بِواسِطَة Signal في جِهاز آخر. اُنقُر لإعادَة التَّسجيل.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "آخر نشاط %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "آخر نشاط %1$@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "مرتبط %@";
+"DEVICE_LINKED_AT_LABEL" = "مرتبط %1$@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "فشل تحديث قائمة الأجهزة";
@@ -1676,7 +1679,7 @@
 "DISAPPEARING_MESSAGES" = "الرسائل المختفية";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ستختفي الرسائل في هذه المحادثة بعد %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "ستختفي الرسائل في هذه المحادثة بعد %1$@.";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "وَقتٌ مُخَصَّص";
@@ -1688,7 +1691,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "عند التفعيل، ستختفي الرسائل الجديدة المرسلة والمستلمة في هذه المحادثة بعد رؤيتها.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "حالياً الرسائل تختفي بعد %@";
+"DISAPPEARING_MESSAGES_HINT" = "حالياً الرسائل تختفي بعد %1$@";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "ساعات";
@@ -1716,6 +1719,9 @@
 
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "عرض الشارات على الملف الشخصي";
+
+/* Title for the proxy confirmation */
+"DO_YOU_WANT_TO_USE_PROXY" = "Do you want to use this proxy address?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "مكان التحايل على الرقابة";
@@ -1751,7 +1757,7 @@
 "DONATION_PAYMENT_ERROR_INCORRECT_CARD_VERIFICATION_CODE" = "رقم رمز التحقق من البطاقة (CVC) الخاص بك غير صحيح. تحقّق لمعرفة ما إذا كان رقم رمز التحقق من البطاقة (CVC) الخاص بك قد تم إدخاله بشكل صحيح في Apple Pay. إذا لم يكن كذلك، فحدّثه وحاول مرة أخرى.";
 
 /* Donation payment error for decline failures where the card has insufficient funds. */
-"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "لا تتوفر بطاقتك على مبالغ كافية لإتمام عملية الشراء هذه. يُرجى محاولة استخدام طريقة دفع أخرى أو الاتصال بِبنكك للمزيد من العملومات. ";
+"DONATION_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "لا تتوفر بطاقتك على مبالغ كافية لإتمام عملية الشراء هذه. يُرجى محاولة استخدام طريقة دفع أخرى أو الاتصال بِبنكك للمزيد من العملومات.";
 
 /* Donation payment error for decline failures where the expiration month on the payment method is incorrect. */
 "DONATION_PAYMENT_ERROR_INVALID_EXPIRY_MONTH" = "شهر انتهاء الصلاحية الذي أدخلته في طريقة دفعك خاطئ. يُرجى تحيينه في Apple Pay والمحاولة من جديد.";
@@ -1828,6 +1834,9 @@
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "إدارة الاشتراك";
 
+/* Text describing to the user that they're going to pay a monthly donation to Signal */
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Monthly Donation to Signal";
+
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "المزيد";
 
@@ -1880,7 +1889,7 @@
 "EDIT_ITEM_COPY_ACTION" = "نسخ";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخرًا، أصبحتُ اَستخدِم Signal عَلى الـiPhone الخاصّ بي لِجعل مُحادَثاتي خُصُوصيَّة. أودُ لو تُثبِّته أنتَ كَذَلِك، حَتّى يَتَسنى لَنا التَّأكُّد أنَنا الوَحيدان اللَّذان يُمكِنُهُما قِراءة رَسائلنا أو سَماع مُكالماتنا.\n\nSignal مُتاحٌ على الآيفون والأندرويد. احصُل عَليه مِن هُنا: %@\n\nيَعملُ Signal مِثل تَطبيق تَراسُلَك الحالي. نَستَطيع إرسال الصُّوَر والمَقاطِع المَرئية, إجراءُ مُكالمات, وبدءُ مُحادثة جَماعية. أفضلُ شيء فيه هُو أنَّ لا أحد آخَر قادِر عَلى رُؤية أي شَيء مِن ذَلك، بِما في ذَلك مُصَمِّمو Signal عَينَهُم\n\nتَستطيعُ قِراءة المَزيد عَن Open Whisper Systems، مُصمّمو Signal، هُنا: %@";
+"EMAIL_INVITE_BODY" = "مرحباً,\n\nمؤخرًا، أصبحتُ اَستخدِم Signal عَلى الـiPhone الخاصّ بي لِجعل مُحادَثاتي خُصُوصيَّة. أودُ لو تُثبِّته أنتَ كَذَلِك، حَتّى يَتَسنى لَنا التَّأكُّد أنَنا الوَحيدان اللَّذان يُمكِنُهُما قِراءة رَسائلنا أو سَماع مُكالماتنا.\n\nSignal مُتاحٌ على الآيفون والأندرويد. احصُل عَليه مِن هُنا: %1$@\n\nيَعملُ Signal مِثل تَطبيق تَراسُلَك الحالي. نَستَطيع إرسال الصُّوَر والمَقاطِع المَرئية, إجراءُ مُكالمات, وبدءُ مُحادثة جَماعية. أفضلُ شيء فيه هُو أنَّ لا أحد آخَر قادِر عَلى رُؤية أي شَيء مِن ذَلك، بِما في ذَلك مُصَمِّمو Signal عَينَهُم\n\nتَستطيعُ قِراءة المَزيد عَن Open Whisper Systems، مُصمّمو Signal، هُنا: %2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "لننتقل إلى Signal";
@@ -1946,7 +1955,7 @@
 "ERROR_COULD_NOT_FORWARD_MESSAGES_N" = "لقد تعذرت إعادة توجيه الرسائل.";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "يتعذّر حفظ الفيديو. ";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "يتعذّر حفظ الفيديو.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "فشل إرسال الرسالة.";
@@ -1997,7 +2006,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "فشل تحميل المُرفق.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "لقد تعذر توصيل رسالة من %@";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "لقد تعذر توصيل رسالة من %1$@";
 
 /* Error message for a decryption failure. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "لقد تعذر توصيل الرسالة";
@@ -2021,7 +2030,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "تغيَّر رقم اﻷمان.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "رقم الأمان الخاص بك أنت و%@ قد تغير.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "رقم الأمان الخاص بك أنت و%1$@ قد تغير.";
 
 /* Text notifying the user that their secure session has been reset */
 "ERROR_MESSAGE_SESSION_REFRESH" = "تمَّ إنعاش جلسة المحادثة";
@@ -2036,7 +2045,7 @@
 "ERROR_NETWORK_FAILURE" = "خلل في الشبكة";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "‫نرجو منك مساعدتنا على تحسين Signal، وذلك بالإبلاغ عن هذا الخطأ مع إرفاق سِجلات التصحيح التي في جهازك إلى support@signal.org‏ ;‏%@";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "‫نرجو منك مساعدتنا على تحسين Signal، وذلك بالإبلاغ عن هذا الخطأ مع إرفاق سِجلات التصحيح التي في جهازك إلى support@signal.org‏ ;‏%1$@";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "‫إصدار Signal التجريبي‬ : حدث خطأ ما";
@@ -2051,7 +2060,7 @@
 "ERROR_SENDING_EXPIRED" = "انتهت صلاحية إصدار Signal الخاص بك. يُرجى تحديثه لإرسال رسائل مستقبلاً.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "مُستخدم غير مسجل: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "مُستخدم غير مسجل: %1$@";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "انتهت صلاحية إصدار Signal الخاص بك! انقر للتحديث لآخر إصدار.";
@@ -2063,7 +2072,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "العديد من الأخطاء مع جهة الاتصال هذه. يُرجى إعادة المحاولة لاحقا.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "تغير رقم أمانك مع %@ مؤخراً. قد ترغب بالتحقق منه قبل إرسال هذه الرسالة مجدداً.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "تغير رقم أمانك مع %1$@ مؤخراً. قد ترغب بالتحقق منه قبل إرسال هذه الرسالة مجدداً.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "فشل التحقّق من رقم اﻷمان!";
@@ -2072,7 +2081,7 @@
 "FEATURED_BADGE_SECTION_HEADER" = "اختر شارة";
 
 /* The title for the featured badge settings page */
-"FEATURED_BADGE_SETTINGS_TITLE" = " الشارة المميزة";
+"FEATURED_BADGE_SETTINGS_TITLE" = "الشارة المميزة";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "علِّم كمُتحقَّق منه";
@@ -2162,7 +2171,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "إدخال البحث الخاص بك";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "انتهت صلاحية هديتك المهداة من طرف %@ ولم يعد من الممكن الحصول عليها.";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "انتهت صلاحية هديتك المهداة من طرف %1$@ ولم يعد من الممكن الحصول عليها.";
 
 /* Title when trying to redeem a gift that's already expired. */
 "GIFT_NOT_REDEEMED_TITLE" = "انتهت صلاحية هديتك";
@@ -2171,13 +2180,13 @@
 "GO_TO_SETTINGS_BUTTON" = "الانتقال إلى الإعدادات";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ قَد غيرتَ من يمكنه تعديل معلومات المجموعة إلى \"%@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ قَد غيرتَ من يمكنه تعديل معلومات المجموعة إلى \"%1$@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد غيَّرَ %1$@ مَن يُمكنه تعديل معلومات المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "يُمكن لـ \"%@\" التعديل على معلومات المجموعة.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "يُمكن لـ \"%1$@\" التعديل على معلومات المجموعة.";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "المُشرفون فقط";
@@ -2195,13 +2204,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "مُعطل";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ قَد غيَّرتَ من يمكنه تعديل عُضوية المجموعة إلى \"%@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "أنتَ قَد غيَّرتَ من يمكنه تعديل عُضوية المجموعة إلى \"%1$@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد غيَّرَ %1$@ مَن يُمكنه تعديل عُضوية المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "يُمكن تغيير عُضوية المجموعة بواسطة \"%@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "يُمكن تغيير عُضوية المجموعة بواسطة \"%1$@\".";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "فقط المُشرفين يُمكنهم تعديل هذا الإعداد.";
@@ -2210,7 +2219,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "أنت لن تتلقى الصوت أو الفيديو الخاص بهم ونفس الأمر ينطبق عليهم.";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "تم حَظر %@";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "تم حَظر %1$@";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "يمكنك للمشرفين على المجموعة فقط بدء المكالمات.";
@@ -2219,7 +2228,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "تعذر بدء المكالمة الجماعية";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "تم حَظر %@";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "تم حَظر %1$@";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "استئناف المُكالمة";
@@ -2237,7 +2246,7 @@
 "GROUP_CALL_IS_FULL" = "المُكالمة ممتلئة";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "جارٍ الاتصال بـ %@…";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "جارٍ الاتصال بـ %1$@…";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "جارٍ الاتصال بـ %1$@ و%2$@…";
@@ -2249,13 +2258,13 @@
 "GROUP_CALL_LEAVE_BUTTON" = "مُغادرة المُكالمة";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "لا يُمكن تلقي الصوت والصورة من %@";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "لا يُمكن تلقي الصوت والصورة من %1$@";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "رُبما يكون هذا بسبب عدم تحقُّقه مِن تغيُّر رقم الأمان الخاص بك، بسبب وجود مُشكلة في جِهازه، أو أنهُ قد حَظرك.";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "لا يُمكن تلقي الصوت والصورة من %@";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "لا يُمكن تلقي الصوت والصورة من %1$@";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "لا يوجد شخص آخر هُنا";
@@ -2264,22 +2273,22 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "ﻻ وجود لأي شخص في هذه المُكالمة بعد.";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "انضم %@ إلى المُكالمة";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "انضم %1$@ إلى المُكالمة";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "غادر %@ من المُكالمة";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "غادر %1$@ من المُكالمة";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "انضما %@ و %@ إلى المُكالمة";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "انضما %1$@ و %2$@ إلى المُكالمة";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "غادرا %@ و %@ من المُكالمة";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "غادرا %1$@ و %2$@ من المُكالمة";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "إنَّ %@ في هذه المُكالمة";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "إنَّ %1$@ في هذه المُكالمة";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "يقوم %@ بالعرض";
+"GROUP_CALL_PRESENTING_FORMAT" = "يقوم %1$@ بالعرض";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "تجري إعادة الاتصال";
@@ -2306,7 +2315,7 @@
 "GROUP_CALL_STARTED_BY_YOU" = "لقد بدأتَ مُكالمة جماعية";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "بدأ %@ مُكالمة جماعية";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "بدأ %1$@ مُكالمة جماعية";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
 "GROUP_CALL_TOO_LARGE_TO_RING" = "إن المجموعة كبيرة جدًا لكي يتصل التطبيق بجميع المشاركين.";
@@ -2318,13 +2327,13 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "لقد قُطع اتصالك بهذه المُكالمة. يُرجى التحقق من اتصالك بالشبكة ثم المُحاولة مرة أخرى.";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "سَيتم إشعار %@";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "سَيتم إشعار %1$@";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "سَيتم إشعار %1$@ و%2$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "سَيتصل Signal بـ %@";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "سَيتصل Signal بـ %1$@";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "سَيتصل Signal بـ %1$@ و%2$@";
@@ -2339,7 +2348,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "أنت قد أنشأتَ المجموعة.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "لَقَد أضافكَ %@ إلى المجموعة.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "لَقَد أضافكَ %1$@ إلى المجموعة.";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "لقد أُنشأَت المجموعة.";
@@ -2360,7 +2369,7 @@
 "GROUP_DESCRIPTION_VIEW_TITLE" = "وَصف المَجمُوعَة";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "وَصف المَجمُوعَة (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "وَصف المَجمُوعَة (%1$@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "تمت إضافة دعوة غير صالحة.";
@@ -2372,10 +2381,10 @@
 "GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "أنت قد أضفت دعوات غير صالحة.";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "لَقَد أضاف %@ دعوة غير صالحة.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "لَقَد أضاف %1$@ دعوة غير صالحة.";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "لَقَد أضاف %@ دعوات غير صالحة.";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "لَقَد أضاف %1$@ دعوات غير صالحة.";
 
 /* Message indicating that multiple invalid invites were added to the group. */
 "GROUP_INVALID_INVITES_ADDED_N" = "تمت إضافة دعوات غير صالحة.";
@@ -2390,10 +2399,10 @@
 "GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "أنت قد سحبت دعوات غير صالحة.";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "لَقَد سحب %@ دعوة غير صالحة.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "لَقَد سحب %1$@ دعوة غير صالحة.";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "لَقَد سحب %@ دعوات غير صالحة.";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "لَقَد سحب %1$@ دعوات غير صالحة.";
 
 /* Message indicating that multiple invalid invites were revoked. */
 "GROUP_INVALID_INVITES_REMOVED_N" = "تم سحب الدعوات غير الصالحة.";
@@ -2405,7 +2414,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "أنت قد أوقفت رابط المجموعة.";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "لَقَد عطَّلَ %@ رابط المجموعة.";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "لَقَد عطَّلَ %1$@ رابط المجموعة.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "تمَّ تفعيل رابط المجموعة مع مُتطلب موافقة المشرف.";
@@ -2414,7 +2423,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "أنت قد فعَّلت رابط المجموعة مع مُتطلب موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %@ رابط المجموعة مع مُتطلب موافقة المشرف.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %1$@ رابط المجموعة مع مُتطلب موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "تم تفعيل رابط المجموعة مع إيقاف مُتطلب موافقة المشرف.";
@@ -2423,16 +2432,16 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "أنت قد فعَّلت رابط المجموعة مع إيقاف مُتطلب موافقة المشرف.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %@ رابط المجموعة مع إيقاف مُتطلب موافقة المشرف.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %1$@ رابط المجموعة مع إيقاف مُتطلب موافقة المشرف.";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "تمَّ إعادة تعيين رابط المجموعة.";
+"GROUP_INVITE_LINK_RESET" = " تمَّ إعادة تعيين رابط المجموعة.";
 
 /* Message indicating that the group invite link was reset by the local user. */
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "أنت قد أعدتَ تعيين رابط المجموعة.";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "إنَّ %@ قد أعاد تعيين رابط المجموعة.";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد أعاد تعيين رابط المجموعة.";
 
 /* Message indicating that the group invite link was set to not require approval. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "تمَّ تعطيل مُتطلب موافق المشرف لرابط المجموعة.";
@@ -2441,7 +2450,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "أنت قد عطَّلتَ مُتطلب موافق المشرف لرابط المجموعة.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد عطَّلَ %@ مُتطلب موافق المشرف لرابط المجموعة.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد عطَّلَ %1$@ مُتطلب موافق المشرف لرابط المجموعة.";
 
 /* Message indicating that the group invite link was set to require approval. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "تمَّ تفعيل مُتطلب مُوافقة المشرف لرابط المجموعة.";
@@ -2450,10 +2459,10 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "أنت قد فعّلت مُتطلب مُوافقة المشرف لرابط المجموعة.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %@ مُتطلب مُوافقة المشرف لرابط المجموعة.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "لَقَد فعَّل %1$@ مُتطلب مُوافقة المشرف لرابط المجموعة.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "بواسطتك لا يُمكن إضافة %@ بشكل تلقائي للمجموعة. لقد دُعي للانضمام حقاً، لكن لن يرى أي رسالة في المجموعة حتى يقبل بالانضمام إليها.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "بواسطتك لا يُمكن إضافة %1$@ بشكل تلقائي للمجموعة. لقد دُعي للانضمام حقاً، لكن لن يرى أي رسالة في المجموعة حتى يقبل بالانضمام إليها.";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "بواسطتك لا يُمكن إضافة هؤلاء المُستخدمين بشكل تلقائي للمجموعة. لقد تم دعوتهم للانضمام حقاً، لكنهم لن يروا أي رسالة في المجموعة حتى يقبلوا بالانضمام إليها.";
@@ -2465,7 +2474,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "لقد قمت بتغيير  إعدادات المجموعة للسماح للمشرفين فقط بإرسال الرسائل.";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "لقد غيَّر العضو %@ إعدادات المجموعة للسماح لجميع الأعضاء بإرسال الرسائل.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "لقد غيَّر العضو %1$@ إعدادات المجموعة للسماح لجميع الأعضاء بإرسال الرسائل.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "لقد تغيرت إعدادات المجموعة للسماح فقط للمشرفين بإرسال الرسائل.";
@@ -2474,7 +2483,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "لقد غيرت إعدادات المجموعة للسماح للمشرفين فقط بإرسال الرسائل.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "لقد غيَّر العضو %@ إعدادات المجموعة للسماح للمشرفين فقط بإرسال الرسائل.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "لقد غيَّر العضو %1$@ إعدادات المجموعة للسماح للمشرفين فقط بإرسال الرسائل.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "لا يمكنك الانضمام لهذه المجموعة من خلال الرابط لأن أحد المشرفين أزالك.";
@@ -2579,34 +2588,34 @@
 "GROUP_LINK_VIEW_TITLE" = "رابط المجموعة";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "لَقَد أضافكَ %@.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "لَقَد أضافكَ %1$@.";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "أنتَ الآن مُشرِف.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "لَقَد جعلَكَ %@ مُشرفاً.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "لَقَد جعلَكَ %1$@ مُشرفاً.";
 
 /* Message indicating that the local user accepted an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "أنتَ قَد قبلتَ الدعوة إلى المجموعة.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "أنتَ قَد قبلتَ دعوة إلى المجموعة من طرف %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "أنتَ قَد قبلتَ دعوة إلى المجموعة من طرف %1$@.";
 
 /* Message indicating that the local user declined an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "أنتَ قد رفضتَ الدعوة للمجموعة.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "أنتَ قَد رفضتَ الدعوة إلى المجموعة من طرف %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "أنتَ قَد رفضتَ الدعوة إلى المجموعة من طرف %1$@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "لقد أبطل %@ دعوتك إلى المجموعة.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "لقد أبطل %1$@ دعوتك إلى المجموعة.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "لقد أُبطلَت دعوتك إلى المجموعة.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "لَقَد دَعاكَ %@.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "لَقَد دَعاكَ %1$@.";
 
 /* Message indicating that the local user was invited to the group. */
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "لقد دُعيتَ إلى المجموعة.";
@@ -2618,13 +2627,13 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "أنت قد انضممت للمجموعة بواسطة رابط المجموعة.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالكَ %@.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالكَ %1$@.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "أُزلتَ من المجموعة.";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "لَقَد وافق %@ على طلب انضمامك إلى المجموعة.";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "لَقَد وافق %1$@ على طلب انضمامك إلى المجموعة.";
 
 /* Message indicating that the local user cancelled their request to join the group. */
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "أنتَ قَد ألغيتَ طلب انضمامك للمجموعة.";
@@ -2639,7 +2648,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "أُبطلَت صلاحياتك كمشرف على المجموعة.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "لَقَد أبطلَ %@ صلاحياتكَ كَمُشرِف عَلَى المَجموعَة.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "لَقَد أبطلَ %1$@ صلاحياتكَ كَمُشرِف عَلَى المَجموعَة.";
 
 /* Message indicating that the local user was added to the group. */
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "عضو قد أضافك إلى المجموعة.";
@@ -2669,91 +2678,91 @@
 "GROUP_NAME_VIEW_TITLE" = "اسم المجموعة";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "لَقَد قَبَلَ %@ الدعوة إلى المجموعة.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "لَقَد قَبَلَ %1$@ الدعوة إلى المجموعة.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "لَقَد قَبَلَ %@ إنضمامك للمجموعة.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "لَقَد قَبَلَ %1$@ إنضمامك للمجموعة.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "لَقَد قَبَلَ %1$@ دعوة إلى لمجموعة من طرف %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "أنتَ قد أضفت %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "أنتَ قد أضفت %1$@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد أضاف %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "لَقَد أُضيفَ %@ إلى المجموعة.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "لَقَد أُضيفَ %1$@ إلى المجموعة.";
 
 /* Message indicating that a remote user has declined their invite. */
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "شخص واحد قد رفض الانضمام إلى المجموعة.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "رفض شخص واحد الدعوة من طرف %@ للانضمام إلى المجموعة.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "رفض شخص واحد الدعوة من طرف %1$@ للانضمام إلى المجموعة.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "رفض %@ دعوتك للانضمام إلى المجموعة.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "رفض %1$@ دعوتك للانضمام إلى المجموعة.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "إنَّ %@ مُشرِفٌ الآن";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "إنَّ %1$@ مُشرِفٌ الآن";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "أنتَ قَد جعلت %@ مشرفاً.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "أنتَ قَد جعلت %1$@ مشرفاً.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد جعلَ %2$@ مُشرفاً.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "دعوة %@ إلى المجموعة قد أُلغيت.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "دعوة %1$@ إلى المجموعة قد أُلغيت.";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "تمَّ دعوة %@ للمجموعة.";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "تمَّ دعوة %1$@ للمجموعة.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "أنت قد دعوت %@ إلى المجموعة.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "أنت قد دعوت %1$@ إلى المجموعة.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "لَقَد اِنضمَ %@ إلى المجموعة.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "لَقَد اِنضمَ %1$@ إلى المجموعة.";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "لَقَد اِنضمَ %@ إلى لمجموعة عبر رابط المجموعة.";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "لَقَد اِنضمَ %1$@ إلى لمجموعة عبر رابط المجموعة.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "لَقَد غادرَ %@ المجموعة.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "لَقَد غادرَ %1$@ المجموعة.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "أنتَ قد أزلتَ %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "أنتَ قد أزلتَ %1$@.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "إنَّ %1$@ قد أزالَ %2$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "أنت قد وافقت على طلب انضمام إلى المجموعة من طرف %@.";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "أنت قد وافقت على طلب انضمام إلى المجموعة من طرف %1$@.";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "لَقَد وافق %2$@ على طلب اِنضمام إلى المجموعة من طرفِ %1$@.";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "لَقَد ألغى %@ طلبهُ في الاِنضمام إلى المجموعة.";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "لَقَد ألغى %1$@ طلبهُ في الاِنضمام إلى المجموعة.";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "أنت قد رفضت طلب اِنضمام للمجموعة من طرف %@.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "أنت قد رفضت طلب اِنضمام للمجموعة من طرف %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "لَقَد رفض %2$@ طلب اِنضمام إلى المجموعة من طرف %1$@.";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "رُفضَ طلب اِنضمام %@ إلى المجموعة.";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "رُفضَ طلب اِنضمام %1$@ إلى المجموعة.";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "لَقَد طلبَ %@ الانضمام إلى المجموعة بواسطة رابط المجموعة.";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "لَقَد طلبَ %1$@ الانضمام إلى المجموعة بواسطة رابط المجموعة.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "لَقَد أُبطلَت صلاحيات %@ كمُشرِف.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "لَقَد أُبطلَت صلاحيات %1$@ كمُشرِف.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "أنت قد أبطلت صلاحيات %@ كمشرف.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "أنت قد أبطلت صلاحيات %1$@ كمشرف.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "لَقَد أبطلَ %1$@ صلاحيات %2$@ كمُشرِف.";
@@ -2771,16 +2780,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ إلى %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "حذف قصة المجموعة";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "هل أنت متأكد من أنك تريد حذف هذه القصة؟";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "يُمكن لعضو في المجموعة \"%@\" مشاهدة هذه القصة و الرّد عليها. يُمكنك تحديث العضوية لهذه الدردشة في المجموعة.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%1$@” can view and reply to this story. You can update the membership for this chat in the group.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "من يُمكنه مُشاهدة هذه القصة";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "تم تحديث المجموعة.";
@@ -2792,7 +2801,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "أنت قد أزلت الصورة.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالَ %@ الصُّورة.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالَ %1$@ الصُّورة.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "تمَّ تحديث صورة المجموعة.";
@@ -2801,13 +2810,13 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "أنت قد حدّثتَ الصورة.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد حدّثَ %@ الصُّورة.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد حدّثَ %1$@ الصُّورة.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "أنت قد حدّثتَ المجموعة.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد حدّثَ %@ المجموعة.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد حدّثَ %1$@ المجموعة.";
 
 /* Message indicating that the group's description was removed. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "لقد أزيل وصف المجموعة.";
@@ -2816,7 +2825,7 @@
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "لقد أزلت وصف المجموعة.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "لقد أزال %@ وصف المجموعة.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "لقد أزال %1$@ وصف المجموعة.";
 
 /* Message indicating that the group's description was changed. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "لقد تغير وصف المجموعة.";
@@ -2825,7 +2834,7 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "أنتَ قد غيَّرتَ وصفَ المَجمُوعَة.";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقد غيَّرَ %@ وصفَ المَجمُوعة.";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقد غيَّرَ %1$@ وصفَ المَجمُوعة.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "لَقَد أُزيلَ اِسم المجموعة.";
@@ -2834,16 +2843,16 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "أنت قد أزلتَ اسم المجموعة.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالَ %@ اِسم المجموعة.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "لَقَد أزالَ %1$@ اِسم المجموعة.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "أنت قد غيرت اسم المجموعة إلى \"%@\".";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "أنت قد غيرت اسم المجموعة إلى \"%1$@\".";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "لَقَد غيَّر %1$@ اِسم المجموعة إلى \"%2$@\".";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "الآن اِسم المجموعة هو \"%@\".";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "الآن اِسم المجموعة هو \"%1$@\".";
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "تمَّ ترقية هذه المجموعة إلى مجموعة جديدة.";
@@ -2861,7 +2870,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "المُشرِفون";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "يمكن فقط لـ %@ إرسال الرسائل.";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "يمكن فقط لـ %1$@ إرسال الرسائل.";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "مراسلة مشرف على المجموعة";
@@ -2873,7 +2882,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "حظر الطلب";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "لن يتمكن %@ من الانضمام إلى هذه المجموعة أو إرسال طلب للانضمام إليها من خلال رابط المجموعة. ولكن يمكن إضافته من طرف مُشرف المجموعة.";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "لن يتمكن %1$@ من الانضمام إلى هذه المجموعة أو إرسال طلب للانضمام إليها من خلال رابط المجموعة. ولكن يمكن إضافته من طرف مُشرف المجموعة.";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "حظر الطلب ؟";
@@ -2891,10 +2900,10 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "حَظر المجموعة";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "حَظر المجموعة وحَظر %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "حَظر المجموعة وحَظر %1$@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "حَظر %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "حَظر %1$@";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "دعوة الأصدقاء";
@@ -2918,13 +2927,13 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "مقارنة المجموعات من الطراز القديم بالمجموعات الجديدة.";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "قم بترقية المجموعة لتفعيل الميزات الجديدة مثل تضمين الاسم @ والمشرفين. سيتم دعوة الأعضاء الذين لم يُشاركوا اسمهم وصورهم في المجموعة للإنضمام.%@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "قم بترقية المجموعة لتفعيل الميزات الجديدة مثل تضمين الاسم @ والمشرفين. سيتم دعوة الأعضاء الذين لم يُشاركوا اسمهم وصورهم في المجموعة للإنضمام.%1$@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "يتعذّر الترقية لمجموعة جديدة";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "لا يمكن ترقية هذه المجموعة إلى مجموعة جديدة لأنها تحوي على العديد من اﻷعضاء. الحد الأقصى للمجموعة لكي يُمكن ترقيتها هو %@.";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "لا يمكن ترقية هذه المجموعة إلى مجموعة جديدة لأنها تحوي على العديد من اﻷعضاء. الحد الأقصى للمجموعة لكي يُمكن ترقيتها هو %1$@.";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "إذا استخدم كافة أعضاء المجموعة إصدار Signal يسمح لهم بالانضمام للمجموعة الجديدة، سيتم ترقية هذه المجموعة.";
@@ -2933,16 +2942,16 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "سيتم الاحتفاظ بكافة محفوظات الرسائل والوسائط مِن قبل الترقية.";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "هذه مجموعة من الطراز القديم. إن الميزات مثل خاصية المشرفين مُتاحة فقط في المجموعات الجديدة. %@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "هذه مجموعة من الطراز القديم. إن الميزات مثل خاصية المشرفين مُتاحة فقط في المجموعات الجديدة. %1$@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "هذه المجموعة القديم ليست جاهزة بعد لكي تترقى إلى مجموعة جديدة. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "هذه المجموعة القديم ليست جاهزة بعد لكي تترقى إلى مجموعة جديدة. %1$@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "لا يمكن ترقية هذه المجموعة القديمة إلى مجموعة جديدة لأنها كبيرة جداً. %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "لا يمكن ترقية هذه المجموعة القديمة إلى مجموعة جديدة لأنها كبيرة جداً. %1$@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "هذه مجموعة من الطراز القديم. للوصول إلى الميزات الجديدة مثل تضمين الاسم @ والمشرفين، %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "هذه مجموعة من الطراز القديم. للوصول إلى الميزات الجديدة مثل تضمين الاسم @ والمشرفين، %1$@.";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "مجموعة من الطراز القديم";
@@ -3059,28 +3068,28 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "البحث";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "مُسوَّدَة:";
+"HOME_VIEW_DRAFT_PREFIX" = "مُسوَّدَة: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %1$@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %@ و%@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %1$@ و%2$@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %@، %@ و%@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "بعض جهات اتصالك بالفعل في Signal، بما في ذلك %1$@، %2$@ و%3$@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اِبدأ أوَّلَ مُحادثةٍ لكَ مِن هُنا.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "لَقَد أضافكَ %@ إلى المجموعة";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "لَقَد أضافكَ %1$@ إلى المجموعة";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "طلب تراسُل";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "لا توجد نتيجة لـ'%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "لا توجد نتيجة لـ'%1$@'";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "الأرشيف";
@@ -3101,7 +3110,7 @@
 "IMAGE_EDITOR_BLUR_TOAST" = "ارسم لتضبيب المزيد من الأوجه أو المساحات";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "لا يُمكنك مُشاركة أكثر من %@ عنصر.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "لا يُمكنك مُشاركة أكثر من %1$@ عنصر.";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
 "IMAGE_PICKER_CHANGE_PHOTOS" = "تغيير الصور";
@@ -3155,16 +3164,16 @@
 "INBOX_VIEW_EMPTY_INBOX" = "لا تُوجَدُ أيُّ مُحَادَثاتٍ حَتَّى الآن.\nإبدأ بِمُراسَلةِ أحدِ الأصدِقاء.";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "إنَّ %@ قد اتصلَ بِكَ";
+"INCOMING_CALL_FORMAT" = "إنَّ %1$@ قد اتصلَ بِكَ";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "يُمكنك إرسال أو استقبال رسائل متزامنة من هاتفك أو من iPad.\nحفاظًا على أمانك ، لا يتم نقل محفوظات المُحادثة إلى الأجهزة المُرتبطة الجديدة.";
+"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@ غيَّرَ رقم هاتفِه.";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@ غيَّرَ رقم هاتفِه.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "إنَّ %@ مُتواجدٌ على Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "إنَّ %1$@ مُتواجدٌ على Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "المُلصقات";
@@ -3177,6 +3186,9 @@
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "ملف صوتي غير صالح.";
+
+/* The provided proxy host address is not valid */
+"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "يمكنك تفعيل الوصول إلى جهات الاتصال في تطبيق إعدادات iOS لدعوة أصدقائك للانضمام إلى Signal.";
@@ -3200,7 +3212,7 @@
 "JOIN_CALL_PILL_BUTTON" = "انضم";
 
 /* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
-"JOINED_WITH_DOT" = "%@ . %@";
+"JOINED_WITH_DOT" = "%1$@ . %2$@";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "اذهب إلى جميع الوسائط";
@@ -3347,7 +3359,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "وسائط للمشاهدة مرة واحدة";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
-"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%1$@";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "هذا الشهر";
@@ -3399,6 +3411,9 @@
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "فتح الوصلة";
+
+/* Label for button to open a signal proxy. */
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "عرض حزمة الملصقات";
@@ -3455,7 +3470,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "نوع MIME";
 
 /* Label for the 'disappears' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "مُختفية ";
+"MESSAGE_METADATA_VIEW_DISAPPEARS_IN" = "مُختفية";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "سُلِّمَت إلى";
@@ -3515,16 +3530,16 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "لن يتمكن الأشخاص المحظورون من الاتصال بك أو إرسال رسالة إليك.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "حظر %@؟";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "حظر %1$@؟";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "سوف تُغادر هذه المجموعة ولن تصلك بعد الآن رسالة أو مستجدات منها.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "حظر ومُغادرة %@؟";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "حظر ومُغادرة %1$@؟";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف  ";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "ستُحذَف هذه المُحادثة من جميع أجهزتك.";
@@ -3572,7 +3587,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "حظر";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "السماح لـ%@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن تستقبل أي رسائل حتى تقوم برفع الحظر عنه.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "السماح لـ%1$@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن تستقبل أي رسائل حتى تقوم برفع الحظر عنه.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "ارفع الحظر عن هذه المجموعة وشاركة اسمك وصورتك مع أعضاءها؟ لن تستقبل أي رسائل من المجموعة حتى تقوم برفع الحظر عنها.";
@@ -3587,13 +3602,13 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "حذف";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "مُواصلة هذه المُحادثة مع %@ ومُشاركة اسمك وصورتك معه؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "مُواصلة هذه المُحادثة مع %1$@ ومُشاركة اسمك وصورتك معه؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "مُواصلة مُحادثتك مع هذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "السماح لـ %@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن يعلم أنك قد قرأت رسائله حتى تقوم بالقبول.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "السماح لـ %1$@ بمُراسلتك ومُشاركة اسمك وصورتك معه؟ لن يعلم أنك قد قرأت رسائله حتى تقوم بالقبول.";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "الإنضمام لهذه المجموعة ومُشاركة اسمك وصورتك مع أعضاءها؟ لن يعلموا أنك قد قرأت رسائلهم حتى تقوم بالقبول.";
@@ -3632,7 +3647,7 @@
 "MESSAGE_STATUS_PENDING" = "الإرسال متوقف مؤقتا";
 
 /* Label indicating that a message send was paused. */
-"MESSAGE_STATUS_PENDING_SHORT" = "تَوَقُّفٌ مُؤقَّت ";
+"MESSAGE_STATUS_PENDING_SHORT" = "تَوَقُّفٌ مُؤقَّت";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "تمت القراءة";
@@ -3656,10 +3671,10 @@
 "MESSAGE_STATUS_VIEWED" = "لقد تمَّ عرضه";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "إنَّ %@ لم يعُد مُعلَّم كمُتحقَّق مِنه. انقر للحُصول على الخيارات.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "إنَّ %1$@ لم يعُد مُعلَّم كمُتحقَّق مِنه. انقر للحُصول على الخيارات.";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "إنَّ %@ لم يعُد مُعلَّم كمُتحقَّق منه. انقر للحُصول على الخيارات.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "إنَّ %1$@ لم يعُد مُعلَّم كمُتحقَّق منه. انقر للحُصول على الخيارات.";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "أكثر مِن عُضو مِن هذه المجموعة لم يعُد مُعلَّم كمُتحقَّق منه. انقر للحصول على الخيارات.";
@@ -3695,7 +3710,7 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "يتطلب Signal الوصول إلى الصوة الخاصة بك لهذه الميزة.";
 
 /* Generic indicator that no value is available for display */
-"MISSING_VALUE" = "لا شيء ";
+"MISSING_VALUE" = "لا شيء";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "لا يمكنك ربط المزيد من الأجهزة.";
@@ -3710,7 +3725,7 @@
 "MY_STORIES_NO_STORIES" = "سَيظهر تحديث قِصتك هنا.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "الكل إلا...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "جميع جهات الاتصال في Signal";
@@ -3723,6 +3738,12 @@
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "قِصتي";
+
+/* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choose who can view your story";
+
+/* Title for the my story settings sheet */
+"MY_STORY_SETTINGS_SHEET_TITLE" = "My Story Privacy";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "قِصتي";
@@ -3779,7 +3800,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "مجموعة جديدة";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ إلى %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@ إلى %2$@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "تسمية المجموعة";
@@ -3791,7 +3812,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "حدِّد أعضاء";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ إلى %2$@ · قصة";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "اختيار مجموعة";
@@ -3863,7 +3884,7 @@
 "NOTE_TO_SELF" = "الملاحظات الشخصية";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "قد تكون قد استلمت رسائل اثناء إعادة تشغيل %@ الخاص بك.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "قد تكون قد استلمت رسائل اثناء إعادة تشغيل %1$@ الخاص بك.";
 
 /* Body for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "لتلقي إشعارات بالرسائل الجديدة:";
@@ -3872,7 +3893,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "انقر على \"الانتقال إلى الإعدادات\" في الأسفل";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "تفعيل \"السماح بالإشعارات\". ";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "تفعيل \"السماح بالإشعارات\".";
 
 /* Second step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "انقر على الإشعارات";
@@ -3986,7 +4007,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "تَمكينُ الصّلاحيّات";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه العثور عليكَ في Signal بواسطة رقم الهاتف الخاص بك %@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "اختر من يُمكنه العثور عليكَ في Signal بواسطة رقم الهاتف الخاص بك %1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "مَن يُمكنه العثور عليك بواسطة الرقم الخاص بك؟";
@@ -3995,7 +4016,7 @@
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "رقم هاتفك";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "يُرجى الانتِظار بضع دقائق قبل المُحاولة مرة أُخرى. (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "يُرجى الانتِظار بضع دقائق قبل المُحاولة مرة أُخرى. (%1$@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "يُرجى إدخال رقم هاتفك";
@@ -4052,7 +4073,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "اتصل بي";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "اتَّصل بي بَعد %@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "اتَّصل بي بَعد %1$@";
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "التَّحَقُّقُ مِنَ الرَّمزِ جارٍ...";
@@ -4064,10 +4085,10 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "أعِد إرسال الرمز";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "إعادة إرسال الرَّمز خِلال %@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "إعادة إرسال الرَّمز خِلال %1$@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "أدخِل الرمز الَّذي أرسلناهُ إلى %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "أدخِل الرمز الَّذي أرسلناهُ إلى %1$@";
 
 /* Title label for the onboarding verification page */
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "التحقُّق مِنَ الرَّمز";
@@ -4076,16 +4097,16 @@
 "OPEN_SETTINGS_BUTTON" = "الإعدادات";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطل %@ الرسائل المختفية.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "عطل %1$@ الرسائل المختفية.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضَبَطَ %@ وقت إختفاء الرسائل على %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضَبَطَ %1$@ وقت إختفاء الرسائل على %2$@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "إنَّ Signal يواجِهُ صُعوبات تَقنية. نحنُ نعملُ بجد لاستعادة الخِدمة في أسرع وقت ممكن.";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "أنتَ قد اتصلت بـ %@";
+"OUTGOING_CALL_FORMAT" = "أنتَ قد اتصلت بـ %1$@";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "رفض الطلب";
@@ -4097,7 +4118,7 @@
 "PAYMENTS_CURRENCY_UNKNOWN" = "؟";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "سيتم إشعار %@ أنك رفضت الطلب.";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "سيتم إشعار %1$@ أنك رفضت الطلب.";
 
 /* Title for the 'decline a payment request' alert. */
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "رفض هذا الطلب ؟";
@@ -4136,7 +4157,7 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "إضافة مُلاحظة";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "الرصيد المتوفر: %@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "الرصيد المتوفر: %1$@";
 
 /* Label for the 'confirm payment' button. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "تأكيد الدفع";
@@ -4154,7 +4175,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "ليس لديك ما يكفي من عملة MOB لإتمام هذا الدفع.";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "ليس لديك ما يكفي من عملة MOB لإتمام هذا الدفع. رصيدك الحالي هو %@.";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "ليس لديك ما يكفي من عملة MOB لإتمام هذا الدفع. رصيدك الحالي هو %1$@.";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "مُعاملة غير صالحة";
@@ -4172,7 +4193,7 @@
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "رسوم الشبكة";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "مُقدَّرة بـ %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "مُقدَّرة بـ %1$@";
 
 /* Label for the 'invalid amount' button. */
 "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "مبلغ غير صالح";
@@ -4193,7 +4214,7 @@
 "PAYMENTS_NEW_PAYMENT_PROCESSING" = "جاري العمل";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "إلى %@";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "إلى %1$@";
 
 /* Label for the 'new payment request' button. */
 "PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "الطلب";
@@ -4205,7 +4226,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "لقد أرسَل لك %1$@ مبلغا قدره %2$@";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "هناك %@ إشعار دفع جديد";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "هناك %1$@ إشعار دفع جديد";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "تمَّ الدفع";
@@ -4304,13 +4325,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "إضافة إلى المجموعة";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "إضافة \"%@\" إلى المجموعة؟";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "إضافة \"%1$@\" إلى المجموعة؟";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "رفض الطلب";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "رفض طلب انضمام المُستخدم \"%@\"؟ لن يتمكن المُستخدم من إرسال طلب الانضمام للمجموعة بواسطة رابط المجموعة مرة أخرى.";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "رفض طلب انضمام المُستخدم \"%1$@\"؟ لن يتمكن المُستخدم من إرسال طلب الانضمام للمجموعة بواسطة رابط المجموعة مرة أخرى.";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "لا توجد طلبات أعضاء مُعلّقة.";
@@ -4319,25 +4340,25 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا توجد دعوات للعرض.";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "لَقَد تمَّت إضافة \"%@\".";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "لَقَد تمَّت إضافة \"%1$@\".";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "عرض الطلبات";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "لَقَد تمَّ رفض \"%@\".";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "لَقَد تمَّ رفض \"%1$@\".";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "إلغاء الدعوة";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "هل تُريد إلغاء دعوة المجموعة إلى \"%@\"؟";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "هل تُريد إلغاء دعوة المجموعة إلى \"%1$@\"؟";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا يتم إظهار تفاصيل الأشخاص المدعوين مِن قِبَل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام ،حينها سيتم مُشاركة معلوماتهم مع المجموعة. لن يستطيعوا رؤية أي رِسالة في المجموعة حتى ينضموا.";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "يُحاول الأشخاص في هذه القائمة الانضمام إلى \"%@\" عبر رابط المجموعة.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "يُحاول الأشخاص في هذه القائمة الانضمام إلى \"%1$@\" عبر رابط المجموعة.";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "دعوات غير صالحة";
@@ -4385,7 +4406,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "لن يتمكن أي شخص على Signal من العثور عليك بواسطة رقم الهاتف الخاص بك. لن تكون مرئيًا كجهة اتصال للأشخاص الذين لديهم رقم هاتفك في جهات الاتصال الخاصة بهم ولن يتمكن الآخرون من العثور عليك باستخدام رقم الهاتف الخاص بك في البحث.";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "مِثال: %@";
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "مِثال: %1$@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "جِهات اتصالي";
@@ -4406,7 +4427,7 @@
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "لن يرى أي أحد رقم هاتفك في Signal.";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@ %@";
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@ %2$@";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "المنزل";
@@ -4556,7 +4577,7 @@
 "PIN_RECREATION_ERROR_TITLE" = "فشل إنشاء الـPIN";
 
 /* Error body indicating that the attempt to recreate a PIN failed. */
-"PIN_RECRETION_ERROR_MESSAGE" = "تعذر إنشاء رقم التعريف الشخصي. تحقق من اتصالك وحاول مجددًا. ";
+"PIN_RECRETION_ERROR_MESSAGE" = "تعذر إنشاء رقم التعريف الشخصي. تحقق من اتصالك وحاول مجددًا.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "لمُساعدتك في حفظ الـPIN الخاص بك، سوف نسألك لإدخاله من حين لآخر. سنسألك عنه بشكل أقل مع مرور الزمن.";
@@ -4616,13 +4637,13 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "تشغيل الوسط";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "لم تضع علامة تحقق لـ %@";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "لم تضع علامة تحقق لـ %1$@";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "مُتحقَّق منه";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ مُتحقَّق منه";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%1$@ مُتحقَّق منه";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "يُرجى اللمس من أجل المسح الضوئي";
@@ -4631,7 +4652,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "مَحوُ التحقُّق";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم أمانك مع %@. هل تتحقق من جهة الاتصال الصحيحة؟";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "لا يبدو هذا رقم أمانك مع %1$@. هل تتحقق من جهة الاتصال الصحيحة؟";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "لا يبدو الرقم الذي في حافظتك أنه رقم الأمان الصحيح لهذه المحادثة.";
@@ -4640,7 +4661,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "لم يجد Signal أي رقم أمان في حافظتك. هل نسخته بشكل صحيح ؟";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي Signal يتشاركان رقم أمان فريد. يُرجى التأكد أن %@ يعرض رقم أمانك الفريد.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "كل زوج من مستخدمي Signal يتشاركان رقم أمان فريد. يُرجى التأكد أن %1$@ يعرض رقم أمانك الفريد.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "أنت تستخدم إصدارا قديما من Signal. تحتاج للتحديث لتتمكن من التحقق.";
@@ -4652,7 +4673,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "الرمز الممسوح لا يبدو كرقم أمان. هل تستخدمان إصدارًا حديثًا من Signal؟";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "إذا رغبتَ في التحقق مِن أمان تَعمية النِهاية-إلى-النِهاية الخاصة بكَ أنتَ مع %@, قارِن الأرقام في الأعلى مع الأرقام في الجهاز الخاص به.\n\nكبديل، يُمكنك مسح الرمز الذي في هاتفه أو اخبره أن يمسح الرمز الخاص بك.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "إذا رغبتَ في التحقق مِن أمان تَعمية النِهاية-إلى-النِهاية الخاصة بكَ أنتَ مع %1$@, قارِن الأرقام في الأعلى مع الأرقام في الجهاز الخاص به.\n\nكبديل، يُمكنك مسح الرمز الذي في هاتفه أو اخبره أن يمسح الرمز الخاص بك.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "التحقق من رقم اﻷمان";
@@ -4673,7 +4694,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "إزالة";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "لن يتمكن هذا الشخص بعد ذلك من رؤية قصتك.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "إزالة %1$@؟";
@@ -4709,13 +4730,13 @@
 "PROFILE_BIO_VIEW_TITLE" = "حول";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = "حَول (%@)";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = "حَول (%1$@)";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "لَقَد غيَّر %@ اِسم ملفه الشخصي مِن %@ إلى %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "لَقَد غيَّر %1$@ اِسم ملفه الشخصي مِن %2$@ إلى %3$@.";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "لَقَد غيَّرَ %@ اِسم ملفه الشخصي إلى %@.";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "لَقَد غيَّرَ %1$@ اِسم ملفه الشخصي إلى %2$@.";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "اِسمُك";
@@ -4756,6 +4777,21 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "الملف الشخصي";
 
+/* The title for the address of the signal proxy */
+"PROXY_ADDRESS" = "Proxy Address";
+
+/* The provided proxy connected successfully */
+"PROXY_CONNECTED_SUCCESSFULLY" = "You are connected to the proxy. You can turn the proxy off at any time from Settings.";
+
+/* The provided proxy couldn't connect */
+"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+
+/* Placeholder text for signal proxy host */
+"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+
+/* Title for the signal proxy settings */
+"PROXY_SETTINGS_TITLE" = "Proxy";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "وسم كَمقروءة";
 
@@ -4772,7 +4808,7 @@
 "QUESTIONMARK_PUNCTUATION" = "؟";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "لم يُعثَر على الرسالة الأصلية.";
@@ -4787,10 +4823,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "التفاعلات مع قصتك";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "تفاعل مع قصة %@";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "تفاعل مع قصة %1$@";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "قصة  · %@";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "قصة  · %1$@";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "مُرفق";
@@ -4811,49 +4847,46 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "فيديو";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "الكُل · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "الكُل · %1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "تفاعُل بِـ%@ على رسالتك";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "تفاعُل بِـ%1$@ على رسالتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "تفاعُل بِـ%@ على ألبومك";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "تفاعُل بِـ%1$@ على ألبومك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "تفاعُل بِـ%@ على صوتك";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "تفاعُل بِـ%1$@ على صوتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "تفاعُل بِـ%@ على جهة اتصالك المُشاركَة";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على جهة اتصالك المُشاركَة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "تفاعُل بِـ%@ على ملفك";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على ملفك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "تفاعُل بِـ%@ على صورتك المتحركة";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "تفاعُل بِـ%1$@ على صورتك المتحركة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "تفاعُل بِـ%@ على صورتك";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "تفاعُل بِـ%1$@ على صورتك";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على مُلصقك";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على مُلصقك";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على: \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "تفاعُل بِـ%@ على مقطعك المرئي";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "تفاعُل بِـ%1$@ على مقطعك المرئي";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على وسيطك المعروض لمرة واحدة";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على وسيطك المعروض لمرة واحدة";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%@ على تسجيلكَ الصوتيّ";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "تفاعُل بِـ%1$@ على تسجيلكَ الصوتيّ";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "مقروء";
-
-/* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "لا يُمكن إضافة هذا المستخدم إلى المجموعة حتى يُحدِّث Signal.";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "يتعذّر تحديد المُستخدم.";
@@ -4949,13 +4982,13 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "سَوف يتمُّ إرسال رَمز تَحقُّق إلى هذا الرَّقم. هل رقمُ هاتِفك أعلاه صحيح؟";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "تأكيدُ الرَّقم: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "تأكيدُ الرَّقم: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "تحرير";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "يَجري التَّحَقُّق مِن %@...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "يَجري التَّحَقُّق مِن %1$@...";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "رفض";
@@ -5003,10 +5036,10 @@
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "إظهار";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بنا:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان Signal الخاص بنا:\n%1$@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تغير رقم أمانك مع %@. قد ترغب بالتحقق منه.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "تغير رقم أمانك مع %1$@. قد ترغب بالتحقق منه.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "امسح رمز الاستجابة السريعة المعروض على جهاز جهة اتصالك.";
@@ -5168,10 +5201,10 @@
 "SEND_SMS_CONFIRM_TITLE" = "دعوة صديق عبر رسالة SMS غير الآمنة؟";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "هل ترغب في دعوة صاحب الرقم التالي إلى Signal:";
+"SEND_SMS_INVITE_TITLE" = "هل ترغب في دعوة صاحب الرقم التالي إلى Signal: ";
 
 /* String describing high quality sent media */
-"SENT_MEDIA_QUALITY_HIGH" = "بالغ الأهميّة ";
+"SENT_MEDIA_QUALITY_HIGH" = "بالغ الأهميّة";
 
 /* String describing standard quality sent media */
 "SENT_MEDIA_QUALITY_STANDARD" = "قياسي";
@@ -5252,7 +5285,7 @@
 "SETTINGS_APPEARANCE_TITLE" = "المظهر";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (اِفتراضي)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@ (اِفتراضي)";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "إضافة مستخدم محظور";
@@ -5279,7 +5312,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "تغيير رقم الهاتف";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "رقم هاتفك أصبح %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "رقم هاتفك أصبح %1$@";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "تغيير الرقم";
@@ -5294,7 +5327,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
 
 /* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "مِثال: %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "مِثال: %1$@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "رقمك الجديد";
@@ -5306,7 +5339,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "رقم الهاتف";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "جاري التحقق من %@";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "جاري التحقق من %1$@";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "يمكنك تغيير رقم هاتفك الحالي برقم جديد. لا يمكن التراجع عن هذا الإجراء.\n\nقبل الاستمرار, تأكد أن رقمك الجديد يمكنه تلقي الرسائل القصيرة أو المكالمات.";
@@ -5366,7 +5399,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "لا تنقلْ";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "رصيدك هو %@. إذا حذفت حسابك قبل إرسال مبالغك إلى عنوان محفظة أخرى، سوف تضيع كلها إلى الأبد.";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "رصيدك هو %1$@. إذا حذفت حسابك قبل إرسال مبالغك إلى عنوان محفظة أخرى، سوف تضيع كلها إلى الأبد.";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "إرسال مبالغ الرصيد ؟";
@@ -5471,7 +5504,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_AGREE" = "تفعيل";
 
 /* Description for the 'activate payments confirmation' UI in the payment settings. */
-"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "يمكنك استخدام Signal لإرسال وتلقي MobileCoin. إن كل الدفوعات تخضع لشروط استخدام MobileCoin بما في ذلك محفظة MobileCoin. إن هذه الميزة تجريبية حاليا، لذا قد تحدث لك بعض المشاكل. كما أن الدفوعات وحسابك قد تصبحان عرضة للضياع، ولن يكون بالإمكان حينها استرجاعهما. ";
+"SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_DESCRIPTION" = "يمكنك استخدام Signal لإرسال وتلقي MobileCoin. إن كل الدفوعات تخضع لشروط استخدام MobileCoin بما في ذلك محفظة MobileCoin. إن هذه الميزة تجريبية حاليا، لذا قد تحدث لك بعض المشاكل. كما أن الدفوعات وحسابك قد تصبحان عرضة للضياع، ولن يكون بالإمكان حينها استرجاعهما.";
 
 /* Title for the 'activate payments confirmation' UI in the payment settings. */
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_TITLE" = "تفعيل";
@@ -5639,7 +5672,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "تمَّ الاستلام";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "مُستلَم من %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "مُستلَم من %1$@";
 
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "مُرسَلَة بِواسِطَة";
@@ -5651,7 +5684,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "تمّ الارسال";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "مُرسَلَة إلَى %@";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "مُرسَلَة إلَى %1$@";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "الحالة";
@@ -5663,16 +5696,16 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "يتم فرض ”رسوم تنظيف العملة“ عندما يتعذر دمج العملات التي بحوزتك لإتمام معاملة. سيسمح لك التنظيف بمواصلة إرسال الدفوعات.";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "ليس لديك ما يكفي من عملة MOB لإتمام هذا الدفع. رصيدك الحالي هو %@.";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "ليس لديك ما يكفي من عملة MOB لإتمام هذا الدفع. رصيدك الحالي هو %1$@.";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "رصيد غير كاف";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "مِن %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "مِن %1$@";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "إلى %@";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "إلى %1$@";
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "عُطلَت الدفوعات";
@@ -5747,7 +5780,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "جملة الاستعادة";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "يُرجى إدخال الكلمة %@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "يُرجى إدخال الكلمة %1$@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "جملة الاستعادة باطلة";
@@ -5816,7 +5849,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "كلا الكلمتين غير صحيحتين. يُرجى المحاولة مرة أخرى.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "الكلمة %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "الكلمة %1$@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "تأكيد جملة الاستعادة";
@@ -5894,7 +5927,7 @@
 "SETTINGS_PINS_TITLE" = "الـPIN الخاص بـSignal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "التَّحايُل عَلَى الرِقابَة، إعادَةُ تَوجِيهِ جَمَيعِ المُكالَمات، وإعدَادَاتُ المُرسِلِ المَختوم.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "مُتقدِم";
@@ -5978,7 +6011,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "السماح لنظام iOS‬ بالوصول إلى جهات الاتصال Signal وإلى المحادثات لاستخدام ميزات مثل مشاركة الاقتراحات والإشعارات.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "إدارة قِصصك ومن يُمكنه مشاهدتها.";
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
 
 /* Label for the stories section of the settings view */
 "SETTINGS_STORIES_TITLE" = "القِصَص";
@@ -6014,7 +6047,7 @@
 "SHARE_ACTION_MESSAGE" = "رسالة";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "رقم أمانك أنت مع %@ قد تغير. رُبما قد ترغب في التحقق منه في التطبيق الرئيس قبل إعادة الإرسال.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "رقم أمانك أنت مع %1$@ قد تغير. رُبما قد ترغب في التحقق منه في التطبيق الرئيس قبل إعادة الإرسال.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "يَجري التَّحميل..";
@@ -6062,7 +6095,7 @@
 "SOUND_AND_NOTIFICATION_SETTINGS" = "الأصوات والاشعارات";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "لا شيء ";
+"SOUNDS_NONE" = "لا شيء";
 
 /* Text for toast presented after spam verification has been completed */
 "SPAM_CAPTCHA_COMPLETED_TOAST" = "لَقَد اِكتَمَلَ التَّحَقُّق.";
@@ -6152,7 +6185,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "الذهاب إلى المحادثة";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "لا يمكنك الردّ على هذه القصة لأنك لم تعد عُضوًا في هذه المجموعة.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "القِصص المخفية";
@@ -6161,10 +6194,13 @@
 "STORIES_HIDE_STORY_ACTION" = "إخفاء القصة";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "لن تَظهر مستجدات قِصص %@ الحديثة في أعلى لائحة القِصص بعد الآن.";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "لن تَظهر مستجدات قِصص %1$@ الحديثة في أعلى لائحة القِصص بعد الآن.";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "إخفاء القصة؟";
+
+/* Short context menu action to hide the selected story */
+"STORIES_HIDE_STORY_ACTION_SHORT" = "Hide";
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "تمّ إخفاء القصة";
@@ -6200,7 +6236,7 @@
 "STORIES_SAVE_STORY_ACTION" = "حفظ";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "تختفي القصص تلقائيًا بعد 24 ساعة. اِختر من يُمكنه مشاهدة قصتك أو أنشئ قِصص جديدة مع مشاهدين أو مجموعات معينة.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "تختفي القصص تلقائيًا بعد 24 ساعة. اِختر من يمكنه مشاهدة قصتك أو إنشاء قصص جديدة مع مشاهدين أو مجموعات معينة.";
 
 /* Header for the 'My Stories' section of the stories settings */
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "قِصصي";
@@ -6209,19 +6245,19 @@
 "STORIES_SETTINGS_TITLE" = "إعدادات خصوصية القِصة";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "لن تتمكن بعد الآن من مُشاركة القِصص أو عرضِها. سَتظل أي قِصص شاركتها مؤخرًا ظاهرة للآخرين حتى تنتهي صلاحيتها.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "إذا قمت بإلغاء الاشتراك في القِصص، فلن تتمكن بعد ذلك من مُشاركة القِصص أو عرضِها.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "إذا قمت بإلغاء الاشتراك في القِصص، فلن تتمكن بعد ذلك من مشاركة القِصص أو عرضها.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "إيقاف تشغيل القِصص";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "شارك واعرض قِصص الآخرين. تختفي القِصص تلقائيًا بعد 24 ساعة.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "تفعيل القِصص";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "المُشاركة";
@@ -6232,11 +6268,14 @@
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "إظهار القصة";
 
+/* Short context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Unhide";
+
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "تمّ إظهار القصة";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "تفعيل إيصالات القراءة لِرؤية من شاهد قِصصك.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "المشاهدات";
@@ -6245,10 +6284,10 @@
 "STORY_COMPOSER_CAMERA" = "الكاميرا";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "تعذّر تحميل الرابط. يُرجى التحقّق من اتصالك بالانترنت ثم المحاولة مرة أخرى.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "مشاركة رابط مع مُشاهدي قصتك";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "مشاركة وصلة مع مشاهدي قصتك";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "يُرجى اللمس لإضافة نص ما";
@@ -6269,13 +6308,13 @@
 "STORY_PRIVACY_SETTINGS" = "الخصوصية";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "تفاعل %1$@ مع قِصتك";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "تفاعل %@ مع قصة";
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %1$@ to a story";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "تفاعل %1$@ مع قصة %2$@";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "رد";
@@ -6293,13 +6332,13 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "تعذّر إرسال القصة. يُرجى التحقّق من اتصالك ثم المحاولة مرة أخرى.";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "تعذّر إرسال هذه القصة إلى بعض الناس. تحقّق من اتصالك بالشبكة ثم حاول مجددًا";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "مشاركة فقط مع...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "الكل إلا...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "فشل الإرسال";
@@ -6308,25 +6347,25 @@
 "STORY_SEND_FAILED_RETRY" = "يُرجى اللمس لإعادة المحاولة";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "فشل الإرسال. يُرجى النقر لإعادة المحاولة";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "تم الإرسال جزئيًا";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "تم الإرسال جزئيًا. يُرجى النقر للتفاصيل";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "جارٍ الإرسال...";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "اختر أي جهات اتصال Signal يمكنها رؤية قصتك. لن تؤثر التغييرات على القصص التي أرسلتها من قبل.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "من يُمكنه مُشاهدة هذه القصة";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "سَيتم تجزئة الفيديوهات المُرسلة إلى القِصص إلى مقاطع من %1$d ثانية وإرسالها كعدة قصص.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "المس للتقدّم";
@@ -6347,7 +6386,7 @@
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "تمّ نسخ مُعرف المُشترِك إلى الحافظة";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم أمانك مع %@ متطابق. يمكنك تعليم جهة الاتصال هذه كمتحقق منها.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "رقم أمانك مع %1$@ متطابق. يمكنك تعليم جهة الاتصال هذه كمتحقق منها.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "رقم الأمان متطابق!";
@@ -6359,34 +6398,34 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "أخبِرنا بما يحدُث";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "أخبِرنا حول الأخطاء:";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "أخبِرنا حول الأخطاء: ";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "يُرجى إرسال طلب الدَّعم بواسطة البَريد الإلكتروني إلى support@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
-"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %@";
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "Filter: %1$@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
-"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardware: %@";
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "Hardware: %1$@";
 
 /* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
-"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID:‏ %@";
+"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID:‏ %1$@";
 
 /* Localized divider for support request emails internal information */
 "SUPPORT_EMAIL_INFO_DIVIDER" = "--- Support Info ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
-"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS Version: %@";
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS Version: %1$@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %1$@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %1$@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal Version: %1$@";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS Support Request";
@@ -6419,7 +6458,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "ما زال قيد المعالجة.";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "احصل على شارة %@ ";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "احصل على شارة %1$@";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "إلغاء الاشتراك";
@@ -6434,7 +6473,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "تأكيد الإلغاء؟";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "تعذّر إضافة الشارة. %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "تعذّر إضافة الشارة. %1$@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "تعذّر إضافة شارتك إلى حسابك. يُرجى التواصل مع الدعم.";
@@ -6449,16 +6488,16 @@
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "حدث خطأ أثناء إجراء عملية الدفع";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "حدث خطأ أثناء معالجة عملية الدفع الخاصة بك. %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "حدث خطأ أثناء معالجة عملية الدفع الخاصة بك. %1$@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/شهر";
+"SUSTAINER_VIEW_PRICING" = "%1$@/شهر";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = "· تنتهي فترة السريان %@";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · تنتهي فترة السريان %1$@";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = ". يتجدد %@";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " . يتجدد %1$@";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "جاري تنفيذ عملية الدفع...";
@@ -6470,7 +6509,7 @@
 "SUSTAINER_VIEW_READ_MORE" = "قراءة المزيد";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "يتجدد %@";
+"SUSTAINER_VIEW_RENEWAL" = "يتجدد %1$@";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "ما زالت عملية الدفع الخاصة بك قيد المعالجة. قد يستغرق الأمر بضع دقائق وفقاً لاتصال شبكتك.";
@@ -6485,7 +6524,7 @@
 "SUSTAINER_VIEW_TITLE" = "يُشغَّل Signal بِواسِطَة أشخاص مِثلَك.";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "ستدفع كامل مبلغ (%@) من سعر الاشتراك الجديد اليوم. وسيتجدد اشتراكك الجديد شهرياً.";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "ستدفع كامل مبلغ (%1$@) من سعر الاشتراك الجديد اليوم. وسيتجدد اشتراكك الجديد شهرياً.";
 
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "تحديث الاشتراك؟";
@@ -6509,7 +6548,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "التحقق";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "بعض ضبط المهلة، سوف تختفي رسائلك التي سوف يجري إرسالها بعد انقضاء %@.";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "بعض ضبط المهلة، سوف تختفي رسائلك التي سوف يجري إرسالها بعد انقضاء %1$@.";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "لا وجود لمجموعات مشتركة. يُرجى مراجعة الطلبات بعناية.";
@@ -6524,64 +6563,64 @@
 "THIS_MESSAGE_WAS_DELETED" = "تمَّ حذف هذه الرسالة.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو في %@، %@، وعدد %lu مِن المجموعات الأُخرى";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "عضو في %1$@، %2$@، وعدد %3$lu مِن المجموعات الأُخرى";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "يُمكِنُك إضافة مُلاحظات لنفسك في هذه المُحادثة. إذا كان حسابك يحتوي على أي أجهزة مُرتبطة، ستتم مُزامنة المُلاحظات.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو في %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "عضو في %1$@";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "إظهار";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "عضو في %@، %@، و %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "عضو في %1$@، %2$@، و %3$@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "عضو في %@ و %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "عضو في %1$@ و %2$@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ أيام";
+"TIME_AMOUNT_DAYS" = "%1$@ أيام";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ي";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%1$@ي";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ ساعات";
+"TIME_AMOUNT_HOURS" = "%1$@ ساعات";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@س";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%1$@س";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = " %@ دقائق";
+"TIME_AMOUNT_MINUTES" = "%1$@ دقائق";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@د";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@د";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ ثوان";
+"TIME_AMOUNT_SECONDS" = "%1$@ ثوان";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ث";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%1$@ث";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ يوم";
+"TIME_AMOUNT_SINGLE_DAY" = "%1$@ يوم";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = " %@ ساعة";
+"TIME_AMOUNT_SINGLE_HOUR" = "%1$@ ساعة";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = " %@ دقيقة";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@ دقيقة";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = " %@ أُسبوع";
+"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ أُسبوع";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ أسابيع";
+"TIME_AMOUNT_WEEKS" = "%1$@ أسابيع";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@أ";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@أ";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "إلغاء";
@@ -6605,7 +6644,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "أرسل أحد أجهزتك رسالة لا يُمكن مُعالجتها أو عرضها هُنا لأنها تستخدم ميزة جديدة في Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "لَقَد أرسلَ لكَ %@ رِسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "لَقَد أرسلَ لكَ %1$@ رِسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "أنت قد تلقيت رسالة لا يُمكن مُعالجتها أو عرضها لأنها تستخدم ميزة جديدة في Signal.";
@@ -6617,7 +6656,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "تمَّ التحديث إلى آخر إصدار من Signal. يُمكنك الآن تلقي هذا النوع من الرسائل على جهازك.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "يُمكن أن تطلب من %@ إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "يُمكن أن تطلب من %1$@ إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من Signal.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "يُمكن أن تطلب من المُرسِل إعادة إرسال هذه الرسالة بما أنك الآن تستخدم آخر إصدار من Signal.";
@@ -6629,7 +6668,7 @@
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد تمَّ تعطيل الرسائل المختفية.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد تمَّ تعيين زمن الرسائل المُختفية إلى %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "لقد تمَّ تعيين زمن الرسائل المُختفية إلى %1$@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "مجهولة";
@@ -6641,7 +6680,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "لن يتمكن هذا الجهاز من إرسال أو استلام الرسائل إذا فُصل ارتباطه.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "فصل ارتباط \"%@\"؟";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "فصل ارتباط \"%1$@\"؟";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "لم يعُد الجهاز مُرتبطًا. أعد ربط Signal مع الهاتف الخاص بك لمُتابعة التراسُل.";
@@ -6668,7 +6707,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "جهازك لا يدعم هذه الميزة.";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "لقد تغير رقم أمانك مع %@، من المحتمل أن يكون ذلك الشخص قد أعاد تثبيت Signal أو قام بتغيير الأجهزة. يُرجى اللمس لتأكيد رقم الأمان الجديد. هذا اﻹجراء اختياري.";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "لقد تغير رقم أمانك مع %1$@، من المحتمل أن يكون ذلك الشخص قد أعاد تثبيت Signal أو قام بتغيير الأجهزة. يُرجى اللمس لتأكيد رقم الأمان الجديد. هذا اﻹجراء اختياري.";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "التَّحَقُق";
@@ -6682,6 +6721,12 @@
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "لا يُمكن تحديث المجموعة. تحقق من اتصالك بالإنترنت ثمَّ حاول مرة أُخرى.";
 
+/* Button to activate the signal proxy */
+"USE_PROXY_BUTTON" = "Use Proxy";
+
+/* Explanation of when you should use a signal proxy */
+"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "اسماء المُستخدمين على Signal اختيارية. إذا اخترت إنشاء اسم مُستخدم، سيتمكن مُستخدمو Signal الآخرون من العُثور عليك بواسطة اسم المُستخدم هذا والاتصال بك دون معرفة رقم الهاتف الخاص بك.";
 
@@ -6692,7 +6737,7 @@
 "USERNAME_LOOKUP_ERROR" = "حدث خطأ أثناء البحث عن اسم المُستخدم. يُرجى إعادة المُحاولة في وقت لاحق.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ ليس مُستخدم Signal. تأكد من إدخالك لاسم المُستخدم الكامل.";
+"USERNAME_NOT_FOUND_FORMAT" = "%1$@ ليس مُستخدم Signal. تأكد من إدخالك لاسم المُستخدم الكامل.";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "لم يتمّ العُثر على المُستخدم.";
@@ -6713,7 +6758,7 @@
 "USERNAME_TOO_SHORT_ERROR" = "يجب أن يتكون اسم المُستخدم مِن 4 خانات على الأقل.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ قد أُخِذَ مُسبقًا.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%1$@ قد أُخِذَ مُسبقًا.";
 
 /* Error message shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "فشل تحديث اسم المُستخدم.";
@@ -6725,16 +6770,16 @@
 "VALIDATION_ERROR_TOO_LONG" = "إنَّ اسم الجهاز طويل جدًا";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "أنتَ قد علَّمتَ %@ كغير مُتحقَّق منه.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "أنتَ قد علَّمتَ %1$@ كغير مُتحقَّق منه.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علَّمتَ %@ كغير مُتحقَّق منه على جهاز آخر.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علَّمتَ %1$@ كغير مُتحقَّق منه على جهاز آخر.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "أنتَ قد علَّمتَ %@ كمُتحقَّق منه.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "أنتَ قد علَّمتَ %1$@ كمُتحقَّق منه.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علَّمتَ %@ كمُتحقَّق منه على جهاز آخر.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "أنتَ قد علَّمتَ %1$@ كمُتحقَّق منه على جهاز آخر.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "لقد تغيَّرت حالة التَحقُّق.";
@@ -6764,7 +6809,7 @@
 "VIEW_PHOTO" = "إظهار الصورة";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "عرض قِصة";
+"VIEW_STORY" = "View Story";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "اسحب للإلغاء";
@@ -6794,7 +6839,7 @@
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تعيِّين خَلفيَّة لِجَميع المُحادثات.";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "تعيِّين خَلفيَّة لـ %@.";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "تعيِّين خَلفيَّة لـ %1$@.";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "مُعاينة";
@@ -6875,4 +6920,4 @@
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "يجبُ عليكَ أن تُكمِلَ الإعداد قبل المُتابعة.";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضبطتَ وقت إختفاء الرسائل على %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ضبطتَ وقت إختفاء الرسائل على %1$@.";

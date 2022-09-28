@@ -1,9 +1,9 @@
-NSAppleMusicUsageDescription = "Signal musí použít Apple Music pro přehrání mediálních příloh. ";
-NSCameraUsageDescription = "Signal používá váš fotoaparát pro pořizování snímků a pro videohovory. ";
-NSContactsUsageDescription = "Signal používá vaše kontakty, aby našel uživatele, které znáte. Vaše kontakty na našich serverech neuchováváme. ";
+NSAppleMusicUsageDescription = "Signal musí použít Apple Music pro přehrání mediálních příloh.";
+NSCameraUsageDescription = "Signal používá váš fotoaparát pro pořizování snímků a pro videohovory.";
+NSContactsUsageDescription = "Signal používá vaše kontakty, aby našel uživatele, které znáte. Vaše kontakty na našich serverech neuchováváme.";
 NSFaceIDUsageDescription = "Uzamčení obrazovky v aplikaci Signal využívá Face ID.";
-NSLocationWhenInUseUsageDescription = "Signal potřebuje přístup k vaší pozici, aby ji mohl sdílet. ";
-NSMicrophoneUsageDescription = "Signal potřebuje přístup k vašemu mikrofonu pro hovory a nahrávání hlasových zpráv. ";
-NSPhotoLibraryAddUsageDescription = "Signal uloží fotografie do vaší knihovny. ";
-NSPhotoLibraryUsageDescription = "Signal vás nechá vybrat, které fotografie z vaší knihovny chcete odeslat. ";
+NSLocationWhenInUseUsageDescription = "Signal potřebuje přístup k vaší pozici, aby ji mohl sdílet.";
+NSMicrophoneUsageDescription = "Signal potřebuje přístup k vašemu mikrofonu pro hovory a nahrávání hlasových zpráv.";
+NSPhotoLibraryAddUsageDescription = "Signal uloží fotografie do vaší knihovny.";
+NSPhotoLibraryUsageDescription = "Signal vás nechá vybrat, které fotografie z vaší knihovny chcete odeslat.";
 NSLocalNetworkUsageDescription = "Pro přímý přesun vašeho účtu do nového telefonu používá Signal místní síť. Toto nebude použito, pokud explicitně nezahájíte přenos do nového zařízení.";

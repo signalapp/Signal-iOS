@@ -1,2 +1,2 @@
-• Improvements to keep the app running smoothly on iPhone 14
-• Various fixes for groups
+• Forbedringer, der sikrer at appen kører problemfrit på iPhone 14
+• Diverse rettelser mht. grupper

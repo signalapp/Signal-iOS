@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 elem</string>
+			<string>%1$d db elem</string>
 			<key>other</key>
-			<string>%d elem</string>
+			<string>%1$d elem</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
@@ -29,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hangüzenet 1 másodperc</string>
+			<string>Voice message 1 second</string>
 			<key>other</key>
-			<string>Hangüzenet %d másodperc</string>
+			<string>Voice message %1$d seconds</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hozzáadod ehhez: "%2$@"?</string>
+			<string>Add member to “%2$@”?</string>
 			<key>other</key>
-			<string>Hozzáadsz %d tagot itt: "%2$@"?</string>
+			<string>Add %1$d members to “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ez az egyedi szín használatban van egy csevegésben. Valóban törölni akarod?</string>
+			<string>Ezt az egyedi színt %1$d beszélgetésben használod. Biztosan törölni szeretnéd az összes beszélgetésre vonatkozóan?</string>
 			<key>other</key>
-			<string>Ez az egyedi szín használatban van %d csevegésben. Valóban törölni akarod?</string>
+			<string>Ez az egyedi szín használatban van %1$d csevegésben. Valóban törölni akarod?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ez az egyedi szín használatban van egy csevegésben. Menteni akarod a változásokat mindegyikhez?</string>
+			<string>Ezt a színt %1$d beszélgetésben használod. Biztosan menteni szeretnéd az összes beszélgetésre vonatkozóan?</string>
 			<key>other</key>
-			<string>Ez az egyedi szín használatban van %d csevegésben. Menteni akarod a változásokat mindegyikhez?</string>
+			<string>Ez az egyedi szín használatban van %1$d csevegésben. Menteni akarod a változásokat mindegyikhez?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Törlöd a beszélgetést?</string>
+			<string>Delete Chat?</string>
 			<key>other</key>
-			<string>Törölsz %d beszélgetést?</string>
+			<string>Delete %1$d Chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Legfeljebb 1 beszélgetést jelölhetsz ki.</string>
+			<string>You can’t select more than 1 chat.</string>
 			<key>other</key>
-			<string>Legfeljebb %d beszélgetést jelölhetsz ki.</string>
+			<string>You can’t select more than %1$d chats.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -175,7 +175,7 @@
 			<key>one</key>
 			<string>1 %2$#@total@</string>
 			<key>other</key>
-			<string>%d %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 		</dict>
 		<key>total</key>
 		<dict>
@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>találat</string>
+			<string>match</string>
 			<key>other</key>
-			<string>/%d találat</string>
+			<string>of %2$d matches</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -200,9 +200,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 tag</string>
+			<string>%1$d tag</string>
 			<key>other</key>
-			<string>%d tag</string>
+			<string>%1$d tag</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -216,9 +216,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 közös csoport</string>
+			<string>%1$d db közös csoport</string>
 			<key>other</key>
-			<string>%d közös csoport</string>
+			<string>%1$d közös csoport</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -232,9 +232,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%dp</string>
+			<string>%1$dp</string>
 			<key>other</key>
-			<string>%dp</string>
+			<string>%1$dp</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -248,9 +248,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 perce</string>
+			<string>1 minute ago</string>
 			<key>other</key>
-			<string>%d perce</string>
+			<string>%1$d minutes ago</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Törlöd az üzenetet?</string>
+			<string>Delete Message?</string>
 			<key>other</key>
-			<string>Törölsz %d üzenetet?</string>
+			<string>Delete %1$d Messages?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A csoport elérte a maximális, %d fős taglétszámot.</string>
+			<string>A csoport elérte a maximális, %1$d fős taglétszámot.</string>
 			<key>other</key>
-			<string>A csoport elérte a maximális, %d fős taglétszámot.</string>
+			<string>A csoport elérte a maximális, %1$d fős taglétszámot.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -296,9 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal verziód 1 napon belül lejár. Koppints a legújabb verzióra frissítéshez.</string>
+			<string>Your version of Signal will expire in 1 day. Tap to update to the most recent version.</string>
 			<key>other</key>
-			<string>Signal verziód %d napon belül lejár. Koppints a legújabb verzióra frissítéshez.</string>
+			<string>Your version of Signal will expire in %1$d days. Tap to update to the most recent version.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -312,9 +312,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Üzenetküldés</string>
+			<string>%1$d üzenet küldése</string>
 			<key>other</key>
-			<string>%d üzenet küldése</string>
+			<string>%1$d üzenet küldése</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A csoporthívás létszáma elérte a maximális 1 főt. Kérlek próbáld később.</string>
+			<string>The maximum number of 1 participant has been reached for this call. Try again later.</string>
 			<key>other</key>
-			<string>A csoporthívás létszáma elérte a maximális %d főt. Kérlek próbáld később.</string>
+			<string>The maximum number of %1$d participants has been reached for this call. Try again later.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 személy ebben a hívásban</string>
+			<string>Ebben a hívásban · %1$d személy</string>
 			<key>other</key>
-			<string>%d személy ebben a hívásban</string>
+			<string>%1$d személy ebben a hívásban</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 megtekintés</string>
+			<string>%1$d view</string>
 			<key>other</key>
-			<string>%d megtekintés</string>
+			<string>%1$d megtekintés</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Privát történet · 1 néző</string>
+			<string>Privát Történet · %1$d néző</string>
 			<key>other</key>
-			<string>Privát történet · %d néző</string>
+			<string>Privát történet · %1$d néző</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Minden Signal Névjegy · 1 néző</string>
+			<string>All Signal Connections · 1 Viewer</string>
 			<key>other</key>
-			<string>Minden Signal Névjegy · %d néző</string>
+			<string>All Signal Connections · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Minden Signal Névjegy · Kivéve 1</string>
+			<string>All Signal Connections · 1 Excluded</string>
 			<key>other</key>
-			<string>Minden Signal Névjegy · Kivéve %d</string>
+			<string>All Signal Connections · %1$d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Kizárólagos megosztás · 1 néző</string>
+			<string>Only Share With · 1 Viewer</string>
 			<key>other</key>
-			<string>Kizárólagos megosztás · %d néző</string>
+			<string>Only Share With · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Csoport történet · 1 néző</string>
+			<string>Csoport Történet · %1$d néző</string>
 			<key>other</key>
-			<string>Csoport történet · %d néző</string>
+			<string>Csoport történet · %1$d néző</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -456,9 +456,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A Signal felhívja %2$@ és %3$@felhasználót, valamint még 1 másikat</string>
+			<string>A Signal hívni fogja %2$@, %3$@ és %1$d további ismerősödet</string>
 			<key>other</key>
-			<string>A Signal felhívja %2$@ és %3$@ felhasználót, valamint még %d másikat</string>
+			<string>A Signal felhívja %2$@ és %3$@ felhasználót, valamint még %1$d másikat</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -472,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ és 1 másik felhasználó értesítést kap</string>
+			<string>%2$@, %3$@ és %1$d további kontakt értesítést kap</string>
 			<key>other</key>
-			<string>%2$@, %3$@ és %d másik felhasználó értesítést kap</string>
+			<string>%2$@, %3$@ és %1$d másik felhasználó értesítést kap</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ és 1 másik felhasználó hívása…</string>
+			<string>Ringing %2$@, %3$@, and 1 other…</string>
 			<key>other</key>
-			<string>%2$@, %3$@ és %d másik felhasználó hívása...</string>
+			<string>Ringing %2$@, %3$@, and %1$d others…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ és még 1 személy ebben a hívásban</string>
+			<string>%2$@, %3$@ és még %1$d másik személy van ebben a hívásban</string>
 			<key>other</key>
-			<string>%2$@, %3$@ és még %d másik személy ebben a hívásban</string>
+			<string>%2$@, %3$@ és még %1$d másik személy ebben a hívásban</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, és 1 további tag belépett a hívásba</string>
+			<string>%2$@, %3$@, and 1 other joined the call</string>
 			<key>other</key>
-			<string>%2$@, %3$@, és %d további tag belépett a hívásba</string>
+			<string>%2$@, %3$@, and %1$d others joined the call</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 további tag kilépett a hívásból</string>
+			<string>%2$@, %3$@, and 1 other left the call</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %d további tag kilépett a hívásból</string>
+			<string>%2$@, %3$@, and %1$d others left the call</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Meghívó elküldve</string>
+			<string>Invitation Sent</string>
 			<key>other</key>
-			<string>%d meghívó elküldve</string>
+			<string>%1$d Invitations Sent</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -568,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 tag</string>
+			<string>%1$d tag</string>
 			<key>other</key>
-			<string>%d tag</string>
+			<string>%1$d tag</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -584,9 +584,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 tag</string>
+			<string>%1$d tag</string>
 			<key>other</key>
-			<string>%d tag</string>
+			<string>%1$d tag</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -600,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 csoporttag hasonló névvel szerepel.</string>
+			<string>1 group member has similar name.</string>
 			<key>other</key>
-			<string>%d csoporttag hasonló névvel szerepel.</string>
+			<string>%1$d group members have similar names.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -616,9 +616,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 csoporttag hasonló névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
+			<string>1 group member has similar name, review the member below or choose to take action.</string>
 			<key>other</key>
-			<string>%d csoporttag hasonló névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
+			<string>%1$d group members have similar names, review the members below or choose to take action.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -632,9 +632,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
+			<string>1 group member has the same name, review the member below or choose to take action.</string>
 			<key>other</key>
-			<string>%d csoporttag azonos névvel szerepel. Tekintsd át a lenti listát, és dönts a továbbiakról!</string>
+			<string>%1$d group members have the same name, review the members below or choose to take action.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -648,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 személy csoportmeghívása visszavonásra került.</string>
+			<string>Invitation to the group were revoked for 1 person.</string>
 			<key>other</key>
-			<string>%d személy csoportmeghívása visszavonásra került.</string>
+			<string>Invitations to the group were revoked for %1$d people.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -664,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string> %2$@ visszavonta 1 személy csoportmeghívását.</string>
+			<string>%2$@ revoked an invitation to the group for 1 person.</string>
 			<key>other</key>
-			<string> %2$@ visszavonta %d személy csoportmeghívását.</string>
+			<string>%2$@ revoked an invitation to the group for %1$d people.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 személy csoportmeghívást kapott.</string>
+			<string>1 person was invited to the group.</string>
 			<key>other</key>
-			<string>%d személy csoportmeghívást kapott.</string>
+			<string>%1$d people were invited to the group.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ meghívott 1 személyt a csoportba.</string>
+			<string>%2$@ invited 1 person to the group.</string>
 			<key>other</key>
-			<string>%2$@ meghívott %d személyt a csoportba.</string>
+			<string>%2$@ invited %1$d people to the group.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -712,9 +712,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@kért és törölt egy csoporthivatkozáson keresztüli csatlakozási kérelmet.</string>
+			<string>%2$@ requested and canceled their request to join via the group link.</string>
 			<key>other</key>
-			<string>%2$@ kért és törölt %d csoporthivatkozáson keresztüli csatlakozási kérelmet.</string>
+			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -728,9 +728,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Egy tagot nem lehetett közvetlenül az új típusú csoporthoz adni és így el lett távolítva.</string>
+			<string>A member couldn’t be added to the New Group and has been removed from the group.</string>
 			<key>other</key>
-			<string>%d tagot nem lehetett közvetlenül az új típusú csoporthoz adni és így el lettek távolítva.</string>
+			<string>%1$d members couldn’t be added to the New Group and have been removed from the group.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Egy tagot nem lehetett közvetlenül az új típusú csoporthoz adni, ezért meghívót kapott.</string>
+			<string>A member couldn’t be added to the New Group and has been invited to join.</string>
 			<key>other</key>
-			<string>%d tagot nem lehetett közvetlenül az új típusú csoporthoz adni, ezért meghívót kaptak.</string>
+			<string>%1$d members couldn’t be added to the New Group and have been invited to join.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -760,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül. %2$@</string>
+			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
 			<key>other</key>
-			<string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül. %2$@</string>
+			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -776,9 +776,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ez a csoport sajnos nem hozható létre, mivel egy tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ő is frissítette a Signalt, vagy ha eltávolítod őt a felvételre kerülő tagok közül.</string>
+			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
 			<key>other</key>
-			<string>Ez a csoport sajnos nem hozható létre, mivel %d tag még a Signal egy régi verzióját használja. Új típusú csoportot csak azután fogsz tudni létrehozni, hogy ők is frissítették a Signalt, vagy ha eltávolítod őket a felvételre kerülő tagok közül.</string>
+			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Egy tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod adni most?</string>
+			<string>1 member couldn’t be re-added to the New Group. Do you want to add them now?</string>
 			<key>other</key>
-			<string>%d tagot nem sikerült az új típusú csoporthoz újra hozzáadni. Hozzá akarod őket adni most?</string>
+			<string>%1$d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -808,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A Signal csoportok 1 vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
+			<string>Signal groups perform best with 1 member or less. Adding more members will cause delays sending and receiving messages.</string>
 			<key>other</key>
-			<string>A Signal csoportok %d vagy kevesebb taggal működnek hatékonyan. Ennél több tag esetén lassulások tapasztalhatóak az üzenetek küldése és fogadása során.</string>
+			<string>Signal groups perform best with %1$d members or less. Adding more members will cause delays sending and receiving messages.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -824,9 +824,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Nem oszthatsz meg többet 1 elemnél.</string>
+			<string>You can’t share more than 1 item.</string>
 			<key>other</key>
-			<string>Nem oszthatsz meg többet %d elemnél.</string>
+			<string>You can’t share more than %1$d items.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -840,9 +840,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 közös csoport</string>
+			<string>%1$d db közös csoport</string>
 			<key>other</key>
-			<string>%d közös csoport</string>
+			<string>%1$d közös csoport</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 üzenet törlése</string>
+			<string>Delete 1 Message</string>
 			<key>other</key>
-			<string>%d üzenet törlése</string>
+			<string>Delete %1$d Messages</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 fotó</string>
+			<string>1 Photo</string>
 			<key>other</key>
-			<string>%d fotó</string>
+			<string>%1$d Photos</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -888,9 +888,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 elem</string>
+			<string>%1$d db elem</string>
 			<key>other</key>
-			<string>%d elem</string>
+			<string>%1$d elem</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -904,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 kiválasztva</string>
+			<string>%1$d kiválasztva</string>
 			<key>other</key>
-			<string>%d kiválasztva</string>
+			<string>%1$d kiválasztva</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A csoport 1 tagja a tiltólistádon van</string>
+			<string>You Blocked 1 Member of This Group</string>
 			<key>other</key>
-			<string>A csoport %d tagja a tiltólistádon van</string>
+			<string>You Blocked %1$d Members of This Group</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Kivéve 1</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>Kivéve %d</string>
+			<string>%1$d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 néző</string>
+			<string>%1$d megtekintő</string>
 			<key>other</key>
-			<string>%d néző</string>
+			<string>%1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -968,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 tag</string>
+			<string>%1$d tag</string>
 			<key>other</key>
-			<string>%d tag</string>
+			<string>%1$d tag</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -984,9 +984,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 néző</string>
+			<string>%1$d megtekintő</string>
 			<key>other</key>
-			<string>%d néző</string>
+			<string>%1$d néző</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1000,9 +1000,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Hibás PIN kód. 1 próbálkozás maradt.</string>
+			<string>Hibás PIN kód. Még %1$d alkalommal próbálkozhatsz.</string>
 			<key>other</key>
-			<string>Hibás PIN kód. %d próbálkozás maradt.</string>
+			<string>Hibás PIN kód. %1$d próbálkozás maradt.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1016,9 +1016,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ meghívott 1 személyt</string>
+			<string>%2$@ invited 1 person</string>
 			<key>other</key>
-			<string>%2$@ meghívott %d személyt</string>
+			<string>%2$@ invited %1$d people</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 függőben lévő tagsági kérés.</string>
+			<string>%1$d függőben lévő tagsági kérés.</string>
 			<key>other</key>
-			<string>%d függőben lévő tagsági kérés.</string>
+			<string>%1$d függőben lévő tagsági kérés.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1048,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Érvénytelen meghívó visszavonása</string>
+			<string>Revoke invalid invite</string>
 			<key>other</key>
-			<string>%d érvénytelen meghívó visszavonása</string>
+			<string>Revoke %1$d invalid invites</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1064,9 +1064,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Visszavonod a "%2$@" által kiküldött meghívót?</string>
+			<string>Revoke group invite sent by “%2$@”?</string>
 			<key>other</key>
-			<string>Visszavonod a "%2$@" által kiküldött %d meghívót?</string>
+			<string>Revoke %1$d invites sent by “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Később újra emlékeztetünk. PIN kódod létrehozása 1 nap múlva kötelezővé válik.</string>
+			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
 			<key>other</key>
-			<string>Később újra emlékeztetünk. PIN kódod létrehozása %d nap múlva kötelezővé válik.</string>
+			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1112,9 +1112,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Még 1 próbálkozásod maradt. Ha ez sem sikerül, lehetőséged lesz új PIN létrehozására. Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profil-információid elvesznek. </string>
+			<string>You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
 			<key>other</key>
-			<string>Még %d próbálkozásod maradt. Ha kifogysz belőlük, lehetőséged lesz új PIN létrehozására.  Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profil-információid elvesznek. </string>
+			<string>You have %1$d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1128,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 próbálkozásod maradt. Ha ezt is elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN kód nélkül.</string>
+			<string>You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
 			<key>other</key>
-			<string>%d próbálkozásod maradt. Ha mindet elrontod, a fiókod zárolásra kerül, majd 7 inaktív nap után a fiókod mindenestül törlésre kerül, ami után már újraregisztrálhatsz - immár PIN kód nélkül.</string>
+			<string>You have %1$d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; válasz</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; válasz</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 néző</string>
+			<string>%1$d megtekintő</string>
 			<key>other</key>
-			<string>%d néző</string>
+			<string>%1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Kivéve 1</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>Kivéve %d </string>
+			<string>%1$d Excluded</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1192,9 +1192,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Küldés...</string>
+			<string>Sending...</string>
 			<key>other</key>
-			<string>%d küldése...</string>
+			<string>Sending %1$d...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1208,9 +1208,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; megtekintés</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; megtekintés</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
@@ -1224,9 +1224,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; megtekintés</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; megtekintés</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
 		</dict>
 		<key>replies</key>
 		<dict>
@@ -1235,9 +1235,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; válasz</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; válasz</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1251,9 +1251,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Az alábbi csoportok tagja: %2$@, %3$@ és még 1 további</string>
+			<string>Member of %2$@, %3$@, and 1 additional group</string>
 			<key>other</key>
-			<string>Az alábbi csoportok tagja:  %2$@, %3$@ és még %d további</string>
+			<string>Member of %2$@, %3$@, and %1$d additional groups</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1267,9 +1267,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 nap</string>
+			<string>%1$d nap</string>
 			<key>other</key>
-			<string>%d nap</string>
+			<string>%1$d nap</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1283,9 +1283,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1n</string>
+			<string>1d</string>
 			<key>other</key>
-			<string>%dn</string>
+			<string>%1$dd</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1299,9 +1299,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 óra</string>
+			<string>%1$d óra</string>
 			<key>other</key>
-			<string>%d óra</string>
+			<string>%1$d óra</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1315,9 +1315,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1ó</string>
+			<string>%1$dó</string>
 			<key>other</key>
-			<string>%dó</string>
+			<string>%1$dó</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>
@@ -1331,9 +1331,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 perc</string>
+			<string>%1$d perc</string>
 			<key>other</key>
-			<string>%d perc</string>
+			<string>%1$d perc</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1347,9 +1347,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1p</string>
+			<string>%1$dp</string>
 			<key>other</key>
-			<string>%dp</string>
+			<string>%1$dp</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
@@ -1363,9 +1363,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 másodperc</string>
+			<string>%1$d másodperc</string>
 			<key>other</key>
-			<string>%d másodperc</string>
+			<string>%1$d másodperc</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1379,9 +1379,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1mp</string>
+			<string>1s</string>
 			<key>other</key>
-			<string>%dmp</string>
+			<string>%1$ds</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_%d</key>
@@ -1395,9 +1395,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 hét</string>
+			<string>%1$d hét</string>
 			<key>other</key>
-			<string>%d hét</string>
+			<string>%1$d hét</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1411,9 +1411,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1h</string>
+			<string>1w</string>
 			<key>other</key>
-			<string>%dh</string>
+			<string>%1$dw</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1427,9 +1427,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 év</string>
+			<string>1 year</string>
 			<key>other</key>
-			<string>%d év</string>
+			<string>%1$d years</string>
 		</dict>
 	</dict>
 </dict>

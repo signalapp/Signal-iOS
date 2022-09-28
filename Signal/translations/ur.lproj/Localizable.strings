@@ -17,7 +17,7 @@
 "ACCESSIBILITY_LABEL_CONTACT" = "رابطہ";
 
 /* Accessibility label for contact. Embeds: {{ the contact name }}. */
-"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%@ کے لئے رابطہ کریں";
+"ACCESSIBILITY_LABEL_CONTACT_FORMAT" = "%1$@ کے لئے رابطہ کریں";
 
 /* Accessibility label for media. */
 "ACCESSIBILITY_LABEL_MEDIA" = "میڈیا";
@@ -71,10 +71,10 @@
 "ADD_TO_GROUP_ALREADY_A_MEMBER" = "پہلے سے ہی رکن";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ پہلے ہی %@ کا ممبر ہے";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%1$@ پہلے ہی %2$@ کا ممبر ہے";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ میں %@ شامل کیا گیا تھا";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%1$@ میں %2$@ شامل کیا گیا تھا";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "کسی گروپ میں شامل کریں";
@@ -86,13 +86,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "یہ مل گیا";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "اس چیٹ میں %@ کی طرف سے آپ کو کوئی پیغام، اسٹیکر، ردعمل، پڑھنے کی رسید یا میڈیا نہیں پہنچایا جا سکتا۔";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "اس چیٹ میں %1$@ کی طرف سے آپ کو کوئی پیغام، اسٹیکر، ردعمل، پڑھنے کی رسید یا میڈیا نہیں پہنچایا جا سکتا۔";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "فراہمی کا مسئلہ";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%@ کی طرف سے آپ کو کوئی پیغام، اسٹیکر، ردعمل، پڑھنے کی رسید یا میڈیا نہیں پہنچایا جا سکتا۔ وہ اسے آپ کو براہ راست، یا گروپ میں بھیجنے کی کوشش کر چکے ہوں گے۔";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "%1$@ کی طرف سے آپ کو کوئی پیغام، اسٹیکر، ردعمل، پڑھنے کی رسید یا میڈیا نہیں پہنچایا جا سکتا۔ وہ اسے آپ کو براہ راست، یا گروپ میں بھیجنے کی کوشش کر چکے ہوں گے۔";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "مسترد کیجئے";
@@ -164,7 +164,7 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "ابھی نہیں";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ایپ سٹور میں اب ورژن %@دستیاب ہے۔";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "ایپ سٹور میں اب ورژن %1$@دستیاب ہے۔";
 
 /* Title for the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_TITLE" = "Signal کا نیا ورژن دستیاب ہے";
@@ -183,6 +183,9 @@
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
+
+/* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
+"APPLICATION_SHORTCUT_NEW_MESSAGE" = "New Message";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "پوشیدہ خانہ";
@@ -203,10 +206,10 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "محفوظ کرنے میں ناکامی";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "فائل ٹائپ:%@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "فائل ٹائپ:%1$@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "سائز:%@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "سائز:%1$@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "محفوظ کریں";
@@ -224,7 +227,7 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "منسلک شدہ مواد";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "منسلک شدہ مواد بھیجنے میں غلطی ";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "منسلک شدہ مواد بھیجنے میں غلطی";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "تصویر تبدیل کرنے کے قابل نہیں۔";
@@ -395,7 +398,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "ماہانہ عطیہ منسوخ ہو گیا";
 
 /* Text in the sheet that's shown when you gift someone a badge. Embeds {recipient name}. */
-"BADGE_GIFT_THANKS_BODY" = "آپ نے %@ کو بیج گفٹ کیا ہے۔ ان کے ریڈیم کرنے پر، انہیں اپنا بیج دکھانے یا چھپانے کا انتخاب دیا جائے گا۔";
+"BADGE_GIFT_THANKS_BODY" = "آپ نے %1$@ کو بیج گفٹ کیا ہے۔ ان کے ریڈیم کرنے پر، انہیں اپنا بیج دکھانے یا چھپانے کا انتخاب دیا جائے گا۔";
 
 /* Title for the sheet that's shown when you gift someone a badge */
 "BADGE_GIFT_THANKS_TITLE" = "آپ کی حمایت کا شکریہ";
@@ -479,7 +482,7 @@
 "BADGE_GIFTING_REDEEM_LATER" = "آپ بعد میں اپنا بیج ریڈیم کر سکتے ہیں";
 
 /* Appears as the title when redeeming a gift you received. Embed {contact's short name, such as a first name}. */
-"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%@ نے آپ کو گفٹ بھیجا ہے";
+"BADGE_GIFTING_REDEEM_TITLE_FORMAT" = "%1$@ نے آپ کو گفٹ بھیجا ہے";
 
 /* Label for a button to see details about a gift you've already redeemed. The text is shown next to a checkmark. */
 "BADGE_GIFTING_REDEEMED" = "ریڈیم کر دیا گیا";
@@ -488,19 +491,19 @@
 "BADGE_GIFTING_REPLY" = "گفٹ";
 
 /* When gifting a badge, shows how long the badge lasts. Embeds {formatted duration}. */
-"BADGE_GIFTING_ROW_DURATION" = "%@ تک برقرار رہتا ہے";
+"BADGE_GIFTING_ROW_DURATION" = "%1$@ تک برقرار رہتا ہے";
 
 /* A button shown on a gift message you send to view additional details about the badge. */
 "BADGE_GIFTING_VIEW" = "دیکھیں";
 
 /* Shown when redeeming a gift you received to explain to the user that they've earned a badge. Embed {contact name}. */
-"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "آپ کو %@ کی جانب سے گفٹ بیج ملا ہے۔ Signal کو عطیہ کرنے کے بارے میں بتانے کے لیے اس بیج کو اپنی پروفائل پر ڈسپلے کریں۔";
+"BADGE_GIFTING_YOU_RECEIVED_FORMAT" = "آپ کو %1$@ کی جانب سے گفٹ بیج ملا ہے۔ Signal کو عطیہ کرنے کے بارے میں بتانے کے لیے اس بیج کو اپنی پروفائل پر ڈسپلے کریں۔";
 
 /* String explaining to the user that their subscription badge has expired on the badge expiry sheet. Embeds {failure-specific sentence(s)} and {badge name}. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا۔ %@ آپ کا %@ آپ کی پروفائل پر مزید نظر نہیں آتا۔";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا۔ %1$@ آپ کا %2$@ آپ کی پروفائل پر مزید نظر نہیں آتا۔";
 
 /* Body of the sheet shown when your subscription is canceled due to inactivity */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا کیونکہ آپ طویل عرصے سے غیر فعال تھے۔ آپ کا %@بیج آپ کی پروفائل پر مزید نظر نہیں آئے گا۔\n\nآپ Signal استعمال کرنا جاری رکھ سکتے ہیں لیکن ایپ کی معاونت اور اپنے بیج کو دوبارہ فعال کرنے کے لیے، ابھی تجدید کریں۔";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_INACTIVITY_BODY_FORMAT" = "آپ کا ماہانہ متواتر عطیہ خود کار طور پر منسوخ ہو گیا تھا کیونکہ آپ طویل عرصے سے غیر فعال تھے۔ آپ کا %1$@بیج آپ کی پروفائل پر مزید نظر نہیں آئے گا۔\n\nآپ Signal استعمال کرنا جاری رکھ سکتے ہیں لیکن ایپ کی معاونت اور اپنے بیج کو دوبارہ فعال کرنے کے لیے، ابھی تجدید کریں۔";
 
 /* Title for boost on the thank you sheet. */
 "BADGE_THANKS_BOOST_TITLE" = "بوسٹ کے لیے شکریہ!";
@@ -518,7 +521,7 @@
 "BADGE_THANKS_TOGGLE_FOOTER" = "جب آپ کے پاس ایک سے زیادہ بیج ہو، تو آپ اپنی پروفائل پر دوسروں کے دیکھنے کے لیے ایک کو خصوصی بنانے کا انتخاب کر سکتے ہیں۔";
 
 /* String explaining to the user that they've earned a badge on the badge thank you sheet. Embed {badge name}. */
-"BADGE_THANKS_YOU_EARNED_FORMAT" = "آپ نے %@بیج حاصل کیا ہے۔ Signal پر عطیہ کرنے کے حوالے سے آگہی پھیلانے کے لیے یہ بیج اپنی پروفائل پر ڈسپلے کریں۔";
+"BADGE_THANKS_YOU_EARNED_FORMAT" = "آپ نے %1$@بیج حاصل کیا ہے۔ Signal پر عطیہ کرنے کے حوالے سے آگہی پھیلانے کے لیے یہ بیج اپنی پروفائل پر ڈسپلے کریں۔";
 
 /* Accessibility label for banner close button */
 "BANNER_CLOSE_ACCESSIBILITY_LABEL" = "بینر بند کریں";
@@ -530,10 +533,10 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "بلاک";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "بلاک کریں اور گروپ\"%@\"چھوڑ دیں؟";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "بلاک کریں اور گروپ\"%1$@\"چھوڑ دیں؟";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "بلاک%@کریں؟";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "بلاک%1$@کریں؟";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "بلاک کردہ گروپس";
@@ -563,13 +566,13 @@
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "اس گروپ کو ان بلاک کریں؟";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "ان بلاک%@کریں؟";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "ان بلاک%1$@کریں؟";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "بلاک";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@بلاکڈ ہو چکا ہے۔";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%1$@بلاکڈ ہو چکا ہے۔";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "صارف بلاکڈ";
@@ -584,7 +587,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "غلطی ہے";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ان بلاکڈ ہو چکا ہے۔";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%1$@ان بلاکڈ ہو چکا ہے۔";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "موجودہ ممبران آپ کو دوبارہ گروپ میں شامل کرسکتے ہیں۔";
@@ -599,7 +602,7 @@
 "BOOST_VIEW_BODY" = "ایک بار عطیہ کریں اور 30 دنوں کے لیے بوسٹ بیج حاصل کریں۔";
 
 /* The body text for the donate to signal view, embeds {{Expiration}} */
-"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "آپ کا بوسٹ بیج %@کو زائد المیعاد ہو جائے گا۔";
+"BOOST_VIEW_BODY_WITH_EXPIRATION_FORMAT" = "آپ کا بوسٹ بیج %1$@کو زائد المیعاد ہو جائے گا۔";
 
 /* Default text for the custom amount field of the boost view. */
 "BOOST_VIEW_CUSTOM_AMOUNT_PLACEHOLDER" = "اپنی مرضی کی رقم درج کریں۔";
@@ -686,16 +689,16 @@
 "CALL_AUDIO_INCOMING_NOTIFICATION_BODY" = "📞 آنے والی آڈیو کال…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 آڈیو کال %@ پر مس کر دی";
+"CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📞 آڈیو کال %1$@ پر مس کر دی";
 
 /* notification body for a call that was just missed */
 "CALL_AUDIO_MISSED_NOTIFICATION_BODY" = "📞 مس آڈیو کال";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 آڈیو کال %@پر مس کر دی";
+"CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📞 آڈیو کال %1$@پر مس کر دی";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 آڈیو کال %@پر مس کر دی";
+"CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 آڈیو کال %1$@پر مس کر دی";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Signal میں کالیں کرنے اور وائس پیغامات ریکارڈ کرنے کیلئے IOS ایپ کی ترتیبات تک رسائی پا کر مائکروفون فعال کریں۔";
@@ -713,13 +716,13 @@
 "CALL_SCREEN_STATUS_NO_ANSWER" = "کوئی جواب نہیں";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
-"CALL_STATUS_FORMAT" = "Signal %@";
+"CALL_STATUS_FORMAT" = "Signal %1$@";
 
 /* Label for call button for alert offering to call a user. */
 "CALL_USER_ALERT_CALL_BUTTON" = "کال";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "کیا آپ %@کو کال کرنا چاہتے ہیں؟";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "کیا آپ %1$@کو کال کرنا چاہتے ہیں؟";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "کال؟";
@@ -728,16 +731,16 @@
 "CALL_VIDEO_INCOMING_NOTIFICATION_BODY" = "📹 آنے والی ویڈیو کال…";
 
 /* notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'. */
-"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 ویڈیو کال %@پر مس کر دی";
+"CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT" = "📹 ویڈیو کال %1$@پر مس کر دی";
 
 /* notification body for a call that was just missed */
 "CALL_VIDEO_MISSED_NOTIFICATION_BODY" = "📹 مس ویڈیو کال";
 
 /* notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'. */
-"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 ویڈیو کال %@پر مس کر دی";
+"CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT" = "📹 ویڈیو کال %1$@پر مس کر دی";
 
 /* notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'. */
-"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 ویڈیو کال %@پر مس کر دی";
+"CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📹 ویڈیو کال %1$@پر مس کر دی";
 
 /* label for accepting incoming video calls as audio  only */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL" = "ویڈیو کے بغیر جواب دیں";
@@ -758,7 +761,7 @@
 "CALL_VIEW_MUTE_LABEL" = "خاموش";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ کو آپ سے میسج کی درخواست ملے گی۔ ایک بار جب آپ کی میسج کی درخواست قبول ہوجائے تو آپ کال کرسکتے ہیں۔";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ کو آپ سے میسج کی درخواست ملے گی۔ ایک بار جب آپ کی میسج کی درخواست قبول ہوجائے تو آپ کال کرسکتے ہیں۔";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "کیمرہ کی سمت تبدیل کریں";
@@ -779,13 +782,13 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "سگنل صارف";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "تصویر لیجئے اور بھیج دیجیئے ";
+"CAMERA_BUTTON_HINT" = "تصویر لیجئے اور بھیج دیجیئے";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "کیمره";
 
 /* VoiceOver label for -> button in text story composer. */
-"CAMERA_VO_ARROW_RIGHT_PROCEED" = "آگے بڑھیں";
+"CAMERA_VO_ARROW_RIGHT_PROCEED" = "آگے بڑھو";
 
 /* VoiceOver label for Flash button in camera. */
 "CAMERA_VO_CAMERA_ALBUM_MODE" = "البم موڈ";
@@ -842,7 +845,7 @@
 "CAMERA_VO_ZOOM" = "زوم";
 
 /* VoiceOver description of current camera zoom level. */
-"CAMERA_VO_ZOOM_LEVEL" = "%@مرتبہ";
+"CAMERA_VO_ZOOM_LEVEL" = "%1$@مرتبہ";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "جب تک آپ اس صارف سے پیغامات کا تبادلہ نہیں کرتے اس صارف کی تصدیق نہیں ہو سکتی۔";
@@ -1013,7 +1016,7 @@
 "CONTACT_FIELD_NAME_PREFIX" = "سابقہ";
 
 /* Label for the 'name suffix' field of a contact. */
-"CONTACT_FIELD_NAME_SUFFIX" = "لاحقہ ";
+"CONTACT_FIELD_NAME_SUFFIX" = "لاحقہ";
 
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "تنظیم";
@@ -1181,7 +1184,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_ALERT_TITLE" = "اس چیٹ کو خاموش کر دیں تا وقت...";
 
 /* 1 day */
-"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 دن ";
+"CONVERSATION_MUTE_CONFIRMATION_OPTION_1D" = "1 دن";
 
 /* 1 hour */
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_1H" = "1 گھنٹا";
@@ -1286,7 +1289,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "ایڈمن بنائیں";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ اس گروپ اور اس کے ممبروں میں ترمیم کرسکے گا۔";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ اس گروپ اور اس کے ممبروں میں ترمیم کرسکے گا۔";
 
 /* Label for 'member requests & invites' action in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "درخواستیں اور دعوت نامے";
@@ -1325,7 +1328,7 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "غیر خاموش";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 دن ";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "1 دن";
 
 /* Label for button to mute a thread for a hour. */
 "CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "1 گھنٹا";
@@ -1346,10 +1349,10 @@
 "CONVERSATION_SETTINGS_MUTED_BUTTON" = "خاموش";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "جب تک%@";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "جب تک%1$@";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%@ تک خاموش ";
+"CONVERSATION_SETTINGS_MUTED_UNTIL_UNMUTE_FORMAT" = "%1$@ تک خاموش";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "نیا رابطہ قائم کریں";
@@ -1364,13 +1367,13 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "گروپ سے ہٹائیں";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%@ کو گروپ سے ہٹائیں؟";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ کو گروپ سے ہٹائیں؟";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "بطور ایڈمن ہٹائیں";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ کو بطور گروپ ایڈمن کو ہٹا دیں؟";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ کو بطور گروپ ایڈمن کو ہٹا دیں؟";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "تلاش کریں";
@@ -1409,7 +1412,7 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "رابطوں میں شامل کریں";
 
 /* Format for sender info for accessibility label for message. Embeds {{ the sender name }}. */
-"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%@ بھیجا:";
+"CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT" = "%1$@ بھیجا:";
 
 /* Format for sender info for outgoing messages. */
 "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER" = "آپ نے بھیجا:";
@@ -1427,7 +1430,7 @@
 "COPIED_TO_CLIPBOARD" = "کلپ بورڈ میں کاپی";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "سیشن کو دوبارہ ترتیب دینے سے%@سے مستقبل میں پیغامات وصول ہوں گے،لیکن یہ کوئی بھی پہلے سے موجود خراب پیغامات بحال نہیں کرے گا۔";
+"CORRUPTED_SESSION_DESCRIPTION" = "سیشن کو دوبارہ ترتیب دینے سے%1$@سے مستقبل میں پیغامات وصول ہوں گے،لیکن یہ کوئی بھی پہلے سے موجود خراب پیغامات بحال نہیں کرے گا۔";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "ملک کے کوڈ کا انتخاب کریں";
@@ -1562,10 +1565,10 @@
 "DEREGISTRATION_WARNING" = "ڈیوئس مزید رجسٹر نہیں ہے۔آپ کا فون نمبر مختلف ڈیوائس پر Signal کے ساتھ رجسٹر ہے۔ دوبارہ رجسٹر کیلئے کلک کریں۔";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
-"DEVICE_LAST_ACTIVE_AT_LABEL" = "آخری فعال %@";
+"DEVICE_LAST_ACTIVE_AT_LABEL" = "آخری فعال %1$@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "منسلک %@";
+"DEVICE_LINKED_AT_LABEL" = "منسلک %1$@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ڈیوائس لِسٹ کی تجدید میں ناکامی";
@@ -1676,7 +1679,7 @@
 "DISAPPEARING_MESSAGES" = "پیغامات غائب ہورہے ہیں";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "اس چیٹ میں موجود پیغامات %@ کے بعد غائب ہوجائیں گے۔";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "اس چیٹ میں موجود پیغامات %1$@ کے بعد غائب ہوجائیں گے۔";
 
 /* Disappearing message option to define a custom time */
 "DISAPPEARING_MESSAGES_CUSTOM_TIME" = "کسٹم ٹائم";
@@ -1688,7 +1691,7 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "فعال ہونے پر ، اس چیٹ میں بھیجے اور موصول ہونے والے نئے پیغامات دیکھنے کے بعد ختم ہوجائیں گے۔";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "%@حالیہ پیغامات غائب ہوتے ہیں ";
+"DISAPPEARING_MESSAGES_HINT" = "%1$@حالیہ پیغامات غائب ہوتے ہیں";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "گھنٹے";
@@ -1716,6 +1719,9 @@
 
 /* Title for switch to enable sharing of badges publicly */
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "پروفائل پر بیجز ڈسپلے کریں";
+
+/* Title for the proxy confirmation */
+"DO_YOU_WANT_TO_USE_PROXY" = "Do you want to use this proxy address?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "لوکیشن بائی پاس کرنے کیلئے سنسر شِپ";
@@ -1828,6 +1834,9 @@
 /* Title for the 'Manage Subscription' button on the donation screen */
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "سبسکرپشن کا نظم کریں";
 
+/* Text describing to the user that they're going to pay a monthly donation to Signal */
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Monthly Donation to Signal";
+
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "مزید";
 
@@ -1880,7 +1889,7 @@
 "EDIT_ITEM_COPY_ACTION" = "کاپی";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "ہیلو ،\n\nحال ہی میں میں اپنے iPhone پر چیٹس کو نجی رکھنے کے لئے Signal کا استعمال کر رہا ہوں۔ میں چاہتا ہوں کہ آپ اسے بھی انسٹال کریں ، لہذا ہم پراعتماد ہوسکتا ہے کہ صرف آپ اور میں ہی ہمارے پیغامات پڑھ سکتے ہیں یا ہماری کالیں سن سکتے ہیں۔\n\nSignal iPhones اور Android کیلئے دستیاب ہے۔ اسے یہاں حاصل کریں:%@\n\nSignal آپ کے موجودہ میسجنگ ایپ کی طرح کام کرتا ہے۔ ہم تصاویر اور ویڈیو بھیج سکتے ہیں ، کال کرسکتے ہیں ، اور گروپ چیٹس شروع کرسکتے ہیں۔ سب سے اچھی بات یہ ہے کہ ، اس میں سے کوئی دوسرا نہیں دیکھ سکتا ہے ، یہاں تک کہ Signal بنانے والے افراد بھی نہیں!\n\nآپ اوپن وہسپر سسٹم ، Signal بنانے والے لوگوں کے بارے میں مزید پڑھ سکتے ہیں۔%@";
+"EMAIL_INVITE_BODY" = "ہیلو ،\n\nحال ہی میں میں اپنے iPhone پر چیٹس کو نجی رکھنے کے لئے Signal کا استعمال کر رہا ہوں۔ میں چاہتا ہوں کہ آپ اسے بھی انسٹال کریں ، لہذا ہم پراعتماد ہوسکتا ہے کہ صرف آپ اور میں ہی ہمارے پیغامات پڑھ سکتے ہیں یا ہماری کالیں سن سکتے ہیں۔\n\nSignal iPhones اور Android کیلئے دستیاب ہے۔ اسے یہاں حاصل کریں:%1$@\n\nSignal آپ کے موجودہ میسجنگ ایپ کی طرح کام کرتا ہے۔ ہم تصاویر اور ویڈیو بھیج سکتے ہیں ، کال کرسکتے ہیں ، اور گروپ چیٹس شروع کرسکتے ہیں۔ سب سے اچھی بات یہ ہے کہ ، اس میں سے کوئی دوسرا نہیں دیکھ سکتا ہے ، یہاں تک کہ Signal بنانے والے افراد بھی نہیں!\n\nآپ اوپن وہسپر سسٹم ، Signal بنانے والے لوگوں کے بارے میں مزید پڑھ سکتے ہیں۔%2$@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal میں سو ئچ کریں";
@@ -1997,7 +2006,7 @@
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "منسلک مواد ڈاؤن لوڈ ہونے میں ناکامی۔";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "%@کی طرف سے پیغام نہیں بھیجا جا سکا";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@کی طرف سے پیغام نہیں بھیجا جا سکا";
 
 /* Error message for a decryption failure. */
 "ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "پیغام بھیجا نہیں جا سکا";
@@ -2018,10 +2027,10 @@
 "ERROR_MESSAGE_NO_SESSION" = "رابطے کیلئے کوئی سیشن دستیاب نہیں۔";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "حفاظتی نمبر تبدیل ہوا ";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "حفاظتی نمبر تبدیل ہوا";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%@کیساتھ آپ کا حفاظتی نمبر تبدیل ہوگیا ہے۔";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "%1$@کیساتھ آپ کا حفاظتی نمبر تبدیل ہوگیا ہے۔";
 
 /* Text notifying the user that their secure session has been reset */
 "ERROR_MESSAGE_SESSION_REFRESH" = "چیٹ سیشن تازہ";
@@ -2030,13 +2039,13 @@
 "ERROR_MESSAGE_UNKNOWN_ERROR" = "ایک نا معلوم غلطی واقع ہوئی۔";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "حفاظتی نمبر تبدیل ہوا ";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "حفاظتی نمبر تبدیل ہوا";
 
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "نیٹ ورک کی خرابی";
 
 /* Format string for an error alert notification message. Embeds {{ error string }} */
-"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "اپنی ڈیوائس سے support@signal.org؛ %@ پر ڈی بگ لاگز کے ساتھ اس نقص کی رپورٹ کرنے کے ذریعے Signal کو بہتر بنانے میں ہماری مدد کریں";
+"ERROR_NOTIFICATION_MESSAGE_FORMAT" = "اپنی ڈیوائس سے support@signal.org؛ %1$@ پر ڈی بگ لاگز کے ساتھ اس نقص کی رپورٹ کرنے کے ذریعے Signal کو بہتر بنانے میں ہماری مدد کریں";
 
 /* Format string for an error alert notification title. */
 "ERROR_NOTIFICATION_TITLE" = "Signal بی ٹا: ایک نقص پیش آیا";
@@ -2051,7 +2060,7 @@
 "ERROR_SENDING_EXPIRED" = "آپ کے Signal ورژن کی میعاد ختم ہو چکی ہے۔ براہ کرم مزید پیغامات بھیجنے کیلئے تجدید کریں۔";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "ان رجسٹرڈ صارف:%@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "ان رجسٹرڈ صارف:%1$@";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "آپ کے Signal کا ورژن ختم ہو گیا ہے! حالیہ ورژن میں تازہ کاری کرنے کیلئے ٹیپ کریں۔";
@@ -2063,7 +2072,7 @@
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "اس رابطے کیساتھ بہت سے فیچرز ہیں۔ براہ کرم بعد میں دوبارہ کوشش کریں۔";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "آپ کا حفاظتی نمبر ابھی %@کیساتھ تبدیل ہو چکا ہے۔ یہ پیغام دوبارہ بھیجنے سے پہلے آپ تصدیق کرنا چاہتے ہیں۔";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "آپ کا حفاظتی نمبر ابھی %1$@کیساتھ تبدیل ہو چکا ہے۔ یہ پیغام دوبارہ بھیجنے سے پہلے آپ تصدیق کرنا چاہتے ہیں۔";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "حفاظتی نمبر کی تصدیق میں ناکامی!";
@@ -2084,7 +2093,7 @@
 "FINISH_GROUP_CREATION_LABEL" = "گروپ بنانے کا اختتام";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = " رابطہ کو آگے بھیجیں";
+"FORWARD_CONTACT" = "رابطہ کو آگے بھیجیں";
 
 /* Label and title for 'message forwarding' views. */
 "FORWARD_MESSAGE" = "پیغام کو آگے بھیجیں";
@@ -2162,7 +2171,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "اپنی سرچ داخل کریں";
 
 /* Shown when trying to redeem a gift that's already expired. Embeds {{contact name}}. */
-"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%@ کی طرف سے آپ کے گفٹ کی مدت ختم ہو گئی ہے اور مزید ریڈیم نہیں کیا جا سکتا۔";
+"GIFT_NOT_REDEEMED_BODY_FORMAT" = "%1$@ کی طرف سے آپ کے گفٹ کی مدت ختم ہو گئی ہے اور مزید ریڈیم نہیں کیا جا سکتا۔";
 
 /* Title when trying to redeem a gift that's already expired. */
 "GIFT_NOT_REDEEMED_TITLE" = "آپ کے گفٹ کی مدت ختم ہو گئی ہے۔";
@@ -2171,13 +2180,13 @@
 "GO_TO_SETTINGS_BUTTON" = "ترتیبات پر جائیں";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "آپ نے تبدیل کیا کہ کون گروپ کی معلومات کو \"%@\" میں ترمیم کرسکتا ہے۔";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "آپ نے تبدیل کیا کہ کون گروپ کی معلومات کو \"%1$@\" میں ترمیم کرسکتا ہے۔";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ تبدیل کر دیا گیا جو گروپ کی معلومات کو \"%2$@\" میں تبدیل کر سکتا ہے۔";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "گروپ کی معلومات کو \"%@\" کے ذریعہ تبدیل کیا جاسکتا ہے۔";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "گروپ کی معلومات کو \"%1$@\" کے ذریعہ تبدیل کیا جاسکتا ہے۔";
 
 /* Description of the 'admins only' access level. */
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "صرف ایڈمنز";
@@ -2195,13 +2204,13 @@
 "GROUP_ACCESS_LEVEL_UNSATISFIABLE" = "غیر فعال ہونا";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "آپ نے تبدیل کردیا کہ گروپ ممبرشپ کو \"%@\" میں کون ترمیم کرسکتا ہے۔";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "آپ نے تبدیل کردیا کہ گروپ ممبرشپ کو \"%1$@\" میں کون ترمیم کرسکتا ہے۔";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ تبدیل کر دیا گیا جو گروپ کی رکنیت کو \"%2$@\" میں تبدیل کر سکتا ہے۔";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "گروپ ممبرشپ کو \"%@\" کے ذریعہ تبدیل کیا جاسکتا ہے.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "گروپ ممبرشپ کو \"%1$@\" کے ذریعہ تبدیل کیا جاسکتا ہے.";
 
 /* Message indicating that a feature can only be used by group admins. */
 "GROUP_ADMIN_ONLY_WARNING" = "صرف منتظمین ہی اس اختیار کو تبدیل کرسکتے ہیں۔";
@@ -2210,7 +2219,7 @@
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "آپ کو ان کا آڈیو یا ویڈیو موصول نہیں ہوگا اور وہ آپ کو وصول نہیں کریں گے۔";
 
 /* Title for alert explaining that a group call participant is blocked. Embeds {{ user's name }} */
-"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%@مسدود ہے";
+"GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "%1$@مسدود ہے";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "صرف اس گروپ کے ایڈمن کال شروع کرسکتے ہیں۔";
@@ -2219,7 +2228,7 @@
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "گروپ کال شروع نہیں کرسکتے ہیں";
 
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
-"GROUP_CALL_BLOCKED_USER_FORMAT" = "%@مسدود ہے";
+"GROUP_CALL_BLOCKED_USER_FORMAT" = "%1$@مسدود ہے";
 
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "کال جاری رکھیں";
@@ -2237,7 +2246,7 @@
 "GROUP_CALL_IS_FULL" = "کال پوری ہے";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%@ کو کال کی جا رہی ہے...";
+"GROUP_CALL_IS_RINGING_ONE_PERSON_FORMAT" = "%1$@ کو کال کی جا رہی ہے...";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_IS_RINGING_TWO_PEOPLE_FORMAT" = "%1$@ اور %2$@ کو کال کی جا رہی ہے...";
@@ -2249,13 +2258,13 @@
 "GROUP_CALL_LEAVE_BUTTON" = "کال چھوڑو";
 
 /* String displayed in cell when media from a user can't be displayed in group call grid. Embeds {user's name} */
-"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%@ سے آڈیو اور ویڈیو موصول نہیں ہوسکتی ہے";
+"GROUP_CALL_MISSING_MEDIA_KEYS_FORMAT" = "%1$@ سے آڈیو اور ویڈیو موصول نہیں ہوسکتی ہے";
 
 /* Message body for alert explaining that a group call participant cannot be displayed because of missing keys */
 "GROUP_CALL_NO_KEYS_ALERT_MESSAGE" = "اس کی وجہ یہ ہوسکتی ہے کہ انہوں نے آپ کے حفاظتی نمبر میں تبدیلی کی توثیق نہیں کی ہے ، ان کے آلے میں کوئی مسئلہ ہے یا انہوں نے آپ کو مسدود کردیا ہے۔";
 
 /* Title for alert explaining that a group call participant cannot be displayed because of missing keys. Embeds {{ user's name }} */
-"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%@ سے آڈیو اور ویڈیو موصول نہیں ہوسکتی ہے";
+"GROUP_CALL_NO_KEYS_ALERT_TITLE_FORMAT" = "%1$@ سے آڈیو اور ویڈیو موصول نہیں ہوسکتی ہے";
 
 /* Text explaining that you are the only person currently in the group call */
 "GROUP_CALL_NO_ONE_HERE" = "یہاں کوئی اور نہیں ہے";
@@ -2264,22 +2273,22 @@
 "GROUP_CALL_NOBODY_IS_IN_YET" = "ابھی تک کوئی بھی اس کال میں نہیں ہے۔";
 
 /* Copy explaining that a user has joined the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%@ کال میں شامل ہوا";
+"GROUP_CALL_NOTIFICATION_ONE_JOINED_FORMAT" = "%1$@ کال میں شامل ہوا";
 
 /* Copy explaining that a user has left the group call. Embeds {member name} */
-"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%@ نے کال چھوڑ دی";
+"GROUP_CALL_NOTIFICATION_ONE_LEFT_FORMAT" = "%1$@ نے کال چھوڑ دی";
 
 /* Copy explaining that two users have joined the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%@ اور %@ کال میں شامل ہوئے";
+"GROUP_CALL_NOTIFICATION_TWO_JOINED_FORMAT" = "%1$@ اور %2$@ کال میں شامل ہوئے";
 
 /* Copy explaining that two users have left the group call. Embeds {first member name}, {second member name} */
-"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%@ اور %@  نےکال چھوڑ دی";
+"GROUP_CALL_NOTIFICATION_TWO_LEFT_FORMAT" = "%1$@ اور %2$@  نےکال چھوڑ دی";
 
 /* Text explaining that there is one person in the group call. Embeds {member name} */
-"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%@اس کال میں ہے";
+"GROUP_CALL_ONE_PERSON_HERE_FORMAT" = "%1$@اس کال میں ہے";
 
 /* Text explaining that a member is presenting. Embeds {member name} */
-"GROUP_CALL_PRESENTING_FORMAT" = "%@ پیش کر رہا ہے";
+"GROUP_CALL_PRESENTING_FORMAT" = "%1$@ پیش کر رہا ہے";
 
 /* Text indicating that the user has lost their connection to the call and we are reconnecting. */
 "GROUP_CALL_RECONNECTING" = "مربوط ہو رہا ہے";
@@ -2306,7 +2315,7 @@
 "GROUP_CALL_STARTED_BY_YOU" = "آپ نے ایک گروپ کال شروع کی";
 
 /* Text explaining that someone started a group call. Embeds {{call creator display name}} */
-"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%@ نے ایک گروپ کال شروع کی";
+"GROUP_CALL_STARTED_MESSAGE_FORMAT" = "%1$@ نے ایک گروپ کال شروع کی";
 
 /* Text displayed when trying to turn on ringing when calling a large group. */
 "GROUP_CALL_TOO_LARGE_TO_RING" = "شرکاء کو کال کرنے کے لیے گروپ بہت بڑا ہے۔";
@@ -2318,13 +2327,13 @@
 "GROUP_CALL_UNEXPECTEDLY_ENDED" = "آپ کال سے منقطع ہوگئے تھے۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%@ کو مطلع کر دیا جائے گا";
+"GROUP_CALL_WILL_NOTIFY_ONE_PERSON_FORMAT" = "%1$@ کو مطلع کر دیا جائے گا";
 
 /* Text shown before the user starts a group call if the user has not enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_WILL_NOTIFY_TWO_PEOPLE_FORMAT" = "%1$@ اور %2$@ کو مطلع کر دیا جائے گا";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there is one other person in the group. Embeds {member name} */
-"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal %@ کو کال کرے گا";
+"GROUP_CALL_WILL_RING_ONE_PERSON_FORMAT" = "Signal %1$@ کو کال کرے گا";
 
 /* Text shown before the user starts a group call if the user has enabled ringing and there are two other people in the group. Embeds {{ %1$@ participant1, %2$@ participant2 }} */
 "GROUP_CALL_WILL_RING_TWO_PEOPLE_FORMAT" = "Signal %1$@ اور %2$@ کو کال کرے گا";
@@ -2339,7 +2348,7 @@
 "GROUP_CREATED_BY_LOCAL_USER" = "آپ نے گروپ بنایا ہے۔";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ نے آپ کو گروپ میں شامل کیا۔";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%1$@ نے آپ کو گروپ میں شامل کیا۔";
 
 /* Message indicating that group was created by an unknown user. */
 "GROUP_CREATED_BY_UNKNOWN_USER" = "گروپ بنایا گیا تھا۔";
@@ -2360,7 +2369,7 @@
 "GROUP_DESCRIPTION_VIEW_TITLE" = "گروپ کی تفصیل";
 
 /* Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}. */
-"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "گروپ کی تفصیل (%@)";
+"GROUP_DESCRIPTION_VIEW_TITLE_FORMAT" = "گروپ کی تفصیل (%1$@)";
 
 /* Message indicating that 1 invalid invite was added to the group. */
 "GROUP_INVALID_INVITES_ADDED_1" = "ایک غلط دعوت نامہ شامل کیا گیا۔";
@@ -2372,10 +2381,10 @@
 "GROUP_INVALID_INVITES_ADDED_BY_LOCAL_USER_N" = "آپ نے غلط دعوت نامے شامل کیے۔";
 
 /* Message indicating that 1 invalid invite was added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%@ نے ایک غلط دعوت نامہ شامل کیا۔";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_1" = "%1$@ نے ایک غلط دعوت نامہ شامل کیا۔";
 
 /* Message indicating that multiple invalid invites were added by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%@ نے غلط دعوت نامے شامل کیے۔";
+"GROUP_INVALID_INVITES_ADDED_BY_REMOTE_USER_FORMAT_N" = "%1$@ نے غلط دعوت نامے شامل کیے۔";
 
 /* Message indicating that multiple invalid invites were added to the group. */
 "GROUP_INVALID_INVITES_ADDED_N" = "غلط دعوت نامے شامل کیے گئے۔";
@@ -2390,10 +2399,10 @@
 "GROUP_INVALID_INVITES_REMOVED_BY_LOCAL_USER_N" = "آپ نے غلط دعوت نامے منسوخ کردیئے۔";
 
 /* Message indicating that 1 invalid invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%@ نے ایک غلط دعوت نامہ منسوخ کردیا۔";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_1" = "%1$@ نے ایک غلط دعوت نامہ منسوخ کردیا۔";
 
 /* Message indicating that multiple invalid invites were revoked by another user. Embeds {{remote user name}}. */
-"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%@ نے غلط دعوت نامے منسوخ کردیئے۔";
+"GROUP_INVALID_INVITES_REMOVED_BY_REMOTE_USER_FORMAT_N" = "%1$@ نے غلط دعوت نامے منسوخ کردیئے۔";
 
 /* Message indicating that multiple invalid invites were revoked. */
 "GROUP_INVALID_INVITES_REMOVED_N" = "غلط دعوت نامے منسوخ کردیئے گئے۔";
@@ -2405,7 +2414,7 @@
 "GROUP_INVITE_LINK_DISABLED_BY_LOCAL_USER" = "آپ نے گروپ لنک آف کردیا۔";
 
 /* Message indicating that the group invite link was disabled by a remote user. Embeds {{ user who disabled the group invite link }}. */
-"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ لنک آف کردیا۔";
+"GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ لنک آف کردیا۔";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "گروپ لنک منتظم کی منظوری کے ساتھ آن کیا گیا تھا۔";
@@ -2414,7 +2423,7 @@
 "GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "آپ نے منتظم کی منظوری کے ساتھ گروپ لنک آن کردیا۔";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ نے منتظم کی منظوری کے ساتھ گروپ لنک آن کیا۔";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ نے منتظم کی منظوری کے ساتھ گروپ لنک آن کیا۔";
 
 /* Message indicating that the group invite link was enabled. */
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "گروپ لنک منتظم منظوری کے ساتھ بند کردیا گیا تھا۔";
@@ -2423,16 +2432,16 @@
 "GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "آپ نے منتظم کی منظوری کے ساتھ گروپ لنک آن کردیا۔";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ نے منتظم کی منظوری کے ساتھ ہی گروپ لنک آن کیا۔";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ نے منتظم کی منظوری کے ساتھ ہی گروپ لنک آن کیا۔";
 
 /* Message indicating that the group invite link was reset. */
-"GROUP_INVITE_LINK_RESET" = "گروپ لنک دوبارہ ترتیب دیا گیا تھا۔";
+"GROUP_INVITE_LINK_RESET" = " گروپ لنک دوبارہ ترتیب دیا گیا تھا۔";
 
 /* Message indicating that the group invite link was reset by the local user. */
 "GROUP_INVITE_LINK_RESET_BY_LOCAL_USER" = "آپ گروپ لنک کو دوبارہ ترتیب دیں۔";
 
 /* Message indicating that the group invite link was reset by a remote user. Embeds {{ user who reset the group invite link }}. */
-"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%@ گروپ لنک کو دوبارہ ترتیب دیں۔";
+"GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ گروپ لنک کو دوبارہ ترتیب دیں۔";
 
 /* Message indicating that the group invite link was set to not require approval. */
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "گروپ لنک کے لئے منتظم کی منظوری بند کردی گئی تھی۔";
@@ -2441,7 +2450,7 @@
 "GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "آپ نے گروپ لنک کیلئے منتظم کی منظوری کو آف کر دیا۔";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ لنک کے لیئے منتظم کی منظوری بند کردی۔";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ لنک کے لیئے منتظم کی منظوری بند کردی۔";
 
 /* Message indicating that the group invite link was set to require approval. */
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "گروپ لنک کے لئے منتظم کی منظوری دے دی گئی۔";
@@ -2450,10 +2459,10 @@
 "GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "آپ نے گروپ لنک کیلئے منتظم کی منظوری دے دی۔";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ لنک کے لیئے منتظم کی منظوری دے دی۔";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ لنک کے لیئے منتظم کی منظوری دے دی۔";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@آپ کے ذریعہ خود بخود اس گروپ میں شامل نہیں ہوسکتا۔ انہیں شرکت کے لئے مدعو کیا گیا ہے ، اور جب تک وہ قبول نہیں کریں گے کوئی گروپ پیغامات نہیں دیکھیں گے۔";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@آپ کے ذریعہ خود بخود اس گروپ میں شامل نہیں ہوسکتا۔ انہیں شرکت کے لئے مدعو کیا گیا ہے ، اور جب تک وہ قبول نہیں کریں گے کوئی گروپ پیغامات نہیں دیکھیں گے۔";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "یہ صارفین آپ کے ذریعہ خود بخود اس گروپ میں شامل نہیں ہوسکتے ہیں۔ انہیں شرکت کے لئے مدعو کیا گیا ہے ، اور جب تک وہ قبول نہیں کریں گے کوئی گروپ پیغامات نہیں دیکھیں گے۔";
@@ -2465,7 +2474,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_LOCAL_USER" = "آپ نے تمام ممبروں کو پیغامات بھیجنے کی اجازت دینے کے لئے گروپ کی ترتیبات کو تبدیل کردیا۔";
 
 /* Message indicating that 'announcement-only' mode was disabled by a remote user. Embeds {{ user who disabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%@ نے تمام ممبروں کو پیغامات بھیجنے کی اجازت دینے کے لئے گروپ کی ترتیبات کو تبدیل کیا۔";
+"GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ نے تمام ممبروں کو پیغامات بھیجنے کی اجازت دینے کے لئے گروپ کی ترتیبات کو تبدیل کیا۔";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "گروپ کی ترتیبات کو تبدیل کیا گیا تھا تاکہ صرف منتظمین کو پیغامات بھیج سکیں۔";
@@ -2474,7 +2483,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "آپ نے منتظمین کو صرف پیغامات بھیجنے کی اجازت دینے کے لئے گروپ کی ترتیبات کو تبدیل کردیا۔";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ کی ترتیبات کو تبدیل کیا تاکہ منتظمین کو صرف پیغامات بھیج سکیں۔";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ کی ترتیبات کو تبدیل کیا تاکہ منتظمین کو صرف پیغامات بھیج سکیں۔";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
 "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "آپ گروپ لنک کے ذریعے اس گروپ میں شامل نہیں ہو سکتے کیونکہ ایک ایڈمن نے آپ کو ہٹا دیا تھا۔";
@@ -2579,34 +2588,34 @@
 "GROUP_LINK_VIEW_TITLE" = "گروپ لنک";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ نے آپ کو شامل کیا۔";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ نے آپ کو شامل کیا۔";
 
 /* Message indicating that the local user was granted administrator role. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "اب آپ ایڈمن ہیں۔";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ نے آپ کو ایک ایڈمن بنایا۔";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ نے آپ کو ایک ایڈمن بنایا۔";
 
 /* Message indicating that the local user accepted an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "آپ نے گروپ کو دعوت نامہ قبول کرلیا۔";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "آپ نے %@ سے گروپ کو دعوت نامہ قبول کیا";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "آپ نے %1$@ سے گروپ کو دعوت نامہ قبول کیا";
 
 /* Message indicating that the local user declined an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "آپ نے گروپ کو دعوت نامے سے انکار کردیا۔";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "آپ نے %@ سے گروپ کو دعوت نامے سے انکار کردیا";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "آپ نے %1$@ سے گروپ کو دعوت نامے سے انکار کردیا";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ کو آپ کی دعوت منسوخ کردی۔";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ کو آپ کی دعوت منسوخ کردی۔";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "گروپ میں آپ کی دعوت منسوخ کردی گئی تھی۔";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ نے آپ کو مدعو کیا۔";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%1$@ نے آپ کو مدعو کیا۔";
 
 /* Message indicating that the local user was invited to the group. */
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "آپ کو گروپ میں مدعو کیا گیا تھا۔";
@@ -2618,13 +2627,13 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "آپ گروپ لنک کے ذریعے گروپ میں شامل ہوگئے۔";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ نے آپ کو ہٹا دیا۔";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ نے آپ کو ہٹا دیا۔";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "آپ کو گروپ سے نکال دیا گیا۔";
 
 /* Message indicating that the local user's request to join the group was approved by another user. Embeds {{ %@ the name of the user who approved the request }}. */
-"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ میں شامل ہونے کی آپ کی درخواست کو منظور کرلیا۔";
+"GROUP_LOCAL_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ میں شامل ہونے کی آپ کی درخواست کو منظور کرلیا۔";
 
 /* Message indicating that the local user cancelled their request to join the group. */
 "GROUP_LOCAL_USER_REQUEST_CANCELLED_BY_LOCAL_USER" = "آپ نے گروپ میں شامل ہونے کی اپنی درخواست منسوخ کردی۔";
@@ -2639,7 +2648,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "آپ کے ایڈمنسٹریٹو مراعات کو کالعدم کردیا گیا۔";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "آپ کے ایڈمنسٹریٹو مراعات کو %@ نے منسوخ کردیا";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "آپ کے ایڈمنسٹریٹو مراعات کو %1$@ نے منسوخ کردیا";
 
 /* Message indicating that the local user was added to the group. */
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "ایک ممبر نے آپ کو گروپ میں شامل کیا۔";
@@ -2669,91 +2678,91 @@
 "GROUP_NAME_VIEW_TITLE" = "گروپ کا نام";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ نے گروپ کو دعوت نامہ قبول کیا۔";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%1$@ نے گروپ کو دعوت نامہ قبول کیا۔";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ نے گروپ میں آپ کی دعوت قبول کرلی۔";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ نے گروپ میں آپ کی دعوت قبول کرلی۔";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ نے گروپ میں شامل ہونے کے لئے %2$@ کی دعوت قبول کرلی۔";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "آپ نے %@ کو شامل کیا";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "آپ نے %1$@ کو شامل کیا";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ نے %2$@ کو شامل کیا";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ کو گروپ میں شامل کیا گیا۔";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%1$@ کو گروپ میں شامل کیا گیا۔";
 
 /* Message indicating that a remote user has declined their invite. */
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1 شخص نے گروپ میں شامل ہونے کی دعوت مسترد کردی۔";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%@ کے ذریعہ مدعو کردہ 1 شخص نے اس گروپ کو دعوت نامے سے انکار کردیا۔";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%1$@ کے ذریعہ مدعو کردہ 1 شخص نے اس گروپ کو دعوت نامے سے انکار کردیا۔";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ نے گروپ میں آپ کی دعوت مسترد کردی۔";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ نے گروپ میں آپ کی دعوت مسترد کردی۔";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ اب ایک ایڈمن ہے";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ اب ایک ایڈمن ہے";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "آپ نے %@ کو ایڈمن بنایا۔";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "آپ نے %1$@ کو ایڈمن بنایا۔";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ نے %2$@ کو ایڈمن بنایا۔";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%@ کی دعوت کو اس گروپ کے لئے منسوخ کردیا گیا تھا";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%1$@ کی دعوت کو اس گروپ کے لئے منسوخ کردیا گیا تھا";
 
 /* Message indicating that a single remote user was invited to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%@ کو گروپ میں مدعو کیا گیا تھا۔";
+"GROUP_REMOTE_USER_INVITED_1_FORMAT" = "%1$@ کو گروپ میں مدعو کیا گیا تھا۔";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "آپ نے %@ کو گروپ میں مدعو کیا۔";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "آپ نے %1$@ کو گروپ میں مدعو کیا۔";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ گروپ میں شامل ہوا۔";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%1$@ گروپ میں شامل ہوا۔";
 
 /* Message indicating that another user has joined the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%@ گروپ کے ذریعے گروپ میں شامل ہوا۔";
+"GROUP_REMOTE_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK_FORMAT" = "%1$@ گروپ کے ذریعے گروپ میں شامل ہوا۔";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ نے گروپ چھوڑ دیا۔";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ نے گروپ چھوڑ دیا۔";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "آپ نے %@ کو ہٹا دیا۔";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "آپ نے %1$@ کو ہٹا دیا۔";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ نے %2$@ کو ہٹا دیا";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "آپ نے %@ کی گروپ میں شامل ہونے کی درخواست منظور کی۔";
+"GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "آپ نے %1$@ کی گروپ میں شامل ہونے کی درخواست منظور کی۔";
 
 /* Message indicating that a remote user's request to join the group was approved by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_REMOTE_USER_FORMAT" = "%2$@ نے %1$@ کی اس گروپ میں شامل ہونے کی درخواست منظور کی۔";
 
 /* Message indicating that a remote user cancelled their request to join the group. Embeds {{ the name of the requesting user }}. */
-"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ میں شامل ہونے کی ان کی درخواست منسوخ کردی۔";
+"GROUP_REMOTE_USER_REQUEST_CANCELLED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ میں شامل ہونے کی ان کی درخواست منسوخ کردی۔";
 
 /* Message indicating that a remote user's request to join the group was rejected by the local user. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "آپ نے %@ کی گروپ میں شامل ہونے کی درخواست کی مسترد کی۔";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_BY_LOCAL_USER_FORMAT" = "آپ نے %1$@ کی گروپ میں شامل ہونے کی درخواست کی مسترد کی۔";
 
 /* Message indicating that a remote user's request to join the group was rejected by another user. Embeds {{ %1$@ requesting user name, %2$@ approving user name }}. */
 "GROUP_REMOTE_USER_REQUEST_REJECTED_BY_REMOTE_USER_FORMAT" = "%2$@ نے %1$@ کی اس گروپ میں شامل ہونے کی درخواست کی مسترد کی۔";
 
 /* Message indicating that a remote user's request to join the group was rejected. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%@ کی گروپ میں شامل ہونے کی درخواست مسترد کردی گئی۔";
+"GROUP_REMOTE_USER_REQUEST_REJECTED_FORMAT" = "%1$@ کی گروپ میں شامل ہونے کی درخواست مسترد کردی گئی۔";
 
 /* Message indicating that a remote user requested to join the group. Embeds {{requesting user name}}. */
-"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%@ نے گروپ لنک کے ذریعے شامل ہونے کی درخواست کی۔";
+"GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ نے گروپ لنک کے ذریعے شامل ہونے کی درخواست کی۔";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ کو ان کے ایڈمن کی مراعات ختم کردی گئیں۔";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%1$@ کو ان کے ایڈمن کی مراعات ختم کردی گئیں۔";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "آپ نے %@ سے ایڈمن کے مراعات کو کالعدم کردیا۔";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "آپ نے %1$@ سے ایڈمن کے مراعات کو کالعدم کردیا۔";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
 "GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ نے %2$@ سے ایڈمن کی مراعات ختم کردی۔";
@@ -2771,16 +2780,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@تا %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "گروپ سٹوری ہٹائیں";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "کیا آپ واقعی یہ سٹوری ڈیلیٹ کرنا چاہتے ہیں؟";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "گروپ چیٹ \"%@\" کے ممبرز اس سٹوری کو دیکھ سکتے اور اس کا جواب دے سکتے ہیں۔ آپ گروپ میں اس چیٹ کی ممبرشب اپ ڈیٹ کر سکتے ہیں۔";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%1$@” can view and reply to this story. You can update the membership for this chat in the group.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "یہ سٹوری کون دیکھ سکتا ہے";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "گروپ کی تجدید ہوئی۔";
@@ -2792,7 +2801,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "آپ نے تصویر ہٹا دی۔";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ نے تصویر ہٹا دی۔";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ نے تصویر ہٹا دی۔";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "گروپ فوٹو اپ ڈیٹ کیا گیا تھا۔";
@@ -2801,13 +2810,13 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "آپ نے تصویر کو اپ ڈیٹ کیا۔";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ نے تصویر کو اپ ڈیٹ کیا۔";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ نے تصویر کو اپ ڈیٹ کیا۔";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "آپ نے گروپ کی تجدید کی۔";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ کو اپ ڈیٹ کیا۔";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ کو اپ ڈیٹ کیا۔";
 
 /* Message indicating that the group's description was removed. */
 "GROUP_UPDATED_DESCRIPTION_REMOVED" = "گروپ کی تفصیل ہٹا دی گئی۔";
@@ -2816,7 +2825,7 @@
 "GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "گروپ کی تفصیل ہٹا دی گئی۔";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ کی تفصیل ہٹا دی۔";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ کی تفصیل ہٹا دی۔";
 
 /* Message indicating that the group's description was changed. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "گروپ کی تفصیل تبدیل کردی گئی۔";
@@ -2825,7 +2834,7 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_LOCAL_USER" = "آپ نے گروپ کی تفصیل تبدیل کردی۔";
 
 /* Message indicating that the group's description was changed by a remote user. Embeds {{ user who changed the name }}. */
-"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ کی تفصیل کو تبدیل کردیا۔";
+"GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ کی تفصیل کو تبدیل کردیا۔";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "گروپ کا نام ہٹا دیا گیا تھا۔";
@@ -2834,16 +2843,16 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "آپ نے گروپ کا نام ہٹا دیا۔";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ نے گروپ کا نام ہٹا دیا۔";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ کا نام ہٹا دیا۔";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "آپ نے گروپ کا نام تبدیل کر کے \"%@\" کردیا۔";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "آپ نے گروپ کا نام تبدیل کر کے \"%1$@\" کردیا۔";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ نے گروپ کا نام تبدیل کرکے \"%2$@\" کردیا۔";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "گروپ کا نام اب \"%@\" ہے۔";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "گروپ کا نام اب \"%1$@\" ہے۔";
 
 /* Message indicating that the group was migrated. */
 "GROUP_WAS_MIGRATED" = "اس گروپ کو نئے گروپ میں اپ گریڈ کیا گیا تھا۔";
@@ -2861,7 +2870,7 @@
 "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "منتظمین";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
-"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "صرف %@ ہی پیغامات بھیج سکتا ہے";
+"GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "صرف %1$@ ہی پیغامات بھیج سکتا ہے";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
 "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "کسی منتظم کو میسج کریں";
@@ -2873,7 +2882,7 @@
 "GROUPS_BLOCK_REQUEST_SHEET_BLOCK_BUTTON" = "درخواست بلاک کریں";
 
 /* Message for sheet offering to let the user block a request to join the group. Embeds {{ the requester's name }}. */
-"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%@ شامل ہونے یا گروپ لنک کے ذریعے اس گروپ میں شامل ہونے کی درخواست کرنے سے قاصر ہو گا۔ ایک ایڈمن پھر بھی انہیں شامل کر سکتا ہے۔";
+"GROUPS_BLOCK_REQUEST_SHEET_MESSAGE" = "%1$@ شامل ہونے یا گروپ لنک کے ذریعے اس گروپ میں شامل ہونے کی درخواست کرنے سے قاصر ہو گا۔ ایک ایڈمن پھر بھی انہیں شامل کر سکتا ہے۔";
 
 /* Title for sheet asking if the user wants to block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_SHEET_TITLE" = "بلاک کی درخواست؟";
@@ -2891,10 +2900,10 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "بلاک گروپ";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "بلاک گروپ اور %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "بلاک گروپ اور %1$@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "بلاک %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "بلاک %1$@";
 
 /* Label for 'invite friends to group' button. */
 "GROUPS_INVITE_FRIENDS_BUTTON" = "دوستوں کو مدعو کریں";
@@ -2918,13 +2927,13 @@
 "GROUPS_LEGACY_GROUP_ALERT_TITLE" = "لیگیسی بمقابلہ نیا گروپ";
 
 /* Format for indicator that a group cannot be used until it is migrated. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "اس گروپ کو اعلی درجے کی خصوصیات جیسے @ ذکر اور منتظمین کو چالو کرنے کے لئے۔ جن ممبروں نے اس گروپ میں اپنا نام یا تصویر شیئر نہیں کی ہے ان میں شرکت کی دعوت دی جائے گی۔ .%@.";
+"GROUPS_LEGACY_GROUP_BLOCKING_MIGRATION_FORMAT" = "اس گروپ کو اعلی درجے کی خصوصیات جیسے @ ذکر اور منتظمین کو چالو کرنے کے لئے۔ جن ممبروں نے اس گروپ میں اپنا نام یا تصویر شیئر نہیں کی ہے ان میں شرکت کی دعوت دی جائے گی۔ .%1$@.";
 
 /* Title for the 'can't upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TITLE" = "نئے گروپ میں اپ گریڈ نہیں کرسکتے ہیں";
 
 /* Text indicating that a legacy group can't be upgraded because it has too many members. Embeds {{ The maximum number of members allowed in a group. }}. */
-"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "اس گروپ کو نئے گروپ میں اپ گریڈ نہیں کیا جاسکتا کیونکہ اس کے بہت سارے ممبرز ہیں۔ زیادہ سے زیادہ گروپ سائز%@ہے جس کو اپ گریڈ کیا جاسکتا ہے۔";
+"GROUPS_LEGACY_GROUP_CANT_UPGRADE_ALERT_TOO_MANY_MEMBERS_FORMAT" = "اس گروپ کو نئے گروپ میں اپ گریڈ نہیں کیا جاسکتا کیونکہ اس کے بہت سارے ممبرز ہیں۔ زیادہ سے زیادہ گروپ سائز%1$@ہے جس کو اپ گریڈ کیا جاسکتا ہے۔";
 
 /* Explanation of group migration for groups that can't yet be migrated in the 'legacy group' alert views. */
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_1" = "جب گروپ کے تمام موجودہ ممبر Signal کا ایک ایسا ورژن استعمال کر رہے ہیں جو کسی نئے گروپ میں شامل ہونے کے قابل ہو تو ، اس گروپ کو اپ گریڈ کیا جائے گا۔";
@@ -2933,16 +2942,16 @@
 "GROUPS_LEGACY_GROUP_CANT_UPGRADE_YET_2" = "اپ گریڈ کرنے سے پہلے ہی پیغام کی تمام تاریخ اور میڈیا کو رکھا جائے گا۔";
 
 /* Brief explanation of legacy groups. Embeds {{ a \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "یہ لیگیسی گروپ ہے۔ گروپ منتظمین جیسی خصوصیات صرف نئے گروپس کیلئے دستیاب ہیں۔%@";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_FORMAT" = "یہ لیگیسی گروپ ہے۔ گروپ منتظمین جیسی خصوصیات صرف نئے گروپس کیلئے دستیاب ہیں۔%1$@";
 
 /* Indicates that a legacy group can't be upgraded because some members can't be migrated. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "یہ لیگیسی گروپ ابھی کسی نئے گروپ میں اپ گریڈ کرنے کے لئے تیار نہیں ہے۔ %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_MEMBERS_CANT_BE_MIGRATED_FORMAT" = "یہ لیگیسی گروپ ابھی کسی نئے گروپ میں اپ گریڈ کرنے کے لئے تیار نہیں ہے۔ %1$@.";
 
 /* Indicates that a legacy group can't be upgraded because it has too many members. Embeds {{ an \"learn more\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "اس لیگیسی گروپ کو نئے گروپ میں اپ گریڈ نہیں کیا جاسکتا کیونکہ یہ بہت بڑا ہے۔ %@.";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_TOO_MANY_MEMBERS_FORMAT" = "اس لیگیسی گروپ کو نئے گروپ میں اپ گریڈ نہیں کیا جاسکتا کیونکہ یہ بہت بڑا ہے۔ %1$@.";
 
 /* Explanation of legacy groups. Embeds {{ an \"upgrade\" link. }}. */
-"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "یہ لیگیسی گروپ ہے۔ @ ذکر اور منتظمین جیسی نئی خصوصیات تک رسائی حاصل کرنے کےلیئے. %@،";
+"GROUPS_LEGACY_GROUP_DESCRIPTION_WITH_UPGRADE_OFFER_FORMAT" = "یہ لیگیسی گروپ ہے۔ @ ذکر اور منتظمین جیسی نئی خصوصیات تک رسائی حاصل کرنے کےلیئے. %1$@،";
 
 /* Label indicating a legacy group. */
 "GROUPS_LEGACY_GROUP_INDICATOR" = "لیگیسی گروپ";
@@ -2996,7 +3005,7 @@
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_INVITED_MEMBERS_N" = "ان ممبروں کو دوبارہ اس گروپ میں شامل ہونے کے لئے دعوت نامہ قبول کرنے کی ضرورت ہوگی ، اور جب تک وہ قبول نہیں کریں گے گروپ پیغامات موصول نہیں ہوں گے۔";
 
 /* Body text for the 'possibly dropped member' section of the 'upgrade legacy group' alert view. */
-"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "یہ ممبر نئے گروپس میں شامل ہونے کے اہل نہیں ہے ، اور اسے گروپ سے نکال دیا جائے گا: ";
+"GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_1" = "یہ ممبر نئے گروپس میں شامل ہونے کے اہل نہیں ہے ، اور اسے گروپ سے نکال دیا جائے گا:";
 
 /* Body text for the 'possibly dropped members' section of the 'upgrade legacy group' alert view. */
 "GROUPS_LEGACY_GROUP_UPGRADE_ALERT_SECTION_POSSIBLY_DROPPED_MEMBERS_N" = "یہ ممبر نئے گروپس میں شامل ہونے کے اہل نہیں ہیں ، اور انہیں گروپ سے نکال دیا جائے گا:";
@@ -3059,28 +3068,28 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "تلا ‎ش کر یں";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "ڈرافٹ";
+"HOME_VIEW_DRAFT_PREFIX" = "ڈرافٹ ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "آپ کے کچھ رابطے پہلے سے Signal پر موجود ہیں،%@شامل کریں۔";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "آپ کے کچھ رابطے پہلے سے Signal پر موجود ہیں،%1$@شامل کریں۔";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "آپ کے کچھ رابطے پہلے سے Signal پر موجود ہیں،%@اور%@شامل کریں";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "آپ کے کچھ رابطے پہلے سے Signal پر موجود ہیں،%1$@اور%2$@شامل کریں";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "آپ کے کچھ رابطے پہلے سے Signal پر ہیں،%@،%@اور%@شامل کریں";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "آپ کے کچھ رابطے پہلے سے Signal پر ہیں،%1$@،%2$@اور%3$@شامل کریں";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "اپنی پہلی چیٹ یہاں شروع کریں۔";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ نے آپ کو گروپ میں شامل کیا";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%1$@ نے آپ کو گروپ میں شامل کیا";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "پیغام کی درخواست";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "'%@' کیلئے کوئی نتیجہ نہیں ملا";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "'%1$@' کیلئے کوئی نتیجہ نہیں ملا";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "حفاظتی خانہ";
@@ -3101,7 +3110,7 @@
 "IMAGE_EDITOR_BLUR_TOAST" = "اضافی چہروں یا علاقوں کو دھندلا کرنے کے لئے ڈرا کریں";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "آپ %@سے زیادہ آئٹمز کا اشتراک نہیں کر سکتے۔";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "آپ %1$@سے زیادہ آئٹمز کا اشتراک نہیں کر سکتے۔";
 
 /* Button that will present a view for the user to change the photos Signal has access to. */
 "IMAGE_PICKER_CHANGE_PHOTOS" = "فوٹو تبدیل کریں";
@@ -3155,16 +3164,16 @@
 "INBOX_VIEW_EMPTY_INBOX" = "ابھی چیٹس نہیں ہیں۔\nکسی دوست کو میسج کرکے شروع کریں۔";
 
 /* info message text in conversation view. {embeds callee name} */
-"INCOMING_CALL_FORMAT" = "%@ نے آپ کو فون کیا";
+"INCOMING_CALL_FORMAT" = "%1$@ نے آپ کو فون کیا";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "آپ اپنے فون یا iPad سے مطابقت پذیر پیغامات بھیج سکتے یا وصول کرسکتے ہیں۔ آپ کی سلامتی کے لئے ، چیٹ کی تاریخ کو نئے منسلک آلات میں منتقل نہیں کیا گیا ہے۔";
+"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, chat history isn't transferred to new linked devices.";
 
 /* Indicates that another user has changed their phone number. Embeds: {{ the user's name}} */
-"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%@نے اپنا فون نمبر تبدیل کیا۔";
+"INFO_MESSAGE_USER_CHANGED_PHONE_NUMBER_FORMAT" = "%1$@نے اپنا فون نمبر تبدیل کیا۔";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@Signal پر ہے!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%1$@Signal پر ہے!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "اسٹیکرز";
@@ -3177,6 +3186,9 @@
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "بے اثر آڈیو فائل۔";
+
+/* The provided proxy host address is not valid */
+"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "آپ اپنے دوستوں کو Signal میں شامل ہونے مدعو کرنے کیلئے iOS ترتیبات ایپ میں رسائی کرکے رابطوں کو فعال کرسکتے ہیں۔";
@@ -3200,7 +3212,7 @@
 "JOIN_CALL_PILL_BUTTON" = "شامل ہوں";
 
 /* Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot */
-"JOINED_WITH_DOT" = "%@·  %@";
+"JOINED_WITH_DOT" = "%1$@·  %2$@";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "All میڈیا پر جائیں";
@@ -3296,7 +3308,7 @@
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "مدد چاہیے؟";
 
 /* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "ہر آلہ پر ، ترتیبات کھولیں ";
+"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "ہر آلہ پر ، ترتیبات کھولیں";
 
 /* Third step for local network permission action sheet */
 "LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "\"لوکل نیٹ ورک\" کو آن کریں";
@@ -3347,7 +3359,7 @@
 "MEDIA_EDITOR_TEXT_FIELD_VIEW_ONCE_MEDIA" = "ایک مرتبہ دیکھا جانے والا میڈیا";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
-"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "ۤۤۤۤۤۤۤۤۤ+%@";
+"MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "ۤۤۤۤۤۤۤۤۤ+%1$@";
 
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "اس مہینے";
@@ -3399,6 +3411,9 @@
 
 /* Label for button to open a link. */
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "لنک کھولیں";
+
+/* Label for button to open a signal proxy. */
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "اسٹیکر پیک دیکھیں";
@@ -3515,13 +3530,13 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "بلاک افراد آپ کو کال کرنے یا پیغامات بھیجنے کے اہل نہیں ہوں گے۔";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "بلاک%@کریں؟";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "بلاک%1$@کریں؟";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "آپ اس گروپ کو چھوڑ دیں گے اور آپ کو پیغامات یا اپ ڈیٹ نہیں ملیں گے۔";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%@ کو بلاک اور چھوڑو؟";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%1$@ کو بلاک اور چھوڑو؟";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "حذف کریں";
@@ -3551,7 +3566,7 @@
 "MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "اگر آپ کو یقین نہیں ہے کہ درخواست کس کی طرف سے ہے تو ، نیچے دیئے گئے رابطوں کا جائزہ لیں اور کارروائی کریں۔";
 
 /* A header string above the requester's contact info */
-"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "درخواست ";
+"MESSAGE_REQUEST_NAME_COLLISON_REQUESTER_HEADER" = "درخواست";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "نظرثانی کی درخواست";
@@ -3572,7 +3587,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "بلاک";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ آپ کو پیغام دیں اور ان کے ساتھ اپنا نام اور تصویر شئیر کریں؟ آپ کو کوئی پیغامات موصول نہیں ہوں گے جب تک کہ آپ ان کو غیر مسدود نہیں کردیں گے۔";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%1$@ آپ کو پیغام دیں اور ان کے ساتھ اپنا نام اور تصویر شئیر کریں؟ آپ کو کوئی پیغامات موصول نہیں ہوں گے جب تک کہ آپ ان کو غیر مسدود نہیں کردیں گے۔";
 
 /* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "اس گروپ کو غیر مسدود کریں اور اس کے ممبروں کے ساتھ اپنا نام اور تصویر شئیر کریں؟ آپ کو کوئی پیغامات موصول نہیں ہوگا جب تک کہ آپ ان کو بلاک نہیں کردیں گے۔";
@@ -3587,13 +3602,13 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "حذف کریں";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@ کے ساتھ یہ چیٹ جاری رکھیں اور ان کے ساتھ اپنا نام اور تصویر بانٹیں؟";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%1$@ کے ساتھ یہ چیٹ جاری رکھیں اور ان کے ساتھ اپنا نام اور تصویر بانٹیں؟";
 
 /* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "اس گروپ کے ساتھ اپنی بات چیت جاری رکھیں اور اس کے ممبروں کے ساتھ اپنا نام اور تصویر بانٹیں؟";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ آپ کو پیغام دیں اور ان کے ساتھ اپنا نام اور تصویر شئیر کریں؟ جب تک آپ ان کو قبول نہ کریں تب تک وہ نہیں جانیں گے کہ آپ نے ان کا پیغام دیکھا ہے۔";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%1$@ آپ کو پیغام دیں اور ان کے ساتھ اپنا نام اور تصویر شئیر کریں؟ جب تک آپ ان کو قبول نہ کریں تب تک وہ نہیں جانیں گے کہ آپ نے ان کا پیغام دیکھا ہے۔";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "اس گروپ میں شامل ہوں اور اس کے ممبروں کے ساتھ اپنا نام اور تصویر بانٹیں؟ جب تک آپ ان کو قبول نہ کریں تب تک وہ نہیں جانیں گے کہ آپ نے ان کے پیغامات دیکھے ہیں۔";
@@ -3614,7 +3629,7 @@
 "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "آپ کی شمولیت کی درخواست گروپ منتظم کو بھیج دی گئی ہے۔ جب وہ کارروائی کرتے ہیں تو آپ کو مطلع کیا جائے گا۔";
 
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "بھیج دیا ";
+"MESSAGE_STATUS_DELIVERED" = "بھیج دیا";
 
 /* message status while message is downloading. */
 "MESSAGE_STATUS_DOWNLOADING" = "ڈاؤن لوڈ ہو رہا ہے";
@@ -3656,10 +3671,10 @@
 "MESSAGE_STATUS_VIEWED" = "دیکھا ہوا";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@مزید تصدیق کے طور پر نشان نہیں لگایا۔ آپشنز کیلئے کلک کریں۔";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%1$@مزید تصدیق کے طور پر نشان نہیں لگایا۔ آپشنز کیلئے کلک کریں۔";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@مزید تصدیق کے طور پر نشان نہیں لگایا۔ آپشنز کیلئے کلک کریں۔";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%1$@مزید تصدیق کے طور پر نشان نہیں لگایا۔ آپشنز کیلئے کلک کریں۔";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "اس گروپ کے ایک زیادہ ممبران تصدیق شدہ نہیں رہے۔ آپشنز کیلئے کلک کریں۔";
@@ -3710,7 +3725,7 @@
 "MY_STORIES_NO_STORIES" = "آپ کی اسٹوری کی اپ ڈیٹس یہاں دکھائی جائیں گی۔";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "تمام ماسوائے";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "تمام Signal کنکشنز";
@@ -3723,6 +3738,12 @@
 
 /* Name for the 'My Story' default story that sends to all the user's contacts. */
 "MY_STORY_NAME" = "میری اسٹوری";
+
+/* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choose who can view your story";
+
+/* Title for the my story settings sheet */
+"MY_STORY_SETTINGS_SHEET_TITLE" = "My Story Privacy";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "میری اسٹوری";
@@ -3779,7 +3800,7 @@
 "NEW_GROUP_DEFAULT_TITLE" = "نیا گروپ";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@کے لیے%@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%1$@کے لیے%2$@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "گروپ کا نام دیں";
@@ -3791,7 +3812,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "ممبران کو منتخب کریں";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%2$@ سے %1$@ پر   سٹوری";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "گروپ منتخب کریں";
@@ -3827,7 +3848,7 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "ناظرین";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "نئی سٹوری";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "نئی اسٹوری";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "موجودہ گروپ پر شیئر کریں";
@@ -3863,7 +3884,7 @@
 "NOTE_TO_SELF" = "اپنے لئے نوٹ کریں";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "آپ کو پیغامات موصول ہو سکتے تھے جب آپ %@کا دوبارہ ترتیب ہو رہا تھا۔";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "آپ کو پیغامات موصول ہو سکتے تھے جب آپ %1$@کا دوبارہ ترتیب ہو رہا تھا۔";
 
 /* Body for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "نئے پیغامات کیلئے اطلاعات موصول کرنے کے لئے:";
@@ -3986,7 +4007,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "اجازت کو منظور کریں";
 
 /* Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number} */
-"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "منتخب کریں کہ کون آپ کو اپنے فون نمبر سے Signal پر تلاش کرسکتا ہے%@";
+"ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT" = "منتخب کریں کہ کون آپ کو اپنے فون نمبر سے Signal پر تلاش کرسکتا ہے%1$@";
 
 /* Title of the 'onboarding phone number discoverability' view. */
 "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE" = "آپ کو آپ کے نمبر کے ساتھ کون مل سکتا ہے؟";
@@ -3995,7 +4016,7 @@
 "ONBOARDING_PHONE_NUMBER_PLACEHOLDER" = "آپ کا فون نمبر";
 
 /* Label indicating that registration has been ratelimited. Embeds {{remaining time string}}. */
-"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "دوبارہ کوشش کرنے سے پہلے براہ کرم چند منٹ انتظار کریں۔ (%@)";
+"ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT" = "دوبارہ کوشش کرنے سے پہلے براہ کرم چند منٹ انتظار کریں۔ (%1$@)";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "اپنا فون نمبر درج کریں";
@@ -4052,7 +4073,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "مجھے فون کرنا";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "مجھے %@ میں کال کریں";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "مجھے %1$@ میں کال کریں";
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "توثیقی کوڈ…";
@@ -4064,10 +4085,10 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "کوڈ دوبارہ بھیجیں";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "%@ میں کوڈ دوبارہ بھیجیں";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "%1$@ میں کوڈ دوبارہ بھیجیں";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "%@ہم نے کوڈ بھیجا ہے داخل کریں";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "%1$@ہم نے کوڈ بھیجا ہے داخل کریں";
 
 /* Title label for the onboarding verification page */
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "تصدیقی کوڈ";
@@ -4076,16 +4097,16 @@
 "OPEN_SETTINGS_BUTTON" = "ترتیبات";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@غائب پیغامات غیر فعال ہو رہے ہیں۔";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@غائب پیغامات غیر فعال ہو رہے ہیں۔";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@غائب پیغامات %@کے ٹائم کو ترتیب دے رہے ہیں۔";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%1$@غائب پیغامات %2$@کے ٹائم کو ترتیب دے رہے ہیں۔";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "signal تکنیکی مشکلات کا تجربہ کر رہا ہے۔جتنا جلدی ممکن ہو ہم سروس بحال کرنے کیلئے سخت محنت کر رہے ہیں۔";
 
 /* info message text in conversation view. {embeds callee name} */
-"OUTGOING_CALL_FORMAT" = "آپ نے %@ کو فون کیا";
+"OUTGOING_CALL_FORMAT" = "آپ نے %1$@ کو فون کیا";
 
 /* Button used to decline a payment request. */
 "PAYMENTS_ACTION_DECLINE_REQUEST" = "درخواست مسترد کریں";
@@ -4097,7 +4118,7 @@
 "PAYMENTS_CURRENCY_UNKNOWN" = "؟";
 
 /* Message for the 'decline a payment request' alert. Embeds {{ the name of the user requesting payment }}. */
-"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%@ مطلع کیا جائے گا کہ آپ نے انکار کردیا۔";
+"PAYMENTS_DECLINE_REQUEST_ALERT_MESSAGE_FORMAT" = "%1$@ مطلع کیا جائے گا کہ آپ نے انکار کردیا۔";
 
 /* Title for the 'decline a payment request' alert. */
 "PAYMENTS_DECLINE_REQUEST_ALERT_TITLE" = "اس درخواست کو مسترد کریں؟";
@@ -4136,7 +4157,7 @@
 "PAYMENTS_NEW_PAYMENT_ADD_MEMO" = "نوٹ شامل";
 
 /* Format for the 'balance' indicator. Embeds {{ the current payments balance }}. */
-"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "دستیاب بیلنس:%@";
+"PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT" = "دستیاب بیلنس:%1$@";
 
 /* Label for the 'confirm payment' button. */
 "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON" = "ادائیگی کی تصدیق کریں";
@@ -4154,7 +4175,7 @@
 "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS" = "آپ کے پاس اس ادائیگی کو مکمل کرنے کے لئے اتنی MOB نہیں ہے۔";
 
 /* Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}. */
-"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "آپ کے پاس اس ادائیگی کو مکمل کرنے کے لئے اتنی MOB نہیں ہے۔ آپ کا موجودہ بیلنس%@ ہے۔";
+"PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT" = "آپ کے پاس اس ادائیگی کو مکمل کرنے کے لئے اتنی MOB نہیں ہے۔ آپ کا موجودہ بیلنس%1$@ ہے۔";
 
 /* Indicates that a payment failed due to being invalid. */
 "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION" = "غلط ٹرانزیکشن";
@@ -4172,7 +4193,7 @@
 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE" = "نیٹ ورک کی فیس";
 
 /* Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}. */
-"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "تخمینہ %@";
+"PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT" = "تخمینہ %1$@";
 
 /* Label for the 'invalid amount' button. */
 "PAYMENTS_NEW_PAYMENT_INVALID_AMOUNT" = "غلط رقم";
@@ -4193,10 +4214,10 @@
 "PAYMENTS_NEW_PAYMENT_PROCESSING" = "پروسیسنگ";
 
 /* Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}. */
-"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "%@کے لئے";
+"PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT" = "%1$@کے لئے";
 
 /* Label for the 'new payment request' button. */
-"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "درخواست ";
+"PAYMENTS_NEW_PAYMENT_REQUEST_BUTTON" = "درخواست";
 
 /* Label for the payments notification banner for a single payment notification. */
 "PAYMENTS_NOTIFICATION_BANNER_1" = "ادائیگی کی 1 نئی اطلاع";
@@ -4205,7 +4226,7 @@
 "PAYMENTS_NOTIFICATION_BANNER_1_WITH_DETAILS_FORMAT" = "%1$@ نے آپ کو %2$@ بھیجے";
 
 /* Format for the payments notification banner for multiple payment notifications. Embeds: {{ the number of unread payment notifications }}. */
-"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%@ نئی ادائیگی کی اطلاعات";
+"PAYMENTS_NOTIFICATION_BANNER_N_FORMAT" = "%1$@ نئی ادائیگی کی اطلاعات";
 
 /* Status indicator for incoming payments which are complete. */
 "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE" = "ادائیگی مکمل";
@@ -4304,13 +4325,13 @@
 "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON" = "گروپ میں شامل کریں";
 
 /* Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "گروپ میں \"%@\" شامل کریں؟";
+"PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT" = "گروپ میں \"%1$@\" شامل کریں؟";
 
 /* Title of 'deny member request to join group' button. */
 "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON" = "درخواست کو مسترد کریں";
 
 /* Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}. */
-"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%@\" کی طرف سے درخواست رد کرنی ہے؟ وہ گروپ لنک کے ذریعے دوباہ شامل ہونے کی درخواست نہیں دے سکیں گے۔";
+"PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT" = "\"%1$@\" کی طرف سے درخواست رد کرنی ہے؟ وہ گروپ لنک کے ذریعے دوباہ شامل ہونے کی درخواست نہیں دے سکیں گے۔";
 
 /* Label indicating that a group has no pending member requests. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS" = "کوئی رکن کی درخواستیں زیر التواء نہیں ہیں۔";
@@ -4319,25 +4340,25 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "کوئی دعوت نامہ نہیں ہے۔";
 
 /* Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "\"%@\" شامل.";
+"PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT" = "\"%1$@\" شامل.";
 
 /* Label for the 'view requests' button in the pending member requests banner. */
 "PENDING_GROUP_MEMBERS_REQUEST_BANNER_VIEW_REQUESTS" = "درخواستیں دیکھیں";
 
 /* Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}. */
-"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%@\" مسترد.";
+"PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT" = "\"%1$@\" مسترد.";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "دعوت نامہ کالعدم کریں";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" کے لئے گروپ دعوت کو کالعدم کریں؟";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%1$@\" کے لئے گروپ دعوت کو کالعدم کریں؟";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "گروپ کے دوسرے ممبروں کے ذریعہ مدعو کیے گئے لوگوں کی تفصیلات نہیں دکھائی گئیں۔ اگر مدعو شامل ہونے کا انتخاب کرتے ہیں تو ، اس وقت ان کی معلومات گروپ کے ساتھ شیئر کی جائیں گی۔ وہ اس گروپ میں شامل ہونے تک کوئی پیغامات نہیں دیکھیں گے۔";
 
 /* Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "اس فہرست میں شامل افراد گروپ لنک کے ذریعے \"%@\" میں شامل ہونے کی کوشش کر رہے ہیں۔";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT" = "اس فہرست میں شامل افراد گروپ لنک کے ذریعے \"%1$@\" میں شامل ہونے کی کوشش کر رہے ہیں۔";
 
 /* Title for the 'invalid invites' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES" = "غلط دعوت نامے";
@@ -4385,7 +4406,7 @@
 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION" = "Signal پر موجود کوئی بھی آپ کو آپ کے فون نمبر کے ساتھ نہیں تلاش کر سکے گا۔ آپ ان لوگوں کے لئے بطور رابطہ نظر نہیں آئیں گے جن کے رابطوں میں آپ کا فون نمبر ہے اور دوسرے آپ کو تلاش میں آپ کے فون نمبر کے ساتھ تلاش نہیں کرسکیں گے۔";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
-"PHONE_NUMBER_EXAMPLE_FORMAT" = "مثال کے طور پر:%@";
+"PHONE_NUMBER_EXAMPLE_FORMAT" = "مثال کے طور پر:%1$@";
 
 /* A user friendly name for the 'contacts only' phone number sharing mode. */
 "PHONE_NUMBER_SHARING_CONTACTS_ONLY" = "میرے رابطے";
@@ -4406,7 +4427,7 @@
 "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION" = "کوئی بھی آپ کا فون نمبر Signal پر نہیں دیکھے گا۔";
 
 /* Format for phone number label with an index. Embeds {{Phone number label (e.g. 'home')}} and {{index, e.g. 2}}. */
-"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%@%@";
+"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT" = "%1$@%2$@";
 
 /* Label for 'Home' phone numbers. */
 "PHONE_NUMBER_TYPE_HOME" = "گھر";
@@ -4616,13 +4637,13 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "میڈیا چلائیں";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "آپ نے تصدیق کے طور پر%@نشان نہیں لگایا۔";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "آپ نے تصدیق کے طور پر%1$@نشان نہیں لگایا۔";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "تصدیق شدہ";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@تصدیق شدہ ہے۔";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%1$@تصدیق شدہ ہے۔";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "سکین کرنے کیلئے کلک کریں";
@@ -4631,7 +4652,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "تصدیق شدہ کلیئر کریں";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "یہ آپ کے حفاظتی نمبر%@کیساتھ نہیں ملتا۔ کیا آپ درست رابطہ کی تصدیق کررہے ہیں؟";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "یہ آپ کے حفاظتی نمبر%1$@کیساتھ نہیں ملتا۔ کیا آپ درست رابطہ کی تصدیق کررہے ہیں؟";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "آپ کے کلپ بورڈ میں نمبر اس چیٹ کے لئے صحیح حفاظتی نمبر کی طرح نہیں لگتا ہے۔";
@@ -4640,7 +4661,7 @@
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal کو آپ کے کلپ بورڈ میں حفاظتی نمبر نہیں ملا۔آپ نے درست طریقے سے کاپی کیا تھا؟";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "ہر Signal صارفین کا جوڑا ایک واضع حفاظتی نمبر کا اشتراک کرتا ہے۔ دوبارہ چیک کریں کہ %@یہ جو واضع حفاظتی نمبر ظاہر ہو رہا ہے آپ کا ہے۔";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "ہر Signal صارفین کا جوڑا ایک واضع حفاظتی نمبر کا اشتراک کرتا ہے۔ دوبارہ چیک کریں کہ %1$@یہ جو واضع حفاظتی نمبر ظاہر ہو رہا ہے آپ کا ہے۔";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "آپ Signal کا پرانا ورژن چلا رہے ہیں۔ تصدیق کرنے سے پہلے آپ کو تجدید کرنے کی ضرورت ہے۔";
@@ -4652,7 +4673,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "سکین کیا گیا کوڈ حفاظتی نمبر سے نہیں ملتا۔کیا آپ دونوں Signal کے اپ ٹو ڈیٹ ورژن پر ہیں؟";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "اگر آپ%@کے ساتھ اپنے end-to-end encryption کی حفاظت کی تصدیق کرنا چاہتے ہیں تو ، مندرجہ بالا نمبروں کا ان کی ڈیوائس پر موجود نمبروں سے موازنہ کریں۔\n\nمتبادل کے طور پر،آپ ان کے فون پر کوڈ سکین کر سکتے ہیں،یا ان سے اپنا کوڈ سکین کرنے کا کہ سکتے ہیں۔";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "اگر آپ%1$@کے ساتھ اپنے end-to-end encryption کی حفاظت کی تصدیق کرنا چاہتے ہیں تو ، مندرجہ بالا نمبروں کا ان کی ڈیوائس پر موجود نمبروں سے موازنہ کریں۔\n\nمتبادل کے طور پر،آپ ان کے فون پر کوڈ سکین کر سکتے ہیں،یا ان سے اپنا کوڈ سکین کرنے کا کہ سکتے ہیں۔";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "حفاظتی نمبر کی تصدیق کریں";
@@ -4673,7 +4694,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ہٹا دیں";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "یہ فرد یہ سٹوری مزید نہیں دیکھ سکے گا۔";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ کو ہٹانا ہے؟";
@@ -4709,13 +4730,13 @@
 "PROFILE_BIO_VIEW_TITLE" = "متعلق";
 
 /* Title for the profile bio view. Embeds {{ the number of characters that can be added to the profile bio without hitting the length limit }}. */
-"PROFILE_BIO_VIEW_TITLE_FORMAT" = " (%@) کے بارے میں";
+"PROFILE_BIO_VIEW_TITLE_FORMAT" = " (%1$@) کے بارے میں";
 
 /* The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%@ سے اپنے پروفائل کا نام %@ تبدیل کر کے%@ کر دیا۔";
+"PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT" = "%1$@ سے اپنے پروفائل کا نام %2$@ تبدیل کر کے%3$@ کر دیا۔";
 
 /* The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name} */
-"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%@ نے اپنے پروفائل کا نام %@ رکھ دیا۔";
+"PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT" = "%1$@ نے اپنے پروفائل کا نام %2$@ رکھ دیا۔";
 
 /* Title for the profile name view. */
 "PROFILE_NAME_VIEW_TITLE" = "تمھارا نام";
@@ -4756,6 +4777,21 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "پروفائل ";
 
+/* The title for the address of the signal proxy */
+"PROXY_ADDRESS" = "Proxy Address";
+
+/* The provided proxy connected successfully */
+"PROXY_CONNECTED_SUCCESSFULLY" = "You are connected to the proxy. You can turn the proxy off at any time from Settings.";
+
+/* The provided proxy couldn't connect */
+"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+
+/* Placeholder text for signal proxy host */
+"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+
+/* Title for the signal proxy settings */
+"PROXY_SETTINGS_TITLE" = "Proxy";
+
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "پڑھے ہوئے کے بطور نشان لگائیں";
 
@@ -4772,7 +4808,7 @@
 "QUESTIONMARK_PUNCTUATION" = "؟";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "%1$@";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "اصل میسج نہیں ملا۔";
@@ -4787,10 +4823,10 @@
 "QUOTED_REPLY_REACTION_TO_OWN_STORY" = "آپ کی اسٹوری پر ردعمل دیا";
 
 /* Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%@ کی اسٹوری پر ردعمل دیا";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT" = "%1$@ کی اسٹوری پر ردعمل دیا";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
-"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%@ · اسٹوری";
+"QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · اسٹوری";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "منسلک مواد";
@@ -4811,49 +4847,46 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "ویڈیو";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "سب.%@";
+"REACTION_DETAIL_ALL_FORMAT" = "سب.%1$@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "آپ کے پیغام پر %@ ردعمل کا اظہار کیا";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "آپ کے پیغام پر %1$@ ردعمل کا اظہار کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "آپ کے البم پر %@ اظہار خیال کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "آپ کے البم پر %1$@ اظہار خیال کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "آپ کے آڈیو پر %@ اظہار خیال کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "آپ کے آڈیو پر %1$@ اظہار خیال کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "آپ کے رابطے کے شیئر پر %@ اظہار خیال کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "آپ کے رابطے کے شیئر پر %1$@ اظہار خیال کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "آپ کی فائل پر %@ اظہار خیال کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "آپ کی فائل پر %1$@ اظہار خیال کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "آپ کے GIF پر %@ اظہار خیال کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "آپ کے GIF پر %1$@ اظہار خیال کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "آپ کی تصویر پر %@ اظہار خیال کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "آپ کی تصویر پر %1$@ اظہار خیال کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "آپ کے اسٹیکر پر %@ اظہار خیال کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "آپ کے اسٹیکر پر %1$@ اظہار خیال کیا";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "اس پر %@ اظہار خیال کیا: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "اس پر %1$@ اظہار خیال کیا: \"%2$@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "آپ کی ویڈیو پر %@ اظہار خیال کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "آپ کی ویڈیو پر %1$@ اظہار خیال کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "ایک بار آپ کے ملاحظہ کرنے والے میڈیا پر %@ ردعمل کا اظہار کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "ایک بار آپ کے ملاحظہ کرنے والے میڈیا پر %1$@ ردعمل کا اظہار کیا";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "آپ کے آڈیو پیغام پر %@ ردعمل ظاہر کیا";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "آپ کے آڈیو پیغام پر %1$@ ردعمل ظاہر کیا";
 
 /* Pressing this button marks a thread as read */
 "READ_ACTION" = "پڑھ لیا";
-
-/* Error message indicating that a user can't be added to a group until they upgrade their app. */
-"RECIPIENT_PICKER_ERROR_CANNOT_ADD_TO_GROUP_BECAUSE_USER_HAS_OUTDATED_CLIENT" = "اس صارف کو اس گروپ میں شامل نہیں کیا جاسکتا جب تک کہ وہ Signal کو اپ گریڈ نہ کریں۔";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "صارف کو منتخب نہیں کیا جاسکتا۔";
@@ -4949,13 +4982,13 @@
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE" = "اس نمبر پر توثیقی کوڈ بھیجا جائے گا۔ کیا آپ کا فون نمبر اوپر ہے؟";
 
 /* Title for confirmation alert during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "نمبر کی تصدیق: %@";
+"REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT" = "نمبر کی تصدیق: %1$@";
 
 /* A button allowing user to cancel registration and edit a phone number */
 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON" = "ترتیب دیں";
 
 /* Label for the progress spinner shown during phone number registration. Embeds {{phone number}}. */
-"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%@ تصدیق ...";
+"REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT" = "%1$@ تصدیق ...";
 
 /* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "مسترد کریں";
@@ -4985,10 +5018,10 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION" = "بہرصورت شامل کریں";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "کہیں بھی کال کریں ";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "کہیں بھی کال کریں";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
-"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "بہر حال بھیجیں ";
+"SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "بہر حال بھیجیں";
 
 /* Message for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "مندرجہ ذیل لوگوں نے انسٹال یا ان میں تبدیلیاں کی ہیں۔ رازداری کو یقینی بنانے کے لیئے ان کے ساتھ اپنے حفاظتی نمبر کی تصدیق کریں۔";
@@ -5003,10 +5036,10 @@
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "دیکھیں";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "آپ کا signal حفاظتی نمبر:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "آپ کا signal حفاظتی نمبر:\n%1$@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "آپ کا حفاظتی نمبر %@کیساتھ تبدیل ہو چکا ہے۔آپ اس کی تصدیق کرنا چاہتے ہیں۔";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "آپ کا حفاظتی نمبر %1$@کیساتھ تبدیل ہو چکا ہے۔آپ اس کی تصدیق کرنا چاہتے ہیں۔";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "اپنی رابطہ ڈیوائس پر QR کوڈ سکین کریں۔";
@@ -5168,7 +5201,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "غیر محفوظ ایس ایم ایس کے ذریعے دوست کو مدعو کریں؟";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "کیا آپ مندرجہ ذیل نمبر کو Signal پر مدعو کرنا چاہتے ہیں:";
+"SEND_SMS_INVITE_TITLE" = "کیا آپ مندرجہ ذیل نمبر کو Signal پر مدعو کرنا چاہتے ہیں: ";
 
 /* String describing high quality sent media */
 "SENT_MEDIA_QUALITY_HIGH" = "اونچا";
@@ -5252,7 +5285,7 @@
 "SETTINGS_APPEARANCE_TITLE" = "ظہور ہونا";
 
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
-"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@(پہلے سے طے شدہ)";
+"SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%1$@(پہلے سے طے شدہ)";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "بلاکڈ صارف جمح کریں";
@@ -5273,13 +5306,13 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "اپنے رابطوں پر اپنا IP ایڈریس ظاہر کرنے سے بچنے کیلئے Signal سرور کے ذریعے تمام کالوں کو ریلے کریں۔ فعال کرنے سے کال کا معیار کم ہوجائے گا۔";
 
 /* Label for the 'edit phone number' button in the 'change phone number' views. */
-"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = " نمبر ترتیب کرے";
+"SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON" = "نمبر ترتیب کرے";
 
 /* Label for button in settings views to change phone number */
 "SETTINGS_CHANGE_PHONE_NUMBER_BUTTON" = "فون نمبر تبدیل کرے";
 
 /* Message indicating that 'change phone number' was successful. Embeds: {{ the user's new phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "آپ کا فون نمبر %@پر تبدیل کر دیا گیا ہے";
+"SETTINGS_CHANGE_PHONE_NUMBER_CHANGE_SUCCESSFUL_FORMAT" = "آپ کا فون نمبر %1$@پر تبدیل کر دیا گیا ہے";
 
 /* Label for the 'confirm change phone number' button in the 'change phone number' views. */
 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON" = "نمبر تبدیل کرے";
@@ -5294,7 +5327,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT" = "%1$@ (%2$@)";
 
 /* Format for 'example phone numbers' in the 'change phone number' settings. Embeds: {{ the example phone number }} */
-"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "مثال کے طور پر:%@";
+"SETTINGS_CHANGE_PHONE_NUMBER_EXAMPLE_PHONE_NUMBER_FORMAT" = "مثال کے طور پر:%1$@";
 
 /* Title for the 'new phone number' section in the 'change phone number' settings. */
 "SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE" = "آپ کا نیا نمبر";
@@ -5306,7 +5339,7 @@
 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD" = "فون نمبر";
 
 /* Format for the 'change phone number' progress view. Embeds: {{ the user's new phone number }}. */
-"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%@ کی تصدیق ہو رہی ہے";
+"SETTINGS_CHANGE_PHONE_NUMBER_PROGRESS_FORMAT" = "%1$@ کی تصدیق ہو رہی ہے";
 
 /* Description text in the 'change phone number splash' view. */
 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION" = "اپنا موجودہ فون نمبر کسی نئے فون نمبر پر تبدیل کرنے کے لیے اس کا استعمال کریں۔ آپ اس تبدیلی کو کالعدم نہیں کر سکتے۔\n\nجاری رکھنے سے پہلے، یقینی بنائیں کہ آپ کا نیا نمبر SMS یا کالز وصول کر سکتا ہے۔";
@@ -5366,7 +5399,7 @@
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_DONT_TRANSFER" = "منتقلی نہ کریں";
 
 /* Body for the alert confirming whether the user wants transfer their payments balance before deleting their account. Embeds: {{ the current payment balance }}. */
-"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "آپ کے پاس %@ کا بیلنس ہے۔ اگر آپ اپنا اکاؤنٹ حذف کرنے سے قبل اپنے فنڈز کو دوسرے Wallet کے پتے پر منتقل نہیں کرتے ہیں تو ، آپ اسے ہمیشہ کے لئے کھو دیں گے۔";
+"SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_MESSAGE_FORMAT" = "آپ کے پاس %1$@ کا بیلنس ہے۔ اگر آپ اپنا اکاؤنٹ حذف کرنے سے قبل اپنے فنڈز کو دوسرے Wallet کے پتے پر منتقل نہیں کرتے ہیں تو ، آپ اسے ہمیشہ کے لئے کھو دیں گے۔";
 
 /* Title for the alert confirming whether the user wants transfer their payments balance before deleting their account. */
 "SETTINGS_DELETE_ACCOUNT_PAYMENTS_BALANCE_ALERT_TITLE" = "ادائیگیوں کا بیلنس منتقل کریں؟";
@@ -5480,7 +5513,7 @@
 "SETTINGS_PAYMENTS_ACTIVATE_PAYMENTS_CONFIRM_VIEW_TERMS" = "موبائل کوائن کی شرائط دیکھیں";
 
 /* Label for 'add money' view in the payment settings. */
-"SETTINGS_PAYMENTS_ADD_MONEY" = " فنڈز شامل کریں";
+"SETTINGS_PAYMENTS_ADD_MONEY" = "فنڈز شامل کریں";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
 "SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "فنڈز شامل کرنے کے لئے ، اپنے Wallet کے پتے پر موبائل کوائن بھیجیں۔ اپنے تبادلے سے اپنے اکاؤنٹ سے لین دین شروع کریں جو موبائل کوائن کو سپورٹ کرتا ہے ، پھر کیو آر کوڈ اسکین کریں یا اپنے بٹوے کے پتے کو کاپی کریں۔";
@@ -5627,7 +5660,7 @@
 "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION" = "اگر آپ اپنے Signal پن کی تصدیق کرتے ہیں تو آپ Signal کو دوبارہ انسٹال کرتے وقت آپ کا بیلنس خود بخود بحال ہوجائے گا۔ آپ بازیافت والے فقرے کا استعمال کرتے ہوئے اپنے بیلنس کو بھی بحال کرسکتے ہیں ، جو آپ کے لئے 24 الفاظ کا جملہ ہے۔ اسے لکھ کر محفوظ جگہ پر محفوظ کریں۔";
 
 /* Label for the 'add money' button in the 'send payment' UI. */
-"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = " فنڈز شامل کریں";
+"SETTINGS_PAYMENTS_PAYMENT_ADD_MONEY" = "فنڈز شامل کریں";
 
 /* Label for the 'MobileCoin block index' in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_BLOCK_INDEX" = "بلاک نمبر";
@@ -5639,7 +5672,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED" = "وصول ہو گیا ہے";
 
 /* Format for indicator that you received a payment in the payment details view in the app settings. Embeds: {{ the user who sent you the payment }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%@ سے موصول ہوا";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_RECEIVED_FORMAT" = "%1$@ سے موصول ہوا";
 
 /* Label for the sender in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENDER" = "کی طرف سے بھیجا";
@@ -5651,7 +5684,7 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT" = "بھیجا گیا";
 
 /* Format for indicator that you sent a payment in the payment details view in the app settings. Embeds: {{ the user who you sent the payment to }}. */
-"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%@کو بھیجا";
+"SETTINGS_PAYMENTS_PAYMENT_DETAILS_SENT_FORMAT" = "%1$@کو بھیجا";
 
 /* Label for the transaction status in the payment details view in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS" = "صورتحال";
@@ -5663,16 +5696,16 @@
 "SETTINGS_PAYMENTS_PAYMENT_DETAILS_STATUS_FOOTER_DEFRAGMENTATION" = "جب آپ کے پاس موجود سکے کو ٹرانزیکشن کو مکمل کرنے کے لئے جوڑ نہیں کیا جاسکتا ہے تو \"Coin cleanup fee\" وصول کی جاتی ہے۔ Cleanup آپ کو ادائیگی بھیجنا جاری رکھنے کی اجازت دے گی۔";
 
 /* Message for the 'insufficient balance for payment' alert. Embeds: {{ The current payments balance }}. */
-"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "آپ کے پاس اس ادائیگی کو مکمل کرنے کے لئے اتنی MOB نہیں ہے۔ آپ کا موجودہ بیلنس%@ ہے۔";
+"SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_MESSAGE_FORMAT" = "آپ کے پاس اس ادائیگی کو مکمل کرنے کے لئے اتنی MOB نہیں ہے۔ آپ کا موجودہ بیلنس%1$@ ہے۔";
 
 /* Title for the 'insufficient balance for payment' alert. */
 "SETTINGS_PAYMENTS_PAYMENT_INSUFFICIENT_BALANCE_ALERT_TITLE" = "ناکافی بیلنس";
 
 /* Format string for the sender of an incoming payment. Embeds: {{ the name of the sender of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "%@ کی طرف سے";
+"SETTINGS_PAYMENTS_PAYMENT_USER_INCOMING_FORMAT" = "%1$@ کی طرف سے";
 
 /* Format string for the recipient of an outgoing payment. Embeds: {{ the name of the recipient of the payment}}. */
-"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "%@کے لئے";
+"SETTINGS_PAYMENTS_PAYMENT_USER_OUTGOING_FORMAT" = "%1$@کے لئے";
 
 /* Message indicating that payments have been disabled in the app settings. */
 "SETTINGS_PAYMENTS_PAYMENTS_DISABLED_TOAST" = "ادائیگی غیر فعال ہوگئی۔";
@@ -5747,7 +5780,7 @@
 "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE" = "بازیابی کی عبارت";
 
 /* Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}. */
-"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "لفظ داخل کریں%@";
+"SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT" = "لفظ داخل کریں%1$@";
 
 /* Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views. */
 "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE" = "بازیافت کا غلط جملہ۔";
@@ -5795,10 +5828,10 @@
 "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER" = "To: Wallet کا پتہ سکین کریں یا درج کریں";
 
 /* Label for 'transfer currency out' view in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = " ایکسچینج میں منتقل کریں";
+"SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE" = "ایکسچینج میں منتقل کریں";
 
 /* Label for the 'transfer to exchange' button in the payment settings. */
-"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = " ایکسچینج میں منتقل کریں";
+"SETTINGS_PAYMENTS_TRANSFER_TO_EXCHANGE" = "ایکسچینج میں منتقل کریں";
 
 /* Message indicating that 'payments passphrase review' is complete. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COMPLETE_TOAST" = "بازیافت فقرے سیٹ اپ مکمل۔";
@@ -5816,7 +5849,7 @@
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_INVALID_WORDS" = "دونوں الفاظ غلط ہیں۔ دوبارہ کوشش کریں.";
 
 /* Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}. */
-"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "لفظ %@";
+"SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT" = "لفظ %1$@";
 
 /* Title for the 'confirm words' step of the 'view payments passphrase' views. */
 "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_TITLE" = "بازیابی کے جملے کی تصدیق کریں";
@@ -5894,7 +5927,7 @@
 "SETTINGS_PINS_TITLE" = "Signal پن";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "سنسرشپ کا ٹور ، ریلے کالز ، اور سیل بھیجنے والے کی ترتیبات۔";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "اعلی' درجے کی";
@@ -5978,10 +6011,10 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "iOS کو تجاویز کے اشتراک اور اطلاعات جیسی خصوصیات کے لیے Signal روابط اور چیٹس تک رسائی کی اجازت دیں۔";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "اپنی سٹوریز اور انہیں دیکھنے والوں کا نظم کریں۔";
+"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
 
 /* Label for the stories section of the settings view */
-"SETTINGS_STORIES_TITLE" = "سٹوریز";
+"SETTINGS_STORIES_TITLE" = "اسٹوریز";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "رجسٹریشن لاک";
@@ -6014,7 +6047,7 @@
 "SHARE_ACTION_MESSAGE" = "پیغام";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "آپ کا حفاظتی نمبر ابھی %@کیساتھ تبدیل ہو چکا ہے۔ دوبارہ بھیجنے سے پہلے مین ایپ میں تصدیق کریں۔";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "آپ کا حفاظتی نمبر ابھی %1$@کیساتھ تبدیل ہو چکا ہے۔ دوبارہ بھیجنے سے پہلے مین ایپ میں تصدیق کریں۔";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "لوڈ ہو رہا ہے۔۔۔";
@@ -6152,7 +6185,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "چیٹ پر جائیں";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "آپ اس سٹوری کا جواب نہیں دے سکتے کیونکہ آپ اس گروپ کے ممبر نہیں رہے۔";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "مخفی سٹوریز";
@@ -6161,10 +6194,13 @@
 "STORIES_HIDE_STORY_ACTION" = "اسٹوری مخفی کریں";
 
 /* Message asking the user if they are sure they want to hide stories from {{other user's name}} */
-"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%@ کی جانب سے نئے سٹوری اپڈیٹس، سٹوریز کی فہرست کے بالائی حصے میں مزید ظاہر نہیں ہوں گی۔";
+"STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE" = "%1$@ کی جانب سے نئے سٹوری اپڈیٹس، سٹوریز کی فہرست کے بالائی حصے میں مزید ظاہر نہیں ہوں گی۔";
 
 /* Title asking the user if they are sure they want to hide stories from another user */
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "سٹوری مخفی کریں؟";
+
+/* Short context menu action to hide the selected story */
+"STORIES_HIDE_STORY_ACTION_SHORT" = "Hide";
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "سٹوری مخفی کر دی گئی";
@@ -6200,28 +6236,28 @@
 "STORIES_SAVE_STORY_ACTION" = "محفوظ کریں";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "سٹوریز خود ہی 24 گھنٹوں کے بعد غائب ہو جاتی ہیں۔ اپنی سٹوریز دیکھنے والوں کا انتخاب کریں یا مخصوص ناظرین یا گروپس کے لیے ئنی سٹوریز بنائیں۔";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "سٹوریز خود کار طور پر 24 گھنٹوں کے بعد غائب ہو جائیں گی۔ انتخاب کریں کہ کون آپ کی سٹوریز دیکھ سکتا یا مخصوص ناظرین یا گروپس کے ساتھ ئنی سٹوریز تخلیق کر سکتا ہے۔";
 
 /* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "میری سٹوریز";
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "میری اسٹوریز";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "اسٹوری کی رازداری";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "آپ سٹوریز شیئر کرنے یا دیکھنے کے مزید قابل نہیں ہوں گے۔ آپ کی جانب سے حالیہ طور پر شیئر کردہ کوئی بھی سٹوریز ان کے زائد المیعاد ہو جانے تک دوسروں کو دکھائی دیں گی۔";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "سٹوریز آپشن سے نکلنے پر آپ مزید سٹوریز دیکھ یا شیئر نہیں کر سکیں گے۔";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "اگر آپ سٹوریز غیر منتخب کرتے ہیں تو آپ سٹوریز مزید شیئر کرنے یا دیکھنے سے قاصر ہوں گے۔";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "سٹوریز آف کریں";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "سٹوریز شیئر کریں اور دوسروں کی سٹوریز دیکھیں۔ سٹوریز خود ہی 24 گھنٹے بعد غائب ہو جائیں گی۔";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "سٹوریز آن کریں";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "اشتراک کریں";
@@ -6232,11 +6268,14 @@
 /* Context menu action to unhide the selected story */
 "STORIES_UNHIDE_STORY_ACTION" = "سٹوری غیر مخفی کریں";
 
+/* Short context menu action to unhide the selected story */
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Unhide";
+
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "سٹوری غیر مخفی کر دی گئی";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "میسج پڑھنے کا ثبوت فعال کریں تاکہ دیکھ سکیں کہ کس نے آپ کی سٹوریز دیکھی ہیں۔";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "ویوز";
@@ -6245,10 +6284,10 @@
 "STORY_COMPOSER_CAMERA" = "کیمرہ";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "لنک لوڈ نہیں کر سکے۔ اپنا انٹرنیٹ چیک کریں اور دوبارہ کوشش کریں۔";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "ناظرین کے ساتھ اپنی سٹوری کا لنک شیئر کریں";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "ناظرین کے ساتھ اپنی اسٹوری کا لنک شیئر کریں";
 
 /* Placeholder text in text stories compose UI */
 "STORY_COMPOSER_TAP_ADD_TEXT" = "متن شامل کرنے کے لیے ٹیپ کریں";
@@ -6269,13 +6308,13 @@
 "STORY_PRIVACY_SETTINGS" = "رازداری";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "آپ کی سٹوری پر %1$@ ردعمل دیا";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "سٹوری پر %@ ردعمل دیا";
+"STORY_REACTION_QUOTE_FORMAT" = "Reacted %1$@ to a story";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "%2$@ کی سٹوری پر %1$@ ردعمل دیا";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "جواب دیں";
@@ -6296,10 +6335,10 @@
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "صرف ان سے شیئر کریں...";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "صرف ان کے ساتھ شیئر کریں...";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "تمام ماسوائے...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "بھیجنے میں ناکام";
@@ -6320,13 +6359,13 @@
 "STORY_SENDING" = "بھیج رہا ہے ...";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "انتخاب کریں کہ کون سے Signal کنکشنز آپ کی سٹوری دیکھ سکتے ہیں۔ تبدیلیاں اس سٹوریز کو متاثر نہیں کریں گی جنہیں آپ پہلے ہی بھیج چکے ہیں۔";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "یہ سٹوری کون دیکھ سکتا ہے";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %1$ds clips and sent as multiple stories.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "آگے بڑھنے کے لیے ٹیپ کریں";
@@ -6347,7 +6386,7 @@
 "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD" = "کلپ بورڈ پر سبسکرائبر کی id کاپی کریں";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "آپ کا حفاظتی نمبر%@کیساتھ میچ ہے۔آپ تصدیق کے طور پر اس رابطہ کو نشان لگا سکتے ہیں۔";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "آپ کا حفاظتی نمبر%1$@کیساتھ میچ ہے۔آپ تصدیق کے طور پر اس رابطہ کو نشان لگا سکتے ہیں۔";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "حفاظتی نمبر میچ ہو گیا!";
@@ -6359,34 +6398,34 @@
 "SUPPORT_DESCRIPTION_PLACEHOLDER" = "کیا ہو رہا ہے ہمیں بتائیں";
 
 /* Default prompt for user description in support email requests */
-"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "اس مسئلے کے بارے میں ہمیں بتائیں:";
+"SUPPORT_EMAIL_DEFAULT_DESCRIPTION" = "اس مسئلے کے بارے میں ہمیں بتائیں: ";
 
 /* Message for alert dialog presented when a support email failed to send */
 "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION" = "برائے مہربانی اپنی مدد کی درخواست کو ای میل کریںsupport@signal.org";
 
 /* Localized label for support request email filter string. Embeds {{filter text}}. */
-"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "فلٹر:%@";
+"SUPPORT_EMAIL_FILTER_LABEL_FORMAT" = "فلٹر:%1$@";
 
 /* Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}. */
-"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "ہارڈ ویئر:%@";
+"SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT" = "ہارڈ ویئر:%1$@";
 
 /* Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}. */
-"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %@";
+"SUPPORT_EMAIL_HID_LABEL_FORMAT" = "HID: %1$@";
 
 /* Localized divider for support request emails internal information */
 "SUPPORT_EMAIL_INFO_DIVIDER" = "--- مدد کی معلومات ---";
 
 /* Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}. */
-"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS ورژن:%@";
+"SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT" = "iOS ورژن:%1$@";
 
 /* Localized label for support request email locale string. Embeds {{locale}}. */
-"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %@";
+"SUPPORT_EMAIL_LOCALE_LABEL_FORMAT" = "Locale: %1$@";
 
 /* Localized label for support request email debug log URL. Embeds {{debug log url}}. */
-"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %@";
+"SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT" = "Log URL: %1$@";
 
 /* Localized label for support request email signal version string. Embeds {{signal version}}. */
-"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal ورژن: %@";
+"SUPPORT_EMAIL_SIGNAL_VERSION_LABEL_FORMAT" = "Signal ورژن: %1$@";
 
 /* Localized subject for support request emails */
 "SUPPORT_EMAIL_SUBJECT" = "Signal iOS کی مدد کی درخواست";
@@ -6419,7 +6458,7 @@
 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE" = "تاحال زیر عمل ہے";
 
 /* Description text for sustainer view badges, embeds {{localized badge name}} */
-"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "%@ بیج حاصل کریں";
+"SUSTAINER_VIEW_BADGE_DESCRIPTION" = "%1$@ بیج حاصل کریں";
 
 /* Sustainer view Cancel Subscription button title */
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION" = "سبسکرپشن منسوخ کریں";
@@ -6434,7 +6473,7 @@
 "SUSTAINER_VIEW_CANCEL_SUBSCRIPTION_CONFIRMATION_TITLE" = "منسوخی کی تصدیق کریں؟";
 
 /* Couldn't add badge text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_CANT_ADD_BADGE" = "بیج شامل نہیں کر سکے۔ %@";
+"SUSTAINER_VIEW_CANT_ADD_BADGE" = "بیج شامل نہیں کر سکے۔ %1$@";
 
 /* Action sheet message for Couldn't Add Badge sheet */
 "SUSTAINER_VIEW_CANT_ADD_BADGE_MESSAGE" = "آپ کا بیج آپ کے اکاؤنٹ میں شامل نہیں کیا جا سکا۔ براہ کرم معاونت سے رابطہ کریں۔";
@@ -6449,16 +6488,16 @@
 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE" = "ادائیگی کی عمل کاری میں نقص پیش آیا";
 
 /* Payment error occurred text, embeds {{link to contact support}} */
-"SUSTAINER_VIEW_PAYMENT_ERROR" = "ادائیگی کی عمل کاری میں نقص پیش آیا۔ %@";
+"SUSTAINER_VIEW_PAYMENT_ERROR" = "ادائیگی کی عمل کاری میں نقص پیش آیا۔ %1$@";
 
 /* Pricing text for sustainer view badges, embeds {{price}} */
-"SUSTAINER_VIEW_PRICING" = "%@/ماہ";
+"SUSTAINER_VIEW_PRICING" = "%1$@/ماہ";
 
 /* Renewal text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_EXPIRATION" = "  · %@ پر زائد المیعاد ہوتا ہے";
+"SUSTAINER_VIEW_PRICING_EXPIRATION" = " · %1$@ پر زائد المیعاد ہوتا ہے";
 
 /* Expiration text for sustainer view management badges, embeds {{Expiration}} */
-"SUSTAINER_VIEW_PRICING_RENEWAL" = "  · %@کی تجدید کرتا ہے";
+"SUSTAINER_VIEW_PRICING_RENEWAL" = " · %1$@کی تجدید کرتا ہے";
 
 /* Loading indicator on the sustainer view */
 "SUSTAINER_VIEW_PROCESSING_PAYMENT" = "ادائیگی پر عمل کاری...";
@@ -6470,7 +6509,7 @@
 "SUSTAINER_VIEW_READ_MORE" = "مزید پڑھیں۔";
 
 /* Renewal date text for sustainer view level, embeds {{renewal date}} */
-"SUSTAINER_VIEW_RENEWAL" = "%@ کی تجدید کرتا ہے";
+"SUSTAINER_VIEW_RENEWAL" = "%1$@ کی تجدید کرتا ہے";
 
 /* Action sheet message for Still Processing Badge sheet */
 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE" = "آپ کی ادائیگی تاحال زیر عمل ہے۔ اس میں آپ کے کنکشن کی بنیاد پر کچھ منٹ لگ سکتے ہیں۔";
@@ -6485,7 +6524,7 @@
 "SUSTAINER_VIEW_TITLE" = "Signal آپ جیسے لوگوں کے ذریعہ تقویت یافتہ ہے۔";
 
 /* Update Subscription? Action sheet message, embeds {{Price}} */
-"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "آپ کو آج نئی سبسکرپشن کی مکمل رقم (%@) چارج کی جائے گی۔ آپ کی نئی سبسکرپشن کی تجدید ماہانہ ہو گی۔";
+"SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_MESSAGE" = "آپ کو آج نئی سبسکرپشن کی مکمل رقم (%1$@) چارج کی جائے گی۔ آپ کی نئی سبسکرپشن کی تجدید ماہانہ ہو گی۔";
 
 /* Update Subscription? Action sheet title */
 "SUSTAINER_VIEW_UPDATE_SUBSCRIPTION_CONFIRMATION_TITLE" = "سبسکرپشن اپ ڈیٹ کریں؟";
@@ -6509,7 +6548,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "تصدیق کریں";
 
 /* Indicator that the default disappearing message timer will be applied when you send a message. Embeds {default disappearing message time} */
-"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "جب آپ انہیں پیغام دیں گے تو غائب ہونے والے پیغام کا وقت %@ پر مقرر کیا جائے گا۔";
+"SYSTEM_MESSAGE_DEFAULT_DISAPPEARING_MESSAGE_TIMER_FORMAT" = "جب آپ انہیں پیغام دیں گے تو غائب ہونے والے پیغام کا وقت %1$@ پر مقرر کیا جائے گا۔";
 
 /* Indicator warning about an unknown contact thread. */
 "SYSTEM_MESSAGE_UNKNOWN_THREAD_WARNING_CONTACT" = "مشترکہ طور پر کوئی گروپ نہیں۔ درخواستوں کا بغور جائزہ لیں۔";
@@ -6524,64 +6563,64 @@
 "THIS_MESSAGE_WAS_DELETED" = "یہ پیغام حذف کردیا گیا تھا۔";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@،%@کے اراکین اور %lu اضافی گروپس";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%1$@،%2$@کے اراکین اور %3$lu اضافی گروپس";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "آپ اس چیٹ میں اپنے لئے نوٹ شامل کرسکتے ہیں۔ اگر آپ کے اکاؤنٹ میں کوئی لنکڈ ڈیوائسز ہیں تو ، نئے نوٹوں کی ہم آہنگی ہوگی۔";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "کا رکن%@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "کا رکن%1$@";
 
 /* Indicator that a blurred avatar can be revealed by tapping. */
 "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR" = "دیکھیں";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "کے ممبر%@، %@اور%@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "کے ممبر%1$@، %2$@اور%3$@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "ممبر%@ اور %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "ممبر%1$@ اور %2$@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@دنوں";
+"TIME_AMOUNT_DAYS" = "%1$@دنوں";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ڈی";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%1$@ڈی";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@گھنٹے";
+"TIME_AMOUNT_HOURS" = "%1$@گھنٹے";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ایچ";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%1$@ایچ";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@منٹس";
+"TIME_AMOUNT_MINUTES" = "%1$@منٹس";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ایم";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%1$@ایم";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@سیکنڈز";
+"TIME_AMOUNT_SECONDS" = "%1$@سیکنڈز";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@ایس";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%1$@ایس";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@دن";
+"TIME_AMOUNT_SINGLE_DAY" = "%1$@دن";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@گھنٹہ";
+"TIME_AMOUNT_SINGLE_HOUR" = "%1$@گھنٹہ";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@منٹ";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%1$@منٹ";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ہفتہ";
+"TIME_AMOUNT_SINGLE_WEEK" = "%1$@ہفتہ";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ہفتے";
+"TIME_AMOUNT_WEEKS" = "%1$@ہفتے";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@ڈبلیو";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%1$@ڈبلیو";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "منسوخ کریں";
@@ -6605,7 +6644,7 @@
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "آپ کی ڈیوائس میں سے ایک نے ایک پیغام بھیجا جس پر کارروائی یا اس کو ظاہر نہیں کر سکتے کیونکہ یہ ایک نئی Signal کی خصوصیت استعمال کرتی ہے۔";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@  نے آپ کو ایک پیغام بھیجا جس پر کارروائی نہیں ہوسکتی ہے یا ظاہر نہیں ہوسکتی ہے کیونکہ یہ ایک نئی Signal کی خصوصیت استعمال کرتی ہے۔";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%1$@  نے آپ کو ایک پیغام بھیجا جس پر کارروائی نہیں ہوسکتی ہے یا ظاہر نہیں ہوسکتی ہے کیونکہ یہ ایک نئی Signal کی خصوصیت استعمال کرتی ہے۔";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "آپ کو جو پیغام وصول ہوا ہے وہ بہتر یا ڈسپلیڈ نہیں ہوسکتا کیونکہ یہ نیا Signal فیچر استعمال کرتا ہے۔";
@@ -6617,7 +6656,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal کے جدید ورژن کی تجدید کریں۔اب آپ اس قسم کے پیغامات اس ڈیوائس پر وصول کر سکتے ہیں۔";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "آپ Signal کا اپ ٹو ڈیٹ ورژن استعمال کر رہے ہو تو آپ %@کو دوبارہ بھیجنے کا کہ سکتے ہیں۔";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "آپ Signal کا اپ ٹو ڈیٹ ورژن استعمال کر رہے ہو تو آپ %1$@کو دوبارہ بھیجنے کا کہ سکتے ہیں۔";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "اگر آپ Signal کا اپ ٹو ڈیٹ ورژن استعمال کر رہے ہو تو آپ بھیجنے والے سے یہ پیغام دوبارہ بھیجنے کا کہ سکتے ہیں۔";
@@ -6629,7 +6668,7 @@
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "غائب ہونے والے پیغامات غیر فعال کردیئے گئے تھے۔";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "غائب ہونے والے پیغام کا وقت اس پر%@ مقرر کیا گیا تھا۔";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "غائب ہونے والے پیغام کا وقت اس پر%1$@ مقرر کیا گیا تھا۔";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "نامعلوم";
@@ -6641,7 +6680,7 @@
 "UNLINK_CONFIRMATION_ALERT_BODY" = "یہ ڈیوائس اگر غیر منسلک ہے تو یہ مزید پیغامات بھیجنے اور وصول کرنے کے قابل نہیں۔";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "غیر منسلک\"%@\"؟";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "غیر منسلک\"%1$@\"؟";
 
 /* Label warning the user that they have been unlinked from their primary device. */
 "UNLINKED_WARNING" = "Device کا اب لنک نہیں ہوا۔ پیغام رسانی جاری رکھنے کے لئے اپنے فون کے ساتھ Signal کو دوبارہ لنک کریں۔";
@@ -6668,7 +6707,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "آپ کی ڈیوائس اس خصوصیت کو سپورٹ نہیں کر رہی۔";
 
 /* Description for the unverified safety number change. Embeds {name of contact with identity change} */
-"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "%@ کے ساتھ آپ کا حفاظتی نمبر ممکنہ طور پر تبدیل ہوا کیونکہ انہوں نے Signal کو دوبارہ انسٹال کیا یا آلات تبدیل کردیئے۔ نئے حفاظتی نمبر کی تصدیق کے لئے تصدیق کریں پر ٹیپ کریں۔ یہ اختیاری ہے۔";
+"UNVERIFIED_SAFETY_NUMBER_CHANGE_DESCRIPTION_FORMAT" = "%1$@ کے ساتھ آپ کا حفاظتی نمبر ممکنہ طور پر تبدیل ہوا کیونکہ انہوں نے Signal کو دوبارہ انسٹال کیا یا آلات تبدیل کردیئے۔ نئے حفاظتی نمبر کی تصدیق کے لئے تصدیق کریں پر ٹیپ کریں۔ یہ اختیاری ہے۔";
 
 /* Action to verify a safety number after it has changed */
 "UNVERIFIED_SAFETY_NUMBER_VERIFY_ACTION" = "تصدیق کریں";
@@ -6682,6 +6721,12 @@
 /* Error indicating that a group could not be updated due to network connectivity problems. */
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "گروپ کو اپ ڈیٹ نہیں کیا جاسکا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
 
+/* Button to activate the signal proxy */
+"USE_PROXY_BUTTON" = "Use Proxy";
+
+/* Explanation of when you should use a signal proxy */
+"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Signal پر صارف کا نام آپشنل ہے۔ اگر آپ صارف کا نام بنانا منتخب کرتے ہیں دوسرے Signal صارفین  اس صارف کے نام کے زریعے تلاش کرنے کے قابل ہوں گے اور فون نمبر کے بغیر آپ سے رابطہ کرسکتے ہیں۔";
 
@@ -6692,7 +6737,7 @@
 "USERNAME_LOOKUP_ERROR" = "صارف نام کو تلاش کرتے وقت ایک خرابی پیش آگئی۔ براہ کرم کچھ دیر بعد کوشش کریں.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@Signal نہیں ہے۔ یقینی بنائیں کی صارف کا نام مکمل داخل کیا ہے۔";
+"USERNAME_NOT_FOUND_FORMAT" = "%1$@Signal نہیں ہے۔ یقینی بنائیں کی صارف کا نام مکمل داخل کیا ہے۔";
 
 /* A message indicating that the given username was not registered with signal. */
 "USERNAME_NOT_FOUND_TITLE" = "صارف نہیں ملا";
@@ -6713,7 +6758,7 @@
 "USERNAME_TOO_SHORT_ERROR" = "صارف کا نام کم از کم 4 کرداروں کا ہونا چاہئے۔";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@لیا جاتا ہے۔";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%1$@لیا جاتا ہے۔";
 
 /* Error message shown when a username update fails. */
 "USERNAME_VIEW_ERROR_UPDATE_FAILED" = "صارف کے نام کی تجدید میں ناکامی۔";
@@ -6725,16 +6770,16 @@
 "VALIDATION_ERROR_TOO_LONG" = "ڈیوائس کا نام بہت بڑا ہے";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "آپ نے تصدیق کے طور پر %@نشان نہیں لگایا۔";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "آپ نے تصدیق کے طور پر %1$@نشان نہیں لگایا۔";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "آپ نے دوسرے ڈیوائس پر تصدیق کے طور پر %@نشان زدہ نہیں کیا۔";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "آپ نے دوسرے ڈیوائس پر تصدیق کے طور پر %1$@نشان زدہ نہیں کیا۔";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "آپ نے تصدیق کے طور پر%@نشان زدہ کیا ہے۔";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "آپ نے تصدیق کے طور پر%1$@نشان زدہ کیا ہے۔";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "آپ نے دوسرے ڈیوائس پر تصدیق کے طور پر%@ نشان لگایا ہے۔";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "آپ نے دوسرے ڈیوائس پر تصدیق کے طور پر%1$@ نشان لگایا ہے۔";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "توثیقی حالت تبدیل ہو چکی ہے۔";
@@ -6764,7 +6809,7 @@
 "VIEW_PHOTO" = "تصویر دیکھیں";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "سٹوری دیکھیں";
+"VIEW_STORY" = "View Story";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "منسوخ کرنے کیلئے سلائیڈ کریں";
@@ -6794,7 +6839,7 @@
 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS" = "تمام چیٹس کیلئے وال پیپر مرتب کریں۔";
 
 /* The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}} */
-"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%@ کے لئے وال پیپر سیٹ کریں۔";
+"WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT" = "%1$@ کے لئے وال پیپر سیٹ کریں۔";
 
 /* Title for the wallpaper preview view. */
 "WALLPAPER_PREVIEW_TITLE" = "پیش نظارہ";
@@ -6875,4 +6920,4 @@
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "آگے بڑھنے سے پہلے آپ کو سیٹ اپ مکمل کرنا ہوگا۔";
 
 /* Info Message when you update disappearing messages duration. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "آپ %@وقت تک پیغام غائب کرنے کیلئے ترتیب دے رہے ہیں۔";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "آپ %1$@وقت تک پیغام غائب کرنے کیلئے ترتیب دے رہے ہیں۔";

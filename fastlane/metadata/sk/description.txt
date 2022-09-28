@@ -1,6 +1,6 @@
 Milióny ľudí po celom svete každý deň používajú Signal na komunikáciu zadarmo. Posielajte a prijímajte správy vo vysokom rozlíšení, zúčastňujte sa na HD (video) hovoroch a objavujte nové možnosti, ktoré vám pomáhajú zostať v kontakte. Pokročilá technológia na udržanie súkromia je v aplikácii Signal vždy zapnutá, takže sa môžete plne sústrediť na zdieľanie momentov, na ktorých záleží, s ľuďmi, na ktorých vám záleží.
 
-• Povedzte čokoľvek – Najmodernejšie koncové šifrovanie (postavené na otvorenom protokole Signal Protocol) udržuje vaše rozhovory v bezpečí. Súkromie nie je niečo voliteľné – tak proste funguje Signal. Každá správa, každý hovor, každý raz.
+• Povedzte čokoľvek – Najmodernejšie koncové šifrovanie (postavené na otvorenom protokole Signal Protocol) udržuje vaše rozhovory v bezpečí. Súkromie nie je niečo voliteľné - tak proste funguje Signal. Každá správa, každý hovor, každý raz.
 
 • Buďte rýchli – Správy sú doručené rýchlo a spoľahlivo a to i v pomalých sieťach. Signal je optimalizovaný na fungovanie aj v tých najťažších podmienkach.
 
@@ -10,7 +10,7 @@ Milióny ľudí po celom svete každý deň používajú Signal na komunikáciu 
 
 • Ozvite sa – Či už žijú na druhom konci mesta, alebo na druhom konci sveta, kvalita zvuku a videa v aplikácii Signal vám dá s priateľmi a rodinou pocit blízkosti.
 
-• Šepkajte pod rúškom tmy – Ak nechcete vidieť svetlo, prepnite sa do tmavého prostredia.
+• Šepkajte pod rúškom tmy – Ak odmietate vidieť svetlo, tak sa prepnite do tmavého prostredia.
 
 • Známe zvuky – Priraďte každému kontaktu vlastnú zvučku, alebo si zvuky úplne vypnite. Simon & Garfunkel o ňom v roku 1964 napísali hit a vy si zvuk ticha môžete vychutnať kedykoľvek, keď si zvolíte "žiadne" zvonenie pre upozornenia.
 

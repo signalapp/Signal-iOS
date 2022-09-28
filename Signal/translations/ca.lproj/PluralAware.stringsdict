@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 element</string>
+			<string>%1$d element</string>
 			<key>other</key>
-			<string>%d elements</string>
+			<string>%1$d elements</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
@@ -29,9 +29,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Missatge de veu d'1 segon</string>
+			<string>Voice message 1 second</string>
 			<key>other</key>
-			<string>Missatge de veu de %d segons</string>
+			<string>Voice message %1$d seconds</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -45,9 +45,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Vols afegir el membre a “%2$@”?</string>
+			<string>Add member to “%2$@”?</string>
 			<key>other</key>
-			<string>Vols afegir %d membres a “%2$@”?</string>
+			<string>Add %1$d members to “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -93,9 +93,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aquest color personalitzat s'usa en 1 conversa. Voleu suprimir-lo?</string>
+			<string>Aquest color personalitzat s&apos;usa en %1$d conversa. Voleu suprimir-lo per a totes?</string>
 			<key>other</key>
-			<string>Aquest color personalitzat s'està utilitzant en %d converses. Vols suprimir-lo de totes?</string>
+			<string>Aquest color personalitzat s&apos;està utilitzant en %1$d converses. Vols suprimir-lo de totes?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -109,9 +109,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aquest color s'usa en 1 conversa. Voleu desar els canvis per a totes?</string>
+			<string>Aquest color s&apos;usa en %1$d conversa. Voleu desar els canvis per a totes?</string>
 			<key>other</key>
-			<string>Aquest color personalitzat s'està utilitzant en %d converses. Vols desar els canvis per a totes?</string>
+			<string>Aquest color personalitzat s&apos;està utilitzant en %1$d converses. Vols desar els canvis per a totes?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -125,9 +125,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voleu suprimir la conversa?</string>
+			<string>Delete Chat?</string>
 			<key>other</key>
-			<string>Vols suprimir %d converses?</string>
+			<string>Delete %1$d Chats?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -141,9 +141,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aquesta conversa se suprimirà d'aquest dispositiu.</string>
+			<string>Aquesta conversa se suprimirà d&apos;aquest dispositiu.</string>
 			<key>other</key>
-			<string>Aquestes converses s'eliminaran d'aquest dispositiu.</string>
+			<string>Aquestes converses s&apos;eliminaran d&apos;aquest dispositiu.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS_%d</key>
@@ -157,9 +157,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No podeu seleccionar més d'1 conversa.</string>
+			<string>You can’t select more than 1 chat.</string>
 			<key>other</key>
-			<string>No podeu seleccionar més de %d converses.</string>
+			<string>You can’t select more than %1$d chats.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -175,7 +175,7 @@
 			<key>one</key>
 			<string>1 %2$#@total@</string>
 			<key>other</key>
-			<string>%d %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 		</dict>
 		<key>total</key>
 		<dict>
@@ -184,9 +184,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>coincidència</string>
+			<string>match</string>
 			<key>other</key>
-			<string>de %d coincidències</string>
+			<string>of %2$d matches</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -200,9 +200,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membre</string>
+			<string>%1$d membre</string>
 			<key>other</key>
-			<string>%d membres</string>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -216,9 +216,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 grup en comú</string>
+			<string>%1$d grup en comú</string>
 			<key>other</key>
-			<string>%d grups en comú</string>
+			<string>%1$d grups en comú</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -232,9 +232,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%dm</string>
+			<string>%1$dm</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%1$dm</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -248,9 +248,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>fa 1 minut</string>
+			<string>1 minute ago</string>
 			<key>other</key>
-			<string>fa %d minuts</string>
+			<string>%1$d minutes ago</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -264,9 +264,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voleu suprimir el missatge?</string>
+			<string>Delete Message?</string>
 			<key>other</key>
-			<string>Vols suprimir %d missatges?</string>
+			<string>Delete %1$d Messages?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -280,9 +280,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>S'ha assolit el nombre màxim de membres del grup: %d.</string>
+			<string>S&apos;ha assolit el nombre màxim de membres del grup: %1$d.</string>
 			<key>other</key>
-			<string>S'ha assolit el nombre màxim de membres del grup: %d.</string>
+			<string>S&apos;ha assolit el nombre màxim de membres del grup: %1$d.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -296,9 +296,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>La vostra del Signal caducarà d'aquí a 1 dia. Toqueu per actualitzar-lo a la versió més recent.</string>
+			<string>Your version of Signal will expire in 1 day. Tap to update to the most recent version.</string>
 			<key>other</key>
-			<string>La versió actual de Signal caducarà d'aquí a %d dies. Toca per actualitzar-lo a la versió més recent.</string>
+			<string>Your version of Signal will expire in %1$d days. Tap to update to the most recent version.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -312,9 +312,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Envia el missatge</string>
+			<string>Envia %1$d missatge</string>
 			<key>other</key>
-			<string>Envia %d missatges</string>
+			<string>Envia %1$d missatges</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -328,9 +328,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>S'ha assolit el nombre màxim d'1 participant per a aquesta trucada. Torneu-ho a provar més tard.</string>
+			<string>The maximum number of 1 participant has been reached for this call. Try again later.</string>
 			<key>other</key>
-			<string>S'ha assolit el nombre màxim de %d participants per aquesta trucada. Torna-ho a provar més tard.</string>
+			<string>The maximum number of %1$d participants has been reached for this call. Try again later.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -344,9 +344,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>En aquesta trucada: 1 persona</string>
+			<string>En aquesta trucada · %1$d persona</string>
 			<key>other</key>
-			<string>En aquesta trucada: %d persones</string>
+			<string>En aquesta trucada: %1$d persones</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 visualització</string>
+			<string>%1$d visualització</string>
 			<key>other</key>
-			<string>%d visualitzacions</string>
+			<string>%1$d visualitzacions</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -376,9 +376,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Història privada · 1 Visualització</string>
+			<string>Història privada · %1$d espectador</string>
 			<key>other</key>
-			<string>Història privada · %d Visualitzacions</string>
+			<string>Història privada · %1$d Visualitzacions</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Totes les Connexions de Signal · 1 espectador</string>
+			<string>All Signal Connections · 1 Viewer</string>
 			<key>other</key>
-			<string>Totes les Connexions de Signal · %d espectadors</string>
+			<string>All Signal Connections · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -408,9 +408,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Totes les Connexions de Signal · 1 persona exclosa</string>
+			<string>All Signal Connections · 1 Excluded</string>
 			<key>other</key>
-			<string>Totes les Connexions de Signal · %d persones excloses</string>
+			<string>All Signal Connections · %1$d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Compartir només amb · 1 espectador</string>
+			<string>Only Share With · 1 Viewer</string>
 			<key>other</key>
-			<string>Compartir només amb · %d espectadors</string>
+			<string>Only Share With · %1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -440,9 +440,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Història de grup · 1 Visualització</string>
+			<string>Història de grup · %1$d espectador</string>
 			<key>other</key>
-			<string>Història de grup · %d Visualitzacions</string>
+			<string>Història de grup · %1$d Visualitzacions</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -456,9 +456,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal trucarà a %2$@, %3$@, i a 1 persona més</string>
+			<string>El Signal trucarà a %2$@, %3$@ i %1$d més</string>
 			<key>other</key>
-			<string>Signal trucarà a %2$@, %3$@, i a %d persones més</string>
+			<string>Signal trucarà a %2$@, %3$@, i a %1$d persones més</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -472,9 +472,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, i 1 persona més seran notificats</string>
+			<string>%2$@, %3$@ i %1$d més rebran una notificació</string>
 			<key>other</key>
-			<string>%2$@, %3$@, i %d persones més seran notificades</string>
+			<string>%2$@, %3$@, i %1$d persones més seran notificades</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -488,9 +488,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Trucant a %2$@, %3$@, i a 1 persona més…</string>
+			<string>Ringing %2$@, %3$@, and 1 other…</string>
 			<key>other</key>
-			<string>Trucant a %2$@, %3$@, i a %d persona més…</string>
+			<string>Ringing %2$@, %3$@, and %1$d others…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -504,9 +504,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ i 1 persona més són en aquesta trucada.</string>
+			<string>%2$@, %3$@ i %1$d més són en aquesta trucada.</string>
 			<key>other</key>
-			<string>%2$@, %3$@ i %d més són en aquesta trucada.</string>
+			<string>%2$@, %3$@ i %1$d més són en aquesta trucada.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -520,9 +520,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ i 1 persona més s'han afegit a la trucada.</string>
+			<string>%2$@, %3$@, and 1 other joined the call</string>
 			<key>other</key>
-			<string>%2$@, %3$@ i %d persones més s'han afegit a la trucada.</string>
+			<string>%2$@, %3$@, and %1$d others joined the call</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -536,9 +536,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@ i 1 persona més han sortit de la trucada.</string>
+			<string>%2$@, %3$@, and 1 other left the call</string>
 			<key>other</key>
-			<string>%2$@, %3$@ i %d persones més han sortitr de la trucada.</string>
+			<string>%2$@, %3$@, and %1$d others left the call</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -552,9 +552,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitació enviada</string>
+			<string>Invitation Sent</string>
 			<key>other</key>
-			<string>%d invitacions enviades</string>
+			<string>%1$d Invitations Sent</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -568,9 +568,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membre</string>
+			<string>%1$d membre</string>
 			<key>other</key>
-			<string>%d membres</string>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -584,9 +584,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membre</string>
+			<string>%1$d membre</string>
 			<key>other</key>
-			<string>%d membres</string>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -600,9 +600,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membre del grup té un nom semblant.</string>
+			<string>1 group member has similar name.</string>
 			<key>other</key>
-			<string>%d membres del grup tenen noms semblants.</string>
+			<string>%1$d group members have similar names.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -616,9 +616,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membre del grup té un nom semblant. Reviseu els membres a continuació o preneu mesures.</string>
+			<string>1 group member has similar name, review the member below or choose to take action.</string>
 			<key>other</key>
-			<string>%d membres del grup tenen noms semblants. Reviseu els membres a continuació o preneu mesures.</string>
+			<string>%1$d group members have similar names, review the members below or choose to take action.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -632,9 +632,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membre del grup té el mateix nom. Reviseu els membres a continuació o preneu mesures.</string>
+			<string>1 group member has the same name, review the member below or choose to take action.</string>
 			<key>other</key>
-			<string>%d membres del grup tenen el mateix nom. Reviseu els membres a continuació o preneu mesures.</string>
+			<string>%1$d group members have the same name, review the members below or choose to take action.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -648,9 +648,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>S'ha revocat la invitació al grup per a 1 persona.</string>
+			<string>Invitation to the group were revoked for 1 person.</string>
 			<key>other</key>
-			<string>S'han revocat les invitacions al grup per a %d persones.</string>
+			<string>Invitations to the group were revoked for %1$d people.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -664,9 +664,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha revocat una invitació al grup per a 1 persona.</string>
+			<string>%2$@ revoked an invitation to the group for 1 person.</string>
 			<key>other</key>
-			<string>%2$@ ha revocat una invitació al grup per a %d persones.</string>
+			<string>%2$@ revoked an invitation to the group for %1$d people.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -680,9 +680,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>S'ha convidat 1 persona al grup.</string>
+			<string>1 person was invited to the group.</string>
 			<key>other</key>
-			<string>%d persones estan convidades al grup.</string>
+			<string>%1$d people were invited to the group.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -696,9 +696,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha convidat 1 persona al grup.</string>
+			<string>%2$@ invited 1 person to the group.</string>
 			<key>other</key>
-			<string>%2$@ ha convidat %d persones al grup.</string>
+			<string>%2$@ invited %1$d people to the group.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -712,9 +712,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha sol·licitat i cancel·lat la seva sol·licitud d'unir-se a través de l'enllaç de grup.</string>
+			<string>%2$@ requested and canceled their request to join via the group link.</string>
 			<key>other</key>
-			<string>%2$@ ha sol·licitat i cancel·lat %d sol·licituds d'unir-se a través de l'enllaç de grup.</string>
+			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -728,9 +728,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No s'ha pogut afegir un membre al grup nou i s'ha suprimit del grup.</string>
+			<string>A member couldn’t be added to the New Group and has been removed from the group.</string>
 			<key>other</key>
-			<string>No s'han pogut afegir %d membres al grup nou i s'han suprimit del grup.</string>
+			<string>%1$d members couldn’t be added to the New Group and have been removed from the group.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -744,9 +744,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No s'ha pogut afegir un membre al grup nou i s'ha convidat a afegir-s'hi.</string>
+			<string>A member couldn’t be added to the New Group and has been invited to join.</string>
 			<key>other</key>
-			<string>No s'han pogut afegir %d membres al grup nou i s'han convidat a afegir-s'hi.</string>
+			<string>%1$d members couldn’t be added to the New Group and have been invited to join.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -760,9 +760,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aquest grup no es pot crear perquè 1 membre està usant una versió antiga del Signal. Podeu crear un nou grup d'estil amb ells després d'actualitzar el Signal o suprimir-los abans de crear el grup. %2$@</string>
+			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
 			<key>other</key>
-			<string>Aquest grup no es pot crear perquè %d membres fan servir una versió antiga de Signal. Podeu crear un nou grup d'estil amb ells després d'actualitzar Signal o suprimir-los abans de crear el grup. %2$@</string>
+			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -776,9 +776,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Aquest grup no es pot crear perquè 1 membre usa una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o suprimir-los abans de crear el grup.</string>
+			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
 			<key>other</key>
-			<string>Aquest grup no es pot crear perquè %d membres utilitzen una versió antiga del Signal. Podeu crear un grup d'estil nou amb ells després que actualitzin el Signal o suprimir-los abans de crear el grup.</string>
+			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -792,9 +792,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membre no s'ha pogut tornar a afegir al grup nou. Voleu afegir-l'hi ara?</string>
+			<string>1 member couldn’t be re-added to the New Group. Do you want to add them now?</string>
 			<key>other</key>
-			<string>%d membres no s'han pogut tornar a afegir al grup nou. Vols afegir-los ara?</string>
+			<string>%1$d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -808,9 +808,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Els grups del Signal funcionen millor amb 1 membre o menys. Afegir-hi més membres causarà retards d'enviament i recepció de missatges.</string>
+			<string>Signal groups perform best with 1 member or less. Adding more members will cause delays sending and receiving messages.</string>
 			<key>other</key>
-			<string>Els grups de Signal funcionen millor amb %d membres o menys. Afegir-hi més membres causarà retards d'enviament i de recepció de missatges.</string>
+			<string>Signal groups perform best with %1$d members or less. Adding more members will cause delays sending and receiving messages.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -824,9 +824,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>No podeu compartir més d'1 element.</string>
+			<string>You can’t share more than 1 item.</string>
 			<key>other</key>
-			<string>No pots compartir més de %d elements.</string>
+			<string>You can’t share more than %1$d items.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -840,9 +840,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 grup en comú</string>
+			<string>%1$d grup en comú</string>
 			<key>other</key>
-			<string>%d grups en comú</string>
+			<string>%1$d grups en comú</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -856,9 +856,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Suprimeix 1 missatge</string>
+			<string>Delete 1 Message</string>
 			<key>other</key>
-			<string>Suprimeix %d missatges</string>
+			<string>Delete %1$d Messages</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -872,9 +872,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 fotografia</string>
+			<string>1 Photo</string>
 			<key>other</key>
-			<string>%d fotografies</string>
+			<string>%1$d Photos</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -888,9 +888,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 element</string>
+			<string>%1$d element</string>
 			<key>other</key>
-			<string>%d elements</string>
+			<string>%1$d elements</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -904,9 +904,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 de seleccionat</string>
+			<string>%1$d de seleccionat</string>
 			<key>other</key>
-			<string>%d de seleccionats</string>
+			<string>%1$d de seleccionats</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -920,9 +920,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Heu blocat 1 membres d'aquest grup.</string>
+			<string>You Blocked 1 Member of This Group</string>
 			<key>other</key>
-			<string>Heu blocat %d membres d'aquest grup.</string>
+			<string>You Blocked %1$d Members of This Group</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -936,9 +936,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 persona exclosa</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>%d persones excloses</string>
+			<string>%1$d Excluded</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 espectador</string>
+			<string>%1$despectadors</string>
 			<key>other</key>
-			<string>%d espectadors</string>
+			<string>%1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -968,9 +968,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 membre</string>
+			<string>%1$d membre</string>
 			<key>other</key>
-			<string>%d membres</string>
+			<string>%1$d membres</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -984,9 +984,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 espectador</string>
+			<string>%1$despectadors</string>
 			<key>other</key>
-			<string>%d espectadors</string>
+			<string>%1$d espectadors</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -1000,9 +1000,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>PIN incorrecte. Resa 1 intent.</string>
+			<string>PIN incorrecte. Us resta %1$d intent.</string>
 			<key>other</key>
-			<string>PIN incorrecte. Queden %d intents.</string>
+			<string>PIN incorrecte. Queden %1$d intents.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -1016,9 +1016,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ ha convidat 1 persona</string>
+			<string>%2$@ invited 1 person</string>
 			<key>other</key>
-			<string>%2$@ ha convidat a %d persones</string>
+			<string>%2$@ invited %1$d people</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1032,9 +1032,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 sol·licitud d'adhesió pendent</string>
+			<string>%1$dsol·licitud d&apos;adhesió pendent</string>
 			<key>other</key>
-			<string>%d sol·licituds d'inscripció pendents</string>
+			<string>%1$d sol·licituds d&apos;inscripció pendents</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -1048,9 +1048,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Rebutja la invitació no vàlida</string>
+			<string>Revoke invalid invite</string>
 			<key>other</key>
-			<string>Rebutja %d invitacions no vàlides</string>
+			<string>Revoke %1$d invalid invites</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1064,9 +1064,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voleu rebutjar la invitació de grup enviada per %2$@?</string>
+			<string>Revoke group invite sent by “%2$@”?</string>
 			<key>other</key>
-			<string>Vols rebutjar %d invitacions enviades per %2$@?</string>
+			<string>Revoke %1$d invites sent by “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1096,9 +1096,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Us ho recordarem més tard. Crear un PIN serà obligatori d'aquí a 1 dia.</string>
+			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
 			<key>other</key>
-			<string>T'ho recordarem més tard. Crear un PIN serà obligatori d'aquí a %d dies.</string>
+			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1112,9 +1112,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Us resta 1 intent. Si us quedeu sense intents, podeu crear un PIN nou. Podeu registrar-vos i usar el compte, però perdreu algunes configuracions desades, com ara la informació del perfil.</string>
+			<string>You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
 			<key>other</key>
-			<string>Et queden %d intents. Si esgotes els intents, pots crear un PIN nou. Pots registrar-te i usar el compte, però perdràs algunes configuracions desades, com ara la informació del perfil.</string>
+			<string>You have %1$d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1128,9 +1128,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Us resta 1 intent. Si us quedeu sense intents, el compte es bloquejarà. Al cap de 7 dies d'inactivitat, podeu tornar-vos-hi a registrar sense el PIN. El compte s'esborrarà i se'n suprimirà tot el contingut.</string>
+			<string>You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
 			<key>other</key>
-			<string>Et queden %d intents. Si esgotes els intents, el compte es bloquejarà. Al cap de 7 dies d'inactivitat, pots tornar-te a registrar sense el PIN. El compte s'esborrarà i se'n suprimirà tot el contingut.</string>
+			<string>You have %1$d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1144,9 +1144,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; resposta</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; respostes</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 espectador</string>
+			<string>%1$despectadors</string>
 			<key>other</key>
-			<string>%d espectadors</string>
+			<string>%1$d Viewers</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1176,9 +1176,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Exclòs</string>
+			<string>1 Excluded</string>
 			<key>other</key>
-			<string>%d Exclosos</string>
+			<string>%1$d Excluded</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1192,9 +1192,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Enviant...</string>
+			<string>Sending...</string>
 			<key>other</key>
-			<string>Enviant %d...</string>
+			<string>Sending %1$d...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1208,9 +1208,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; visualització</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; visualitzacions</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
@@ -1224,9 +1224,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; visualització</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; visualitzacions</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
 		</dict>
 		<key>replies</key>
 		<dict>
@@ -1235,9 +1235,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; respostes</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; respostes</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1251,9 +1251,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Membre de %2$@, %3$@ i 1 grup addicional</string>
+			<string>Member of %2$@, %3$@, and 1 additional group</string>
 			<key>other</key>
-			<string>Membre de %2$@, %3$@ i %d grups addicionals</string>
+			<string>Member of %2$@, %3$@, and %1$d additional groups</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1267,9 +1267,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 dia</string>
+			<string>%1$d dia</string>
 			<key>other</key>
-			<string>%d dies</string>
+			<string>%1$d dies</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1283,9 +1283,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 d</string>
+			<string>1d</string>
 			<key>other</key>
-			<string>%d d</string>
+			<string>%1$dd</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1299,9 +1299,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 hora</string>
+			<string>%1$d hora</string>
 			<key>other</key>
-			<string>%d hores</string>
+			<string>%1$d hores</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1315,9 +1315,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 h</string>
+			<string>%1$dh</string>
 			<key>other</key>
-			<string>%d h</string>
+			<string>%1$d h</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>
@@ -1331,9 +1331,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minut</string>
+			<string>%1$d minut</string>
 			<key>other</key>
-			<string>%d minuts</string>
+			<string>%1$d minuts</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1347,9 +1347,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 min</string>
+			<string>%1$dm</string>
 			<key>other</key>
-			<string>%d min</string>
+			<string>%1$d min</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
@@ -1363,9 +1363,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 segon</string>
+			<string>%1$d segon</string>
 			<key>other</key>
-			<string>%d segons</string>
+			<string>%1$d segons</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1379,9 +1379,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 s</string>
+			<string>1s</string>
 			<key>other</key>
-			<string>%d s</string>
+			<string>%1$ds</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_%d</key>
@@ -1395,9 +1395,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 setmana</string>
+			<string>%1$d setmana</string>
 			<key>other</key>
-			<string>%d setmanes</string>
+			<string>%1$d setmanes</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1411,9 +1411,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 set</string>
+			<string>1w</string>
 			<key>other</key>
-			<string>%d set</string>
+			<string>%1$dw</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1427,9 +1427,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 any</string>
+			<string>1 year</string>
 			<key>other</key>
-			<string>%d anys</string>
+			<string>%1$d years</string>
 		</dict>
 	</dict>
 </dict>

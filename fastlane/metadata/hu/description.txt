@@ -1,14 +1,14 @@
 Milliók használják napi szinten a Signal alkalmazást azonnali, ingyenes kommunikációra szerte a világon. Küldj és fogadj nagy felbontású üzeneteket, vegyél részt HD hang/videó hívásokban, fedezd fel az új szolgáltatásokat, amelyek a kapcsolattartást segítik. A Signal fejlett adatvédelmi technológiája mindig aktív, így arra fókuszálhatsz hogy a számodra fontos pillanatokat megoszthasd a számodra fontos emberekkel.
 
-• Mondj bármit – A de facto ipari szabvány Signal Protocol™ végponttól végpontig tartó titkosítása segítségével óvja beszélgetéseid biztonságát. Az adatvédelem többé nem opcionális, a Signal esetén ez az alapvetés. Minden üzenetre, minden hívásra, minden esetben.
+• Mondj bármit – A csúcstechnológiájú végponttól végpontig terjedő titkosítás (a nyílt forrású Signal Protocol™ segítségével) óvja beszélgetéseid biztonságát. Az adatvédelem többé nem csak egy opció, hanem a mód, ahogy a Signal működik. Minden üzenetnél, minden hívásnál, minden esetben.
 
-• Gyorsulj fel – Az üzenetek gyorsan és megbízhatóan kerülnek kézbesítésre, még lassú hálózatokon is. A Signal korlátozott környezetben működésre optimalizált.
+• Gyorsulj fel – Az üzenetek gyorsan és megbízhatóan kézbesülnek, még lassú hálózatokon is. A Signal korlátozott környezetben működésre optimalizált.
 
 • Légy szabad – A Signal egy 501c3 besorolású, teljesen független, nonprofit szervezet. A fejlesztést hozzád hasonló felhasználók támogatják. Nincs reklám. Nincs követés. Nincs trükk.
 
 • Légy önmagad –  Használd meglévő telefonszámod és címjegyzéked, hogy biztonságosan kommunikálj barátaiddal.
 
-• Beszélj tisztán – Mindegy, hogy a város túlsó végén vagy az óceánon túl, a Signal fejlett hang és videó minősége közelebb hozza a barátokat és a családot.
+• Beszélj tisztán – Mindegy, hogy a város túlsó végén vagy az óceánon túl, a Signal fejlett audió és videó minősége közelebb hozza a barátokat és a családot.
 
 • Suttogj a sötétben – Kapcsolj a sötét témára, ha zavar a fény.
 
@@ -17,10 +17,10 @@ Milliók használják napi szinten a Signal alkalmazást azonnali, ingyenes komm
 • Képzeld el - A beépített képszerkesztő lehetővé teszi a küldött fotók nyújtását, vágását, forgatását. Szöveg eszköztár is található benne, így saját szavaidat is hozzáadhatod a meglévő 1000 mellé, amivel a kép többet mond a szónál.
 
 
-Támogatásért, kérdésekkel és további információkért látogass el ide:
+Támogatásért, kérdéseivel és további információkért látogasson el ide:
 https://support.signal.org
 
 Forráskód:
 https://github.com/signalapp
 
-Kövess minket Twitteren (@signalapp) és Instagramon (@signal_app) a legújabb újdonságokért és bejelentésekért.
+Kövessen minket Twitter-en (@signalapp) és Instagram-on (@signal_app) a legújabb frissítésekért és bejelentésekért.

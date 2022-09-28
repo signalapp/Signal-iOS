@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal are nevoie de acces la locația ta
 NSMicrophoneUsageDescription = "Signal are nevoie de acces la microfon pentru a efectua și primi apeluri telefonice și înregistra mesaje vocale.";
 NSPhotoLibraryAddUsageDescription = "Signal va salva fotografiile în biblioteca ta.";
 NSPhotoLibraryUsageDescription = "Signal îți permite să alegi ce fotografii să trimiți din biblioteca ta.";
-NSLocalNetworkUsageDescription = "Signal folosește rețeaua locală pentru a permite transferul direct al contului de utilizator pe un nou telefon. Funcția va fi folosită doar dacă alegi explicit să inițiezi un transfer către un nou dispozitiv. ";
+NSLocalNetworkUsageDescription = "Signal folosește rețeaua locală pentru a permite transferul direct al contului de utilizator pe un nou telefon. Funcția va fi folosită doar dacă alegi explicit să inițiezi un transfer către un nou dispozitiv.";

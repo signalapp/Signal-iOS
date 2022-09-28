@@ -1,2 +1,2 @@
-• Improvements to keep the app running smoothly on iPhone 14
-• Various fixes for groups
+• iPhone 14에서 앱이 원활하게 실행되도록 개선
+• 그룹에 다양한 수정 사항 적용

@@ -1,4 +1,4 @@
-NSAppleMusicUsageDescription = "Signal necesita usar Apple Music para reproducir adjuntos de audio. ";
+NSAppleMusicUsageDescription = "Signal necesita usar Apple Music para reproducir adjuntos de audio.";
 NSCameraUsageDescription = "Signal usa tu cámara para tomar fotos o para hacer vídeollamadas.";
 NSContactsUsageDescription = "Signal usa tu lista de contactos para encontrar personas que conoces que usan Signal. No guardamos tus contactos en nuestros servidores.";
 NSFaceIDUsageDescription = "Signal usa Face ID para activar el bloqueo de pantalla.";

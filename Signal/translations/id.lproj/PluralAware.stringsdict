@@ -13,7 +13,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d item</string>
+			<string>%1$d item</string>
 		</dict>
 	</dict>
 	<key>ACCESSIBILITY_LABEL_VOICE_MEMO_%d</key>
@@ -27,7 +27,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Pesan suara %d detik</string>
+			<string>Pesan suara %1$d detik</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -41,7 +41,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Tambahkan %d anggota ke “%2$@”?</string>
+			<string>Tambahkan %1$d anggota ke “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -83,7 +83,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Warna kustom ini digunakan pada %d percakapan. Apakah Anda ingin menghapusnya pada semua percakapan?</string>
+			<string>Warna kustom ini digunakan pada %1$d percakapan. Apakah Anda ingin menghapusnya pada semua percakapan?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
@@ -97,7 +97,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Warna ini digunakan pada %d percakapan. Apakah Anda ingin menyimpannya untuk semua percakapan?</string>
+			<string>Warna ini digunakan pada %1$d percakapan. Apakah Anda ingin menyimpannya untuk semua percakapan?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
@@ -111,7 +111,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Hapus %d Obrolan?</string>
+			<string>Hapus %1$d Obrolan?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -139,7 +139,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda tidak dapat memilih lebih dari %d chats.</string>
+			<string>Anda tidak dapat memilih lebih dari %1$d chats.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -153,7 +153,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d %2$#@total@</string>
+			<string>%1$d %2$#@total@</string>
 		</dict>
 		<key>total</key>
 		<dict>
@@ -162,7 +162,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>dari %d kecocokan</string>
+			<string>dari %2$d kecocokan</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -176,7 +176,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Anggota</string>
+			<string>%1$d Anggota</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MUTUAL_GROUPS_SECTION_TITLE_%d</key>
@@ -190,7 +190,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Grup yang Sama</string>
+			<string>%1$d Grup yang Sama</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_%d</key>
@@ -204,7 +204,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%1$dm</string>
 		</dict>
 	</dict>
 	<key>DATE_MINUTES_AGO_LONG_%d</key>
@@ -218,7 +218,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d menit yang lalu</string>
+			<string>%1$d menit yang lalu</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -232,7 +232,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Hapus %d Pesan?</string>
+			<string>Hapus %1$d Pesan?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -246,7 +246,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Batas maksimum ukuran grup %d anggota sudah terpenuhi.</string>
+			<string>Batas maksimum ukuran grup %1$d anggota sudah terpenuhi.</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -260,7 +260,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Versi Signal Anda akan kedaluwarsa dalam %d hari. Ketuk untuk memperbarui ke versi paling baru.</string>
+			<string>Versi Signal Anda akan kedaluwarsa dalam %1$d hari. Ketuk untuk memperbarui ke versi paling baru.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -274,7 +274,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Kirim %d pesan</string>
+			<string>Kirim %1$d pesan</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_HAS_MAX_DEVICES_%d</key>
@@ -288,7 +288,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Jumlah peserta %d telah mencapai angka maksimum untuk panggilan ini. Coba lagi nanti.</string>
+			<string>Jumlah peserta %1$d telah mencapai angka maksimum untuk panggilan ini. Coba lagi nanti.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -302,7 +302,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Dalam panggilan ini · %d orang</string>
+			<string>Dalam panggilan ini · %1$d orang</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_%d</key>
@@ -316,7 +316,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d ditonton</string>
+			<string>%1$d ditonton</string>
 		</dict>
 	</dict>
 	<key>PRIVATE_STORY_VIEWERS_%d</key>
@@ -330,7 +330,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Cerita Privat · %d Penonton</string>
+			<string>Cerita Privat · %1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_%d</key>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Semua Koneksi Signal · %d Penonton</string>
+			<string>Semua Koneksi Signal · %1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -358,7 +358,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Semua Koneksi Signal · %d Dikecualikan</string>
+			<string>Semua Koneksi Signal · %1$d Dikecualikan</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -372,7 +372,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Hanya Bagikan Dengan · %d Penonton</string>
+			<string>Hanya Bagikan Dengan · %1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -386,7 +386,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Cerita Grup · %d Penonton</string>
+			<string>Cerita Grup · %1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_RING_MANY_PEOPLE_%d</key>
@@ -400,7 +400,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Signal akan berdering untuk %2$@, %3$@, dan %d lainnya</string>
+			<string>Signal akan berdering untuk %2$@, %3$@, dan %1$d lainnya</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_WILL_NOTIFY_MANY_PEOPLE_%d</key>
@@ -414,7 +414,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@, %3$@, dan %d lainnya akan mendapat notifikasi</string>
+			<string>%2$@, %3$@, dan %1$d lainnya akan mendapat notifikasi</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IS_RINGING_MANY_PEOPLE_%d</key>
@@ -428,7 +428,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Berdering untuk %2$@, %3$@, dan %d lainnya…</string>
+			<string>Berdering untuk %2$@, %3$@, dan %1$d lainnya…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -442,7 +442,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@, %3$@, dan %d yang lainnya sedang dalam panggilan ini</string>
+			<string>%2$@, %3$@, dan %1$d yang lainnya sedang dalam panggilan ini</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_JOINED_%d</key>
@@ -456,7 +456,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@, %3$@, dan %d lainnya bergabung dalam panggilan</string>
+			<string>%2$@, %3$@, dan %1$d lainnya bergabung dalam panggilan</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -470,7 +470,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@, %3$@, dan %d lainnya meninggalkan panggilan</string>
+			<string>%2$@, %3$@, dan %1$d lainnya meninggalkan panggilan</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -484,7 +484,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Undangan Terkirim</string>
+			<string>%1$d Undangan Terkirim</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -498,7 +498,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d anggota</string>
+			<string>%1$d anggota</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d</key>
@@ -512,7 +512,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Anggota</string>
+			<string>%1$d Anggota</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_COLLISIONS_BANNER_TITLE_%d</key>
@@ -526,7 +526,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d anggota grup memiliki nama yang serupa.</string>
+			<string>%1$d anggota grup memiliki nama yang serupa.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -540,7 +540,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d anggota grup memiliki nama yang serupa, tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
+			<string>%1$d anggota grup memiliki nama yang serupa, tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -554,7 +554,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d anggota grup memiliki nama yang sama, tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
+			<string>%1$d anggota grup memiliki nama yang sama, tinjau anggota di bawah atau pilih untuk mengambil tindakan.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -568,7 +568,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Undangan masuk ke grup telah dibatalkan untuk %d orang.</string>
+			<string>Undangan masuk ke grup telah dibatalkan untuk %1$d orang.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -582,7 +582,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@ membatalkan undangan masuk ke grup untuk %d orang.</string>
+			<string>%2$@ membatalkan undangan masuk ke grup untuk %1$d orang.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -596,7 +596,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d orang diundang masuk ke dalam grup.</string>
+			<string>%1$d orang diundang masuk ke dalam grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -610,7 +610,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@ mengundang %d orang ke dalam grup.</string>
+			<string>%2$@ mengundang %1$d orang ke dalam grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -624,7 +624,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@ meminta dan membatalkan %d permintaan untuk gabung via tautan grup.</string>
+			<string>%2$@ meminta dan membatalkan %1$d permintaan untuk gabung via tautan grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -638,7 +638,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d anggota tidak dapat ditambahkan ke Grup Baru dan telah dikeluarkan dari grup.</string>
+			<string>%1$d anggota tidak dapat ditambahkan ke Grup Baru dan telah dikeluarkan dari grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -652,7 +652,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d anggota tidak dapat ditambahkan ke dalam Grup Baru dan telah diundang untuk bergabung.</string>
+			<string>%1$d anggota tidak dapat ditambahkan ke dalam Grup Baru dan telah diundang untuk bergabung.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -666,7 +666,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Grup ini tidak dapat dibuat karena %d anggota menggunakan versi lama Signal. Anda dapat membuat sebuah Grup Gaya Baru dengan mereka setelah mereka memperbarui Signal, atau mengeluarkan mereka sebelum membuat grup. %2$@</string>
+			<string>Grup ini tidak dapat dibuat karena %1$d anggota menggunakan versi lama Signal. Anda dapat membuat sebuah Grup Gaya Baru dengan mereka setelah mereka memperbarui Signal, atau mengeluarkan mereka sebelum membuat grup. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -680,7 +680,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Grup ini tidak dapat dibuat karena %d anggota menggunakan versi lama Signal. Anda dapat membuat sebuah Grup Gaya Baru dengan mereka setelah mereka memperbarui Signal, atau mengeluarkan mereka sebelum membuat grup.</string>
+			<string>Grup ini tidak dapat dibuat karena %1$d anggota menggunakan versi lama Signal. Anda dapat membuat sebuah Grup Gaya Baru dengan mereka setelah mereka memperbarui Signal, atau mengeluarkan mereka sebelum membuat grup.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -694,7 +694,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d anggota tidak dapat ditambahkan ulang ke dalam Grup Baru. Apa Anda ingin menambahkannya sekarang?</string>
+			<string>%1$d anggota tidak dapat ditambahkan ulang ke dalam Grup Baru. Apa Anda ingin menambahkannya sekarang?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -708,7 +708,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Performa grup Signal akan lebih baik dengan jumlah %d anggota atau kurang. Menambah anggota lebih banyak akan menyebabkan pengiriman dan penerimaan pesan menjadi lambat.</string>
+			<string>Performa grup Signal akan lebih baik dengan jumlah %1$d anggota atau kurang. Menambah anggota lebih banyak akan menyebabkan pengiriman dan penerimaan pesan menjadi lambat.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -722,7 +722,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda tidak dapat membagi lebih dari %d item.</string>
+			<string>Anda tidak dapat membagi lebih dari %1$d item.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -736,7 +736,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d grup yang sama</string>
+			<string>%1$d grup yang sama</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_DELETE_MESSAGES_%d</key>
@@ -750,7 +750,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Hapus %d Pesan</string>
+			<string>Hapus %1$d Pesan</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -764,7 +764,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Foto</string>
+			<string>%1$d Foto</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -778,7 +778,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Item</string>
+			<string>%1$d Item</string>
 		</dict>
 	</dict>
 	<key>MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d</key>
@@ -792,7 +792,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Dipilih</string>
+			<string>%1$d Dipilih</string>
 		</dict>
 	</dict>
 	<key>MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_%d</key>
@@ -806,7 +806,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda Memblokir %d Anggota Grup Ini</string>
+			<string>Anda Memblokir %1$d Anggota Grup Ini</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -820,7 +820,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Dikecualikan</string>
+			<string>%1$d Dikecualikan</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -834,7 +834,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Penonton</string>
+			<string>%1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -848,7 +848,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Anggota</string>
+			<string>%1$d Anggota</string>
 		</dict>
 	</dict>
 	<key>NEW_PRIVATE_STORY_VIEW_TITLE_%d</key>
@@ -862,7 +862,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Penonton</string>
+			<string>%1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>ONBOARDING_2FA_INVALID_PIN_%d</key>
@@ -876,7 +876,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>PIN salah. %d percobaan tersisa.</string>
+			<string>PIN salah. %1$d percobaan tersisa.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_MEMBER_INVITED_USERS_%d</key>
@@ -890,7 +890,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%2$@ mengundang %d orang</string>
+			<string>%2$@ mengundang %1$d orang</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -904,7 +904,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d permintaan anggota tertunda.</string>
+			<string>%1$d permintaan anggota tertunda.</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d</key>
@@ -918,7 +918,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Batalkan %d undangan tidak valid</string>
+			<string>Batalkan %1$d undangan tidak valid</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -932,7 +932,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Batalkan %d undangan yang dikirim oleh "%2$@"?</string>
+			<string>Batalkan %1$d undangan yang dikirim oleh &quot;%2$@&quot;?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -960,7 +960,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Kami akan mengingatkan Anda nanti. Membuat PIN akan menjadi kewajiban dalam %d hari.</string>
+			<string>Kami akan mengingatkan Anda nanti. Membuat PIN akan menjadi kewajiban dalam %1$d hari.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -974,7 +974,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda memiliki %d percobaan tersisa. Jika kehabisan, Anda dapat membuat PIN baru. Anda dapat melakukan pendaftaran dan menggunakan akun Anda namun Anda akan kehilangan pengaturan yang disimpan seperti informasi profil.</string>
+			<string>Anda memiliki %1$d percobaan tersisa. Jika kehabisan, Anda dapat membuat PIN baru. Anda dapat melakukan pendaftaran dan menggunakan akun Anda namun Anda akan kehilangan pengaturan yang disimpan seperti informasi profil.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -988,7 +988,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anda memiliki %d percobaan tersisa. Jika Anda kehabisan percobaan, akun Anda akan dikunci. Setelah 7 hari tidak aktif, Anda dapat mendaftar ulang tanpa PIN Anda. Akun Anda dan semua konten di dalamnya akan dihapus.</string>
+			<string>Anda memiliki %1$d percobaan tersisa. Jika Anda kehabisan percobaan, akun Anda akan dikunci. Setelah 7 hari tidak aktif, Anda dapat mendaftar ulang tanpa PIN Anda. Akun Anda dan semua konten di dalamnya akan dihapus.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1002,7 +1002,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; balasan</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; balasan</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1016,7 +1016,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Penonton</string>
+			<string>%1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1030,7 +1030,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d Dikecualikan</string>
+			<string>%1$d Dikecualikan</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1044,7 +1044,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Mengirim %d...</string>
+			<string>Mengirim %1$d...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1058,7 +1058,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; dilihat</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; dilihat</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
@@ -1072,7 +1072,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; dilihat</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; balasan</string>
 		</dict>
 		<key>replies</key>
 		<dict>
@@ -1081,7 +1081,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%d&lt;/bold&gt; balasan</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; dilihat</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1095,7 +1095,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Anggota dari %2$@, %3$@, dan %d grup tambahan</string>
+			<string>Anggota dari %2$@, %3$@, dan %1$d grup tambahan</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1109,7 +1109,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d hari</string>
+			<string>%1$d hari</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_SHORT_%d</key>
@@ -1123,7 +1123,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%dhari</string>
+			<string>%1$dhari</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1137,7 +1137,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d jam</string>
+			<string>%1$d jam</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_SHORT_%d</key>
@@ -1151,7 +1151,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%djam</string>
+			<string>%1$djam</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_%d</key>
@@ -1165,7 +1165,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d menit</string>
+			<string>%1$d menit</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_MINUTES_SHORT_%d</key>
@@ -1179,7 +1179,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%dm</string>
+			<string>%1$dm</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_%d</key>
@@ -1193,7 +1193,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d detik</string>
+			<string>%1$d detik</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_SECONDS_SHORT_%d</key>
@@ -1207,7 +1207,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%ddetik</string>
+			<string>%1$ddetik</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_%d</key>
@@ -1221,7 +1221,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d minggu</string>
+			<string>%1$d minggu</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_SHORT_%d</key>
@@ -1235,7 +1235,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%dminggu</string>
+			<string>%1$dminggu</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1249,7 +1249,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%d tahun</string>
+			<string>%1$d tahun</string>
 		</dict>
 	</dict>
 </dict>

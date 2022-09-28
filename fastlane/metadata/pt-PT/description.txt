@@ -1,4 +1,4 @@
-Milhões de pessoas utilizam o Signal todos os dias para a comunicação livre e instantânea em qualquer local do mundo. Envie e receba mensagens em alta-fidelidade, participe em chamadas de voz/vídeo em HD, e explore um crescente conjunto de novos recursos que o ajudam a estar ligado. A tecnologia avançada de preservação da privacidade do Signal está sempre ativada, portanto você pode-se focar em partilhar os momentos que importam com as pessoas que lhe são importantes.
+Milhões de pessoas utilizam diariamente o Signal para comunicar de forma livre e rápida a partir qualquer local do mundo. Envie e receba mensagens, participe em chamadas de voz/vídeo em HD, e explore um crescente número de funcionalidades que o(a) ajudam a estar ligado(a). A tecnologia avançada de preservação da privacidade do Signal está sempre ativa, portanto pode focar-se em partilhar os momentos que importam com as pessoas que são importantes para si.
 
 • Diga o que quiser – A encriptação ponta-a-ponta mais avançada (graças ao Signal Protocol™ de código aberto) mantém as suas conversas seguras. A privacidade não é apenas uma opção, é a forma como o Signal trabalha. Em cada mensagem, cada chamada e, a todo momento.
 
@@ -8,11 +8,11 @@ Milhões de pessoas utilizam o Signal todos os dias para a comunicação livre e
 
 • Seja você mesmo(a) – Pode utilizar o seu número de telefone e lista de contactos para comunicar com segurança com os seus amigos.
 
-• Fale – Quer morem no outro lado da cidade ou no outro lado do oceano, a qualidade de áudio e vídeo aprimorada do Signal fará com que seus amigos e familiares pareçam estar junto a si
+• Fale – Quer morem no outro lado da cidade quer no outro lado do oceano, a qualidade de áudio e vídeo aprimorada do Signal fará com que seus amigos e familiares pareçam estar junto a si
 
-• Sussurre na escuridão – Mude para o tema escuro caso a luz o(a) incomode.
+• Murmure nas sombras – Mude para o tema escuro caso a luz o(a) incomode.
 
-• Pareça familiar – Escolha alertas personalizados para cada contato ou desative completamente os sons. Simon & Garfunkel compuseram uma canção de sucesso sobre isso em 1964, e você pode experimentar o som do silêncio sempre que desejar escolher "Nenhum" como seu toque de notificação.
+• Sons familiares – Escolha alertas personalizados para cada contacto ou desative completamente os toques. Simon & Garfunkel compuseram uma música de sucesso sobre esse tema em 1964 e poderá recordar "The Sound of Silence" sempre que quiser, ao selecionar "Nenhum" como seu toque de notificação.
 
 • Decore as imagens – Utilize os recursos incorporados de edição de imagem para esticar, recortar e inverter as imagens que irá enviar. Existe mesmo uma ferramenta de texto, para que possa adicionar mais palavras às mil que a sua imagem já vale.
 

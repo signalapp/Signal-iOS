@@ -1,26 +1,26 @@
-Milioane de persoane folosesc Signal în fiecare zi pentru comunicare gratuită și instantanee oriunde în lume. Trimiteți și primiți mesaje de înaltă fidelitate, efectuați apeluri vocale/video HD și explorați un set tot mai mare de funcționalități noi care vă ajută să rămâneți conectați. Tehnologia avansată de păstrare a confidențialității din Signal este întotdeauna activată, așa că vă puteți concentra pe împărtășirea momentelor care contează cu oamenii care contează.
+Milioane de persoane folosesc Signal în fiecare zi pentru comunicare gratuită și instantanee oriunde în lume. Trimite și primește mesaje de înaltă fidelitate, efectuează apeluri vocale/video HD și explorează un set tot mai mare de funcționalități noi care te ajută să rămâi conectat. Tehnologia avansată de păstrare a confidențialității din Signal este întotdeauna activată, așa că te poți concentra pe împărtășirea momentelor care contează cu oamenii care contează.
 
-• Spuneți orice – Criptarea integrală de ultimă generație (prin protocolul Signal Protocol™ cu sursă deschisă) vă păstrează conversațiile securizate. Confidențialitatea nu este o opțiune — e pur și simplu modul în care funcționează Signal la fiecare mesaj, fiecare apel, de fiecare dată.
+• Spune orice – Criptarea integrală de ultimă generație (prin protocolul Signal Protocol™ cu sursă deschisă) îți păstrează conversațiile securizate. Confidențialitatea nu este o opțiune — e pur și simplu modul în care funcționează Signal la fiecare mesaj, fiecare apel, de fiecare dată.
 
 • Rapid – Mesajele sunt transmise rapid și fiabil, chiar și în rețele lente. Signal este optimizat să funcționeze în cele mai restrictive medii posibile.
 
-• Libertate – Signal este o organizație non-profit înființată în baza secțiunii 501c3 și este complet independentă. Dezvoltarea este susținută de utilizatori ca dvs. Fără reclame. Fără elemente de urmărire. Pe bune.
+• Libertate – Signal este o organizație non-profit înființată în baza secțiunii 501c3 și este complet independentă. Dezvoltarea este susținută de utilizatori ca tine. Fără reclame. Fără elemente de urmărire. Pe bune.
 
-• Fiți voi înșivă – Vă puteți folosi numărul de telefon existent și adresa de contacte pentru a comunica în siguranță cu prietenii.
+• Fii tu însuți – Vei putea folosi numărul de telefon existent și adresa de contacte pentru a comunica în siguranță cu prietenii.
 
-• Vorbiți clar – Fie că locuiesc în cealaltă parte a orașului sau peste ocean, calitatea audio și video amplificată din Signal vă ține aproape prietenii și familia.
+• Vorbește clar – Fie că locuiesc în cealaltă parte a orașului sau peste ocean, calitatea audio și video amplificată din Signal îți ține aproape prietenii și familia.
 
-• Șoapte din umbră – Treceți pe tema întunecată dacă nu vreți să vedeți lumina.
+• Șoapte din umbră – Treci pe tema întunecată dacă nu vrei să vezi lumina.
 
-• Sunete familiare – Alegeți alerte personalizate pentru fiecare contact sau dezactivați complet sunetele. Simon și Garfunkel au scris un hit despre asta în 1964 și puteți trăi sunetul liniștii oricând vreți selectând „Niciunul” pentru tonul de notificări.
+• Sunete familiare – Alege alerte personalizate pentru fiecare contact sau dezactivează complet sunetele. Simon și Garfunkel au scris un hit despre asta în 1964 și poți trăi sunetul liniștii oricând vrei selectând „Niciunul” pentru tonul de notificări.
 
-• Editare imagini – Folosiți funcționalitățile încorporate de editare a imaginilor ca să desenați, să decupați și să rotiți fotografiile trimise. Imaginile valorează cât 1.000 de cuvinte, dar aveți chiar și un instrument de text ca să adăugați și mai multe.
+• Editare imagini – Folosește funcționalitățile încorporate de editare a imaginilor ca să desenezi, să decupezi și să rotești fotografiile trimise. Imaginile valorează cât 1.000 de cuvinte, dar ai chiar și un instrument de text ca să adaugi și mai multe.
 
 
-Pentru asistență, întrebări sau informații suplimentare, intrați pe:
+Pentru asistență, întrebări sau informații suplimentare, intră pe:
 https://support.signal.org
 
 Cod-sursă:
 https://github.com/signalapp
 
-Urmăriți-ne pe Twitter (@signalapp) și Instagram (@signal_app) pentru toate actualizările și anunțurile cele mai recente.
+Urmărește-ne pe Twitter (@signalapp) și Instagram (@signal_app) pentru toate actualizările și anunțurile cele mai recente.
