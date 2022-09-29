@@ -36,7 +36,7 @@ final class ReactionContainerView: UIView {
         arrow.tintColor = Colors.text
         
         let textLabel = UILabel()
-        textLabel.text = "Show less"
+        textLabel.text = "EMOJI_REACTS_SHOW_LESS".localized()
         textLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         textLabel.textColor = Colors.text
         
