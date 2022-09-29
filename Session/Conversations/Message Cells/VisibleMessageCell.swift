@@ -147,7 +147,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         var result = groupThreadHSpacing + profilePictureSize + groupThreadHSpacing
         
         if UIDevice.current.isIPad {
-            result += CGFloat(UIScreen.main.bounds.width / 2 - 88)
+            result += 168
         }
         
         return result
