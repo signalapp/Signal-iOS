@@ -57,13 +57,6 @@ class TestingViewController: OWSTableViewController2 {
         // MARK: - Other
 
         do {
-            let section = OWSTableSection()
-            section.footerTitle = LocalizationNotNeeded("Make sure to force-enable auto-migrations above first.")
-            section.add(OWSTableItem.actionItem(withText: LocalizationNotNeeded("Groups v2: Auto-migrate all v1 groups")) {
-                GroupsV2Migration.tryToAutoMigrateAllGroups(shouldLimitBatchSize: false)
-            })
-            contents.addSection(section)
-
             if !TSConstants.isUsingProductionService {
                 let subscriberIDSection = OWSTableSection()
                 subscriberIDSection.footerTitle = LocalizationNotNeeded("Resets subscriberID, which clears current subscription state. Do not do this in prod environment")

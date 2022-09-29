@@ -41,10 +41,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift, GroupsV2 {
             self.mergeUserProfiles()
 
             Self.enqueueRestoreGroupPass()
-
-            if !CurrentAppContext().isNSE {
-                GroupsV2Migration.tryToAutoMigrateAllGroups(shouldLimitBatchSize: true)
-            }
         }
 
         observeNotifications()

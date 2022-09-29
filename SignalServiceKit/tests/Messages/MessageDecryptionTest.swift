@@ -69,7 +69,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
                                                  recipient: localClient.protocolAddress,
                                                  context: transaction)
 
-            let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: 0)
+            let envelopeBuilder = SSKProtoEnvelope.builder(timestamp: Date.ows_millisecondTimestamp())
             envelopeBuilder.setType(type)
             if let destinationUuid = destinationUuid {
                 envelopeBuilder.setDestinationUuid(destinationUuid.uuidString)
