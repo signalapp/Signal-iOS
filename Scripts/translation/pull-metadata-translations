@@ -3,19 +3,10 @@
 set -x
 set -e
 
-# https://docs.fastlane.tools/actions/deliver/#available-language-codes
-APP_STORE_LANGUAGES='ar,ca,cs,da,de,el,en_AU,en_CA,en_GB,en_US,es,fi,fr,he,hi,hr,hu,id,it,ja,ko,ms,nl,nb,pl,pt_BR,pt_PT,ro,ru,sk,sv,th,tr,uk,vi,zh_CN,zh_TW'
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+REPO_ROOT=$BIN_DIR/../..
+cd $REPO_ROOT
 
 echo "Pulling metadata translations..."
-
-BASE_DIR=$(git rev-parse --show-toplevel)
-METADATA_ROOT="$BASE_DIR/fastlane/metadata"
-
-cd $METADATA_ROOT
-
-# Legacy hack: pull *any existing* app store descriptios regardless of their completion.
-# Once supported, we don't want to drop any translations.
-tx pull --force -l $APP_STORE_LANGUAGES
-
-cp -R fr-FR/ fr-CA
-cp -R es-ES/ es-MX
+swift run --package-path Scripts/translation-tool translation-tool download-metadata

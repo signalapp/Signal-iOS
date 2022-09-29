@@ -3,9 +3,9 @@
 set -x
 set -e
 
-BASE_DIR=$(git rev-parse --show-toplevel)
-METADATA_ROOT="$BASE_DIR/fastlane/metadata"
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd $METADATA_ROOT
+REPO_ROOT=$BIN_DIR/../..
+cd $REPO_ROOT
 
-tx push --source
+swift run --package-path Scripts/translation-tool translation-tool upload-metadata

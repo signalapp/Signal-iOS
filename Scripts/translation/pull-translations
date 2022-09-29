@@ -6,65 +6,11 @@ set -e
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 REPO_ROOT=$BIN_DIR/../..
+cd $REPO_ROOT
+swift run --package-path Scripts/translation-tool translation-tool download-resources
+
 LOCALIZATION_ROOT=$REPO_ROOT/Signal/translations
-
 cd $LOCALIZATION_ROOT
-
-# Pull all translations which are at least 80% complete
-tx pull -a --minimum-perc=80
-
-# Legacy hack: pull *any existing* translations regardless of their completion.
-# Once supported, we don't want to drop any translations.
-tx pull --force
-
-# There's some problem with nb_NO, iconv fails to parse it.
-# I'm guessing it some kind of unicode encoding issue.
-rm -rf nb_NO.lproj
-
-for dir in *.lproj
-do
-
-  # en.lproj is already utf-8
-  if [[ "$dir" = "en.lproj" ]]; then
-    continue
-  fi
-
-  pushd $dir
-
-  translations=$(ls *.strings)
-  for translation in $translations; do
-    # Transifex pulls utf-16, but our string linting script needs utf-8.
-    # Plus we can see the string diffs in GH this way.
-    echo "Converting $dir/$translation to UTF-8"
-    iconv -f UTF-16 -t UTF-8 $translation > $translation.utf8
-    mv $translation.utf8 $translation
-  done
-
-  # missing translations in stringsdict files are not filled with the source language automatically
-  if [[ "$dir" == ??"_"* ]]; then
-    echo "skipping $dir/PluralAware.stringsdict right now"
-  else
-    swift $BIN_DIR/MergeStringsDictFiles.swift ../en.lproj/PluralAware.stringsdict PluralAware.stringsdict
-  fi
-  popd
-
-done
-
-for dir in ??_*.lproj
-do
-  pushd $dir
-  lang=${dir:0:2}
-
-  # merge with "main" (country independent) version of the language
-  if [ -e ../$lang.lproj/PluralAware.stringsdict ]; then
-    swift $BIN_DIR/MergeStringsDictFiles.swift ../$lang.lproj/PluralAware.stringsdict PluralAware.stringsdict
-  else
-    swift $BIN_DIR/MergeStringsDictFiles.swift ../en.lproj/PluralAware.stringsdict PluralAware.stringsdict
-  fi
-
-  popd
-
-done
 
 # Parse the PluralAware.stringsdict files to ensure they're not malformed.
 lang_errors=()

@@ -200,6 +200,9 @@ def process(filepath):
     if lines[0].startswith("#!"):
         shebang = lines[0] + "\n"
         lines = lines[1:]
+    elif lines[0].startswith("// swift-tools-version:"):
+        shebang = lines[0] + "\n"
+        lines = lines[1:]
 
     while lines and lines[0].startswith("//"):
         lines = lines[1:]
