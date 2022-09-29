@@ -909,12 +909,11 @@ extension OWSURLSession: URLSessionDownloadDelegate {
 extension OWSURLSession: URLSessionWebSocketDelegate {
 
     @available(iOS 13, *)
-    public func webSocketTask(request: URLRequest, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (SSKWebSocketNativeError) -> Void) -> URLSessionWebSocketTask {
-        // For some reason, `URLSessionWebSocketTask` will only respect the proxy configuration
-        // if started with a URL and not a URLRequest. As a temporary workaround, port over
-        // any header information from the request to the session.
-        session.configuration.httpAdditionalHeaders = request.allHTTPHeaderFields
-        let task = session.webSocketTask(with: request.url!)
+    public func webSocketTask(requestUrl: URL, didOpenBlock: @escaping (String?) -> Void, didCloseBlock: @escaping (SSKWebSocketNativeError) -> Void) -> URLSessionWebSocketTask {
+        // We can't pass a URLRequest here since it prevents the proxy from
+        // operating correctly. See `SSKWebSocketNative.init(...)` for more details
+        // and an example of passing URLRequest options via this web socket.
+        let task = session.webSocketTask(with: requestUrl)
         addTask(task, taskState: WebSocketTaskState(openBlock: didOpenBlock, closeBlock: didCloseBlock))
         return task
     }
