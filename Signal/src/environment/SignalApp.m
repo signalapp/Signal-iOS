@@ -257,6 +257,7 @@ NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminate
         [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
         [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
         [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
+        [AppDelegate updateApplicationShortcutItemsWithIsRegisteredAndReady:NO];
     });
 
     [DebugLogger.shared wipeLogs];

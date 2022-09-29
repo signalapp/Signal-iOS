@@ -139,6 +139,8 @@ extension AppDelegate {
         DebugLogger.shared().postLaunchLogCleanup()
         AppVersion.shared().mainAppLaunchDidComplete()
 
+        Self.updateApplicationShortcutItems(isRegisteredAndReady: tsAccountManager.isRegisteredAndReady)
+
         if !Environment.shared.preferences.hasGeneratedThumbnails() {
             databaseStorage.asyncRead(
                 block: { transaction in
@@ -394,7 +396,8 @@ extension AppDelegate {
 
         enableBackgroundRefreshIfNecessary()
 
-        if tsAccountManager.isRegisteredAndReady {
+        let isRegisteredAndReady = tsAccountManager.isRegisteredAndReady
+        if isRegisteredAndReady {
             AppReadiness.runNowOrWhenAppDidBecomeReadySync {
                 self.databaseStorage.write { transaction in
                     let localAddress = self.tsAccountManager.localAddress(with: transaction)
@@ -408,6 +411,30 @@ extension AppDelegate {
                 self.disappearingMessagesJob.startIfNecessary()
             }
         }
+
+        Self.updateApplicationShortcutItems(isRegisteredAndReady: isRegisteredAndReady)
+    }
+
+    // MARK: - Utilities
+
+    @objc
+    public static func updateApplicationShortcutItems(isRegisteredAndReady: Bool) {
+        guard CurrentAppContext().isMainApp else { return }
+        UIApplication.shared.shortcutItems = applicationShortcutItems(isRegisteredAndReady: isRegisteredAndReady)
+    }
+
+    static func applicationShortcutItems(isRegisteredAndReady: Bool) -> [UIApplicationShortcutItem] {
+        guard isRegisteredAndReady else { return [] }
+        return [.init(
+            type: "\(Bundle.main.bundleIdPrefix).quickCompose",
+            localizedTitle: NSLocalizedString(
+                "APPLICATION_SHORTCUT_NEW_MESSAGE",
+                value: "New Message",
+                comment: "On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings."
+            ),
+            localizedSubtitle: nil,
+            icon: UIApplicationShortcutIcon(type: .compose)
+        )]
     }
 }
 
