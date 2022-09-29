@@ -88,6 +88,14 @@ public class StoryManager: NSObject {
             transaction: transaction
         ) else { return }
 
+        switch message.context {
+        case .authorUuid(let uuid):
+            // Make sure the thread exists for the contact who sent us this story.
+            _ = TSContactThread.getOrCreateThread(withContactAddress: .init(uuid: uuid), transaction: transaction)
+        case .groupId, .privateStory, .none:
+            break
+        }
+
         startAutomaticDownloadIfNecessary(for: message, transaction: transaction)
 
         OWSDisappearingMessagesJob.shared.scheduleRun(byTimestamp: message.timestamp + storyLifetimeMillis)
