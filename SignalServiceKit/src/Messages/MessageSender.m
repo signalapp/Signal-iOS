@@ -617,9 +617,14 @@ NSString *const MessageSenderSpamChallengeResolvedException = @"SpamChallengeRes
     if (senderCertificates != nil) {
         for (SignalServiceAddress *address in addresses) {
             if (!address.isLocalAddress) {
-                sendingAccessMap[address] = [self.udManager udSendingAccessForAddress:address
-                                                                    requireSyncAccess:YES
-                                                                   senderCertificates:senderCertificates];
+                if (message.isStorySend) {
+                    sendingAccessMap[address] = [self.udManager storySendingAccessForAddress:address
+                                                                          senderCertificates:senderCertificates];
+                } else {
+                    sendingAccessMap[address] = [self.udManager udSendingAccessForAddress:address
+                                                                        requireSyncAccess:YES
+                                                                       senderCertificates:senderCertificates];
+                }
             }
         }
     }

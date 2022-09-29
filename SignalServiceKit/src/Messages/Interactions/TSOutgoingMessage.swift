@@ -149,6 +149,9 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
 
 public extension TSOutgoingMessage {
     @objc
+    var isStorySend: Bool { isGroupStoryReply }
+
+    @objc
     func failedRecipientAddresses(errorCode: Int) -> [SignalServiceAddress] {
         guard let states = recipientAddressStates else { return [] }
 

@@ -153,6 +153,9 @@ public protocol OWSUDManager: AnyObject {
                          requireSyncAccess: Bool,
                          senderCertificates: SenderCertificates) -> OWSUDSendingAccess?
 
+    @objc
+    func storySendingAccess(forAddress address: SignalServiceAddress, senderCertificates: SenderCertificates) -> OWSUDSendingAccess
+
     // MARK: Sender Certificate
 
     // We use completion handlers instead of a promise so that message sending
@@ -518,7 +521,17 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             return nil
         }
 
-        return databaseStorage.read { transaction in
+        return udSendingAccess(for: address, udAccess: udAccess, senderCertificates: senderCertificates)
+    }
+
+    @objc
+    public func storySendingAccess(forAddress address: SignalServiceAddress, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
+        let udAccess = OWSUDAccess(udAccessKey: randomUDAccessKey(), udAccessMode: .unrestricted, isRandomKey: true)
+        return udSendingAccess(for: address, udAccess: udAccess, senderCertificates: senderCertificates)
+    }
+
+    private func udSendingAccess(for address: SignalServiceAddress, udAccess: OWSUDAccess, senderCertificates: SenderCertificates) -> OWSUDSendingAccess {
+        databaseStorage.read { transaction in
             let senderCertificate: SenderCertificate
             switch phoneNumberSharingMode {
             case .everybody:

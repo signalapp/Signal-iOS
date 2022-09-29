@@ -42,6 +42,8 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
     @objc
     public override var isUrgent: Bool { false }
 
+    public override var isStorySend: Bool { true }
+
     public override func shouldSyncTranscript() -> Bool { !skipSyncTranscript.boolValue }
 
     public override func buildTranscriptSyncMessage(

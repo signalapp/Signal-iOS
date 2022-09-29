@@ -514,11 +514,13 @@ extension MessageSender {
                 timestamp: message.timestamp,
                 isOnline: message.isOnline,
                 isUrgent: message.isUrgent,
+                isStory: message.isStorySend,
                 thread: thread,
                 recipients: recipients,
                 udAccessMap: udAccessMap,
                 senderCertificate: senderCertificate,
-                remainingAttempts: 3)
+                remainingAttempts: 3
+            )
         }
     }
 
@@ -528,6 +530,7 @@ extension MessageSender {
         timestamp: UInt64,
         isOnline: Bool,
         isUrgent: Bool,
+        isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess],
@@ -540,9 +543,11 @@ extension MessageSender {
                 timestamp: timestamp,
                 isOnline: isOnline,
                 isUrgent: isUrgent,
+                isStory: isStory,
                 thread: thread,
                 recipients: recipients,
-                udAccessMap: udAccessMap)
+                udAccessMap: udAccessMap
+            )
         }.map(on: senderKeyQueue) { response -> SenderKeySendResult in
             guard response.responseStatusCode == 200 else { throw
                 OWSAssertionError("Unhandled error")
@@ -567,6 +572,7 @@ extension MessageSender {
                         timestamp: timestamp,
                         isOnline: isOnline,
                         isUrgent: isUrgent,
+                        isStory: isStory,
                         thread: thread,
                         recipients: recipients,
                         udAccessMap: udAccessMap,
@@ -696,6 +702,7 @@ extension MessageSender {
         timestamp: UInt64,
         isOnline: Bool,
         isUrgent: Bool,
+        isStory: Bool,
         thread: TSThread,
         recipients: [Recipient],
         udAccessMap: [SignalServiceAddress: OWSUDSendingAccess]
@@ -717,7 +724,9 @@ extension MessageSender {
             compositeUDAccessKey: compositeKey,
             timestamp: timestamp,
             isOnline: isOnline,
-            isUrgent: isUrgent)
+            isUrgent: isUrgent,
+            isStory: isStory
+        )
 
         // If we can use the websocket, try that and fail over to REST.
         // If not, go straight to REST.
@@ -792,13 +801,14 @@ fileprivate extension SignalServiceAddress {
         let sessionStore = signalProtocolStore(for: .aci).sessionStore
         return candidateDevices.allSatisfy { deviceId in
             do {
-                guard let sessionRecord = try sessionStore.loadSession(for: self,
-                                                                       deviceId: Int32(deviceId),
-                                                                       transaction: readTx),
-                      sessionRecord.hasCurrentState else {
-                    Logger.warn("No session for address: \(self)")
-                    return false
-                }
+                guard
+                    let sessionRecord = try sessionStore.loadSession(
+                        for: self,
+                        deviceId: Int32(deviceId),
+                        transaction: readTx
+                    ),
+                    sessionRecord.hasCurrentState
+                else { return true }
                 let registrationId = try sessionRecord.remoteRegistrationId()
                 let isValidRegistrationId = (registrationId & 0x3fff == registrationId)
                 owsAssertDebug(isValidRegistrationId)

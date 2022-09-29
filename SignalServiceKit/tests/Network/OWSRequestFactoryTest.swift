@@ -34,17 +34,19 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
             timestamp: 1234,
             udAccessKey: udAccessKey,
             isOnline: true,
-            isUrgent: false
+            isUrgent: false,
+            isStory: false
         )
 
         let url = try XCTUnwrap(request.url, "request.url")
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertEqual(url.path, "v1/messages/\(recipientUuid.uuidString)")
-        XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online", "urgent"]))
+        XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online", "urgent", "story"]))
         XCTAssertEqual(request.parameters["messages"] as? NSArray, [])
         XCTAssertEqual(request.parameters["timestamp"] as? UInt, 1234)
         XCTAssertEqual(request.parameters["online"] as? Bool, true)
         XCTAssertEqual(request.parameters["urgent"] as? Bool, false)
+        XCTAssertEqual(request.parameters["story"] as? Bool, false)
         XCTAssertEqual(request.allHTTPHeaderFields?["Unidentified-Access-Key"], udAccessKey.keyData.base64EncodedString())
     }
 
@@ -57,13 +59,14 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
             compositeUDAccessKey: udAccessKey,
             timestamp: 1234,
             isOnline: true,
-            isUrgent: false
+            isUrgent: false,
+            isStory: false
         )
 
         let url = try XCTUnwrap(request.url, "request.url")
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertEqual(url.path, "v1/messages/multi_recipient")
-        XCTAssertEqual(try queryItemsAsDictionary(url: url), ["ts": "1234", "online": "true", "urgent": "false"])
+        XCTAssertEqual(try queryItemsAsDictionary(url: url), ["ts": "1234", "online": "true", "urgent": "false", "story": "false"])
         XCTAssertEqual(request.allHTTPHeaderFields?["Content-Type"], "application/vnd.signal-messenger.mrm")
         XCTAssertEqual(request.allHTTPHeaderFields?["Unidentified-Access-Key"], udAccessKey.keyData.base64EncodedString())
         XCTAssertEqual(request.httpBody, ciphertext)

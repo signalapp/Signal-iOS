@@ -533,12 +533,15 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
                                       isOnline:(BOOL)isOnline
                                       isUrgent:(BOOL)isUrgent
+                                       isStory:(BOOL)isStory
 {
     // NOTE: messages may be empty; See comments in OWSDeviceManager.
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(timestamp > 0);
 
     NSString *path = [self.textSecureMessagesAPI stringByAppendingString:recipientAddress.serviceIdentifier];
+
+    path = [path stringByAppendingFormat:@"?story=%@", isStory ? @"true" : @"false"];
 
     // Returns the per-account-message parameters used when submitting a message to
     // the Signal Web Service.
@@ -559,6 +562,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                                       timestamp:(uint64_t)timestamp
                                                        isOnline:(BOOL)isOnline
                                                        isUrgent:(BOOL)isUrgent
+                                                        isStory:(BOOL)isStory
 {
     OWSAssertDebug(ciphertext);
     OWSAssertDebug(udAccessKey);
@@ -571,6 +575,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
         [NSURLQueryItem queryItemWithName:@"ts" value:[@(timestamp) stringValue]],
         [NSURLQueryItem queryItemWithName:@"online" value:isOnline ? @"true" : @"false"],
         [NSURLQueryItem queryItemWithName:@"urgent" value:isUrgent ? @"true" : @"false"],
+        [NSURLQueryItem queryItemWithName:@"story" value:isStory ? @"true" : @"false"],
     ];
     NSURL *url = [components URL];
 

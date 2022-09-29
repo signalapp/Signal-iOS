@@ -809,28 +809,33 @@ public extension MessageSender {
             Logger.warn("Sending a message with no device messages.")
         }
 
-        let requestMaker = RequestMaker(label: "Message Send",
-                                        requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
-                                            OWSRequestFactory.submitMessageRequest(with: address,
-                                                                                   messages: deviceMessages,
-                                                                                   timestamp: message.timestamp,
-                                                                                   udAccessKey: udAccessKey,
-                                                                                   isOnline: message.isOnline,
-                                                                                   isUrgent: message.isUrgent)
-                                        },
-                                        udAuthFailureBlock: {
-                                            // Note the UD auth failure so subsequent retries
-                                            // to this recipient also use basic auth.
-                                            messageSend.setHasUDAuthFailed()
-                                        },
-                                        websocketFailureBlock: {
-                                            // Note the websocket failure so subsequent retries
-                                            // to this recipient also use REST.
-                                            messageSend.hasWebsocketSendFailed = true
-                                        },
-                                        address: address,
-                                        udAccess: messageSend.udSendingAccess?.udAccess,
-                                        canFailoverUDAuth: false)
+        let requestMaker = RequestMaker(
+            label: "Message Send",
+            requestFactoryBlock: { (udAccessKey: SMKUDAccessKey?) in
+                OWSRequestFactory.submitMessageRequest(
+                    with: address,
+                    messages: deviceMessages,
+                    timestamp: message.timestamp,
+                    udAccessKey: udAccessKey,
+                    isOnline: message.isOnline,
+                    isUrgent: message.isUrgent,
+                    isStory: message.isStorySend
+                )
+            },
+            udAuthFailureBlock: {
+                // Note the UD auth failure so subsequent retries
+                // to this recipient also use basic auth.
+                messageSend.setHasUDAuthFailed()
+            },
+            websocketFailureBlock: {
+                // Note the websocket failure so subsequent retries
+                // to this recipient also use REST.
+                messageSend.hasWebsocketSendFailed = true
+            },
+            address: address,
+            udAccess: messageSend.udSendingAccess?.udAccess,
+            canFailoverUDAuth: false
+        )
 
         // Client-side fanout can yield many
         firstly {
