@@ -39,6 +39,8 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     var audioRecorder: AVAudioRecorder?
     var audioTimer: Timer?
     
+    private var searchBarWidth: NSLayoutConstraint?
+    
     // Context menu
     var contextMenuWindow: ContextMenuWindow?
     var contextMenuVC: ContextMenuVC?
@@ -478,6 +480,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+        searchBarWidth?.constant = size.width - 32
         tableView.reloadData()
     }
     
@@ -1398,7 +1401,7 @@ final class ConversationVC: BaseVC, OWSConversationSettingsViewDelegate, Convers
         searchBar.sizeToFit()
         searchBar.layoutMargins = UIEdgeInsets.zero
         searchBarContainer.set(.height, to: 44)
-        searchBarContainer.set(.width, to: UIScreen.main.bounds.width - 32)
+        searchBarWidth = searchBarContainer.set(.width, to: UIScreen.main.bounds.width - 32)
         searchBarContainer.addSubview(searchBar)
         navigationItem.titleView = searchBarContainer
         
