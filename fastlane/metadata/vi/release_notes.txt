@@ -1,2 +1,4 @@
-• Các thay đổi nâng cấp để ứng dụng chạy mượt trên iPhone 14
-• Sửa các lỗi cho nhóm
+• Better integration of your Signal contacts with the share sheet on older iOS versions, making it smoother to connect with the people you talk to most often.
+• Beautified long link previews
+• Fixed a bug where messages read on a linked device would sometimes show up as unread notifications on your lock screen.
+• Sorted out an issue with video recording using the in-app camera

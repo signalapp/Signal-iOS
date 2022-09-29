@@ -1,2 +1,4 @@
-• iPhone 14에서 앱이 원활하게 실행되도록 개선
-• 그룹에 다양한 수정 사항 적용
+• Better integration of your Signal contacts with the share sheet on older iOS versions, making it smoother to connect with the people you talk to most often.
+• Beautified long link previews
+• Fixed a bug where messages read on a linked device would sometimes show up as unread notifications on your lock screen.
+• Sorted out an issue with video recording using the in-app camera

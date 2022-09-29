@@ -1,2 +1,4 @@
-• Improvements to keep the app running smoothly on iPhone 14
-• Various fixes for groups
+• Better integration of your Signal contacts with the share sheet on older iOS versions, making it smoother to connect with the people you talk to most often.
+• Beautified long link previews
+• Fixed a bug where messages read on a linked device would sometimes show up as unread notifications on your lock screen.
+• Sorted out an issue with video recording using the in-app camera
