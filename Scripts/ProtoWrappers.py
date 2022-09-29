@@ -679,7 +679,7 @@ class MessageContext(BaseContext):
                     writer.add('}')
                     writer.newline()
 
-        has_address_helper = uuid_field and e164_field and not args.skip_address_helpers
+        has_address_helper = uuid_field and e164_field
         address_accessor = ''
         if has_address_helper:
             accessor_prefix = uuid_field.name.replace('Uuid', '')
@@ -1249,19 +1249,6 @@ public func serializedData() throws -> Data {
         writer.pop_indent()
         writer.add('}')
         writer.newline()
-
-        # description
-        if self.args.add_description:
-            writer.add_objc()
-            writer.add('public override var description: String {')
-            writer.push_indent()
-            writer.add('var fields = [String]()')
-            for field in self.fields():
-                writer.add('fields.append("%s: \(proto.%s)")' % ( field.name_swift, field.name_swift, ) )
-            writer.add('return "[" + fields.joined(separator: ", ") + "]"')
-            writer.pop_indent()
-            writer.add('}')
-            writer.newline()
 
         writer.pop_context()
 
@@ -1919,15 +1906,11 @@ def process_proto_file(args, proto_file_path, dst_file_path):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Protocol Buffer Swift Wrapper Generator.')
-    # parser.add_argument('--all', action='store_true', help='process all files in or below current dir')
-    # parser.add_argument('--path', help='used to specify a path to a file.')
     parser.add_argument('--proto-dir', help='dir path of the proto schema file.')
     parser.add_argument('--proto-file', help='filename of the proto schema file.')
     parser.add_argument('--wrapper-prefix', help='name prefix for generated wrappers.')
     parser.add_argument('--proto-prefix', help='name prefix for proto bufs.')
     parser.add_argument('--dst-dir', help='path to the destination directory.')
-    parser.add_argument('--add-description', action='store_true', help='add `description` properties.')
-    parser.add_argument('--skip-address-helpers', action='store_true', help='skip generating address helpers for uuid/e164 fields')
     parser.add_argument('--verbose', action='store_true', help='enables verbose logging')
     args = parser.parse_args()
 
