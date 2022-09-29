@@ -161,6 +161,15 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
     }
 
     @objc
+    public var story: Bool {
+        return proto.story
+    }
+    @objc
+    public var hasStory: Bool {
+        return proto.hasStory
+    }
+
+    @objc
     public var hasValidSource: Bool {
         return sourceAddress != nil
     }
@@ -303,6 +312,9 @@ extension SSKProtoEnvelope {
         if let _value = sourceUuid {
             builder.setSourceUuid(_value)
         }
+        if hasStory {
+            builder.setStory(story)
+        }
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -398,6 +410,11 @@ public class SSKProtoEnvelopeBuilder: NSObject {
 
     public func setSourceUuid(_ valueParam: String) {
         proto.sourceUuid = valueParam
+    }
+
+    @objc
+    public func setStory(_ valueParam: Bool) {
+        proto.story = valueParam
     }
 
     public func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

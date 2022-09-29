@@ -115,6 +115,15 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `sourceUuid`. Subsequent reads from it will return its default value.
   mutating func clearSourceUuid() {self._sourceUuid = nil}
 
+  var story: Bool {
+    get {return _story ?? false}
+    set {_story = newValue}
+  }
+  /// Returns true if `story` has been explicitly set.
+  var hasStory: Bool {return self._story != nil}
+  /// Clears the value of `story`. Subsequent reads from it will return its default value.
+  mutating func clearStory() {self._story = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum TypeEnum: SwiftProtobuf.Enum {
@@ -172,6 +181,7 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _serverGuid: String? = nil
   fileprivate var _serverTimestamp: UInt64? = nil
   fileprivate var _sourceUuid: String? = nil
+  fileprivate var _story: Bool? = nil
 }
 
 #if swift(>=4.2)
@@ -4683,6 +4693,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
     11: .same(proto: "sourceUuid"),
+    16: .same(proto: "story"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4700,6 +4711,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 10: try { try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp) }()
       case 11: try { try decoder.decodeSingularStringField(value: &self._sourceUuid) }()
       case 13: try { try decoder.decodeSingularStringField(value: &self._destinationUuid) }()
+      case 16: try { try decoder.decodeSingularBoolField(value: &self._story) }()
       default: break
       }
     }
@@ -4737,6 +4749,9 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     try { if let v = self._destinationUuid {
       try visitor.visitSingularStringField(value: v, fieldNumber: 13)
     } }()
+    try { if let v = self._story {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 16)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -4750,6 +4765,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._serverGuid != rhs._serverGuid {return false}
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}
     if lhs._sourceUuid != rhs._sourceUuid {return false}
+    if lhs._story != rhs._story {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

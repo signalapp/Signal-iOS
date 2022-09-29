@@ -41,6 +41,9 @@ message Envelope {
   optional uint64 serverTimestamp = 10;
   // @trustedMapping
   optional string sourceUuid      = 11;
+  reserved /* urgent */             14;
+  reserved /* update_pni */         15;
+  optional bool   story           = 16;
 }
 
 message TypingMessage {
