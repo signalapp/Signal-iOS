@@ -88,7 +88,7 @@ public struct SessionApp {
         }
         
         let homeViewController: HomeVC = HomeVC()
-        let navController: UINavigationController = UINavigationController(rootViewController: homeViewController)
+        let navController: UINavigationController = StyledNavigationController(rootViewController: homeViewController)
         (UIApplication.shared.delegate as? AppDelegate)?.window?.rootViewController = navController
     }
 }

@@ -92,7 +92,7 @@ internal enum Theme_ClassicDark: ThemeColors {
         .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color,
         
         // InputButton
-        .inputButton_background: .classicDark1,
+        .inputButton_background: .classicDark2,
         
         // ContextMenu
         .contextMenu_background: .classicDark1,
@@ -106,6 +106,9 @@ internal enum Theme_ClassicDark: ThemeColors {
         
         // Reactions
         .reactions_contextBackground: .classicDark2,
-        .reactions_contextMoreBackground: .classicDark1
+        .reactions_contextMoreBackground: .classicDark1,
+        
+        // NewConversation
+        .newConversation_background: .classicDark1
     ]
 }

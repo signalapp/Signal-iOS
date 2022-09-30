@@ -4,10 +4,11 @@ import UIKit
 import SessionUIKit
 
 final class InputViewButton: UIView {
-    private let icon: UIImage
+    private let icon: UIImage?
     private let isSendButton: Bool
     private weak var delegate: InputViewButtonDelegate?
     private let hasOpaqueBackground: Bool
+    private let onTap: (() -> Void)?
     private lazy var widthConstraint = set(.width, to: InputViewButton.size)
     private lazy var heightConstraint = set(.height, to: InputViewButton.size)
     private var longPressTimer: Timer?
@@ -26,11 +27,12 @@ final class InputViewButton: UIView {
     
     // MARK: - Lifecycle
     
-    init(icon: UIImage, isSendButton: Bool = false, delegate: InputViewButtonDelegate, hasOpaqueBackground: Bool = false) {
+    init(icon: UIImage?, isSendButton: Bool = false, delegate: InputViewButtonDelegate? = nil, hasOpaqueBackground: Bool = false, onTap: (() -> Void)? = nil) {
         self.icon = icon
         self.isSendButton = isSendButton
         self.delegate = delegate
         self.hasOpaqueBackground = hasOpaqueBackground
+        self.onTap = onTap
         
         super.init(frame: CGRect.zero)
         
@@ -82,7 +84,7 @@ final class InputViewButton: UIView {
         widthConstraint.isActive = true
         heightConstraint.isActive = true
         
-        iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
+        iconImageView.image = icon?.withRenderingMode(.alwaysTemplate)
         iconImageView.themeTintColor = (isSendButton ? .black : .textPrimary)
         iconImageView.contentMode = .scaleAspectFit
         addSubview(iconImageView)
@@ -161,6 +163,7 @@ final class InputViewButton: UIView {
         collapse()
         if !isLongPress {
             delegate?.handleInputViewButtonTapped(self)
+            onTap?()
         } else {
             delegate?.handleInputViewButtonLongPressEnded(self, with: touches.first)
         }

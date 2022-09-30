@@ -397,7 +397,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         self.hasInitialRootViewController = true
-        self.window?.rootViewController = OWSNavigationController(
+        self.window?.rootViewController = StyledNavigationController(
             rootViewController: (Identity.userExists() ?
                 HomeVC() :
                 LandingVC()
@@ -595,7 +595,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     private func createNewDMFromDeepLink(sessionId: String) {
-        guard let homeViewController: HomeVC = (window?.rootViewController as? OWSNavigationController)?.visibleViewController as? HomeVC else {
+        guard let homeViewController: HomeVC = (window?.rootViewController as? UINavigationController)?.visibleViewController as? HomeVC else {
             return
         }
         

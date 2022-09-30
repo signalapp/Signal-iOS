@@ -8,6 +8,23 @@ public class StyledSearchController: UISearchController {
     public override var preferredStatusBarStyle: UIStatusBarStyle {
         return ThemeManager.currentTheme.statusBarStyle
     }
+    
+    let stubbableSearchBar: StubbableSearchBar = StubbableSearchBar()
+    override public var searchBar: UISearchBar {
+        get { stubbableSearchBar }
+    }
+}
+
+public class StubbableSearchBar: UISearchBar {
+    weak var stubbedNextResponder: UIResponder?
+    
+    public override var next: UIResponder? {
+        if let stubbedNextResponder = self.stubbedNextResponder {
+            return stubbedNextResponder
+        }
+        
+        return super.next
+    }
 }
 
 public class ConversationSearchController: NSObject {
@@ -15,7 +32,7 @@ public class ConversationSearchController: NSObject {
 
     private let threadId: String
     public weak var delegate: ConversationSearchControllerDelegate?
-    public let uiSearchController: UISearchController = StyledSearchController(searchResultsController: nil)
+    public let uiSearchController: StyledSearchController = StyledSearchController(searchResultsController: nil)
     public let resultsBar: SearchResultsBar = SearchResultsBar()
     
     private var lastSearchText: String?

@@ -152,7 +152,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         
         guard let attachments: [SignalAttachment] = ShareVC.attachmentPrepPromise?.value else { return }
         
-        let approvalVC: OWSNavigationController = AttachmentApprovalViewController.wrappedInNavController(
+        let approvalVC: UINavigationController = AttachmentApprovalViewController.wrappedInNavController(
             threadId: self.viewModel.viewData[indexPath.row].threadId,
             attachments: attachments,
             approvalDelegate: self

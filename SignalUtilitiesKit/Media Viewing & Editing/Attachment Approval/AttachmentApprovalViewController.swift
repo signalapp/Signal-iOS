@@ -45,6 +45,10 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 // MARK: -
 
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return ThemeManager.currentTheme.statusBarStyle
+    }
+    
     public enum Mode: UInt {
         case modal
         case sharedNavigation
@@ -159,12 +163,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         threadId: String,
         attachments: [SignalAttachment],
         approvalDelegate: AttachmentApprovalViewControllerDelegate
-    ) -> OWSNavigationController {
+    ) -> UINavigationController {
         let vc = AttachmentApprovalViewController(mode: .modal, threadId: threadId, attachments: attachments)
         vc.approvalDelegate = approvalDelegate
         
-        let navController = OWSNavigationController(rootViewController: vc)
-        navController.ows_prefersStatusBarHidden = true
+        let navController = StyledNavigationController(rootViewController: vc)
         
         return navController
     }
@@ -172,8 +175,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - UI
     
     private let kSpacingBetweenItems: CGFloat = 20
-    
-    public override var prefersStatusBarHidden: Bool { return true }
     
     private lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
         let bottomToolView = AttachmentApprovalInputAccessoryView()
@@ -214,7 +215,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.themeBackgroundColor = .backgroundSecondary
+        self.view.themeBackgroundColor = .newConversation_background
         
         // Avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
         pagerScrollView?.isScrollEnabled = (attachmentItems.count > 1)
@@ -255,11 +256,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         super.viewDidAppear(animated)
 
         updateContents()
-    }
-
-    override public func viewWillDisappear(_ animated: Bool) {
-        Logger.debug("")
-        super.viewWillDisappear(animated)
     }
     
     // MARK: - Layout
@@ -367,57 +363,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         }
         else {
-            // Mimic a conventional back button, but with a shadow.
-            let isRTL = CurrentAppContext().isRTL
-            let imageName = (isRTL ? "NavBarBackRTL" : "NavBarBack")
-            let backButton = OWSButton(imageName: imageName, tintColor: .textPrimary) { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            }
-
-            // Nudge closer to the left edge to match default back button item.
-            let kExtraLeftPadding: CGFloat = isRTL ? +0 : -8
-
-            // Give some extra hit area to the back button. This is a little smaller
-            // than the default back button, but makes sense for our left aligned title
-            // view in the MessagesViewController
-            let kExtraRightPadding: CGFloat = isRTL ? -0 : +10
-
-            // Extra hit area above/below
-            let kExtraHeightPadding: CGFloat = 4
-
-            // Matching the default backbutton placement is tricky.
-            // We can't just adjust the imageEdgeInsets on a UIBarButtonItem directly,
-            // so we adjust the imageEdgeInsets on a UIButton, then wrap that
-            // in a UIBarButtonItem.
-
-            backButton.contentHorizontalAlignment = .left
-
-            // Default back button is 1.5 pixel lower than our extracted image.
-            let kTopInsetPadding: CGFloat = 1.5
-            backButton.imageEdgeInsets = UIEdgeInsets(
-                top: kTopInsetPadding,
-                left: kExtraLeftPadding,
-                bottom: 0,
-                right: 0
-            )
-
-            var backImageSize = CGSize.zero
-            if let backImage = UIImage(named: imageName) {
-                backImageSize = backImage.size
-            }
-            else {
-                owsFailDebug("Missing backImage.")
-            }
-            backButton.frame = CGRect(
-                origin: .zero,
-                size: CGSize(
-                    width: backImageSize.width + kExtraRightPadding,
-                    height: backImageSize.height + kExtraHeightPadding
-                )
-            )
-
-            // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+            navigationItem.leftBarButtonItem = nil
         }
     }
 

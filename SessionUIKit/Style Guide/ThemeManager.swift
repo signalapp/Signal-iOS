@@ -216,11 +216,11 @@ public enum ThemeManager {
         // Will use the 'primary' style for all other cases
         guard
             let navController: UINavigationController = ((viewController as? UINavigationController) ?? viewController.navigationController),
-            (navController.viewControllers.first as? ThemedNavigation)?.navigationStyle == .secondary
+            let navigationBackground: ThemeValue = (navController.viewControllers.first as? ThemedNavigation)?.navigationBackground
         else { return }
         
-        navController.navigationBar.barTintColor = ThemeManager.currentTheme.color(for: .backgroundSecondary)
-        navController.navigationBar.shadowImage = ThemeManager.currentTheme.color(for: .backgroundSecondary)?.toImage()
+        navController.navigationBar.barTintColor = ThemeManager.currentTheme.color(for: navigationBackground)
+        navController.navigationBar.shadowImage = ThemeManager.currentTheme.color(for: navigationBackground)?.toImage()
         
         // Note: Looks like there were changes to the appearance behaviour in iOS 15, unfortunately
         // this breaks parts of the old 'UINavigationBar.appearance()' logic so we need to do everything
@@ -229,8 +229,8 @@ public enum ThemeManager {
             let textPrimary: UIColor = (ThemeManager.currentTheme.color(for: .textPrimary) ?? .white)
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = ThemeManager.currentTheme.color(for: .backgroundSecondary)
-            appearance.shadowImage = ThemeManager.currentTheme.color(for: .backgroundSecondary)?.toImage()
+            appearance.backgroundColor = ThemeManager.currentTheme.color(for: navigationBackground)
+            appearance.shadowImage = ThemeManager.currentTheme.color(for: navigationBackground)?.toImage()
             appearance.titleTextAttributes = [
                 NSAttributedString.Key.foregroundColor: textPrimary
             ]

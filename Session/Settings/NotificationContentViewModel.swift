@@ -52,8 +52,7 @@ class NotificationContentViewModel: SessionTableViewModel<NoNav, NotificationSet
                                 id: previewType,
                                 title: previewType.name,
                                 rightAccessory: .radio(
-                                    isSelected: { (currentSelection == previewType) },
-                                    storedSelection: (currentSelection == previewType)
+                                    isSelected: { (currentSelection == previewType) }
                                 ),
                                 onTap: { [weak self] in
                                     storage.writeAsync { db in

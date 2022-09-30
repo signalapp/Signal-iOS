@@ -59,7 +59,7 @@ public class AllMediaViewController: UIViewController, UIPageViewControllerDataS
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.themeBackgroundColor = .backgroundSecondary
+        view.themeBackgroundColor = .newConversation_background
         
         // Add a custom back button if this is the only view controller
         if self.navigationController?.viewControllers.first == self {

@@ -637,7 +637,7 @@ public class MediaGalleryViewModel {
 @objc(SNMediaGallery)
 public class SNMediaGallery: NSObject {
     @objc(pushTileViewWithSliderEnabledForThreadId:isClosedGroup:isOpenGroup:fromNavController:)
-    static func pushTileView(threadId: String, isClosedGroup: Bool, isOpenGroup: Bool, fromNavController: OWSNavigationController) {
+    static func pushTileView(threadId: String, isClosedGroup: Bool, isOpenGroup: Bool, fromNavController: UINavigationController) {
         fromNavController.pushViewController(
             MediaGalleryViewModel.createAllMediaViewController(
                 threadId: threadId,

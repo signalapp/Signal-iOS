@@ -163,7 +163,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
     public override func loadView() {
         self.view = UIView()
-        self.view.themeBackgroundColor = .backgroundSecondary
+        self.view.themeBackgroundColor = .newConversation_background
         self.view.isOpaque = true
 
         canvasView.configureSubviews()
@@ -236,11 +236,6 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
 
         let navigationBarItems = [undoButton, doneButton]
         updateNavigationBar(navigationBarItems: navigationBarItems)
-    }
-
-    @objc
-    public override var prefersStatusBarHidden: Bool {
-        return true
     }
 
     @objc

@@ -27,8 +27,14 @@ public class ToastController: ToastViewDelegate {
         toastView.alpha = 0
         view.addSubview(toastView)
         toastView.setCompressionResistanceHigh()
-        toastView.autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -inset)
-        toastView.autoPinWidthToSuperview(withMargin: 24)
+        toastView.center(.horizontal, in: view)
+        toastView.pin(.bottom, to: .bottom, of: view, withInset: -inset)
+        toastView.widthAnchor
+            .constraint(
+                lessThanOrEqualTo: view.widthAnchor,
+                constant: -(Values.mediumSpacing * 2)
+            )
+            .isActive = true
 
         if let currentToastController = ToastController.currentToastController {
             currentToastController.dismissToastView()
@@ -97,24 +103,28 @@ class ToastView: UIView {
     }
     weak var delegate: ToastViewDelegate?
 
-    private let label: UILabel
+    private let label: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = .systemFont(ofSize: Values.mediumFontSize)
+        result.themeTextColor = .textPrimary
+        result.textAlignment = .center
+        result.numberOfLines = 0
+        
+        return result
+    }()
 
     // MARK: Initializers
 
     init(background: ThemeValue) {
-        label = UILabel()
-        
         super.init(frame: .zero)
 
         self.themeBackgroundColor = background
-        self.layoutMargins = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-
-        label.font = .systemFont(ofSize: Values.mediumFontSize)
-        label.themeTextColor = .textPrimary
-        label.textAlignment = .center
-        label.numberOfLines = 0
+        
         self.addSubview(label)
-        label.autoPinEdgesToSuperviewMargins()
+        label.pin(.top, to: .top, of: self, withInset: Values.smallSpacing)
+        label.pin(.leading, to: .leading, of: self, withInset: Values.largeSpacing)
+        label.pin(.trailing, to: .trailing, of: self, withInset: -Values.largeSpacing)
+        label.pin(.bottom, to: .bottom, of: self, withInset: -Values.smallSpacing)
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(gesture:)))
         self.addGestureRecognizer(tapGesture)

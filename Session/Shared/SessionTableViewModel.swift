@@ -25,6 +25,9 @@ class SessionTableViewModel<NavItemId: Equatable, Section: SessionTableSection, 
     open var leftNavItems: AnyPublisher<[NavItem]?, Never> { Just(nil).eraseToAnyPublisher() }
     open var rightNavItems: AnyPublisher<[NavItem]?, Never> { Just(nil).eraseToAnyPublisher() }
     
+    private let _showToast: PassthroughSubject<(String, ThemeValue), Never> = PassthroughSubject()
+    lazy var showToast: AnyPublisher<(String, ThemeValue), Never> = _showToast
+        .shareReplay(0)
     private let _transitionToScreen: PassthroughSubject<(UIViewController, TransitionType), Never> = PassthroughSubject()
     lazy var transitionToScreen: AnyPublisher<(UIViewController, TransitionType), Never> = _transitionToScreen
         .shareReplay(0)
@@ -48,6 +51,10 @@ class SessionTableViewModel<NavItemId: Equatable, Section: SessionTableSection, 
     
     func setIsEditing(_ isEditing: Bool) {
         _isEditing.send(isEditing)
+    }
+    
+    func showToast(text: String, backgroundColor: ThemeValue = .backgroundPrimary) {
+        _showToast.send((text, backgroundColor))
     }
     
     func dismissScreen(type: DismissType = .auto) {

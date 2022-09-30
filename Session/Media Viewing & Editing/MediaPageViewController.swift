@@ -165,9 +165,9 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
 
         // Views
-        pagerScrollView.themeBackgroundColor = .backgroundSecondary
+        pagerScrollView.themeBackgroundColor = .newConversation_background
 
-        view.themeBackgroundColor = .backgroundSecondary
+        view.themeBackgroundColor = .newConversation_background
 
         captionContainerView.delegate = self
         updateCaptionContainerVisibility()
@@ -300,10 +300,7 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     private var shouldHideToolbars: Bool = false {
         didSet {
             guard oldValue != shouldHideToolbars else { return }
-
-            // Hiding the status bar affects the positioning of the navbar. We don't want to show
-            // that in an animation, it's better to just have everythign "flit" in/out
-            UIApplication.shared.setStatusBarHidden(shouldHideToolbars, with: .none)
+            
             self.navigationController?.setNavigationBarHidden(shouldHideToolbars, animated: false)
 
             UIView.animate(withDuration: 0.1) {

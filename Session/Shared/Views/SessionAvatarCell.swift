@@ -42,7 +42,7 @@ class SessionAvatarCell: UITableViewCell {
         stackView.layoutMargins = UIEdgeInsets(
             top: Values.mediumSpacing,
             leading: horizontalSpacing,
-            bottom: Values.mediumSpacing,
+            bottom: Values.largeSpacing,
             trailing: horizontalSpacing
         )
         stackView.isLayoutMarginsRelativeArrangement = true

@@ -12,7 +12,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
     
     // MARK: - UI
     
-    var navigationStyle: ThemedNavigationStyle { .secondary }
+    var navigationBackground: ThemeValue { .newConversation_background }
     
     private lazy var newDMButton: NewConversationButton = NewConversationButton(icon: #imageLiteral(resourceName: "Message"), title: "vc_create_private_chat_title".localized())
     private lazy var newGroupButton: NewConversationButton = NewConversationButton(icon: #imageLiteral(resourceName: "Group"), title: "vc_create_closed_group_title".localized())
@@ -61,7 +61,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
         result.delegate = self
         result.dataSource = self
         result.separatorStyle = .none
-        result.themeBackgroundColor = .backgroundSecondary
+        result.themeBackgroundColor = .newConversation_background
         result.register(view: SessionCell.self)
         
         if #available(iOS 15.0, *) {
@@ -77,7 +77,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
         super.viewDidLoad()
         
         setNavBarTitle("vc_new_conversation_title".localized())
-        view.themeBackgroundColor = .backgroundSecondary
+        view.themeBackgroundColor = .newConversation_background
         
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
@@ -87,7 +87,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
     }
     
     private func setUpViewHierarchy() {
-        buttonStackViewContainer.themeBackgroundColor = .backgroundSecondary
+        buttonStackViewContainer.themeBackgroundColor = .newConversation_background
         
         let headerView = UIView(
             frame: CGRect(
@@ -144,7 +144,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
         label.themeTextColor = .textPrimary
         
         let headerView: UIView = UIView()
-        headerView.themeBackgroundColor = .backgroundSecondary
+        headerView.themeBackgroundColor = .newConversation_background
         headerView.addSubview(label)
         
         label.pin(.left, to: .left, of: headerView, withInset: Values.mediumSpacing)
@@ -172,7 +172,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
     }
     
     func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
-        view.themeBackgroundColor = .backgroundSecondary
+        view.themeBackgroundColor = .newConversation_background
     }
     
     // MARK: - Interaction

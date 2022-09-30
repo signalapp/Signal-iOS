@@ -58,7 +58,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         super.viewDidLoad()
         
         setNavBarTitle("vc_join_public_chat_title".localized())
-        view.themeBackgroundColor = .backgroundSecondary
+        view.themeBackgroundColor = .newConversation_background
         
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.themeTintColor = .textPrimary

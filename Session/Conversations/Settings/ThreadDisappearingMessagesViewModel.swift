@@ -101,8 +101,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
                             id: Item(title: "DISAPPEARING_MESSAGES_OFF".localized()),
                             title: "DISAPPEARING_MESSAGES_OFF".localized(),
                             rightAccessory: .radio(
-                                isSelected: { (self?.currentSelection.value == 0) },
-                                storedSelection: (self?.config.isEnabled == false)
+                                isSelected: { (self?.currentSelection.value == 0) }
                             ),
                             onTap: { self?.currentSelection.send(0) }
                         )
@@ -118,8 +117,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
                                     id: Item(title: title),
                                     title: title,
                                     rightAccessory: .radio(
-                                        isSelected: { (self?.currentSelection.value == duration) },
-                                        storedSelection: (self?.config.durationSeconds == duration)
+                                        isSelected: { (self?.currentSelection.value == duration) }
                                     ),
                                     onTap: { self?.currentSelection.send(duration) }
                                 )

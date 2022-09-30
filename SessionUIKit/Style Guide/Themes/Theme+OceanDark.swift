@@ -106,6 +106,9 @@ internal enum Theme_OceanDark: ThemeColors {
         
         // Reactions
         .reactions_contextBackground: .oceanDark1,
-        .reactions_contextMoreBackground: .oceanDark2
+        .reactions_contextMoreBackground: .oceanDark2,
+        
+        // NewConversation
+        .newConversation_background: .oceanDark3
     ]
 }

@@ -5,8 +5,11 @@ import Photos
 import PromiseKit
 import SignalUtilitiesKit
 
-class SendMediaNavigationController: OWSNavigationController {
-
+class SendMediaNavigationController: UINavigationController {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return ThemeManager.currentTheme.statusBarStyle
+    }
+    
     // This is a sensitive constant, if you change it make sure to check
     // on iPhone5, 6, 6+, X, layouts.
     static let bottomButtonsCenterOffset: CGFloat = -50
@@ -18,7 +21,7 @@ class SendMediaNavigationController: OWSNavigationController {
     init(threadId: String) {
         self.threadId = threadId
         
-        super.init()
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -26,9 +29,7 @@ class SendMediaNavigationController: OWSNavigationController {
     }
     
     // MARK: - Overrides
-
-    override var prefersStatusBarHidden: Bool { return true }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -39,7 +40,9 @@ class SendMediaNavigationController: OWSNavigationController {
         view.addSubview(batchModeButton)
         batchModeButton.setCompressionResistanceHigh()
         batchModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        batchModeButton.autoPinEdge(toSuperviewMargin: .trailing)
+        batchModeButton.centerXAnchor
+            .constraint(equalTo: view.layoutMarginsGuide.trailingAnchor, constant: -20)
+            .isActive = true
 
         view.addSubview(doneButton)
         doneButton.setCompressionResistanceHigh()
@@ -48,13 +51,19 @@ class SendMediaNavigationController: OWSNavigationController {
 
         view.addSubview(cameraModeButton)
         cameraModeButton.setCompressionResistanceHigh()
-        cameraModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        cameraModeButton.autoPinEdge(toSuperviewMargin: .leading)
+        cameraModeButton.centerYAnchor
+            .constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset)
+            .isActive = true
+        cameraModeButton.centerXAnchor
+            .constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 20)
+            .isActive = true
 
         view.addSubview(mediaLibraryModeButton)
         mediaLibraryModeButton.setCompressionResistanceHigh()
         mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        mediaLibraryModeButton.autoPinEdge(toSuperviewMargin: .leading)
+        mediaLibraryModeButton.centerXAnchor
+            .constraint(equalTo: view.layoutMarginsGuide.leadingAnchor, constant: 20)
+            .isActive = true
     }
 
     // MARK: -
@@ -153,58 +162,31 @@ class SendMediaNavigationController: OWSNavigationController {
         return button
     }()
 
-    private lazy var batchModeButton: UIButton = {
-        let button = OWSButton(
-            imageName: "media_send_batch_mode_disabled",
-            tintColor: .backgroundPrimary,
-            block: { [weak self] in self?.didTapBatchModeButton() }
-        )
-        button.clipsToBounds = true
-        button.adjustsImageWhenHighlighted = false
-        button.setThemeBackgroundColor(.textPrimary, for: .normal)
-        button.setThemeBackgroundColor(.textSecondary, for: .highlighted)
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.layer.cornerRadius = (SendMediaNavigationController.bottomButtonWidth / 2)
-        button.set(.width, to: SendMediaNavigationController.bottomButtonWidth)
-        button.set(.height, to: SendMediaNavigationController.bottomButtonWidth)
-
-        return button
+    private lazy var batchModeButton: InputViewButton = {
+        let result: InputViewButton = InputViewButton(
+            icon: UIImage(named: "media_send_batch_mode_disabled")?
+                .withRenderingMode(.alwaysTemplate)
+        ) { [weak self] in self?.didTapBatchModeButton() }
+        
+        return result
     }()
 
-    private lazy var cameraModeButton: UIButton = {
-        let button = OWSButton(
-            imageName: "settings-avatar-camera-2",
-            tintColor: .backgroundPrimary,
-            block: { [weak self] in self?.didTapCameraModeButton() }
-        )
-        button.clipsToBounds = true
-        button.adjustsImageWhenHighlighted = false
-        button.setThemeBackgroundColor(.textPrimary, for: .normal)
-        button.setThemeBackgroundColor(.textSecondary, for: .highlighted)
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.layer.cornerRadius = (SendMediaNavigationController.bottomButtonWidth / 2)
-        button.set(.width, to: SendMediaNavigationController.bottomButtonWidth)
-        button.set(.height, to: SendMediaNavigationController.bottomButtonWidth)
+    private lazy var cameraModeButton: InputViewButton = {
+        let result: InputViewButton = InputViewButton(
+            icon: UIImage(named: "settings-avatar-camera-2")?
+                .withRenderingMode(.alwaysTemplate)
+        ) { [weak self] in self?.didTapCameraModeButton() }
 
-        return button
+        return result
     }()
 
-    private lazy var mediaLibraryModeButton: UIButton = {
-        let button = OWSButton(
-            imageName: "actionsheet_camera_roll_black",
-            tintColor: .backgroundPrimary,
-            block: { [weak self] in self?.didTapMediaLibraryModeButton() }
-        )
-        button.clipsToBounds = true
-        button.adjustsImageWhenHighlighted = false
-        button.setThemeBackgroundColor(.textPrimary, for: .normal)
-        button.setThemeBackgroundColor(.textSecondary, for: .highlighted)
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        button.layer.cornerRadius = (SendMediaNavigationController.bottomButtonWidth / 2)
-        button.set(.width, to: SendMediaNavigationController.bottomButtonWidth)
-        button.set(.height, to: SendMediaNavigationController.bottomButtonWidth)
+    private lazy var mediaLibraryModeButton: InputViewButton = {
+        let result: InputViewButton = InputViewButton(
+            icon: UIImage(named: "actionsheet_camera_roll_black")?
+                .withRenderingMode(.alwaysTemplate)
+        ) { [weak self] in self?.didTapMediaLibraryModeButton() }
 
-        return button
+        return result
     }()
 
     // MARK: State
@@ -581,7 +563,7 @@ private class DoneButton: UIView {
     
     private let container: UIView = {
         let result: UIView = UIView()
-        result.themeBackgroundColor = .textPrimary
+        result.themeBackgroundColor = .inputButton_background
         result.layer.cornerRadius = 20
         
         return result
@@ -611,7 +593,7 @@ private class DoneButton: UIView {
         }()
         let result: UIImageView = UIImageView(image: image.withRenderingMode(.alwaysTemplate))
         result.contentMode = .scaleAspectFit
-        result.themeTintColor = .backgroundPrimary
+        result.themeTintColor = .textPrimary
         result.set(.width, to: 10)
         result.set(.height, to: 18)
 
@@ -643,11 +625,11 @@ private class DoneButton: UIView {
         stackView.alignment = .center
         stackView.spacing = 9
 
-        container.addSubview(stackView)
-        stackView.pin(.top, to: .top, of: container, withInset: 7)
-        stackView.pin(.leading, to: .leading, of: container, withInset: 8)
-        stackView.pin(.trailing, to: .trailing, of: container, withInset: -8)
-        stackView.pin(.bottom, to: .bottom, of: container, withInset: -7)
+        addSubview(stackView)
+        stackView.pin(.top, to: .top, of: self, withInset: 7)
+        stackView.pin(.leading, to: .leading, of: self, withInset: 8)
+        stackView.pin(.trailing, to: .trailing, of: self, withInset: -8)
+        stackView.pin(.bottom, to: .bottom, of: self, withInset: -7)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -663,6 +645,38 @@ private class DoneButton: UIView {
     }
     
     // MARK: - Interaction
+    
+    private func animate(
+        to scale: CGFloat,
+        themeBackgroundColor: ThemeValue,
+        themeBadgeBackgroundColor: ThemeValue,
+        themeTintColor: ThemeValue
+    ) {
+        UIView.animate(withDuration: 0.25) {
+            self.container.transform = CGAffineTransform.identity.scale(scale)
+            self.badgeLabel.themeTextColor = themeTintColor
+            self.badge.themeBackgroundColor = themeBadgeBackgroundColor
+            self.container.themeBackgroundColor = themeBackgroundColor
+        }
+    }
+    
+    private func expand() {
+        animate(
+            to: (InputViewButton.expandedSize / InputViewButton.size),
+            themeBackgroundColor: .primary,
+            themeBadgeBackgroundColor: .inputButton_background,
+            themeTintColor: .textPrimary
+        )
+    }
+    
+    private func collapse() {
+        animate(
+            to: 1,
+            themeBackgroundColor: .inputButton_background,
+            themeBadgeBackgroundColor: .primary,
+            themeTintColor: .black
+        )
+    }
 
     @objc func didTap(tapGesture: UITapGestureRecognizer) {
         delegate?.doneButtonWasTapped(self)
@@ -676,7 +690,7 @@ private class DoneButton: UIView {
         else { return }
         
         didTouchDownInside = true
-        container.themeBackgroundColor = .textSecondary
+        expand()
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -687,17 +701,17 @@ private class DoneButton: UIView {
             didTouchDownInside
         else {
             if didTouchDownInside {
-                container.themeBackgroundColor = .textPrimary
+                collapse()
             }
             return
         }
         
-        container.themeBackgroundColor = .textSecondary
+        expand()
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if didTouchDownInside {
-            container.themeBackgroundColor = .textPrimary
+            collapse()
         }
         
         didTouchDownInside = false
@@ -705,7 +719,7 @@ private class DoneButton: UIView {
     
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         if didTouchDownInside {
-            container.themeBackgroundColor = .textPrimary
+            collapse()
         }
         
         didTouchDownInside = false

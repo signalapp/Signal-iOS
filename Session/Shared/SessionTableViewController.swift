@@ -204,25 +204,6 @@ class SessionTableViewController<NavItemId: Equatable, Section: SessionTableSect
             }
             .store(in: &disposables)
         
-        viewModel.transitionToScreen
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] viewController, transitionType in
-                switch transitionType {
-                    case .push:
-                        self?.navigationController?.pushViewController(viewController, animated: true)
-                    
-                    case .present:
-                        if UIDevice.current.isIPad {
-                            viewController.popoverPresentationController?.permittedArrowDirections = []
-                            viewController.popoverPresentationController?.sourceView = self?.view
-                            viewController.popoverPresentationController?.sourceRect = (self?.view.bounds ?? UIScreen.main.bounds)
-                        }
-                        
-                        self?.present(viewController, animated: true)
-                }
-            }
-            .store(in: &disposables)
-        
         viewModel.leftNavItems
             .receiveOnMain(immediately: true)
             .sink { [weak self] maybeItems in
@@ -266,6 +247,35 @@ class SessionTableViewController<NavItemId: Equatable, Section: SessionTableSect
                     },
                     animated: true
                 )
+            }
+            .store(in: &disposables)
+        
+        viewModel.showToast
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] text, color in
+                guard let view: UIView = self?.view else { return }
+                
+                let toastController: ToastController = ToastController(text: text, background: color)
+                toastController.presentToastView(fromBottomOfView: view, inset: Values.largeSpacing)
+            }
+            .store(in: &disposables)
+        
+        viewModel.transitionToScreen
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewController, transitionType in
+                switch transitionType {
+                    case .push:
+                        self?.navigationController?.pushViewController(viewController, animated: true)
+                    
+                    case .present:
+                        if UIDevice.current.isIPad {
+                            viewController.popoverPresentationController?.permittedArrowDirections = []
+                            viewController.popoverPresentationController?.sourceView = self?.view
+                            viewController.popoverPresentationController?.sourceRect = (self?.view.bounds ?? UIScreen.main.bounds)
+                        }
+                        
+                        self?.present(viewController, animated: true)
+                }
             }
             .store(in: &disposables)
         

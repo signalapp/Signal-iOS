@@ -72,7 +72,7 @@ extension ConversationVC:
                     dismissOnConfirm: false // Custom dismissal logic
                 ) { [weak self] _ in
                     self?.dismiss(animated: true) {
-                        let navController: OWSNavigationController = OWSNavigationController(
+                        let navController: UINavigationController = StyledNavigationController(
                             rootViewController: SessionTableViewController(
                                 viewModel: PrivacySettingsViewModel(
                                     shouldShowCloseButton: true
@@ -199,7 +199,7 @@ extension ConversationVC:
         let gifVC = GifPickerViewController()
         gifVC.delegate = self
         
-        let navController = OWSNavigationController(rootViewController: gifVC)
+        let navController = StyledNavigationController(rootViewController: gifVC)
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true) { }
     }

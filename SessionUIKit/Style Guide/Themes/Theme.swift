@@ -68,13 +68,8 @@ public protocol ThemeColors {
 
 // MARK: - ThemedNavigation
 
-public enum ThemedNavigationStyle {
-    case primary
-    case secondary
-}
-
 public protocol ThemedNavigation {
-    var navigationStyle: ThemedNavigationStyle { get }
+    var navigationBackground: ThemeValue { get }
 }
 
 // MARK: - ThemeValue
@@ -185,6 +180,9 @@ public indirect enum ThemeValue: Hashable {
     // Reactions
     case reactions_contextBackground
     case reactions_contextMoreBackground
+    
+    // NewConversation
+    case newConversation_background
 }
 
 // MARK: - ForcedThemeValue

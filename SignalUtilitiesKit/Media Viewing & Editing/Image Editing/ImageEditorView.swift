@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import SessionUtilitiesKit
 
 @objc
 public protocol ImageEditorViewDelegate: AnyObject {

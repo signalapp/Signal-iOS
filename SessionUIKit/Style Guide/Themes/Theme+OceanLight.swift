@@ -92,7 +92,7 @@ internal enum Theme_OceanLight: ThemeColors {
         .conversationButton_swipeTertiary: Theme.PrimaryColor.orange.color,
         
         // InputButton
-        .inputButton_background: .oceanLight7,
+        .inputButton_background: .oceanLight5,
         
         // ContextMenu
         .contextMenu_background: .oceanLight7,
@@ -106,6 +106,9 @@ internal enum Theme_OceanLight: ThemeColors {
         
         // Reactions
         .reactions_contextBackground: .oceanLight7,
-        .reactions_contextMoreBackground: .oceanLight6
+        .reactions_contextMoreBackground: .oceanLight6,
+        
+        // NewConversation
+        .newConversation_background: .oceanLight7
     ]
 }

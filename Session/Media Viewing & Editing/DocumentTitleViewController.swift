@@ -50,7 +50,7 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     
     lazy var tableView: UITableView = {
         let result: UITableView = UITableView()
-        result.themeBackgroundColor = .backgroundSecondary
+        result.themeBackgroundColor = .newConversation_background
         result.separatorStyle = .none
         result.showsVerticalScrollIndicator = false
         result.register(view: DocumentCell.self)
@@ -414,11 +414,11 @@ class DocumentCell: UITableViewCell {
         themeBackgroundColor = .clear
         
         backgroundView = UIView()
-        backgroundView?.themeBackgroundColor = .conversationButton_background
+        backgroundView?.themeBackgroundColor = .settings_tabBackground
         backgroundView?.layer.cornerRadius = 5
         
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.themeBackgroundColor = .conversationButton_highlight
+        selectedBackgroundView?.themeBackgroundColor = .settings_tabHighlight
         selectedBackgroundView?.layer.cornerRadius = 5
         
         contentView.addSubview(iconImageView)
@@ -527,7 +527,7 @@ class DocumentSectionHeaderView: UIView {
         self.themeBackgroundColor = .clear
         
         let backgroundView: UIView = UIView()
-        backgroundView.themeBackgroundColor = .backgroundSecondary
+        backgroundView.themeBackgroundColor = .newConversation_background
         addSubview(backgroundView)
         backgroundView.pin(to: self)
 

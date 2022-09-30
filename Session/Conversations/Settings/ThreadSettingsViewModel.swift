@@ -257,6 +257,10 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).copy_thread_id",
                                 onTap: {
                                     UIPasteboard.general.string = threadId
+                                    self?.showToast(
+                                        text: "copied".localized(),
+                                        backgroundColor: .backgroundSecondary
+                                    )
                                 }
                             )
                         ),
@@ -550,7 +554,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
         else { return }
         
         let format: ImageFormat = profileData.guessedImageFormat
-        let navController: UINavigationController = UINavigationController(
+        let navController: UINavigationController = StyledNavigationController(
             rootViewController: ProfilePictureVC(
                 image: (format == .gif || format == .webp ?
                     nil :

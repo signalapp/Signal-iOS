@@ -717,7 +717,7 @@
 "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "Receive a notification when a contact takes a screenshot of a one-to-one chat.";
 "PRIVACY_SECTION_READ_RECEIPTS" = "Read Receipts";
 "PRIVACY_READ_RECEIPTS_TITLE" = "Read Receipts";
-"PRIVACY_READ_RECEIPTS_DESCRIPTION" = "See and share read receipts in one-to-one conversations.";
+"PRIVACY_READ_RECEIPTS_DESCRIPTION" = "Send read receipts in one-to-one chats.";
 "PRIVACY_SECTION_TYPING_INDICATORS" = "Typing Indicators";
 "PRIVACY_TYPING_INDICATORS_TITLE" = "Typing Indicators";
 "PRIVACY_TYPING_INDICATORS_DESCRIPTION" = "See and share typing indicators in one-to-one conversations.";

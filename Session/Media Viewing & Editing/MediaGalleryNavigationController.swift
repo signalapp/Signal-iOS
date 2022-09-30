@@ -4,7 +4,7 @@ import UIKit
 import SignalUtilitiesKit
 import SessionUIKit
 
-class MediaGalleryNavigationController: OWSNavigationController {
+class MediaGalleryNavigationController: UINavigationController {
     // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
     // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
     // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
@@ -16,7 +16,7 @@ class MediaGalleryNavigationController: OWSNavigationController {
     
     private lazy var backgroundView: UIView = {
         let result: UIView = UIView()
-        result.themeBackgroundColor = .backgroundSecondary
+        result.themeBackgroundColor = .newConversation_background
         
         return result
     }()
@@ -28,7 +28,7 @@ class MediaGalleryNavigationController: OWSNavigationController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.themeBackgroundColor = .backgroundSecondary
+        view.themeBackgroundColor = .newConversation_background
         
         // Insert a view to ensure the nav bar colour goes to the top of the screen
         relayoutBackgroundView()
@@ -65,7 +65,7 @@ class MediaGalleryNavigationController: OWSNavigationController {
     
     override func setNavigationBarHidden(_ hidden: Bool, animated: Bool) {
         super.setNavigationBarHidden(hidden, animated: animated)
-        
+
         backgroundView.isHidden = hidden
         relayoutBackgroundView()
     }

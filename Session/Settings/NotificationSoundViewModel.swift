@@ -126,8 +126,7 @@ class NotificationSoundViewModel: SessionTableViewModel<NotificationSoundViewMod
                                     return sound.displayName
                                 }(),
                                 rightAccessory: .radio(
-                                    isSelected: { (self?.currentSelection.value == sound) },
-                                    storedSelection: (self?.storedSelection == sound)
+                                    isSelected: { (self?.currentSelection.value == sound) }
                                 ),
                                 onTap: {
                                     self?.currentSelection.send(sound)

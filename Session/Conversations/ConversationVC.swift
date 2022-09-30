@@ -66,7 +66,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         // Need to return false during the swap between threads to prevent keyboard dismissal
         !isReplacingThread
     }
-
+    
     override var inputAccessoryView: UIView? {
         guard viewModel.threadData.canWrite else { return nil }
         
@@ -1475,8 +1475,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         // So here we stub the next responder on the navBar so that when the searchBar resigns
         // first responder, the ConversationVC will be in it's responder chain - keeeping the
         // ResultsBar on the bottom of the screen after dismissing the keyboard.
-        let navBar = navigationController!.navigationBar as! OWSNavigationBar
-        navBar.stubbedNextResponder = self
+        searchController.uiSearchController.stubbableSearchBar.stubbedNextResponder = self
     }
 
     @objc func hideSearchUI() {
@@ -1484,8 +1483,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         navigationItem.titleView = titleView
         updateNavBarButtons(threadData: self.viewModel.threadData, initialVariant: viewModel.initialThreadVariant)
         
-        let navBar: OWSNavigationBar? = navigationController?.navigationBar as? OWSNavigationBar
-        navBar?.stubbedNextResponder = nil
+        searchController.uiSearchController.stubbableSearchBar.stubbedNextResponder = nil
         becomeFirstResponder()
         reloadInputViews()
     }

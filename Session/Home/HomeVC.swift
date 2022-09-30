@@ -715,7 +715,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     
     func handleContinueButtonTapped(from seedReminderView: SeedReminderView) {
         let seedVC = SeedVC()
-        let navigationController = OWSNavigationController(rootViewController: seedVC)
+        let navigationController = StyledNavigationController(rootViewController: seedVC)
         present(navigationController, animated: true, completion: nil)
     }
     
@@ -748,7 +748,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         let settingsViewController: SessionTableViewController = SessionTableViewController(
             viewModel: SettingsViewModel()
         )
-        let navigationController = OWSNavigationController(rootViewController: settingsViewController)
+        let navigationController = StyledNavigationController(rootViewController: settingsViewController)
         navigationController.modalPresentationStyle = .fullScreen
         present(navigationController, animated: true, completion: nil)
     }
@@ -763,7 +763,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     
     @objc func createNewConversation() {
         let newConversationVC = NewConversationVC()
-        let navigationController = OWSNavigationController(rootViewController: newConversationVC)
+        let navigationController = StyledNavigationController(rootViewController: newConversationVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
@@ -773,7 +773,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     
     @objc func createNewDM() {
         let newDMVC = NewDMVC(shouldShowBackButton: false)
-        let navigationController = OWSNavigationController(rootViewController: newDMVC)
+        let navigationController = StyledNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
@@ -783,7 +783,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     
     func createNewDMFromDeepLink(sessionId: String) {
         let newDMVC = NewDMVC(sessionId: sessionId, shouldShowBackButton: false)
-        let navigationController = OWSNavigationController(rootViewController: newDMVC)
+        let navigationController = StyledNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }

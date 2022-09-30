@@ -389,11 +389,9 @@
 		C38EF32E255B6DBF007E1867 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF304255B6DBE007E1867 /* ImageCache.swift */; };
 		C38EF32F255B6DBF007E1867 /* OWSFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF305255B6DBE007E1867 /* OWSFormat.m */; };
 		C38EF331255B6DBF007E1867 /* UIGestureRecognizer+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF307255B6DBE007E1867 /* UIGestureRecognizer+OWS.swift */; };
-		C38EF35D255B6DCC007E1867 /* OWSNavigationController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF343255B6DC5007E1867 /* OWSNavigationController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF344255B6DC5007E1867 /* OWSViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF363255B6DCC007E1867 /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */; };
 		C38EF36F255B6DCC007E1867 /* OWSViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF355255B6DCB007E1867 /* OWSViewController.m */; };
-		C38EF370255B6DCC007E1867 /* OWSNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF356255B6DCB007E1867 /* OWSNavigationController.m */; };
 		C38EF372255B6DCC007E1867 /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF358255B6DCC007E1867 /* MediaMessageView.swift */; };
 		C38EF385255B6DD2007E1867 /* AttachmentTextToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF37C255B6DCF007E1867 /* AttachmentTextToolbar.swift */; };
 		C38EF386255B6DD2007E1867 /* AttachmentApprovalInputAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF37D255B6DCF007E1867 /* AttachmentApprovalInputAccessoryView.swift */; };
@@ -419,7 +417,6 @@
 		C38EF3C5255B6DE7007E1867 /* OWSViewController+ImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3B5255B6DE6007E1867 /* OWSViewController+ImageEditor.swift */; };
 		C38EF3C6255B6DE7007E1867 /* ImageEditorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3B6255B6DE6007E1867 /* ImageEditorModel.swift */; };
 		C38EF3C7255B6DE7007E1867 /* ImageEditorCanvasView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3B7255B6DE6007E1867 /* ImageEditorCanvasView.swift */; };
-		C38EF3F7255B6DF7007E1867 /* OWSNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3D9255B6DF1007E1867 /* OWSNavigationBar.swift */; };
 		C38EF3F9255B6DF7007E1867 /* OWSLayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3DB255B6DF1007E1867 /* OWSLayerView.swift */; };
 		C38EF3FA255B6DF7007E1867 /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3DC255B6DF1007E1867 /* DirectionalPanGestureRecognizer.swift */; };
 		C38EF3FB255B6DF7007E1867 /* UIAlertController+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF3DD255B6DF1007E1867 /* UIAlertController+OWS.swift */; };
@@ -702,6 +699,7 @@
 		FD71165228E410BE00B47552 /* SessionTableSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71165128E410BE00B47552 /* SessionTableSection.swift */; };
 		FD71165828E436E800B47552 /* Modal.swift in Sources */ = {isa = PBXBuildFile; fileRef = B86BD08323399ACF000F5AE3 /* Modal.swift */; };
 		FD71165928E436E800B47552 /* ConfirmationModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD52090628B49738006098F6 /* ConfirmationModal.swift */; };
+		FD71165B28E6DDBC00B47552 /* StyledNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71165A28E6DDBC00B47552 /* StyledNavigationController.swift */; };
 		FD7162DB281B6C440060647B /* TypedTableAlias.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7162DA281B6C440060647B /* TypedTableAlias.swift */; };
 		FD716E6428502DDD00C96BF4 /* CallManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD716E6328502DDD00C96BF4 /* CallManagerProtocol.swift */; };
 		FD716E6628502EE200C96BF4 /* CurrentCallProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD716E6528502EE200C96BF4 /* CurrentCallProtocol.swift */; };
@@ -1483,11 +1481,9 @@
 		C38EF306255B6DBE007E1867 /* OWSWindowManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSWindowManager.m; path = SessionMessagingKit/Utilities/OWSWindowManager.m; sourceTree = SOURCE_ROOT; };
 		C38EF307255B6DBE007E1867 /* UIGestureRecognizer+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIGestureRecognizer+OWS.swift"; path = "SignalUtilitiesKit/Utilities/UIGestureRecognizer+OWS.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF309255B6DBE007E1867 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeviceSleepManager.swift; path = SessionMessagingKit/Utilities/DeviceSleepManager.swift; sourceTree = SOURCE_ROOT; };
-		C38EF343255B6DC5007E1867 /* OWSNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSNavigationController.h; path = "SignalUtilitiesKit/Shared View Controllers/OWSNavigationController.h"; sourceTree = SOURCE_ROOT; };
 		C38EF344255B6DC5007E1867 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OWSViewController.h; path = "SignalUtilitiesKit/Shared View Controllers/OWSViewController.h"; sourceTree = SOURCE_ROOT; };
 		C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ModalActivityIndicatorViewController.swift; path = "SignalUtilitiesKit/Shared View Controllers/ModalActivityIndicatorViewController.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF355255B6DCB007E1867 /* OWSViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSViewController.m; path = "SignalUtilitiesKit/Shared View Controllers/OWSViewController.m"; sourceTree = SOURCE_ROOT; };
-		C38EF356255B6DCB007E1867 /* OWSNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OWSNavigationController.m; path = "SignalUtilitiesKit/Shared View Controllers/OWSNavigationController.m"; sourceTree = SOURCE_ROOT; };
 		C38EF358255B6DCC007E1867 /* MediaMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MediaMessageView.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/MediaMessageView.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF37C255B6DCF007E1867 /* AttachmentTextToolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentTextToolbar.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/Attachment Approval/AttachmentTextToolbar.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF37D255B6DCF007E1867 /* AttachmentApprovalInputAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AttachmentApprovalInputAccessoryView.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/Attachment Approval/AttachmentApprovalInputAccessoryView.swift"; sourceTree = SOURCE_ROOT; };
@@ -1513,7 +1509,6 @@
 		C38EF3B5255B6DE6007E1867 /* OWSViewController+ImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "OWSViewController+ImageEditor.swift"; path = "SignalUtilitiesKit/Media Viewing & Editing/OWSViewController+ImageEditor.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3B6255B6DE6007E1867 /* ImageEditorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorModel.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/Image Editing/ImageEditorModel.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3B7255B6DE6007E1867 /* ImageEditorCanvasView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ImageEditorCanvasView.swift; path = "SignalUtilitiesKit/Media Viewing & Editing/Image Editing/ImageEditorCanvasView.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF3D9255B6DF1007E1867 /* OWSNavigationBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSNavigationBar.swift; path = "SignalUtilitiesKit/Shared Views/OWSNavigationBar.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3DB255B6DF1007E1867 /* OWSLayerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSLayerView.swift; path = "SignalUtilitiesKit/Shared Views/OWSLayerView.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF3DC255B6DF1007E1867 /* DirectionalPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DirectionalPanGestureRecognizer.swift; path = SignalUtilitiesKit/Utilities/DirectionalPanGestureRecognizer.swift; sourceTree = SOURCE_ROOT; };
 		C38EF3DD255B6DF1007E1867 /* UIAlertController+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIAlertController+OWS.swift"; path = "SignalUtilitiesKit/Utilities/UIAlertController+OWS.swift"; sourceTree = SOURCE_ROOT; };
@@ -1781,6 +1776,7 @@
 		FD71164D28E3F8CC00B47552 /* SessionCell+Info.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionCell+Info.swift"; sourceTree = "<group>"; };
 		FD71164F28E3F9FA00B47552 /* SessionTableViewModel+NavItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SessionTableViewModel+NavItem.swift"; sourceTree = "<group>"; };
 		FD71165128E410BE00B47552 /* SessionTableSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTableSection.swift; sourceTree = "<group>"; };
+		FD71165A28E6DDBC00B47552 /* StyledNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyledNavigationController.swift; sourceTree = "<group>"; };
 		FD7162DA281B6C440060647B /* TypedTableAlias.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypedTableAlias.swift; sourceTree = "<group>"; };
 		FD716E6328502DDD00C96BF4 /* CallManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManagerProtocol.swift; sourceTree = "<group>"; };
 		FD716E6528502EE200C96BF4 /* CurrentCallProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCallProtocol.swift; sourceTree = "<group>"; };
@@ -2820,6 +2816,7 @@
 				C38EF3EE255B6DF6007E1867 /* GradientView.swift */,
 				B86BD08323399ACF000F5AE3 /* Modal.swift */,
 				FD52090628B49738006098F6 /* ConfirmationModal.swift */,
+				FD71165A28E6DDBC00B47552 /* StyledNavigationController.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3019,8 +3016,6 @@
 			isa = PBXGroup;
 			children = (
 				C38EF349255B6DC7007E1867 /* ModalActivityIndicatorViewController.swift */,
-				C38EF343255B6DC5007E1867 /* OWSNavigationController.h */,
-				C38EF356255B6DCB007E1867 /* OWSNavigationController.m */,
 				C38EF344255B6DC5007E1867 /* OWSViewController.h */,
 				C38EF355255B6DCB007E1867 /* OWSViewController.m */,
 			);
@@ -3079,7 +3074,6 @@
 				C38EF383255B6DD1007E1867 /* ApprovalRailCellView.swift */,
 				C38EF3E7255B6DF5007E1867 /* OWSButton.swift */,
 				C38EF3DB255B6DF1007E1867 /* OWSLayerView.swift */,
-				C38EF3D9255B6DF1007E1867 /* OWSNavigationBar.swift */,
 				C38EF3E9255B6DF6007E1867 /* Toast.swift */,
 				C38EF3E2255B6DF3007E1867 /* GalleryRailView.swift */,
 				C38EF3ED255B6DF6007E1867 /* TappableStackView.swift */,
@@ -4164,7 +4158,6 @@
 				C38EF32B255B6DBF007E1867 /* OWSFormat.h in Headers */,
 				C33FDDCC255A582000E217F9 /* TSConstants.h in Headers */,
 				C33FDDBD255A582000E217F9 /* ByteParser.h in Headers */,
-				C38EF35D255B6DCC007E1867 /* OWSNavigationController.h in Headers */,
 				C38EF249255B6D67007E1867 /* UIColor+OWS.h in Headers */,
 				C33FDDB3255A582000E217F9 /* OWSError.h in Headers */,
 				C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */,
@@ -5120,6 +5113,7 @@
 				FD09B7E328865FDA00ED0B66 /* HighlightMentionBackgroundView.swift in Sources */,
 				C331FFB82558FA8D00070591 /* DeviceUtilities.swift in Sources */,
 				C331FFE72558FB0000070591 /* TextField.swift in Sources */,
+				FD71165B28E6DDBC00B47552 /* StyledNavigationController.swift in Sources */,
 				C331FFE32558FB0000070591 /* TabBar.swift in Sources */,
 				FD37E9D528A1FCE8003AE748 /* Theme+OceanLight.swift in Sources */,
 				FD37E9C828A1D73F003AE748 /* Theme+Colors.swift in Sources */,
@@ -5191,9 +5185,7 @@
 				C38EF32F255B6DBF007E1867 /* OWSFormat.m in Sources */,
 				FD87DD0428B8727D00AF0F98 /* Configuration.swift in Sources */,
 				C38EF3BA255B6DE7007E1867 /* ImageEditorItem.swift in Sources */,
-				C38EF3F7255B6DF7007E1867 /* OWSNavigationBar.swift in Sources */,
 				C33FDD3A255A582000E217F9 /* Notification+Loki.swift in Sources */,
-				C38EF370255B6DCC007E1867 /* OWSNavigationController.m in Sources */,
 				C38EF24E255B6D67007E1867 /* Collection+OWS.swift in Sources */,
 				C33FDCFA255A582000E217F9 /* SignalIOSProto.swift in Sources */,
 				C38EF24D255B6D67007E1867 /* UIView+OWS.swift in Sources */,

@@ -148,7 +148,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.themeBackgroundColor = .backgroundSecondary
+        navigationItem.backButtonTitle = ""
+        view.themeBackgroundColor = .newConversation_background
 
         view.addSubview(contentContainerView)
         
@@ -534,12 +535,11 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 
 extension AttachmentPrepViewController: ImageEditorViewDelegate {
     public func imageEditor(presentFullScreenView viewController: UIViewController, isTransparent: Bool) {
-        let navigationController = OWSNavigationController(rootViewController: viewController)
+        let navigationController = StyledNavigationController(rootViewController: viewController)
         navigationController.modalPresentationStyle = (isTransparent ?
             .overFullScreen :
             .fullScreen
         )
-        navigationController.ows_prefersStatusBarHidden = true
         
         self.present(navigationController, animated: false, completion: nil)
     }

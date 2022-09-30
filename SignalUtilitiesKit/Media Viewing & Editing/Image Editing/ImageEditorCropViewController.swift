@@ -87,7 +87,7 @@ class ImageEditorCropViewController: OWSViewController {
     override func loadView() {
         self.view = UIView()
 
-        self.view.themeBackgroundColor = .backgroundSecondary
+        self.view.themeBackgroundColor = .newConversation_background
         self.view.layoutMargins = .zero
 
         // MARK: - Buttons
@@ -244,11 +244,6 @@ class ImageEditorCropViewController: OWSViewController {
         cropLockButton.setImage(imageName: (isCropLocked
             ? "image_editor_crop_lock"
             : "image_editor_crop_unlock"))
-    }
-
-    @objc
-    public override var prefersStatusBarHidden: Bool {
-        return true
     }
 
     @objc

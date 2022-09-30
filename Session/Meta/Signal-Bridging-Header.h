@@ -11,7 +11,6 @@
 #import "OWSAudioPlayer.h"
 #import "OWSBezierPathView.h"
 #import "OWSMessageTimerView.h"
-#import "OWSNavigationController.h"
 #import "OWSWindowManager.h"
 #import "MainAppContext.h"
 #import <PureLayout/PureLayout.h>

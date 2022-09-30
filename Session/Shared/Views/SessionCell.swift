@@ -393,7 +393,7 @@ public class SessionCell: UITableViewCell {
         switch position {
             case .top:
                 cellBackgroundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-                topSeparator.isHidden = true
+                topSeparator.isHidden = (style != .edgeToEdge)
                 botSeparator.isHidden = false
                 
             case .middle:
@@ -403,16 +403,16 @@ public class SessionCell: UITableViewCell {
                 
             case .bottom:
                 cellBackgroundView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-                botSeparator.isHidden = false
-                botSeparator.isHidden = true
+                topSeparator.isHidden = false
+                botSeparator.isHidden = (style != .edgeToEdge)
                 
             case .individual:
                 cellBackgroundView.layer.maskedCorners = [
                     .layerMinXMinYCorner, .layerMaxXMinYCorner,
                     .layerMinXMaxYCorner, .layerMaxXMaxYCorner
                 ]
-                topSeparator.isHidden = true
-                botSeparator.isHidden = true
+                topSeparator.isHidden = (style != .edgeToEdge)
+                botSeparator.isHidden = (style != .edgeToEdge)
         }
     }
     

@@ -71,7 +71,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     lazy var collectionView: UICollectionView = {
         let result: UICollectionView = UICollectionView(frame: .zero, collectionViewLayout: mediaTileViewLayout)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.themeBackgroundColor = .backgroundSecondary
+        result.themeBackgroundColor = .newConversation_background
         result.delegate = self
         result.dataSource = self
         result.register(view: PhotoGridViewCell.self)
@@ -117,7 +117,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        view.themeBackgroundColor = .backgroundSecondary
+        view.themeBackgroundColor = .newConversation_background
 
         // Add a custom back button if this is the only view controller
         if self.navigationController?.viewControllers.first == self {
@@ -773,7 +773,7 @@ private class MediaGallerySectionHeader: UICollectionReusableView {
         self.themeBackgroundColor = .clear
         
         let backgroundView: UIView = UIView()
-        backgroundView.themeBackgroundColor = .backgroundSecondary
+        backgroundView.themeBackgroundColor = .newConversation_background
         addSubview(backgroundView)
         backgroundView.pin(to: self)
 

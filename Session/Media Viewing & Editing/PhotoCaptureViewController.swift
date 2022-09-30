@@ -49,7 +49,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     override func loadView() {
         self.view = UIView()
-        self.view.themeBackgroundColor = .backgroundSecondary
+        self.view.themeBackgroundColor = .newConversation_background
     }
 
     override func viewDidLoad() {

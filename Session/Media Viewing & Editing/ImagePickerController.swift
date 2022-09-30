@@ -49,7 +49,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.themeBackgroundColor = .backgroundSecondary
+        navigationItem.backButtonTitle = ""
+        self.view.themeBackgroundColor = .newConversation_background
 
         library.add(delegate: self)
 
@@ -81,7 +82,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         navigationItem.titleView = titleView
         self.titleView = titleView
 
-        collectionView.themeBackgroundColor = .backgroundSecondary
+        collectionView.themeBackgroundColor = .newConversation_background
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
         selectionPanGesture.delegate = self

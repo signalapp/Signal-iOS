@@ -61,7 +61,14 @@ class AttachmentApprovalInputAccessoryView: UIView {
         let backgroundView = UIView()
         backgroundView.themeBackgroundColor = .backgroundPrimary
         addSubview(backgroundView)
-        backgroundView.autoPinEdgesToSuperviewEdges()
+        backgroundView.pin(to: self)
+        
+        // Separator
+        let separator = UIView.separator()
+        addSubview(separator)
+        separator.pin(.top, to: .top, of: self)
+        separator.pin(.leading, to: .leading, of: self)
+        separator.pin(.trailing, to: .trailing, of: self)
 
         currentCaptionLabel.themeTextColor = .white
         currentCaptionLabel.font = .systemFont(ofSize: Values.mediumFontSize)

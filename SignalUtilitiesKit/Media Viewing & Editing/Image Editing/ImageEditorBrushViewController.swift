@@ -51,7 +51,7 @@ public class ImageEditorBrushViewController: OWSViewController {
 
     public override func loadView() {
         self.view = UIView()
-        self.view.themeBackgroundColor = .backgroundSecondary
+        self.view.themeBackgroundColor = .newConversation_background
         self.view.isOpaque = true
 
         canvasView.configureSubviews()
@@ -117,11 +117,6 @@ public class ImageEditorBrushViewController: OWSViewController {
         // Hide controls during stroke.
         let hasStroke = currentStroke != nil
         paletteView.isHidden = hasStroke
-    }
-
-    @objc
-    public override var prefersStatusBarHidden: Bool {
-        return true
     }
 
     @objc
