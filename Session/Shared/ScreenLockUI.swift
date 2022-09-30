@@ -104,13 +104,8 @@ class ScreenLockUI {
             return .none;
         }
         
-        if Storage.shared[.appSwitcherPreviewEnabled] {
-            Logger.verbose("desiredUIState: screen protection 4.")
-            return .protection;
-        }
-        
-        Logger.verbose("desiredUIState: none 5.")
-        return .none
+        Logger.verbose("desiredUIState: screen protection 4.")
+        return .protection;
     }
     
     // MARK: - Lifecycle

@@ -722,7 +722,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         let wasRead: Bool
                         let expiresInSeconds: UInt32?
                         let expiresStartedAtMs: UInt64?
-                        let openGroupServerMessageId: UInt64?
+                        let openGroupServerMessageId: Int64?
                         let recipientStateMap: [String: SMKLegacy._DBOutgoingMessageRecipientState]?
                         let mostRecentFailureText: String?
                         let quotedMessage: SMKLegacy._DBQuotedMessage?
@@ -737,9 +737,13 @@ enum _003_YDBToGRDBMigration: Migration {
                             // The legacy code only considered '!= 0' ids as valid so set those
                             // values to be null to avoid the unique constraint (it's also more
                             // correct for the values to be null)
-                            openGroupServerMessageId = (legacyMessage.openGroupServerMessageID == 0 ?
+                            //
+                            // Note: Looks like it was also possible for this to be set to the max
+                            // value which overflows when trying to convert to a signed version so
+                            // we essentially discard the information in those cases)
+                            openGroupServerMessageId = (Int64.zeroingOverflow(legacyMessage.openGroupServerMessageID) == 0 ?
                                 nil :
-                                legacyMessage.openGroupServerMessageID
+                                Int64.zeroingOverflow(legacyMessage.openGroupServerMessageID)
                             )
                             quotedMessage = legacyMessage.quotedMessage
                             
@@ -904,8 +908,8 @@ enum _003_YDBToGRDBMigration: Migration {
                                 authorId: authorId,
                                 variant: variant,
                                 body: body,
-                                timestampMs: Int64(legacyInteraction.timestamp),
-                                receivedAtTimestampMs: Int64(legacyInteraction.receivedAtTimestamp),
+                                timestampMs: Int64.zeroingOverflow(legacyInteraction.timestamp),
+                                receivedAtTimestampMs: Int64.zeroingOverflow(legacyInteraction.receivedAtTimestamp),
                                 wasRead: wasRead,
                                 hasMention: Interaction.isUserMentioned(
                                     db,
@@ -923,7 +927,7 @@ enum _003_YDBToGRDBMigration: Migration {
                                     nil
                                 ),
                                 linkPreviewUrl: linkPreview?.urlString, // Only a soft link so save to set
-                                openGroupServerMessageId: openGroupServerMessageId.map { Int64($0) },
+                                openGroupServerMessageId: openGroupServerMessageId,
                                 openGroupWhisperMods: false,
                                 openGroupWhisperTo: nil
                             ).inserted(db)
@@ -945,7 +949,7 @@ enum _003_YDBToGRDBMigration: Migration {
                         try ControlMessageProcessRecord(
                             threadId: threadId,
                             variant: variant,
-                            timestampMs: Int64(legacyInteraction.timestamp)
+                            timestampMs: Int64.zeroingOverflow(legacyInteraction.timestamp)
                         )?.insert(db)
                         
                         // Remove timestamps we created records for (they will be protected by unique
@@ -1086,7 +1090,7 @@ enum _003_YDBToGRDBMigration: Migration {
                             try Quote(
                                 interactionId: interactionId,
                                 authorId: quotedMessage.authorId,
-                                timestampMs: Int64(quotedMessage.timestamp),
+                                timestampMs: Int64.zeroingOverflow(quotedMessage.timestamp),
                                 body: quotedMessage.body,
                                 attachmentId: attachmentId
                             ).insert(db)
@@ -1192,7 +1196,7 @@ enum _003_YDBToGRDBMigration: Migration {
         // entries as "legacy"
         try ControlMessageProcessRecord.generateLegacyProcessRecords(
             db,
-            receivedMessageTimestamps: receivedMessageTimestamps.map { Int64($0) }
+            receivedMessageTimestamps: receivedMessageTimestamps.map { Int64.zeroingOverflow($0) }
         )
         
         // Clear out processed data (give the memory a change to be freed)
@@ -1448,9 +1452,6 @@ enum _003_YDBToGRDBMigration: Migration {
             db[.lastRecordedVoipToken] = lastVoipToken
         }
         
-        // Note: The 'preferencesKeyScreenSecurityDisabled' value previously controlled whether the
-        // setting was disabled, this has been inverted to 'appSwitcherPreviewEnabled' so it can default
-        // to 'false' (as most Bool values do)
         db[.areReadReceiptsEnabled] = (legacyPreferences[SMKLegacy.readReceiptManagerAreReadReceiptsEnabled] as? Bool == true)
         db[.typingIndicatorsEnabled] = (legacyPreferences[SMKLegacy.typingIndicatorsEnabledKey] as? Bool == true)
         db[.isScreenLockEnabled] = (legacyPreferences[SMKLegacy.screenLockIsScreenLockEnabledKey] as? Bool == true)
@@ -1461,7 +1462,6 @@ enum _003_YDBToGRDBMigration: Migration {
             value: (legacyPreferences[SMKLegacy.screenLockScreenLockTimeoutSecondsKey] as? Double)
                 .defaulting(to: (15 * 60))
         )
-        db[.appSwitcherPreviewEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyScreenSecurityDisabled] as? Bool == false)
         db[.areLinkPreviewsEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyAreLinkPreviewsEnabled] as? Bool == true)
         db[.areCallsEnabled] = (legacyPreferences[SMKLegacy.preferencesKeyAreCallsEnabled] as? Bool == true)
         db[.hasHiddenMessageRequests] = CurrentAppContext().appUserDefaults()
@@ -1852,5 +1852,11 @@ enum _003_YDBToGRDBMigration: Migration {
             SMKLegacy._MessageRequestResponse.self,
             forClassName: "SNMessageRequestResponse"
         )
+    }
+}
+
+fileprivate extension Int64 {
+    static func zeroingOverflow(_ value: UInt64) -> Int64 {
+        return (value > UInt64(Int64.max) ? 0 : Int64(value))
     }
 }

@@ -15,12 +15,6 @@ public extension Setting.EnumKey {
 }
 
 public extension Setting.BoolKey {
-    /// Controls whether the preview screen in the app switcher should be enabled
-    ///
-    /// **Note:** In the legacy setting this flag controlled whether the preview was "disabled" (and defaulted to
-    /// true), by inverting this flag we can default it to false as is standard for Bool values
-    static let appSwitcherPreviewEnabled: Setting.BoolKey = "appSwitcherPreviewEnabled"
-    
     /// Controls whether typing indicators are enabled
     ///
     /// **Note:** Only works if both participants in a "contact" thread have this setting enabled

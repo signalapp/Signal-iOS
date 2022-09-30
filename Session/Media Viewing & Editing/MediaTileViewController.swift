@@ -23,7 +23,7 @@ public class MediaTileViewController: UIViewController, UICollectionViewDataSour
     private var isAutoLoadingNextPage: Bool = false
     private var currentTargetOffset: CGPoint?
     
-    public var delegate: MediaTileViewControllerDelegate?
+    public weak var delegate: MediaTileViewControllerDelegate?
     
     var isInBatchSelectMode = false {
         didSet {

@@ -138,11 +138,13 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         result.showsVerticalScrollIndicator = false
         result.contentInsetAdjustmentBehavior = .never
         result.keyboardDismissMode = .interactive
-        let bottomInset: CGFloat = viewModel.threadData.canWrite ? Values.mediumSpacing : Values.mediumSpacing + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
         result.contentInset = UIEdgeInsets(
             top: 0,
             leading: 0,
-            bottom: bottomInset,
+            bottom: (viewModel.threadData.canWrite ?
+                Values.mediumSpacing :
+                (Values.mediumSpacing + (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0))
+            ),
             trailing: 0
         )
         result.registerHeaderFooterView(view: UITableViewHeaderFooterView.self)
@@ -604,11 +606,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             snInputView.text = draft
         }
         
-        // Now we have done all the needed diffs, update the viewModel with the latest data and mark
-        // all messages as read (we do it in here as the 'threadData' actually contains the last
-        // 'interactionId' for the thread)
+        // Now we have done all the needed diffs update the viewModel with the latest data
         self.viewModel.updateThreadData(updatedThreadData)
-        self.viewModel.markAllAsRead()
         
         /// **Note:** This needs to happen **after** we have update the viewModel's thread data
         if initialLoad || viewModel.threadData.currentUserIsClosedGroupMember != updatedThreadData.currentUserIsClosedGroupMember {
@@ -682,7 +681,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             source: viewModel.interactionData,
             target: updatedData
         )
-        let isInsert: Bool = (changeset.map({ $0.elementInserted.count }).reduce(0, +) > 0)
+        let numItemsInserted: Int = changeset.map { $0.elementInserted.count }.reduce(0, +)
+        let isInsert: Bool = (numItemsInserted > 0)
         let wasLoadingMore: Bool = self.isLoadingMore
         let wasOffsetCloseToBottom: Bool = self.isCloseToBottom
         let numItemsInUpdatedData: [Int] = updatedData.map { $0.elements.count }
@@ -758,10 +758,12 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                     }
                 }
             }
-            else if wasOffsetCloseToBottom && !wasLoadingMore {
-                // Scroll to the bottom if an interaction was just inserted and we either
-                // just sent a message or are close enough to the bottom (wait a tiny fraction
-                // to avoid buggy animation behaviour)
+            else if wasOffsetCloseToBottom && !wasLoadingMore && numItemsInserted < 5 {
+                /// Scroll to the bottom if an interaction was just inserted and we either just sent a message or are close enough to the
+                /// bottom (wait a tiny fraction to avoid buggy animation behaviour)
+                ///
+                /// **Note:** We won't automatically scroll to the bottom if 5 or more messages were inserted (to avoid endlessly
+                /// auto-scrolling to the bottom when fetching new pages of data within open groups
                 DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
                     self?.scrollToBottom(isAnimated: true)
                 }
@@ -770,6 +772,11 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                 // Complete page loading
                 self.isLoadingMore = false
                 self.autoLoadNextPageIfNeeded()
+            }
+            else {
+                // Need to update the scroll button alpha in case new messages were added but we didn't scroll
+                self.scrollButton.alpha = self.getScrollButtonOpacity()
+                self.unreadCountView.alpha = self.scrollButton.alpha
             }
             return
         }
@@ -1311,6 +1318,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         )
         
         self.handleInitialOffsetBounceBug(targetIndexPath: targetIndexPath, at: .bottom)
+        self.viewModel.markAsRead(beforeInclusive: nil)
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -1322,8 +1330,41 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     }
 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        scrollButton.alpha = getScrollButtonOpacity()
-        unreadCountView.alpha = scrollButton.alpha
+        self.scrollButton.alpha = self.getScrollButtonOpacity()
+        self.unreadCountView.alpha = self.scrollButton.alpha
+        
+        // We want to mark messages as read while we scroll, so grab the newest message and mark
+        // everything older as read
+        //
+        // Note: For the 'tableVisualBottom' we remove the 'Values.mediumSpacing' as that is the distance
+        // the table content appears above the input view
+        let tableVisualBottom: CGFloat = (tableView.frame.maxY - (tableView.contentInset.bottom - Values.mediumSpacing))
+        
+        if
+            let visibleIndexPaths: [IndexPath] = self.tableView.indexPathsForVisibleRows,
+            let messagesSection: Int = visibleIndexPaths
+                .first(where: { self.viewModel.interactionData[$0.section].model == .messages })?
+                .section,
+            let newestCellViewModel: MessageViewModel = visibleIndexPaths
+                .sorted()
+                .filter({ $0.section == messagesSection })
+                .compactMap({ indexPath -> (frame: CGRect, cellViewModel: MessageViewModel)? in
+                    guard let frame: CGRect = tableView.cellForRow(at: indexPath)?.frame else {
+                        return nil
+                    }
+                    
+                    return (
+                        view.convert(frame, from: tableView),
+                        self.viewModel.interactionData[indexPath.section].elements[indexPath.row]
+                    )
+                })
+                // Exclude messages that are partially off the bottom of the screen
+                .filter({ $0.frame.maxY <= tableVisualBottom })
+                .last?
+                .cellViewModel
+        {
+            self.viewModel.markAsRead(beforeInclusive: newestCellViewModel.id)
+        }
     }
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
@@ -1472,6 +1513,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         // Store the info incase we need to load more data (call will be re-triggered)
         self.focusedInteractionId = interactionId
         self.shouldHighlightNextScrollToInteraction = highlight
+        self.viewModel.markAsRead(beforeInclusive: interactionId)
         
         // Ensure the target interaction has been loaded
         guard

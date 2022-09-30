@@ -116,8 +116,8 @@ open class Modal: UIViewController, UIGestureRecognizerDelegate {
     }
     
     public static func createButton(title: String, titleColor: ThemeValue) -> UIButton {
-        let result: UIButton = UIButton() // TODO: NEED to fix the font (looks bad)
-        result.titleLabel?.font = .systemFont(ofSize: Values.mediumFontSize, weight: UIFont.Weight(600))
+        let result: UIButton = UIButton()
+        result.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.setTitle(title, for: .normal)
         result.setThemeTitleColor(titleColor, for: .normal)
         result.setThemeBackgroundColor(.alert_buttonBackground, for: .normal)

@@ -1594,6 +1594,14 @@ extension ConversationVC:
 
     func delete(_ cellViewModel: MessageViewModel) {
         // Only allow deletion on incoming and outgoing messages
+        guard cellViewModel.variant != .standardIncomingDeleted else {
+            Storage.shared.writeAsync { db in
+                _ = try Interaction
+                    .filter(id: cellViewModel.id)
+                    .deleteAll(db)
+            }
+            return
+        }
         guard cellViewModel.variant == .standardIncoming || cellViewModel.variant == .standardOutgoing else {
             return
         }

@@ -149,6 +149,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     // MARK: - Interaction Data
     
+    private var lastInteractionIdMarkedAsRead: Int64?
     public private(set) var unobservedInteractionDataChanges: [SectionModel]?
     public private(set) var interactionData: [SectionModel] = []
     public private(set) var reactionExpandedInteractionIds: Set<Int64> = []
@@ -380,21 +381,30 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         }
     }
     
-    public func markAllAsRead() {
-        // Don't bother marking anything as read if there are no unread interactions (we can rely
-        // on the 'threadData.threadUnreadCount' to always be accurate)
+    /// This method will mark all interactions as read before the specified interaction id, if no id is provided then all interactions for
+    /// the thread will be marked as read
+    public func markAsRead(beforeInclusive interactionId: Int64?) {
+        /// Since this method now gets triggered when scrolling we want to try to optimise it and avoid busying the database
+        /// write queue when it isn't needed, in order to do this we:
+        ///
+        ///   - Don't bother marking anything as read if there are no unread interactions (we can rely on the
+        ///     `threadData.threadUnreadCount` to always be accurate)
+        ///   - Don't bother marking anything as read if this was called with the same `interactionId` that we
+        ///     previously marked as read (ie. when scrolling and the last message hasn't changed)
         guard
             (self.threadData.threadUnreadCount ?? 0) > 0,
-            let lastInteractionId: Int64 = self.threadData.interactionId
+            let targetInteractionId: Int64 = (interactionId ?? self.threadData.interactionId),
+            self.lastInteractionIdMarkedAsRead != targetInteractionId
         else { return }
         
         let threadId: String = self.threadData.threadId
         let trySendReadReceipt: Bool = (self.threadData.threadIsMessageRequest == false)
+        self.lastInteractionIdMarkedAsRead = targetInteractionId
         
         Storage.shared.writeAsync { db in
             try Interaction.markAsRead(
                 db,
-                interactionId: lastInteractionId,
+                interactionId: targetInteractionId,
                 threadId: threadId,
                 includingOlder: true,
                 trySendReadReceipt: trySendReadReceipt

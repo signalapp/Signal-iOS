@@ -105,7 +105,7 @@ public class ScreenLock {
                                                  defaultErrorDescription: defaultErrorDescription)
             switch outcome {
                 case .success:
-                    owsFailDebug("local authentication unexpected success")
+                    Logger.error("local authentication unexpected success")
                     completion(.failure(error: defaultErrorDescription))
                     
                 case .cancel, .failure, .unexpectedFailure:
@@ -129,8 +129,8 @@ public class ScreenLock {
             
             switch outcome {
                 case .success:
-                    owsFailDebug("local authentication unexpected success")
-                    completion(.failure(error:defaultErrorDescription))
+                    Logger.error("local authentication unexpected success")
+                    completion(.failure(error: defaultErrorDescription))
                     
                 case .cancel, .failure, .unexpectedFailure:
                     completion(outcome)
@@ -190,11 +190,11 @@ public class ScreenLock {
                     return .failure(error: "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT".localized())
                     
                 case .invalidContext:
-                    owsFailDebug("context not valid.")
+                    Logger.error("context not valid.")
                     return .unexpectedFailure(error: defaultErrorDescription)
                     
                 case .notInteractive:
-                    owsFailDebug("context not interactive.")
+                    Logger.error("context not interactive.")
                     return .unexpectedFailure(error: defaultErrorDescription)
                 
                 @unknown default:

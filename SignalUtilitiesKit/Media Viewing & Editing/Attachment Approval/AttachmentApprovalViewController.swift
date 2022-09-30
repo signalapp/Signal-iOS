@@ -5,10 +5,11 @@
 import Foundation
 import AVFoundation
 import MediaPlayer
+import CoreServices
 import PromiseKit
 import SessionUIKit
-import CoreServices
 import SessionMessagingKit
+import SignalCoreKit
 
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
     func attachmentApproval(
@@ -538,7 +539,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private func setCurrentItem(_ item: SignalAttachmentItem?, direction: UIPageViewController.NavigationDirection, animated isAnimated: Bool) {
         guard let item: SignalAttachmentItem = item, let page = self.buildPage(item: item) else {
-            owsFailDebug("unexpectedly unable to build new page")
+            Logger.error("unexpectedly unable to build new page")
             return
         }
 
@@ -550,7 +551,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     func updateMediaRail() {
         guard let currentItem = self.currentItem else {
-            owsFailDebug("currentItem was unexpectedly nil")
+            Logger.error("currentItem was unexpectedly nil")
             return
         }
 
@@ -565,7 +566,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                     return cell
                     
                 default:
-                    owsFailDebug("unexpted rail item type: \(railItem)")
+                    Logger.error("unexpted rail item type: \(railItem)")
                     return GalleryRailCellView()
             }
         }

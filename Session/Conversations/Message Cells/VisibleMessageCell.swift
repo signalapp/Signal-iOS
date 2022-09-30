@@ -1049,51 +1049,52 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             )
             
             // Custom handle links
-            let links: [String: NSRange] = {
-                guard
-                    let body: String = cellViewModel.body,
-                    let detector: NSDataDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-                else { return [:] }
-                
-                var links: [String: NSRange] = [:]
-                let matches = detector.matches(
-                    in: body,
-                    options: [],
-                    range: NSRange(location: 0, length: body.count)
-                )
-                
-                for match in matches {
-                    guard let matchURL = match.url else { continue }
-                    
-                    /// If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
-                    /// set the scheme to 'https' instead as we don't load previews for 'http' so this will result
-                    /// in more previews actually getting loaded without forcing the user to enter 'https://' before
-                    /// every URL they enter
-                    let urlString: String = (matchURL.absoluteString == "http://\(body)" ?
-                        "https://\(body)" :
-                        matchURL.absoluteString
-                    )
-                    
-                    if URL(string: urlString) != nil {
-                        links[urlString] = (body as NSString).range(of: urlString)
-                    }
+            let links: [URL: NSRange] = {
+                guard let detector: NSDataDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+                    return [:]
                 }
                 
-                return links
+                return detector
+                    .matches(
+                        in: attributedText.string,
+                        options: [],
+                        range: NSRange(location: 0, length: attributedText.string.count)
+                    )
+                    .reduce(into: [:]) { result, match in
+                        guard
+                            let matchUrl: URL = match.url,
+                            let originalRange: Range = Range(match.range, in: attributedText.string)
+                        else { return }
+                        
+                        /// If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
+                        /// set the scheme to 'https' instead as we don't load previews for 'http' so this will result
+                        /// in more previews actually getting loaded without forcing the user to enter 'https://' before
+                        /// every URL they enter
+                        let originalString: String = String(attributedText.string[originalRange])
+                        
+                        guard matchUrl.absoluteString != "http://\(originalString)" else {
+                            guard let httpsUrl: URL = URL(string: "https://\(originalString)") else {
+                                return
+                            }
+                            
+                            result[httpsUrl] = match.range
+                            return
+                        }
+                        
+                        result[matchUrl] = match.range
+                    }
             }()
             
-            for (urlString, range) in links {
-                guard let url: URL = URL(string: urlString) else { continue }
-                
+            for (linkUrl, urlRange) in links {
                 attributedText.addAttributes(
                     [
                         .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel)),
                         .foregroundColor: actualTextColor,
                         .underlineColor: actualTextColor,
                         .underlineStyle: NSUnderlineStyle.single.rawValue,
-                        .attachment: url
+                        .attachment: linkUrl
                     ],
-                    range: range
+                    range: urlRange
                 )
             }
             
@@ -1105,7 +1106,8 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                     .map { part -> String in
                         guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
                         
-                        return String(part[part.index(after: part.startIndex)..<part.endIndex])
+                        let partRange = (part.index(after: part.startIndex)..<part.index(before: part.endIndex))
+                        return String(part[partRange])
                     }
                     .forEach { part in
                         // Highlight all ranges of the text (Note: The search logic only finds
@@ -1114,13 +1116,26 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                         normalizedBody
                             .ranges(
                                 of: (CurrentAppContext().isRTL ?
-                                     "\(part.lowercased())(^|[ ])" :
-                                     "(^|[ ])\(part.lowercased())"
+                                     "(\(part.lowercased()))(^|[^a-zA-Z0-9])" :
+                                     "(^|[^a-zA-Z0-9])(\(part.lowercased()))"
                                 ),
                                 options: [.regularExpression]
                             )
                             .forEach { range in
-                                let legacyRange: NSRange = NSRange(range, in: normalizedBody)
+                                let targetRange: Range<String.Index> = {
+                                    let term: String = String(normalizedBody[range])
+                                    
+                                    // If the matched term doesn't actually match the "part" value then it means
+                                    // we've matched a term after a non-alphanumeric character so need to shift
+                                    // the range over by 1
+                                    guard term.starts(with: part.lowercased()) else {
+                                        return (normalizedBody.index(after: range.lowerBound)..<range.upperBound)
+                                    }
+                                    
+                                    return range
+                                }()
+                                
+                                let legacyRange: NSRange = NSRange(targetRange, in: normalizedBody)
                                 attributedText.addThemeAttribute(.background(backgroundPrimaryColor), range: legacyRange)
                                 attributedText.addThemeAttribute(.foreground(textPrimaryColor), range: legacyRange)
                             }

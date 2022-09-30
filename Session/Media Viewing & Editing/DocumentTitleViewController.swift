@@ -23,7 +23,7 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     private var isAutoLoadingNextPage: Bool = false
     private var currentTargetOffset: CGPoint?
     
-    public var delegate: DocumentTileViewControllerDelegate?
+    public weak var delegate: DocumentTileViewControllerDelegate?
     
     // MARK: - Initialization
 

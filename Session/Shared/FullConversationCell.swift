@@ -545,7 +545,8 @@ public final class FullConversationCell: UITableViewCell {
             .map { part -> String in
                 guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
                 
-                return String(part[part.index(after: part.startIndex)..<part.endIndex])
+                let partRange = (part.index(after: part.startIndex)..<part.index(before: part.endIndex))
+                return String(part[partRange])
             }
             .forEach { part in
                 // Highlight all ranges of the text (Note: The search logic only finds results that start
@@ -553,18 +554,31 @@ public final class FullConversationCell: UITableViewCell {
                 normalizedSnippet
                     .ranges(
                         of: (CurrentAppContext().isRTL ?
-                             "\(part.lowercased())(^|[ ])" :
-                             "(^|[ ])\(part.lowercased())"
+                             "(\(part.lowercased()))(^|[^a-zA-Z0-9])" :
+                             "(^|[^a-zA-Z0-9])(\(part.lowercased()))"
                         ),
                         options: [.regularExpression]
                     )
                     .forEach { range in
+                        let targetRange: Range<String.Index> = {
+                            let term: String = String(normalizedSnippet[range])
+                            
+                            // If the matched term doesn't actually match the "part" value then it means
+                            // we've matched a term after a non-alphanumeric character so need to shift
+                            // the range over by 1
+                            guard term.starts(with: part.lowercased()) else {
+                                return (normalizedSnippet.index(after: range.lowerBound)..<range.upperBound)
+                            }
+                            
+                            return range
+                        }()
+                        
                         // Store the range of the first match so we can focus it in the content displayed
                         if firstMatchRange == nil {
-                            firstMatchRange = range
+                            firstMatchRange = targetRange
                         }
                         
-                        let legacyRange: NSRange = NSRange(range, in: normalizedSnippet)
+                        let legacyRange: NSRange = NSRange(targetRange, in: normalizedSnippet)
                         result.addAttribute(.foregroundColor, value: textColor, range: legacyRange)
                         result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: fontSize), range: legacyRange)
                     }

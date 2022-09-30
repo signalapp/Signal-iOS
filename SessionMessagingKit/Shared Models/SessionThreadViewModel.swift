@@ -940,6 +940,13 @@ public extension SessionThreadViewModel {
 public extension SessionThreadViewModel {
     static let searchResultsLimit: Int = 500
     
+    /// FTS will fail or try to process characters outside of `[A-Za-z0-9]` are included directly in a search
+    /// term, in order to resolve this the term needs to be wrapped in quotation marks so the eventual SQL
+    /// is `MATCH '"{term}"'` or `MATCH '"{term}"*'`
+    static func searchSafeTerm(_ term: String) -> String {
+        return "\"\(term)\""
+    }
+    
     static func searchTermParts(_ searchTerm: String) -> [String] {
         /// Process the search term in order to extract the parts of the search pattern we want
         ///
@@ -954,7 +961,7 @@ public extension SessionThreadViewModel {
                 guard index % 2 == 1 else {
                     return String(value)
                         .split(separator: " ")
-                        .map { String($0) }
+                        .map { "\"\(String($0))\"" }
                 }
                 
                 return ["\"\(value)\""]
@@ -972,13 +979,14 @@ public extension SessionThreadViewModel {
         let rawPattern: String = searchTermParts(searchTerm)
             .joined(separator: " OR ")
             .appending("*")
+        let fallbackTerm: String = "\(searchSafeTerm(searchTerm))*"
         
         /// There are cases where creating a pattern can fail, we want to try and recover from those cases
         /// by failling back to simpler patterns if needed
         let maybePattern: FTS5Pattern? = (try? db.makeFTS5Pattern(rawPattern: rawPattern, forTable: table))
             .defaulting(
-                to: (try? db.makeFTS5Pattern(rawPattern: searchTerm, forTable: table))
-                    .defaulting(to: FTS5Pattern(matchingAnyTokenIn: searchTerm))
+                to: (try? db.makeFTS5Pattern(rawPattern: fallbackTerm, forTable: table))
+                    .defaulting(to: FTS5Pattern(matchingAnyTokenIn: fallbackTerm))
             )
         
         guard let pattern: FTS5Pattern = maybePattern else { throw StorageError.invalidSearchPattern }

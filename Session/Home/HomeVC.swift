@@ -331,7 +331,9 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         // PagedDatabaseObserver won't have them so we need to force a re-fetch of the current
         // data to ensure everything is up to date
         if didReturnFromBackground {
-            self.viewModel.pagedDataObserver?.reload()
+            DispatchQueue.global(qos: .default).async { [weak self] in
+                self?.viewModel.pagedDataObserver?.reload()
+            }
         }
     }
     
