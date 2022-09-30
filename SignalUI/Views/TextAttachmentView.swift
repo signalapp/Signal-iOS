@@ -198,6 +198,7 @@ public class TextAttachmentView: UIView {
                 }
             } else {
                 // Dark placeholder icon on light background if there's no thumbnail associated with the link preview.
+                layout = .compact
                 thumbnailImageView.backgroundColor = .ows_gray02
                 thumbnailImageView.contentMode = .center
                 thumbnailImageView.image = UIImage(imageLiteralResourceName: "link-diagonal")
