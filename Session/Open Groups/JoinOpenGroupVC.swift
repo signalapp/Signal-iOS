@@ -88,6 +88,13 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         enterURLVC.constrainHeight(to: height)
         scanQRCodePlaceholderVC.constrainHeight(to: height)
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        enterURLVC.viewWidth?.constant = size.width
+        enterURLVC.suggestionGrid.refreshLayout(with: size.width - 2 * Values.largeSpacing)
+        scanQRCodePlaceholderVC.viewWidth?.constant = size.width
+    }
 
     // MARK: - General
     
@@ -230,13 +237,15 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         return result
     }()
 
-    private lazy var suggestionGrid: OpenGroupSuggestionGrid = {
+    lazy var suggestionGrid: OpenGroupSuggestionGrid = {
         let maxWidth: CGFloat = (UIScreen.main.bounds.width - Values.largeSpacing * 2)
         let result: OpenGroupSuggestionGrid = OpenGroupSuggestionGrid(maxWidth: maxWidth)
         result.delegate = self
         
         return result
     }()
+    
+    var viewWidth: NSLayoutConstraint?
 
     // MARK: - Lifecycle
     
@@ -270,7 +279,7 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         bottomConstraint = view.pin(.bottom, to: .bottom, of: stackView, withInset: bottomMargin)
         
         // Constraints
-        view.set(.width, to: UIScreen.main.bounds.width)
+        viewWidth = view.set(.width, to: UIScreen.main.bounds.width)
         
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -374,6 +383,8 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
 private final class ScanQRCodePlaceholderVC: UIViewController {
     weak var joinOpenGroupVC: JoinOpenGroupVC?
     
+    var viewWidth: NSLayoutConstraint?
+    
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -403,7 +414,7 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
         stackView.alignment = .center
         
         // Constraints
-        view.set(.width, to: UIScreen.main.bounds.width)
+        viewWidth = view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
         view.pin(.trailing, to: .trailing, of: stackView, withInset: Values.massiveSpacing)

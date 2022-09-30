@@ -5,7 +5,7 @@ import SessionUIKit
 
 final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     private let itemsPerSection: Int = (UIDevice.current.isIPad ? 4 : 2)
-    private let maxWidth: CGFloat
+    private var maxWidth: CGFloat
     private var rooms: [OpenGroupAPI.Room] = [] { didSet { update() } }
     private var heightConstraint: NSLayoutConstraint!
     var delegate: OpenGroupSuggestionGridDelegate?
@@ -140,6 +140,11 @@ final class OpenGroupSuggestionGrid: UIView, UICollectionViewDataSource, UIColle
         heightConstraint.constant = height
         collectionView.reloadData()
         errorView.isHidden = (roomCount > 0)
+    }
+    
+    public func refreshLayout(with maxWidth: CGFloat) {
+        self.maxWidth = maxWidth
+        collectionView.collectionViewLayout.invalidateLayout()
     }
     
     // MARK: - Layout
