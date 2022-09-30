@@ -102,6 +102,12 @@ final class NewDMVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControll
         scanQRCodePlaceholderVC.constrainHeight(to: height)
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        enterPublicKeyVC.viewWidth?.constant = size.width
+        scanQRCodePlaceholderVC.viewWidth?.constant = size.width
+    }
+    
     // MARK: General
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let index = pages.firstIndex(of: viewController), index != 0 else { return nil }
@@ -269,6 +275,8 @@ private final class EnterPublicKeyVC : UIViewController {
         return result
     }()
     
+    var viewWidth: NSLayoutConstraint?
+    
     // MARK: Lifecycle
     override func viewDidLoad() {
         // Remove background color
@@ -329,12 +337,10 @@ private final class EnterPublicKeyVC : UIViewController {
         mainStackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
         mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
-        mainStackView.pin(.leading, to: .leading, of: view)
-        mainStackView.pin(.top, to: .top, of: view)
-        view.pin(.trailing, to: .trailing, of: mainStackView)
+        mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: view)
         bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView, withInset: bottomMargin)
         // Width constraint
-        view.set(.width, to: UIScreen.main.bounds.width)
+        viewWidth = view.set(.width, to: UIScreen.main.bounds.width)
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGestureRecognizer)
@@ -430,6 +436,8 @@ private final class EnterPublicKeyVC : UIViewController {
 private final class ScanQRCodePlaceholderVC : UIViewController {
     weak var NewDMVC: NewDMVC!
     
+    var viewWidth: NSLayoutConstraint?
+    
     override func viewDidLoad() {
         // Remove background color
         view.backgroundColor = .clear
@@ -453,7 +461,7 @@ private final class ScanQRCodePlaceholderVC : UIViewController {
         stackView.spacing = Values.mediumSpacing
         stackView.alignment = .center
         // Set up constraints
-        view.set(.width, to: UIScreen.main.bounds.width)
+        viewWidth = view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
         view.pin(.trailing, to: .trailing, of: stackView, withInset: Values.massiveSpacing)
