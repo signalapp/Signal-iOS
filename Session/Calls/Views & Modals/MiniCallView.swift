@@ -5,7 +5,8 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
     var callVC: CallVC
     
     // MARK: UI
-    private static let defaultSize: CGFloat = 100
+    private static let defaultSize: CGFloat = UIDevice.current.isIPad ? 200 : 100
+    private static let defaultVideoSize: CGFloat = UIDevice.current.isIPad ? 320 : 160
     private let topMargin = UIApplication.shared.keyWindow!.safeAreaInsets.top + Values.veryLargeSpacing
     private let bottomMargin = UIApplication.shared.keyWindow!.safeAreaInsets.bottom
     
@@ -70,7 +71,7 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
     private func setUpViewHierarchy() {
         self.width = self.set(.width, to: MiniCallView.defaultSize)
         self.height = self.set(.height, to: MiniCallView.defaultSize)
-        self.layer.cornerRadius = 10
+        self.layer.cornerRadius = UIDevice.current.isIPad ? 20 : 10
         self.layer.masksToBounds = true
         // Background
         let background = getBackgroudView()
@@ -139,7 +140,10 @@ final class MiniCallView: UIView, RTCVideoViewDelegate {
     
     // MARK: RTCVideoViewDelegate
     func videoView(_ videoView: RTCVideoRenderer, didChangeVideoSize size: CGSize) {
-        let newSize = CGSize(width: min(160.0, 160.0 * size.width / size.height), height: min(160.0, 160.0 * size.height / size.width))
+        let newSize = CGSize(
+            width: min(Self.defaultVideoSize, Self.defaultVideoSize * size.width / size.height),
+            height: min(Self.defaultVideoSize, Self.defaultVideoSize * size.height / size.width)
+        )
         persistCurrentPosition(newSize: newSize)
         self.width?.constant = newSize.width
         self.height?.constant = newSize.height

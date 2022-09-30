@@ -78,8 +78,8 @@ class RemoteVideoView: TargetView {
 
 class LocalVideoView: TargetView {
     
-    static let width: CGFloat = 80
-    static let height: CGFloat = 173
+    static let width: CGFloat = UIDevice.current.isIPad ? 160 : 80
+    static let height: CGFloat = UIDevice.current.isIPad ? 346: 173
     
     override func renderFrame(_ frame: RTCVideoFrame?) {
         super.renderFrame(frame)
