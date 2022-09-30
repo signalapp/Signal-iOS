@@ -27,6 +27,10 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
     private var selectedContacts: Set<String> = []
     private var searchText: String = ""
     
+    // MARK: - Layout
+    
+    private var tableViewWidth: NSLayoutConstraint?
+    
     // MARK: - Components
     
     private lazy var nameTextField: TextField = {
@@ -105,6 +109,11 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         // Set up content
         setUpViewHierarchy()
     }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        tableViewWidth?.constant = size.width
+    }
 
     private func setUpViewHierarchy() {
         guard !contactProfiles.isEmpty else {
@@ -158,15 +167,13 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         mainStackView.addArrangedSubview(separator)
         
         tableView.set(.height, to: CGFloat(contactProfiles.count * 65 + 100)) // A cell is exactly 65 points high
-        tableView.set(.width, to: UIScreen.main.bounds.width)
+        tableViewWidth = tableView.set(.width, to: UIScreen.main.bounds.width)
         mainStackView.addArrangedSubview(tableView)
         
         let scrollView: UIScrollView = UIScrollView(wrapping: mainStackView, withInsets: UIEdgeInsets.zero)
         scrollView.showsVerticalScrollIndicator = false
         scrollView.delegate = self
         view.addSubview(scrollView)
-        
-        scrollView.set(.width, to: UIScreen.main.bounds.width)
         scrollView.pin(to: view)
         
         view.addSubview(fadeView)
