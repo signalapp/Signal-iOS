@@ -23,7 +23,7 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     private lazy var localVideoView: LocalVideoView = {
         let result = LocalVideoView()
         result.isHidden = !call.isVideoEnabled
-        result.layer.cornerRadius = 10
+        result.layer.cornerRadius = UIDevice.current.isIPad ? 20 : 10
         result.layer.masksToBounds = true
         result.set(.width, to: LocalVideoView.width)
         result.set(.height, to: LocalVideoView.height)
@@ -284,6 +284,18 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(audioRouteDidChange), name: AVAudioSession.routeChangeNotification, object: nil)
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        let layer = CAGradientLayer()
+        layer.frame = CGRect(x: 0, y: 0, width: size.width, height: 64)
+        layer.colors = [ UIColor(hex: 0x000000).withAlphaComponent(0.4).cgColor, UIColor(hex: 0x000000).withAlphaComponent(0).cgColor ]
+        if let existingSublayer = fadeView.layer.sublayers?[0], existingSublayer is CAGradientLayer {
+            fadeView.layer.replaceSublayer(existingSublayer, with: layer)
+        } else {
+            fadeView.layer.insertSublayer(layer, at: 0)
+        }
+    }
+    
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.removeObserver(self)
@@ -373,6 +385,7 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     }
     
     @objc func didChangeDeviceOrientation(notification: Notification) {
+        if UIDevice.current.isIPad { return }
         
         func rotateAllButtons(rotationAngle: CGFloat) {
             let transform = CGAffineTransform(rotationAngle: rotationAngle)
