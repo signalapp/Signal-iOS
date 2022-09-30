@@ -10,6 +10,8 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
     private var displayNameToBeUploaded: String?
     private var isEditingDisplayName = false { didSet { handleIsEditingDisplayNameChanged() } }
     
+    private var viewWidth: NSLayoutConstraint?
+    
     // MARK: - Components
     
     private lazy var profilePictureView: ProfilePictureView = {
@@ -246,7 +248,7 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: Values.mediumSpacing, left: 0, bottom: Values.mediumSpacing, right: 0)
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.set(.width, to: UIScreen.main.bounds.width)
+        viewWidth = stackView.set(.width, to: UIScreen.main.bounds.width)
         
         // Scroll view
         let scrollView = UIScrollView()
@@ -255,6 +257,11 @@ final class SettingsVC: BaseVC, AvatarViewHelperDelegate {
         stackView.pin(to: scrollView)
         view.addSubview(scrollView)
         scrollView.pin(to: view)
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        viewWidth?.constant = size.width
     }
     
     private func getSettingButtons() -> [UIView] {
