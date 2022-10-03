@@ -122,7 +122,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             textColor: .ows_accentRed,
             accessibilityIdentifier: nil,
             actionBlock: { [weak self] in
-                self?.turnOffStories()
+                self?.turnOffStoriesConfirmation()
             }))
     }
 
@@ -165,26 +165,40 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    func turnOffStories() {
+    func turnOffStoriesConfirmation() {
         let actionSheet = ActionSheetController(
             message: NSLocalizedString(
-                "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE",
-                comment: "Title for the action sheet confirming you want to turn off stories"
+                "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE",
+                comment: "Title for the action sheet confirming you want to turn off and delete all stories"
             )
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(.init(
             title: NSLocalizedString(
-                "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON",
-                comment: "Button to turn off stories on the story privacy settings view"
+                "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON",
+                comment: "Button to turn off and delete stories on the story privacy settings view"
             ),
             style: .destructive,
-            handler: { _ in
-                Self.databaseStorage.write { transaction in
-                    StoryManager.setAreStoriesEnabled(false, transaction: transaction)
-                }
+            handler: { [weak self] _ in
+                self?.turnOffStories()
             }))
         presentActionSheet(actionSheet)
+    }
+
+    func turnOffStories() {
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+            Self.databaseStorage.asyncWrite { transaction in
+                StoryFinder.enumerateOutgoingStories(transaction: transaction) { storyMessage, _ in
+                    storyMessage.remotelyDeleteForAllRecipients(transaction: transaction)
+                }
+
+                StoryManager.setAreStoriesEnabled(false, transaction: transaction)
+
+                transaction.addAsyncCompletionOnMain {
+                    modal.dismiss {}
+                }
+            }
+        }
     }
 }
 

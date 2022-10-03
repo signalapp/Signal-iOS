@@ -476,6 +476,12 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         attachmentDownloads.enqueueDownloadOfAttachmentsForNewStoryMessage(self, transaction: transaction)
     }
 
+    public func remotelyDeleteForAllRecipients(transaction: SDSAnyWriteTransaction) {
+        for thread in threads(transaction: transaction) {
+            remotelyDelete(for: thread, transaction: transaction)
+        }
+    }
+
     public func remotelyDelete(for thread: TSThread, transaction: SDSAnyWriteTransaction) {
         guard case .outgoing(var recipientStates) = manifest else {
             return owsFailDebug("Cannot remotely delete incoming story.")

@@ -6244,8 +6244,11 @@
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "Story Privacy";
 
-/* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+/* Title for the action sheet confirming you want to turn off and delete all stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+
+/* Button to turn off and delete stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "If you opt out of stories you will no longer be able to share or view stories.";
