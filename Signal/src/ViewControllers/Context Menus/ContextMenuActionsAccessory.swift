@@ -147,10 +147,11 @@ protocol ContextMenuActionsViewDelegate: AnyObject {
 
 private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScrollViewDelegate {
 
-    private class ContextMenuActionRow: UIVisualEffectView {
+    private class ContextMenuActionRow: UIView {
         let attributes: ContextMenuAction.Attributes
         let hostEffect: UIBlurEffect
         let forceDarkTheme: Bool
+        let visualEffectView: UIVisualEffectView
         let titleLabel: UILabel
         let iconView: UIImageView
         let separatorView: UIView
@@ -170,7 +171,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
                         }
 
                         if let view = highlightedView {
-                            contentView.insertSubview(view, at: 0)
+                            insertSubview(view, at: 1)
                         }
                     } else {
                         highlightedView?.removeFromSuperview()
@@ -200,12 +201,19 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             hostEffect = hostBlurEffect
             self.forceDarkTheme = forceDarkTheme
 
+            /// when made a child of a UIVisualEffectView, UILabel text color is overridden, but a vibrancy effect is added.
+            /// When we aren't using a color anyway, we want the vibrancy effect so we add it as a subview of the visual effect.
+            /// If we want the colors to take effect, however, we make it a subview of the root view.
+            let makeLabelSubviewOfVisualEffectsView: Bool
             if attributes.contains(.destructive) {
                 titleLabel.textColor = Theme.ActionSheet.default.destructiveButtonTextColor
+                makeLabelSubviewOfVisualEffectsView = false
             } else if attributes.contains(.disabled) {
                 titleLabel.textColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+                makeLabelSubviewOfVisualEffectsView = false
             } else {
                 titleLabel.textColor = forceDarkTheme ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
+                makeLabelSubviewOfVisualEffectsView = true
             }
 
             iconView = UIImageView(image: icon)
@@ -220,14 +228,22 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             isHighlighted = false
 
             if #available(iOS 13, *) {
-                super.init(effect: UIVibrancyEffect(blurEffect: hostBlurEffect, style: .label))
+                visualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect, style: .label))
             } else {
-                super.init(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
+                visualEffectView = UIVisualEffectView(effect: UIVibrancyEffect(blurEffect: hostBlurEffect))
             }
+            super.init(frame: .zero)
 
-            contentView.addSubview(titleLabel)
-            contentView.addSubview(iconView)
-            contentView.addSubview(separatorView)
+            addSubview(visualEffectView)
+            if makeLabelSubviewOfVisualEffectsView {
+                visualEffectView.contentView.addSubview(titleLabel)
+            } else {
+                addSubview(titleLabel)
+            }
+            visualEffectView.contentView.addSubview(iconView)
+            visualEffectView.contentView.addSubview(separatorView)
+
+            visualEffectView.autoPinEdgesToSuperviewEdges()
 
             isAccessibilityElement = true
             accessibilityLabel = titleLabel.text
