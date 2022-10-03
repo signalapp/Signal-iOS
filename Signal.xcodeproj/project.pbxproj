@@ -3377,7 +3377,6 @@
 		B657DDC91911A40500F45B0C /* Signal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = Signal.entitlements; sourceTree = "<group>"; };
 		B660F69E1C29868000687D6E /* SignalTests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "SignalTests-Info.plist"; sourceTree = "<group>"; };
 		B660F69F1C29868000687D6E /* whisperFake.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = whisperFake.cer; sourceTree = "<group>"; };
-		B660F6A01C29868000687D6E /* TestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtil.h; sourceTree = "<group>"; };
 		B660F6AD1C29868000687D6E /* FunctionalUtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FunctionalUtilTest.m; sourceTree = "<group>"; };
 		B660F6B31C29868000687D6E /* UtilTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilTest.h; sourceTree = "<group>"; };
 		B660F6B41C29868000687D6E /* UtilTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilTest.m; sourceTree = "<group>"; };
@@ -6613,7 +6612,6 @@
 				34843B2321432293004DED45 /* SignalBaseTest.h */,
 				34843B2221432292004DED45 /* SignalBaseTest.m */,
 				4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */,
-				B660F6A01C29868000687D6E /* TestUtil.h */,
 			);
 			path = test;
 			sourceTree = "<group>";

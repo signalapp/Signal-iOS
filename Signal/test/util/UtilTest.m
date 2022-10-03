@@ -1,9 +1,8 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "UtilTest.h"
-#import "TestUtil.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
@@ -36,24 +35,24 @@
 
 -(void) testRemoveAllCharactersIn {
 
-    test([[@"" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
-    test([[@"1" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@"1"]);
-    test([[@"a" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
-    test([[@"A" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
-    test([[@"abc123%^&" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@"123%^&"]);
+    XCTAssert([[@"" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
+    XCTAssert([[@"1" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@"1"]);
+    XCTAssert([[@"a" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
+    XCTAssert([[@"A" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@""]);
+    XCTAssert([[@"abc123%^&" removeAllCharactersIn:NSCharacterSet.letterCharacterSet] isEqual:@"123%^&"]);
 
-    test([[@"" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@""]);
-    test([[@"1" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@""]);
-    test([[@"a" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"a"]);
-    test([[@"A" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"A"]);
-    test([[@"abc123%^&" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"abc%^&"]);
+    XCTAssert([[@"" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@""]);
+    XCTAssert([[@"1" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@""]);
+    XCTAssert([[@"a" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"a"]);
+    XCTAssert([[@"A" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"A"]);
+    XCTAssert([[@"abc123%^&" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"abc%^&"]);
 }
 
 - (void)testDigitsOnly {
-    test([@"".digitsOnly isEqual:@""]);
-    test([@"1".digitsOnly isEqual:@"1"]);
-    test([@"a".digitsOnly isEqual:@""]);
-    test([@"(555) 235-7111".digitsOnly isEqual:@"5552357111"]);
+    XCTAssert([@"".digitsOnly isEqual:@""]);
+    XCTAssert([@"1".digitsOnly isEqual:@"1"]);
+    XCTAssert([@"a".digitsOnly isEqual:@""]);
+    XCTAssert([@"(555) 235-7111".digitsOnly isEqual:@"5552357111"]);
 }
 
 - (void)testEnsureArabicNumerals {
@@ -77,18 +76,19 @@
     ];
 
     for (NSString *zeroToNineTest in zeroToNineTests) {
-        test([zeroToNineTest.ensureArabicNumerals isEqualToString:@"0123456789"]);
+        XCTAssert([zeroToNineTest.ensureArabicNumerals isEqualToString:@"0123456789"]);
     }
 
     // In mixed strings, only replaces the numerals.
-    test([@"نمرا ١٢٣٤٥ يا".ensureArabicNumerals isEqualToString:@"نمرا 12345 يا"]);
+    XCTAssert([@"نمرا ١٢٣٤٥ يا".ensureArabicNumerals isEqualToString:@"نمرا 12345 يا"]);
 
     // Appropriately handles characters that extend across multiple unicode scalars
-    test([@"123 👩🏻‍🔬🧛🏿‍♀️🤦🏽‍♀️🏳️‍🌈 ١٢٣".ensureArabicNumerals isEqualToString:@"123 👩🏻‍🔬🧛🏿‍♀️🤦🏽‍♀️🏳️‍🌈 123"]);
+    XCTAssert([@"123 👩🏻‍🔬🧛🏿‍♀️🤦🏽‍♀️🏳️‍🌈 ١٢٣".ensureArabicNumerals
+        isEqualToString:@"123 👩🏻‍🔬🧛🏿‍♀️🤦🏽‍♀️🏳️‍🌈 123"]);
 
     // In strings without numerals, does nothing.
-    test([@"a".ensureArabicNumerals isEqualToString:@"a"]);
-    test([@"".ensureArabicNumerals isEqualToString:@""]);
+    XCTAssert([@"a".ensureArabicNumerals isEqualToString:@"a"]);
+    XCTAssert([@"".ensureArabicNumerals isEqualToString:@""]);
 }
 
 - (void)testfilterUnsafeFilenameCharacters
