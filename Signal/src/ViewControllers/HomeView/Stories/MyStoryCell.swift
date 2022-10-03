@@ -55,7 +55,7 @@ class MyStoryCell: UITableViewCell {
         addStoryButton.addSubview(avatarView)
         avatarView.autoPinEdgesToSuperviewEdges()
 
-        plusIcon.image = #imageLiteral(resourceName: "plus-12").withRenderingMode(.alwaysTemplate)
+        plusIcon.image = #imageLiteral(resourceName: "plus-my-story").withRenderingMode(.alwaysTemplate)
         plusIcon.tintColor = .white
         plusIcon.contentMode = .center
         plusIcon.autoSetDimensions(to: .square(26))
