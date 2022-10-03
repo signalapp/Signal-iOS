@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// typing indicator to a recipient if we need the user to verify a safety number change. Outgoing SKDMs being sent on
 /// behalf of an outgoing typing indicator should inherit this behavior.
 @property (assign, atomic, readonly) BOOL isSentOnBehalfOfOnlineMessage;
+/// Returns YES if this message is being sent as a precondition to sending a story message.
+@property (assign, atomic, readonly) BOOL isSentOnBehalfOfStoryMessage;
 - (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message NS_SWIFT_NAME(configureAsSentOnBehalfOf(_:));
 
 @end

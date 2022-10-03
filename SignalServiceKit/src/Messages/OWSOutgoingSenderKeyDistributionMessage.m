@@ -8,6 +8,7 @@
 @interface OWSOutgoingSenderKeyDistributionMessage ()
 @property (strong, nonatomic, readonly) NSData *serializedSKDM;
 @property (assign, atomic) BOOL isSentOnBehalfOfOnlineMessage;
+@property (assign, atomic) BOOL isSentOnBehalfOfStoryMessage;
 @end
 
 @implementation OWSOutgoingSenderKeyDistributionMessage
@@ -41,6 +42,11 @@
     return NO;
 }
 
+- (BOOL)isStorySend
+{
+    return self.isSentOnBehalfOfStoryMessage;
+}
+
 - (nullable SSKProtoContentBuilder *)contentBuilderWithThread:(TSThread *)thread
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -52,6 +58,7 @@
 - (void)configureAsSentOnBehalfOf:(TSOutgoingMessage *)message
 {
     self.isSentOnBehalfOfOnlineMessage = message.isOnline;
+    self.isSentOnBehalfOfStoryMessage = message.isStorySend;
 }
 
 @end
