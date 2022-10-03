@@ -923,7 +923,10 @@ extension SignalServiceAddress {
 
 extension StoryMessage {
 
-    public static let videoAttachmentDurationLimit: TimeInterval = 30
+    // Android rounds _down_ video length for display, so 30.999 seconds
+    // is rendered as "30s". If we didn't allow that length, users might be
+    // confused as to why if all it says is "30s" and we say "up to 30s".
+    public static let videoAttachmentDurationLimit: TimeInterval = 30.999
 
     public static var videoSegmentationTooltip: String {
         return String(
