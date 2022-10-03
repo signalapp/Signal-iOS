@@ -271,6 +271,7 @@ public class OWSWebSocket: NSObject {
                                                selector: #selector(appExpiryDidChange),
                                                name: AppExpiry.AppExpiryDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(storiesEnabledStateDidChange), name: .storiesEnabledStateDidChange, object: nil)
     }
 
     // MARK: -
@@ -974,6 +975,7 @@ public class OWSWebSocket: NSObject {
         var request = URLRequest(url: webSocketConnectURL)
         request.addValue(OWSURLSession.userAgentHeaderValueSignalIos,
                          forHTTPHeaderField: OWSURLSession.userAgentHeaderKey)
+        StoryManager.appendStoryHeaders(to: &request)
         owsAssertDebug(webSocketFactory.canBuildWebSocket)
         guard let webSocket = webSocketFactory.buildSocket(request: request,
                                                            callbackQueue: OWSWebSocket.serialQueue) else {
@@ -1128,6 +1130,13 @@ public class OWSWebSocket: NSObject {
         if verboseLogging {
             Logger.info("\(logPrefix) \(appExpiry.isExpired)")
         }
+
+        cycleSocket()
+    }
+
+    @objc
+    private func storiesEnabledStateDidChange(_ notification: NSNotification) {
+        AssertIsOnMainThread()
 
         cycleSocket()
     }

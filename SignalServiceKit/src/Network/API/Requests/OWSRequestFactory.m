@@ -105,7 +105,9 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
 
 + (TSRequest *)getMessagesRequest
 {
-    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
+    [StoryManager appendStoryHeadersToRequest:request];
+    return request;
 }
 
 + (TSRequest *)getUnversionedProfileRequestWithAddress:(SignalServiceAddress *)address
