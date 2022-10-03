@@ -343,17 +343,18 @@ public class OWSLinkPreviewManager: NSObject, Dependencies {
             return nil
         }
 
-        let allMatches = detector.matches(
-            in: searchString,
-            options: [],
-            range: searchString.entireRange)
-
-        return allMatches.first(where: {
-            guard let parsedUrl = $0.url else { return false }
-            guard let matchedRange = Range($0.range, in: searchString) else { return false }
+        var result: URL?
+        detector.enumerateMatches(in: searchString, range: searchString.entireRange) { match, _, stop in
+            guard let match = match else { return }
+            guard let parsedUrl = match.url else { return }
+            guard let matchedRange = Range(match.range, in: searchString) else { return }
             let matchedString = String(searchString[matchedRange])
-            return parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: matchedString)
-        })?.url
+            if parsedUrl.isPermittedLinkPreviewUrl(parsedFrom: matchedString) {
+                result = parsedUrl
+                stop.pointee = true
+            }
+        }
+        return result
     }
 
     @objc(fetchLinkPreviewForUrl:)

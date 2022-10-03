@@ -164,6 +164,15 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                extractsLink: URL(string: "https://www.youtube.com/watch?v=tP-Ipsat90c")!)
     }
 
+    func testFindFirstValidUrlPerformance() {
+        let bodyText = String(repeating: "https://example.com ", count: 1_000_000)
+        let expected = URL(string: "https://example.com")
+        measure {
+            let actual = linkPreviewManager.findFirstValidUrl(in: bodyText, bypassSettingsCheck: true)
+            XCTAssertEqual(actual, expected)
+        }
+    }
+
     private func Assert(bodyText: String, extractsLink link: URL?, file: StaticString = #file, line: UInt = #line) {
         let actual = linkPreviewManager.findFirstValidUrl(in: bodyText, bypassSettingsCheck: true)
         XCTAssertEqual(actual, link, file: file, line: line)
