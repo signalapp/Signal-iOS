@@ -300,7 +300,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             message: "DATABASE_MIGRATION_FAILED".localized(),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "modal_share_logs_title".localized(), style: .default) { _ in
+        alert.addAction(UIAlertAction(title: "HELP_REPORT_BUG_ACTION_TITLE".localized(), style: .default) { _ in
             HelpViewModel.shareLogs(viewControllerToDismiss: alert) { [weak self] in
                 self?.showFailedMigrationAlert(error: error)
             }

@@ -39,7 +39,10 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     }()
 
     private lazy var groupNameTextField: TextField = {
-        let result: TextField = TextField(placeholder: "Enter a group name", usesDefaultHeight: false)
+        let result: TextField = TextField(
+            placeholder: "vc_create_closed_group_text_field_hint".localized(),
+            usesDefaultHeight: false
+        )
         result.textAlignment = .center
         
         return result

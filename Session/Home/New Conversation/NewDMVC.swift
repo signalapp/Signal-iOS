@@ -192,7 +192,7 @@ final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControlle
                                 }
                                 
                                 return (maybeSessionId?.prefix == .blinded ?
-                                    "You can only send messages to Blinded IDs from within an Open Group" :
+                                    "You can only send messages to Blinded IDs from within a Community" :
                                     "Please check the Session ID or ONS name and try again"
                                 )
                             }()
