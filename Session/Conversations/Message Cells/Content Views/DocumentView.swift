@@ -5,8 +5,6 @@ import SessionUIKit
 import SessionMessagingKit
 
 final class DocumentView: UIView {
-    private static let iconImageViewSize: CGSize = CGSize(width: 31, height: 40)
-    
     // MARK: - Lifecycle
     
     init(attachment: Attachment, textColor: ThemeValue) {
@@ -24,18 +22,23 @@ final class DocumentView: UIView {
     }
     
     private func setUpViewHierarchy(attachment: Attachment, textColor: ThemeValue) {
-        // Image view
-        let imageView = UIImageView(image: UIImage(named: "File")?.withRenderingMode(.alwaysTemplate))
-        imageView.themeTintColor = textColor
-        imageView.contentMode = .center
+        let imageBackgroundView: UIView = UIView()
+        imageBackgroundView.themeBackgroundColor = .messageBubble_overlay
+        addSubview(imageBackgroundView)
         
-        let iconImageViewSize = DocumentView.iconImageViewSize
-        imageView.set(.width, to: iconImageViewSize.width)
-        imageView.set(.height, to: iconImageViewSize.height)
+        // Image view
+        let imageView = UIImageView(
+            image: UIImage(systemName: "doc")?
+                .withRenderingMode(.alwaysTemplate)
+        )
+        imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        imageView.setContentHuggingPriority(.required, for: .horizontal)
+        imageView.themeTintColor = textColor
+        imageView.set(.height, to: 22)
         
         // Body label
         let titleLabel = UILabel()
-        titleLabel.font = .systemFont(ofSize: Values.smallFontSize, weight: .light)
+        titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = (attachment.sourceFilename ?? "File")
         titleLabel.themeTextColor = textColor
         titleLabel.lineBreakMode = .byTruncatingTail
@@ -51,12 +54,41 @@ final class DocumentView: UIView {
         let labelStackView = UIStackView(arrangedSubviews: [ titleLabel, sizeLabel ])
         labelStackView.axis = .vertical
         
+        // Download image view
+        let downloadImageView = UIImageView(
+            image: UIImage(systemName: "arrow.down")?
+                .withRenderingMode(.alwaysTemplate)
+        )
+        downloadImageView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        downloadImageView.setContentHuggingPriority(.required, for: .horizontal)
+        downloadImageView.themeTintColor = textColor
+        downloadImageView.set(.height, to: 16)
+        
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ imageView, labelStackView ])
+        let stackView = UIStackView(
+            arrangedSubviews: [
+                imageView,
+                UIView.spacer(withWidth: 0),
+                labelStackView,
+                downloadImageView
+            ]
+        )
         stackView.axis = .horizontal
-        stackView.spacing = Values.verySmallSpacing
+        stackView.spacing = Values.mediumSpacing
         stackView.alignment = .center
+        stackView.layoutMargins = UIEdgeInsets(
+            top: Values.smallSpacing,
+            leading: Values.mediumSpacing,
+            bottom: Values.smallSpacing,
+            trailing: Values.mediumSpacing
+        )
+        stackView.isLayoutMarginsRelativeArrangement = true
         addSubview(stackView)
         stackView.pin(to: self)
+        
+        imageBackgroundView.pin(.top, to: .top, of: self)
+        imageBackgroundView.pin(.leading, to: .leading, of: self)
+        imageBackgroundView.pin(.trailing, to: .trailing, of: imageView, withInset: Values.mediumSpacing)
+        imageBackgroundView.pin(.bottom, to: .bottom, of: self)
     }
 }

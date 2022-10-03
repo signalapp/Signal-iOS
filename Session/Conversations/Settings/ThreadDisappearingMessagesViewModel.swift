@@ -28,6 +28,8 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
     
     // MARK: - Variables
     
+    private let storage: Storage
+    private let scheduler: ValueObservationScheduler
     private let threadId: String
     private let config: DisappearingMessagesConfiguration
     private var storedSelection: TimeInterval
@@ -35,7 +37,14 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
     
     // MARK: - Initialization
     
-    init(threadId: String, config: DisappearingMessagesConfiguration) {
+    init(
+        storage: Storage = Storage.shared,
+        scheduling scheduler: ValueObservationScheduler = Storage.defaultPublisherScheduler,
+        threadId: String,
+        config: DisappearingMessagesConfiguration
+    ) {
+        self.storage = storage
+        self.scheduler = scheduler
         self.threadId = threadId
         self.config = config
         self.storedSelection = (config.isEnabled ? config.durationSeconds : 0)
@@ -92,7 +101,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
     /// fetch (after the ones in `ValueConcurrentObserver.asyncStart`/`ValueConcurrentObserver.syncStart`)
     /// just in case the database has changed between the two reads - unfortunately it doesn't look like there is a way to prevent this
     private lazy var _observableSettingsData: ObservableData = ValueObservation
-        .trackingConstantRegion { [weak self, config = self.config] db -> [SectionModel] in
+        .trackingConstantRegion { [weak self, config] db -> [SectionModel] in
             return [
                 SectionModel(
                     model: .content,
@@ -127,7 +136,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
             ]
         }
         .removeDuplicates()
-        .publisher(in: Storage.shared)
+        .publisher(in: storage, scheduling: scheduler)
     
     // MARK: - Functions
 
@@ -146,7 +155,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
         
         guard self.config != updatedConfig else { return }
         
-        Storage.shared.writeAsync { db in
+        storage.writeAsync { db in
             guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
                 return
             }

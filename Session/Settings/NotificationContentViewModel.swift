@@ -9,11 +9,16 @@ import SessionUtilitiesKit
 
 class NotificationContentViewModel: SessionTableViewModel<NoNav, NotificationSettingsViewModel.Section, Preferences.NotificationPreviewType> {
     private let storage: Storage
+    private let scheduler: ValueObservationScheduler
     
     // MARK: - Initialization
     
-    init(storage: Storage = Storage.shared) {
+    init(
+        storage: Storage = Storage.shared,
+        scheduling scheduler: ValueObservationScheduler = Storage.defaultPublisherScheduler
+    ) {
         self.storage = storage
+        self.scheduler = scheduler
     }
     
     // MARK: - Section
@@ -67,7 +72,7 @@ class NotificationContentViewModel: SessionTableViewModel<NoNav, NotificationSet
             ]
         }
         .removeDuplicates()
-        .publisher(in: storage)
+        .publisher(in: storage, scheduling: scheduler)
     
     // MARK: - Functions
 

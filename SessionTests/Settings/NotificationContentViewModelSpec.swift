@@ -13,6 +13,7 @@ class NotificationContentViewModelSpec: QuickSpec {
     override func spec() {
         var mockStorage: Storage!
         var dataChangeCancellable: AnyCancellable?
+        var dismissCancellable: AnyCancellable?
         var viewModel: NotificationContentViewModel!
         
         describe("a NotificationContentViewModel") {
@@ -28,7 +29,7 @@ class NotificationContentViewModelSpec: QuickSpec {
                         SNUIKit.migrations()
                     ]
                 )
-                viewModel = NotificationContentViewModel(storage: mockStorage)
+                viewModel = NotificationContentViewModel(storage: mockStorage, scheduling: .immediate)
                 dataChangeCancellable = viewModel.observableSettingsData
                     .receiveOnMain(immediately: true)
                     .sink(
@@ -39,9 +40,11 @@ class NotificationContentViewModelSpec: QuickSpec {
             
             afterEach {
                 dataChangeCancellable?.cancel()
+                dismissCancellable?.cancel()
                 
                 mockStorage = nil
                 dataChangeCancellable = nil
+                dismissCancellable = nil
                 viewModel = nil
             }
             
@@ -53,53 +56,37 @@ class NotificationContentViewModelSpec: QuickSpec {
 
             it("has the correct number of items") {
                 expect(viewModel.settingsData.count)
-                    .toEventually(
-                        equal(1),
-                        timeout: .milliseconds(10)
-                    )
+                    .to(equal(1))
                 expect(viewModel.settingsData.first?.elements.count)
-                    .toEventually(
-                        equal(3),
-                        timeout: .milliseconds(10)
-                    )
+                    .to(equal(3))
             }
             
             it("has the correct default state") {
-                expect(viewModel.settingsData.first?.elements )
-                    .toEventually(
+                expect(viewModel.settingsData.first?.elements)
+                    .to(
                         equal([
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: Preferences.NotificationPreviewType.nameAndPreview,
-                                title: "NOTIFICATIONS_SENDER_AND_MESSAGE".localized(),
-                                action: .listSelection(
-                                    isSelected: { true },
-                                    storedSelection: true,
-                                    shouldAutoSave: true,
-                                    selectValue: {}
+                                title: "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT".localized(),
+                                rightAccessory: .radio(
+                                    isSelected: { true }
                                 )
                             ),
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: Preferences.NotificationPreviewType.nameNoPreview,
-                                title: "NOTIFICATIONS_SENDER_ONLY".localized(),
-                                action: .listSelection(
-                                    isSelected: { false },
-                                    storedSelection: false,
-                                    shouldAutoSave: true,
-                                    selectValue: {}
+                                title: "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_ONLY".localized(),
+                                rightAccessory: .radio(
+                                    isSelected: { false }
                                 )
                             ),
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: Preferences.NotificationPreviewType.noNameNoPreview,
-                                title: "NOTIFICATIONS_NONE".localized(),
-                                action: .listSelection(
-                                    isSelected: { false },
-                                    storedSelection: false,
-                                    shouldAutoSave: true,
-                                    selectValue: {}
+                                title: "NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT".localized(),
+                                rightAccessory: .radio(
+                                    isSelected: { false }
                                 )
                             )
-                        ]),
-                        timeout: .milliseconds(10)
+                        ])
                     )
             }
             
@@ -107,7 +94,7 @@ class NotificationContentViewModelSpec: QuickSpec {
                 mockStorage.write { db in
                     db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType.nameNoPreview
                 }
-                viewModel = NotificationContentViewModel(storage: mockStorage)
+                viewModel = NotificationContentViewModel(storage: mockStorage, scheduling: .immediate)
                 dataChangeCancellable = viewModel.observableSettingsData
                     .receiveOnMain(immediately: true)
                     .sink(
@@ -115,42 +102,55 @@ class NotificationContentViewModelSpec: QuickSpec {
                         receiveValue: { viewModel.updateSettings($0) }
                     )
                 
-                expect(viewModel.settingsData.first?.elements )
-                    .toEventually(
+                expect(viewModel.settingsData.first?.elements)
+                    .to(
                         equal([
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: Preferences.NotificationPreviewType.nameAndPreview,
-                                title: "NOTIFICATIONS_SENDER_AND_MESSAGE".localized(),
-                                action: .listSelection(
-                                    isSelected: { false },
-                                    storedSelection: false,
-                                    shouldAutoSave: true,
-                                    selectValue: {}
+                                title: "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT".localized(),
+                                rightAccessory: .radio(
+                                    isSelected: { false }
                                 )
                             ),
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: Preferences.NotificationPreviewType.nameNoPreview,
-                                title: "NOTIFICATIONS_SENDER_ONLY".localized(),
-                                action: .listSelection(
-                                    isSelected: { true },
-                                    storedSelection: true,
-                                    shouldAutoSave: true,
-                                    selectValue: {}
+                                title: "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_ONLY".localized(),
+                                rightAccessory: .radio(
+                                    isSelected: { true }
                                 )
                             ),
-                            SettingInfo(
+                            SessionCell.Info(
                                 id: Preferences.NotificationPreviewType.noNameNoPreview,
-                                title: "NOTIFICATIONS_NONE".localized(),
-                                action: .listSelection(
-                                    isSelected: { false },
-                                    storedSelection: false,
-                                    shouldAutoSave: true,
-                                    selectValue: {}
+                                title: "NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT".localized(),
+                                rightAccessory: .radio(
+                                    isSelected: { false }
                                 )
                             )
-                        ]),
-                        timeout: .milliseconds(10)
+                        ])
                     )
+            }
+            
+            context("when tapping an item") {
+                it("updates the saved preference") {
+                    viewModel.settingsData.first?.elements.last?.onTap?(nil)
+                    
+                    expect(mockStorage[.preferencesNotificationPreviewType])
+                        .to(equal(Preferences.NotificationPreviewType.noNameNoPreview))
+                }
+                
+                it("dismisses the screen") {
+                    var didDismissScreen: Bool = false
+                    
+                    dismissCancellable = viewModel.dismissScreen
+                        .receiveOnMain(immediately: true)
+                        .sink(
+                            receiveCompletion: { _ in },
+                            receiveValue: { _ in didDismissScreen = true }
+                        )
+                    viewModel.settingsData.first?.elements.last?.onTap?(nil)
+                    
+                    expect(didDismissScreen).to(beTrue())
+                }
             }
         }
     }

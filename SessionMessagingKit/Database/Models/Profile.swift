@@ -152,7 +152,7 @@ public extension Profile {
 
     func toProto() -> SNProtoDataMessage? {
         let dataMessageProto = SNProtoDataMessage.builder()
-        let profileProto = SNProtoDataMessageLokiProfile.builder()
+        let profileProto = SNProtoLokiProfile.builder()
         profileProto.setDisplayName(name)
         
         if let profileKey: OWSAES256Key = profileEncryptionKey, let profilePictureUrl: String = profilePictureUrl {

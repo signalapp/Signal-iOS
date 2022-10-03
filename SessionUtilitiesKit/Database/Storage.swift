@@ -26,6 +26,7 @@ public final class Storage {
     public static let shared: Storage = Storage()
     public private(set) var isValid: Bool = false
     public private(set) var hasCompletedMigrations: Bool = false
+    public static let defaultPublisherScheduler: ValueObservationScheduler = .async(onQueue: .main)
     
     fileprivate var dbWriter: DatabaseWriter?
     private var migrator: DatabaseMigrator?
@@ -429,12 +430,15 @@ public extension Storage {
 // MARK: - Combine Extensions
 
 public extension ValueObservation {
-    func publisher(in storage: Storage) -> AnyPublisher<Reducer.Value, Error> {
+    func publisher(
+        in storage: Storage,
+        scheduling scheduler: ValueObservationScheduler = Storage.defaultPublisherScheduler
+    ) -> AnyPublisher<Reducer.Value, Error> {
         guard storage.isValid, let dbWriter: DatabaseWriter = storage.dbWriter else {
             return Fail(error: StorageError.databaseInvalid).eraseToAnyPublisher()
         }
-
-        return self.publisher(in: dbWriter)
+        
+        return self.publisher(in: dbWriter, scheduling: scheduler)
             .eraseToAnyPublisher()
     }
 }

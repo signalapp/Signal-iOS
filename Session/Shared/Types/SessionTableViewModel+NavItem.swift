@@ -6,7 +6,7 @@ import SessionUtilitiesKit
 public enum NoNav: Equatable {}
 
 extension SessionTableViewModel {
-    public struct NavItem {
+    public struct NavItem: Equatable {
         let id: NavItemId
         let image: UIImage?
         let style: UIBarButtonItem.Style
@@ -63,6 +63,21 @@ extension SessionTableViewModel {
                 target: nil,
                 action: nil,
                 accessibilityIdentifier: accessibilityIdentifier
+            )
+        }
+        
+        // MARK: - Conformance
+        
+        public static func == (
+            lhs: SessionTableViewModel<NavItemId, Section, SettingItem>.NavItem,
+            rhs: SessionTableViewModel<NavItemId, Section, SettingItem>.NavItem
+        ) -> Bool {
+            return (
+                lhs.id == rhs.id &&
+                lhs.image == rhs.image &&
+                lhs.style == rhs.style &&
+                lhs.systemItem == rhs.systemItem &&
+                lhs.accessibilityIdentifier == rhs.accessibilityIdentifier
             )
         }
     }

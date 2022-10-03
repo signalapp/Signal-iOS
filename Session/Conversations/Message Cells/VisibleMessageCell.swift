@@ -589,7 +589,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 
                 let inset: CGFloat = 12
                 let maxWidth = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * inset)
-            
+                
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])
                 stackView.axis = .vertical
@@ -601,6 +601,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             
                 // Body text view
                 if let body: String = cellViewModel.body, !body.isEmpty { // delegate should always be set at this point
+                    let bodyContainerView: UIView = UIView()
                     let bodyTappableLabel = VisibleMessageCell.getBodyTappableLabel(
                         for: cellViewModel,
                         with: maxWidth,
@@ -610,11 +611,16 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                     )
                     
                     self.bodyTappableLabel = bodyTappableLabel
-                    stackView.addArrangedSubview(bodyTappableLabel)
+                    bodyContainerView.addSubview(bodyTappableLabel)
+                    bodyTappableLabel.pin(.top, to: .top, of: bodyContainerView)
+                    bodyTappableLabel.pin(.leading, to: .leading, of: bodyContainerView, withInset: 12)
+                    bodyTappableLabel.pin(.trailing, to: .trailing, of: bodyContainerView, withInset: -12)
+                    bodyTappableLabel.pin(.bottom, to: .bottom, of: bodyContainerView, withInset: -12)
+                    stackView.addArrangedSubview(bodyContainerView)
                 }
                 
                 bubbleView.addSubview(stackView)
-                stackView.pin(to: bubbleView, withInset: inset)
+                stackView.pin(to: bubbleView)
                 snContentView.addArrangedSubview(bubbleBackgroundView)
         }
     }

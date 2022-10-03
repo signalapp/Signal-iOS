@@ -671,7 +671,6 @@
 		FD71160028C8253500B47552 /* UIView+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD7115FF28C8253500B47552 /* UIView+Combine.swift */; };
 		FD71160228C8255900B47552 /* UIControl+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71160128C8255900B47552 /* UIControl+Combine.swift */; };
 		FD71160428C95B5600B47552 /* PhotoCollectionPickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71160328C95B5600B47552 /* PhotoCollectionPickerViewModel.swift */; };
-		FD71160C28D00BAE00B47552 /* SessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71160B28D00BAE00B47552 /* SessionTests.swift */; };
 		FD71161528D00D6700B47552 /* ThreadDisappearingMessagesViewModelSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71161428D00D6700B47552 /* ThreadDisappearingMessagesViewModelSpec.swift */; };
 		FD71161728D00DA400B47552 /* ThreadSettingsViewModelSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71161628D00DA400B47552 /* ThreadSettingsViewModelSpec.swift */; };
 		FD71161A28D00E1100B47552 /* NotificationContentViewModelSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD71161928D00E1100B47552 /* NotificationContentViewModelSpec.swift */; };
@@ -1756,7 +1755,6 @@
 		FD71160128C8255900B47552 /* UIControl+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Combine.swift"; sourceTree = "<group>"; };
 		FD71160328C95B5600B47552 /* PhotoCollectionPickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionPickerViewModel.swift; sourceTree = "<group>"; };
 		FD71160928D00BAE00B47552 /* SessionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SessionTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		FD71160B28D00BAE00B47552 /* SessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionTests.swift; sourceTree = "<group>"; };
 		FD71161428D00D6700B47552 /* ThreadDisappearingMessagesViewModelSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDisappearingMessagesViewModelSpec.swift; sourceTree = "<group>"; };
 		FD71161628D00DA400B47552 /* ThreadSettingsViewModelSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadSettingsViewModelSpec.swift; sourceTree = "<group>"; };
 		FD71161928D00E1100B47552 /* NotificationContentViewModelSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationContentViewModelSpec.swift; sourceTree = "<group>"; };
@@ -3788,7 +3786,6 @@
 			children = (
 				FD71161228D00D5300B47552 /* Conversations */,
 				FD71161828D00E0100B47552 /* Settings */,
-				FD71160B28D00BAE00B47552 /* SessionTests.swift */,
 			);
 			path = SessionTests;
 			sourceTree = "<group>";
@@ -5758,7 +5755,6 @@
 				FD71161728D00DA400B47552 /* ThreadSettingsViewModelSpec.swift in Sources */,
 				FD71161528D00D6700B47552 /* ThreadDisappearingMessagesViewModelSpec.swift in Sources */,
 				FD71161A28D00E1100B47552 /* NotificationContentViewModelSpec.swift in Sources */,
-				FD71160C28D00BAE00B47552 /* SessionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
