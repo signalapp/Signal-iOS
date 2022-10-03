@@ -209,6 +209,9 @@ public extension MessageSender {
             return failure(MessageSenderNoSessionForTransientMessageError())
         }
 
+        // Don't use UD for story preKey fetches, we don't have a valid UD auth key
+        let udAccess = messageSend.message.isStorySend ? nil : messageSend.udSendingAccess?.udAccess
+
         let requestMaker = RequestMaker(label: "Prekey Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
                                             Logger.verbose("Building prekey request for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
@@ -224,7 +227,7 @@ public extension MessageSender {
                                             // to this recipient also use REST.
                                             messageSend.hasWebsocketSendFailed = true
                                         }, address: recipientAddress,
-                                        udAccess: messageSend.udSendingAccess?.udAccess,
+                                        udAccess: udAccess,
                                         canFailoverUDAuth: true)
 
         firstly(on: .global()) { () -> Promise<RequestMakerResult> in
