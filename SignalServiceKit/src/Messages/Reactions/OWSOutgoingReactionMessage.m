@@ -75,10 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    if (messageAuthor.phoneNumber && !SSKFeatureFlags.phoneNumberSharing) {
-        reactionBuilder.authorE164 = messageAuthor.phoneNumber;
-    }
-
     if (messageAuthor.uuidString) {
         reactionBuilder.authorUuid = messageAuthor.uuidString;
     } else {

@@ -3374,7 +3374,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:timestamp];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSourceE164:source.phoneNumber];
     [envelopeBuilder setSourceUuid:source.uuidString];
     [envelopeBuilder setSourceDevice:1];
     NSError *error;
@@ -3552,6 +3551,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
         [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
+                                                             fakeSourceE164:@"+13215550123"
                                                             withTransaction:transaction];
 #pragma clang diagnostic pop
 
@@ -3945,7 +3945,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:timestamp];
     [envelopeBuilder setType:envelopeType];
-    [envelopeBuilder setSourceE164:source.phoneNumber];
     [envelopeBuilder setSourceUuid:source.uuidString];
     [envelopeBuilder setSourceDevice:sourceDevice];
     envelopeBuilder.content = content;

@@ -21,7 +21,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kAliceRecipientId = @"+13213214321";
+NSString *const kLocalE164 = @"+13215550198";
+NSString *const kLocalUuidString = @"B0D19730-950B-462C-84E7-60421F879EEF";
 
 @interface OWSMessageManager (Testing)
 
@@ -56,7 +57,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
 - (void)setUp
 {
     [super setUp];
-    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId uuid:[NSUUID new]];
+    [self.tsAccountManager registerForTestsWithLocalNumber:kLocalE164
+                                                      uuid:[[NSUUID alloc] initWithUUIDString:kLocalUuidString]];
     [self.messageSenderJobQueue setup];
 }
 
@@ -82,7 +84,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     SSKProtoEnvelopeBuilder *envelopeBuilder =
         [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSourceE164:kAliceRecipientId];
+    [envelopeBuilder setSourceUuid:kLocalUuidString];
     [envelopeBuilder setSourceDevice:1];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -109,9 +111,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
         XCTAssertNil(thread);
     }];
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [SSKProtoEnvelope builderWithTimestamp:12345];
-    [envelopeBuilder setSourceE164:@"+13213214321"];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setSourceUuid:NSUUID.UUID.UUIDString];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
 
@@ -149,9 +149,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
         XCTAssertNil(thread);
     }];
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [SSKProtoEnvelope builderWithTimestamp:12345];
-    [envelopeBuilder setSourceE164:@"+13213214321"];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setSourceUuid:NSUUID.UUID.UUIDString];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
 

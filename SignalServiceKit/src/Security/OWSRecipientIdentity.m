@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -45,7 +45,6 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
     OWSCAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
     SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerified builder];
-    verifiedBuilder.destinationE164 = address.phoneNumber;
     verifiedBuilder.destinationUuid = address.uuidString;
     verifiedBuilder.identityKey = identityKey;
     verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);

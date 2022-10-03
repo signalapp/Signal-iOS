@@ -42,6 +42,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 // We no longer create these messages, but they might exist on legacy clients so it's useful to be able to
 // create them with the debug UI
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
+                                   fakeSourceE164:(NSString *)fakeSourceE164
                                   withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
@@ -51,13 +52,14 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
         [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
                                                       thread:contactThread
+                                              fakeSourceE164:fakeSourceE164
                                             incomingEnvelope:envelope];
     return errorMessage;
 }
-#endif
 
 - (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
                                                          thread:(TSThread *)thread
+                                                 fakeSourceE164:fakeSourceE164
                                                incomingEnvelope:(SSKProtoEnvelope *)envelope
 {
     TSErrorMessageBuilder *builder =
@@ -67,7 +69,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
     if (!self) {
         return self;
     }
-    
+
     NSError *error;
     _envelopeData = [envelope serializedDataAndReturnError:&error];
     if (!_envelopeData || error != nil) {
@@ -75,10 +77,11 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         return nil;
     }
 
-    _authorId = envelope.sourceE164;
+    _authorId = fakeSourceE164;
 
     return self;
 }
+#endif
 
 // --- CODE GENERATION MARKER
 

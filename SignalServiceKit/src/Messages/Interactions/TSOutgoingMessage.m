@@ -1424,14 +1424,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp];
 
-    if (quotedMessage.authorAddress.phoneNumber && !SSKFeatureFlags.phoneNumberSharing) {
-        quoteBuilder.authorE164 = quotedMessage.authorAddress.phoneNumber;
-    }
-
     if (quotedMessage.authorAddress.uuidString) {
         quoteBuilder.authorUuid = quotedMessage.authorAddress.uuidString;
     } else {
-        OWSAssertDebug(!SSKFeatureFlags.phoneNumberSharing);
+        OWSFailDebug(@"It should be impossible to quote a message without a UUID");
+        return nil;
     }
 
     BOOL hasQuotedText = NO;

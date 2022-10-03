@@ -75,6 +75,9 @@ class MessageDecryptionTest: SSKBaseTestSwift {
                 envelopeBuilder.setDestinationUuid(destinationUuid.uuidString)
             } else if destinationIdentity != nil {
                 envelopeBuilder.setDestinationUuid(localClient.uuidIdentifier)
+            } else {
+                XCTFail("Envelope that lacks a destination UUID")
+                return
             }
 
             if type == .unidentifiedSender {
@@ -106,11 +109,11 @@ class MessageDecryptionTest: SSKBaseTestSwift {
         }
     }
 
-    private func expectDecryptsSuccessfully(type: SSKProtoEnvelopeType, destinationIdentity: OWSIdentity?) {
+    private func expectDecryptsSuccessfully(type: SSKProtoEnvelopeType, destinationIdentity: OWSIdentity) {
         generateAndDecrypt(type: type, destinationIdentity: destinationIdentity) { result, originalEnvelope in
             let decrypted = try! result.get()
             XCTAssertNil(decrypted.envelopeData)
-            XCTAssertEqual(decrypted.identity, destinationIdentity ?? .aci)
+            XCTAssertEqual(decrypted.identity, destinationIdentity)
             XCTAssertNotNil(decrypted.plaintextData)
             XCTAssertEqual(String(data: decrypted.plaintextData!, encoding: .utf8), message)
 
@@ -123,7 +126,7 @@ class MessageDecryptionTest: SSKBaseTestSwift {
     }
 
     private func expectDecryptionFailure(type: SSKProtoEnvelopeType,
-                                         destinationIdentity: OWSIdentity?,
+                                         destinationIdentity: OWSIdentity,
                                          destinationUuid: UUID? = nil,
                                          isExpectedError: (Error) -> Bool) {
         generateAndDecrypt(type: type,
@@ -138,10 +141,6 @@ class MessageDecryptionTest: SSKBaseTestSwift {
         }
     }
 
-    func testDecryptWhisper() {
-        expectDecryptsSuccessfully(type: .ciphertext, destinationIdentity: nil)
-    }
-
     func testDecryptWhisperExplicitAci() {
         expectDecryptsSuccessfully(type: .ciphertext, destinationIdentity: .aci)
     }
@@ -153,10 +152,6 @@ class MessageDecryptionTest: SSKBaseTestSwift {
             }
             return false
         }
-    }
-
-    func testDecryptPreKey() {
-        expectDecryptsSuccessfully(type: .prekeyBundle, destinationIdentity: nil)
     }
 
     func testDecryptPreKeyExplicitAci() {
@@ -190,10 +185,6 @@ class MessageDecryptionTest: SSKBaseTestSwift {
             }
             return false
         }
-    }
-
-    func testDecryptSealedSenderPreKey() {
-        expectDecryptsSuccessfully(type: .unidentifiedSender, destinationIdentity: nil)
     }
 
     func testDecryptSealedSenderPreKeyPni() {

@@ -27,7 +27,7 @@ message Envelope {
   }
 
   optional Type   type            = 1;
-  optional string sourceE164      = 2;
+  reserved /* sourceE164 */         2;
   optional uint32 sourceDevice    = 7;
   optional string destinationUuid = 13;
   reserved /* relay */              3;
@@ -216,7 +216,7 @@ message DataMessage {
 
     // @required
     optional uint64            id          = 1;
-    optional string            authorE164  = 2;
+    reserved /* authorE164 */                2;
     optional string            authorUuid  = 5;
     optional string            text        = 3;
     repeated QuotedAttachment  attachments = 4;
@@ -307,7 +307,7 @@ message DataMessage {
     // @required
     optional string emoji      = 1;
     optional bool   remove     = 2;
-    optional string authorE164 = 3;
+    reserved /* authorE164 */    3;
     optional string authorUuid = 4;
     // @required
     optional uint64 timestamp  = 5;

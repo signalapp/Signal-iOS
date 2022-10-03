@@ -679,9 +679,8 @@ class MessageContext(BaseContext):
                     writer.add('}')
                     writer.newline()
 
-        has_address_helper = uuid_field and e164_field
         address_accessor = ''
-        if has_address_helper:
+        if uuid_field is not None:
             accessor_prefix = uuid_field.name.replace('Uuid', '')
             address_accessor = accessor_prefix + 'Address'
             address_has_accessor = 'hasValid' + accessor_prefix[0].upper() + accessor_prefix[1:]
@@ -730,24 +729,24 @@ class MessageContext(BaseContext):
         for field in explict_fields:
             writer.add('self.%s = %s' % (field.name_swift, field.name_swift))
 
-        if has_address_helper:
+        if uuid_field:
             writer.newline()
 
             if proto_syntax == 'proto3':
                 writer.add('let %s = !proto.%s.isEmpty' % (uuid_field.has_accessor_name(), uuid_field.name_swift))
-                writer.add('let %s = !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.name_swift))
+                if e164_field:
+                    writer.add('let %s = !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.name_swift))
             else:
                 writer.add('let %s = proto.%s && !proto.%s.isEmpty' % (uuid_field.has_accessor_name(), uuid_field.has_accessor_name(), uuid_field.name_swift))
-                writer.add('let %s = proto.%s && !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.has_accessor_name(), e164_field.name_swift))
+                if e164_field:
+                    writer.add('let %s = proto.%s && !proto.%s.isEmpty' % (e164_field.has_accessor_name(), e164_field.has_accessor_name(), e164_field.name_swift))
 
             writer.add('let %s: String? = proto.%s' % (uuid_field.name_swift, uuid_field.name_swift))
-            writer.add('let %s: String? = proto.%s' % (e164_field.name_swift, e164_field.name_swift))
+            if e164_field:
+                writer.add('let %s: String? = proto.%s' % (e164_field.name_swift, e164_field.name_swift))
 
             writer.add('self.%s = {' % address_accessor)
             writer.push_indent()
-
-            writer.add('guard %s || %s else { return nil }' % (e164_field.has_accessor_name(), uuid_field.has_accessor_name()))
-            writer.newline()
 
             writer.add('let uuidString: String? = {')
             writer.push_indent()
@@ -765,26 +764,34 @@ class MessageContext(BaseContext):
             writer.add('}()')
             writer.newline()
 
-            writer.add('let phoneNumber: String? = {')
-            writer.push_indent()
-            writer.add('guard %s else {' % e164_field.has_accessor_name())
-            writer.push_indent()
-            writer.add('return nil')
-            writer.pop_indent()
-            writer.add('}')
-            writer.newline()
-            writer.add('return ProtoUtils.parseProtoE164(%s, name: "%s.%s")' % (e164_field.name_swift, wrapped_swift_name, e164_field.name_swift))
-            writer.pop_indent()
-            writer.add('}()')
-            writer.newline()
+            if e164_field:
+                writer.add('let phoneNumber: String? = {')
+                writer.push_indent()
+                writer.add('guard %s else {' % e164_field.has_accessor_name())
+                writer.push_indent()
+                writer.add('return nil')
+                writer.pop_indent()
+                writer.add('}')
+                writer.newline()
+                writer.add('return ProtoUtils.parseProtoE164(%s, name: "%s.%s")' % (e164_field.name_swift, wrapped_swift_name, e164_field.name_swift))
+                writer.pop_indent()
+                writer.add('}()')
+                writer.newline()
 
-            writer.add('let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber, trustLevel: %s)' % ('.high' if uuid_field.is_trusted_mapping else '.low'))
-            writer.add('guard address.isValid else {')
-            writer.push_indent()
-            writer.add('owsFailDebug("address was unexpectedly invalid")')
-            writer.add('return nil')
-            writer.pop_indent()
-            writer.add('}')
+                writer.add("let address = SignalServiceAddress(")
+                writer.push_indent()
+                writer.add("uuidString: uuidString,")
+                writer.add("phoneNumber: phoneNumber,")
+                writer.add(f"trustLevel: .{'high' if uuid_field.is_trusted_mapping else 'low'}")
+                writer.pop_indent()
+                writer.add(")")
+            else:
+                writer.add("guard let uuidString = uuidString else { return nil }")
+                writer.newline()
+
+                writer.add("let address = SignalServiceAddress(uuidString: uuidString)")
+
+            writer.add('guard address.isValid else { return nil }')
             writer.newline()
             writer.add('return address')
             writer.pop_indent()

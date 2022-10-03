@@ -31,15 +31,6 @@ public struct OWSMessageDecryptResult: Dependencies {
         // Self-sent messages should be discarded during the decryption process.
         let localDeviceId = Self.tsAccountManager.storedDeviceId()
         owsAssertDebug(!(sourceAddress.isLocalAddress && envelope.sourceDevice == localDeviceId))
-
-        // Having received a valid (decryptable) message from this user,
-        // make note of the fact that they have a valid Signal account.
-        SignalRecipient.mark(
-            asRegisteredAndGet: sourceAddress,
-            deviceId: envelope.sourceDevice,
-            trustLevel: .high,
-            transaction: transaction
-        )
     }
 }
 
@@ -740,25 +731,31 @@ public class OWSMessageDecrypter: OWSMessageHandler {
         }
 
         let sourceAddress = decryptResult.senderAddress
-        guard sourceAddress.isValid else {
+        guard
+            sourceAddress.isValid,
+            let sourceUuid = sourceAddress.uuidString
+        else {
             return .failure(OWSAssertionError("Invalid UD sender: \(sourceAddress)"))
         }
 
-        let sourceDeviceId = decryptResult.senderDeviceId
-        guard sourceDeviceId > 0, sourceDeviceId < UInt32.max else {
+        let rawSourceDeviceId = decryptResult.senderDeviceId
+        guard rawSourceDeviceId > 0, rawSourceDeviceId < UInt32.max else {
             return .failure(OWSAssertionError("Invalid UD sender device id."))
         }
+        let sourceDeviceId = UInt32(rawSourceDeviceId)
+
+        SignalRecipient.mark(
+            asRegisteredAndGet: sourceAddress,
+            deviceId: sourceDeviceId,
+            trustLevel: .high,
+            transaction: transaction
+        )
 
         let plaintextData = decryptResult.paddedPayload.withoutPadding()
 
         let identifiedEnvelopeBuilder = envelope.asBuilder()
-        if let sourceE164 = sourceAddress.phoneNumber {
-            identifiedEnvelopeBuilder.setSourceE164(sourceE164)
-        }
-        if let sourceUuid = sourceAddress.uuidString {
-            identifiedEnvelopeBuilder.setSourceUuid(sourceUuid)
-        }
-        identifiedEnvelopeBuilder.setSourceDevice(UInt32(sourceDeviceId))
+        identifiedEnvelopeBuilder.setSourceUuid(sourceUuid)
+        identifiedEnvelopeBuilder.setSourceDevice(sourceDeviceId)
 
         let identifiedEnvelope: SSKProtoEnvelope
         do {
@@ -880,7 +877,6 @@ private extension SSKProtoEnvelope {
         owsAssert(error.senderAddress.isValid)
 
         let identifiedEnvelopeBuilder = asBuilder()
-        error.senderAddress.phoneNumber.map { identifiedEnvelopeBuilder.setSourceE164($0) }
         error.senderAddress.uuidString.map { identifiedEnvelopeBuilder.setSourceUuid($0) }
         identifiedEnvelopeBuilder.setSourceDevice(error.senderDeviceId)
         identifiedEnvelopeBuilder.setContent(error.unsealedContent)

@@ -24,11 +24,11 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
         // `encodedData` was derived thus:
         //     let builder = SSKProtoEnvelopeBuilder()
         //     builder.setTimestamp(NSDate.ows_millisecondTimeStamp())
-        //     builder.setSourceE164("+15551231234")
+        //     builder.setSourceUuid(UUID().uuidString)
         //     builder.setSourceDevice(1)
         //     builder.setType(SSKProtoEnvelopeType.ciphertext)
-        //     let encodedData = builder.build().data()!.base64EncodedString()
-        let encodedData = "CAESDCsxNTU1MTIzMTIzNCjKm4WazSw4AQ=="
+        //     let encodedData = try! builder.build().serializedData().base64EncodedString()
+        let encodedData = "CAEo/ovqh7gwOAFaJENFNTk5RjlCLThDNjQtNEM1OC1CNUQwLUU4MDE0NTAxQzhBMw=="
         let data = Data(base64Encoded: encodedData)!
 
         XCTAssertNoThrow(try SSKProtoEnvelope(serializedData: data))
@@ -37,12 +37,12 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
     func testParse_invalidData() {
         // `encodedData` was derived thus:
         // var proto = SignalServiceKit.SignalServiceProtos_Envelope()
-        // proto.source = "+15551231234"
+        // proto.sourceUuid = UUID().uuidString
         // proto.sourceDevice = 1
         // // MISSING TIMESTAMP!
         //
         // let encodedData = try! proto.serializedData().base64EncodedString()
-        let encodedData = "EgwrMTU1NTEyMzEyMzQ4AQ=="
+        let encodedData = "OAFaJEZEMkU1M0RELUJEQjAtNDg1Qi04OUFELTlBRTA3RTYxRjUzMw=="
         let data = Data(base64Encoded: encodedData)!
 
         XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data)) { (error) -> Void in
@@ -58,7 +58,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
     func testParse_roundtrip() {
         let builder = SSKProtoEnvelope.builder(timestamp: 123)
         builder.setType(SSKProtoEnvelopeType.prekeyBundle)
-        builder.setSourceE164("+13213214321")
+        builder.setSourceUuid("CE599F9B-8C64-4C58-B5D0-E8014501C8A3")
         builder.setSourceDevice(1)
 
         let phonyContent = "phony data".data(using: .utf8)!
@@ -83,7 +83,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
 
         XCTAssertEqual(envelope.type, SSKProtoEnvelopeType.prekeyBundle)
         XCTAssertEqual(envelope.timestamp, 123)
-        XCTAssertEqual(envelope.sourceE164, "+13213214321")
+        XCTAssertEqual(envelope.sourceUuid, "CE599F9B-8C64-4C58-B5D0-E8014501C8A3")
         XCTAssertEqual(envelope.sourceDevice, 1)
         XCTAssertTrue(envelope.hasContent)
         XCTAssertEqual(envelope.content, phonyContent)

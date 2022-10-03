@@ -307,7 +307,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = arc4random_uniform(32) + 1;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
@@ -329,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -374,7 +374,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -401,7 +401,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     [SSKProtoSyncMessage builder];
                                                 SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                     [SSKProtoSyncMessageSent builder];
-                                                sentBuilder.destinationE164 = @"abc";
+                                                sentBuilder.destinationUuid = @"abc";
                                                 sentBuilder.timestamp = 0;
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
@@ -426,7 +426,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                             [SSKProtoSyncMessage builder];
                                                                         SSKProtoSyncMessageSentBuilder *sentBuilder =
                                                                             [SSKProtoSyncMessageSent builder];
-                                                                        sentBuilder.destinationE164 = @"abc";
+                                                                        sentBuilder.destinationUuid = @"abc";
                                                                         syncMessageBuilder.sent =
                                                                             [sentBuilder buildIgnoringErrors];
                                                                         contentBuilder.syncMessage =
