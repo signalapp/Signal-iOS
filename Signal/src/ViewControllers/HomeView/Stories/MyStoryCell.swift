@@ -133,7 +133,7 @@ class MyStoryCell: UITableViewCell {
 
     func configureSubtitle(with model: MyStoryViewModel) {
         subtitleLabel.font = .ows_dynamicTypeSubheadline
-        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
         failedIconView.image = Theme.iconImage(.error16)
 
         if model.sendingCount > 0 {

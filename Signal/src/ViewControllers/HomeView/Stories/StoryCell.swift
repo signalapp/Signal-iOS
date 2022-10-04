@@ -109,7 +109,7 @@ class StoryCell: UITableViewCell {
     func configureSubtitle(with model: StoryViewModel) {
         subtitleStack.isHidden = model.isSystemStory
         subtitleLabel.font = .ows_dynamicTypeSubheadline
-        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
         switch model.latestMessageSendingState {
         case .sent:

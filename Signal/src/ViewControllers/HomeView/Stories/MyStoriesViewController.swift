@@ -410,7 +410,7 @@ class SentStoryCell: UITableViewCell {
         thumbnailView.autoPinEdgesToSuperviewEdges()
 
         titleLabel.textColor = Theme.primaryTextColor
-        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+        subtitleLabel.textColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
         switch item.message.sendingState {
         case .pending, .sending:
