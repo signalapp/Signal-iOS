@@ -15,6 +15,8 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         didSet {
             if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
                 sectionOptions.insert(.stories)
+            } else if isTextMessage {
+                sectionOptions.insert(.stories)
             } else {
                 sectionOptions.remove(.stories)
             }
@@ -37,9 +39,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     var approvalMessageBody: MessageBody?
     var approvalLinkPreviewDraft: OWSLinkPreviewDraft?
 
-    var outgoingMessages = [TSOutgoingMessage]() {
-        didSet { AssertIsOnMainThread() }
-    }
+    var outgoingMessages = [TSOutgoingMessage]()
 
     var mentionCandidates: [SignalServiceAddress] = []
 
@@ -166,47 +166,64 @@ extension SharingThreadPickerViewController {
 extension SharingThreadPickerViewController {
 
     func send() {
-        do {
-            try tryToSend()
-        } catch {
-            shareViewDelegate?.shareViewFailed(error: error)
+        let dismissSendProgress = showSendProgress()
+        firstly {
+            tryToSend()
+        }.done {
+            dismissSendProgress {}
+            self.shareViewDelegate?.shareViewWasCompleted()
+        }.catch { error in
+            dismissSendProgress { self.showSendFailure(error: error) }
         }
     }
 
-    func tryToSend() throws {
+    func tryToSend() -> Promise<Void> {
         outgoingMessages.removeAll()
 
         if isTextMessage {
             guard let body = approvalMessageBody, body.text.count > 0 else {
-                throw OWSAssertionError("Missing body.")
+                return Promise(error: OWSAssertionError("Missing body."))
             }
 
             let linkPreviewDraft = approvalLinkPreviewDraft
 
-            sendToThreads { thread in
-                return firstly(on: .global()) { () -> Promise<Void> in
-                    return self.databaseStorage.write { transaction in
-                        let preparer = OutgoingMessagePreparer(
-                            messageBody: body,
-                            thread: thread,
-                            transaction: transaction
-                        )
-                        preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
-                        self.outgoingMessages.append(preparer.unpreparedMessage)
-                        return ThreadUtil.enqueueMessagePromise(
-                            message: preparer.unpreparedMessage,
-                            isHighPriority: true,
-                            transaction: transaction
-                        )
+            let outgoingMessageConversations = selectedConversations.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }
+            let outgoingMessageSendPromise: Promise<Void>
+            if !outgoingMessageConversations.isEmpty {
+                outgoingMessageSendPromise = sendToOutgoingMessageThreads { thread in
+                    return firstly(on: .global()) { () -> Promise<Void> in
+                        return self.databaseStorage.write { transaction in
+                            let preparer = OutgoingMessagePreparer(
+                                messageBody: body,
+                                thread: thread,
+                                transaction: transaction
+                            )
+                            preparer.insertMessage(linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+                            self.outgoingMessages.append(preparer.unpreparedMessage)
+                            return ThreadUtil.enqueueMessagePromise(
+                                message: preparer.unpreparedMessage,
+                                isHighPriority: true,
+                                transaction: transaction
+                            )
+                        }
                     }
                 }
-            }
-        } else if isContactShare {
-            guard let contactShare = approvedContactShare else {
-                throw OWSAssertionError("Missing contactShare.")
+            } else {
+                outgoingMessageSendPromise = Promise.value(())
             }
 
-            sendToThreads { thread in
+            // Send the text message to any selected story recipients
+            // as a text story with default styling.
+            let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
+            let storySendPromise = StorySharing.sendTextStory(with: body, linkPreviewDraft: linkPreviewDraft, to: storyConversations)
+
+            return Promise<Void>.when(fulfilled: [outgoingMessageSendPromise, storySendPromise])
+        } else if isContactShare {
+            guard let contactShare = approvedContactShare else {
+                return Promise(error: OWSAssertionError("Missing contactShare."))
+            }
+
+            return sendToOutgoingMessageThreads { thread in
                 return firstly(on: .global()) { () -> Promise<Void> in
                     return self.databaseStorage.write { transaction in
                         let builder = TSOutgoingMessageBuilder(thread: thread)
@@ -225,10 +242,10 @@ extension SharingThreadPickerViewController {
             }
         } else {
             guard let approvedAttachments = approvedAttachments else {
-                throw OWSAssertionError("Missing approvedAttachments.")
+                return Promise(error: OWSAssertionError("Missing approvedAttachments."))
             }
 
-            sendToConversations { conversations in
+            return sendToConversations { conversations in
                 return AttachmentMultisend.sendApprovedMediaFromShareExtension(
                     conversations: conversations,
                     approvalMessageBody: self.approvalMessageBody,
@@ -330,32 +347,26 @@ extension SharingThreadPickerViewController {
         }
     }
 
-    func sendToConversations(enqueueBlock: @escaping ([ConversationItem]) -> Promise<[TSThread]>) {
+    func sendToConversations(enqueueBlock: @escaping ([ConversationItem]) -> Promise<[TSThread]>) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let dismissSendProgress = showSendProgress()
         let conversations = self.selectedConversations
-        firstly {
+
+        return firstly {
             enqueueBlock(conversations)
         }.done { threads in
             for thread in threads {
                 // We're sending a message to this thread, approve any pending message request
                 ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             }
-
-            dismissSendProgress {}
-            self.shareViewDelegate?.shareViewWasCompleted()
-        }.catch { error in
-            dismissSendProgress { self.showSendFailure(error: error) }
         }
     }
 
-    func sendToThreads(enqueueBlock: @escaping (TSThread) -> Promise<Void>) {
+    func sendToOutgoingMessageThreads(enqueueBlock: @escaping (TSThread) -> Promise<Void>) -> Promise<Void> {
         AssertIsOnMainThread()
 
-        let dismissSendProgress = showSendProgress()
-        let conversations = self.selectedConversations
-        firstly {
+        let conversations = self.selectedConversations.filter { $0.outgoingMessageClass == TSOutgoingMessage.self }
+        return firstly {
             self.threads(for: conversations)
         }.then { (threads: [TSThread]) -> Promise<Void> in
             var sendPromises = [Promise<Void>]()
@@ -366,11 +377,6 @@ extension SharingThreadPickerViewController {
                 ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread: thread)
             }
             return Promise.when(fulfilled: sendPromises)
-        }.done {
-            dismissSendProgress {}
-            self.shareViewDelegate?.shareViewWasCompleted()
-        }.catch { error in
-            dismissSendProgress { self.showSendFailure(error: error) }
         }
     }
 

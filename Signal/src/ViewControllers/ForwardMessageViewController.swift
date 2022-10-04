@@ -397,28 +397,7 @@ extension ForwardMessageViewController {
             // Send the text message to any selected story recipients
             // as a text story with default styling.
             let storyConversations = selectedConversations.filter { $0.outgoingMessageClass == OutgoingStoryMessage.self }
-            let storySendPromise: Promise<Void>
-            if !storyConversations.isEmpty {
-                let linkPreview: OWSLinkPreview?
-                if let linkPreviewDraft = linkPreviewDraft {
-                    linkPreview = databaseStorage.write { transaction in
-                        try? OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreviewDraft, transaction: transaction)
-                    }
-                } else {
-                    linkPreview = nil
-                }
-                let textAttachment = TextAttachment(
-                    text: messageBody.text,
-                    textStyle: .regular,
-                    textForegroundColor: .white,
-                    textBackgroundColor: nil,
-                    background: PhotoCaptureViewController.textBackgrounds.first!,
-                    linkPreview: linkPreview
-                )
-                storySendPromise = AttachmentMultisend.sendTextAttachment(textAttachment, to: storyConversations).asVoid()
-            } else {
-                storySendPromise = Promise.value(())
-            }
+            let storySendPromise = StorySharing.sendTextStory(with: messageBody, linkPreviewDraft: linkPreviewDraft, to: storyConversations)
 
             return Promise<Void>.when(fulfilled: [nonStorySendPromise, storySendPromise])
         } else {

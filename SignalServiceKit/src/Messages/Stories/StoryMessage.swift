@@ -904,12 +904,14 @@ public struct TextAttachment: Codable, Equatable {
         return try builder.build()
     }
 
-    public init(text: String,
-                textStyle: TextStyle,
-                textForegroundColor: UIColor,
-                textBackgroundColor: UIColor?,
-                background: Background,
-                linkPreview: OWSLinkPreview?) {
+    public init(
+        text: String?,
+        textStyle: TextStyle,
+        textForegroundColor: UIColor,
+        textBackgroundColor: UIColor?,
+        background: Background,
+        linkPreview: OWSLinkPreview?
+    ) {
         self.text = text
         self.textStyle = textStyle
         self.textForegroundColorHex = textForegroundColor.argbHex

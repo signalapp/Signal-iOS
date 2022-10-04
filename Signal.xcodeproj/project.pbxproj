@@ -1064,6 +1064,7 @@
 		88F58A1725EEE5B9008CDA24 /* AppSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */; };
 		88F5D78A2880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */; };
 		88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */; };
+		88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9228EBD484007AA1BF /* StorySharing.swift */; };
 		88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7EE92230253C5003ADF7D /* UsernameViewController.swift */; };
 		88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */; };
@@ -3348,6 +3349,7 @@
 		88F58A1625EEE5B9008CDA24 /* AppSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewController.swift; sourceTree = "<group>"; };
 		88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPrivateStoryRecipientsViewController.swift; sourceTree = "<group>"; };
 		88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPrivateStoryConfirmViewController.swift; sourceTree = "<group>"; };
+		88F5FA9228EBD484007AA1BF /* StorySharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySharing.swift; sourceTree = "<group>"; };
 		88F7EE92230253C5003ADF7D /* UsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
 		88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Scroll.swift"; sourceTree = "<group>"; };
 		89095AC0DD065D55A4A5F8C6 /* Pods_SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5130,6 +5132,7 @@
 				342FFE64271DB66E000AC89F /* OWSProfileManager+SignalUI.m */,
 				342FFE56271DA8C9000AC89F /* OWSSounds+SignalUI.swift */,
 				88B6D67128076F37005D86EC /* StoryMessage+SignalUI.swift */,
+				88F5FA9228EBD484007AA1BF /* StorySharing.swift */,
 				88C980D327F3AD2C009750C0 /* TSMessage+SignalUI.swift */,
 			);
 			path = Utils;
@@ -9731,6 +9734,7 @@
 				3402AA3E271D9DCD0084CBAE /* StickerPackDataSource.swift in Sources */,
 				3402AA4D271D9DCD0084CBAE /* StickerView.swift in Sources */,
 				88B6D674280770C4005D86EC /* StoryMessage+SignalUI.swift in Sources */,
+				88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */,
 				3402A9DA271D953B0084CBAE /* SUIEnvironment.swift in Sources */,
 				3402AA7E271D9E180084CBAE /* TappableStackView.swift in Sources */,
 				3402AA80271D9E180084CBAE /* TappableView.swift in Sources */,
