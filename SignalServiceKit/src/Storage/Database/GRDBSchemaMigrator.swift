@@ -191,6 +191,8 @@ public class GRDBSchemaMigrator: NSObject {
         case addStoriesHiddenStateToThreadAssociatedData
         case addUnregisteredAtTimestampToSignalRecipient
         case addLastReceivedStoryTimestampToTSThread
+        case addStoryContextAssociatedDataTable
+        case populateStoryContextAssociatedDataTableAndRemoveOldColumns
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -243,7 +245,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 46
+    public static let grdbSchemaVersionLatest: UInt = 47
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -1992,6 +1994,144 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(.addStoryContextAssociatedDataTable) { db in
+            do {
+                try db.create(table: StoryContextAssociatedData.databaseTableName) { table in
+                    table.autoIncrementedPrimaryKey(StoryContextAssociatedData.columnName(.id))
+                        .notNull()
+                    table.column(StoryContextAssociatedData.columnName(.recordType), .integer)
+                        .notNull()
+                    table.column(StoryContextAssociatedData.columnName(.uniqueId))
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column(StoryContextAssociatedData.columnName(.contactUuid), .text)
+                    table.column(StoryContextAssociatedData.columnName(.groupId), .blob)
+                    table.column(StoryContextAssociatedData.columnName(.isHidden), .boolean)
+                        .notNull()
+                        .defaults(to: false)
+                    table.column(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp), .integer)
+                    table.column(StoryContextAssociatedData.columnName(.lastReceivedTimestamp), .integer)
+                    table.column(StoryContextAssociatedData.columnName(.lastViewedTimestamp), .integer)
+                }
+                try db.create(
+                    index: "index_story_context_associated_data_contact_on_contact_uuid",
+                    on: StoryContextAssociatedData.databaseTableName,
+                    columns: [StoryContextAssociatedData.columnName(.contactUuid)]
+                )
+                try db.create(
+                    index: "index_story_context_associated_data_contact_on_group_id",
+                    on: StoryContextAssociatedData.databaseTableName,
+                    columns: [StoryContextAssociatedData.columnName(.groupId)]
+                )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(.populateStoryContextAssociatedDataTableAndRemoveOldColumns) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            do {
+                // All we need to do is iterate over ThreadAssociatedData; one exists for every
+                // thread, so we can pull hidden state from the associated data and received/viewed
+                // timestamps from their threads and have a copy of everything we need.
+                try Row.fetchCursor(db, sql: """
+                    SELECT * FROM thread_associated_data
+                """).forEach { threadAssociatedDataRow in
+                    guard
+                        let hideStory = (threadAssociatedDataRow["hideStory"] as? NSNumber)?.boolValue,
+                        let threadUniqueId = threadAssociatedDataRow["threadUniqueId"] as? String
+                    else {
+                        owsFailDebug("Did not find hideStory or threadUniqueId columnds on ThreadAssociatedData table")
+                        return
+                    }
+                    let insertSQL = """
+                    INSERT INTO model_StoryContextAssociatedData (
+                        recordType,
+                        uniqueId,
+                        contactUuid,
+                        groupId,
+                        isHidden,
+                        latestUnexpiredTimestamp,
+                        lastReceivedTimestamp,
+                        lastViewedTimestamp
+                    )
+                    VALUES ('0', ?, ?, ?, ?, ?, ?, ?)
+                    """
+
+                    if
+                        let threadRow = try? Row.fetchOne(
+                            db,
+                            sql: """
+                                SELECT * FROM model_TSThread
+                                WHERE uniqueId = ?
+                            """,
+                            arguments: [threadUniqueId]
+                        )
+                    {
+                        let lastReceivedStoryTimestamp = (threadRow["lastReceivedStoryTimestamp"] as? NSNumber)?.uint64Value
+                        let latestUnexpiredTimestamp = (lastReceivedStoryTimestamp ?? 0) > Date().ows_millisecondsSince1970 - kDayInMs
+                            ? lastReceivedStoryTimestamp : nil
+                        let lastViewedStoryTimestamp = (threadRow["lastViewedStoryTimestamp"] as? NSNumber)?.uint64Value
+                        if
+                            let groupModelData = threadRow["groupModel"] as? Data,
+                            let unarchivedObject = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(groupModelData),
+                            let groupId = (unarchivedObject as? TSGroupModel)?.groupId
+                        {
+                            try db.execute(
+                                sql: insertSQL,
+                                arguments: [
+                                    UUID().uuidString,
+                                    nil,
+                                    groupId,
+                                    hideStory,
+                                    latestUnexpiredTimestamp,
+                                    lastReceivedStoryTimestamp,
+                                    lastViewedStoryTimestamp
+                                ]
+                            )
+                        } else if
+                            let contactUuidString = threadRow["contactUUID"] as? String
+                        {
+                            // Okay to ignore e164 addresses because we can't have updated story metadata
+                            // for those contact threads anyway.
+                            try db.execute(
+                                sql: insertSQL,
+                                arguments: [
+                                    UUID().uuidString,
+                                    contactUuidString,
+                                    nil,
+                                    hideStory,
+                                    latestUnexpiredTimestamp,
+                                    lastReceivedStoryTimestamp,
+                                    lastViewedStoryTimestamp
+                                ]
+                            )
+                        }
+                    } else {
+                        // If we couldn't find a thread, that means this associated data was
+                        // created for a group we don't know about yet.
+                        // Stories is in beta at the time of this migration, so we will just drop it.
+                        Logger.info("Dropping StoryContextAssociatedData migration for ThreadAssociatedData without a TSThread")
+                    }
+
+                }
+
+                // Drop the old columns since they are no longer needed.
+                try db.alter(table: "model_TSThread") { alteration in
+                    alteration.drop(column: "lastViewedStoryTimestamp")
+                    alteration.drop(column: "lastReceivedStoryTimestamp")
+                }
+                try db.alter(table: "thread_associated_data") { alteration in
+                    alteration.drop(column: "hideStory")
+                }
+
+            } catch {
+                owsFail("Error \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -2234,8 +2374,7 @@ public class GRDBSchemaMigrator: NSObject {
                         isMarkedUnread: thread.isMarkedUnreadObsolete,
                         mutedUntilTimestamp: thread.mutedUntilTimestampObsolete,
                         // this didn't exist pre-migration, just write the default
-                        audioPlaybackRate: 1,
-                        hideStory: false
+                        audioPlaybackRate: 1
                     ).insert(transaction.database)
                 } catch {
                     owsFail("Error \(error)")
@@ -2349,7 +2488,19 @@ public class GRDBSchemaMigrator: NSObject {
             StoryMessage.anyEnumerate(transaction: transaction.asAnyRead) { message, _ in
                 guard !message.authorAddress.isLocalAddress else { return }
                 for thread in message.threads(transaction: transaction.asAnyRead) {
-                    thread.updateWithLastReceivedStoryTimestamp(NSNumber(value: message.timestamp), transaction: transaction.asAnyWrite)
+                    let uniqueId = thread.uniqueId
+                    do {
+                        try transaction.database.execute(
+                            sql: """
+                            UPDATE model_TSThread
+                            SET lastReceivedStoryTimestamp = ?
+                            WHERE uniqueId = ? AND lastReceivedStoryTimestamp < ?
+                            """,
+                            arguments: [message.timestamp, uniqueId, message.timestamp]
+                        )
+                    } catch {
+                        owsFail("Error \(error)")
+                    }
                 }
             }
         }
@@ -2366,6 +2517,8 @@ public class GRDBSchemaMigrator: NSObject {
                 owsFail("Error \(error)")
             }
         }
+
+        // MARK: - Data Migration Insertion Point
     }
 }
 

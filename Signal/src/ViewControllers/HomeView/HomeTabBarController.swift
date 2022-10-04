@@ -166,7 +166,7 @@ extension HomeTabBarController: DatabaseChangeDelegate {
         if databaseChanges.didUpdateInteractions || databaseChanges.didUpdateModel(collection: String(describing: ThreadAssociatedData.self)) {
             updateChatListBadge()
         }
-        if databaseChanges.didUpdateModel(collection: StoryMessage.collection()) {
+        if databaseChanges.didUpdateModel(collection: StoryContextAssociatedData.collection()) {
             updateStoriesBadge()
         }
     }

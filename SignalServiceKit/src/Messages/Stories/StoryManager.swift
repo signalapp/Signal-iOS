@@ -239,8 +239,11 @@ public class StoryManager: NSObject {
 
         let pinnedThreads = PinnedThreadManager.pinnedThreads(transaction: transaction)
         let recentlyInteractedThreads = AnyThreadFinder().threadsWithRecentInteractions(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
-        let recentlyViewedThreads = AnyThreadFinder().threadsWithRecentlyViewedStories(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
-        let autoDownloadContexts = (pinnedThreads + recentlyInteractedThreads + recentlyViewedThreads).map { $0.storyContext }
+        let recentlyViewedContexts = StoryFinder.associatedDatasWithRecentlyViewedStories(
+            limit: Int(recentContextAutomaticDownloadLimit),
+            transaction: transaction
+        ).map(\.sourceContext.asStoryContext)
+        let autoDownloadContexts = (pinnedThreads + recentlyInteractedThreads).map { $0.storyContext } + recentlyViewedContexts
 
         if autoDownloadContexts.contains(message.context) || autoDownloadContexts.contains(.authorUuid(message.authorUuid)) {
             Logger.info("Automatically downloading attachments for story with timestamp \(message.timestamp) and context \(message.context)")
@@ -299,7 +302,7 @@ extension StoryManager {
 
 // MARK: -
 
-public enum StoryContext: Equatable, Hashable {
+public enum StoryContext: Equatable, Hashable, Dependencies {
     case groupId(Data)
     case authorUuid(UUID)
     case privateStory(String)
@@ -321,6 +324,20 @@ public extension TSThread {
 }
 
 public extension StoryContext {
+
+    var asAssociatedDataContext: StoryContextAssociatedData.SourceContext? {
+        switch self {
+        case .groupId(let data):
+            return .group(groupId: data)
+        case .authorUuid(let uUID):
+            return .contact(contactUuid: uUID)
+        case .privateStory:
+            return nil
+        case .none:
+            return nil
+        }
+    }
+
     func threadUniqueId(transaction: SDSAnyReadTransaction) -> String? {
         switch self {
         case .groupId(let data):
@@ -356,19 +373,36 @@ public extension StoryContext {
         }
     }
 
-    func isHidden(
-        transaction: SDSAnyReadTransaction
-    ) -> Bool {
-        return isHidden(threadUniqueId: self.threadUniqueId(transaction: transaction), transaction: transaction)
+    /// Returns nil only for outgoing contexts (private story contexts) which have no associated data.
+    /// For valid contact and group contexts where the associated data does not yet exists, creates and returns a default one.
+    func associatedData(transaction: SDSAnyReadTransaction) -> StoryContextAssociatedData? {
+        guard let source = self.asAssociatedDataContext else {
+            return nil
+        }
+        return StoryContextAssociatedData.fetchOrDefault(sourceContext: source, transaction: transaction)
     }
 
     func isHidden(
-        threadUniqueId: String?,
         transaction: SDSAnyReadTransaction
     ) -> Bool {
-        guard let threadUniqueId = threadUniqueId else {
-            return false
+        if
+            case .authorUuid(let uuid) = self,
+            SignalServiceAddress(uuid: uuid).isSystemStoryAddress
+        {
+            return Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction)
         }
-        return ThreadAssociatedData.fetchOrDefault(for: threadUniqueId, transaction: transaction).hideStory
+        return self.associatedData(transaction: transaction)?.isHidden ?? false
+    }
+}
+
+public extension StoryContextAssociatedData.SourceContext {
+
+    var asStoryContext: StoryContext {
+        switch self {
+        case .contact(let contactUuid):
+            return .authorUuid(contactUuid)
+        case .group(let groupId):
+            return .groupId(groupId)
+        }
     }
 }

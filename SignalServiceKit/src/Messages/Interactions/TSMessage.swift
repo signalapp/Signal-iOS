@@ -213,6 +213,7 @@ public extension TSMessage {
             }
 
             storyMessage.anyRemove(transaction: transaction)
+
             return .success
         } else {
             // The message doesn't exist locally, so nothing to do.

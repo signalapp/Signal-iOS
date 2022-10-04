@@ -9,20 +9,31 @@ import GRDB
 public class StoryFinder: NSObject {
     public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
         let sql = """
-            SELECT COUNT(*) OVER ()
-            FROM \(StoryMessage.databaseTableName)
-            WHERE json_extract(\(StoryMessage.columnName(.manifest)), '$.incoming.receivedState.viewedTimestamp') is NULL
-            AND \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.incoming.rawValue)
-            GROUP BY (
-                CASE
-                    WHEN \(StoryMessage.columnName(.groupId)) is NULL THEN \(StoryMessage.columnName(.authorUuid))
-                    ELSE \(StoryMessage.columnName(.groupId))
-                END
-            )
-            LIMIT 1
+            SELECT COUNT(*)
+            FROM \(StoryContextAssociatedData.databaseTableName)
+            WHERE
+                (
+                    \(StoryContextAssociatedData.columnName(.isHidden)) = 0
+                    OR \(StoryContextAssociatedData.columnName(.isHidden)) is NULL
+                )
+                AND \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp)) IS NOT NULL
+                AND (
+                    \(StoryContextAssociatedData.columnName(.lastViewedTimestamp)) IS NULL
+                    OR \(StoryContextAssociatedData.columnName(.lastViewedTimestamp))
+                        < \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp))
+                );
         """
         do {
-            return try Int.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? 0
+            let unviewedStoryCount = try Int.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? 0
+
+            // Check the system story separately, since its hidden state is kept separately.
+            guard !Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction) else {
+                return unviewedStoryCount
+            }
+
+            let unviewedSystemStoryCount = Self.systemStoryManager.isOnboardingStoryViewed(transaction: transaction) ? 0 : 1
+            return unviewedStoryCount + unviewedSystemStoryCount
+
         } catch {
             owsFailDebug("Failed to query unviewed story sender count \(error)")
             return 0
@@ -294,6 +305,66 @@ private extension StoryContext {
             """
         case .none:
             return nil
+        }
+    }
+}
+
+// MARK: - StoryContextAssociatedData
+
+extension StoryFinder {
+
+    public static func getAssociatedData(
+        forContext source: StoryContextAssociatedData.SourceContext,
+        transaction: SDSAnyReadTransaction
+    ) -> StoryContextAssociatedData? {
+        switch source {
+        case .contact(let contactUuid):
+            return try? StoryContextAssociatedData
+                .filter(Column(StoryContextAssociatedData.columnName(.contactUuid)) == contactUuid.uuidString)
+                .fetchOne(transaction.unwrapGrdbRead.database)
+
+        case .group(let groupId):
+            return try? StoryContextAssociatedData
+                .filter(Column(StoryContextAssociatedData.columnName(.groupId)) == groupId)
+                .fetchOne(transaction.unwrapGrdbRead.database)
+        }
+    }
+
+    public static func getAssocatedData(
+        forContactAdddress address: SignalServiceAddress,
+        transaction: SDSAnyReadTransaction
+    ) -> StoryContextAssociatedData? {
+        guard let uuid = address.uuid else {
+            // Non-UUID addresses predate stories; we never create
+            // any story data without a uuid so this is safe to ignore.
+            return nil
+        }
+        return getAssociatedData(forContext: .contact(contactUuid: uuid), transaction: transaction)
+    }
+
+    public static func associatedData(for thread: TSThread, transaction: SDSAnyReadTransaction) -> StoryContextAssociatedData? {
+        if
+            let contactThread = thread as? TSContactThread,
+            let contactUuidString = contactThread.contactUUID,
+            let contactUuid = UUID(uuidString: contactUuidString)
+        {
+            return getAssociatedData(forContext: .contact(contactUuid: contactUuid), transaction: transaction)
+        } else if let groupThread = thread as? TSGroupThread {
+            return getAssociatedData(forContext: .group(groupId: groupThread.groupId), transaction: transaction)
+        } else {
+            return nil
+        }
+    }
+
+    public static func associatedDatasWithRecentlyViewedStories(limit: Int, transaction: SDSAnyReadTransaction) -> [StoryContextAssociatedData] {
+        do {
+            return try StoryContextAssociatedData
+            .order(Column(StoryContextAssociatedData.columnName(.lastViewedTimestamp)).desc)
+            .limit(limit)
+            .fetchAll(transaction.unwrapGrdbRead.database)
+        } catch {
+            owsFailDebug("Failed to query recent threads \(error)")
+            return []
         }
     }
 }

@@ -23,8 +23,6 @@ struct StoryViewModel: Dependencies {
     let latestMessageViewedTimestamp: UInt64?
     let latestMessageSendingState: TSOutgoingMessageState
 
-    let threadUniqueId: String?
-
     let latestMessageAvatarDataSource: ConversationAvatarDataSource
 
     var isSystemStory: Bool {
@@ -59,14 +57,7 @@ struct StoryViewModel: Dependencies {
         latestMessageViewedTimestamp = latestMessage.localUserViewedTimestamp
         latestMessageSendingState = latestMessage.sendingState
 
-        let threadUniqueId = context.threadUniqueId(transaction: transaction)
-        self.threadUniqueId = threadUniqueId
-
-        if latestMessage.authorAddress.isSystemStoryAddress {
-            self.isHidden = Self.systemStoryManager.areSystemStoriesHidden(transaction: transaction)
-        } else {
-            self.isHidden = isHidden ?? context.isHidden(threadUniqueId: threadUniqueId, transaction: transaction)
-        }
+        self.isHidden = isHidden ?? context.isHidden(transaction: transaction)
     }
 
     /// Returns nil if there are no messages left after deletions are applied.

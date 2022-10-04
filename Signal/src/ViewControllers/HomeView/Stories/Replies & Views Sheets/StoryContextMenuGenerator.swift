@@ -63,7 +63,7 @@ class StoryContextMenuGenerator: Dependencies {
     ) -> [ContextMenuAction] {
         return [
             deleteAction(for: message, in: thread),
-            hideAction(for: message, in: thread, transaction: transaction),
+            hideAction(for: message, transaction: transaction),
             infoAction(for: message, in: thread),
             saveAction(message: message, attachment: attachment),
             forwardAction(message: message, attachment: attachment),
@@ -99,7 +99,7 @@ class StoryContextMenuGenerator: Dependencies {
     ) -> [UIAction] {
         return [
             deleteAction(for: message, in: thread),
-            hideAction(for: message, in: thread, transaction: transaction),
+            hideAction(for: message, transaction: transaction),
             infoAction(for: message, in: thread),
             saveAction(message: message, attachment: attachment),
             forwardAction(message: message, attachment: attachment),
@@ -113,8 +113,7 @@ class StoryContextMenuGenerator: Dependencies {
     ) -> UIContextualAction? {
         guard
             var action = Self.databaseStorage.read(block: { transaction -> GenericContextAction? in
-                let thread = model.context.thread(transaction: transaction)
-                return self.hideAction(for: model.latestMessage, in: thread, useShortTitle: true, transaction: transaction)
+                return self.hideAction(for: model.latestMessage, useShortTitle: true, transaction: transaction)
             })
         else {
             return nil
@@ -163,7 +162,6 @@ extension StoryContextMenuGenerator {
 
     private func hideAction(
         for message: StoryMessage,
-        in thread: TSThread?,
         useShortTitle: Bool = false,
         transaction: SDSAnyReadTransaction
     ) -> GenericContextAction? {
@@ -176,13 +174,11 @@ extension StoryContextMenuGenerator {
         }
 
         // Refresh the hidden state, it might be stale.
-        let isHidden: Bool = {
-            if let threadUniqueId = thread?.uniqueId {
-                return message.context.isHidden(threadUniqueId: threadUniqueId, transaction: transaction)
-            } else {
-                return message.context.isHidden(transaction: transaction)
-            }
-        }()
+        guard let associatedData = message.context.associatedData(transaction: transaction) else {
+            return nil
+        }
+        let isHidden = message.context.isHidden(transaction: transaction)
+
         let title: String
         let icon: ThemeIcon
         if isHidden {
@@ -216,7 +212,7 @@ extension StoryContextMenuGenerator {
             title: title,
             icon: icon,
             handler: { [weak self] completion in
-                self?.showHidingActionSheetIfNeeded(for: message, in: thread, shouldHide: !isHidden, completion: completion)
+                self?.showHidingActionSheetIfNeeded(for: message, associatedData: associatedData, shouldHide: !isHidden, completion: completion)
             }
         )
     }
@@ -225,13 +221,13 @@ extension StoryContextMenuGenerator {
 
     private func showHidingActionSheetIfNeeded(
         for message: StoryMessage,
-        in thread: TSThread?,
+        associatedData: StoryContextAssociatedData,
         shouldHide: Bool,
         completion: @escaping (Bool) -> Void
     ) {
         guard shouldHide else {
             // No need to show anything if unhiding, hide right away
-            setHideStateAndShowToast(for: message, in: thread, shouldHide: shouldHide)
+            setHideStateAndShowToast(for: message, associatedData: associatedData, shouldHide: shouldHide)
             return
         }
 
@@ -262,7 +258,7 @@ extension StoryContextMenuGenerator {
                     completion(false)
                     return
                 }
-                strongSelf.setHideStateAndShowToast(for: message, in: thread, shouldHide: shouldHide)
+                strongSelf.setHideStateAndShowToast(for: message, associatedData: associatedData, shouldHide: shouldHide)
                 completion(true)
             }
         ))
@@ -325,7 +321,7 @@ extension StoryContextMenuGenerator {
 
     private func setHideStateAndShowToast(
         for message: StoryMessage,
-        in thread: TSThread?,
+        associatedData: StoryContextAssociatedData,
         shouldHide: Bool
     ) {
         Self.databaseStorage.write { transaction in
@@ -334,16 +330,7 @@ extension StoryContextMenuGenerator {
                 Self.systemStoryManager.setSystemStoriesHidden(shouldHide, transaction: transaction)
                 return
             }
-            guard let thread = thread ?? message.context.thread(transaction: transaction) else {
-                owsFailDebug("Cannot hide a story without specifying its thread!")
-                return
-            }
-            let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(for: thread, transaction: transaction)
-            threadAssociatedData.updateWith(
-                hideStory: shouldHide,
-                updateStorageService: true,
-                transaction: transaction
-            )
+            associatedData.update(isHidden: shouldHide, transaction: transaction)
         }
         let toastText: String
         if shouldHide {

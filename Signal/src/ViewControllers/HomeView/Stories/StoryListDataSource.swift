@@ -98,7 +98,7 @@ class StoryListDataSource: NSObject, Dependencies {
                 )
             } sync: { _ in
                 self.tableView?.reloadData()
-                self.observeThreadAssociatedDataChangesForAvailableModels()
+                self.observeAssociatedDataChangesForAvailableModels()
             }
         }
     }
@@ -167,7 +167,7 @@ class StoryListDataSource: NSObject, Dependencies {
                 mutate,
                 sync: { (changes) in
                     self.applyChangesToTableView(changes)
-                    self.observeThreadAssociatedDataChangesForAvailableModels()
+                    self.observeAssociatedDataChangesForAvailableModels()
                 }
             )
 
@@ -184,43 +184,52 @@ class StoryListDataSource: NSObject, Dependencies {
     public func beginObservingDatabase() {
         Self.databaseStorage.appendDatabaseChangeDelegate(self)
         Self.systemStoryManager.addStateChangedObserver(self)
-        // NOTE: hidden state lives on ThreadAssociatedData, so we observe changes on that.
+        // NOTE: hidden state lives on StoryContextAssociatedData, so we observe changes on that.
         // But we need to know which thread IDs to observe, so first we load messages and then
-        // we begin observing the threads those messages are a part of.
+        // we begin observing the contexts those messages are a part of.
     }
 
-    private var threadAssociatedDataObservation: DatabaseCancellable?
-    private var observedThreadIds = Set<String>()
+    private var associatedDataObservation: DatabaseCancellable?
+    private var observedAssociatedDataContexts = Set<StoryContextAssociatedData.SourceContext>()
 
-    /// Observe the ThreadAssociatedData(s) for the threads of the stories we are currently showing.
+    /// Observe the StoryContextAssociatedData(s) for the threads of the stories we are currently showing.
     /// Diffs against what we were already observing to avoid overhead.
-    private func observeThreadAssociatedDataChangesForAvailableModels() {
+    private func observeAssociatedDataChangesForAvailableModels() {
         let models = self.syncingModels.exposedModel.stories
-        var threadIds = Set<String>()
-        var threadIdToContexts = [String: StoryContext]()
+        var associatedDataContexts = Set<StoryContextAssociatedData.SourceContext>()
+        var contactUuids = Set<String>()
+        var groupIds = Set<Data>()
         models.forEach {
-            guard let threadId = $0.threadUniqueId else { return }
-            threadIds.insert(threadId)
-            owsAssertDebug(threadIdToContexts[threadId] == nil, "Have two story models on the same thread!")
-            threadIdToContexts[threadId] = $0.context
+            guard let associatedDataContext = $0.context.asAssociatedDataContext else { return }
+            owsAssertDebug(!associatedDataContexts.contains(associatedDataContext), "Have two story models on the same context!")
+            associatedDataContexts.insert(associatedDataContext)
+            switch associatedDataContext {
+            case .contact(let contactUuid):
+                contactUuids.insert(contactUuid.uuidString)
+            case .group(let groupId):
+                groupIds.insert(groupId)
+            }
         }
 
-        if observedThreadIds == threadIds {
+        if observedAssociatedDataContexts == associatedDataContexts {
             // We are already observing this set.
             return
         }
-        observedThreadIds = threadIds
+        observedAssociatedDataContexts = associatedDataContexts
 
         let observation = ValueObservation.tracking { db in
-            try ThreadAssociatedData
-                .filter(threadIds.contains(Column("threadUniqueId")))
+            try StoryContextAssociatedData
+                .filter(
+                    contactUuids.contains(Column(StoryContextAssociatedData.columnName(.contactUuid)))
+                    || groupIds.contains(Column(StoryContextAssociatedData.columnName(.groupId)))
+                )
                 .fetchAll(db)
         }
         // Ignore the first emission that fires right away, we
         // want subsequent updates only.
         var hasEmitted = false
-        threadAssociatedDataObservation?.cancel()
-        threadAssociatedDataObservation = observation.start(
+        associatedDataObservation?.cancel()
+        associatedDataObservation = observation.start(
             in: databaseStorage.grdbStorage.pool,
             onError: { error in
                 owsFailDebug("Failed to observe story hidden state: \(error))")
@@ -232,12 +241,12 @@ class StoryListDataSource: NSObject, Dependencies {
                 var changedContexts = Set<StoryContext>()
                 changedModels
                     .lazy
-                    .compactMap { [weak self] threadAssociatedData -> StoryContext? in
+                    .compactMap { [weak self] associatedData -> StoryContext? in
+                        let context = associatedData.sourceContext.asStoryContext
                         guard
-                            let context = threadIdToContexts[threadAssociatedData.threadUniqueId],
                             let storyModel = self?.syncingModels.exposedModel.stories.first(where: { context == $0.context }),
                             // If the hidden state didn't change, skip over this context.
-                            storyModel.isHidden != threadAssociatedData.hideStory
+                            storyModel.isHidden != associatedData.isHidden
                         else {
                             return nil
                         }

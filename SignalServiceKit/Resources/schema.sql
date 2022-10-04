@@ -40,8 +40,6 @@ CREATE
             ,"name" TEXT
             ,"addresses" BLOB
             ,"storyViewMode" INTEGER DEFAULT 0
-            ,"lastViewedStoryTimestamp" INTEGER
-            ,"lastReceivedStoryTimestamp" INTEGER
         )
 ;
 
@@ -1110,7 +1108,6 @@ CREATE
             ,"isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0
             ,"mutedUntilTimestamp" INTEGER NOT NULL DEFAULT 0
             ,"audioPlaybackRate" DOUBLE NOT NULL DEFAULT 1
-            ,"hideStory" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 
@@ -1363,4 +1360,32 @@ CREATE
             ,'$.incoming.receivedState.viewedTimestamp'
         )
     )
+;
+
+CREATE
+    TABLE
+        IF NOT EXISTS "model_StoryContextAssociatedData" (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            ,"recordType" INTEGER NOT NULL
+            ,"uniqueId" NOT NULL UNIQUE
+                ON CONFLICT FAIL
+            ,"contactUuid" TEXT
+            ,"groupId" BLOB
+            ,"isHidden" BOOLEAN NOT NULL DEFAULT 0
+            ,"latestUnexpiredTimestamp" INTEGER
+            ,"lastReceivedTimestamp" INTEGER
+            ,"lastViewedTimestamp" INTEGER
+        )
+;
+
+CREATE
+    INDEX "index_story_context_associated_data_contact_on_contact_uuid"
+        ON "model_StoryContextAssociatedData"("contactUuid"
+)
+;
+
+CREATE
+    INDEX "index_story_context_associated_data_contact_on_group_id"
+        ON "model_StoryContextAssociatedData"("groupId"
+)
 ;

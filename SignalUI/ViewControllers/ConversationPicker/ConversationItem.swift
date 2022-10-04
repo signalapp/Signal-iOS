@@ -241,12 +241,15 @@ public struct StoryConversationItem {
     }
 
     public static func allItems(includeImplicitGroupThreads: Bool, transaction: SDSAnyReadTransaction) -> [StoryConversationItem] {
-        func sortTime(for thread: TSThread) -> UInt64 {
+        func sortTime(
+            for associatedData: StoryContextAssociatedData?,
+            thread: TSThread
+        ) -> UInt64 {
             if
                 let thread = thread as? TSGroupThread,
-                thread.lastReceivedStoryTimestamp?.uint64Value ?? 0 > thread.lastSentStoryTimestamp?.uint64Value ?? 0
+                associatedData?.lastReceivedTimestamp ?? 0 > thread.lastSentStoryTimestamp?.uint64Value ?? 0
             {
-                return thread.lastReceivedStoryTimestamp?.uint64Value ?? 0
+                return associatedData?.lastReceivedTimestamp ?? 0
             }
 
             return thread.lastSentStoryTimestamp?.uint64Value ?? 0
@@ -258,11 +261,15 @@ public struct StoryConversationItem {
                 transaction: transaction
             )
             .lazy
-            .sorted { lhs, rhs in
-                if (lhs as? TSPrivateStoryThread)?.isMyStory == true { return true }
-                if (rhs as? TSPrivateStoryThread)?.isMyStory == true { return false }
-                return sortTime(for: lhs) > sortTime(for: rhs)
+            .map { (thread: TSThread) -> (TSThread, StoryContextAssociatedData?) in
+                return (thread, StoryFinder.associatedData(for: thread, transaction: transaction))
             }
+            .sorted { lhs, rhs in
+                if (lhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return true }
+                if (rhs.0 as? TSPrivateStoryThread)?.isMyStory == true { return false }
+                return sortTime(for: lhs.1, thread: lhs.0) > sortTime(for: rhs.1, thread: rhs.0)
+            }
+            .map(\.0)
             .compactMap { thread -> StoryConversationItem.ItemType? in
                 if let groupThread = thread as? TSGroupThread {
                     guard groupThread.isLocalUserFullMember else {

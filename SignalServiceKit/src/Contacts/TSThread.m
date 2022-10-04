@@ -26,8 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) TSThreadStoryViewMode storyViewMode;
 @property (nonatomic, nullable) NSNumber *lastSentStoryTimestamp;
-@property (nonatomic, nullable) NSNumber *lastViewedStoryTimestamp;
-@property (nonatomic, nullable) NSNumber *lastReceivedStoryTimestamp;
 
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) BOOL isArchivedObsolete;
@@ -97,9 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
               isArchivedObsolete:(BOOL)isArchivedObsolete
           isMarkedUnreadObsolete:(BOOL)isMarkedUnreadObsolete
             lastInteractionRowId:(int64_t)lastInteractionRowId
-      lastReceivedStoryTimestamp:(nullable NSNumber *)lastReceivedStoryTimestamp
           lastSentStoryTimestamp:(nullable NSNumber *)lastSentStoryTimestamp
-        lastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
        lastVisibleSortIdObsolete:(uint64_t)lastVisibleSortIdObsolete
 lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPercentageObsolete
          mentionNotificationMode:(TSThreadMentionNotificationMode)mentionNotificationMode
@@ -122,9 +118,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     _isArchivedObsolete = isArchivedObsolete;
     _isMarkedUnreadObsolete = isMarkedUnreadObsolete;
     _lastInteractionRowId = lastInteractionRowId;
-    _lastReceivedStoryTimestamp = lastReceivedStoryTimestamp;
     _lastSentStoryTimestamp = lastSentStoryTimestamp;
-    _lastViewedStoryTimestamp = lastViewedStoryTimestamp;
     _lastVisibleSortIdObsolete = lastVisibleSortIdObsolete;
     _lastVisibleSortIdOnScreenPercentageObsolete = lastVisibleSortIdOnScreenPercentageObsolete;
     _mentionNotificationMode = mentionNotificationMode;
@@ -620,30 +614,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
                                  if (lastSentStoryTimestamp.unsignedIntegerValue
                                      > thread.lastSentStoryTimestamp.unsignedIntegerValue) {
                                      thread.lastSentStoryTimestamp = lastSentStoryTimestamp;
-                                 }
-                             }];
-}
-
-- (void)updateWithLastViewedStoryTimestamp:(nullable NSNumber *)lastViewedStoryTimestamp
-                               transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 if (lastViewedStoryTimestamp.unsignedIntegerValue
-                                     > thread.lastViewedStoryTimestamp.unsignedIntegerValue) {
-                                     thread.lastViewedStoryTimestamp = lastViewedStoryTimestamp;
-                                 }
-                             }];
-}
-
-- (void)updateWithLastReceivedStoryTimestamp:(nullable NSNumber *)lastReceivedStoryTimestamp
-                                 transaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 if (lastReceivedStoryTimestamp.unsignedIntegerValue
-                                     > thread.lastReceivedStoryTimestamp.unsignedIntegerValue) {
-                                     thread.lastReceivedStoryTimestamp = lastReceivedStoryTimestamp;
                                  }
                              }];
 }

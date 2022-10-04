@@ -15,7 +15,6 @@ public protocol ThreadFinder {
     func threads(withThreadIds threadIds: Set<String>, transaction: ReadTransaction) throws -> Set<TSThread>
     func storyThreads(includeImplicitGroupThreads: Bool, transaction: ReadTransaction) -> [TSThread]
     func threadsWithRecentInteractions(limit: UInt, transaction: ReadTransaction) -> [TSThread]
-    func threadsWithRecentlyViewedStories(limit: UInt, transaction: ReadTransaction) -> [TSThread]
 }
 
 @objc
@@ -93,13 +92,6 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
         switch transaction.readTransaction {
         case .grdbRead(let grdb):
             return grdbAdapter.threadsWithRecentInteractions(limit: limit, transaction: grdb)
-        }
-    }
-
-    public func threadsWithRecentlyViewedStories(limit: UInt, transaction: SDSAnyReadTransaction) -> [TSThread] {
-        switch transaction.readTransaction {
-        case .grdbRead(let grdb):
-            return grdbAdapter.threadsWithRecentlyViewedStories(limit: limit, transaction: grdb)
         }
     }
 }
@@ -372,26 +364,6 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
             SELECT *
             FROM \(ThreadRecord.databaseTableName)
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
-            LIMIT \(limit)
-            """
-
-        let cursor = TSThread.grdbFetchCursor(sql: sql, transaction: transaction)
-        var threads = [TSThread]()
-        do {
-            while let thread = try cursor.next() {
-                threads.append(thread)
-            }
-        } catch {
-            owsFailDebug("Failed to query recent threads \(error)")
-        }
-        return threads
-    }
-
-    public func threadsWithRecentlyViewedStories(limit: UInt, transaction: GRDBReadTransaction) -> [TSThread] {
-        let sql = """
-            SELECT *
-            FROM \(ThreadRecord.databaseTableName)
-            ORDER BY \(threadColumn: .lastViewedStoryTimestamp) DESC
             LIMIT \(limit)
             """
 

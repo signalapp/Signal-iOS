@@ -187,9 +187,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         )
         record.anyInsert(transaction: transaction)
 
-        for thread in record.threads(transaction: transaction) {
-            thread.updateWithLastReceivedStoryTimestamp(NSNumber(value: timestamp), transaction: transaction)
-        }
+        // Nil associated datas are for outgoing contexts, where we don't need to keep track of received timestamp.
+        record.context.associatedData(transaction: transaction)?.update(lastReceivedTimestamp: timestamp, transaction: transaction)
 
         return record
     }
@@ -325,8 +324,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         switch context {
         case .groupId, .authorUuid, .privateStory:
             // Record on the context when the local user last viewed the story for this context
-            if let thread = context.thread(transaction: transaction) {
-                thread.updateWithLastViewedStoryTimestamp(NSNumber(value: timestamp), transaction: transaction)
+            if let associatedData = context.associatedData(transaction: transaction) {
+                associatedData.update(lastViewedTimestamp: timestamp, transaction: transaction)
             } else {
                 owsFailDebug("Missing thread for story context \(context)")
             }
@@ -438,24 +437,33 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    /// If the story is incoming, returns a single-element array with the TSContactThread for the author if the
+    /// story was sent as a private story, or the TSGroupThread if the story was sent to a group.
+    /// If the story is outgoing, returns either a single-element array with the TSGroupThread if the story was sent
+    /// to a group, or an array of TSPrivateStoryThreads for all the private threads the story was sent to.
     public func threads(transaction: SDSAnyReadTransaction) -> [TSThread] {
-        var threads = [TSThread]()
-
-        if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
-            threads.append(groupThread)
-        }
-
-        if case .outgoing(let recipientStates) = manifest {
-            for context in Set(recipientStates.values.flatMap({ $0.contexts })) {
+        switch manifest {
+        case .incoming:
+            if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+                return [groupThread]
+            } else if let contactThread = TSContactThread.getWithContactAddress(.init(uuid: authorUuid), transaction: transaction) {
+                return [contactThread]
+            } else {
+                owsFailDebug("No thread found for an incoming story message")
+                return []
+            }
+        case .outgoing(let recipientStates):
+            if let groupId = groupId, let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
+                return [groupThread]
+            }
+            return Set(recipientStates.values.flatMap({ $0.contexts })).compactMap { context in
                 guard let thread = TSPrivateStoryThread.anyFetch(uniqueId: context.uuidString, transaction: transaction) else {
                     owsFailDebug("Missing thread for story context \(context)")
-                    continue
+                    return nil
                 }
-                threads.append(thread)
+                return thread
             }
         }
-
-        return threads
     }
 
     public func downloadIfNecessary(transaction: SDSAnyWriteTransaction) {
@@ -599,6 +607,9 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             }
             attachment.anyRemove(transaction: transaction)
         }
+
+        // Reload latest unexpired timestamp for the context.
+        self.context.associatedData(transaction: transaction)?.recomputeLatestUnexpiredTimestamp(transaction: transaction)
     }
 
     @objc

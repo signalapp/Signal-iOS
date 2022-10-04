@@ -81,7 +81,10 @@ extension StorageServiceProtoContactRecord: Dependencies {
             builder.setArchived(threadAssociatedData.isArchived)
             builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
             builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
-            builder.setHideStory(threadAssociatedData.hideStory)
+        }
+
+        if let storyContextAssociatedData = StoryFinder.getAssocatedData(forContactAdddress: address, transaction: transaction) {
+            builder.setHideStory(storyContextAssociatedData.isHidden)
         }
 
         // Unknown
@@ -227,8 +230,14 @@ extension StorageServiceProtoContactRecord: Dependencies {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
-        if hideStory != localThreadAssociatedData.hideStory {
-            localThreadAssociatedData.updateWith(hideStory: hideStory, updateStorageService: false, transaction: transaction)
+        if let uuid = address.uuid {
+            let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
+                sourceContext: .contact(contactUuid: uuid),
+                transaction: transaction
+            )
+            if hideStory != localStoryContextAssociatedData.isHidden {
+                localStoryContextAssociatedData.update(updateStorageService: false, isHidden: hideStory, transaction: transaction)
+            }
         }
 
         return mergeState
@@ -397,7 +406,10 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
         builder.setArchived(threadAssociatedData.isArchived)
         builder.setMarkedUnread(threadAssociatedData.isMarkedUnread)
         builder.setMutedUntilTimestamp(threadAssociatedData.mutedUntilTimestamp)
-        builder.setHideStory(threadAssociatedData.hideStory)
+
+        if let storyContextAssociatedData = StoryFinder.getAssociatedData(forContext: .group(groupId: groupId), transaction: transaction) {
+            builder.setHideStory(storyContextAssociatedData.isHidden)
+        }
 
         if let thread = TSGroupThread.anyFetchGroupThread(uniqueId: threadId, transaction: transaction) {
             builder.setStorySendMode(thread.storyViewMode.storageServiceMode)
@@ -532,8 +544,12 @@ extension StorageServiceProtoGroupV2Record: Dependencies {
             localThreadAssociatedData.updateWith(mutedUntilTimestamp: mutedUntilTimestamp, updateStorageService: false, transaction: transaction)
         }
 
-        if hideStory != localThreadAssociatedData.hideStory {
-            localThreadAssociatedData.updateWith(hideStory: hideStory, updateStorageService: false, transaction: transaction)
+        let localStoryContextAssociatedData = StoryContextAssociatedData.fetchOrDefault(
+            sourceContext: .group(groupId: groupId),
+            transaction: transaction
+        )
+        if hideStory != localStoryContextAssociatedData.isHidden {
+            localStoryContextAssociatedData.update(updateStorageService: false, isHidden: hideStory, transaction: transaction)
         }
 
         return mergeState
