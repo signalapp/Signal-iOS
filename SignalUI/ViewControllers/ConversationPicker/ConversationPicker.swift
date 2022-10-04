@@ -121,7 +121,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
 
     public var threadFilter: (_ isIncluded: TSThread) -> Bool = { _ in true }
 
-    public var maxStoryConversationsToRender = 2
+    public var maxStoryConversationsToRender = 3
     public var isStorySectionExpanded = false
 
     /// When `true`, each time the user selects an item for sending to we will fetch the identity keys for those recipients
@@ -517,7 +517,7 @@ open class ConversationPickerViewController: OWSTableViewController2 {
         var conversationsToRender = conversations
         let hasMoreConversations = !isExpanded && conversationsToRender.count > maxConversationsToRender
         if hasMoreConversations {
-            conversationsToRender = Array(conversationsToRender.prefix(maxConversationsToRender))
+            conversationsToRender = Array(conversationsToRender.prefix(maxConversationsToRender - 1))
         }
 
         for conversation in conversationsToRender {
