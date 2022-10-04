@@ -90,10 +90,9 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
                         )
                     )
                 
-                let title: String = NSString.formatDurationSeconds(
-                    UInt32(DisappearingMessagesConfiguration.validDurationsSeconds.last ?? -1),
-                    useShortFormat: false
-                )
+                let title: String = (DisappearingMessagesConfiguration.validDurationsSeconds.last?
+                    .formatted(format: .long))
+                    .defaulting(to: "")
                 expect(viewModel.settingsData.first?.elements.last)
                     .to(
                         equal(
@@ -146,10 +145,9 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
                         )
                     )
                 
-                let title: String = NSString.formatDurationSeconds(
-                    UInt32(DisappearingMessagesConfiguration.validDurationsSeconds.last ?? -1),
-                    useShortFormat: false
-                )
+                let title: String = (DisappearingMessagesConfiguration.validDurationsSeconds.last?
+                    .formatted(format: .long))
+                    .defaulting(to: "")
                 expect(viewModel.settingsData.first?.elements.last)
                     .to(
                         equal(

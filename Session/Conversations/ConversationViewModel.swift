@@ -298,6 +298,20 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                                 currentUserBlindedPublicKey: threadData.currentUserBlindedPublicKey
                             )
                         }
+                        .reduce([]) { result, message in
+                            guard message.shouldShowDateHeader else {
+                                return result.appending(message)
+                            }
+                            
+                            return result
+                                .appending(
+                                    MessageViewModel(
+                                        timestampMs: message.timestampMs,
+                                        cellType: .dateHeader
+                                    )
+                                )
+                                .appending(message)
+                        }
                         .appending(typingIndicator)
                 )
             ],

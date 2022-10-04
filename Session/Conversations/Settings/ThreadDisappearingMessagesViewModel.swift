@@ -117,10 +117,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
                     ].appending(
                         contentsOf: DisappearingMessagesConfiguration.validDurationsSeconds
                             .map { duration in
-                                let title: String = NSString.formatDurationSeconds(
-                                    UInt32(duration),
-                                    useShortFormat: false
-                                )
+                                let title: String = duration.formatted(format: .long)
                                 
                                 return SessionCell.Info(
                                     id: Item(title: title),

@@ -16,7 +16,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     var audioStateChanged: ((TimeInterval, Bool) -> ())?
     
     // Constraints
-    private lazy var headerViewTopConstraint = headerView.pin(.top, to: .top, of: self, withInset: 1)
+    private lazy var authorLabelTopConstraint = authorLabel.pin(.top, to: .top, of: self)
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
     private lazy var profilePictureViewLeftConstraint = profilePictureView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var profilePictureViewWidthConstraint = profilePictureView.set(.width, to: Values.verySmallProfilePictureSize)
@@ -77,9 +77,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         result.set(.width, greaterThanOrEqualTo: VisibleMessageCell.largeCornerRadius * 2)
         return result
     }()
-
-    private lazy var headerView = UIView()
-
+    
     private lazy var authorLabel: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
@@ -166,15 +164,10 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     override func setUpViewHierarchy() {
         super.setUpViewHierarchy()
         
-        // Header view
-        addSubview(headerView)
-        headerViewTopConstraint.isActive = true
-        headerView.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
-        
         // Author label
         addSubview(authorLabel)
+        authorLabelTopConstraint.isActive = true
         authorLabelHeightConstraint.isActive = true
-        authorLabel.pin(.top, to: .bottom, of: headerView)
         
         // Profile picture view
         addSubview(profilePictureView)
@@ -197,7 +190,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         // Bubble background view
         bubbleBackgroundView.addSubview(bubbleView)
-        bubbleBackgroundView.pin(to: bubbleView)
+        bubbleView.pin(to: bubbleBackgroundView)
         
         // Timer view
         addSubview(timerView)
@@ -253,14 +246,16 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     ) {
         self.viewModel = cellViewModel
         
-        let isGroupThread: Bool = (cellViewModel.threadVariant == .openGroup || cellViewModel.threadVariant == .closedGroup)
-        let shouldInsetHeader: Bool = (
-            cellViewModel.previousVariant?.isInfoMessage != true &&
-            (
+        // We want to add spacing between "clusters" of messages to indicate that time has
+        // passed (even if there wasn't enough time to warrant showing a date header)
+        let shouldAddTopInset: Bool = (
+            !cellViewModel.shouldShowDateHeader &&
+            cellViewModel.previousVariant?.isInfoMessage != true && (
                 cellViewModel.positionInCluster == .top ||
                 cellViewModel.isOnlyMessageInCluster
             )
         )
+        let isGroupThread: Bool = (cellViewModel.threadVariant == .openGroup || cellViewModel.threadVariant == .closedGroup)
         
         // Profile picture view
         profilePictureViewLeftConstraint.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : 0)
@@ -309,12 +304,8 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         reactionContainerViewRightConstraint.isActive = (cellViewModel.variant == .standardOutgoing)
         populateReaction(for: cellViewModel, showExpandedReactions: showExpandedReactions)
         
-        // Date break
-        headerViewTopConstraint.constant = (shouldInsetHeader ? Values.mediumSpacing : 1)
-        headerView.subviews.forEach { $0.removeFromSuperview() }
-        populateHeader(for: cellViewModel, shouldInsetHeader: shouldInsetHeader)
-        
         // Author label
+        authorLabelTopConstraint.constant = (shouldAddTopInset ? Values.mediumSpacing : 0)
         authorLabel.isHidden = (cellViewModel.senderName == nil)
         authorLabel.text = cellViewModel.senderName
         authorLabel.themeTextColor = .textPrimary
@@ -378,27 +369,6 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         }
     }
 
-    private func populateHeader(for cellViewModel: MessageViewModel, shouldInsetHeader: Bool) {
-        guard cellViewModel.shouldShowDateHeader else { return }
-        
-        let dateBreakLabel: UILabel = UILabel()
-        dateBreakLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        dateBreakLabel.text = cellViewModel.dateForUI.formattedForDisplay
-        dateBreakLabel.themeTextColor = .textPrimary
-        dateBreakLabel.textAlignment = .center
-        headerView.addSubview(dateBreakLabel)
-        dateBreakLabel.pin(.top, to: .top, of: headerView, withInset: Values.smallSpacing)
-        
-        let additionalBottomInset = (shouldInsetHeader ? Values.mediumSpacing : 1)
-        headerView.pin(.bottom, to: .bottom, of: dateBreakLabel, withInset: Values.smallSpacing + additionalBottomInset)
-        dateBreakLabel.center(.horizontal, in: headerView)
-        
-        let availableWidth = VisibleMessageCell.getMaxWidth(for: cellViewModel)
-        let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
-        let dateBreakLabelSize = dateBreakLabel.sizeThatFits(availableSpace)
-        dateBreakLabel.set(.height, to: dateBreakLabelSize.height)
-    }
-
     private func populateContentView(
         for cellViewModel: MessageViewModel,
         mediaCache: NSCache<NSString, AnyObject>,
@@ -444,7 +414,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         }
 
         switch cellViewModel.cellType {
-            case .typingIndicator: break
+            case .typingIndicator, .dateHeader: break
             
             case .textOnlyMessage:
                 let inset: CGFloat = 12

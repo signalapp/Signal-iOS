@@ -259,8 +259,8 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
                                 let pathView: PathStatusView = PathStatusView(size: .large)
                                 result.addSubview(pathView)
                                 
-                                result.set(.width, to: IconSize.small.size)
-                                result.set(.height, to: IconSize.small.size)
+                                result.set(.width, to: IconSize.medium.size)
+                                result.set(.height, to: IconSize.medium.size)
                                 pathView.center(in: result)
                                 
                                 return result
