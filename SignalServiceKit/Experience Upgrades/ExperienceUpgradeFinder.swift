@@ -241,6 +241,11 @@ public class ExperienceUpgradeFinder: NSObject {
 
         // Query all saved experience upgrades...
         ExperienceUpgrade.anyEnumerate(transaction: transaction.asAnyRead) { experienceUpgrade, _ in
+            guard activeIds.contains(experienceUpgrade.uniqueId) else {
+                // Only load active upgrades.
+                return
+            }
+
             guard experienceUpgrade.experienceId.shouldSave else {
                 // Ignore saved upgrades that we don't currently save.
                 return
