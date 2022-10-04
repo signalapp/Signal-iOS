@@ -185,11 +185,7 @@ public class ExperienceUpgradeFinder: NSObject {
 
     public class func markAsViewed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as seen \(experienceUpgrade.uniqueId)")
-        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { experienceUpgrade in
-            // Only mark as viewed if it has yet to be viewed.
-            guard experienceUpgrade.firstViewedTimestamp == 0 else { return }
-            experienceUpgrade.firstViewedTimestamp = Date().timeIntervalSince1970
-        }
+        experienceUpgrade.markAsViewed(transaction: transaction.asAnyWrite)
     }
 
     public class func hasUnsnoozed(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBReadTransaction) -> Bool {
@@ -202,7 +198,8 @@ public class ExperienceUpgradeFinder: NSObject {
 
     public class func markAsSnoozed(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
         Logger.info("marking experience upgrade as snoozed \(experienceUpgrade.uniqueId)")
-        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.lastSnoozedTimestamp = Date().timeIntervalSince1970 }
+
+        experienceUpgrade.markAsSnoozed(transaction: transaction.asAnyWrite)
     }
 
     public class func markAsComplete(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
@@ -210,13 +207,13 @@ public class ExperienceUpgradeFinder: NSObject {
     }
 
     public class func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
-        guard experienceUpgrade.id.canBeCompleted else {
+        guard experienceUpgrade.experienceId.canBeCompleted else {
             return Logger.info("skipping marking experience upgrade as complete for experience upgrade \(experienceUpgrade.uniqueId)")
         }
 
         Logger.info("marking experience upgrade as complete \(experienceUpgrade.uniqueId)")
 
-        experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
+        experienceUpgrade.markAsComplete(transaction: transaction.asAnyWrite)
     }
 
     @objc
@@ -239,25 +236,16 @@ public class ExperienceUpgradeFinder: NSObject {
             .filter { $0.hasLaunched(transaction: transaction) && !$0.hasExpired && ($0.showOnLinkedDevices || isPrimaryDevice) }
             .map { $0.rawValue }
 
-        // We don't include `isComplete` in the query as we want to initialize
-        // new records for any active ids that haven't had one recorded yet.
-        let cursor = ExperienceUpgrade.grdbFetchCursor(
-            sql: """
-                SELECT * FROM \(ExperienceUpgradeRecord.databaseTableName)
-                WHERE \(experienceUpgradeColumn: .uniqueId) IN (\(activeIds.map { "\'\($0)'" }.joined(separator: ",")))
-            """,
-            transaction: transaction
-        )
-
         var experienceUpgrades = [ExperienceUpgrade]()
         var unsavedIds = activeIds
 
-        while true {
-            guard let experienceUpgrade = try? cursor.next() else { break }
-            guard experienceUpgrade.id.shouldSave else {
+        // Query all saved experience upgrades...
+        ExperienceUpgrade.anyEnumerate(transaction: transaction.asAnyRead) { experienceUpgrade, _ in
+            guard experienceUpgrade.experienceId.shouldSave else {
                 // Ignore saved upgrades that we don't currently save.
-                continue
+                return
             }
+
             if !experienceUpgrade.isComplete && !experienceUpgrade.hasCompletedVisibleDuration {
                 experienceUpgrades.append(experienceUpgrade)
             }
@@ -265,6 +253,7 @@ public class ExperienceUpgradeFinder: NSObject {
             unsavedIds.removeAll { $0 == experienceUpgrade.uniqueId }
         }
 
+        // ...and instantiate new ones for any not-saved ones.
         for id in unsavedIds {
             experienceUpgrades.append(ExperienceUpgrade(uniqueId: id))
         }
@@ -282,14 +271,14 @@ public class ExperienceUpgradeFinder: NSObject {
 }
 
 public extension ExperienceUpgrade {
-    var id: ExperienceUpgradeId! {
+    var experienceId: ExperienceUpgradeId! {
         return ExperienceUpgradeId(rawValue: uniqueId)
     }
 
     var isSnoozed: Bool {
         guard lastSnoozedTimestamp > 0 else { return false }
         // If it hasn't been two days since we were snoozed, wait to show again.
-        return -Date(timeIntervalSince1970: lastSnoozedTimestamp).timeIntervalSinceNow <= id.snoozeDuration
+        return -Date(timeIntervalSince1970: lastSnoozedTimestamp).timeIntervalSinceNow <= experienceId.snoozeDuration
     }
 
     var daysSinceFirstViewed: Int {
@@ -299,7 +288,7 @@ public extension ExperienceUpgrade {
     }
 
     var hasCompletedVisibleDuration: Bool {
-        switch id {
+        switch experienceId {
         // To have a megaphone dismiss after N days, you can create a case like the following
         // case .researchMegaphone1: return daysSinceFirstViewed >= 7
         default: return false
@@ -307,12 +296,4 @@ public extension ExperienceUpgrade {
     }
 
     var hasViewed: Bool { firstViewedTimestamp > 0 }
-
-    func upsertWith(transaction: SDSAnyWriteTransaction, changeBlock: (ExperienceUpgrade) -> Void) {
-        guard id.shouldSave else { return Logger.debug("Skipping save for experience upgrade \(String(describing: id))") }
-
-        let experienceUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
-        changeBlock(experienceUpgrade)
-        experienceUpgrade.anyUpsert(transaction: transaction)
-    }
 }

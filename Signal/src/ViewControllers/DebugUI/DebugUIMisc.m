@@ -41,16 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          [DebugUIMisc setManualCensorshipCircumventionEnabled:YES];
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Disable Manual Censorship Circumvention"
-                                     actionBlock:^{
-                                         [DebugUIMisc setManualCensorshipCircumventionEnabled:NO];
-                                     }]];
-    [items addObject:[OWSTableItem
-                         itemWithTitle:@"Clear experience upgrades (works once per launch)"
-                           actionBlock:^{
-                               DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-                                   [ExperienceUpgrade anyRemoveAllWithoutInstantationWithTransaction:transaction];
-                               });
-                           }]];
+                                     actionBlock:^{ [DebugUIMisc setManualCensorshipCircumventionEnabled:NO]; }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];

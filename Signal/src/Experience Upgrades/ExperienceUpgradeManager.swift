@@ -82,7 +82,7 @@ class ExperienceUpgradeManager: NSObject {
 
     @objc
     static func dismissPINReminderIfNecessary() {
-        guard lastPresented?.experienceUpgrade.id == .pinReminder else { return }
+        guard lastPresented?.experienceUpgrade.experienceId == .pinReminder else { return }
         lastPresented?.dismiss(animated: false, completion: nil)
     }
 
@@ -98,7 +98,7 @@ class ExperienceUpgradeManager: NSObject {
 
         guard hasIncomplete else {
             // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
+            guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
             lastPresented?.dismiss(animated: false, completion: nil)
             return
         }
@@ -111,7 +111,7 @@ class ExperienceUpgradeManager: NSObject {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
         transaction.addAsyncCompletion(queue: .main) {
             // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
+            guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
             lastPresented?.dismiss(animated: false, completion: nil)
         }
     }
@@ -128,7 +128,7 @@ class ExperienceUpgradeManager: NSObject {
 
         guard hasUnsnoozed else {
             // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
+            guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
             lastPresented?.dismiss(animated: false, completion: nil)
             return
         }
@@ -141,7 +141,7 @@ class ExperienceUpgradeManager: NSObject {
         ExperienceUpgradeFinder.markAsSnoozed(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
         transaction.addAsyncCompletion(queue: .main) {
             // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.id == experienceUpgradeId else { return }
+            guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
             lastPresented?.dismiss(animated: false, completion: nil)
         }
     }
@@ -165,7 +165,7 @@ class ExperienceUpgradeManager: NSObject {
     // MARK: - Megaphone
 
     private static func hasMegaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
-        switch experienceUpgrade.id {
+        switch experienceUpgrade.experienceId {
         case .introducingPins,
              .pinReminder,
              .notificationPermissionReminder,
@@ -178,7 +178,7 @@ class ExperienceUpgradeManager: NSObject {
     }
 
     fileprivate static func megaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) -> MegaphoneView? {
-        switch experienceUpgrade.id {
+        switch experienceUpgrade.experienceId {
         case .introducingPins:
             return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .pinReminder:

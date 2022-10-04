@@ -1114,6 +1114,7 @@
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
 		D9AB38D0283C38B10003C038 /* InteractionFinderPerformanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */; };
 		D9AD1D9528B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */; };
+		D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E44AD4E624E98F440035D7B8 /* PhotoCaptureDismiss.swift in Sources */ = {isa = PBXBuildFile; fileRef = E44AD4E524E98F430035D7B8 /* PhotoCaptureDismiss.swift */; };
 		E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E75DD3DF2810CDBD00E32C36 /* SubscriptionManagerTest.swift */; };
@@ -1837,7 +1838,6 @@
 		F9C5CDE3289453B400548EEE /* MailtoLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB11289453B200548EEE /* MailtoLink.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDE4289453B400548EEE /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB12289453B200548EEE /* StorageService.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDE5289453B400548EEE /* UIColor+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB13289453B200548EEE /* UIColor+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CDE6289453B400548EEE /* ExperienceUpgrade.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB14289453B200548EEE /* ExperienceUpgrade.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CDE7289453B400548EEE /* Locale+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB15289453B200548EEE /* Locale+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDE8289453B400548EEE /* DispatchQueue+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CDE9289453B400548EEE /* NSUserDefaults+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB17289453B200548EEE /* NSUserDefaults+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1890,7 +1890,6 @@
 		F9C5CE19289453B400548EEE /* SSKPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB47289453B200548EEE /* SSKPreferences.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE1A289453B400548EEE /* OWSFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB48289453B200548EEE /* OWSFormat.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE1B289453B400548EEE /* OWSFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB49289453B200548EEE /* OWSFileSystem.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CE1C289453B400548EEE /* ExperienceUpgrade+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4A289453B200548EEE /* ExperienceUpgrade+SDS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE1D289453B400548EEE /* Promise+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4B289453B200548EEE /* Promise+OWS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE1E289453B400548EEE /* OrderedSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4C289453B200548EEE /* OrderedSet.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
@@ -1898,7 +1897,6 @@
 		F9C5CE21289453B400548EEE /* NSUserDefaults+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB4F289453B200548EEE /* NSUserDefaults+OWS.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE22289453B400548EEE /* TestModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB50289453B200548EEE /* TestModel.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE23289453B400548EEE /* Error+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB51289453B200548EEE /* Error+SSK.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
-		F9C5CE24289453B400548EEE /* ExperienceUpgrade.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB52289453B200548EEE /* ExperienceUpgrade.m */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE25289453B400548EEE /* AppReadiness.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB53289453B200548EEE /* AppReadiness.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CE26289453B400548EEE /* UserProfileFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CB54289453B200548EEE /* UserProfileFinder.swift */; settings = {COMPILER_FLAGS = "-fcxx-modules"; }; };
 		F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -3429,6 +3427,7 @@
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
 		D9AB38CE283C38640003C038 /* InteractionFinderPerformanceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InteractionFinderPerformanceTests.swift; sourceTree = "<group>"; };
 		D9AD1D9428B9955C00B42E6F /* TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+GroupUpdateCopy+NSAttributedStringTest.swift"; sourceTree = "<group>"; };
+		D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgrade.swift; sourceTree = "<group>"; };
 		DBCD4214999408EBC915EE0F /* Pods_SignalServiceKitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDBCB034D1DFAF85ADFD5E76 /* Pods-SignalUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SignalUITests/Pods-SignalUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		DE2DD605305BC6EFAD731723 /* Pods-Signal.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.debug.xcconfig"; sourceTree = "<group>"; };
@@ -4160,7 +4159,6 @@
 		F9C5CB11289453B200548EEE /* MailtoLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MailtoLink.swift; sourceTree = "<group>"; };
 		F9C5CB12289453B200548EEE /* StorageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
 		F9C5CB13289453B200548EEE /* UIColor+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+SSK.swift"; sourceTree = "<group>"; };
-		F9C5CB14289453B200548EEE /* ExperienceUpgrade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExperienceUpgrade.h; sourceTree = "<group>"; };
 		F9C5CB15289453B200548EEE /* Locale+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Locale+SSK.swift"; sourceTree = "<group>"; };
 		F9C5CB16289453B200548EEE /* DispatchQueue+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchQueue+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB17289453B200548EEE /* NSUserDefaults+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSUserDefaults+OWS.h"; sourceTree = "<group>"; };
@@ -4213,7 +4211,6 @@
 		F9C5CB47289453B200548EEE /* SSKPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKPreferences.swift; sourceTree = "<group>"; };
 		F9C5CB48289453B200548EEE /* OWSFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormat.swift; sourceTree = "<group>"; };
 		F9C5CB49289453B200548EEE /* OWSFileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSFileSystem.h; sourceTree = "<group>"; };
-		F9C5CB4A289453B200548EEE /* ExperienceUpgrade+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ExperienceUpgrade+SDS.swift"; sourceTree = "<group>"; };
 		F9C5CB4B289453B200548EEE /* Promise+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Promise+OWS.swift"; sourceTree = "<group>"; };
 		F9C5CB4C289453B200548EEE /* OrderedSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OrderedSet.swift; sourceTree = "<group>"; };
 		F9C5CB4D289453B200548EEE /* UIImage+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
@@ -4221,7 +4218,6 @@
 		F9C5CB4F289453B200548EEE /* NSUserDefaults+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSUserDefaults+OWS.m"; sourceTree = "<group>"; };
 		F9C5CB50289453B200548EEE /* TestModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestModel.m; sourceTree = "<group>"; };
 		F9C5CB51289453B200548EEE /* Error+SSK.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Error+SSK.swift"; sourceTree = "<group>"; };
-		F9C5CB52289453B200548EEE /* ExperienceUpgrade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExperienceUpgrade.m; sourceTree = "<group>"; };
 		F9C5CB53289453B200548EEE /* AppReadiness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppReadiness.h; sourceTree = "<group>"; };
 		F9C5CB54289453B200548EEE /* UserProfileFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProfileFinder.swift; sourceTree = "<group>"; };
 		F9C5CB55289453B200548EEE /* DarwinNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DarwinNotificationCenter.h; sourceTree = "<group>"; };
@@ -6793,6 +6789,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		D920487D28EB8201003F5371 /* Experience Upgrades */ = {
+			isa = PBXGroup;
+			children = (
+				D9C7CEB328EB8495001E87B6 /* ExperienceUpgrade.swift */,
+				F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */,
+			);
+			path = "Experience Upgrades";
+			sourceTree = "<group>";
+		};
 		E75DD3DC2810CD3500E32C36 /* subscriptions */ = {
 			isa = PBXGroup;
 			children = (
@@ -7113,6 +7118,7 @@
 				F9C5C9BA289453B100548EEE /* Account */,
 				F9C5C9CC289453B100548EEE /* Contacts */,
 				F9C5CA09289453B100548EEE /* Devices */,
+				D920487D28EB8201003F5371 /* Experience Upgrades */,
 				F9C5CBA3289453B200548EEE /* groups */,
 				F9C5C8B6289453B100548EEE /* Messages */,
 				F9C5CAB2289453B200548EEE /* Network */,
@@ -8040,10 +8046,6 @@
 				F9C5CB0B289453B200548EEE /* Error+ErrorLocalizedDescription.swift */,
 				F9C5CB73289453B200548EEE /* Error+isRetryable.swift */,
 				F9C5CB51289453B200548EEE /* Error+SSK.swift */,
-				F9C5CB4A289453B200548EEE /* ExperienceUpgrade+SDS.swift */,
-				F9C5CB14289453B200548EEE /* ExperienceUpgrade.h */,
-				F9C5CB52289453B200548EEE /* ExperienceUpgrade.m */,
-				F9C5CB5B289453B200548EEE /* ExperienceUpgradeFinder.swift */,
 				F9C5CB59289453B200548EEE /* FeatureFlags.swift */,
 				F9C5CB6E289453B200548EEE /* FunctionalUtil.h */,
 				F9C5CB1A289453B200548EEE /* FunctionalUtil.m */,
@@ -8307,7 +8309,6 @@
 				F9C5CCEC289453B300548EEE /* ContactsManagerProtocol.h in Headers */,
 				F9C5CE27289453B400548EEE /* DarwinNotificationCenter.h in Headers */,
 				F9C5CE2E289453B400548EEE /* DataSource.h in Headers */,
-				F9C5CDE6289453B400548EEE /* ExperienceUpgrade.h in Headers */,
 				F9C5CE3F289453B400548EEE /* FunctionalUtil.h in Headers */,
 				F9C5CDAA289453B400548EEE /* HTTPUtils.h in Headers */,
 				F9C5CDA7289453B400548EEE /* IncomingGroupsV2MessageJob.h in Headers */,
@@ -10559,8 +10560,7 @@
 				F9C5CDDD289453B400548EEE /* Error+ErrorLocalizedDescription.swift in Sources */,
 				F9C5CE44289453B400548EEE /* Error+isRetryable.swift in Sources */,
 				F9C5CE23289453B400548EEE /* Error+SSK.swift in Sources */,
-				F9C5CE1C289453B400548EEE /* ExperienceUpgrade+SDS.swift in Sources */,
-				F9C5CE24289453B400548EEE /* ExperienceUpgrade.m in Sources */,
+				D9C7CEB428EB8495001E87B6 /* ExperienceUpgrade.swift in Sources */,
 				F9C5CE2D289453B400548EEE /* ExperienceUpgradeFinder.swift in Sources */,
 				F9C5CD79289453B300548EEE /* Explain.swift in Sources */,
 				F9C5CE57289453B400548EEE /* Factories.swift in Sources */,
