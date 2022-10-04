@@ -32,7 +32,9 @@ class ForwardMessageViewController: InteractiveSheetViewController {
     private let selection = ConversationPickerSelection()
     var selectedConversations: [ConversationItem] { selection.conversations }
 
-    override var sheetBackgroundColor: UIColor { pickerVC.tableBackgroundColor }
+    override var sheetBackgroundColor: UIColor {
+        ForwardPickerViewController.tableBackgroundColor(isUsingPresentedStyle: true)
+    }
 
     private init(content: Content) {
         self.content = content

@@ -24,6 +24,11 @@ class BoostSheetView: InteractiveSheetViewController {
         addChild(boostVC)
 
         minimizedHeight = 680
+        allowsExpansion = false
+    }
+
+    override var sheetBackgroundColor: UIColor {
+        return boostVC.tableBackgroundColor
     }
 }
 

@@ -47,6 +47,8 @@ class EmojiPickerSheet: InteractiveSheetViewController {
         if !allowReactionConfiguration {
             self.backdropColor = .clear
         }
+
+        super.allowsExpansion = true
     }
 
     public required init() {

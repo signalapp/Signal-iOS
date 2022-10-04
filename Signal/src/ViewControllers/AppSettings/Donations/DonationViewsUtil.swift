@@ -66,6 +66,7 @@ public class SubscriptionReadMoreSheet: InteractiveSheetViewController {
         super.viewDidLoad()
 
         minimizedHeight = 740
+        super.allowsExpansion = false
 
         contentView.addSubview(contentScrollView)
 

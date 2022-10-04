@@ -22,6 +22,8 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
         self.groupReplyViewController = StoryGroupReplyViewController(storyMessage: storyMessage)
 
         super.init()
+
+        self.allowsExpansion = true
     }
 
     public required init() {
@@ -31,7 +33,7 @@ class StoryGroupReplySheet: InteractiveSheetViewController, StoryGroupReplier {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        minimizedHeight = super.maximizedHeight
+        minimizedHeight = super.maxHeight
 
         addChild(groupReplyViewController)
         contentView.addSubview(groupReplyViewController.view)

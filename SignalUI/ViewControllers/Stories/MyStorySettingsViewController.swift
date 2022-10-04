@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import SignalMessaging
+import BonMot
 
 public class MyStorySettingsViewController: OWSTableViewController2, MyStorySettingsDataSourceDelegate {
 
@@ -77,11 +78,12 @@ private protocol MyStorySettingsDataSourceDelegate: UIViewController {
     func reloadTableContents()
 }
 
-private class MyStorySettingsDataSource: Dependencies {
+private class MyStorySettingsDataSource: NSObject, Dependencies {
 
     private weak var delegate: MyStorySettingsDataSourceDelegate?
 
     init(delegate: MyStorySettingsDataSourceDelegate) {
+        super.init()
         self.delegate = delegate
     }
 
@@ -110,11 +112,11 @@ private class MyStorySettingsDataSource: Dependencies {
                 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
                 comment: "Section header for the 'viewers' section on the 'story settings' view"
             )
-            // TODO: Add 'learn more' sheet button
-            visibilitySection.footerTitle = OWSLocalizedString(
-                "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
-                comment: "Section footer for the 'viewers' section on the 'story settings' view"
-            )
+            let footerTextView = makeWhoCanViewThisTextView(for: style)
+            let footerContainer = UIView()
+            footerContainer.addSubview(footerTextView)
+            footerTextView.autoPinEdgesToSuperviewEdges(withInsets: .init(hMargin: 32, vMargin: 16))
+            visibilitySection.customFooterView = footerContainer
         }
         contents.addSection(visibilitySection)
 
@@ -276,10 +278,12 @@ private class MyStorySettingsDataSource: Dependencies {
     private class SheetHeaderView: UIView {
 
         let titleLabel = UILabel()
-        let subtitleLabel = UILabel()
+        let subtitleView: LinkingTextView
         let doneButton = UIButton()
 
         init(frame: CGRect, dataSource: MyStorySettingsDataSource) {
+            subtitleView = dataSource.makeWhoCanViewThisTextView(for: .sheet)
+
             super.init(frame: frame)
 
             titleLabel.text = OWSLocalizedString(
@@ -291,16 +295,7 @@ private class MyStorySettingsDataSource: Dependencies {
             titleLabel.textColor = Theme.primaryTextColor
             addSubview(titleLabel)
 
-            // TODO: Add 'learn more' sheet button
-            subtitleLabel.text = OWSLocalizedString(
-                "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
-                comment: "Section footer for the 'viewers' section on the 'story settings' view"
-            )
-            subtitleLabel.textAlignment = .center
-            subtitleLabel.numberOfLines = 0
-            subtitleLabel.font = .ows_dynamicTypeFootnote
-            subtitleLabel.textColor = Theme.secondaryTextAndIconColor
-            addSubview(subtitleLabel)
+            addSubview(subtitleView)
 
             doneButton.setTitle(CommonStrings.doneButton, for: .normal)
             doneButton.titleLabel?.font = .ows_dynamicTypeHeadline.ows_semibold
@@ -316,10 +311,10 @@ private class MyStorySettingsDataSource: Dependencies {
             titleLabel.autoPinTopToSuperviewMargin()
             titleLabel.autoPinTrailing(toLeadingEdgeOf: doneButton)
 
-            subtitleLabel.autoHCenterInSuperview()
-            subtitleLabel.autoPinWidthToSuperview(withMargin: 42)
-            subtitleLabel.autoPinBottomToSuperviewMargin(withInset: 16)
-            subtitleLabel.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 24)
+            subtitleView.autoHCenterInSuperview()
+            subtitleView.autoPinWidthToSuperview(withMargin: 24)
+            subtitleView.autoPinBottomToSuperviewMargin(withInset: 16)
+            subtitleView.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 24)
         }
 
         @available(*, unavailable)
@@ -328,8 +323,66 @@ private class MyStorySettingsDataSource: Dependencies {
         }
     }
 
+    private func makeWhoCanViewThisTextView(for style: Style) -> LinkingTextView {
+        let textView = LinkingTextView()
+
+        let baseString: String
+        let textAlignment: NSTextAlignment
+        switch style {
+        case .fullscreen:
+            textAlignment = .natural
+            baseString = OWSLocalizedString(
+                "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
+                comment: "Section footer for the 'viewers' section on the 'story settings' view."
+            )
+        case .sheet:
+            textAlignment = .center
+            baseString = OWSLocalizedString(
+                "STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER",
+                comment: "Header for the 'viewers' section on the 'story settings' bottom sheet."
+            )
+        }
+
+        // Link doesn't matter, we will override tap behavior.
+        let learnMoreString = CommonStrings.learnMore.styled(with: .link(URL(string: Constants.learnMoreUrl)!))
+        textView.attributedText = NSAttributedString.composed(of: [
+            baseString,
+            "\n",
+            learnMoreString
+        ]).styled(
+            with: .font(.ows_dynamicTypeCaption1Clamped),
+            .color(Theme.secondaryTextAndIconColor),
+            .alignment(textAlignment)
+        )
+        textView.linkTextAttributes = [
+            .foregroundColor: Theme.primaryTextColor,
+            .underlineColor: UIColor.clear,
+            .underlineStyle: NSUnderlineStyle.single.rawValue
+        ]
+
+        textView.delegate = self
+
+        return textView
+    }
+
     @objc
     private func didTapDoneButton() {
         delegate?.dismiss(animated: true)
+    }
+
+    private enum Constants {
+        // Link doesn't matter, we will override tap behavior.
+        static let learnMoreUrl = "https://support.signal.org/"
+    }
+}
+
+extension MyStorySettingsDataSource: UITextViewDelegate {
+
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        guard URL.absoluteString == Constants.learnMoreUrl else {
+            return false
+        }
+        delegate?.present(MyStorySettingsLearnMoreSheetViewController(), animated: true)
+        return false
     }
 }

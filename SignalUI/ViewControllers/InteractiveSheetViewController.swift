@@ -7,23 +7,23 @@ import UIKit
 
 open class InteractiveSheetViewController: OWSViewController {
 
-    private enum Constants {
-        static let handleSize = CGSize(width: 36, height: 5)
-        static let handleInsideMargin: CGFloat = 12
+    public enum Constants {
+        fileprivate static let handleSize = CGSize(width: 36, height: 5)
+        fileprivate static let handleInsideMargin: CGFloat = 12
 
         /// Max height of the sheet has its top this far from the safe area top of the screen.
-        static let extraTopPadding: CGFloat = 32
+        fileprivate static let extraTopPadding: CGFloat = 32
 
-        static let defaultMinHeight: CGFloat = 346
+        public static let defaultMinHeight: CGFloat = 346
 
-        static let maxAnimationDuration: TimeInterval = 0.3
+        fileprivate static let maxAnimationDuration: TimeInterval = 0.3
 
         /// Any absolute velocity below this amount counts as zero velocity, e.g. just releasing.
-        static let baseVelocityThreshhold: CGFloat = 200
+        fileprivate static let baseVelocityThreshhold: CGFloat = 200
         /// Any upwards velocity greater this that amount maximizes the sheet.
-        static let maximizeVelocityThreshold: CGFloat = 500
+        fileprivate static let maximizeVelocityThreshold: CGFloat = 500
         /// Any downwards velocity greater than this amount dismisses the sheet.
-        static let dismissVelocityThreshold: CGFloat = 1000
+        fileprivate static let dismissVelocityThreshold: CGFloat = 1000
     }
 
     private let sheetContainerView: UIView = {
@@ -78,6 +78,10 @@ open class InteractiveSheetViewController: OWSViewController {
         // Prefer to be full width, but don't exceed the maximum width
         sheetContainerView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)
         sheetContainerView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
+        let minScreenDimension = min(CurrentAppContext().frame.width, CurrentAppContext().frame.height)
+        if minScreenDimension <= maxWidth {
+            sheetContainerView.autoSetDimension(.width, toSize: minScreenDimension)
+        }
         NSLayoutConstraint.autoSetPriority(.defaultHigh) {
             sheetContainerView.autoPinWidthToSuperview()
         }
@@ -110,6 +114,7 @@ open class InteractiveSheetViewController: OWSViewController {
         super.themeDidChange()
 
         handle.backgroundColor = Theme.tableView2PresentedSeparatorColor
+        sheetContainerView.backgroundColor = sheetBackgroundColor
     }
 
     @objc
@@ -120,60 +125,76 @@ open class InteractiveSheetViewController: OWSViewController {
 
     // MARK: - Resize / Interactive Dismiss
 
-    public final lazy var minimizedHeight: CGFloat = Constants.defaultMinHeight {
+    public final var allowsExpansion: Bool = true {
         didSet {
+            if allowsExpansion {
+                maxHeight = maximumAllowedHeight()
+            } else {
+                maxHeight = minHeight
+            }
             guard isViewLoaded else {
                 return
             }
-            sheetHeightMinConstraint.constant = minHeightForConstraint
             if
                 !isInInteractiveTransition,
                 !isDismissingFromPanGesture,
-                sheetCurrentHeightConstraint.constant == oldValue
-                || sheetCurrentHeightConstraint.constant < minHeightForConstraint
+                sheetCurrentHeightConstraint.constant > minHeight
             {
-                sheetCurrentHeightConstraint.constant = minHeightForConstraint
+                sheetCurrentHeightConstraint.constant = minHeight
             }
         }
     }
 
-    public final lazy var maximizedHeight: CGFloat = defaultMaximizedHeight {
+    private var minHeight: CGFloat = Constants.defaultMinHeight {
         didSet {
+            if !allowsExpansion {
+                maxHeight = minHeight
+            }
             guard isViewLoaded else {
                 return
             }
-            sheetHeightMaxConstraint.constant = maximizedHeight
+            sheetHeightMinConstraint.constant = minHeight
             if
                 !isInInteractiveTransition,
                 !isDismissingFromPanGesture,
                 sheetCurrentHeightConstraint.constant == oldValue
-                || sheetCurrentHeightConstraint.constant > maximizedHeight
+                    || sheetCurrentHeightConstraint.constant < minHeight
             {
-                sheetCurrentHeightConstraint.constant = maximizedHeight
+                sheetCurrentHeightConstraint.constant = minHeight
             }
         }
     }
 
-    private var minHeightForConstraint: CGFloat {
-        return min(minimizedHeight, maximizedHeight)
+    private var externalMinHeight: CGFloat?
+
+    public final var minimizedHeight: CGFloat {
+        get {
+            return minHeight
+        }
+        set {
+            externalMinHeight = newValue
+            self.minHeight = min(newValue, maximumAllowedHeight())
+        }
     }
+
+    public private(set) lazy final var maxHeight = maximumAllowedHeight()
 
     private lazy var sheetHeightMinConstraint = sheetContainerView.autoSetDimension(
         .height,
-        toSize: minHeightForConstraint,
+        toSize: minHeight,
         relation: .greaterThanOrEqual
     )
 
     private lazy var sheetHeightMaxConstraint = sheetContainerView.autoSetDimension(
         .height,
-        toSize: maximizedHeight,
+        toSize: maxHeight,
         relation: .lessThanOrEqual
     )
 
-    private lazy var sheetCurrentHeightConstraint = sheetContainerView.autoSetDimension(.height, toSize: minHeightForConstraint)
+    private lazy var sheetCurrentHeightConstraint = sheetContainerView.autoSetDimension(.height, toSize: minHeight)
 
     public func minimizeHeight(animated: Bool = true) {
-        sheetCurrentHeightConstraint.constant = minHeightForConstraint
+        sheetCurrentHeightConstraint.constant = minHeight
         guard animated else {
             view.layoutIfNeeded()
             return
@@ -191,7 +212,7 @@ open class InteractiveSheetViewController: OWSViewController {
     }
 
     public func maximizeHeight(animated: Bool = true) {
-        sheetCurrentHeightConstraint.constant = maximizedHeight
+        sheetCurrentHeightConstraint.constant = maxHeight
         guard animated else {
             view.layoutIfNeeded()
             return
@@ -233,15 +254,38 @@ open class InteractiveSheetViewController: OWSViewController {
         interactiveScrollViews.forEach { $0.panGestureRecognizer.addTarget(self, action: #selector(handlePan)) }
     }
 
-    private lazy var defaultMaximizedHeight = CurrentAppContext().frame.height - (view.safeAreaInsets.top + Constants.extraTopPadding)
+    private func maximumAllowedHeight() -> CGFloat {
+        return CurrentAppContext().frame.height - (view.safeAreaInsets.top + Constants.extraTopPadding)
+    }
 
     open override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
-        let newDefaultMaxHeight = CurrentAppContext().frame.height - (view.safeAreaInsets.top + Constants.extraTopPadding)
-        if maximizedHeight == defaultMaximizedHeight {
-            maximizedHeight = newDefaultMaxHeight
+        let oldMaxHeight = maxHeight
+        let newMaxHeight = maximumAllowedHeight()
+        if allowsExpansion {
+            maxHeight = newMaxHeight
         }
-        defaultMaximizedHeight = newDefaultMaxHeight
+        if minHeight > maxHeight {
+            minHeight = maxHeight
+        } else if minHeight == oldMaxHeight, let externalMinHeight = externalMinHeight {
+            minimizedHeight = externalMinHeight
+        }
+
+        guard isViewLoaded else {
+            return
+        }
+        sheetHeightMaxConstraint.constant = maxHeight
+        if
+            !isInInteractiveTransition,
+            !isDismissingFromPanGesture,
+            (
+                sheetCurrentHeightConstraint.constant == oldMaxHeight
+                && sheetCurrentHeightConstraint.constant != minHeight
+            )
+                || sheetCurrentHeightConstraint.constant > maxHeight
+        {
+            sheetCurrentHeightConstraint.constant = maxHeight
+        }
     }
 
     @objc
@@ -269,8 +313,8 @@ open class InteractiveSheetViewController: OWSViewController {
             let translation = sender.translation(in: view).y - startingTranslation
 
             var newHeight = startingHeight - translation
-            if newHeight > maximizedHeight {
-                newHeight = maximizedHeight
+            if newHeight > maxHeight {
+                newHeight = maxHeight
             }
 
             // If the height is decreasing, adjust the relevant view's proporitionally
@@ -292,12 +336,12 @@ open class InteractiveSheetViewController: OWSViewController {
                 completionState = .growing
             } else if currentVelocity >= Constants.dismissVelocityThreshold {
                 completionState = .dismissing
-            } else if currentHeight >= minHeightForConstraint {
+            } else if currentHeight >= minHeight {
                 if abs(currentVelocity) > Constants.baseVelocityThreshhold {
                     completionState = currentVelocity > 0 ? .shrinking : .growing
                 } else {
                     completionState =
-                        currentHeight < (maximizedHeight + minHeightForConstraint) / 2
+                        currentHeight < (maxHeight + minHeight) / 2
                         ? .shrinking : .growing
                 }
             } else {
@@ -305,7 +349,7 @@ open class InteractiveSheetViewController: OWSViewController {
                     completionState = currentVelocity > 0 ? .dismissing : .shrinking
                 } else {
                     completionState =
-                        currentHeight < minHeightForConstraint / 2
+                        currentHeight < minHeight / 2
                         ? .dismissing : .shrinking
                 }
             }
@@ -316,9 +360,9 @@ open class InteractiveSheetViewController: OWSViewController {
                 isDismissingFromPanGesture = true
                 finalHeight = 0
             case .growing:
-                finalHeight = maximizedHeight
+                finalHeight = maxHeight
             case .shrinking:
-                finalHeight = minHeightForConstraint
+                finalHeight = minHeight
             }
 
             let remainingDistance = finalHeight - currentHeight
@@ -368,7 +412,7 @@ open class InteractiveSheetViewController: OWSViewController {
         // view we want to do an interactive transition.
         guard
             (panningScrollView != nil && panningScrollView!.contentOffset.y <= 0)
-            || sheetContainerView.height < maximizedHeight
+            || sheetContainerView.height < maxHeight
             || panningScrollView == nil
         else {
             return false

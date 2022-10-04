@@ -45,6 +45,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
 
         tableViewController.shouldDeferInitialLoad = false
 
+        super.allowsExpansion = false
         contentSizeObservation = tableViewController.tableView.observe(\.contentSize, changeHandler: { [weak self] (_, _) in
             guard let self = self else { return }
             self.minimizedHeight = self.contentSizeHeight

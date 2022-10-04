@@ -71,6 +71,8 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        super.allowsExpansion = false
+
         contentView.preservesSuperviewLayoutMargins = true
         contentView.superview?.preservesSuperviewLayoutMargins = true
 
@@ -126,7 +128,11 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
                                                           verticalFittingPriority: .fittingSizeLevel)
         if sheetHeight != sheetSize.height {
             sheetHeight = sheetSize.height
-            minimizedHeight = max(0, sheetHeight)
+            if sheetHeight > 0 {
+                minimizedHeight = sheetHeight
+            } else {
+                minimizedHeight = InteractiveSheetViewController.Constants.defaultMinHeight
+            }
         }
     }
 

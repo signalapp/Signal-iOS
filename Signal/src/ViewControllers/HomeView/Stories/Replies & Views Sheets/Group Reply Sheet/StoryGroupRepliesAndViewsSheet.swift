@@ -45,6 +45,9 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         self.viewsViewController = StoryViewsViewController(storyMessage: storyMessage)
 
         super.init()
+
+        self.allowsExpansion = true
+        minimizedHeight = CurrentAppContext().frame.height * 0.6
     }
 
     public required init() {
@@ -53,11 +56,6 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        switch focusedTab {
-        case .views: minimizedHeight = CurrentAppContext().frame.height * 0.6
-        case .replies: minimizedHeight = super.maximizedHeight
-        }
 
         let vStack = UIStackView()
         vStack.axis = .vertical
@@ -98,6 +96,17 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         groupReplyViewController.view.autoPinHeightToSuperview()
         groupReplyViewController.view.autoPinEdge(.leading, to: .trailing, of: viewsViewController.view)
         groupReplyViewController.view.autoPinEdge(toSuperviewEdge: .trailing)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        switch focusedTab {
+        case .views:
+            break
+        case .replies:
+            maximizeHeight()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
