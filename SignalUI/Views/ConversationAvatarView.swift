@@ -23,13 +23,13 @@ public extension ConversationAvatarViewDelegate {
             actionSheet.addAction(.init(
                 title: OWSLocalizedString("VIEW_PHOTO", comment: "View the photo of a group or user"),
                 handler: { [weak self] _ in
-                    self?.presentStoryViewController()
+                    self?.presentAvatarViewController()
                 }
             ))
             actionSheet.addAction(.init(
                 title: OWSLocalizedString("VIEW_STORY", comment: "View the story of a group or user"),
                 handler: { [weak self] _ in
-                    self?.presentAvatarViewController()
+                    self?.presentStoryViewController()
                 }
             ))
             presentActionSheet(actionSheet, animated: true)
