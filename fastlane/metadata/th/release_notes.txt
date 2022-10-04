@@ -1,4 +1,4 @@
-• Better integration of your Signal contacts with the share sheet on older iOS versions, making it smoother to connect with the people you talk to most often.
-• Beautified long link previews
-• Fixed a bug where messages read on a linked device would sometimes show up as unread notifications on your lock screen.
-• Sorted out an issue with video recording using the in-app camera
+• ผสานรวมรายชื่อผู้ติดต่อ Signal ได้ง่ายดายยิ่งขึ้นด้วยแชร์ชีตบน iOS รุ่นก่อนๆ เพื่อให้คุณติดต่อสื่อสารกับคนที่คุยด้วยบ่อยๆ ได้สะดวกกว่าที่เคย
+• แสดงตัวอย่างลิงก์แบบยาวได้ครบถ้วนสวยงาม
+• แก้ไขบั๊กในกรณีที่คุณอ่านข้อความแล้วบนอุปกรณ์ที่เชื่อมโยงอยู่ แต่ระบบแสดงการแจ้งเตือนว่ามีข้อความที่ยังไม่ได้อ่านบนหน้าจอล็อก
+• แก้ไขปัญหาการบันทึกวิดีโอด้วยกล้องในแอป

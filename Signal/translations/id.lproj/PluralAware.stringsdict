@@ -1044,7 +1044,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Mengirim %1$d...</string>
+			<string>Mengirim %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

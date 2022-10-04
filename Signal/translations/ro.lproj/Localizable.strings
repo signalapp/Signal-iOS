@@ -185,7 +185,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
-"APPLICATION_SHORTCUT_NEW_MESSAGE" = "New Message";
+"APPLICATION_SHORTCUT_NEW_MESSAGE" = "Mesaj nou";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Arhivează";
@@ -1721,7 +1721,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Afișează insignele pe profil";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Do you want to use this proxy address?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Vrei să folosești această adresă proxy?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Locație ocolire cenzură";
@@ -1835,7 +1835,7 @@
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Gestionare abonament";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
-"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Monthly Donation to Signal";
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Donație lunară către Signal";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Mai multe";
@@ -2780,16 +2780,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ către %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Elimină Povestea de Grup";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Sigur vrei să ștergi această poveste?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%1$@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Membrii conversației de grup „%1$@” pot vedea și răspunde la această poveste. Poți actualiza calitatea de membru pentru acest chat în grup.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Cine Poate Vedea Această Poveste";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupul a fost actualizat.";
@@ -3188,7 +3188,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Fișier audio invalid.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "Adresa proxy pe care ai introdus-o este invalidă, verifică adresa și încearcă.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Poți activa accesul la contacte din aplicația iOS Setări pentru a putea invita prietenii tăi la Signal.";
@@ -3413,7 +3413,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Deschide linkul";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Deschide Signal Proxy";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Vezi pachetul de autocolante";
@@ -3725,7 +3725,7 @@
 "MY_STORIES_NO_STORIES" = "Actualizări ale poveștii tale vor apărea aici.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Toate Persoanele cu Excepția…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Toate Conexiunile Signal";
@@ -3740,10 +3740,10 @@
 "MY_STORY_NAME" = "Povestea mea";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choose who can view your story";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Alege cine poate să-ți vadă povestea";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "My Story Privacy";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Confidențialitatea Poveștii Mele";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Povestea Mea";
@@ -3812,7 +3812,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Selectează membri";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ către %2$@ · Poveste";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Alege Grupul";
@@ -4694,7 +4694,7 @@
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Elimină";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Această persoană nu va mai putea vedea povestea.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Elimini pe %1$@?";
@@ -4778,16 +4778,16 @@
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "Adresă proxy";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "You are connected to the proxy. You can turn the proxy off at any time from Settings.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "Ești conectat la proxy. Poți dezactiva proxy-ul în orice moment din Setări.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "Nu s-a realizat conexiunea la proxy. Verifică adresa proxy și încearcă din nou.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "Introdu adresa proxy";
 
 /* Title for the signal proxy settings */
 "PROXY_SETTINGS_TITLE" = "Proxy";
@@ -5927,7 +5927,7 @@
 "SETTINGS_PINS_TITLE" = "PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Setări pentru ocolirea cenzurii, proxy, redirecționarea apelurilor și expeditor ascuns.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avansat";
@@ -6011,7 +6011,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Permiteți accesul iOS la contactele si conversațiile Signal pentru funcții precum sugestii de partajare și notificări.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "Gestionează poveștile și cine le poate vedea.";
 
 /* Label for the stories section of the settings view */
 "SETTINGS_STORIES_TITLE" = "Povești";
@@ -6185,7 +6185,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Arată conversația";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Nu poți răspunde la această poveste pentru că nu mai ești membru al acestui grup.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Povești Ascunse";
@@ -6200,7 +6200,7 @@
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Ascunzi Povestea?";
 
 /* Short context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION_SHORT" = "Hide";
+"STORIES_HIDE_STORY_ACTION_SHORT" = "Ascunde";
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Poveste Ascunsă";
@@ -6236,7 +6236,7 @@
 "STORIES_SAVE_STORY_ACTION" = "Salvează";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Poveștile dispar automat după 24 de ore. Alege cine poate să-ți vadă povestea sau creează noi povești cu anumiți vizualizatori sau grupuri.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Poveștile dispar automat după 24 de ore. Alege cine poate să-ți vadă povestea sau creează noi povești cu anumiți spectatori sau grupuri.";
 
 /* Header for the 'My Stories' section of the stories settings */
 "STORIES_SETTINGS_MY_STORIES_HEADER" = "Poveștile Mele";
@@ -6245,19 +6245,19 @@
 "STORIES_SETTINGS_TITLE" = "Confidențialitatea poveștilor";
 
 /* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "Nu vei mai putea să distribui sau să vezi povești. Orice povești pe care le-ai distribuit recent vor fi încă vizibile pentru alte persoane până expiră.";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "Dacă dezactivezi poveștile nu vei mai putea să distribui sau să vezi povești.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Dezactivează Poveștile";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Distribuie și vezi povești de la alte persoane. Poveștile dispar automat după 24 de ore.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Activează Poveștile";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Distribuie";
@@ -6266,16 +6266,16 @@
 "STORIES_TITLE" = "Povești";
 
 /* Context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION" = "Arată Povestea";
+"STORIES_UNHIDE_STORY_ACTION" = "Arată Povestea din Nou";
 
 /* Short context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Unhide";
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Afișează din nou";
 
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Poveste Arătată din Nou";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Activează confirmările de citire ca să știi cine ți-a văzut poveștile.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Vizualizări";
@@ -6284,7 +6284,7 @@
 "STORY_COMPOSER_CAMERA" = "Cameră foto";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Nu s-a putut încărca linkul. Verifică-ți conexiunea și încearcă din nou.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
 "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Distribuie un link cu spectatorii poveștii tale";
@@ -6308,13 +6308,13 @@
 "STORY_PRIVACY_SETTINGS" = "Confidențialitate";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "A reacționat cu %1$@ la povestea ta";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %1$@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "A reacționat cu %1$@ la o poveste";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "A reacționat cu %1$@ la povestea lui %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Răspunde";
@@ -6332,13 +6332,13 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Această poveste nu a putut fi trimisă. Verifică-ți conexiunea și încearcă din nou";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Povestea nu a putut fi trimisă către anumite persoane. Verifică-ți conexiunea și încearcă din nou";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Împărtășește Doar Cu…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Toate cu Excepția...";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Trimitere eșuată";
@@ -6347,25 +6347,25 @@
 "STORY_SEND_FAILED_RETRY" = "Atinge pentru a încerca din nou";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Trimitere eșuată. Atinge și reîncearcă";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED" = "Trimis parțial";
+"STORY_SEND_PARTIALLY_FAILED" = "Trimisă parțial";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Trimisă parțial. Apasă pentru detalii";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Se trimite...";
 
 /* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Alege care dintre conexiunile Signal îți pot vedea povestea. Schimbările nu vor afecta poveștile pe care le-ai trimis deja.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Cine Poate Vedea Această Poveste";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %1$ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videoclipurile trimise către Povești vor fi scurtate în %1$d clipuri și trimise ca povești multiple.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Atinge ca să continui";
@@ -6722,10 +6722,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grupul nu a putut fi actualizat. Verifică-ți conexiunea la internet și încearcă din nou.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "Utilizează proxy";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "Folosește un proxy numai dacă nu te poți conecta la Signal pe date mobile sau Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Numele de utilizator pe Signal este opțional. Dacă alegi să creezi un nume de utilizator, alți utilizatori de Signal te vor putea găsi prin acest nume și te vor putea contacta fără să îți știe numărul de telefon.";
@@ -6809,7 +6809,7 @@
 "VIEW_PHOTO" = "Vezi Poza";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "Vezi Povestea";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Glisează pentru a anula";

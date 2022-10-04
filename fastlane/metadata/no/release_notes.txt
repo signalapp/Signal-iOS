@@ -1,4 +1,4 @@
-• Better integration of your Signal contacts with the share sheet on older iOS versions, making it smoother to connect with the people you talk to most often.
-• Beautified long link previews
-• Fixed a bug where messages read on a linked device would sometimes show up as unread notifications on your lock screen.
-• Sorted out an issue with video recording using the in-app camera
+• Bedre integrering av Signal-kontaktene dine på eldre iOS-versjoner, som gjør det enklere å få kontakt med de personene du snakker mest med.
+• Finere forhåndsvisninger av lenker.
+• Rettet en feil der meldinger som ble lest på en tilkoblet enhet, noen ganger dukket opp som uleste varsler på låseskjermen.
+• Løste et problem med videoopptak som ble gjort med kameraet i appen.

@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Semua Hubungan Signal . %1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -358,7 +358,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Semua Hubungan Signal . %1$d Dikecualikan</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -372,7 +372,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Hanya Kongsi Dengan . %1$d Penonton</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>

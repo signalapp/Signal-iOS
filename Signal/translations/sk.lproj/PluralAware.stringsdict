@@ -33,13 +33,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voice message 1 second</string>
+			<string>Hlasová správa 1 sekunda</string>
 			<key>few</key>
-			<string>Voice message %1$d seconds</string>
+			<string>Hlasová správa %1$d sekundy</string>
 			<key>many</key>
-			<string>Voice message %1$d seconds</string>
+			<string>Hlasová správa %1$d sekundy</string>
 			<key>other</key>
-			<string>Voice message %1$d seconds</string>
+			<string>Hlasová správa %1$d sekúnd</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -53,13 +53,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Add member to “%2$@”?</string>
+			<string>Pridať člena do „%2$@“?</string>
 			<key>few</key>
-			<string>Add %1$d members to “%2$@”?</string>
+			<string>Pridať %1$d členov do „%2$@“?</string>
 			<key>many</key>
-			<string>Add %1$d members to “%2$@”?</string>
+			<string>Pridať %1$d člena do „%2$@“?</string>
 			<key>other</key>
-			<string>Add %1$d members to “%2$@”?</string>
+			<string>Pridať %1$d členov do „%2$@“?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -153,13 +153,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete Chat?</string>
+			<string>Odstrániť čet?</string>
 			<key>few</key>
-			<string>Delete %1$d Chats?</string>
+			<string>Odstrániť %1$d čety?</string>
 			<key>many</key>
-			<string>Delete %1$d Chats?</string>
+			<string>Odstrániť %1$d četu?</string>
 			<key>other</key>
-			<string>Delete %1$d Chats?</string>
+			<string>Odstrániť %1$d četov?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -193,13 +193,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>Nemôžete vybrať viac ako jeden čet.</string>
 			<key>few</key>
-			<string>You can’t select more than %1$d chats.</string>
+			<string>Nemôžete vybrať viac ako %1$d čety.</string>
 			<key>many</key>
-			<string>You can’t select more than %1$d chats.</string>
+			<string>Nemôžete vybrať viac ako %1$d četu.</string>
 			<key>other</key>
-			<string>You can’t select more than %1$d chats.</string>
+			<string>Nemôžete vybrať viac ako %1$d četov.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -228,13 +228,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>match</string>
+			<string>zhoda</string>
 			<key>few</key>
-			<string>of %2$d matches</string>
+			<string>z %2$d zhôd</string>
 			<key>many</key>
-			<string>of %2$d matches</string>
+			<string>z %2$d zhody</string>
 			<key>other</key>
-			<string>of %2$d matches</string>
+			<string>z %2$d zhôd</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -308,13 +308,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minute ago</string>
+			<string>pred 1 minútou</string>
 			<key>few</key>
-			<string>%1$d minutes ago</string>
+			<string>pred %1$d minútami</string>
 			<key>many</key>
-			<string>%1$d minutes ago</string>
+			<string>pred %1$d minútou</string>
 			<key>other</key>
-			<string>%1$d minutes ago</string>
+			<string>pred %1$d minútami</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -328,13 +328,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete Message?</string>
+			<string>Odstrániť správu?</string>
 			<key>few</key>
-			<string>Delete %1$d Messages?</string>
+			<string>Odstrániť %1$d správy?</string>
 			<key>many</key>
-			<string>Delete %1$d Messages?</string>
+			<string>Odstrániť %1$d správy?</string>
 			<key>other</key>
-			<string>Delete %1$d Messages?</string>
+			<string>Odstrániť %1$d správ?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -368,13 +368,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Your version of Signal will expire in 1 day. Tap to update to the most recent version.</string>
+			<string>Platnosť vašej verzie Signal vyprší o jeden deň. Ťuknutím aktualizujte na najnovšiu verziu.</string>
 			<key>few</key>
-			<string>Your version of Signal will expire in %1$d days. Tap to update to the most recent version.</string>
+			<string>Platnosť vašej verzie Signal vyprší o %1$d dni. Ťuknutím aktualizujte na najnovšiu verziu.</string>
 			<key>many</key>
-			<string>Your version of Signal will expire in %1$d days. Tap to update to the most recent version.</string>
+			<string>Platnosť vašej verzie Signal vyprší o %1$d dňa. Ťuknutím aktualizujte na najnovšiu verziu.</string>
 			<key>other</key>
-			<string>Your version of Signal will expire in %1$d days. Tap to update to the most recent version.</string>
+			<string>Platnosť vašej verzie Signal vyprší o %1$d dní. Ťuknutím aktualizujte na najnovšiu verziu.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -408,13 +408,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The maximum number of 1 participant has been reached for this call. Try again later.</string>
+			<string>Bol dosiahnutý maximálny počet jedného účastníka pre tento hovor. Skúste to znovu neskôr.</string>
 			<key>few</key>
-			<string>The maximum number of %1$d participants has been reached for this call. Try again later.</string>
+			<string>Bol dosiahnutý maximálny počet %1$d účastníkov pre tento hovor. Skúste to znovu neskôr.</string>
 			<key>many</key>
-			<string>The maximum number of %1$d participants has been reached for this call. Try again later.</string>
+			<string>Bol dosiahnutý maximálny počet %1$d účastníka pre tento hovor. Skúste to znovu neskôr.</string>
 			<key>other</key>
-			<string>The maximum number of %1$d participants has been reached for this call. Try again later.</string>
+			<string>Bol dosiahnutý maximálny počet %1$d účastníkov pre tento hovor. Skúste to znovu neskôr.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -488,13 +488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Všetky Signal spojenia · 1 sledovateľ</string>
 			<key>few</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Všetky Signal spojenia · %1$d sledovatelia</string>
 			<key>many</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Všetky Signal spojenia · %1$d sledovateľa</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Všetky Signal spojenia · %1$d sledovateľov</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -508,13 +508,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Všetky Signal spojenia · 1 vylúčený</string>
 			<key>few</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Všetky Signal spojenia · %1$d vylúčení</string>
 			<key>many</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Všetky Signal spojenia · %1$d vylúčeného</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Všetky Signal spojenia · %1$d vylúčených</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -528,13 +528,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Zdieľať iba s · 1 sledovateľom</string>
 			<key>few</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Zdieľať iba s · %1$d sledovateľmi</string>
 			<key>many</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Zdieľať iba s · %1$d sledovateľom</string>
 			<key>other</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Zdieľať iba s · %1$d sledovateľmi</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<string>Volám používateľom %2$@, %3$@ a jednému ďalšiemu…</string>
 			<key>few</key>
-			<string>Ringing %2$@, %3$@, and %1$d others…</string>
+			<string>Volám používateľom %2$@, %3$@ a %1$d ďalším…</string>
 			<key>many</key>
-			<string>Ringing %2$@, %3$@, and %1$d others…</string>
+			<string>Volám používateľom %2$@, %3$@ a %1$d ďalšiemu…</string>
 			<key>other</key>
-			<string>Ringing %2$@, %3$@, and %1$d others…</string>
+			<string>Volám používateľom %2$@, %3$@ a %1$d ďalším…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -648,13 +648,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other joined the call</string>
+			<string>%2$@, %3$@ a jeden ďalší používateľ sa pripojili k hovoru</string>
 			<key>few</key>
-			<string>%2$@, %3$@, and %1$d others joined the call</string>
+			<string>%2$@, %3$@ a %1$d ďalší používatelia sa pripojili k hovoru</string>
 			<key>many</key>
-			<string>%2$@, %3$@, and %1$d others joined the call</string>
+			<string>%2$@, %3$@ a %1$d ďalšieho používateľa sa pripojilo k hovoru</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %1$d others joined the call</string>
+			<string>%2$@, %3$@ a %1$d ďalších používateľov sa pripojilo k hovoru</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -668,13 +668,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other left the call</string>
+			<string>%2$@, %3$@ a jeden ďalší používateľ opustili hovor</string>
 			<key>few</key>
-			<string>%2$@, %3$@, and %1$d others left the call</string>
+			<string>%2$@, %3$@ a %1$d ďalší používatelia opustili hovor</string>
 			<key>many</key>
-			<string>%2$@, %3$@, and %1$d others left the call</string>
+			<string>%2$@, %3$@ a %1$d ďalšieho používateľa opustilo hovor</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %1$d others left the call</string>
+			<string>%2$@, %3$@ a %1$d ďalších používateľov opustilo hovor</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -688,13 +688,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitation Sent</string>
+			<string>Pozvánka bola odoslaná</string>
 			<key>few</key>
-			<string>%1$d Invitations Sent</string>
+			<string>Boli odoslané %1$d pozvánky</string>
 			<key>many</key>
-			<string>%1$d Invitations Sent</string>
+			<string>Bolo odoslanej %1$d pozvánky</string>
 			<key>other</key>
-			<string>%1$d Invitations Sent</string>
+			<string>Bolo odoslaných %1$d pozvánok</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -748,13 +748,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 group member has similar name.</string>
+			<string>Jeden člen skupiny má podobné meno.</string>
 			<key>few</key>
-			<string>%1$d group members have similar names.</string>
+			<string>%1$d členovia skupiny majú podobné meno.</string>
 			<key>many</key>
-			<string>%1$d group members have similar names.</string>
+			<string>%1$d člena skupiny má podobné meno.</string>
 			<key>other</key>
-			<string>%1$d group members have similar names.</string>
+			<string>%1$d členov skupiny má podobné meno.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -768,13 +768,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 group member has similar name, review the member below or choose to take action.</string>
+			<string>Jeden člen skupiny má podobné meno, skontrolujte člena nižšie, alebo sa rozhodnite vykonať akciu.</string>
 			<key>few</key>
-			<string>%1$d group members have similar names, review the members below or choose to take action.</string>
+			<string>%1$d členovia skupiny majú podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
 			<key>many</key>
-			<string>%1$d group members have similar names, review the members below or choose to take action.</string>
+			<string>%1$d člena skupiny má podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
 			<key>other</key>
-			<string>%1$d group members have similar names, review the members below or choose to take action.</string>
+			<string>%1$d členov skupiny má podobné meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -788,13 +788,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 group member has the same name, review the member below or choose to take action.</string>
+			<string>Jeden člen skupiny má rovnaké meno, skontrolujte člena nižšie, alebo sa rozhodnite vykonať akciu.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name, review the members below or choose to take action.</string>
+			<string>%1$d členovia skupiny majú rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
 			<key>many</key>
-			<string>%1$d group members have the same name, review the members below or choose to take action.</string>
+			<string>%1$d člena skupiny má rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name, review the members below or choose to take action.</string>
+			<string>%1$d členov skupiny má rovnaké meno, skontrolujte členov nižšie, alebo sa rozhodnite vykonať akciu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -808,13 +808,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitation to the group were revoked for 1 person.</string>
+			<string>Pozvánka do skupiny bola odvolaná pre jednu osobu.</string>
 			<key>few</key>
-			<string>Invitations to the group were revoked for %1$d people.</string>
+			<string>Pozvánka do skupiny bola odvolaná pre %1$d ľudí.</string>
 			<key>many</key>
-			<string>Invitations to the group were revoked for %1$d people.</string>
+			<string>Pozvánka do skupiny bola odvolaná pre %1$d osoby.</string>
 			<key>other</key>
-			<string>Invitations to the group were revoked for %1$d people.</string>
+			<string>Pozvánka do skupiny bola odvolaná pre %1$d ľudí.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -828,13 +828,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ revoked an invitation to the group for 1 person.</string>
+			<string>Používateľ %2$@ zrušil pozvanie do skupiny pre jednu osobu.</string>
 			<key>few</key>
-			<string>%2$@ revoked an invitation to the group for %1$d people.</string>
+			<string>Používateľ %2$@ zrušil pozvanie do skupiny pre %1$d ľudí.</string>
 			<key>many</key>
-			<string>%2$@ revoked an invitation to the group for %1$d people.</string>
+			<string>Používateľ %2$@ zrušil pozvanie do skupiny pre %1$d osoby.</string>
 			<key>other</key>
-			<string>%2$@ revoked an invitation to the group for %1$d people.</string>
+			<string>Používateľ %2$@ zrušil pozvanie do skupiny pre %1$d ľudí.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -848,13 +848,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person was invited to the group.</string>
+			<string>Jedna osoba bola pozvaná do skupiny.</string>
 			<key>few</key>
-			<string>%1$d people were invited to the group.</string>
+			<string>%1$d ľudia boli pozvaní do skupiny.</string>
 			<key>many</key>
-			<string>%1$d people were invited to the group.</string>
+			<string>%1$d osoby bolo pozvanej do skupiny.</string>
 			<key>other</key>
-			<string>%1$d people were invited to the group.</string>
+			<string>%1$d ľudí boli pozvaných do skupiny.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -868,13 +868,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person to the group.</string>
+			<string>Používateľ %2$@ pozval do skupiny jednu osobu.</string>
 			<key>few</key>
-			<string>%2$@ invited %1$d people to the group.</string>
+			<string>Používateľ %2$@ pozval do skupiny %1$d ľudí.</string>
 			<key>many</key>
-			<string>%2$@ invited %1$d people to the group.</string>
+			<string>Používateľ %2$@ pozval do skupiny %1$d osoby.</string>
 			<key>other</key>
-			<string>%2$@ invited %1$d people to the group.</string>
+			<string>Používateľ %2$@ pozval do skupiny %1$d ľudí.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -888,13 +888,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ requested and canceled their request to join via the group link.</string>
+			<string>Používateľ %2$@ vyžiadal a zrušil žiadosť o pripojenie cez odkaz na skupinu.</string>
 			<key>few</key>
-			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
+			<string>Používateľ %2$@ vyžiadal a zrušil %1$d žiadosti o pripojenie cez odkaz na skupinu.</string>
 			<key>many</key>
-			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
+			<string>Používateľ %2$@ vyžiadal a zrušil %1$d žiadosti o pripojenie cez odkaz na skupinu.</string>
 			<key>other</key>
-			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
+			<string>Používateľ %2$@ vyžiadal a zrušil %1$d žiadostí o pripojenie cez odkaz na skupinu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -908,13 +908,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been removed from the group.</string>
+			<string>Jedného člena nebolo možné pridať do novej skupiny a bol odstránený zo skupiny.</string>
 			<key>few</key>
-			<string>%1$d members couldn’t be added to the New Group and have been removed from the group.</string>
+			<string>%1$d členov nebolo možné pridať do novej skupiny a boli odstránení zo skupiny.</string>
 			<key>many</key>
-			<string>%1$d members couldn’t be added to the New Group and have been removed from the group.</string>
+			<string>%1$d člena nebolo možné pridať do novej skupiny a bol odstránení zo skupiny.</string>
 			<key>other</key>
-			<string>%1$d members couldn’t be added to the New Group and have been removed from the group.</string>
+			<string>%1$d členov nebolo možné pridať do novej skupiny a boli odstránení zo skupiny.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -948,13 +948,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Túto skupinu nie je možné vytvoriť, pretože jeden člen používa starú verziu Signalu. Po aktualizácii Signalu s ním môžete vytvoriť novú skupinu, alebo ho pred vytvorením skupiny odstrániť. %2$@</string>
 			<key>few</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Túto skupinu nie je možné vytvoriť, pretože %1$d členovia používajú starú verziu Signalu. Po aktualizácii Signalu s nimi môžete vytvoriť novú skupinu, alebo ich pred vytvorením skupiny odstrániť. %2$@</string>
 			<key>many</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Túto skupinu nie je možné vytvoriť, pretože %1$d člena používa starú verziu Signalu. Po aktualizácii Signalu s ním môžete vytvoriť novú skupinu, alebo ho pred vytvorením skupiny odstrániť. %2$@</string>
 			<key>other</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Túto skupinu nie je možné vytvoriť, pretože %1$d členov používa starú verziu Signalu. Po aktualizácii Signalu s nimi môžete vytvoriť novú skupinu, alebo ich pred vytvorením skupiny odstrániť. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -968,13 +968,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Túto skupinu nie je možné vytvoriť, pretože jeden člen používa starú verziu Signalu. Po aktualizácii Signalu s ním môžete vytvoriť novú skupinu, alebo ho pred vytvorením skupiny odstrániť.</string>
 			<key>few</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Túto skupinu nie je možné vytvoriť, pretože %1$d členovia používajú starú verziu Signalu. Po aktualizácii Signalu s nimi môžete vytvoriť novú skupinu, alebo ich pred vytvorením skupiny odstrániť.</string>
 			<key>many</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Túto skupinu nie je možné vytvoriť, pretože %1$d člena používa starú verziu Signalu. Po aktualizácii Signalu s ním môžete vytvoriť novú skupinu, alebo ho pred vytvorením skupiny odstrániť.</string>
 			<key>other</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Túto skupinu nie je možné vytvoriť, pretože %1$d členov používa starú verziu Signalu. Po aktualizácii Signalu s nimi môžete vytvoriť novú skupinu, alebo ich pred vytvorením skupiny odstrániť.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -988,13 +988,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 member couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>Jedného člena nebolo možné znova pridať do novej skupiny. Chcete ho pridať teraz?</string>
 			<key>few</key>
-			<string>%1$d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>%1$d členov nebolo možné znova pridať do novej skupiny. Chcete ich pridať teraz?</string>
 			<key>many</key>
-			<string>%1$d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>%1$d člena nebolo možné znova pridať do novej skupiny. Chcete ho pridať teraz?</string>
 			<key>other</key>
-			<string>%1$d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>%1$d členov nebolo možné znova pridať do novej skupiny. Chcete ich pridať teraz?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -1008,13 +1008,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal groups perform best with 1 member or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Signal skupiny najlepšie fungujú s jedným členom alebo menším počtom členov. Pridanie ďalších členov spôsobí oneskorenia v posielaní a prijímaní správ.</string>
 			<key>few</key>
-			<string>Signal groups perform best with %1$d members or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Signal skupiny najlepšie fungujú s %1$d alebo menej členmi. Pridanie ďalších členov spôsobí oneskorenia v posielaní a prijímaní správ.</string>
 			<key>many</key>
-			<string>Signal groups perform best with %1$d members or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Signal skupiny najlepšie fungujú s %1$d členom alebo menším počtom členov. Pridanie ďalších členov spôsobí oneskorenia v posielaní a prijímaní správ.</string>
 			<key>other</key>
-			<string>Signal groups perform best with %1$d members or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Signal skupiny najlepšie fungujú s %1$d alebo menej členmi. Pridanie ďalších členov spôsobí oneskorenia v posielaní a prijímaní správ.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -1028,13 +1028,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t share more than 1 item.</string>
+			<string>Nemôžete zdieľať viac ako jednu položku.</string>
 			<key>few</key>
-			<string>You can’t share more than %1$d items.</string>
+			<string>Nemôžete zdieľať viac ako %1$d položky.</string>
 			<key>many</key>
-			<string>You can’t share more than %1$d items.</string>
+			<string>Nemôžete zdieľať viac ako %1$d položky.</string>
 			<key>other</key>
-			<string>You can’t share more than %1$d items.</string>
+			<string>Nemôžete zdieľať viac ako %1$d položiek.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1068,13 +1068,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete 1 Message</string>
+			<string>Odstrániť jednu správu</string>
 			<key>few</key>
-			<string>Delete %1$d Messages</string>
+			<string>Odstrániť %1$d správy</string>
 			<key>many</key>
-			<string>Delete %1$d Messages</string>
+			<string>Odstrániť %1$d správy</string>
 			<key>other</key>
-			<string>Delete %1$d Messages</string>
+			<string>Odstrániť %1$d správ</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -1088,13 +1088,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Photo</string>
+			<string>Jedna fotka</string>
 			<key>few</key>
-			<string>%1$d Photos</string>
+			<string>%1$d fotky</string>
 			<key>many</key>
-			<string>%1$d Photos</string>
+			<string>%1$d fotky</string>
 			<key>other</key>
-			<string>%1$d Photos</string>
+			<string>%1$d fotiek</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -1148,13 +1148,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You Blocked 1 Member of This Group</string>
+			<string>Zablokovali ste jedného člena tejto skupiny</string>
 			<key>few</key>
-			<string>You Blocked %1$d Members of This Group</string>
+			<string>Zablokovali ste %1$d členov tejto skupiny</string>
 			<key>many</key>
-			<string>You Blocked %1$d Members of This Group</string>
+			<string>Zablokovali ste %1$d člena tejto skupiny</string>
 			<key>other</key>
-			<string>You Blocked %1$d Members of This Group</string>
+			<string>Zablokovali ste %1$d členov tejto skupiny</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1168,13 +1168,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 vylúčený</string>
 			<key>few</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d vylúčení</string>
 			<key>many</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d vylúčeného</string>
 			<key>other</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d vylúčených</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1268,13 +1268,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person</string>
+			<string>Používateľ %2$@ pozval jednu osobu</string>
 			<key>few</key>
-			<string>%2$@ invited %1$d people</string>
+			<string>Používateľ %2$@ pozval %1$d ľudí</string>
 			<key>many</key>
-			<string>%2$@ invited %1$d people</string>
+			<string>Používateľ %2$@ pozval %1$d osoby</string>
 			<key>other</key>
-			<string>%2$@ invited %1$d people</string>
+			<string>Používateľ %2$@ pozval %1$d ľudí</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1308,13 +1308,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke invalid invite</string>
+			<string>Odvolať neplatnú pozvánku</string>
 			<key>few</key>
-			<string>Revoke %1$d invalid invites</string>
+			<string>Odvolať %1$d neplatné pozvánky</string>
 			<key>many</key>
-			<string>Revoke %1$d invalid invites</string>
+			<string>Odvolať %1$d neplatnej pozvánky</string>
 			<key>other</key>
-			<string>Revoke %1$d invalid invites</string>
+			<string>Odvolať %1$d neplatných pozvánok</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1328,13 +1328,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke group invite sent by “%2$@”?</string>
+			<string>Odvolať pozvánku odoslanú skupinou „%2$@“?</string>
 			<key>few</key>
-			<string>Revoke %1$d invites sent by “%2$@”?</string>
+			<string>Odvolať %1$d pozvánky odoslané skupinou „%2$@“?</string>
 			<key>many</key>
-			<string>Revoke %1$d invites sent by “%2$@”?</string>
+			<string>Odvolať %1$d pozvánky odoslanej skupinou „%2$@“?</string>
 			<key>other</key>
-			<string>Revoke %1$d invites sent by “%2$@”?</string>
+			<string>Odvolať %1$d pozvánok odoslaných skupinou „%2$@“?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1368,13 +1368,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
+			<string>Pripomenieme vám to neskôr. Vytvorenie PIN kódu bude povinné o jeden deň.</string>
 			<key>few</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
+			<string>Pripomenieme vám to neskôr. Vytvorenie PIN kódu bude povinné o %1$d dni.</string>
 			<key>many</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
+			<string>Pripomenieme vám to neskôr. Vytvorenie PIN kódu bude povinné o %1$d dňa.</string>
 			<key>other</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
+			<string>Pripomenieme vám to neskôr. Vytvorenie PIN kódu bude povinné o %1$d dní.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1388,13 +1388,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Zostáva vám jeden pokus. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet, ale stratíte niektoré uložené nastavenia, ako napríklad informácie o vašom profile.</string>
 			<key>few</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Zostávajú vám %1$d pokusy. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet, ale stratíte niektoré uložené nastavenia, ako napríklad informácie o vašom profile.</string>
 			<key>many</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Zostáva vám %1$d pokusu. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet, ale stratíte niektoré uložené nastavenia, ako napríklad informácie o vašom profile.</string>
 			<key>other</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Zostáva vám %1$d pokusov. Ak sa vám minú pokusy, môžete si vytvoriť nový PIN. Môžete sa zaregistrovať a používať svoj účet, ale stratíte niektoré uložené nastavenia, ako napríklad informácie o vašom profile.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1408,13 +1408,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>Zostáva vám jeden pokus. Ak sa vám minú pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
 			<key>few</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>Zostávajú vám %1$d pokusy. Ak sa vám minú pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
 			<key>many</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>Zostáva vám %1$d pokusu. Ak sa vám minú pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
 			<key>other</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>Zostáva vám %1$d pokusov. Ak sa vám minú pokusy, váš účet bude zablokovaný. Po 7 dňoch nečinnosti sa môžete znova zaregistrovať bez vášho PIN. Váš účet bude vymazaný a všetok obsah odstránený.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1428,13 +1428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; odpoveď</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpovede</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpovede</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; odpovedí</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1468,13 +1468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 vylúčený</string>
 			<key>few</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d vylúčení</string>
 			<key>many</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d vylúčeného</string>
 			<key>other</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d vylúčených</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1488,13 +1488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Odosiela sa…</string>
 			<key>few</key>
-			<string>Sending %1$d...</string>
+			<string>Odosielajú sa %1$d…</string>
 			<key>many</key>
-			<string>Sending %1$d...</string>
+			<string>Odosiela sa %1$d…</string>
 			<key>other</key>
-			<string>Sending %1$d...</string>
+			<string>Odosiela sa %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1508,13 +1508,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; pozretie</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; pozretia</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; pozretia</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; pozretí</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
@@ -1528,13 +1528,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; pozretie</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; pozretia</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; pozretia</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; pozretí</string>
 		</dict>
 		<key>replies</key>
 		<dict>
@@ -1543,13 +1543,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; odpoveď</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpovede</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpovede</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; odpovedí</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1563,13 +1563,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Member of %2$@, %3$@, and 1 additional group</string>
+			<string>Člen %2$@, %3$@ a jednej ďalšej skupiny</string>
 			<key>few</key>
-			<string>Member of %2$@, %3$@, and %1$d additional groups</string>
+			<string>Člen %2$@, %3$@ a %1$d ďalších skupín</string>
 			<key>many</key>
-			<string>Member of %2$@, %3$@, and %1$d additional groups</string>
+			<string>Člen %2$@, %3$@ a %1$d ďalšej skupiny</string>
 			<key>other</key>
-			<string>Member of %2$@, %3$@, and %1$d additional groups</string>
+			<string>Člen %2$@, %3$@ a %1$d ďalších skupín</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1603,13 +1603,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1d</string>
+			<string>1 deň</string>
 			<key>few</key>
-			<string>%1$dd</string>
+			<string>%1$d dni</string>
 			<key>many</key>
-			<string>%1$dd</string>
+			<string>%1$d dňa</string>
 			<key>other</key>
-			<string>%1$dd</string>
+			<string>%1$d dní</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1723,13 +1723,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1s</string>
+			<string>%1$d sekunda</string>
 			<key>few</key>
-			<string>%1$ds</string>
+			<string>%1$d sekundy</string>
 			<key>many</key>
-			<string>%1$ds</string>
+			<string>%1$d sekundy</string>
 			<key>other</key>
-			<string>%1$ds</string>
+			<string>%1$d sekúnd</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_WEEKS_%d</key>
@@ -1763,13 +1763,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1w</string>
+			<string>%1$d týždeň</string>
 			<key>few</key>
-			<string>%1$dw</string>
+			<string>%1$d týždne</string>
 			<key>many</key>
-			<string>%1$dw</string>
+			<string>%1$d týždňa</string>
 			<key>other</key>
-			<string>%1$dw</string>
+			<string>%1$d týždňov</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1783,13 +1783,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 year</string>
+			<string>Jeden rok</string>
 			<key>few</key>
-			<string>%1$d years</string>
+			<string>%1$d roky</string>
 			<key>many</key>
-			<string>%1$d years</string>
+			<string>%1$d roka</string>
 			<key>other</key>
-			<string>%1$d years</string>
+			<string>%1$d rokov</string>
 		</dict>
 	</dict>
 </dict>

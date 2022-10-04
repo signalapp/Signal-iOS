@@ -246,7 +246,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Maximum group size of %1$d members reached.</string>
+			<string>已達到 %1$d 位群組成員的人數上限。</string>
 		</dict>
 	</dict>
 	<key>EXPIRATION_WARNING_%d</key>
@@ -344,7 +344,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>所有 Signal 人脈 · %1$d 個瀏覽者</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -358,7 +358,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>所有 Signal 人脈 · 已排除 %1$d 人</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -372,7 +372,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>只分享給 · %1$d 位瀏覽者</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>

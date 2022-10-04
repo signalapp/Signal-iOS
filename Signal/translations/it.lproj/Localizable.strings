@@ -185,7 +185,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
-"APPLICATION_SHORTCUT_NEW_MESSAGE" = "New Message";
+"APPLICATION_SHORTCUT_NEW_MESSAGE" = "Nuovo messaggio";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Archivia";
@@ -1721,7 +1721,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Mostra badge sul profilo";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Do you want to use this proxy address?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Vuoi usare questo indirizzo proxy?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Raggiro censura del luogo";
@@ -1835,7 +1835,7 @@
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Gestisci contributo";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
-"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Monthly Donation to Signal";
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Donazione mensile a Signal";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Altro";
@@ -3188,7 +3188,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Audio file non valido.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "L'indirizzo del proxy che hai inserito non è valido, controlla l'indirizzo e riprova.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Puoi abilitare l'accesso ai contatti nelle impostazioni di iOS per invitare i tuoi amici ad unirsi a Signal.";
@@ -3413,7 +3413,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Apri link";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Apri il proxy di Signal";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Visualizza pacchetto di adesivi";
@@ -3740,10 +3740,10 @@
 "MY_STORY_NAME" = "La mia storia";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choose who can view your story";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Scegli chi può vedere questa Storia";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "My Story Privacy";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Privacy delle mie Storie";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "La mia storia";
@@ -4778,16 +4778,16 @@
 "PROFILE_VIEW_TITLE" = "Profilo";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "Indirizzo proxy";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "You are connected to the proxy. You can turn the proxy off at any time from Settings.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "Sei connesso al proxy. Puoi disattivare il proxy in qualsiasi momento dalle impostazioni.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "Impossibile connettersi al proxy. Controlla l'indirizzo proxy e riprova.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "Inserisci indirizzo proxy";
 
 /* Title for the signal proxy settings */
 "PROXY_SETTINGS_TITLE" = "Proxy";
@@ -5927,7 +5927,7 @@
 "SETTINGS_PINS_TITLE" = "PIN di Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Impostazioni per le funzioni di aggiramento della censura, server proxy, mittente schermato e inoltro delle chiamate.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Avanzate";
@@ -6200,7 +6200,7 @@
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Vuoi nascondere la Storia?";
 
 /* Short context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION_SHORT" = "Hide";
+"STORIES_HIDE_STORY_ACTION_SHORT" = "Nascondi";
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Storia nascosta";
@@ -6269,7 +6269,7 @@
 "STORIES_UNHIDE_STORY_ACTION" = "Rendi visibile la Storia";
 
 /* Short context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Unhide";
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Rendi visibile";
 
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "La Storia è ora visibile";
@@ -6332,7 +6332,7 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Non è stato possibile inviare questa Storia. Controlla la tua connessione e riprova";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Non è stato possibile inviare questa Storia a tutte le persone. Controlla la tua connessione e riprova.";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Condividi solo con...";
@@ -6347,13 +6347,13 @@
 "STORY_SEND_FAILED_RETRY" = "Tocca per riprovare";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Invio non riuscito. Tocca per riprovare";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "Inviata in parte";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Inviata in parte. Tocca per i dettagli";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Invio in corso...";
@@ -6365,7 +6365,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %1$ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "I video che vuoi inviare come Storie verranno tagliati in clip di %1$d secondi e poi inviati sotto forma di più Storie.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "Tocca per proseguire";
@@ -6722,10 +6722,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Il gruppo non può essere aggiornato. Controlla la tua connessione a Internet e riprova.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "Usa proxy";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "Usa un proxy solo se non riesci a connetterti a Signal tramite una connessione Wi-Fi o i dati mobili.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "I nomi utente su Signal sono facoltativi. Se scegli di creare un nome utente, gli altri utilizzatori di Signal potranno trovarti con questo nome utente e contattarti senza conoscere il tuo numero di telefono.";
