@@ -350,13 +350,23 @@ class LastRowCenteredLayout: UICollectionViewFlowLayout {
         // If we have an odd number of items then we want to center the last one horizontally
         let elementAttributes: [UICollectionViewLayoutAttributes]? = super.layoutAttributesForElements(in: rect)
         
+        // It looks like on "max" devices the rect we are given can be much larger than the size of the
+        // collection view, as a result we need to try and use the collectionView width here instead
+        let targetViewWidth: CGFloat = {
+            guard let collectionView: UICollectionView = self.collectionView, collectionView.frame.width > 0 else {
+                return rect.width
+            }
+            
+            return collectionView.frame.width
+        }()
+        
         guard
             (elementAttributes?.count ?? 0) % 2 == 1,
             let lastItemAttributes: UICollectionViewLayoutAttributes = elementAttributes?.last
         else { return elementAttributes }
         
         lastItemAttributes.frame = CGRect(
-            x: ((rect.width - lastItemAttributes.frame.size.width) / 2),
+            x: ((targetViewWidth - lastItemAttributes.frame.size.width) / 2),
             y: lastItemAttributes.frame.origin.y,
             width: lastItemAttributes.frame.size.width,
             height: lastItemAttributes.frame.size.height

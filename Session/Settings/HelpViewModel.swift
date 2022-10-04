@@ -60,9 +60,9 @@ class HelpViewModel: SessionTableViewModel<NoNav, HelpViewModel.Section, HelpVie
                             id: .translate,
                             title: "HELP_TRANSLATE_TITLE".localized(),
                             rightAccessory: .icon(
-                                UIImage(named: "icon_link")?
+                                UIImage(systemName: "arrow.up.forward.app")?
                                     .withRenderingMode(.alwaysTemplate),
-                                size: .fit
+                                size: .small
                             ),
                             onTap: {
                                 guard let url: URL = URL(string: "https://crowdin.com/project/session-ios") else {
@@ -81,9 +81,9 @@ class HelpViewModel: SessionTableViewModel<NoNav, HelpViewModel.Section, HelpVie
                             id: .feedback,
                             title: "HELP_FEEDBACK_TITLE".localized(),
                             rightAccessory: .icon(
-                                UIImage(named: "icon_link")?
+                                UIImage(systemName: "arrow.up.forward.app")?
                                     .withRenderingMode(.alwaysTemplate),
-                                size: .fit
+                                size: .small
                             ),
                             onTap: {
                                 guard let url: URL = URL(string: "https://getsession.org/survey") else {
@@ -102,9 +102,9 @@ class HelpViewModel: SessionTableViewModel<NoNav, HelpViewModel.Section, HelpVie
                             id: .faq,
                             title: "HELP_FAQ_TITLE".localized(),
                             rightAccessory: .icon(
-                                UIImage(named: "icon_link")?
+                                UIImage(systemName: "arrow.up.forward.app")?
                                     .withRenderingMode(.alwaysTemplate),
-                                size: .fit
+                                size: .small
                             ),
                             onTap: {
                                 guard let url: URL = URL(string: "https://getsession.org/faq") else {
@@ -123,9 +123,9 @@ class HelpViewModel: SessionTableViewModel<NoNav, HelpViewModel.Section, HelpVie
                             id: .support,
                             title: "HELP_SUPPORT_TITLE".localized(),
                             rightAccessory: .icon(
-                                UIImage(named: "icon_link")?
+                                UIImage(systemName: "arrow.up.forward.app")?
                                     .withRenderingMode(.alwaysTemplate),
-                                size: .fit
+                                size: .small
                             ),
                             onTap: {
                                 guard let url: URL = URL(string: "https://sessionapp.zendesk.com/hc/en-us") else {

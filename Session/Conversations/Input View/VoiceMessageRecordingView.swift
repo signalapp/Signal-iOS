@@ -2,6 +2,7 @@
 
 import UIKit
 import SessionUIKit
+import SessionUtilitiesKit
 import SignalUtilitiesKit
 
 final class VoiceMessageRecordingView: UIView {
@@ -207,7 +208,7 @@ final class VoiceMessageRecordingView: UIView {
     
     @objc private func updateDurationLabel() {
         let interval = Date().timeIntervalSince(recordingStartDate)
-        durationLabel.text = OWSFormat.formatDurationSeconds(Int(interval))
+        durationLabel.text = interval.formatted(format: .hoursMinutesSeconds)
     }
 
     // MARK: - Animation

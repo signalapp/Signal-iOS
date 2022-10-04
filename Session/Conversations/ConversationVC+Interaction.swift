@@ -1561,7 +1561,7 @@ extension ConversationVC:
 
     func copy(_ cellViewModel: MessageViewModel) {
         switch cellViewModel.cellType {
-            case .typingIndicator: break
+            case .typingIndicator, .dateHeader: break
             
             case .textOnlyMessage:
                 UIPasteboard.general.string = cellViewModel.body

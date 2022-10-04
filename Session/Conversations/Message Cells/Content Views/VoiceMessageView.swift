@@ -4,6 +4,7 @@ import UIKit
 import NVActivityIndicatorView
 import SessionUIKit
 import SessionMessagingKit
+import SessionUtilitiesKit
 
 public final class VoiceMessageView: UIView {
     private static let width: CGFloat = 160
@@ -180,7 +181,8 @@ public final class VoiceMessageView: UIView {
                 
                 toggleImageView.image = (isPlaying ? UIImage(named: "Pause") : UIImage(named: "Play"))?
                     .withRenderingMode(.alwaysTemplate)
-                countdownLabel.text = OWSFormat.formatDurationSeconds(max(0, Int(floor(attachment.duration.defaulting(to: 0) - progress))))
+                countdownLabel.text = max(0, (floor(attachment.duration.defaulting(to: 0) - progress)))
+                    .formatted(format: .hoursMinutesSeconds)
                 
                 guard let duration: TimeInterval = attachment.duration, duration > 0, progress > 0 else {
                     return progressViewRightConstraint.constant = -VoiceMessageView.width

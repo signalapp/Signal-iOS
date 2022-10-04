@@ -150,6 +150,7 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             trailing: 0
         )
         result.registerHeaderFooterView(view: UITableViewHeaderFooterView.self)
+        result.register(view: DateHeaderCell.self)
         result.register(view: VisibleMessageCell.self)
         result.register(view: InfoMessageCell.self)
         result.register(view: TypingIndicatorCell.self)

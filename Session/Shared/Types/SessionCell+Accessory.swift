@@ -157,11 +157,11 @@ extension SessionCell.Accessory {
     // MARK: - .icon Variants
     
     public static func icon(_ image: UIImage?) -> SessionCell.Accessory {
-        return .icon(image, size: .small, customTint: nil, shouldFill: false)
+        return .icon(image, size: .medium, customTint: nil, shouldFill: false)
     }
     
     public static func icon(_ image: UIImage?, customTint: ThemeValue) -> SessionCell.Accessory {
-        return .icon(image, size: .small, customTint: customTint, shouldFill: false)
+        return .icon(image, size: .medium, customTint: customTint, shouldFill: false)
     }
     
     public static func icon(_ image: UIImage?, size: IconSize) -> SessionCell.Accessory {
@@ -173,17 +173,17 @@ extension SessionCell.Accessory {
     }
     
     public static func icon(_ image: UIImage?, shouldFill: Bool) -> SessionCell.Accessory {
-        return .icon(image, size: .small, customTint: nil, shouldFill: shouldFill)
+        return .icon(image, size: .medium, customTint: nil, shouldFill: shouldFill)
     }
     
     // MARK: - .iconAsync Variants
     
     public static func iconAsync(_ setter: @escaping (UIImageView) -> Void) -> SessionCell.Accessory {
-        return .iconAsync(size: .small, customTint: nil, shouldFill: false, setter: setter)
+        return .iconAsync(size: .medium, customTint: nil, shouldFill: false, setter: setter)
     }
     
     public static func iconAsync(customTint: ThemeValue, _ setter: @escaping (UIImageView) -> Void) -> SessionCell.Accessory {
-        return .iconAsync(size: .small, customTint: customTint, shouldFill: false, setter: setter)
+        return .iconAsync(size: .medium, customTint: customTint, shouldFill: false, setter: setter)
     }
     
     public static func iconAsync(size: IconSize, setter: @escaping (UIImageView) -> Void) -> SessionCell.Accessory {
@@ -191,7 +191,7 @@ extension SessionCell.Accessory {
     }
     
     public static func iconAsync(shouldFill: Bool, setter: @escaping (UIImageView) -> Void) -> SessionCell.Accessory {
-        return .iconAsync(size: .small, customTint: nil, shouldFill: shouldFill, setter: setter)
+        return .iconAsync(size: .medium, customTint: nil, shouldFill: shouldFill, setter: setter)
     }
     
     public static func iconAsync(size: IconSize, customTint: ThemeValue, setter: @escaping (UIImageView) -> Void) -> SessionCell.Accessory {
