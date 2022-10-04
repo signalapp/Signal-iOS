@@ -19,7 +19,6 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
     }()
     let storyMessage: StoryMessage
     lazy var thread: TSThread? = databaseStorage.read { storyMessage.context.thread(transaction: $0) }
-    weak var interactiveTransitionCoordinator: StoryInteractiveTransitionCoordinator?
 
     var reactionPickerBackdrop: UIView?
     var reactionPicker: MessageReactionPicker?
@@ -31,7 +30,6 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
         self.storyMessage = storyMessage
         super.init()
         modalPresentationStyle = .custom
-        transitioningDelegate = self
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -71,36 +69,5 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     func didSendMessage() {
         dismiss(animated: true)
-    }
-}
-
-extension StoryDirectReplySheet: UIViewControllerTransitioningDelegate {
-    public func animationController(
-        forPresented presented: UIViewController,
-        presenting: UIViewController,
-        source: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: true,
-            isInteractive: interactiveTransitionCoordinator != nil,
-            backdropView: backdropView
-        )
-    }
-
-    public func animationController(
-        forDismissed dismissed: UIViewController
-    ) -> UIViewControllerAnimatedTransitioning? {
-        return StoryReplySheetAnimator(
-            isPresenting: false,
-            isInteractive: false,
-            backdropView: backdropView
-        )
-    }
-
-    public func interactionControllerForPresentation(
-        using animator: UIViewControllerAnimatedTransitioning
-    ) -> UIViewControllerInteractiveTransitioning? {
-        interactiveTransitionCoordinator?.mode = .reply
-        return interactiveTransitionCoordinator
     }
 }

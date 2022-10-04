@@ -58,24 +58,64 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
             case .leading, .top, .bottom:
                 pageViewController.dismiss(animated: true)
             case .trailing:
-                pageViewController.currentContextViewController.presentRepliesAndViewsSheet(interactiveTransitionCoordinator: self)
+                mode = .reply
             }
         case .changed:
             interactionInProgress = true
-            update(calculateProgress(gestureRecognizer))
+            let progress = calculateProgress(gestureRecognizer)
+            switch mode {
+            case .reply:
+                if progress >= 1 {
+                    pageViewController.currentContextViewController.presentRepliesAndViewsSheet()
+                    // Cancel the gesture.
+                    self.interactionInProgress = false
+                    gestureRecognizer.isEnabled = false
+                    gestureRecognizer.isEnabled = true
+                    finish()
+                } else {
+                    let newMinX: CGFloat
+                    if CurrentAppContext().isRTL {
+                        newMinX = progress * Self.replyGestureMaxTranslation
+                    } else {
+                        newMinX = -progress * Self.replyGestureMaxTranslation
+                    }
+                    self.pageViewController.currentContextViewController.view.frame.origin.x = newMinX
+                    update(progress)
+                }
+            case .zoom, .slide:
+                update(progress)
+            }
         case .cancelled:
-            pageViewController.currentContextViewController.play()
+            switch mode {
+            case .reply:
+                finishRepliesGestureAnimation(gestureRecognizer)
+                guard !self.interactionInProgress else {
+                    fallthrough
+                }
+                // Cancel happens naturally as part of presentation.
+                interactiveEdge = .none
+                return
+            case .slide, .zoom:
+                pageViewController.currentContextViewController.play()
+            }
             cancel()
             interactionInProgress = false
             interactiveEdge = .none
         case .ended:
             let progress = calculateProgress(gestureRecognizer)
 
-            if progress >= 0.5 || hasExceededVelocityThreshold(gestureRecognizer) {
-                finish()
-            } else {
+            switch mode {
+            case .reply:
+                finishRepliesGestureAnimation(gestureRecognizer)
                 pageViewController.currentContextViewController.play()
                 cancel()
+            case .zoom, .slide:
+                if progress >= 0.5 || hasExceededVelocityThreshold(gestureRecognizer) {
+                    finish()
+                } else {
+                    pageViewController.currentContextViewController.play()
+                    cancel()
+                }
             }
 
             interactionInProgress = false
@@ -87,12 +127,14 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
         }
     }
 
+    static let replyGestureMaxTranslation: CGFloat = 150
+
     func calculateProgress(_ gestureRecognizer: UIPanGestureRecognizer) -> CGFloat {
         let offset = gestureRecognizer.translation(in: pageViewController.view)
         let totalDistance: CGFloat
 
         switch mode {
-        case .zoom, .reply: totalDistance = 150
+        case .zoom, .reply: totalDistance = Self.replyGestureMaxTranslation
         case .slide:
             switch interactiveEdge {
             case .top, .bottom: totalDistance = pageViewController.view.height
@@ -130,6 +172,21 @@ class StoryInteractiveTransitionCoordinator: UIPercentDrivenInteractiveTransitio
         case .none:
             return false
         }
+    }
+
+    func finishRepliesGestureAnimation(_ gestureRecognizer: UIPanGestureRecognizer) {
+        let view = self.pageViewController.currentContextViewController.view
+
+        let percentCompletion = calculateProgress(gestureRecognizer)
+
+        UIView.animate(
+            withDuration: 0.3 * percentCompletion,
+            delay: 0,
+            options: .curveEaseOut,
+            animations: {
+                self.pageViewController.currentContextViewController.view.frame.origin.x = 0
+            }
+        )
     }
 
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
