@@ -374,13 +374,12 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        let layer = CAGradientLayer()
-        layer.frame = CGRect(x: 0, y: 0, width: size.width, height: 64)
-        layer.colors = [ UIColor(hex: 0x000000).withAlphaComponent(0.4).cgColor, UIColor(hex: 0x000000).withAlphaComponent(0).cgColor ]
-        if let existingSublayer = fadeView.layer.sublayers?[0], existingSublayer is CAGradientLayer {
+
+        if let existingSublayer = fadeView.layer.sublayers?[0] as? CAGradientLayer {
+            let layer = CAGradientLayer()
+            layer.frame = CGRect(x: 0, y: 0, width: size.width, height: 64)
+            layer.colors = existingSublayer.colors
             fadeView.layer.replaceSublayer(existingSublayer, with: layer)
-        } else {
-            fadeView.layer.insertSublayer(layer, at: 0)
         }
     }
     
