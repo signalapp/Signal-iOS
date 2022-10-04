@@ -1057,7 +1057,12 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
         var builder = StorageServiceProtoStoryDistributionListRecord.builder()
         builder.setIdentifier(distributionListIdentifier)
 
-        if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
+        if let deletedAtTimestamp = TSPrivateStoryThread.deletedAtTimestamp(
+            forDistributionListIdentifer: distributionListIdentifier,
+            transaction: transaction
+        ) {
+            builder.setDeletedAtTimestamp(deletedAtTimestamp)
+        } else if let story = TSPrivateStoryThread.anyFetchPrivateStoryThread(
             uniqueId: uniqueId,
             transaction: transaction
         ) {
@@ -1065,11 +1070,6 @@ extension StorageServiceProtoStoryDistributionListRecord: Dependencies {
             builder.setRecipientUuids(story.addresses.compactMap { $0.uuidString })
             builder.setAllowsReplies(story.allowsReplies)
             builder.setIsBlockList(story.storyViewMode == .blockList)
-        } else if let deletedAtTimestamp = TSPrivateStoryThread.deletedAtTimestamp(
-            forDistributionListIdentifer: distributionListIdentifier,
-            transaction: transaction
-        ) {
-            builder.setDeletedAtTimestamp(deletedAtTimestamp)
         } else {
             throw StorageService.StorageError.storyMissing
         }

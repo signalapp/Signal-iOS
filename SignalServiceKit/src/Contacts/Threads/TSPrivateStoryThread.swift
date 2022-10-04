@@ -29,10 +29,10 @@ public extension TSPrivateStoryThread {
 
     override func recipientAddresses(with transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         switch storyViewMode {
-        case .default, .disabled:
+        case .default:
             owsFailDebug("Unexpectedly have private story with no view mode")
             return []
-        case .explicit:
+        case .explicit, .disabled:
             return addresses
         case .blockList:
             return profileManager.allWhitelistedRegisteredAddresses(with: transaction).filter { !addresses.contains($0) && !$0.isLocalAddress }
@@ -70,11 +70,24 @@ public extension TSPrivateStoryThread {
             ) else { continue }
             guard Date().timeIntervalSince(Date(millisecondsSince1970: timestamp)) > deletedAtTimestampThreshold else { continue }
             deletedAtTimestampKVS.removeValue(forKey: identifier, transaction: transaction)
+
+            // If we still have a private story thread for this deleted timestamp, it's
+            // now safe to purge it from the database.
+            TSPrivateStoryThread.anyFetchPrivateStoryThread(
+                uniqueId: identifier,
+                transaction: transaction
+            )?.anyRemove(transaction: transaction)
+
             UUID(uuidString: identifier).map { deletedIdentifiers.append($0.data) }
         }
 
         if !deletedIdentifiers.isEmpty {
             Self.storageServiceManager.recordPendingDeletions(deletedStoryDistributionListIds: deletedIdentifiers)
         }
+    }
+
+    override func updateWithShouldThreadBeVisible(_ shouldThreadBeVisible: Bool, transaction: SDSAnyWriteTransaction) {
+        super.updateWithShouldThreadBeVisible(shouldThreadBeVisible, transaction: transaction)
+        updateWithStoryViewMode(.disabled, transaction: transaction)
     }
 }

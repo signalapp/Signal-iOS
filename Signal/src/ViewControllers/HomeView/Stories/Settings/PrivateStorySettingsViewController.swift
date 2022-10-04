@@ -189,25 +189,57 @@ class PrivateStorySettingsViewController: OWSTableViewController2 {
     }
 
     private func deleteStoryWithConfirmation() {
+        let format = NSLocalizedString(
+            "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT",
+            comment: "Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }}"
+        )
+
+        let actionSheet = ActionSheetController(
+            message: String.localizedStringWithFormat(format, thread.name)
+        )
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+        actionSheet.addAction(.init(
+            title: NSLocalizedString(
+                "PRIVATE_STORY_SETTINGS_DELETE_BUTTON",
+                comment: "Button to delete the story on the 'private story settings' view"
+            ),
+            style: .destructive,
+            handler: { [weak self] _ in
+                self?.deleteStory()
+            }))
+        presentActionSheet(actionSheet)
+    }
+
+    private func deleteStory() {
         guard let dlistIdentifier = thread.distributionListIdentifier else {
             return owsFailDebug("Missing dlist identifier for thread \(thread.uniqueId)")
         }
-        OWSActionSheets.showConfirmationAlert(
-            title: NSLocalizedString(
-                "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION",
-                comment: "Action sheet title confirming deletion of a private story on the 'private story settings' view"
-            )
-        ) { _ in
-            self.databaseStorage.write { transaction in
-                self.thread.anyRemove(transaction: transaction)
+
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modal in
+            Self.databaseStorage.asyncWrite { transaction in
+                StoryFinder.enumerateStoriesForContext(self.thread.storyContext, transaction: transaction) { storyMessage, _ in
+                    storyMessage.remotelyDelete(for: self.thread, transaction: transaction)
+                }
+
+                // Because we're sending delete messages to this thread, we need
+                // to keep it in the database even though it will no longer be
+                // rendered to the user. We'll clean it up later when we clean
+                // up records from storage service.
+                self.thread.updateWithStoryViewMode(.disabled, transaction: transaction)
+
                 TSPrivateStoryThread.recordDeletedAtTimestamp(
                     Date.ows_millisecondTimestamp(),
                     forDistributionListIdentifer: dlistIdentifier,
                     transaction: transaction
                 )
+
+                transaction.addAsyncCompletionOnMain {
+                    Self.storageServiceManager.recordPendingUpdates(updatedStoryDistributionListIds: [dlistIdentifier])
+                    modal.dismiss {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
             }
-            Self.storageServiceManager.recordPendingUpdates(updatedStoryDistributionListIds: [dlistIdentifier])
-            self.navigationController?.popViewController(animated: true)
         }
     }
 

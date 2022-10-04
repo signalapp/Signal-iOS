@@ -4687,8 +4687,8 @@
 /* Button to delete the story on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Delete Private Story";
 
-/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Are you sure you want to delete this story?";
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Remove";
