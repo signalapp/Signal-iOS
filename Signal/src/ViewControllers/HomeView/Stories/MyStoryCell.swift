@@ -105,6 +105,8 @@ class MyStoryCell: UITableViewCell {
         attachmentThumbnail.removeAllSubviews()
 
         if let latestMessageAttachment = model.latestMessageAttachment {
+            attachmentThumbnail.isHiddenInStackView = false
+
             let latestThumbnailView = StoryThumbnailView(attachment: latestMessageAttachment)
             attachmentThumbnail.addSubview(latestThumbnailView)
             latestThumbnailView.autoPinHeightToSuperview()
@@ -128,6 +130,8 @@ class MyStoryCell: UITableViewCell {
                 dividerView.autoPinEdge(toSuperviewEdge: .trailing, withInset: -2)
                 dividerView.autoPinEdge(toSuperviewEdge: .top, withInset: -2)
             }
+        } else {
+            attachmentThumbnail.isHiddenInStackView = true
         }
     }
 
