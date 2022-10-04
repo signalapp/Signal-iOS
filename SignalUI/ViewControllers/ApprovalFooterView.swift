@@ -45,7 +45,7 @@ public class ApprovalFooterView: UIView {
     private var textfieldBackgroundView: UIView?
 
     public var textInput: String? {
-        textfield.text
+        approvalTextMode == .none ? nil : textfield.text
     }
 
     private var approvalMode: ApprovalMode {
@@ -211,6 +211,7 @@ public class ApprovalFooterView: UIView {
         switch approvalTextMode {
         case .none:
             textfieldStack.isHidden = true
+            textfield.resignFirstResponder()
         case .active(let placeholderText):
             textfieldStack.isHidden = false
             textfield.placeholderText = placeholderText
