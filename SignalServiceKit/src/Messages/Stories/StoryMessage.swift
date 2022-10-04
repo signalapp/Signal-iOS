@@ -694,10 +694,10 @@ public enum StoryMessageAttachment: Codable {
     case text(attachment: TextAttachment)
 }
 
-public struct TextAttachment: Codable {
+public struct TextAttachment: Codable, Equatable {
     public let text: String?
 
-    public enum TextStyle: Int, Codable {
+    public enum TextStyle: Int, Codable, Equatable {
         case regular = 0
         case bold = 1
         case serif = 2
@@ -712,10 +712,10 @@ public struct TextAttachment: Codable {
     private let textBackgroundColorHex: UInt32?
     public var textBackgroundColor: UIColor? { textBackgroundColorHex.map { UIColor(argbHex: $0) } }
 
-    private enum RawBackground: Codable {
+    private enum RawBackground: Codable, Equatable {
         case color(hex: UInt32)
         case gradient(raw: RawGradient)
-        struct RawGradient: Codable {
+        struct RawGradient: Codable, Equatable {
             let colors: [UInt32]
             let positions: [Float]
             let angle: UInt32

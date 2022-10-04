@@ -22,7 +22,7 @@ protocol StoryItemMediaViewDelegate: ContextMenuButtonDelegate {
 
 class StoryItemMediaView: UIView {
     weak var delegate: StoryItemMediaViewDelegate?
-    let item: StoryItem
+    public private(set) var item: StoryItem
 
     private lazy var gradientProtectionView: UIView = {
         let gradientLayer = CAGradientLayer()
@@ -76,9 +76,11 @@ class StoryItemMediaView: UIView {
         bottomContentVStack.autoPinEdge(toSuperviewEdge: .top, withInset: OWSTableViewController2.defaultHOuterMargin)
 
         bottomContentVStack.addArrangedSubview(.vStretchingSpacer())
+        bottomContentVStack.addArrangedSubview(captionLabel)
+        bottomContentVStack.addArrangedSubview(authorRow)
 
-        createCaptionIfNecessary()
-        createAuthorRow()
+        updateCaption()
+        updateAuthorRow()
     }
 
     required init?(coder: NSCoder) {
@@ -92,6 +94,21 @@ class StoryItemMediaView: UIView {
         updateTimestampText()
         bottomContentVStack.alpha = 1
         gradientProtectionView.alpha = 1
+    }
+
+    func updateItem(_ newItem: StoryItem) {
+        let oldItem = self.item
+        self.item = newItem
+
+        updateTimestampText()
+        updateAuthorRow()
+
+        // Only recreate the media view if the actual attachment changes.
+        if item.attachment != oldItem.attachment {
+            self.pause()
+            updateMediaView()
+            updateCaption()
+        }
     }
 
     func updateTimestampText() {
@@ -241,7 +258,7 @@ class StoryItemMediaView: UIView {
 
     private lazy var timestampLabel = UILabel()
     private lazy var authorRow = UIStackView()
-    private func createAuthorRow() {
+    private func updateAuthorRow() {
         let (avatarView, nameLabel) = databaseStorage.read { (
             buildAvatarView(transaction: $0),
             buildNameLabel(transaction: $0)
@@ -303,6 +320,7 @@ class StoryItemMediaView: UIView {
             metadataStackView = nameHStack
         }
 
+        authorRow.removeAllSubviews()
         authorRow.addArrangedSubviews([
             avatarView,
             .spacer(withWidth: 12),
@@ -325,8 +343,6 @@ class StoryItemMediaView: UIView {
         timestampLabel.textColor = Theme.darkThemePrimaryColor
         timestampLabel.alpha = 0.8
         updateTimestampText()
-
-        bottomContentVStack.addArrangedSubview(authorRow)
     }
 
     private func buildAvatarView(transaction: SDSAnyReadTransaction) -> UIView {
@@ -428,20 +444,17 @@ class StoryItemMediaView: UIView {
     private var hasCaption: Bool { fullCaptionText != nil }
 
     private var maxCaptionLines = 5
-    private func createCaptionIfNecessary() {
-        guard let captionText: String = {
+    private func updateCaption() {
+        let captionText: String? = {
             switch item.attachment {
             case .stream(let attachment): return attachment.caption?.nilIfEmpty
             case .pointer(let attachment): return attachment.caption?.nilIfEmpty
             case .text: return nil
             }
-        }() else { return }
+        }()
 
         fullCaptionText = captionText
-
         captionLabel.text = captionText
-
-        bottomContentVStack.addArrangedSubview(captionLabel)
     }
 
     private var isCaptionExpanded = false
@@ -589,6 +602,8 @@ class StoryItemMediaView: UIView {
     private weak var mediaView: UIView?
     private func updateMediaView() {
         mediaView?.removeFromSuperview()
+        videoPlayer = nil
+        videoPlayerLoopCount = 0
 
         let mediaView = buildMediaView()
         self.mediaView = mediaView
@@ -764,7 +779,7 @@ class StoryItemMediaView: UIView {
 class StoryItem: NSObject {
     let message: StoryMessage
     let numberOfReplies: UInt
-    enum Attachment {
+    enum Attachment: Equatable {
         case pointer(TSAttachmentPointer)
         case stream(TSAttachmentStream)
         case text(TextAttachment)

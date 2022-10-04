@@ -460,10 +460,14 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             return nil
         }
 
+        guard let storyView = storyView(for: storyMessage) else {
+            return nil
+        }
+
         return .init(
             isPresenting: isPresenting,
             thumbnailView: thumbnailView,
-            storyView: try storyView(for: storyMessage),
+            storyView: storyView,
             storyThumbnailSize: try storyThumbnailSize(for: storyMessage),
             thumbnailRepresentsStoryView: thumbnailRepresentsStoryView,
             pageViewController: self,
@@ -489,12 +493,13 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
         }
     }
 
-    private func storyView(for presentingMessage: StoryMessage) throws -> UIView {
+    private func storyView(for presentingMessage: StoryMessage) -> UIView? {
         let storyView: UIView
         switch presentingMessage.attachment {
         case .file(let attachmentId):
             guard let attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: attachmentId, transaction: $0) }) else {
-                throw OWSAssertionError("Unexpectedly missing attachment for story message")
+                // Can happen if the story was deleted by the sender while in the viewer.
+                return nil
             }
 
             let view = UIView()

@@ -321,14 +321,14 @@ class StoryContextViewController: OWSViewController {
     }
 
     private func currentItemWasUpdated(messageDidChange: Bool) {
-        currentItemMediaView?.pause()
-        currentItemMediaView?.removeFromSuperview()
-
         if let currentItem = currentItem {
-            let itemView = StoryItemMediaView(item: currentItem, delegate: self)
-            self.currentItemMediaView = itemView
-            mediaViewContainer.addSubview(itemView)
-            itemView.autoPinEdgesToSuperviewEdges()
+            if currentItemMediaView == nil {
+                let itemView = StoryItemMediaView(item: currentItem, delegate: self)
+                self.currentItemMediaView = itemView
+                mediaViewContainer.addSubview(itemView)
+                itemView.autoPinEdgesToSuperviewEdges()
+            }
+            currentItemMediaView?.updateItem(currentItem)
 
             if currentItem.message.sendingState != .sent {
                 updateSendingIndicator(currentItem)
@@ -513,6 +513,7 @@ class StoryContextViewController: OWSViewController {
             repliesAndViewsButton.setAttributedTitle(
                 repliesAndViewsButtonText.styled(
                     with: .font(.systemFont(ofSize: 17)),
+                    .color(Theme.darkThemePrimaryColor),
                     .xmlRules([.style("bold", semiboldStyle)])),
                 for: .normal)
         } else {
