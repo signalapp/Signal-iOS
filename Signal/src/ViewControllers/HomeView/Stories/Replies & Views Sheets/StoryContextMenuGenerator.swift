@@ -66,7 +66,7 @@ class StoryContextMenuGenerator: Dependencies {
             hideAction(for: message, transaction: transaction),
             infoAction(for: message, in: thread),
             saveAction(message: message, attachment: attachment),
-            forwardAction(message: message, attachment: attachment),
+            forwardAction(message: message),
             shareAction(message: message, attachment: attachment, sourceView: sourceView),
             goToChatAction(thread: thread)
         ].compactMap({ $0?.asSignalContextMenuAction() })
@@ -102,7 +102,7 @@ class StoryContextMenuGenerator: Dependencies {
             hideAction(for: message, transaction: transaction),
             infoAction(for: message, in: thread),
             saveAction(message: message, attachment: attachment),
-            forwardAction(message: message, attachment: attachment),
+            forwardAction(message: message),
             shareAction(message: message, attachment: attachment, sourceView: sourceView),
             goToChatAction(thread: thread)
         ].compactMap({ $0?.asNativeContextMenuAction() })
@@ -608,8 +608,7 @@ extension StoryThumbnailView.Attachment {
 extension StoryContextMenuGenerator: ForwardMessageDelegate {
 
     private func forwardAction(
-        message: StoryMessage,
-        attachment: StoryThumbnailView.Attachment
+        message: StoryMessage
     ) -> GenericContextAction? {
         guard message.authorAddress.isLocalAddress else {
             // Can only forward one's own stories.
@@ -629,24 +628,11 @@ extension StoryContextMenuGenerator: ForwardMessageDelegate {
                     completion(false)
                     return
                 }
-                switch attachment {
-                case .file(let attachment):
-                    self.isDisplayingFollowup = true
-                    ForwardMessageViewController.present([attachment], from: presentingController, delegate: self)
-                    // Its not actually complete, but the action is going through successfully, so for the sake of
-                    // UIContextualAction we count it as a success.
-                    completion(true)
-                case .text:
-                    // TODO(IOS-2961): support forwarding text stories. Don't remember to set isDisplayingFollowup and
-                    // call the delegate when complete.
-                    OWSActionSheets.showActionSheet(title: LocalizationNotNeeded("Forwarding text stories is not yet implemented."))
-                    // Its not actually complete, but the action is going through successfully, so for the sake of
-                    // UIContextualAction we count it as a success.
-                    completion(true)
-                case .missing:
-                    owsFailDebug("Unexpectedly missing attachment for story.")
-                    completion(false)
-                }
+                self.isDisplayingFollowup = true
+                ForwardMessageViewController.present(forStoryMessage: message, from: presentingController, delegate: self)
+                // Its not actually complete, but the action is going through successfully, so for the sake of
+                // UIContextualAction we count it as a success.
+                completion(true)
             }
         )
     }

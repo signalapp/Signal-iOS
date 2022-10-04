@@ -988,7 +988,7 @@ extension PhotoCaptureViewController {
 
     // MARK: - Background
 
-    private static var textBackgrounds: [TextAttachment.Background] = [
+    static var textBackgrounds: [TextAttachment.Background] = [
         .color(.init(rgbHex: 0x688BD4)),
         .color(.init(rgbHex: 0x8687C1)),
         .color(.init(rgbHex: 0xB47F8C)),
