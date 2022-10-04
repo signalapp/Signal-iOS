@@ -6,8 +6,8 @@ import XCTest
 @testable import SignalServiceKit
 
 class MessageSenderJobQueueTest: SSKBaseTestSwift {
-    private var fakeMessageSender: OWSFakeMessageSender {
-        MockSSKEnvironment.shared.messageSender as! OWSFakeMessageSender
+    private var fakeMessageSender: FakeMessageSender {
+        MockSSKEnvironment.shared.messageSender as! FakeMessageSender
     }
 
     // MARK: 

@@ -7,7 +7,6 @@
 #import "OWSBackgroundTask.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSFakeCallMessageHandler.h"
-#import "OWSFakeMessageSender.h"
 #import "OWSFakeProfileManager.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
@@ -46,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
     NetworkManager *networkManager = [OWSFakeNetworkManager new];
-    MessageSender *messageSender = [OWSFakeMessageSender new];
+    MessageSender *messageSender = [FakeMessageSender new];
     MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
 
     OWSMessageManager *messageManager = [OWSMessageManager new];

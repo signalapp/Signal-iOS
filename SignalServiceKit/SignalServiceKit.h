@@ -94,7 +94,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSEndSessionMessage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFakeCallMessageHandler.h>
-#import <SignalServiceKit/OWSFakeMessageSender.h>
 #import <SignalServiceKit/OWSFakeProfileManager.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSFingerprint.h>
