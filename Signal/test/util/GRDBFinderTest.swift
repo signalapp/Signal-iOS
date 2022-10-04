@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -8,7 +8,6 @@ import XCTest
 @testable import SignalMessaging
 
 class GRDBFinderTest: SignalBaseTest {
-
     override func setUp() {
         super.setUp()
 
@@ -16,10 +15,6 @@ class GRDBFinderTest: SignalBaseTest {
         let localE164Identifier = "+13235551234"
         let localUUID = UUID()
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
-    }
-
-    override func tearDown() {
-        super.tearDown()
     }
 
     func testAnyThreadFinder() {

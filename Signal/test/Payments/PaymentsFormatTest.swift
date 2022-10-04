@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -15,10 +15,6 @@ class PaymentsFormatTest: SignalBaseTest {
 
         SSKEnvironment.shared.paymentsHelperRef = PaymentsHelperImpl()
         SUIEnvironment.shared.paymentsRef = PaymentsImpl()
-    }
-
-    override func tearDown() {
-        super.tearDown()
     }
 
     func test_formatAsFiatCurrency() {

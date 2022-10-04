@@ -1,16 +1,11 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 @testable import Signal
 
 class ConversationViewTest: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-    }
-
     func testConversationStyleComparison() throws {
         let thread = ContactThreadFactory().create()
 

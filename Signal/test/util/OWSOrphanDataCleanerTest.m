@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
@@ -37,11 +37,6 @@
     XCTAssertEqual(0, [TSAttachmentStream numberOfKeysInCollection]);
     XCTAssertEqual(0, [TSIncomingMessage numberOfKeysInCollection]);
     XCTAssertEqual(0, [TSThread numberOfKeysInCollection]);
-}
-
-- (void)tearDown
-{
-    [super tearDown];
 }
 
 - (int)numberOfItemsInAttachmentsFolder

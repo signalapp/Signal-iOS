@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -15,16 +15,6 @@ extension ImageEditorModel {
 }
 
 class ImageEditorTest: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
     func testImageEditorContents() {
         let contents = ImageEditorContents()
         XCTAssertEqual(0, contents.itemMap.count)

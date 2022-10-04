@@ -32,11 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.datePrefixLength = [self.formatter formatLogMessage:[self messageWithString:@""]].length;
 }
 
-- (void)tearDown
-{
-    [super tearDown];
-}
-
 - (DDLogMessage *)messageWithString:(NSString *)string
 {
     return [[DDLogMessage alloc] initWithMessage:string

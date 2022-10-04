@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -7,11 +7,6 @@ import XCTest
 @testable import SignalServiceKit
 
 class EmojiTests: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-    }
-
     func testSimpleEmojiCases() {
         XCTAssertFalse("".isSingleEmojiUsingEmojiWithSkinTones)
         XCTAssertTrue("😃".isSingleEmojiUsingEmojiWithSkinTones)

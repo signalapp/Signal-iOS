@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -8,16 +8,6 @@ import XCTest
 @testable import SignalMessaging
 
 class DateUtilTest: SignalBaseTest {
-
-    override func setUp() {
-        super.setUp()
-
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     func buildDate(year: Int = 0,
                    month: Int = 0,
                    day: Int = 0,

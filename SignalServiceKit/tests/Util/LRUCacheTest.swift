@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,17 +9,6 @@ import Curve25519Kit
 @testable import SignalServiceKit
 
 class LRUCacheTest: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
-    // MARK: -
-
     func testStringString() {
         let cache = LRUCache<String, String>(maxSize: 16)
         let key1 = "a"

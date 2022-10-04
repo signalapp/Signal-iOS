@@ -7,15 +7,6 @@ import XCTest
 import GRDB
 
 class MessageSendLogTests: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     func testStoreAndRetrieveValidPayload() {
         databaseStorage.write { writeTx in
             // Create and save the message payload

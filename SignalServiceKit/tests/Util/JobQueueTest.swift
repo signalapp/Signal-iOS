@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -75,15 +75,6 @@ class TestDurableOperation: OWSOperation, DurableOperation {
 }
 
 class JobQueueTest: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
     // MARK: 
 
     func buildJobRecord() -> TestJobRecord {

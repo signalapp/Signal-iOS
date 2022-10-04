@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,17 +9,6 @@ import Curve25519Kit
 @testable import SignalServiceKit
 
 class DeviceNamesTest: SSKBaseTestSwift {
-
-    override func setUp() {
-        super.setUp()
-    }
-
-    override func tearDown() {
-        super.tearDown()
-    }
-
-    // MARK: 
-
     func testNotEncrypted() {
         let identityKeyPair = Curve25519.generateKeyPair()
 

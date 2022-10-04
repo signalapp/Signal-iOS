@@ -43,11 +43,6 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         udManagerImpl.setSenderCertificate(uuidOnly: false, certificateData: Data(defaultSenderCert.serialize()))
     }
 
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
     // MARK: - Tests
 
     func testMode_self() {
