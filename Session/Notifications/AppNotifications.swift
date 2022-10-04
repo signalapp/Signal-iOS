@@ -142,27 +142,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         super.init()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            NotificationCenter.default.addObserver(self, selector: #selector(self.handleMessageRead), name: .incomingMessageMarkedAsRead, object: nil)
-        }
         SwiftSingletons.register(self)
-    }
-
-    // MARK: -
-
-    @objc
-    func handleMessageRead(notification: Notification) {
-        AssertIsOnMainThread()
-
-        switch notification.object {
-            case let interaction as Interaction:
-                guard interaction.variant == .standardIncoming else { return }
-        
-                Logger.debug("canceled notification for message: \(interaction)")
-                cancelNotifications(identifiers: interaction.notificationIdentifiers)
-            
-            default: break
-        }
     }
 
     // MARK: - Presenting Notifications
@@ -198,7 +178,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         
         let senderName = Profile.displayName(db, id: interaction.authorId, threadVariant: thread.variant)
         let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
-            .defaulting(to: .nameAndPreview)
+            .defaulting(to: .defaultPreviewType)
         let groupName: String = SessionThread.displayName(
             threadId: thread.id,
             variant: thread.variant,
@@ -268,7 +248,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
                 fallbackSound: fallbackSound
             )
             
-            notificationBody = MentionUtilities.highlightMentions(
+            notificationBody = MentionUtilities.highlightMentionsNoAttributes(
                 in: (notificationBody ?? ""),
                 threadVariant: thread.variant,
                 currentUserPublicKey: userPublicKey,
@@ -414,7 +394,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func notifyForFailedSend(_ db: Database, in thread: SessionThread) {
         let notificationTitle: String?
         let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
-            .defaulting(to: .nameAndPreview)
+            .defaulting(to: .defaultPreviewType)
         let threadName: String = SessionThread.displayName(
             threadId: thread.id,
             variant: thread.variant,

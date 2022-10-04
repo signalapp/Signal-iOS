@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import Combine
 import GRDB
 import PromiseKit
 import SignalCoreKit
@@ -25,8 +26,9 @@ public final class Storage {
     public static let shared: Storage = Storage()
     public private(set) var isValid: Bool = false
     public private(set) var hasCompletedMigrations: Bool = false
+    public static let defaultPublisherScheduler: ValueObservationScheduler = .async(onQueue: .main)
     
-    private var dbWriter: DatabaseWriter?
+    fileprivate var dbWriter: DatabaseWriter?
     private var migrator: DatabaseMigrator?
     private var migrationProgressUpdater: Atomic<((String, CGFloat) -> ())>?
     
@@ -359,14 +361,26 @@ public final class Storage {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         guard let observer: TransactionObserver = observer else { return }
         
-        dbWriter.add(transactionObserver: observer)
+        // Note: This actually triggers a write to the database so can be blocked by other
+        // writes, since it's usually called on the main thread when creating a view controller
+        // this can result in the UI hanging - to avoid this we dispatch (and hope there isn't
+        // negative impact)
+        DispatchQueue.global(qos: .default).async {
+            dbWriter.add(transactionObserver: observer)
+        }
     }
     
     public func removeObserver(_ observer: TransactionObserver?) {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         guard let observer: TransactionObserver = observer else { return }
         
-        dbWriter.remove(transactionObserver: observer)
+        // Note: This actually triggers a write to the database so can be blocked by other
+        // writes, since it's usually called on the main thread when creating a view controller
+        // this can result in the UI hanging - to avoid this we dispatch (and hope there isn't
+        // negative impact)
+        DispatchQueue.global(qos: .default).async {
+            dbWriter.remove(transactionObserver: observer)
+        }
     }
 }
 
@@ -410,5 +424,21 @@ public extension Storage {
         )
         
         return promise
+    }
+}
+
+// MARK: - Combine Extensions
+
+public extension ValueObservation {
+    func publisher(
+        in storage: Storage,
+        scheduling scheduler: ValueObservationScheduler = Storage.defaultPublisherScheduler
+    ) -> AnyPublisher<Reducer.Value, Error> {
+        guard storage.isValid, let dbWriter: DatabaseWriter = storage.dbWriter else {
+            return Fail(error: StorageError.databaseInvalid).eraseToAnyPublisher()
+        }
+        
+        return self.publisher(in: dbWriter, scheduling: scheduler)
+            .eraseToAnyPublisher()
     }
 }

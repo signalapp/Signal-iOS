@@ -3,82 +3,92 @@
 import UIKit
 import Sodium
 import Curve25519Kit
+import SessionUIKit
+import SignalUtilitiesKit
 
 final class RegisterVC : BaseVC {
     private var seed: Data! { didSet { updateKeyPair() } }
     private var ed25519KeyPair: Sign.KeyPair!
     private var x25519KeyPair: ECKeyPair! { didSet { updatePublicKeyLabel() } }
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var publicKeyLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = Fonts.spaceMono(ofSize: isIPhone5OrSmaller ? Values.mediumFontSize : 20)
-        result.numberOfLines = 0
-        result.lineBreakMode = .byCharWrapping
+        result.themeTextColor = .textPrimary
         result.accessibilityLabel = "Session ID label"
+        result.lineBreakMode = .byCharWrapping
+        result.numberOfLines = 0
+        
         return result
     }()
     
-    private lazy var copyPublicKeyButton: Button = {
-        let result = Button(style: .prominentOutline, size: .large)
-        result.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
-        result.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        result.addTarget(self, action: #selector(copyPublicKey), for: UIControl.Event.touchUpInside)
+    private lazy var copyPublicKeyButton: SessionButton = {
+        let result = SessionButton(style: .bordered, size: .large)
+        result.setTitle("copy".localized(), for: .normal)
+        result.addTarget(self, action: #selector(copyPublicKey), for: .touchUpInside)
+        
         return result
     }()
     
     private lazy var legalLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        result.themeTextColor = .textPrimary
         let text = "By using this service, you agree to our Terms of Service, End User License Agreement (EULA) and Privacy Policy"
         let attributedText = NSMutableAttributedString(string: text, attributes: [ .font : UIFont.systemFont(ofSize: Values.verySmallFontSize) ])
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Terms of Service"))
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "End User License Agreement (EULA)"))
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Privacy Policy"))
         result.attributedText = attributedText
-        result.numberOfLines = 0
         result.textAlignment = .center
         result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpGradientBackground()
-        setUpNavBarStyle()
+        
         setUpNavBarSessionIcon()
+        
         // Set up title label
         let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("vc_register_title", comment: "")
-        titleLabel.numberOfLines = 0
+        titleLabel.text = "vc_register_title".localized()
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 0
+        
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_register_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_register_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
         // Set up public key label container
         let publicKeyLabelContainer = UIView()
         publicKeyLabelContainer.addSubview(publicKeyLabel)
         publicKeyLabel.pin(to: publicKeyLabelContainer, withInset: Values.mediumSpacing)
         publicKeyLabelContainer.layer.cornerRadius = TextField.cornerRadius
         publicKeyLabelContainer.layer.borderWidth = 1
-        publicKeyLabelContainer.layer.borderColor = Colors.text.cgColor
+        publicKeyLabelContainer.themeBorderColor = .textPrimary
+        
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
+        
         // Set up register button
-        let registerButton = Button(style: .prominentFilled, size: .large)
-        registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
-        registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        let registerButton = SessionButton(style: .filled, size: .large)
+        registerButton.setTitle("continue_2".localized(), for: .normal)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
+        
         // Set up button stack view
         let buttonStackView = UIStackView(arrangedSubviews: [ registerButton, copyPublicKeyButton ])
         buttonStackView.axis = .vertical
@@ -89,6 +99,7 @@ final class RegisterVC : BaseVC {
             copyPublicKeyButton.set(.width, to: Values.iPadButtonWidth)
             buttonStackView.alignment = .center
         }
+        
         // Set up button stack view container
         let buttonStackViewContainer = UIView()
         buttonStackViewContainer.addSubview(buttonStackView)
@@ -96,10 +107,12 @@ final class RegisterVC : BaseVC {
         buttonStackView.pin(.top, to: .top, of: buttonStackViewContainer)
         buttonStackViewContainer.pin(.trailing, to: .trailing, of: buttonStackView, withInset: Values.massiveSpacing)
         buttonStackViewContainer.pin(.bottom, to: .bottom, of: buttonStackView)
+        
         // Set up legal label
         legalLabel.isUserInteractionEnabled = true
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleLegalLabelTapped))
         legalLabel.addGestureRecognizer(tapGestureRecognizer)
+        
         // Set up legal label container
         let legalLabelContainer = UIView()
         legalLabelContainer.set(.height, to: Values.onboardingButtonBottomOffset)
@@ -108,11 +121,13 @@ final class RegisterVC : BaseVC {
         legalLabel.pin(.top, to: .top, of: legalLabelContainer)
         legalLabelContainer.pin(.trailing, to: .trailing, of: legalLabel, withInset: Values.massiveSpacing)
         legalLabelContainer.pin(.bottom, to: .bottom, of: legalLabel, withInset: isIPhone5OrSmaller ? 6 : 10)
+        
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyLabelContainer ])
         topStackView.axis = .vertical
         topStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
         topStackView.alignment = .fill
+        
         // Set up top stack view container
         let topStackViewContainer = UIView()
         topStackViewContainer.addSubview(topStackView)
@@ -120,6 +135,7 @@ final class RegisterVC : BaseVC {
         topStackView.pin(.top, to: .top, of: topStackViewContainer)
         topStackViewContainer.pin(.trailing, to: .trailing, of: topStackView, withInset: Values.veryLargeSpacing)
         topStackViewContainer.pin(.bottom, to: .bottom, of: topStackView)
+        
         // Set up main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, buttonStackViewContainer, legalLabelContainer ])
         mainStackView.axis = .vertical
@@ -127,6 +143,7 @@ final class RegisterVC : BaseVC {
         view.addSubview(mainStackView)
         mainStackView.pin(to: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
+        
         // Peform initial seed update
         updateSeed()
     }

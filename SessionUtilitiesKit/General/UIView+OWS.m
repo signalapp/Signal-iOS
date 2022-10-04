@@ -439,36 +439,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     return container;
 }
 
-#pragma mark - Debugging
-
-- (void)addBorderWithColor:(UIColor *)color
-{
-    self.layer.borderColor = color.CGColor;
-    self.layer.borderWidth = 1;
-}
-
-- (void)addRedBorder
-{
-    [self addBorderWithColor:[UIColor redColor]];
-}
-
-- (void)addRedBorderRecursively
-{
-    [self addRedBorder];
-    for (UIView *subview in self.subviews) {
-        [subview addRedBorderRecursively];
-    }
-}
-
-- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor
-{
-    visitor(self);
-
-    for (UIView *subview in self.subviews) {
-        [subview traverseViewHierarchyWithVisitor:visitor];
-    }
-}
-
 @end
 
 #pragma mark -
@@ -478,40 +448,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
 - (BOOL)applyScrollViewInsetsFix
 {
     return NO;
-}
-
-@end
-
-#pragma mark -
-
-@implementation UIStackView (OWS)
-
-- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor
-{
-    UIView *subview = [UIView new];
-    subview.backgroundColor = backgroundColor;
-    [self addSubview:subview];
-    [subview autoPinEdgesToSuperviewEdges];
-    [subview setCompressionResistanceLow];
-    [subview setContentHuggingLow];
-    [self sendSubviewToBack:subview];
-    return subview;
-}
-
-- (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius
-{
-    UIView *borderView = [UIView new];
-    borderView.userInteractionEnabled = NO;
-    borderView.backgroundColor = UIColor.clearColor;
-    borderView.opaque = NO;
-    borderView.layer.borderColor = color.CGColor;
-    borderView.layer.borderWidth = strokeWidth;
-    borderView.layer.cornerRadius = cornerRadius;
-    [self addSubview:borderView];
-    [borderView autoPinEdgesToSuperviewEdges];
-    [borderView setCompressionResistanceLow];
-    [borderView setContentHuggingLow];
-    return borderView;
 }
 
 @end

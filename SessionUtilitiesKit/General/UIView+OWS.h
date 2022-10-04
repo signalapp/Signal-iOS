@@ -111,21 +111,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (NSArray<NSLayoutConstraint *> *)autoPinToEdgesOfView:(UIView *)view;
 
-- (void)traverseViewHierarchyWithVisitor:(UIViewVisitorBlock)visitor;
-
 #pragma mark - Containers
 
 + (UIView *)containerView;
 
 + (UIView *)verticalStackWithSubviews:(NSArray<UIView *> *)subviews spacing:(int)spacing;
-
-#pragma mark - Debugging
-
-- (void)addBorderWithColor:(UIColor *)color;
-- (void)addRedBorder;
-
-// Add red border to self, and all subviews recursively.
-- (void)addRedBorderRecursively;
 
 @end
 
@@ -135,16 +125,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 // Returns YES if contentInsetAdjustmentBehavior is disabled.
 - (BOOL)applyScrollViewInsetsFix;
-
-@end
-
-#pragma mark -
-
-@interface UIStackView (OWS)
-
-- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
-
-- (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius;
 
 @end
 

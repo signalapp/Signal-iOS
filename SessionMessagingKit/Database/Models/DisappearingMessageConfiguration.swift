@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct DisappearingMessagesConfiguration: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct DisappearingMessagesConfiguration: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "disappearingMessagesConfiguration" }
     internal static let threadForeignKey = ForeignKey([Columns.threadId], to: [SessionThread.Columns.id])
     private static let thread = belongsTo(SessionThread.self, using: threadForeignKey)

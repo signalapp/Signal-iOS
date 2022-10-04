@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
+import UIKit
+import SessionUIKit
+
+final class ExpandingAttachmentsButton: UIView, InputViewButtonDelegate {
     private weak var delegate: ExpandingAttachmentsButtonDelegate?
     private var isExpanded = false { didSet { expandOrCollapse() } }
     
@@ -22,31 +26,36 @@ final class ExpandingAttachmentsButton : UIView, InputViewButtonDelegate {
     // MARK: UI Components
     lazy var gifButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_gif_black"), delegate: self, hasOpaqueBackground: true)
-        result.accessibilityLabel = NSLocalizedString("accessibility_gif_button", comment: "")
+        result.accessibilityLabel = "accessibility_gif_button".localized()
+        
         return result
     }()
     lazy var gifButtonContainer = container(for: gifButton)
     lazy var documentButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_document_black"), delegate: self, hasOpaqueBackground: true)
-        result.accessibilityLabel = NSLocalizedString("accessibility_document_button", comment: "")
+        result.accessibilityLabel = "accessibility_document_button".localized()
+        
         return result
     }()
     lazy var documentButtonContainer = container(for: documentButton)
     lazy var libraryButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_roll_black"), delegate: self, hasOpaqueBackground: true)
-        result.accessibilityLabel = NSLocalizedString("accessibility_library_button", comment: "")
+        result.accessibilityLabel = "accessibility_library_button".localized()
+        
         return result
     }()
     lazy var libraryButtonContainer = container(for: libraryButton)
     lazy var cameraButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "actionsheet_camera_black"), delegate: self, hasOpaqueBackground: true)
-        result.accessibilityLabel = NSLocalizedString("accessibility_camera_button", comment: "")
+        result.accessibilityLabel = "accessibility_camera_button".localized()
+        
         return result
     }()
     lazy var cameraButtonContainer = container(for: cameraButton)
     lazy var mainButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "ic_plus_24"), delegate: self)
-        result.accessibilityLabel = NSLocalizedString("accessibility_expanding_attachments_button", comment: "")
+        result.accessibilityLabel = "accessibility_expanding_attachments_button".localized()
+        
         return result
     }()
     lazy var mainButtonContainer = container(for: mainButton)

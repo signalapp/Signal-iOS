@@ -7,7 +7,7 @@ import SignalUtilitiesKit
 import SessionUIKit
 import SessionUtilitiesKit
 
-final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockViewDelegate {
+final class SAEScreenLockViewController: ScreenLockViewController {
     private var hasShownAuthUIOnce: Bool = false
     private var isShowingAuthUI: Bool = false
     
@@ -16,10 +16,10 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
     // MARK: - Initialization
     
     init(shareViewDelegate: ShareViewDelegate) {
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         
+        self.onUnlockPressed = { [weak self] in self?.unlockButtonWasTapped() }
         self.shareViewDelegate = shareViewDelegate
-        self.delegate = self
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -32,57 +32,52 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
     
     // MARK: - UI
     
-    private lazy var gradientBackground: CAGradientLayer = {
-        let layer: CAGradientLayer = CAGradientLayer()
-        
-        let gradientStartColor: UIColor = (LKAppModeUtilities.isLightMode ?
-            UIColor(rgbHex: 0xF9F9F9) :
-            UIColor(rgbHex: 0x171717)
-        )
-        let gradientEndColor: UIColor = (LKAppModeUtilities.isLightMode ?
-            UIColor(rgbHex: 0xFFFFFF) :
-            UIColor(rgbHex: 0x121212)
-        )
-        layer.colors = [gradientStartColor.cgColor, gradientEndColor.cgColor]
-        
-        return layer
-    }()
-    
     private lazy var titleLabel: UILabel = {
         let titleLabel: UILabel = UILabel()
         titleLabel.font = UIFont.boldSystemFont(ofSize: Values.veryLargeFontSize)
         titleLabel.text = "vc_share_title".localized()
-        titleLabel.textColor = Colors.text
+        titleLabel.themeTextColor = .textPrimary
         
         return titleLabel
     }()
     
     private lazy var closeButton: UIBarButtonItem = {
         let closeButton: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "X"), style: .plain, target: self, action: #selector(dismissPressed))
-        closeButton.tintColor = Colors.text
+        closeButton.themeTintColor = .textPrimary
         
         return closeButton
     }()
     
     // MARK: - Lifecycle
     
-    override func loadView() {
+    public override func loadView() {
         super.loadView()
         
-        UIView.appearance().tintColor = Colors.text
+        UIView.appearance().themeTintColor = .textPrimary
         
-        self.view.backgroundColor = UIColor.clear
-        self.view.layer.insertSublayer(gradientBackground, at: 0)
-        
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.tintColor = Colors.navigationBarBackground
-        
+        self.view.themeBackgroundColor = .backgroundPrimary
         self.navigationItem.titleView = titleLabel
         self.navigationItem.leftBarButtonItem = closeButton
         
-        setupLayout()
+        ThemeManager.onThemeChange(observer: self.unlockButton) { [weak self] theme, _ in
+            switch theme.interfaceStyle {
+                case .light:
+                    self?.unlockButton.setThemeTitleColorForced(.theme(theme, color: .textPrimary), for: .normal)
+                    self?.unlockButton.setThemeBackgroundColorForced(
+                        .theme(theme, color: .textPrimary),
+                        for: .highlighted
+                    )
+                    self?.unlockButton.themeBorderColorForced = .theme(theme, color: .textPrimary)
+                    
+                default:
+                    self?.unlockButton.setThemeTitleColorForced(.primary(.green), for: .normal)
+                    self?.unlockButton.setThemeBackgroundColorForced(
+                        .primary(.green, alpha: 0.3),
+                        for: .highlighted
+                    )
+                    self?.unlockButton.themeBorderColorForced = .primary(.green)
+            }
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -104,12 +99,6 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
         }
     }
     
-    // MARK: - Layout
-    
-    private func setupLayout() {
-        gradientBackground.frame = UIScreen.main.bounds
-    }
-    
     // MARK: - Functions
     
     private func tryToPresentAuthUIToUnlockScreenLock() {
@@ -122,7 +111,7 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
 
         isShowingAuthUI = true
         
-        OWSScreenLock.shared.tryToUnlockScreenLock(
+        ScreenLock.shared.tryToUnlockScreenLock(
             success: { [weak self] in
                 AssertIsOnMainThread()
                 OWSLogger.info("unlock screen lock succeeded.")
@@ -164,23 +153,30 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
     }
     
     private func ensureUI() {
-        self.updateUI(with: .screenLock, isLogoAtTop: false, animated: false)
+        self.updateUI(state: .lock, animated: false)
     }
     
     private func showScreenLockFailureAlert(message: String) {
         AssertIsOnMainThread()
         
-        OWSAlerts.showAlert(
-            // Title for alert indicating that screen lock could not be unlocked.
-            title: "SCREEN_LOCK_UNLOCK_FAILED".localized(),
-            message: message,
-            buttonTitle: nil,
-            buttonAction: { [weak self] action in
-                // After the alert, update the UI
-                self?.ensureUI()
-            },
-            fromViewController: self
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: self.view,
+            info: ConfirmationModal.Info(
+                title: "SCREEN_LOCK_UNLOCK_FAILED".localized(),
+                explanation: message,
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text,
+                afterClosed: { [weak self] in self?.ensureUI() } // After the alert, update the UI
+            )
         )
+        self.present(modal, animated: true)
+    }
+    
+    func unlockButtonWasTapped() {
+        AssertIsOnMainThread()
+        OWSLogger.info("unlockButtonWasTapped")
+        
+        self.tryToPresentAuthUIToUnlockScreenLock()
     }
     
     // MARK: - Transitions
@@ -193,14 +189,5 @@ final class SAEScreenLockViewController: ScreenLockViewController, ScreenLockVie
 
     private func cancelShareExperience() {
         self.shareViewDelegate?.shareViewWasCancelled()
-    }
-
-    // MARK: - ScreenLockViewDelegate
-    
-    func unlockButtonWasTapped() {
-        AssertIsOnMainThread()
-        OWSLogger.info("unlockButtonWasTapped")
-        
-        self.tryToPresentAuthUIToUnlockScreenLock()
     }
 }

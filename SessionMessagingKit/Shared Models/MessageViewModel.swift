@@ -3,6 +3,7 @@
 import Foundation
 import GRDB
 import DifferenceKit
+import SessionUIKit
 import SessionUtilitiesKit
 
 fileprivate typealias ViewModel = MessageViewModel
@@ -34,6 +35,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public static let cellTypeKey: SQL = SQL(stringLiteral: CodingKeys.cellType.stringValue)
     public static let authorNameKey: SQL = SQL(stringLiteral: CodingKeys.authorName.stringValue)
     public static let shouldShowProfileKey: SQL = SQL(stringLiteral: CodingKeys.shouldShowProfile.stringValue)
+    public static let shouldShowDateHeaderKey: SQL = SQL(stringLiteral: CodingKeys.shouldShowDateHeader.stringValue)
     public static let positionInClusterKey: SQL = SQL(stringLiteral: CodingKeys.positionInCluster.stringValue)
     public static let isOnlyMessageInClusterKey: SQL = SQL(stringLiteral: CodingKeys.isOnlyMessageInCluster.stringValue)
     public static let isLastKey: SQL = SQL(stringLiteral: CodingKeys.isLast.stringValue)
@@ -43,12 +45,6 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     public static let quoteAttachmentString: String = CodingKeys.quoteAttachment.stringValue
     public static let linkPreviewString: String = CodingKeys.linkPreview.stringValue
     public static let linkPreviewAttachmentString: String = CodingKeys.linkPreviewAttachment.stringValue
-    
-    public enum Position: Int, Decodable, Equatable, Hashable, DatabaseValueConvertible {
-        case top
-        case middle
-        case bottom
-    }
     
     public enum CellType: Int, Decodable, Equatable, Hashable, DatabaseValueConvertible {
         case textOnlyMessage
@@ -119,8 +115,11 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
     /// A flag indicating whether the profile view should be displayed
     public let shouldShowProfile: Bool
 
-    /// This value will be used to populate the date header, if it's null then the header will be hidden
-    public let dateForUI: Date?
+    /// A flag which controls whether the date header should be displayed
+    public let shouldShowDateHeader: Bool
+    
+    /// This value will be used to populate the Context Menu and date header (if present)
+    public var dateForUI: Date { Date(timeIntervalSince1970: (TimeInterval(self.timestampMs) / 1000)) }
     
     /// This value specifies whether the body contains only emoji characters
     public let containsOnlyEmoji: Bool?
@@ -184,7 +183,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
             authorName: self.authorName,
             senderName: self.senderName,
             shouldShowProfile: self.shouldShowProfile,
-            dateForUI: self.dateForUI,
+            shouldShowDateHeader: self.shouldShowDateHeader,
             containsOnlyEmoji: self.containsOnlyEmoji,
             glyphCount: self.glyphCount,
             previousVariant: self.previousVariant,
@@ -395,10 +394,7 @@ public struct MessageViewModel: FetchableRecordWithRowId, Decodable, Equatable, 
                 // Need a profile to be able to show it
                 self.profile != nil
             ),
-            dateForUI: (shouldShowDateOnThisModel ?
-                Date(timeIntervalSince1970: (TimeInterval(self.timestampMs) / 1000)) :
-                nil
-            ),
+            shouldShowDateHeader: shouldShowDateOnThisModel,
             containsOnlyEmoji: self.body?.containsOnlyEmoji,
             glyphCount: self.body?.glyphCount,
             previousVariant: prevModel?.variant,
@@ -493,7 +489,14 @@ public extension MessageViewModel {
     static let typingIndicatorId: Int64 = -2
     
     // Note: This init method is only used system-created cells or empty states
-    init(isTypingIndicator: Bool? = nil) {
+    init(
+        variant: Interaction.Variant = .standardOutgoing,
+        body: String? = nil,
+        quote: Quote? = nil,
+        cellType: CellType = .typingIndicator,
+        isTypingIndicator: Bool? = nil,
+        isLast: Bool = true
+    ) {
         self.threadId = "INVALID_THREAD_ID"
         self.threadVariant = .contact
         self.threadIsTrusted = false
@@ -510,11 +513,11 @@ public extension MessageViewModel {
         )
         self.rowId = targetId
         self.id = targetId
-        self.variant = .standardOutgoing
+        self.variant = variant
         self.timestampMs = Int64.max
         self.authorId = ""
         self.authorNameInternal = nil
-        self.body = nil
+        self.body = body
         self.rawBody = nil
         self.expiresStartedAtMs = nil
         self.expiresInSeconds = nil
@@ -525,7 +528,7 @@ public extension MessageViewModel {
         self.isSenderOpenGroupModerator = false
         self.isTypingIndicator = isTypingIndicator
         self.profile = nil
-        self.quote = nil
+        self.quote = quote
         self.quoteAttachment = nil
         self.linkPreview = nil
         self.linkPreviewAttachment = nil
@@ -535,17 +538,17 @@ public extension MessageViewModel {
         
         self.attachments = nil
         self.reactionInfo = nil
-        self.cellType = .typingIndicator
+        self.cellType = cellType
         self.authorName = ""
         self.senderName = nil
         self.shouldShowProfile = false
-        self.dateForUI = nil
+        self.shouldShowDateHeader = false
         self.containsOnlyEmoji = nil
         self.glyphCount = nil
         self.previousVariant = nil
         self.positionInCluster = .middle
         self.isOnlyMessageInCluster = true
-        self.isLast = true
+        self.isLast = isLast
         self.currentUserBlindedPublicKey = nil
     }
 }
@@ -595,9 +598,25 @@ extension MessageViewModel {
 public extension MessageViewModel {
     static func filterSQL(threadId: String) -> SQL {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let setting: TypedTableAlias<Setting> = TypedTableAlias()
         
-        return SQL("\(interaction[.threadId]) = \(threadId)")
+        var targetValue: Bool = true
+        let boolSettingLiteral: Data = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
+        
+        return SQL("""
+            \(interaction[.threadId]) = \(threadId) AND (
+                \(SQL("\(interaction[.variant]) != \(Interaction.Variant.infoScreenshotNotification)")) OR
+                \(SQL("IFNULL(\(setting[.value]), false) == \(boolSettingLiteral)"))
+            )
+        """)
     }
+    
+    static let optimisedJoinSQL: SQL = {
+        let setting: TypedTableAlias<Setting> = TypedTableAlias()
+        let targetSetting: String = Setting.BoolKey.showScreenshotNotifications.rawValue
+        
+        return SQL("LEFT JOIN \(Setting.self) ON \(setting[.key]) = \(targetSetting)")
+    }()
     
     static let groupSQL: SQL = {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
@@ -687,6 +706,7 @@ public extension MessageViewModel {
                     \(CellType.textOnlyMessage) AS \(ViewModel.cellTypeKey),
                     '' AS \(ViewModel.authorNameKey),
                     false AS \(ViewModel.shouldShowProfileKey),
+                    false AS \(ViewModel.shouldShowDateHeaderKey),
                     \(Position.middle) AS \(ViewModel.positionInClusterKey),
                     false AS \(ViewModel.isOnlyMessageInClusterKey),
                     false AS \(ViewModel.isLastKey)

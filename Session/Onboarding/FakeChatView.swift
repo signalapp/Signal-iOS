@@ -1,5 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class FakeChatView : UIView {
+import UIKit
+import SessionUIKit
+
+final class FakeChatView: UIView {
     private let spacing = Values.mediumSpacing
     
     var contentOffset: CGPoint {
@@ -8,11 +12,11 @@ final class FakeChatView : UIView {
     }
     
     private lazy var chatBubbles = [
-        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_1", comment: ""), wasSentByCurrentUser: true),
-        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_2", comment: ""), wasSentByCurrentUser: false),
-        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_3", comment: ""), wasSentByCurrentUser: true),
-        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_4", comment: ""), wasSentByCurrentUser: false),
-        getChatBubble(withText: NSLocalizedString("view_fake_chat_bubble_5", comment: ""), wasSentByCurrentUser: false)
+        getChatBubble(withText: "view_fake_chat_bubble_1".localized(), wasSentByCurrentUser: true),
+        getChatBubble(withText: "view_fake_chat_bubble_2".localized(), wasSentByCurrentUser: false),
+        getChatBubble(withText: "view_fake_chat_bubble_3".localized(), wasSentByCurrentUser: true),
+        getChatBubble(withText: "view_fake_chat_bubble_4".localized(), wasSentByCurrentUser: false),
+        getChatBubble(withText: "view_fake_chat_bubble_5".localized(), wasSentByCurrentUser: false)
     ]
     
     private lazy var scrollView: UIScrollView = {
@@ -62,30 +66,40 @@ final class FakeChatView : UIView {
         let result = UIView()
         let bubbleView = UIView()
         bubbleView.set(.width, lessThanOrEqualTo: FakeChatView.bubbleWidth)
+        bubbleView.themeShadowColor = .black
         bubbleView.layer.cornerRadius = FakeChatView.bubbleCornerRadius
-        bubbleView.layer.shadowColor = UIColor.black.cgColor
-        bubbleView.layer.shadowRadius = isLightMode ? 4 : 8
-        bubbleView.layer.shadowOpacity = isLightMode ? 0.16 : 0.24
+        bubbleView.layer.shadowRadius = (ThemeManager.currentTheme.interfaceStyle == .light ? 4 : 8)
+        bubbleView.layer.shadowOpacity = (ThemeManager.currentTheme.interfaceStyle == .light ? 0.16 : 0.24)
         bubbleView.layer.shadowOffset = CGSize.zero
-        let backgroundColor = wasSentByCurrentUser ? Colors.fakeChatBubbleBackground : Colors.accent
-        bubbleView.backgroundColor = backgroundColor
+        
+        bubbleView.themeBackgroundColor = (wasSentByCurrentUser ?
+            .messageBubble_outgoingBackground :
+            .messageBubble_incomingBackground
+        )
+        
         let label = UILabel()
-        let textColor = wasSentByCurrentUser ? Colors.text : Colors.fakeChatBubbleText
-        label.textColor = textColor
         label.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
         label.text = text
+        label.themeTextColor = (wasSentByCurrentUser ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
+        label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
         bubbleView.addSubview(label)
         label.pin(to: bubbleView, withInset: 12)
+        
         result.addSubview(bubbleView)
         bubbleView.pin(.top, to: .top, of: result)
         result.pin(.bottom, to: .bottom, of: bubbleView)
+        
         if wasSentByCurrentUser {
             bubbleView.pin(.trailing, to: .trailing, of: result)
-        } else {
+        }
+        else {
             result.pin(.leading, to: .leading, of: bubbleView)
         }
+        
         return result
     }
     
@@ -93,6 +107,7 @@ final class FakeChatView : UIView {
         let animationDuration = FakeChatView.animationDuration
         let delayBetweenMessages = FakeChatView.chatDelay
         chatBubbles.forEach { $0.alpha = 0 }
+        
         Timer.scheduledTimer(withTimeInterval: FakeChatView.startDelay, repeats: false) { [weak self] _ in
             self?.showChatBubble(at: 0)
             Timer.scheduledTimer(withTimeInterval: 1.5 * delayBetweenMessages, repeats: false) { _ in
@@ -124,11 +139,13 @@ final class FakeChatView : UIView {
     
     private func showChatBubble(at index: Int) {
         let chatBubble = chatBubbles[index]
+        
         UIView.animate(withDuration: FakeChatView.animationDuration) {
             chatBubble.alpha = 1
         }
         let scale = FakeChatView.popAnimationStartScale
         chatBubble.transform = CGAffineTransform(scaleX: scale, y: scale)
+        
         UIView.animate(withDuration: FakeChatView.animationDuration, delay: 0, usingSpringWithDamping: 0.68, initialSpringVelocity: 4, options: .curveEaseInOut, animations: {
             chatBubble.transform = CGAffineTransform(scaleX: 1, y: 1)
         }, completion: nil)

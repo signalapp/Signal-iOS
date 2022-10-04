@@ -9,7 +9,7 @@ import SessionUtilitiesKit
 public struct ProfileManager {
     // The max bytes for a user's profile name, encoded in UTF8.
     // Before encrypting and submitting we NULL pad the name data to this length.
-    private static let nameDataLength: UInt = 26
+    private static let nameDataLength: UInt = 64
     public static let maxAvatarDiameter: CGFloat = 640
     
     private static var profileAvatarCache: Atomic<[String: Data]> = Atomic([:])
@@ -237,7 +237,6 @@ public struct ProfileManager {
         profileName: String,
         image: UIImage?,
         imageFilePath: String?,
-        requiredSync: Bool,
         success: ((Database, Profile) throws -> ())? = nil,
         failure: ((ProfileManagerError) -> ())? = nil
     ) {
@@ -296,7 +295,7 @@ public struct ProfileManager {
                     failure?(profileManagerError)
                 }
                 return
-            }
+            } 
             
             guard let data: Data = avatarImageData else {
                 // If we have no image then we need to make sure to remove it from the profile

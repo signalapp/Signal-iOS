@@ -10,44 +10,51 @@ final class ContextMenuVC: UIViewController {
     
     private let snapshot: UIView
     private let frame: CGRect
+    private var targetFrame: CGRect = .zero
     private let cellViewModel: MessageViewModel
     private let actions: [Action]
     private let dismiss: () -> Void
     
     // MARK: - UI
     
-    private lazy var blurView: UIVisualEffectView = UIVisualEffectView(effect: nil)
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return ThemeManager.currentTheme.statusBarStyle
+    }
+    
+    private lazy var blurView: UIVisualEffectView = UIVisualEffectView()
     
     private lazy var emojiBar: UIView = {
-        let result = UIView()
-        result.layer.shadowColor = UIColor.black.cgColor
+        let result: UIView = UIView()
+        result.themeShadowColor = .black
         result.layer.shadowOffset = CGSize.zero
         result.layer.shadowOpacity = 0.4
         result.layer.shadowRadius = 4
         result.set(.height, to: ContextMenuVC.actionViewHeight)
+        result.alpha = 0
         
         return result
     }()
     
     private lazy var emojiPlusButton: EmojiPlusButton = {
-        let result = EmojiPlusButton(
+        let result: EmojiPlusButton = EmojiPlusButton(
             action: self.actions.first(where: { $0.isEmojiPlus }),
             dismiss: snDismiss
         )
+        result.clipsToBounds = true
         result.set(.width, to: EmojiPlusButton.size)
         result.set(.height, to: EmojiPlusButton.size)
-        result.layer.cornerRadius = EmojiPlusButton.size / 2
-        result.layer.masksToBounds = true
+        result.layer.cornerRadius = (EmojiPlusButton.size / 2)
         
         return result
     }()
 
     private lazy var menuView: UIView = {
         let result: UIView = UIView()
-        result.layer.shadowColor = UIColor.black.cgColor
+        result.themeShadowColor = .black
         result.layer.shadowOffset = CGSize.zero
         result.layer.shadowOpacity = 0.4
         result.layer.shadowRadius = 4
+        result.alpha = 0
         
         return result
     }()
@@ -55,11 +62,19 @@ final class ContextMenuVC: UIViewController {
     private lazy var timestampLabel: UILabel = {
         let result: UILabel = UILabel()
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
-        result.textColor = (isLightMode ? .black : .white)
+        result.text = cellViewModel.dateForUI.formattedForDisplay
+        result.themeTextColor = .textPrimary
+        result.alpha = 0
         
-        if let dateForUI: Date = cellViewModel.dateForUI {
-            result.text = dateForUI.formattedForDisplay
-        }
+        return result
+    }()
+    
+    private lazy var fallbackTimestampLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = .systemFont(ofSize: Values.verySmallFontSize)
+        result.text = cellViewModel.dateForUI.formattedForDisplay
+        result.themeTextColor = .textPrimary
+        result.alpha = 0
         
         return result
     }()
@@ -96,35 +111,24 @@ final class ContextMenuVC: UIViewController {
         super.viewDidLoad()
         
         // Background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         // Blur
         view.addSubview(blurView)
         blurView.pin(to: view)
         
         // Snapshot
-        snapshot.layer.shadowColor = UIColor.black.cgColor
+        snapshot.themeShadowColor = .black
         snapshot.layer.shadowOffset = CGSize.zero
         snapshot.layer.shadowOpacity = 0.4
         snapshot.layer.shadowRadius = 4
         view.addSubview(snapshot)
         
-        // Timestamp
-        view.addSubview(timestampLabel)
-        timestampLabel.center(.vertical, in: snapshot)
-        
-        if cellViewModel.variant == .standardOutgoing {
-            timestampLabel.pin(.right, to: .left, of: snapshot, withInset: -Values.smallSpacing)
-        }
-        else {
-            timestampLabel.pin(.left, to: .right, of: snapshot, withInset: Values.smallSpacing)
-        }
-        
         // Emoji reacts
-        let emojiBarBackgroundView = UIView()
-        emojiBarBackgroundView.backgroundColor = Colors.receivedMessageBackground
-        emojiBarBackgroundView.layer.cornerRadius = ContextMenuVC.actionViewHeight / 2
-        emojiBarBackgroundView.layer.masksToBounds = true
+        let emojiBarBackgroundView: UIView = UIView()
+        emojiBarBackgroundView.clipsToBounds = true
+        emojiBarBackgroundView.themeBackgroundColor = .reactions_contextBackground
+        emojiBarBackgroundView.layer.cornerRadius = (ContextMenuVC.actionViewHeight / 2)
         emojiBar.addSubview(emojiBarBackgroundView)
         emojiBarBackgroundView.pin(to: emojiBar)
         
@@ -150,10 +154,10 @@ final class ContextMenuVC: UIViewController {
         view.addSubview(emojiBar)
         
         // Menu
-        let menuBackgroundView = UIView()
-        menuBackgroundView.backgroundColor = Colors.receivedMessageBackground
+        let menuBackgroundView: UIView = UIView()
+        menuBackgroundView.clipsToBounds = true
+        menuBackgroundView.themeBackgroundColor = .contextMenu_background
         menuBackgroundView.layer.cornerRadius = ContextMenuVC.menuCornerRadius
-        menuBackgroundView.layer.masksToBounds = true
         menuView.addSubview(menuBackgroundView)
         menuBackgroundView.pin(to: menuView)
         
@@ -163,30 +167,63 @@ final class ContextMenuVC: UIViewController {
                 .map { action -> ActionView in ActionView(for: action, dismiss: snDismiss) }
         )
         menuStackView.axis = .vertical
-        menuView.addSubview(menuStackView)
-        menuStackView.pin(to: menuView)
+        menuBackgroundView.addSubview(menuStackView)
+        menuStackView.pin(to: menuBackgroundView)
         view.addSubview(menuView)
         
+        // Timestamp
+        view.addSubview(timestampLabel)
+        timestampLabel.center(.vertical, in: snapshot)
+        
+        if cellViewModel.variant == .standardOutgoing {
+            timestampLabel.pin(.right, to: .left, of: snapshot, withInset: -Values.smallSpacing)
+        }
+        else {
+            timestampLabel.pin(.left, to: .right, of: snapshot, withInset: Values.smallSpacing)
+        }
+        
+        view.addSubview(fallbackTimestampLabel)
+        fallbackTimestampLabel.pin(.top, to: .top, of: menuView)
+        fallbackTimestampLabel.set(.height, to: ContextMenuVC.actionViewHeight)
+        
+        if cellViewModel.variant == .standardOutgoing {
+            fallbackTimestampLabel.pin(.right, to: .left, of: menuView, withInset: -Values.mediumSpacing)
+        }
+        else {
+            fallbackTimestampLabel.pin(.left, to: .right, of: menuView, withInset: Values.mediumSpacing)
+        }
+        
         // Constrains
+        let timestampSize: CGSize = timestampLabel.sizeThatFits(UIScreen.main.bounds.size)
         let menuHeight: CGFloat = CGFloat(menuStackView.arrangedSubviews.count) * ContextMenuVC.actionViewHeight
         let spacing: CGFloat = Values.smallSpacing
-        let targetFrame: CGRect = calculateFrame(menuHeight: menuHeight, spacing: spacing)
+        self.targetFrame = calculateFrame(menuHeight: menuHeight, spacing: spacing)
         
-        snapshot.pin(.left, to: .left, of: view, withInset: targetFrame.origin.x)
-        snapshot.pin(.top, to: .top, of: view, withInset: targetFrame.origin.y)
-        snapshot.set(.width, to: targetFrame.width)
-        snapshot.set(.height, to: targetFrame.height)
-        emojiBar.pin(.bottom, to: .top, of: snapshot, withInset: -spacing)
-        menuView.pin(.top, to: .bottom, of: snapshot, withInset: spacing)
+        // Decide which timestamp label should be used based on whether it'll go off screen
+        self.timestampLabel.isHidden = {
+            switch cellViewModel.variant {
+                case .standardOutgoing:
+                    return ((self.targetFrame.minX - timestampSize.width - Values.mediumSpacing) < 0)
+                    
+                default:
+                    return ((self.targetFrame.maxX + timestampSize.width + Values.mediumSpacing) > UIScreen.main.bounds.width)
+            }
+        }()
+        self.fallbackTimestampLabel.isHidden = !self.timestampLabel.isHidden
+        
+        // Position the snapshot view in it's original message position
+        snapshot.frame = self.frame
+        emojiBar.pin(.bottom, to: .top, of: view, withInset: targetFrame.minY - spacing)
+        menuView.pin(.top, to: .top, of: view, withInset: targetFrame.maxY + spacing)
         
         switch cellViewModel.variant {
             case .standardOutgoing:
-                menuView.pin(.right, to: .right, of: snapshot)
-                emojiBar.pin(.right, to: .right, of: snapshot)
-                
-            case .standardIncoming:
-                menuView.pin(.left, to: .left, of: snapshot)
-                emojiBar.pin(.left, to: .left, of: snapshot)
+                menuView.pin(.right, to: .right, of: view, withInset: -(UIScreen.main.bounds.width - targetFrame.maxX))
+                emojiBar.pin(.right, to: .right, of: view, withInset: -(UIScreen.main.bounds.width - targetFrame.maxX))
+            
+            case .standardIncoming, .standardIncomingDeleted:
+                menuView.pin(.left, to: .left, of: view, withInset: targetFrame.minX)
+                emojiBar.pin(.left, to: .left, of: view, withInset: targetFrame.minX)
                 
             default: break // Should never occur
         }
@@ -199,9 +236,50 @@ final class ContextMenuVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        UIView.animate(withDuration: 0.25) {
-            self.blurView.effect = UIBlurEffect(style: .regular)
-            self.menuView.alpha = 1
+        // Fade the menus in and animate the snapshot from it's starting position to where it
+        // needs to be on screen in order to fit the menu
+        let view: UIView = self.view
+        let targetFrame: CGRect = self.targetFrame
+        
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.blurView.effect = UIBlurEffect(
+                style: (ThemeManager.currentTheme.interfaceStyle == .light ?
+                    .light :
+                    .dark
+                )
+            )
+        }
+        
+        UIView.animate(withDuration: 0.2) { [weak self] in
+            self?.emojiBar.alpha = 1
+            self?.menuView.alpha = 1
+            self?.timestampLabel.alpha = 1
+            self?.fallbackTimestampLabel.alpha = 1
+        }
+        
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0,
+            usingSpringWithDamping: 0.8,
+            initialSpringVelocity: 0.6,
+            options: .curveEaseInOut,
+            animations: { [weak self] in
+                self?.snapshot.pin(.left, to: .left, of: view, withInset: targetFrame.origin.x)
+                self?.snapshot.pin(.top, to: .top, of: view, withInset: targetFrame.origin.y)
+                self?.snapshot.set(.width, to: targetFrame.width)
+                self?.snapshot.set(.height, to: targetFrame.height)
+                self?.snapshot.superview?.setNeedsLayout()
+                self?.snapshot.superview?.layoutIfNeeded()
+            },
+            completion: nil
+        )
+        
+        // Change the blur effect on theme change
+        ThemeManager.onThemeChange(observer: blurView) { [weak self] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: self?.blurView.effect = UIBlurEffect(style: .light)
+                default: self?.blurView.effect = UIBlurEffect(style: .dark)
+            }
         }
     }
     
@@ -210,8 +288,8 @@ final class ContextMenuVC: UIViewController {
         let ratio: CGFloat = (frame.width / frame.height)
         
         // FIXME: Need to update this when an appropriate replacement is added (see https://teng.pub/technical/2021/11/9/uiapplication-key-window-replacement)
-        let topMargin = max(UIApplication.shared.keyWindow!.safeAreaInsets.top, Values.mediumSpacing)
-        let bottomMargin = max(UIApplication.shared.keyWindow!.safeAreaInsets.bottom, Values.mediumSpacing)
+        let topMargin = max((UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0), Values.mediumSpacing)
+        let bottomMargin = max((UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0), Values.mediumSpacing)
         let diffY = finalFrame.height + menuHeight + Self.actionViewHeight + 2 * spacing + topMargin + bottomMargin - UIScreen.main.bounds.height
         
         if diffY > 0 {
@@ -261,14 +339,56 @@ final class ContextMenuVC: UIViewController {
     }
     
     func snDismiss() {
+        let currentFrame: CGRect = self.snapshot.frame
+        let currentLabelFrame: CGRect = self.timestampLabel.frame
+        let originalFrame: CGRect = self.frame
+        let frameDiff: CGRect = CGRect(
+            x: (currentFrame.minX - originalFrame.minX),
+            y: (currentFrame.minY - originalFrame.minY),
+            width: (currentFrame.width - originalFrame.width),
+            height: (currentFrame.height - originalFrame.height)
+        )
+        let endLabelFrame: CGRect = CGRect(
+            x: (currentLabelFrame.minX - (frameDiff.origin.x + frameDiff.width)),
+            y: (currentLabelFrame.minY - (frameDiff.origin.y + frameDiff.height)),
+            width: currentLabelFrame.width,
+            height: currentLabelFrame.height
+        )
+        
+        // Remove the snapshot view and it's timestampLabel from the view hierarchy to remove its
+        // constaints (and prevent them from causing animation bugs - also need to turn
+        // 'translatesAutoresizingMaskIntoConstraints' back on so autod layout doesn't mess with
+        // the frame manipulation)
+        let oldSuperview: UIView? = self.snapshot.superview
+        self.snapshot.removeFromSuperview()
+        self.timestampLabel.removeFromSuperview()
+        oldSuperview?.insertSubview(self.snapshot, aboveSubview: self.blurView)
+        oldSuperview?.insertSubview(self.timestampLabel, aboveSubview: self.blurView)
+        
+        self.snapshot.translatesAutoresizingMaskIntoConstraints = true
+        self.timestampLabel.translatesAutoresizingMaskIntoConstraints = true
+        self.snapshot.frame = currentFrame
+        self.timestampLabel.frame = currentLabelFrame
+        
+        UIView.animate(
+            withDuration: 0.15,
+            delay: 0,
+            options: .curveEaseOut,
+            animations: { [weak self] in
+                self?.snapshot.frame = originalFrame
+                self?.timestampLabel.frame = endLabelFrame
+            },
+            completion: nil
+        )
+        
         UIView.animate(
             withDuration: 0.25,
             animations: { [weak self] in
                 self?.blurView.effect = nil
                 self?.menuView.alpha = 0
                 self?.emojiBar.alpha = 0
-                self?.snapshot.alpha = 0
                 self?.timestampLabel.alpha = 0
+                self?.fallbackTimestampLabel.alpha = 0
             },
             completion: { [weak self] _ in
                 self?.dismiss()

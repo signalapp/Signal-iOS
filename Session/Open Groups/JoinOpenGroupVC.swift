@@ -1,12 +1,14 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import AVFoundation
 import GRDB
 import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
+import SignalUtilitiesKit
 
-final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, OWSQRScannerDelegate {
+final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControllerDelegate, QRScannerDelegate {
     private let pageVC = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
     private var pages: [UIViewController] = []
     private var isJoining = false
@@ -55,12 +57,11 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setNavBarTitle("vc_join_public_chat_title".localized())
+        view.themeBackgroundColor = .newConversation_background
         
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
-        closeButton.tintColor = Colors.text
+        closeButton.themeTintColor = .textPrimary
         navigationItem.rightBarButtonItem = closeButton
         
         // Page VC
@@ -135,7 +136,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         dismiss(animated: true, completion: nil)
     }
 
-    func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
+    func controller(_ controller: QRCodeScanningViewController, didDetectQRCodeWith string: String) {
         joinOpenGroup(with: string)
     }
 
@@ -200,12 +201,19 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
     // MARK: - Convenience
 
     private func showError(title: String, message: String = "") {
-        let alert: UIAlertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-        
-        presentAlert(alert)
+        let confirmationModal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: title,
+                explanation: message,
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text
+            )
+        )
+        self.navigationController?.present(confirmationModal, animated: true, completion: nil)
     }
 }
+
+// MARK: - EnterURLVC
 
 private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, OpenGroupSuggestionGridDelegate {
     weak var joinOpenGroupVC: JoinOpenGroupVC?
@@ -215,6 +223,9 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
     private let bottomMargin: CGFloat = (UIDevice.current.isIPad ? Values.largeSpacing : 0)
 
     // MARK: - UI
+    
+    private var keyboardTransitionSnapshot1: UIView?
+    private var keyboardTransitionSnapshot2: UIView?
     
     private lazy var urlTextView: TextView = {
         let result: TextView = TextView(placeholder: "vc_enter_chat_url_text_field_hint".localized())
@@ -227,12 +238,12 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
     
     private lazy var suggestionGridTitleLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.textColor = Colors.text
+        result.setContentHuggingPriority(.required, for: .vertical)
         result.font = .boldSystemFont(ofSize: Values.largeFontSize)
         result.text = "vc_join_open_group_suggestions_title".localized()
-        result.numberOfLines = 0
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byWordWrapping
-        result.setContentHuggingPriority(.required, for: .vertical)
+        result.numberOfLines = 0
         
         return result
     }()
@@ -251,10 +262,10 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
     
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         // Next button
-        let joinButton = Button(style: .prominentOutline, size: .large)
+        let joinButton = SessionButton(style: .bordered, size: .large)
         joinButton.setTitle("JOIN_COMMUNITY_BUTTON_TITLE".localized(), for: UIControl.State.normal)
         joinButton.addTarget(self, action: #selector(joinOpenGroup), for: UIControl.Event.touchUpInside)
         
@@ -265,10 +276,25 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         )
         
         // Stack view
-        let stackView = UIStackView(arrangedSubviews: [ urlTextView, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGridTitleLabel, UIView.spacer(withHeight: Values.mediumSpacing), suggestionGrid, UIView.vStretchingSpacer(), joinButtonContainer ])
+        let stackView = UIStackView(
+            arrangedSubviews: [
+                urlTextView,
+                UIView.spacer(withHeight: Values.mediumSpacing),
+                suggestionGridTitleLabel,
+                UIView.spacer(withHeight: Values.mediumSpacing),
+                suggestionGrid,
+                UIView.vStretchingSpacer(),
+                joinButtonContainer
+            ]
+        )
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(uniform: Values.largeSpacing)
+        stackView.layoutMargins = UIEdgeInsets(
+            top: Values.largeSpacing,
+            leading: Values.largeSpacing,
+            bottom: Values.smallSpacing,
+            trailing: Values.largeSpacing
+        )
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         
@@ -348,35 +374,71 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         guard let endFrame: CGRect = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         guard endFrame.minY < UIScreen.main.bounds.height else { return }
         
-        bottomConstraint.constant = endFrame.size.height + bottomMargin
+        let duration = max(0.25, ((notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval) ?? 0))
+        
+        // Add snapshots for the suggestion grid
+        UIView.performWithoutAnimation {
+            self.keyboardTransitionSnapshot1 = self.suggestionGridTitleLabel.snapshotView(afterScreenUpdates: false)
+            self.keyboardTransitionSnapshot1?.frame = self.suggestionGridTitleLabel.frame
+            self.suggestionGridTitleLabel.alpha = 0
+            
+            if let snapshot1: UIView = self.keyboardTransitionSnapshot1 {
+                self.suggestionGridTitleLabel.superview?.addSubview(snapshot1)
+            }
+            
+            self.keyboardTransitionSnapshot2 = self.suggestionGrid.snapshotView(afterScreenUpdates: false)
+            self.keyboardTransitionSnapshot2?.frame = self.suggestionGrid.frame
+            self.suggestionGrid.alpha = 0
+            
+            if let snapshot2: UIView = self.keyboardTransitionSnapshot2 {
+                self.suggestionGrid.superview?.addSubview(snapshot2)
+            }
+            self.view.setNeedsLayout()
+            self.view.layoutIfNeeded()
+        }
         
         UIView.animate(
-            withDuration: 0.25,
+            withDuration: duration,
             animations: { [weak self] in
-                self?.view.layoutIfNeeded()
-                self?.suggestionGridTitleLabel.alpha = 0
-                self?.suggestionGrid.alpha = 0
-            },
-            completion: { [weak self] _ in
+                self?.keyboardTransitionSnapshot1?.alpha = 0
+                self?.keyboardTransitionSnapshot2?.alpha = 0
                 self?.suggestionGridTitleLabel.isHidden = true
                 self?.suggestionGrid.isHidden = true
-            }
+                self?.bottomConstraint.constant = (endFrame.size.height + (self?.bottomMargin ?? 0))
+                self?.view.layoutIfNeeded()
+            },
+            completion: nil
         )
     }
     
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         guard isKeyboardShowing else { return }
         
+        let duration = max(0.25, ((notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval) ?? 0))
         isKeyboardShowing = false
-        bottomConstraint.constant = bottomMargin
         
-        UIView.animate(withDuration: 0.25) { [weak self] in
-            self?.view.layoutIfNeeded()
-            self?.suggestionGridTitleLabel.isHidden = false
-            self?.suggestionGridTitleLabel.alpha = 1
-            self?.suggestionGrid.isHidden = false
-            self?.suggestionGrid.alpha = 1
-        }
+        self.suggestionGrid.alpha = 0
+        self.suggestionGridTitleLabel.alpha = 0
+        
+        UIView.animate(
+            withDuration: duration,
+            animations: { [weak self] in
+                self?.keyboardTransitionSnapshot1?.alpha = 1
+                self?.keyboardTransitionSnapshot2?.alpha = 1
+                self?.suggestionGrid.isHidden = false
+                self?.suggestionGridTitleLabel.isHidden = false
+                self?.bottomConstraint.constant = (self?.bottomMargin ?? 0)
+                self?.view.layoutIfNeeded()
+            },
+            completion: { [weak self] _ in
+                self?.keyboardTransitionSnapshot1?.removeFromSuperview()
+                self?.keyboardTransitionSnapshot2?.removeFromSuperview()
+                self?.keyboardTransitionSnapshot1 = nil
+                self?.keyboardTransitionSnapshot2 = nil
+                self?.suggestionGridTitleLabel.alpha = 1
+                self?.suggestionGrid.alpha = 1
+            }
+        )
     }
 }
 
@@ -389,23 +451,23 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
 
     override func viewDidLoad() {
         // Remove background color
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         // Explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_scan_qr_code_camera_access_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_scan_qr_code_camera_access_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
         
         // Call to action button
         let callToActionButton = UIButton()
-        callToActionButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        callToActionButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
-        callToActionButton.setTitle(NSLocalizedString("vc_scan_qr_code_grant_camera_access_button_title", comment: ""), for: UIControl.State.normal)
-        callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: UIControl.Event.touchUpInside)
+        callToActionButton.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        callToActionButton.setTitle("vc_scan_qr_code_grant_camera_access_button_title".localized(), for: .normal)
+        callToActionButton.setThemeTitleColor(.primary, for: .normal)
+        callToActionButton.addTarget(self, action: #selector(requestCameraAccess), for: .touchUpInside)
         
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [ explanationLabel, callToActionButton ])
@@ -428,12 +490,8 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
     }
 
     @objc private func requestCameraAccess() {
-        ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
-            if hasCameraAccess {
-                self?.joinOpenGroupVC?.handleCameraAccessGranted()
-            } else {
-                // Do nothing
-            }
-        })
+        Permissions.requestCameraPermissionIfNeeded { [weak self] in
+            self?.joinOpenGroupVC?.handleCameraAccessGranted()
+        }
     }
 }

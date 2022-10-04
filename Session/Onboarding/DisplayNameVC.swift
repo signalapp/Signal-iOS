@@ -3,6 +3,7 @@
 import UIKit
 import SessionUIKit
 import SessionMessagingKit
+import SignalUtilitiesKit
 
 final class DisplayNameVC: BaseVC {
     private var spacer1HeightConstraint: NSLayoutConstraint!
@@ -13,8 +14,8 @@ final class DisplayNameVC: BaseVC {
     // MARK: - Components
     
     private lazy var displayNameTextField: TextField = {
-        let result = TextField(placeholder: NSLocalizedString("vc_display_name_text_field_hint", comment: ""))
-        result.layer.borderColor = Colors.text.cgColor
+        let result = TextField(placeholder: "vc_display_name_text_field_hint".localized())
+        result.themeBorderColor = .textPrimary
         result.accessibilityLabel = "Display name text field"
         
         return result
@@ -25,25 +26,23 @@ final class DisplayNameVC: BaseVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-        setUpNavBarStyle()
         setUpNavBarSessionIcon()
         
         // Set up title label
         let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("vc_display_name_title_2", comment: "")
-        titleLabel.numberOfLines = 0
+        titleLabel.text = "vc_display_name_title_2".localized()
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 0
         
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_display_name_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_display_name_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
         
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
@@ -56,9 +55,8 @@ final class DisplayNameVC: BaseVC {
         registerButtonBottomOffsetConstraint = registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
         
         // Set up register button
-        let registerButton = Button(style: .prominentFilled, size: .large)
-        registerButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
-        registerButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        let registerButton = SessionButton(style: .filled, size: .large)
+        registerButton.setTitle("continue_2".localized(), for: UIControl.State.normal)
         registerButton.addTarget(self, action: #selector(register), for: UIControl.Event.touchUpInside)
         
         // Set up register button container
@@ -154,16 +152,23 @@ final class DisplayNameVC: BaseVC {
     
     @objc private func register() {
         func showError(title: String, message: String = "") {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-            presentAlert(alert)
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self.view,
+                info: ConfirmationModal.Info(
+                    title: title,
+                    explanation: message,
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
+            )
+            self.present(modal, animated: true)
         }
         let displayName = displayNameTextField.text!.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         guard !displayName.isEmpty else {
-            return showError(title: NSLocalizedString("vc_display_name_display_name_missing_error", comment: ""))
+            return showError(title: "vc_display_name_display_name_missing_error".localized())
         }
         guard !ProfileManager.isToLong(profileName: displayName) else {
-            return showError(title: NSLocalizedString("vc_display_name_display_name_too_long_error", comment: ""))
+            return showError(title: "vc_display_name_display_name_too_long_error".localized())
         }
         
         // Try to save the user name but ignore the result
@@ -171,8 +176,7 @@ final class DisplayNameVC: BaseVC {
             queue: DispatchQueue.global(qos: .default),
             profileName: displayName,
             image: nil,
-            imageFilePath: nil,
-            requiredSync: false
+            imageFilePath: nil
         )
         let pnModeVC = PNModeVC()
         navigationController?.pushViewController(pnModeVC, animated: true)

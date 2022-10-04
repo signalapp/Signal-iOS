@@ -51,6 +51,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     public static let interactionTimestampMsKey: SQL = SQL(stringLiteral: CodingKeys.interactionTimestampMs.stringValue)
     public static let interactionBodyKey: SQL = SQL(stringLiteral: CodingKeys.interactionBody.stringValue)
     public static let interactionStateKey: SQL = SQL(stringLiteral: CodingKeys.interactionState.stringValue)
+    public static let interactionHasAtLeastOneReadReceiptKey: SQL = SQL(stringLiteral: CodingKeys.interactionHasAtLeastOneReadReceipt.stringValue)
     public static let interactionIsOpenGroupInvitationKey: SQL = SQL(stringLiteral: CodingKeys.interactionIsOpenGroupInvitation.stringValue)
     public static let interactionAttachmentDescriptionInfoKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentDescriptionInfo.stringValue)
     public static let interactionAttachmentCountKey: SQL = SQL(stringLiteral: CodingKeys.interactionAttachmentCount.stringValue)
@@ -127,6 +128,7 @@ public struct SessionThreadViewModel: FetchableRecordWithRowId, Decodable, Equat
     private let interactionTimestampMs: Int64?
     public let interactionBody: String?
     public let interactionState: RecipientState.State?
+    public let interactionHasAtLeastOneReadReceipt: Bool?
     public let interactionIsOpenGroupInvitation: Bool?
     public let interactionAttachmentDescriptionInfo: Attachment.DescriptionInfo?
     public let interactionAttachmentCount: Int?
@@ -234,6 +236,8 @@ public extension SessionThreadViewModel {
     init(
         threadId: String? = nil,
         threadVariant: SessionThread.Variant? = nil,
+        threadIsNoteToSelf: Bool = false,
+        contactProfile: Profile? = nil,
         currentUserIsClosedGroupMember: Bool? = nil,
         unreadCount: UInt = 0
     ) {
@@ -243,7 +247,7 @@ public extension SessionThreadViewModel {
         self.threadCreationDateTimestamp = 0
         self.threadMemberNames = nil
         
-        self.threadIsNoteToSelf = false
+        self.threadIsNoteToSelf = threadIsNoteToSelf
         self.threadIsMessageRequest = false
         self.threadRequiresApproval = false
         self.threadShouldBeVisible = false
@@ -259,7 +263,7 @@ public extension SessionThreadViewModel {
         
         // Thread display info
         
-        self.contactProfile = nil
+        self.contactProfile = contactProfile
         self.closedGroupProfileFront = nil
         self.closedGroupProfileBack = nil
         self.closedGroupProfileBackFallback = nil
@@ -281,6 +285,7 @@ public extension SessionThreadViewModel {
         self.interactionTimestampMs = nil
         self.interactionBody = nil
         self.interactionState = nil
+        self.interactionHasAtLeastOneReadReceipt = nil
         self.interactionIsOpenGroupInvitation = nil
         self.interactionAttachmentDescriptionInfo = nil
         self.interactionAttachmentCount = nil
@@ -337,6 +342,7 @@ public extension SessionThreadViewModel {
             interactionTimestampMs: self.interactionTimestampMs,
             interactionBody: self.interactionBody,
             interactionState: self.interactionState,
+            interactionHasAtLeastOneReadReceipt: self.interactionHasAtLeastOneReadReceipt,
             interactionIsOpenGroupInvitation: self.interactionIsOpenGroupInvitation,
             interactionAttachmentDescriptionInfo: self.interactionAttachmentDescriptionInfo,
             interactionAttachmentCount: self.interactionAttachmentCount,
@@ -389,6 +395,7 @@ public extension SessionThreadViewModel {
             interactionTimestampMs: self.interactionTimestampMs,
             interactionBody: self.interactionBody,
             interactionState: self.interactionState,
+            interactionHasAtLeastOneReadReceipt: self.interactionHasAtLeastOneReadReceipt,
             interactionIsOpenGroupInvitation: self.interactionIsOpenGroupInvitation,
             interactionAttachmentDescriptionInfo: self.interactionAttachmentDescriptionInfo,
             interactionAttachmentCount: self.interactionAttachmentCount,
@@ -433,8 +440,16 @@ public extension SessionThreadViewModel {
             let attachment: TypedTableAlias<Attachment> = TypedTableAlias()
             let interactionAttachment: TypedTableAlias<InteractionAttachment> = TypedTableAlias()
             let profile: TypedTableAlias<Profile> = TypedTableAlias()
+            let setting: TypedTableAlias<Setting> = TypedTableAlias()
+            let targetSetting: String = Setting.BoolKey.showScreenshotNotifications.rawValue
+            
+            var targetValue: Bool = true
+            let boolSettingLiteral: Data = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
             
             let interactionTimestampMsColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
+            let interactionStateInteractionIdColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.interactionId.name)
+            let readReceiptTableLiteral: SQL = SQL(stringLiteral: "readReceipt")
+            let readReceiptReadTimestampMsColumnLiteral: SQL = SQL(stringLiteral: RecipientState.Columns.readTimestampMs.name)
             let profileIdColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.id.name)
             let profileNicknameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.nickname.name)
             let profileNameColumnLiteral: SQL = SQL(stringLiteral: Profile.Columns.name.name)
@@ -449,7 +464,7 @@ public extension SessionThreadViewModel {
             ///
             /// Explicitly set default values for the fields ignored for search results
             let numColumnsBeforeProfiles: Int = 12
-            let numColumnsBetweenProfilesAndAttachmentInfo: Int = 10 // The attachment info columns will be combined
+            let numColumnsBetweenProfilesAndAttachmentInfo: Int = 11 // The attachment info columns will be combined
             
             let request: SQLRequest<ViewModel> = """
                 SELECT
@@ -484,6 +499,7 @@ public extension SessionThreadViewModel {
                     
                     -- Default to 'sending' assuming non-processed interaction when null
                     IFNULL(MIN(\(recipientState[.state])), \(SQL("\(RecipientState.State.sending)"))) AS \(ViewModel.interactionStateKey),
+                    (\(readReceiptTableLiteral).\(readReceiptReadTimestampMsColumnLiteral) IS NOT NULL) AS \(ViewModel.interactionHasAtLeastOneReadReceiptKey),
                     (\(linkPreview[.url]) IS NOT NULL) AS \(ViewModel.interactionIsOpenGroupInvitationKey),
             
                     -- These 4 properties will be combined into 'Attachment.DescriptionInfo'
@@ -516,7 +532,12 @@ public extension SessionThreadViewModel {
                         SUM(\(interaction[.wasRead]) = false AND \(interaction[.hasMention]) = true) AS \(ViewModel.threadUnreadMentionCountKey)
                     
                     FROM \(Interaction.self)
-                    WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
+                    LEFT JOIN \(Setting.self) ON \(setting[.key]) = \(targetSetting)
+                    WHERE
+                        \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)")) AND (
+                            \(SQL("\(interaction[.variant]) != \(Interaction.Variant.infoScreenshotNotification)")) OR
+                            \(SQL("IFNULL(\(setting[.value]), false) == \(boolSettingLiteral)"))
+                        )
                     GROUP BY \(interaction[.threadId])
                 ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
                 
@@ -524,6 +545,10 @@ public extension SessionThreadViewModel {
                     -- Ignore 'skipped' states
                     \(SQL("\(recipientState[.state]) != \(RecipientState.State.skipped)")) AND
                     \(recipientState[.interactionId]) = \(Interaction.self).\(ViewModel.interactionIdKey)
+                )
+                LEFT JOIN \(RecipientState.self) AS \(readReceiptTableLiteral) ON (
+                    \(readReceiptTableLiteral).\(readReceiptReadTimestampMsColumnLiteral) IS NOT NULL AND
+                    \(Interaction.self).\(ViewModel.interactionIdKey) = \(readReceiptTableLiteral).\(interactionStateInteractionIdColumnLiteral)
                 )
                 LEFT JOIN \(LinkPreview.self) ON (
                     \(linkPreview[.url]) = \(interaction[.linkPreviewUrl]) AND
@@ -611,6 +636,11 @@ public extension SessionThreadViewModel {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
         let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
+        let setting: TypedTableAlias<Setting> = TypedTableAlias()
+        let targetSetting: String = Setting.BoolKey.showScreenshotNotifications.rawValue
+        
+        var targetValue: Bool = true
+        let boolSettingLiteral: Data = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
         
         let interactionTimestampMsColumnLiteral: SQL = SQL(stringLiteral: Interaction.Columns.timestampMs.name)
         
@@ -621,7 +651,12 @@ public extension SessionThreadViewModel {
                     \(interaction[.threadId]),
                     MAX(\(interaction[.timestampMs])) AS \(interactionTimestampMsColumnLiteral)
                 FROM \(Interaction.self)
-                WHERE \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)"))
+                LEFT JOIN \(Setting.self) ON \(setting[.key]) = \(targetSetting)
+                WHERE
+                    \(SQL("\(interaction[.variant]) != \(Interaction.Variant.standardIncomingDeleted)")) AND (
+                        \(SQL("\(interaction[.variant]) != \(Interaction.Variant.infoScreenshotNotification)")) OR
+                        \(SQL("IFNULL(\(setting[.value]), false) == \(boolSettingLiteral)"))
+                    )
                 GROUP BY \(interaction[.threadId])
             ) AS \(Interaction.self) ON \(interaction[.threadId]) = \(thread[.id])
         """
@@ -794,8 +829,9 @@ public extension SessionThreadViewModel {
         }
     }
     
-    static func conversationSettingsProfileQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
+    static func conversationSettingsQuery(threadId: String, userPublicKey: String) -> AdaptedFetchRequest<SQLRequest<SessionThreadViewModel>> {
         let thread: TypedTableAlias<SessionThread> = TypedTableAlias()
+        let contact: TypedTableAlias<Contact> = TypedTableAlias()
         let closedGroup: TypedTableAlias<ClosedGroup> = TypedTableAlias()
         let groupMember: TypedTableAlias<GroupMember> = TypedTableAlias()
         let openGroup: TypedTableAlias<OpenGroup> = TypedTableAlias()
@@ -808,7 +844,7 @@ public extension SessionThreadViewModel {
         /// parse and might throw
         ///
         /// Explicitly set default values for the fields ignored for search results
-        let numColumnsBeforeProfiles: Int = 6
+        let numColumnsBeforeProfiles: Int = 9
         let request: SQLRequest<ViewModel> = """
             SELECT
                 \(thread.alias[Column.rowID]) AS \(ViewModel.rowIdKey),
@@ -816,21 +852,35 @@ public extension SessionThreadViewModel {
                 \(thread[.variant]) AS \(ViewModel.threadVariantKey),
                 \(thread[.creationDateTimestamp]) AS \(ViewModel.threadCreationDateTimestampKey),
                 
-                false AS \(ViewModel.threadIsNoteToSelfKey),
-                false AS \(ViewModel.threadIsPinnedKey),
+                (\(SQL("\(thread[.id]) = \(userPublicKey)"))) AS \(ViewModel.threadIsNoteToSelfKey),
+                
+                \(thread[.isPinned]) AS \(ViewModel.threadIsPinnedKey),
+                \(contact[.isBlocked]) AS \(ViewModel.threadIsBlockedKey),
+                \(thread[.mutedUntilTimestamp]) AS \(ViewModel.threadMutedUntilTimestampKey),
+                \(thread[.onlyNotifyForMentions]) AS \(ViewModel.threadOnlyNotifyForMentionsKey),
         
                 \(ViewModel.contactProfileKey).*,
                 \(ViewModel.closedGroupProfileFrontKey).*,
                 \(ViewModel.closedGroupProfileBackKey).*,
                 \(ViewModel.closedGroupProfileBackFallbackKey).*,
+                
+                \(closedGroup[.name]) AS \(ViewModel.closedGroupNameKey),
+                (\(groupMember[.profileId]) IS NOT NULL) AS \(ViewModel.currentUserIsClosedGroupMemberKey),
+                \(openGroup[.name]) AS \(ViewModel.openGroupNameKey),
                 \(openGroup[.imageData]) AS \(ViewModel.openGroupProfilePictureDataKey),
-        
+                    
                 \(SQL("\(userPublicKey)")) AS \(ViewModel.currentUserPublicKeyKey)
             
             FROM \(SessionThread.self)
+            LEFT JOIN \(Contact.self) ON \(contact[.id]) = \(thread[.id])
             LEFT JOIN \(Profile.self) AS \(ViewModel.contactProfileKey) ON \(ViewModel.contactProfileKey).\(profileIdColumnLiteral) = \(thread[.id])
-            LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
             LEFT JOIN \(OpenGroup.self) ON \(openGroup[.threadId]) = \(thread[.id])
+            LEFT JOIN \(ClosedGroup.self) ON \(closedGroup[.threadId]) = \(thread[.id])
+            LEFT JOIN \(GroupMember.self) ON (
+                \(SQL("\(groupMember[.role]) = \(GroupMember.Role.standard)")) AND
+                \(groupMember[.groupId]) = \(closedGroup[.threadId]) AND
+                \(SQL("\(groupMember[.profileId]) = \(userPublicKey)"))
+            )
         
             LEFT JOIN \(Profile.self) AS \(ViewModel.closedGroupProfileFrontKey) ON (
                 \(ViewModel.closedGroupProfileFrontKey).\(profileIdColumnLiteral) = (
@@ -888,7 +938,14 @@ public extension SessionThreadViewModel {
 // MARK: - Search Queries
 
 public extension SessionThreadViewModel {
-    fileprivate static let searchResultsLimit: Int = 500
+    static let searchResultsLimit: Int = 500
+    
+    /// FTS will fail or try to process characters outside of `[A-Za-z0-9]` are included directly in a search
+    /// term, in order to resolve this the term needs to be wrapped in quotation marks so the eventual SQL
+    /// is `MATCH '"{term}"'` or `MATCH '"{term}"*'`
+    static func searchSafeTerm(_ term: String) -> String {
+        return "\"\(term)\""
+    }
     
     static func searchTermParts(_ searchTerm: String) -> [String] {
         /// Process the search term in order to extract the parts of the search pattern we want
@@ -904,7 +961,7 @@ public extension SessionThreadViewModel {
                 guard index % 2 == 1 else {
                     return String(value)
                         .split(separator: " ")
-                        .map { String($0) }
+                        .map { "\"\(String($0))\"" }
                 }
                 
                 return ["\"\(value)\""]
@@ -913,18 +970,23 @@ public extension SessionThreadViewModel {
     }
     
     static func pattern(_ db: Database, searchTerm: String) throws -> FTS5Pattern {
+        return try pattern(db, searchTerm: searchTerm, forTable: Interaction.self)
+    }
+    
+    static func pattern<T>(_ db: Database, searchTerm: String, forTable table: T.Type) throws -> FTS5Pattern where T: TableRecord, T: ColumnExpressible {
         // Note: FTS doesn't support both prefix/suffix wild cards so don't bother trying to
         // add a prefix one
         let rawPattern: String = searchTermParts(searchTerm)
             .joined(separator: " OR ")
             .appending("*")
+        let fallbackTerm: String = "\(searchSafeTerm(searchTerm))*"
         
         /// There are cases where creating a pattern can fail, we want to try and recover from those cases
         /// by failling back to simpler patterns if needed
-        let maybePattern: FTS5Pattern? = (try? db.makeFTS5Pattern(rawPattern: rawPattern, forTable: Interaction.self))
+        let maybePattern: FTS5Pattern? = (try? db.makeFTS5Pattern(rawPattern: rawPattern, forTable: table))
             .defaulting(
-                to: (try? db.makeFTS5Pattern(rawPattern: searchTerm, forTable: Interaction.self))
-                    .defaulting(to: FTS5Pattern(matchingAnyTokenIn: searchTerm))
+                to: (try? db.makeFTS5Pattern(rawPattern: fallbackTerm, forTable: table))
+                    .defaulting(to: FTS5Pattern(matchingAnyTokenIn: fallbackTerm))
             )
         
         guard let pattern: FTS5Pattern = maybePattern else { throw StorageError.invalidSearchPattern }

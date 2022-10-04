@@ -216,13 +216,15 @@ class PhotoCollectionContents {
 }
 
 class PhotoCollection {
+    public let id: String
     private let collection: PHAssetCollection
     
     // The user never sees this collection, but we use it for a null object pattern
     // when the user has denied photos access.
-    static let empty = PhotoCollection(collection: PHAssetCollection())
+    static let empty = PhotoCollection(id: "", collection: PHAssetCollection())
 
-    init(collection: PHAssetCollection) {
+    init(id: String, collection: PHAssetCollection) {
+        self.id = id
         self.collection = collection
     }
 
@@ -289,7 +291,7 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
             subtype: .smartAlbumUserLibrary,
             options: fetchOptions
         ).enumerateObjects { collection, _, stop in
-            fetchedCollection = PhotoCollection(collection: collection)
+            fetchedCollection = PhotoCollection(id: collection.localIdentifier, collection: collection)
             stop.pointee = true
         }
 
@@ -310,17 +312,16 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
             let (collection, hideIfEmpty) = arg
 
             // De-duplicate by id.
-            let collectionId = collection.localIdentifier
-            guard !collectionIds.contains(collectionId) else {
-                return
-            }
+            let collectionId: String = collection.localIdentifier
+            
+            guard !collectionIds.contains(collectionId) else { return }
             collectionIds.insert(collectionId)
 
             guard let assetCollection = collection as? PHAssetCollection else {
                 owsFailDebug("Asset collection has unexpected type: \(type(of: collection))")
                 return
             }
-            let photoCollection = PhotoCollection(collection: assetCollection)
+            let photoCollection = PhotoCollection(id: collectionId, collection: assetCollection)
             guard !hideIfEmpty || photoCollection.contents().assetCount > 0 else {
                 return
             }

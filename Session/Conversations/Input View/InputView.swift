@@ -54,15 +54,17 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
 
     private lazy var voiceMessageButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "Microphone"), delegate: self)
-        result.accessibilityLabel = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE", comment: "")
-        result.accessibilityHint = NSLocalizedString("VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE", comment: "")
+        result.accessibilityLabel = "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE".localized()
+        result.accessibilityHint = "VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE".localized()
+        
         return result
     }()
 
     private lazy var sendButton: InputViewButton = {
         let result = InputViewButton(icon: #imageLiteral(resourceName: "ArrowUp"), isSendButton: true, delegate: self)
         result.isHidden = true
-        result.accessibilityLabel = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "")
+        result.accessibilityLabel = "ATTACHMENT_APPROVAL_SEND_BUTTON".localized()
+        
         return result
     }()
     private lazy var voiceMessageButtonContainer = container(for: voiceMessageButton)
@@ -76,16 +78,24 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
 
     private lazy var mentionsViewContainer: UIView = {
         let result: UIView = UIView()
+        result.alpha = 0
+        
         let backgroundView = UIView()
-        backgroundView.backgroundColor = (isLightMode ? .white : .black)
+        backgroundView.themeBackgroundColor = .backgroundSecondary
         backgroundView.alpha = Values.lowOpacity
         result.addSubview(backgroundView)
         backgroundView.pin(to: result)
         
-        let blurView: UIVisualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        let blurView: UIVisualEffectView = UIVisualEffectView()
         result.addSubview(blurView)
         blurView.pin(to: result)
-        result.alpha = 0
+        
+        ThemeManager.onThemeChange(observer: blurView) { [weak blurView] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: blurView?.effect = UIBlurEffect(style: .light)
+                default: blurView?.effect = UIBlurEffect(style: .dark)
+            }
+        }
         
         return result
     }()
@@ -103,8 +113,8 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
     private lazy var disabledInputLabel: UILabel = {
         let label: UILabel = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: Values.smallFontSize)
-        label.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        label.font = .systemFont(ofSize: Values.smallFontSize)
+        label.themeTextColor = .textPrimary
         label.textAlignment = .center
         label.alpha = 0
 
@@ -137,19 +147,26 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         
         // Background & blur
         let backgroundView = UIView()
-        backgroundView.backgroundColor = isLightMode ? .white : .black
+        backgroundView.themeBackgroundColor = .backgroundSecondary
         backgroundView.alpha = Values.lowOpacity
         addSubview(backgroundView)
         backgroundView.pin(to: self)
         
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        let blurView = UIVisualEffectView()
         addSubview(blurView)
         blurView.pin(to: self)
         
+        ThemeManager.onThemeChange(observer: blurView) { [weak blurView] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: blurView?.effect = UIBlurEffect(style: .light)
+                default: blurView?.effect = UIBlurEffect(style: .dark)
+            }
+        }
+        
         // Separator
         let separator = UIView()
-        separator.backgroundColor = Colors.text.withAlphaComponent(0.2)
-        separator.set(.height, to: 1 / UIScreen.main.scale)
+        separator.themeBackgroundColor = .borderSeparator
+        separator.set(.height, to: Values.separatorThickness)
         addSubview(separator)
         separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.top, UIView.HorizontalEdge.trailing ], to: self)
         
@@ -330,7 +347,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
                 1 :
                 (messageTypes == .textOnly ? 0.4 : 0)
             )
-            self?.disabledInputLabel.alpha = (messageTypes != .none ? 0 : 1)
+            self?.disabledInputLabel.alpha = (messageTypes != .none ? 0 : Values.mediumOpacity)
         }
     }
 
@@ -371,21 +388,30 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         if inputViewButton == sendButton { delegate?.handleSendButtonTapped() }
     }
 
-    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton) {
+    func handleInputViewButtonLongPressBegan(_ inputViewButton: InputViewButton?) {
         guard inputViewButton == voiceMessageButton else { return }
+        
         delegate?.startVoiceMessageRecording()
         showVoiceMessageUI()
     }
 
-    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch) {
-        guard let voiceMessageRecordingView = voiceMessageRecordingView, inputViewButton == voiceMessageButton else { return }
-        let location = touch.location(in: voiceMessageRecordingView)
+    func handleInputViewButtonLongPressMoved(_ inputViewButton: InputViewButton, with touch: UITouch?) {
+        guard
+            let voiceMessageRecordingView: VoiceMessageRecordingView = voiceMessageRecordingView,
+            inputViewButton == voiceMessageButton,
+            let location = touch?.location(in: voiceMessageRecordingView)
+        else { return }
+        
         voiceMessageRecordingView.handleLongPressMoved(to: location)
     }
 
-    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch) {
-        guard let voiceMessageRecordingView = voiceMessageRecordingView, inputViewButton == voiceMessageButton else { return }
-        let location = touch.location(in: voiceMessageRecordingView)
+    func handleInputViewButtonLongPressEnded(_ inputViewButton: InputViewButton, with touch: UITouch?) {
+        guard
+            let voiceMessageRecordingView: VoiceMessageRecordingView = voiceMessageRecordingView,
+            inputViewButton == voiceMessageButton,
+            let location = touch?.location(in: voiceMessageRecordingView)
+        else { return }
+        
         voiceMessageRecordingView.handleLongPressEnded(at: location)
     }
 
@@ -440,7 +466,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         )
     }
 
-    func showMentionsUI(for candidates: [ConversationViewModel.MentionInfo]) {
+    func showMentionsUI(for candidates: [MentionInfo]) {
         mentionsView.candidates = candidates
         
         let mentionCellHeight = (Values.smallProfilePictureSize + 2 * Values.smallSpacing)
@@ -452,7 +478,7 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         }
     }
 
-    func handleMentionSelected(_ mentionInfo: ConversationViewModel.MentionInfo, from view: MentionSelectionView) {
+    func handleMentionSelected(_ mentionInfo: MentionInfo, from view: MentionSelectionView) {
         delegate?.handleMentionSelected(mentionInfo, from: view)
     }
     
@@ -479,6 +505,6 @@ protocol InputViewDelegate: ExpandingAttachmentsButtonDelegate, VoiceMessageReco
     func showLinkPreviewSuggestionModal()
     func handleSendButtonTapped()
     func inputTextViewDidChangeContent(_ inputTextView: InputTextView)
-    func handleMentionSelected(_ mentionInfo: ConversationViewModel.MentionInfo, from view: MentionSelectionView)
+    func handleMentionSelected(_ mentionInfo: MentionInfo, from view: MentionSelectionView)
     func didPasteImageFromPasteboard(_ image: UIImage)
 }

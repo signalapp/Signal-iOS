@@ -109,6 +109,9 @@ extension ContextMenuVC {
         delegate: ContextMenuActionDelegate?
     ) -> [Action]? {
         // No context items for info messages
+        guard cellViewModel.variant != .standardIncomingDeleted else {
+            return [ Action.delete(cellViewModel, delegate) ]
+        }
         guard cellViewModel.variant == .standardOutgoing || cellViewModel.variant == .standardIncoming else {
             return nil
         }

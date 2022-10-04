@@ -402,6 +402,7 @@ public class MediaGalleryViewModel {
                 .baseQuery(
                     orderSQL: SQL(interactionAttachment[.albumIndex]),
                     customFilters: SQL("""
+                        \(attachment[.isVisualMedia]) = true AND
                         \(attachment[.isValid]) = true AND
                         \(interaction[.id]) = \(interactionId)
                     """)
@@ -416,6 +417,8 @@ public class MediaGalleryViewModel {
                 .baseQuery(
                     orderSQL: Item.galleryReverseOrderSQL,
                     customFilters: SQL("""
+                        \(attachment[.isVisualMedia]) = true AND
+                        \(attachment[.isValid]) = true AND
                         \(interaction[.timestampMs]) > \(albumTimestampMs) AND
                         \(interaction[.threadId]) = \(threadId)
                     """)
@@ -425,6 +428,8 @@ public class MediaGalleryViewModel {
                 .baseQuery(
                     orderSQL: Item.galleryOrderSQL,
                     customFilters: SQL("""
+                        \(attachment[.isVisualMedia]) = true AND
+                        \(attachment[.isValid]) = true AND
                         \(interaction[.timestampMs]) < \(albumTimestampMs) AND
                         \(interaction[.threadId]) = \(threadId)
                     """)
@@ -608,17 +613,20 @@ public class MediaGalleryViewModel {
             threadId: threadId,
             threadVariant: threadVariant,
             focusedAttachmentId: focusedAttachmentId,
-            performInitialQuerySync: performInitialQuerySync)
+            performInitialQuerySync: performInitialQuerySync
+        )
         
         let documentTitleViewController = createDocumentTitleViewController(
             threadId: threadId,
             threadVariant: threadVariant,
             focusedAttachmentId: focusedAttachmentId,
-            performInitialQuerySync: performInitialQuerySync)
+            performInitialQuerySync: performInitialQuerySync
+        )
         
         return AllMediaViewController(
             mediaTitleViewController: mediaTitleViewController,
-            documentTitleViewController: documentTitleViewController)
+            documentTitleViewController: documentTitleViewController
+        )
     }
 }
 
@@ -629,7 +637,7 @@ public class MediaGalleryViewModel {
 @objc(SNMediaGallery)
 public class SNMediaGallery: NSObject {
     @objc(pushTileViewWithSliderEnabledForThreadId:isClosedGroup:isOpenGroup:fromNavController:)
-    static func pushTileView(threadId: String, isClosedGroup: Bool, isOpenGroup: Bool, fromNavController: OWSNavigationController) {
+    static func pushTileView(threadId: String, isClosedGroup: Bool, isOpenGroup: Bool, fromNavController: UINavigationController) {
         fromNavController.pushViewController(
             MediaGalleryViewModel.createAllMediaViewController(
                 threadId: threadId,

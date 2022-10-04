@@ -1,9 +1,11 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import MediaPlayer
 import WebRTC
 import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
-import UIKit
-import MediaPlayer
 
 final class CallVC: UIViewController, VideoPreviewDelegate {
     let call: SessionCall
@@ -19,36 +21,52 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         return result
     }()
     
-    // MARK: UI Components
+    // MARK: - UI Components
+    
     private lazy var localVideoView: LocalVideoView = {
         let result = LocalVideoView()
+        result.clipsToBounds = true
+        result.themeBackgroundColor = .backgroundSecondary
         result.isHidden = !call.isVideoEnabled
         result.layer.cornerRadius = UIDevice.current.isIPad ? 20 : 10
         result.layer.masksToBounds = true
         result.set(.width, to: LocalVideoView.width)
         result.set(.height, to: LocalVideoView.height)
         result.makeViewDraggable()
+        
         return result
     }()
     
     private lazy var remoteVideoView: RemoteVideoView = {
         let result = RemoteVideoView()
         result.alpha = 0
-        result.backgroundColor = .black
+        result.themeBackgroundColor = .backgroundPrimary
         result.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleRemoteVieioViewTapped)))
+        
         return result
     }()
     
     private lazy var fadeView: UIView = {
+        let height: CGFloat = ((UIApplication.shared.keyWindow?.safeAreaInsets.top).map { $0 + Values.veryLargeSpacing } ?? 64)
+        
         let result = UIView()
-        let height: CGFloat = 64
         var frame = UIScreen.main.bounds
         frame.size.height = height
+        
         let layer = CAGradientLayer()
         layer.frame = frame
-        layer.colors = [ UIColor(hex: 0x000000).withAlphaComponent(0.4).cgColor, UIColor(hex: 0x000000).withAlphaComponent(0).cgColor ]
         result.layer.insertSublayer(layer, at: 0)
         result.set(.height, to: height)
+        
+        ThemeManager.onThemeChange(observer: result) { [weak layer] theme, _ in
+            guard let backgroundPrimary: UIColor = theme.color(for: .backgroundPrimary) else { return }
+            
+            layer?.colors = [
+                backgroundPrimary.withAlphaComponent(0.4).cgColor,
+                backgroundPrimary.withAlphaComponent(0).cgColor
+            ]
+        }
+        
         return result
     }()
     
@@ -61,42 +79,60 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         result.layer.cornerRadius = radius
         result.layer.masksToBounds = true
         result.contentMode = .scaleAspectFill
+        
         return result
     }()
     
     private lazy var minimizeButton: UIButton = {
         let result = UIButton(type: .custom)
+        result.setImage(
+            UIImage(named: "Minimize")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = .textPrimary
+        result.addTarget(self, action: #selector(minimize), for: UIControl.Event.touchUpInside)
+        
         result.isHidden = !call.hasConnected
-        let image = UIImage(named: "Minimize")!.withTint(.white)
-        result.setImage(image, for: UIControl.State.normal)
         result.set(.width, to: 60)
         result.set(.height, to: 60)
-        result.addTarget(self, action: #selector(minimize), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
     private lazy var answerButton: UIButton = {
         let result = UIButton(type: .custom)
-        result.isHidden = call.hasStartedConnecting
-        let image = UIImage(named: "AnswerCall")!.withTint(.white)
-        result.setImage(image, for: UIControl.State.normal)
-        result.set(.width, to: 60)
-        result.set(.height, to: 60)
-        result.backgroundColor = Colors.accent
+        result.setImage(
+            UIImage(named: "AnswerCall")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = .white
+        result.themeBackgroundColor = .callAccept_background
         result.layer.cornerRadius = 30
         result.addTarget(self, action: #selector(answerCall), for: UIControl.Event.touchUpInside)
+        
+        result.isHidden = call.hasStartedConnecting
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        
         return result
     }()
     
     private lazy var hangUpButton: UIButton = {
         let result = UIButton(type: .custom)
-        let image = UIImage(named: "EndCall")!.withTint(.white)
-        result.setImage(image, for: UIControl.State.normal)
-        result.set(.width, to: 60)
-        result.set(.height, to: 60)
-        result.backgroundColor = Colors.destructive
+        result.setImage(
+            UIImage(named: "EndCall")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = .white
+        result.themeBackgroundColor = .callDecline_background
         result.layer.cornerRadius = 30
         result.addTarget(self, action: #selector(endCall), for: UIControl.Event.touchUpInside)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        
         return result
     }()
     
@@ -104,58 +140,83 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         let result = UIStackView(arrangedSubviews: [hangUpButton, answerButton])
         result.axis = .horizontal
         result.spacing = Values.veryLargeSpacing * 2 + 40
+        
         return result
     }()
 
     private lazy var switchCameraButton: UIButton = {
         let result = UIButton(type: .custom)
         result.isEnabled = call.isVideoEnabled
-        let image = UIImage(named: "SwitchCamera")!.withTint(.white)
-        result.setImage(image, for: UIControl.State.normal)
-        result.set(.width, to: 60)
-        result.set(.height, to: 60)
-        result.backgroundColor = UIColor(hex: 0x1F1F1F)
+        result.setImage(
+            UIImage(named: "SwitchCamera")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = .textPrimary
+        result.themeBackgroundColor = .backgroundSecondary
         result.layer.cornerRadius = 30
         result.addTarget(self, action: #selector(switchCamera), for: UIControl.Event.touchUpInside)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        
         return result
     }()
 
     private lazy var switchAudioButton: UIButton = {
         let result = UIButton(type: .custom)
-        let image = UIImage(named: "AudioOff")!.withTint(.white)
-        result.setImage(image, for: UIControl.State.normal)
-        result.set(.width, to: 60)
-        result.set(.height, to: 60)
-        result.backgroundColor = call.isMuted ? Colors.destructive : UIColor(hex: 0x1F1F1F)
+        result.setImage(
+            UIImage(named: "AudioOff")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = (call.isMuted ?
+            .white :
+            .textPrimary
+        )
+        result.themeBackgroundColor = (call.isMuted ?
+            .danger :
+            .backgroundSecondary
+        )
         result.layer.cornerRadius = 30
         result.addTarget(self, action: #selector(switchAudio), for: UIControl.Event.touchUpInside)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        
         return result
     }()
     
     private lazy var videoButton: UIButton = {
         let result = UIButton(type: .custom)
-        let image = UIImage(named: "VideoCall")?.withRenderingMode(.alwaysTemplate)
-        result.setImage(image, for: UIControl.State.normal)
-        result.set(.width, to: 60)
-        result.set(.height, to: 60)
-        result.tintColor = .white
-        result.backgroundColor = UIColor(hex: 0x1F1F1F)
+        result.setImage(
+            UIImage(named: "VideoCall")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = .textPrimary
+        result.themeBackgroundColor = .backgroundSecondary
         result.layer.cornerRadius = 30
         result.addTarget(self, action: #selector(operateCamera), for: UIControl.Event.touchUpInside)
+        result.set(.width, to: 60)
+        result.set(.height, to: 60)
+        
         return result
     }()
     
     private lazy var volumeView: MPVolumeView = {
         let result = MPVolumeView()
-        let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
         result.showsVolumeSlider = false
         result.showsRouteButton = true
-        result.setRouteButtonImage(image, for: UIControl.State.normal)
+        result.setRouteButtonImage(
+            UIImage(named: "Speaker")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = .textPrimary
+        result.themeBackgroundColor = .backgroundSecondary
+        result.layer.cornerRadius = 30
         result.set(.width, to: 60)
         result.set(.height, to: 60)
-        result.tintColor = .white
-        result.backgroundColor = UIColor(hex: 0x1F1F1F)
-        result.layer.cornerRadius = 30
+        
         return result
     }()
     
@@ -163,37 +224,43 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         let result = UIStackView(arrangedSubviews: [switchCameraButton, videoButton, switchAudioButton, volumeView])
         result.axis = .horizontal
         result.spacing = Values.veryLargeSpacing
+        
         return result
     }()
     
     private lazy var titleLabel: UILabel = {
-        let result = UILabel()
-        result.textColor = .white
+        let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        
         return result
     }()
     
     private lazy var callInfoLabel: UILabel = {
-        let result = UILabel()
-        result.isHidden = call.hasConnected
-        result.textColor = .white
+        let result: UILabel = UILabel()
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.isHidden = call.hasConnected
+        
         if call.hasStartedConnecting { result.text = "Connecting..." }
+        
         return result
     }()
     
     private lazy var callDurationLabel: UILabel = {
         let result = UILabel()
-        result.isHidden = true
-        result.textColor = .white
         result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.isHidden = true
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init(for call: SessionCall) {
         self.call = call
         super.init(nibName: nil, bundle: nil)
@@ -208,6 +275,7 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
                 UIView.animate(withDuration: 0.25) {
                     self.remoteVideoView.alpha = isEnabled ? 1 : 0
                 }
+                
                 if self.callInfoLabel.alpha < 0.5 {
                     UIView.animate(withDuration: 0.25) {
                         self.operationPanel.alpha = 1
@@ -217,45 +285,60 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
                 }
             }
         }
+        
         self.call.hasStartedConnectingDidChange = {
             DispatchQueue.main.async {
                 self.callInfoLabel.text = "Connecting..."
                 self.answerButton.alpha = 0
-                UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseIn, animations: {
-                    self.answerButton.isHidden = true
-                }, completion: nil)
+                
+                UIView.animate(
+                    withDuration: 0.5,
+                    delay: 0,
+                    usingSpringWithDamping: 1,
+                    initialSpringVelocity: 1,
+                    options: .curveEaseIn,
+                    animations: { [weak self] in
+                        self?.answerButton.isHidden = true
+                    },
+                    completion: nil
+                )
             }
         }
-        self.call.hasConnectedDidChange = {
+        
+        self.call.hasConnectedDidChange = { [weak self] in
             DispatchQueue.main.async {
                 CallRingTonePlayer.shared.stopPlayingRingTone()
-                self.callInfoLabel.text = "Connected"
-                self.minimizeButton.isHidden = false
-                self.durationTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                    self.updateDuration()
+                
+                self?.callInfoLabel.text = "Connected"
+                self?.minimizeButton.isHidden = false
+                self?.durationTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                    self?.updateDuration()
                 }
-                self.callInfoLabel.isHidden = true
-                self.callDurationLabel.isHidden = false
+                self?.callInfoLabel.isHidden = true
+                self?.callDurationLabel.isHidden = false
             }
         }
-        self.call.hasEndedDidChange = {
+        
+        self.call.hasEndedDidChange = { [weak self] in
             DispatchQueue.main.async {
-                self.durationTimer?.invalidate()
-                self.durationTimer = nil
-                self.handleEndCallMessage()
+                self?.durationTimer?.invalidate()
+                self?.durationTimer = nil
+                self?.handleEndCallMessage()
             }
         }
-        self.call.hasStartedReconnecting = {
+        
+        self.call.hasStartedReconnecting = { [weak self] in
             DispatchQueue.main.async {
-                self.callInfoLabel.isHidden = false
-                self.callDurationLabel.isHidden = true
-                self.callInfoLabel.text = "Reconnecting..."
+                self?.callInfoLabel.isHidden = false
+                self?.callDurationLabel.isHidden = true
+                self?.callInfoLabel.text = "Reconnecting..."
             }
         }
-        self.call.hasReconnected = {
+        
+        self.call.hasReconnected = { [weak self] in
             DispatchQueue.main.async {
-                self.callInfoLabel.isHidden = true
-                self.callDurationLabel.isHidden = false
+                self?.callInfoLabel.isHidden = true
+                self?.callDurationLabel.isHidden = false
             }
         }
     }
@@ -264,19 +347,24 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
+        
+        view.themeBackgroundColor = .backgroundPrimary
+        
         setUpViewHierarchy()
+        
         if shouldRestartCamera { cameraManager.prepare() }
+        
         touch(call.videoCapturer)
         titleLabel.text = self.call.contactName
-        AppEnvironment.shared.callManager.startCall(call) { error in
+        AppEnvironment.shared.callManager.startCall(call) { [weak self] error in
             DispatchQueue.main.async {
                 if let _ = error {
-                    self.callInfoLabel.text = "Can't start a call."
-                    self.endCall()
-                } else {
-                    self.callInfoLabel.text = "Ringing..."
-                    self.answerButton.isHidden = true
+                    self?.callInfoLabel.text = "Can't start a call."
+                    self?.endCall()
+                }
+                else {
+                    self?.callInfoLabel.text = "Ringing..."
+                    self?.answerButton.isHidden = true
                 }
             }
         }
@@ -305,41 +393,50 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         // Profile picture container
         let profilePictureContainer = UIView()
         view.addSubview(profilePictureContainer)
+        
         // Remote video view
         call.attachRemoteVideoRenderer(remoteVideoView)
         view.addSubview(remoteVideoView)
         remoteVideoView.translatesAutoresizingMaskIntoConstraints = false
         remoteVideoView.pin(to: view)
+        
         // Local video view
         call.attachLocalVideoRenderer(localVideoView)
+        
         // Fade view
         view.addSubview(fadeView)
         fadeView.translatesAutoresizingMaskIntoConstraints = false
         fadeView.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.top, UIView.HorizontalEdge.right ], to: view)
+        
         // Minimize button
         view.addSubview(minimizeButton)
         minimizeButton.translatesAutoresizingMaskIntoConstraints = false
         minimizeButton.pin(.left, to: .left, of: view)
         minimizeButton.pin(.top, to: .top, of: view, withInset: 32)
+        
         // Title label
         view.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.center(.vertical, in: minimizeButton)
         titleLabel.center(.horizontal, in: view)
+        
         // Response Panel
         view.addSubview(responsePanel)
         responsePanel.center(.horizontal, in: view)
-        responsePanel.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset)
+        responsePanel.pin(.bottom, to: .bottom, of: view.safeAreaLayoutGuide, withInset: -Values.smallSpacing)
+        
         // Operation Panel
         view.addSubview(operationPanel)
         operationPanel.center(.horizontal, in: view)
         operationPanel.pin(.bottom, to: .top, of: responsePanel, withInset: -Values.veryLargeSpacing)
+        
         // Profile picture view
         profilePictureContainer.pin(.top, to: .bottom, of: fadeView)
         profilePictureContainer.pin(.bottom, to: .top, of: operationPanel)
         profilePictureContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: view)
         profilePictureContainer.addSubview(profilePictureView)
         profilePictureView.center(in: profilePictureContainer)
+        
         // Call info label
         let callInfoLabelContainer = UIView()
         view.addSubview(callInfoLabelContainer)
@@ -355,25 +452,28 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     }
     
     private func addLocalVideoView() {
-        let safeAreaInsets = UIApplication.shared.keyWindow!.safeAreaInsets
-        let window = CurrentAppContext().mainWindow!
-        window.addSubview(localVideoView)
+        let safeAreaInsets = UIApplication.shared.keyWindow?.safeAreaInsets
+        CurrentAppContext().mainWindow?.addSubview(localVideoView)
         localVideoView.autoPinEdge(toSuperviewEdge: .right, withInset: Values.smallSpacing)
-        let topMargin = safeAreaInsets.top + Values.veryLargeSpacing
+        let topMargin = (safeAreaInsets?.top ?? 0) + Values.veryLargeSpacing
         localVideoView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.start() }
+        
         shouldRestartCamera = true
         addLocalVideoView()
-        remoteVideoView.alpha = call.isRemoteVideoEnabled ? 1 : 0
+        remoteVideoView.alpha = (call.isRemoteVideoEnabled ? 1 : 0)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
         if (call.isVideoEnabled && shouldRestartCamera) { cameraManager.stop() }
+        
         localVideoView.removeFromSuperview()
     }
     
@@ -386,9 +486,10 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     
     @objc func didChangeDeviceOrientation(notification: Notification) {
         if UIDevice.current.isIPad { return }
-        
+
         func rotateAllButtons(rotationAngle: CGFloat) {
             let transform = CGAffineTransform(rotationAngle: rotationAngle)
+            
             UIView.animate(withDuration: 0.2) {
                 self.answerButton.transform = transform
                 self.hangUpButton.transform = transform
@@ -400,16 +501,11 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         }
         
         switch UIDevice.current.orientation {
-        case .portrait:
-            rotateAllButtons(rotationAngle: 0)
-        case .portraitUpsideDown:
-            rotateAllButtons(rotationAngle: .pi)
-        case .landscapeLeft:
-            rotateAllButtons(rotationAngle: .halfPi)
-        case .landscapeRight:
-            rotateAllButtons(rotationAngle: .pi + .halfPi)
-        default:
-            break
+            case .portrait: rotateAllButtons(rotationAngle: 0)
+            case .portraitUpsideDown: rotateAllButtons(rotationAngle: .pi)
+            case .landscapeLeft: rotateAllButtons(rotationAngle: .halfPi)
+            case .landscapeRight: rotateAllButtons(rotationAngle: .pi + .halfPi)
+            default: break
         }
     }
     
@@ -422,39 +518,42 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         SNLog("[Calls] Ending call.")
         self.callInfoLabel.isHidden = false
         self.callDurationLabel.isHidden = true
-        callInfoLabel.text = "Call Ended"
+        self.callInfoLabel.text = "Call Ended"
+        
         UIView.animate(withDuration: 0.25) {
             self.remoteVideoView.alpha = 0
             self.operationPanel.alpha = 1
             self.responsePanel.alpha = 1
             self.callInfoLabel.alpha = 1
         }
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in
-            self.conversationVC?.showInputAccessoryView()
-            self.presentingViewController?.dismiss(animated: true, completion: nil)
+        
+        Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+            self?.conversationVC?.showInputAccessoryView()
+            self?.presentingViewController?.dismiss(animated: true, completion: nil)
         }
     }
     
     @objc private func answerCall() {
-        AppEnvironment.shared.callManager.answerCall(call) { error in
+        AppEnvironment.shared.callManager.answerCall(call) { [weak self] error in
             DispatchQueue.main.async {
                 if let _ = error {
-                    self.callInfoLabel.text = "Can't answer the call."
-                    self.endCall()
+                    self?.callInfoLabel.text = "Can't answer the call."
+                    self?.endCall()
                 }
             }
         }
     }
     
     @objc private func endCall() {
-        AppEnvironment.shared.callManager.endCall(call) { error in
+        AppEnvironment.shared.callManager.endCall(call) { [weak self] error in
             if let _ = error {
-                self.call.endSessionCall()
+                self?.call.endSessionCall()
                 AppEnvironment.shared.callManager.reportCurrentCallEnded(reason: nil)
             }
+            
             DispatchQueue.main.async {
-                self.conversationVC?.showInputAccessoryView()
-                self.presentingViewController?.dismiss(animated: true, completion: nil)
+                self?.conversationVC?.showInputAccessoryView()
+                self?.presentingViewController?.dismiss(animated: true, completion: nil)
             }
         }
     }
@@ -464,26 +563,31 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         duration += 1
     }
     
-    // MARK: Minimize to a floating view
+    // MARK: - Minimize to a floating view
+    
     @objc private func minimize() {
         self.shouldRestartCamera = false
+        self.conversationVC?.showInputAccessoryView()
+        
         let miniCallView = MiniCallView(from: self)
         miniCallView.show()
-        self.conversationVC?.showInputAccessoryView()
+        
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
-    // MARK: Video and Audio
+    // MARK: - Video and Audio
+    
     @objc private func operateCamera() {
         if (call.isVideoEnabled) {
             localVideoView.isHidden = true
             cameraManager.stop()
-            videoButton.tintColor = .white
-            videoButton.backgroundColor = UIColor(hex: 0x1F1F1F)
+            videoButton.themeTintColor = .textPrimary
+            videoButton.themeBackgroundColor = .backgroundSecondary
             switchCameraButton.isEnabled = false
             call.isVideoEnabled = false
-        } else {
-            guard requestCameraPermissionIfNeeded() else { return }
+        }
+        else {
+            guard Permissions.requestCameraPermissionIfNeeded() else { return }
             let previewVC = VideoPreviewVC()
             previewVC.delegate = self
             present(previewVC, animated: true, completion: nil)
@@ -494,8 +598,8 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         localVideoView.isHidden = false
         cameraManager.prepare()
         cameraManager.start()
-        videoButton.tintColor = UIColor(hex: 0x1F1F1F)
-        videoButton.backgroundColor = .white
+        videoButton.themeTintColor = .backgroundSecondary
+        videoButton.themeBackgroundColor = .textPrimary
         switchCameraButton.isEnabled = true
         call.isVideoEnabled = true
     }
@@ -506,10 +610,13 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
     
     @objc private func switchAudio() {
         if call.isMuted {
-            switchAudioButton.backgroundColor = UIColor(hex: 0x1F1F1F)
+            switchAudioButton.themeTintColor = .textPrimary
+            switchAudioButton.themeBackgroundColor = .backgroundSecondary
             call.isMuted = false
-        } else {
-            switchAudioButton.backgroundColor = Colors.destructive
+        }
+        else {
+            switchAudioButton.themeTintColor = .white
+            switchAudioButton.themeBackgroundColor = .danger
             call.isMuted = true
         }
     }
@@ -519,41 +626,48 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         let currentRoute = currentSession.currentRoute
         if let currentOutput = currentRoute.outputs.first {
             if let latestKnownAudioOutputDeviceName = latestKnownAudioOutputDeviceName, currentOutput.portName == latestKnownAudioOutputDeviceName { return }
+            
             latestKnownAudioOutputDeviceName = currentOutput.portName
+            
             switch currentOutput.portType {
-            case .builtInSpeaker:
-                let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
-                volumeView.setRouteButtonImage(image, for: .normal)
-                volumeView.tintColor = UIColor(hex: 0x1F1F1F)
-                volumeView.backgroundColor = .white
-            case .headphones:
-                let image = UIImage(named: "Headsets")?.withRenderingMode(.alwaysTemplate)
-                volumeView.setRouteButtonImage(image, for: .normal)
-                volumeView.tintColor = UIColor(hex: 0x1F1F1F)
-                volumeView.backgroundColor = .white
-            case .bluetoothLE: fallthrough
-            case .bluetoothA2DP:
-                let image = UIImage(named: "Bluetooth")?.withRenderingMode(.alwaysTemplate)
-                volumeView.setRouteButtonImage(image, for: .normal)
-                volumeView.tintColor = UIColor(hex: 0x1F1F1F)
-                volumeView.backgroundColor = .white
-            case .bluetoothHFP:
-                let image = UIImage(named: "Airpods")?.withRenderingMode(.alwaysTemplate)
-                volumeView.setRouteButtonImage(image, for: .normal)
-                volumeView.tintColor = UIColor(hex: 0x1F1F1F)
-                volumeView.backgroundColor = .white
-            case .builtInReceiver: fallthrough
-            default:
-                let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
-                volumeView.setRouteButtonImage(image, for: .normal)
-                volumeView.tintColor = .white
-                volumeView.backgroundColor = UIColor(hex: 0x1F1F1F)
+                case .builtInSpeaker:
+                    let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
+                    volumeView.setRouteButtonImage(image, for: .normal)
+                    volumeView.themeTintColor = .backgroundSecondary
+                    volumeView.themeBackgroundColor = .textPrimary
+                    
+                case .headphones:
+                    let image = UIImage(named: "Headsets")?.withRenderingMode(.alwaysTemplate)
+                    volumeView.setRouteButtonImage(image, for: .normal)
+                    volumeView.themeTintColor = .backgroundSecondary
+                    volumeView.themeBackgroundColor = .textPrimary
+                    
+                case .bluetoothLE: fallthrough
+                case .bluetoothA2DP:
+                    let image = UIImage(named: "Bluetooth")?.withRenderingMode(.alwaysTemplate)
+                    volumeView.setRouteButtonImage(image, for: .normal)
+                    volumeView.themeTintColor = .backgroundSecondary
+                    volumeView.themeBackgroundColor = .textPrimary
+                    
+                case .bluetoothHFP:
+                    let image = UIImage(named: "Airpods")?.withRenderingMode(.alwaysTemplate)
+                    volumeView.setRouteButtonImage(image, for: .normal)
+                    volumeView.themeTintColor = .backgroundSecondary
+                    volumeView.themeBackgroundColor = .textPrimary
+                    
+                case .builtInReceiver: fallthrough
+                default:
+                    let image = UIImage(named: "Speaker")?.withRenderingMode(.alwaysTemplate)
+                    volumeView.setRouteButtonImage(image, for: .normal)
+                    volumeView.themeTintColor = .backgroundSecondary
+                    volumeView.themeBackgroundColor = .textPrimary
             }
         }
     }
     
     @objc private func handleRemoteVieioViewTapped(gesture: UITapGestureRecognizer) {
         let isHidden = callDurationLabel.alpha < 0.5
+        
         UIView.animate(withDuration: 0.5) {
             self.operationPanel.alpha = isHidden ? 1 : 0
             self.responsePanel.alpha = isHidden ? 1 : 0

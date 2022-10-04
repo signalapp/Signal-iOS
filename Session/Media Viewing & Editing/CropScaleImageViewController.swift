@@ -4,6 +4,7 @@
 
 import Foundation
 import MediaPlayer
+import SessionUIKit
 import SignalUtilitiesKit
 
 // This kind of view is tricky.  I've tried to organize things in the 
@@ -145,13 +146,37 @@ import SignalUtilitiesKit
     // MARK: - Create Views
 
     private func createViews() {
-
-        view.backgroundColor = .black
+        view.themeBackgroundColor = .backgroundPrimary
 
         let contentView = UIView()
-        contentView.backgroundColor = .black
+        contentView.themeBackgroundColor = .backgroundPrimary
         self.view.addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()
+        
+        let titleLabel: UILabel = UILabel()
+        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.text = "CROP_SCALE_IMAGE_VIEW_TITLE".localized()
+        titleLabel.themeTextColor = .textPrimary
+        titleLabel.textAlignment = .center
+        contentView.addSubview(titleLabel)
+        titleLabel.autoPinWidthToSuperview()
+        
+        let titleLabelMargin = ScaleFromIPhone5(16)
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: titleLabelMargin)
+        
+        let buttonRow: UIView = createButtonRow()
+        contentView.addSubview(buttonRow)
+        buttonRow.pin(.leading, to: .leading, of: contentView)
+        buttonRow.pin(.trailing, to: .trailing, of: contentView)
+        buttonRow.pin(.bottom, to: .bottom, of: contentView)
+        buttonRow.set(
+            .height,
+            to: (
+                ScaleFromIPhone5To7Plus(35, 45) +
+                Values.mediumSpacing +
+                (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? Values.mediumSpacing)
+            )
+        )
 
         let imageView = OWSLayerView(frame: CGRect.zero, layoutCallback: { [weak self] _ in
             guard let strongSelf = self else { return }
@@ -160,7 +185,10 @@ import SignalUtilitiesKit
         imageView.clipsToBounds = true
         self.imageView = imageView
         contentView.addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewEdges()
+        imageView.pin(.top, to: .top, of: contentView, withInset: (Values.massiveSpacing + Values.smallSpacing))
+        imageView.pin(.leading, to: .leading, of: contentView)
+        imageView.pin(.trailing, to: .trailing, of: contentView)
+        imageView.pin(.bottom, to: .top, of: buttonRow)
 
         let imageLayer = CALayer()
         self.imageLayer = imageLayer
@@ -185,23 +213,13 @@ import SignalUtilitiesKit
 
             layer.path = path.cgPath
             layer.fillRule = .evenOdd
-            layer.fillColor = UIColor.black.cgColor
+            layer.themeFillColor = .black
             layer.opacity = 0.75
         }
-        maskingView.autoPinEdgesToSuperviewEdges()
-
-        let titleLabel = UILabel()
-        titleLabel.textColor = .white
-        titleLabel.textAlignment = .center
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
-                                            comment: "Title for the 'crop/scale image' dialog.")
-        contentView.addSubview(titleLabel)
-        titleLabel.autoPinWidthToSuperview()
-        let titleLabelMargin = ScaleFromIPhone5(16)
-        titleLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: titleLabelMargin)
-
-        createButtonRow(contentView: contentView)
+        maskingView.pin(.top, to: .top, of: contentView, withInset: (Values.massiveSpacing + Values.smallSpacing))
+        maskingView.pin(.leading, to: .leading, of: contentView)
+        maskingView.pin(.trailing, to: .trailing, of: contentView)
+        maskingView.pin(.bottom, to: .top, of: buttonRow)
 
         contentView.isUserInteractionEnabled = true
         contentView.addGestureRecognizer(UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(sender:))))
@@ -427,45 +445,35 @@ import SignalUtilitiesKit
         updateImageLayout()
     }
 
-    private func createButtonRow(contentView: UIView) {
-        let buttonTopMargin = ScaleFromIPhone5To7Plus(30, 40)
-        let buttonBottomMargin = ScaleFromIPhone5To7Plus(25, 40)
+    private func createButtonRow() -> UIView {
+        let result: UIStackView = UIStackView()
+        result.axis = .horizontal
+        result.distribution = .fillEqually
+        result.alignment = .fill
 
-        let buttonRow = UIView()
-        self.view.addSubview(buttonRow)
-        buttonRow.autoPinWidthToSuperview()
-        buttonRow.autoPinEdge(toSuperviewEdge: .bottom, withInset: buttonBottomMargin)
-        buttonRow.autoPinEdge(.top, to: .bottom, of: contentView, withOffset: buttonTopMargin)
+        let cancelButton = createButton(title: CommonStrings.cancelButton, action: #selector(cancelPressed))
+        result.addArrangedSubview(cancelButton)
 
-        let cancelButton = createButton(title: CommonStrings.cancelButton,
-                                        action: #selector(cancelPressed))
-        cancelButton.titleLabel!.font = .systemFont(ofSize: 18) // Match iOS UI
-        buttonRow.addSubview(cancelButton)
-        cancelButton.autoPinEdge(toSuperviewEdge: .top)
-        cancelButton.autoPinEdge(toSuperviewEdge: .bottom)
-        cancelButton.autoPinEdge(toSuperviewEdge: .left)
-
-        let doneButton = createButton(title: CommonStrings.doneButton,
-                                      action: #selector(donePressed))
-        doneButton.titleLabel!.font = .systemFont(ofSize: 18) // Match iOS UI
-        buttonRow.addSubview(doneButton)
-        doneButton.autoPinEdge(toSuperviewEdge: .top)
-        doneButton.autoPinEdge(toSuperviewEdge: .bottom)
-        doneButton.autoPinEdge(toSuperviewEdge: .right)
+        let doneButton = createButton(title: CommonStrings.doneButton, action: #selector(donePressed))
+        result.addArrangedSubview(doneButton)
+        
+        return result
     }
 
     private func createButton(title: String, action: Selector) -> UIButton {
-        let buttonFont = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5To7Plus(18, 22))
-        let buttonWidth = ScaleFromIPhone5To7Plus(110, 140)
-        let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
-
-        let button = UIButton()
+        let button: UIButton = UIButton()
+        button.titleLabel?.font = .systemFont(ofSize: 18)
         button.setTitle(title, for: .normal)
-        button.setTitleColor(UIColor.white, for: .normal)
-        button.titleLabel!.font = buttonFont
+        button.setThemeTitleColor(.textPrimary, for: .normal)
+        button.setThemeBackgroundColor(.backgroundSecondary, for: .highlighted)
+        button.contentEdgeInsets = UIEdgeInsets(
+            top: Values.mediumSpacing,
+            leading: 0,
+            bottom: (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? Values.mediumSpacing),
+            trailing: 0
+        )
         button.addTarget(self, action: action, for: .touchUpInside)
-        button.autoSetDimension(.width, toSize: buttonWidth)
-        button.autoSetDimension(.height, toSize: buttonHeight)
+        
         return button
     }
 

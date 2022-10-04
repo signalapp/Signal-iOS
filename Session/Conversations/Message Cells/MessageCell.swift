@@ -30,10 +30,10 @@ public class MessageCell: UITableViewCell {
     }
 
     func setUpViewHierarchy() {
-        backgroundColor = .clear
+        themeBackgroundColor = .clear
         
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = .clear
+        selectedBackgroundView.themeBackgroundColor = .clear
         self.selectedBackgroundView = selectedBackgroundView
     }
 
@@ -88,7 +88,6 @@ protocol MessageCellDelegate: ReactionDelegate {
     func handleItemSwiped(_ cellViewModel: MessageViewModel, state: SwipeState)
     func openUrl(_ urlString: String)
     func handleReplyButtonTapped(for cellViewModel: MessageViewModel)
-    func showUserDetails(for profile: Profile)
     func startThread(with sessionId: String, openGroupServer: String?, openGroupPublicKey: String?)
     func showReactionList(_ cellViewModel: MessageViewModel, selectedReaction: EmojiWithSkinTones?)
     func needsLayout(for cellViewModel: MessageViewModel, expandingReactions: Bool)

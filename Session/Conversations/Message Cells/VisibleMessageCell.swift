@@ -109,11 +109,12 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         let size = VisibleMessageCell.replyButtonSize + 8
         result.set(.width, to: size)
         result.set(.height, to: size)
+        result.themeBorderColor = .textPrimary
         result.layer.borderWidth = 1
-        result.layer.borderColor = Colors.text.cgColor
-        result.layer.cornerRadius = size / 2
+        result.layer.cornerRadius = (size / 2)
         result.layer.masksToBounds = true
         result.alpha = 0
+        
         return result
     }()
 
@@ -123,7 +124,8 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         result.set(.width, to: size)
         result.set(.height, to: size)
         result.image = UIImage(named: "ic_reply")?.withRenderingMode(.alwaysTemplate)
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
+        
         return result
     }()
 
@@ -284,11 +286,13 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         )
-        bubbleView.backgroundColor = ((
+        
+        let bubbleBackgroundColor: ThemeValue = ((
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
-        ) ? Colors.receivedMessageBackground : Colors.sentMessageBackground)
-        bubbleBackgroundView.backgroundColor = bubbleView.backgroundColor
+        ) ? .messageBubble_incomingBackground : .messageBubble_outgoingBackground)
+        bubbleView.themeBackgroundColor = bubbleBackgroundColor
+        bubbleBackgroundView.themeBackgroundColor = bubbleBackgroundColor
         updateBubbleViewCorners()
         
         // Content view
@@ -311,9 +315,9 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         populateHeader(for: cellViewModel, shouldInsetHeader: shouldInsetHeader)
         
         // Author label
-        authorLabel.textColor = Colors.text
         authorLabel.isHidden = (cellViewModel.senderName == nil)
         authorLabel.text = cellViewModel.senderName
+        authorLabel.themeTextColor = .textPrimary
         
         let authorLabelAvailableWidth: CGFloat = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * VisibleMessageCell.authorLabelInset)
         let authorLabelAvailableSpace = CGSize(width: authorLabelAvailableWidth, height: .greatestFiniteMagnitude)
@@ -321,10 +325,12 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         authorLabelHeightConstraint.constant = (cellViewModel.senderName != nil ? authorLabelSize.height : 0)
         
         // Message status image view
-        let (image, tintColor, backgroundColor) = getMessageStatusImage(for: cellViewModel)
+        let (image, tintColor) = cellViewModel.state.statusIconInfo(
+            variant: cellViewModel.variant,
+            hasAtLeastOneReadReceipt: cellViewModel.hasAtLeastOneReadReceipt
+        )
         messageStatusImageView.image = image
-        messageStatusImageView.tintColor = tintColor
-        messageStatusImageView.backgroundColor = backgroundColor
+        messageStatusImageView.themeTintColor = tintColor
         messageStatusImageView.isHidden = (
             cellViewModel.variant != .standardOutgoing ||
             cellViewModel.variant == .infoCall ||
@@ -348,9 +354,9 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             
             timerView.configure(
                 withExpirationTimestamp: UInt64(floor(expirationTimestampMs)),
-                initialDurationSeconds: UInt32(floor(expiresInSeconds)),
-                tintColor: Colors.text
+                initialDurationSeconds: UInt32(floor(expiresInSeconds))
             )
+            timerView.themeTintColor = .textPrimary
             timerView.isHidden = false
         }
         else {
@@ -373,13 +379,13 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     }
 
     private func populateHeader(for cellViewModel: MessageViewModel, shouldInsetHeader: Bool) {
-        guard let date: Date = cellViewModel.dateForUI else { return }
+        guard cellViewModel.shouldShowDateHeader else { return }
         
         let dateBreakLabel: UILabel = UILabel()
         dateBreakLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        dateBreakLabel.textColor = Colors.text
+        dateBreakLabel.text = cellViewModel.dateForUI.formattedForDisplay
+        dateBreakLabel.themeTextColor = .textPrimary
         dateBreakLabel.textAlignment = .center
-        dateBreakLabel.text = date.formattedForDisplay
         headerView.addSubview(dateBreakLabel)
         dateBreakLabel.pin(.top, to: .top, of: headerView, withInset: Values.smallSpacing)
         
@@ -399,16 +405,15 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         playbackInfo: ConversationViewModel.PlaybackInfo?,
         lastSearchText: String?
     ) {
-        let direction: Direction = cellViewModel.variant == .standardOutgoing ? .outgoing : .incoming
-        let bodyLabelTextColor: UIColor = {
-            switch (direction, AppModeManager.shared.currentAppMode) {
-                case (.outgoing, .dark), (.incoming, .light): return .black
-                case (.outgoing, .light): return Colors.grey
-                default: return .white
-            }
-        }()
+        let bodyLabelTextColor: ThemeValue = (cellViewModel.variant == .standardOutgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         
-        snContentView.alignment = direction == .incoming ? .leading : .trailing
+        snContentView.alignment = (cellViewModel.variant == .standardOutgoing ?
+            .trailing :
+            .leading
+        )
         
         for subview in snContentView.arrangedSubviews {
             snContentView.removeArrangedSubview(subview)
@@ -584,7 +589,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 
                 let inset: CGFloat = 12
                 let maxWidth = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * inset)
-            
+                
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])
                 stackView.axis = .vertical
@@ -596,6 +601,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             
                 // Body text view
                 if let body: String = cellViewModel.body, !body.isEmpty { // delegate should always be set at this point
+                    let bodyContainerView: UIView = UIView()
                     let bodyTappableLabel = VisibleMessageCell.getBodyTappableLabel(
                         for: cellViewModel,
                         with: maxWidth,
@@ -605,11 +611,16 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                     )
                     
                     self.bodyTappableLabel = bodyTappableLabel
-                    stackView.addArrangedSubview(bodyTappableLabel)
+                    bodyContainerView.addSubview(bodyTappableLabel)
+                    bodyTappableLabel.pin(.top, to: .top, of: bodyContainerView)
+                    bodyTappableLabel.pin(.leading, to: .leading, of: bodyContainerView, withInset: 12)
+                    bodyTappableLabel.pin(.trailing, to: .trailing, of: bodyContainerView, withInset: -12)
+                    bodyTappableLabel.pin(.bottom, to: .bottom, of: bodyContainerView, withInset: -12)
+                    stackView.addArrangedSubview(bodyContainerView)
                 }
                 
                 bubbleView.addSubview(stackView)
-                stackView.pin(to: bubbleView, withInset: inset)
+                stackView.pin(to: bubbleView)
                 snContentView.addArrangedSubview(bubbleBackgroundView)
         }
     }
@@ -734,21 +745,26 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     }
 
     func highlight() {
-        // FIXME: This will have issues with themes
-        let shawdowColour = (isLightMode ? UIColor.black.cgColor : Colors.accent.cgColor)
-        let opacity: Float = (isLightMode ? 0.5 : 1)
+        let shadowColor: ThemeValue = (ThemeManager.currentTheme.interfaceStyle == .light ?
+            .black :
+            .primary
+        )
+        let opacity: Float = (ThemeManager.currentTheme.interfaceStyle == .light ?
+            0.5 :
+            1
+        )
         
         DispatchQueue.main.async { [weak self] in
             let oldMasksToBounds: Bool = (self?.layer.masksToBounds ?? false)
             self?.layer.masksToBounds = false
-            self?.bubbleBackgroundView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shawdowColour)
+            self?.bubbleBackgroundView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shadowColor)
             
             UIView.animate(
                 withDuration: 1.6,
                 delay: 0,
                 options: .curveEaseInOut,
                 animations: {
-                    self?.bubbleBackgroundView.setShadow(radius: 0, opacity: 0, offset: .zero, color: UIColor.clear.cgColor)
+                    self?.bubbleBackgroundView.setShadow(radius: 0, opacity: 0, offset: .zero, color: .clear)
                 },
                 completion: { _ in
                     self?.layer.masksToBounds = oldMasksToBounds
@@ -932,34 +948,6 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         }
     }
 
-    private func getMessageStatusImage(for cellViewModel: MessageViewModel) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
-        guard cellViewModel.variant == .standardOutgoing else { return (nil, nil, nil) }
-
-        let image: UIImage
-        var tintColor: UIColor? = nil
-        var backgroundColor: UIColor? = nil
-        
-        switch (cellViewModel.state, cellViewModel.hasAtLeastOneReadReceipt) {
-            case (.sending, _):
-                image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.text
-            
-            case (.sent, false), (.skipped, _):
-                image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.text
-                
-            case (.sent, true):
-                image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
-                backgroundColor = isLightMode ? .black : .white
-                
-            case (.failed, _):
-                image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.destructive
-        }
-
-        return (image, tintColor, backgroundColor)
-    }
-
     private func getSize(for cellViewModel: MessageViewModel) -> CGSize {
         guard let mediaAttachments: [Attachment] = cellViewModel.attachments?.filter({ $0.isVisualMedia }) else {
             preconditionFailure()
@@ -1029,114 +1017,144 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     static func getBodyTappableLabel(
         for cellViewModel: MessageViewModel,
         with availableWidth: CGFloat,
-        textColor: UIColor,
+        textColor: ThemeValue,
         searchText: String?,
         delegate: TappableLabelDelegate?
     ) -> TappableLabel {
-        let result = TappableLabel()
         let isOutgoing: Bool = (cellViewModel.variant == .standardOutgoing)
-        
-        let attributedText: NSMutableAttributedString = NSMutableAttributedString(
-            attributedString: MentionUtilities.highlightMentions(
-                in: (cellViewModel.body ?? ""),
-                threadVariant: cellViewModel.threadVariant,
-                currentUserPublicKey: cellViewModel.currentUserPublicKey,
-                currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
-                isOutgoingMessage: isOutgoing,
-                attributes: [
-                    .foregroundColor : textColor,
-                    .font : UIFont.systemFont(ofSize: getFontSize(for: cellViewModel))
-                ]
-            )
-        )
-        
-        // Custom handle links
-        let links: [String: NSRange] = {
-            guard
-                let body: String = cellViewModel.body,
-                let detector: NSDataDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-            else { return [:] }
-            
-            var links: [String: NSRange] = [:]
-            let matches = detector.matches(
-                in: body,
-                options: [],
-                range: NSRange(location: 0, length: body.count)
-            )
-            
-            for match in matches {
-                guard let matchURL = match.url else { continue }
-                
-                /// If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
-                /// set the scheme to 'https' instead as we don't load previews for 'http' so this will result
-                /// in more previews actually getting loaded without forcing the user to enter 'https://' before
-                /// every URL they enter
-                let urlString: String = (matchURL.absoluteString == "http://\(body)" ?
-                    "https://\(body)" :
-                    matchURL.absoluteString
-                )
-                
-                if URL(string: urlString) != nil {
-                    links[urlString] = (body as NSString).range(of: urlString)
-                }
-            }
-            
-            return links
-        }()
-        
-        for (urlString, range) in links {
-            guard let url: URL = URL(string: urlString) else { continue }
-            
-            attributedText.addAttributes(
-                [
-                    .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel)),
-                    .foregroundColor: textColor,
-                    .underlineColor: textColor,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue,
-                    .attachment: url
-                ],
-                range: range
-            )
-        }
-        
-        // If there is a valid search term then highlight each part that matched
-        if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
-            let normalizedBody: String = attributedText.string.lowercased()
-            
-            SessionThreadViewModel.searchTermParts(searchText)
-                .map { part -> String in
-                    guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
-                    
-                    return String(part[part.index(after: part.startIndex)..<part.endIndex])
-                }
-                .forEach { part in
-                    // Highlight all ranges of the text (Note: The search logic only finds results that start
-                    // with the term so we use the regex below to ensure we only highlight those cases)
-                    normalizedBody
-                        .ranges(
-                            of: (CurrentAppContext().isRTL ?
-                                 "\(part.lowercased())(^|[ ])" :
-                                 "(^|[ ])\(part.lowercased())"
-                            ),
-                            options: [.regularExpression]
-                        )
-                        .forEach { range in
-                            let legacyRange: NSRange = NSRange(range, in: normalizedBody)
-                            attributedText.addAttribute(.backgroundColor, value: UIColor.white, range: legacyRange)
-                            attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: legacyRange)
-                        }
-                }
-        }
-        
-        result.attributedText = attributedText
-        result.backgroundColor = .clear
+        let result: TappableLabel = TappableLabel()
+        result.themeBackgroundColor = .clear
         result.isOpaque = false
         result.isUserInteractionEnabled = true
         result.delegate = delegate
         
-        let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
-        let size = result.sizeThatFits(availableSpace)
-        result.set(.height, to: size.height)
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, primaryColor in
+            guard
+                let actualTextColor: UIColor = theme.color(for: textColor),
+                let backgroundPrimaryColor: UIColor = theme.color(for: .backgroundPrimary),
+                let textPrimaryColor: UIColor = theme.color(for: .textPrimary)
+            else { return }
+            
+            let hasPreviousSetText: Bool = ((result?.attributedText?.length ?? 0) > 0)
+            
+            let attributedText: NSMutableAttributedString = NSMutableAttributedString(
+                attributedString: MentionUtilities.highlightMentions(
+                    in: (cellViewModel.body ?? ""),
+                    threadVariant: cellViewModel.threadVariant,
+                    currentUserPublicKey: cellViewModel.currentUserPublicKey,
+                    currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
+                    isOutgoingMessage: isOutgoing,
+                    textColor: actualTextColor,
+                    theme: theme,
+                    primaryColor: primaryColor,
+                    attributes: [
+                        .foregroundColor: actualTextColor,
+                        .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel))
+                    ]
+                )
+            )
+            
+            // Custom handle links
+            let links: [URL: NSRange] = {
+                guard let detector: NSDataDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+                    return [:]
+                }
+                
+                return detector
+                    .matches(
+                        in: attributedText.string,
+                        options: [],
+                        range: NSRange(location: 0, length: attributedText.string.count)
+                    )
+                    .reduce(into: [:]) { result, match in
+                        guard
+                            let matchUrl: URL = match.url,
+                            let originalRange: Range = Range(match.range, in: attributedText.string)
+                        else { return }
+                        
+                        /// If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
+                        /// set the scheme to 'https' instead as we don't load previews for 'http' so this will result
+                        /// in more previews actually getting loaded without forcing the user to enter 'https://' before
+                        /// every URL they enter
+                        let originalString: String = String(attributedText.string[originalRange])
+                        
+                        guard matchUrl.absoluteString != "http://\(originalString)" else {
+                            guard let httpsUrl: URL = URL(string: "https://\(originalString)") else {
+                                return
+                            }
+                            
+                            result[httpsUrl] = match.range
+                            return
+                        }
+                        
+                        result[matchUrl] = match.range
+                    }
+            }()
+            
+            for (linkUrl, urlRange) in links {
+                attributedText.addAttributes(
+                    [
+                        .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel)),
+                        .foregroundColor: actualTextColor,
+                        .underlineColor: actualTextColor,
+                        .underlineStyle: NSUnderlineStyle.single.rawValue,
+                        .attachment: linkUrl
+                    ],
+                    range: urlRange
+                )
+            }
+            
+            // If there is a valid search term then highlight each part that matched
+            if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
+                let normalizedBody: String = attributedText.string.lowercased()
+                
+                SessionThreadViewModel.searchTermParts(searchText)
+                    .map { part -> String in
+                        guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
+                        
+                        let partRange = (part.index(after: part.startIndex)..<part.index(before: part.endIndex))
+                        return String(part[partRange])
+                    }
+                    .forEach { part in
+                        // Highlight all ranges of the text (Note: The search logic only finds
+                        // results that start with the term so we use the regex below to ensure
+                        // we only highlight those cases)
+                        normalizedBody
+                            .ranges(
+                                of: (CurrentAppContext().isRTL ?
+                                     "(\(part.lowercased()))(^|[^a-zA-Z0-9])" :
+                                     "(^|[^a-zA-Z0-9])(\(part.lowercased()))"
+                                ),
+                                options: [.regularExpression]
+                            )
+                            .forEach { range in
+                                let targetRange: Range<String.Index> = {
+                                    let term: String = String(normalizedBody[range])
+                                    
+                                    // If the matched term doesn't actually match the "part" value then it means
+                                    // we've matched a term after a non-alphanumeric character so need to shift
+                                    // the range over by 1
+                                    guard term.starts(with: part.lowercased()) else {
+                                        return (normalizedBody.index(after: range.lowerBound)..<range.upperBound)
+                                    }
+                                    
+                                    return range
+                                }()
+                                
+                                let legacyRange: NSRange = NSRange(targetRange, in: normalizedBody)
+                                attributedText.addThemeAttribute(.background(backgroundPrimaryColor), range: legacyRange)
+                                attributedText.addThemeAttribute(.foreground(textPrimaryColor), range: legacyRange)
+                            }
+                    }
+            }
+            result?.attributedText = attributedText
+            
+            if let result: TappableLabel = result, !hasPreviousSetText {
+                let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
+                let size = result.sizeThatFits(availableSpace)
+                result.set(.height, to: size.height)
+            }
+        }
         
         return result
     }

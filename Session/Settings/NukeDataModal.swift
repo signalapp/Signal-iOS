@@ -6,117 +6,110 @@ import SessionSnodeKit
 import SessionMessagingKit
 import SignalUtilitiesKit
 
-@objc(LKNukeDataModal)
 final class NukeDataModal: Modal {
+    // MARK: - Initialization
+    
+    override init(targetView: UIView? = nil, afterClosed: (() -> ())? = nil) {
+        super.init(targetView: targetView, afterClosed: afterClosed)
+        
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - Components
     
     private lazy var titleLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         result.text = "modal_clear_all_data_title".localized()
-        result.numberOfLines = 0
-        result.lineBreakMode = .byWordWrapping
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
         
         return result
     }()
     
     private lazy var explanationLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.text = "modal_clear_all_data_explanation".localized()
-        result.numberOfLines = 0
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
         result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
+    private lazy var clearDeviceRadio: RadioButton = {
+        let result: RadioButton = RadioButton(size: .small) { [weak self] radio in
+            self?.clearNetworkRadio.update(isSelected: false)
+            radio.update(isSelected: true)
+        }
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = "modal_clear_all_data_device_only_button_title".localized()
+        result.update(isSelected: true)
+        
+        return result
+    }()
+    
+    private lazy var clearNetworkRadio: RadioButton = {
+        let result: RadioButton = RadioButton(size: .small) { [weak self] radio in
+            self?.clearDeviceRadio.update(isSelected: false)
+            radio.update(isSelected: true)
+        }
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = "modal_clear_all_data_entire_account_button_title".localized()
         
         return result
     }()
     
     private lazy var clearDataButton: UIButton = {
-        let result = UIButton()
-        result.set(.height, to: Values.mediumButtonHeight)
-        result.layer.cornerRadius = Modal.buttonCornerRadius
-        if isDarkMode {
-            result.backgroundColor = Colors.destructive
-        }
-        result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
-        result.setTitleColor(isLightMode ? Colors.destructive : Colors.text, for: UIControl.State.normal)
-        result.setTitle("TXT_DELETE_TITLE".localized(), for: UIControl.State.normal)
+        let result: UIButton = Modal.createButton(
+            title: "modal_clear_all_data_confirm".localized(),
+            titleColor: .danger
+        )
         result.addTarget(self, action: #selector(clearAllData), for: UIControl.Event.touchUpInside)
         
         return result
     }()
     
-    private lazy var buttonStackView1: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ cancelButton, clearDataButton ])
+    private lazy var buttonStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ clearDataButton, cancelButton ])
         result.axis = .horizontal
-        result.spacing = Values.mediumSpacing
         result.distribution = .fillEqually
-        
-        return result
-    }()
-    
-    private lazy var deviceOnlyButton: UIButton = {
-        let result = UIButton()
-        result.set(.height, to: Values.mediumButtonHeight)
-        result.layer.cornerRadius = Modal.buttonCornerRadius
-        result.backgroundColor = Colors.buttonBackground
-        result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
-        result.setTitleColor(Colors.text, for: UIControl.State.normal)
-        result.setTitle("modal_clear_all_data_device_only_button_title".localized(), for: UIControl.State.normal)
-        result.addTarget(self, action: #selector(clearDeviceOnly), for: UIControl.Event.touchUpInside)
-        
-        return result
-    }()
-    
-    private lazy var entireAccountButton: UIButton = {
-        let result = UIButton()
-        result.set(.height, to: Values.mediumButtonHeight)
-        result.layer.cornerRadius = Modal.buttonCornerRadius
-        if isDarkMode {
-            result.backgroundColor = Colors.destructive
-        }
-        result.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
-        result.setTitleColor(isLightMode ? Colors.destructive : Colors.text, for: UIControl.State.normal)
-        result.setTitle("modal_clear_all_data_entire_account_button_title".localized(), for: UIControl.State.normal)
-        result.addTarget(self, action: #selector(clearEntireAccount), for: UIControl.Event.touchUpInside)
-        
-        return result
-    }()
-    
-    private lazy var buttonStackView2: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ deviceOnlyButton, entireAccountButton ])
-        result.axis = .horizontal
-        result.spacing = Values.mediumSpacing
-        result.distribution = .fillEqually
-        result.alpha = 0
-        
-        return result
-    }()
-    
-    private lazy var buttonStackViewContainer: UIView = {
-        let result = UIView()
-        result.addSubview(buttonStackView2)
-        buttonStackView2.pin(to: result)
-        result.addSubview(buttonStackView1)
-        buttonStackView1.pin(to: result)
         
         return result
     }()
     
     private lazy var contentStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel ])
+        let result = UIStackView(arrangedSubviews: [
+            titleLabel,
+            explanationLabel,
+            clearDeviceRadio,
+            UIView.separator(),
+            clearNetworkRadio
+        ])
         result.axis = .vertical
-        result.spacing = Values.largeSpacing
+        result.spacing = Values.smallSpacing
+        result.isLayoutMarginsRelativeArrangement = true
+        result.layoutMargins = UIEdgeInsets(
+            top: Values.largeSpacing,
+            leading: Values.largeSpacing,
+            bottom: Values.verySmallSpacing,
+            trailing: Values.largeSpacing
+        )
         
         return result
     }()
     
     private lazy var mainStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ contentStackView, buttonStackViewContainer ])
+        let result = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
         result.axis = .vertical
         result.spacing = Values.largeSpacing - Values.smallFontSize / 2
         
@@ -127,32 +120,34 @@ final class NukeDataModal: Modal {
     
     override func populateContentView() {
         contentView.addSubview(mainStackView)
-        mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
-        mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
-        contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: mainStackView.spacing)
+        
+        mainStackView.pin(to: contentView)
     }
     
     // MARK: - Interaction
     
     @objc private func clearAllData() {
-        UIView.animate(withDuration: 0.25) {
-            self.buttonStackView1.alpha = 0
-            self.buttonStackView2.alpha = 1
+        guard clearNetworkRadio.isSelected else {
+            clearDeviceOnly()
+            return
         }
         
-        UIView.transition(
-            with: explanationLabel,
-            duration: 0.25,
-            options: .transitionCrossDissolve,
-            animations: {
-                self.explanationLabel.text = "modal_clear_all_data_explanation_2".localized()
-            },
-            completion: nil
+        let confirmationModal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: "modal_clear_all_data_title".localized(),
+                explanation: "modal_clear_all_data_explanation_2".localized(),
+                confirmTitle: "modal_clear_all_data_confirm".localized(),
+                confirmStyle: .danger,
+                cancelStyle: .alert_text,
+                dismissOnConfirm: false
+            ) { [weak self] confirmationModal in
+                self?.clearEntireAccount(presentedViewController: confirmationModal)
+            }
         )
+        present(confirmationModal, animated: true, completion: nil)
     }
     
-    @objc private func clearDeviceOnly() {
+    private func clearDeviceOnly() {
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] _ in
             Storage.shared
                 .writeAsync { db in try MessageSender.syncConfiguration(db, forceSyncNow: true) }
@@ -164,9 +159,9 @@ final class NukeDataModal: Modal {
         }
     }
     
-    @objc private func clearEntireAccount() {
+    private func clearEntireAccount(presentedViewController: UIViewController) {
         ModalActivityIndicatorViewController
-            .present(fromViewController: self, canCancel: false) { [weak self] _ in
+            .present(fromViewController: presentedViewController, canCancel: false) { [weak self] _ in
                 SnodeAPI.clearAllData()
                     .done(on: DispatchQueue.main) { confirmations in
                         self?.dismiss(animated: true, completion: nil) // Dismiss the loader
@@ -185,18 +180,31 @@ final class NukeDataModal: Modal {
                                 message = String(format: "dialog_clear_all_data_deletion_failed_2".localized(), String(potentiallyMaliciousSnodes.count), potentiallyMaliciousSnodes.joined(separator: ", "))
                             }
                             
-                            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-                            alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-                            
-                            self?.presentAlert(alert)
+                            let modal: ConfirmationModal = ConfirmationModal(
+                                targetView: self?.view,
+                                info: ConfirmationModal.Info(
+                                    title: "Error",
+                                    explanation: message,
+                                    cancelTitle: "BUTTON_OK".localized(),
+                                    cancelStyle: .alert_text
+                                )
+                            )
+                            self?.present(modal, animated: true)
                         }
                     }
                     .catch(on: DispatchQueue.main) { error in
                         self?.dismiss(animated: true, completion: nil) // Dismiss the loader
                         
-                        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: nil))
-                        self?.presentAlert(alert)
+                        let modal: ConfirmationModal = ConfirmationModal(
+                            targetView: self?.view,
+                            info: ConfirmationModal.Info(
+                                title: "Error",
+                                explanation: error.localizedDescription,
+                                cancelTitle: "BUTTON_OK".localized(),
+                                cancelStyle: .alert_text
+                            )
+                        )
+                        self?.present(modal, animated: true)
                     }
             }
     }

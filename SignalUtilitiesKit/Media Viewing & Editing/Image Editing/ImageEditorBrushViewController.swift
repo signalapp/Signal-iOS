@@ -1,12 +1,10 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
 import SessionUIKit
 
 @objc
-public protocol ImageEditorBrushViewControllerDelegate: class {
+public protocol ImageEditorBrushViewControllerDelegate: AnyObject {
     func brushDidComplete(currentColor: ImageEditorColor)
 }
 
@@ -17,24 +15,27 @@ public class ImageEditorBrushViewController: OWSViewController {
     private weak var delegate: ImageEditorBrushViewControllerDelegate?
 
     private let model: ImageEditorModel
-
     private let canvasView: ImageEditorCanvasView
-
     private let paletteView: ImageEditorPaletteView
+    private let bottomInset: CGFloat
 
     // We only want to let users undo changes made in this view.
     // So we snapshot any older "operation id" and prevent
     // users from undoing it.
     private let firstUndoOperationId: String?
 
-    init(delegate: ImageEditorBrushViewControllerDelegate,
-         model: ImageEditorModel,
-         currentColor: ImageEditorColor) {
+    init(
+        delegate: ImageEditorBrushViewControllerDelegate,
+        model: ImageEditorModel,
+        currentColor: ImageEditorColor,
+        bottomInset: CGFloat
+    ) {
         self.delegate = delegate
         self.model = model
         self.canvasView = ImageEditorCanvasView(model: model)
         self.paletteView = ImageEditorPaletteView(currentColor: currentColor)
         self.firstUndoOperationId = model.currentUndoOperationId()
+        self.bottomInset = bottomInset
 
         super.init(nibName: nil, bundle: nil)
 
@@ -50,16 +51,19 @@ public class ImageEditorBrushViewController: OWSViewController {
 
     public override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.themeBackgroundColor = .newConversation_background
         self.view.isOpaque = true
 
         canvasView.configureSubviews()
         self.view.addSubview(canvasView)
-        canvasView.autoPinEdgesToSuperviewEdges()
+        canvasView.pin(.top, to: .top, of: self.view)
+        canvasView.pin(.leading, to: .leading, of: self.view)
+        canvasView.pin(.trailing, to: .trailing, of: self.view)
+        canvasView.pin(.bottom, to: .bottom, of: self.view, withInset: -bottomInset)
 
         paletteView.delegate = self
         self.view.addSubview(paletteView)
-        paletteView.autoVCenterInSuperview()
+        paletteView.center(.vertical, in: self.view, withInset: -(bottomInset / 2))
         paletteView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
 
         self.view.isUserInteractionEnabled = true
@@ -113,11 +117,6 @@ public class ImageEditorBrushViewController: OWSViewController {
         // Hide controls during stroke.
         let hasStroke = currentStroke != nil
         paletteView.isHidden = hasStroke
-    }
-
-    @objc
-    public override var prefersStatusBarHidden: Bool {
-        return true
     }
 
     @objc

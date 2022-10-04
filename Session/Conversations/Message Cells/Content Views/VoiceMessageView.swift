@@ -16,37 +16,57 @@ public final class VoiceMessageView: UIView {
     
     private lazy var progressView: UIView = {
         let result: UIView = UIView()
-        result.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        result.themeBackgroundColor = .messageBubble_overlay
+        
+        return result
+    }()
+    
+    private lazy var toggleContainer: UIView = {
+        let result: UIView = UIView()
+        result.themeBackgroundColor = .backgroundSecondary
+        result.set(.width, to: VoiceMessageView.toggleContainerSize)
+        result.set(.height, to: VoiceMessageView.toggleContainerSize)
+        result.layer.masksToBounds = true
+        result.layer.cornerRadius = (VoiceMessageView.toggleContainerSize / 2)
         
         return result
     }()
 
     private lazy var toggleImageView: UIImageView = {
-        let result: UIImageView = UIImageView(image: UIImage(named: "Play"))
+        let result: UIImageView = UIImageView(
+            image: UIImage(named: "Play")?.withRenderingMode(.alwaysTemplate)
+        )
         result.contentMode = .scaleAspectFit
+        result.themeTintColor = .textPrimary
         result.set(.width, to: 8)
         result.set(.height, to: 8)
         
         return result
     }()
 
-    private lazy var loader: NVActivityIndicatorView = {
+    private let loader: NVActivityIndicatorView = {
         let result: NVActivityIndicatorView = NVActivityIndicatorView(
             frame: .zero,
             type: .circleStrokeSpin,
-            color: Colors.text,
+            color: .black,
             padding: nil
         )
         result.set(.width, to: VoiceMessageView.toggleContainerSize + 2)
         result.set(.height, to: VoiceMessageView.toggleContainerSize + 2)
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
+            
+            result?.color = textPrimary
+        }
         
         return result
     }()
 
     private lazy var countdownLabelContainer: UIView = {
         let result: UIView = UIView()
-        result.backgroundColor = .white
-        result.layer.masksToBounds = true
+        result.clipsToBounds = true
+        result.themeBackgroundColor = .backgroundSecondary
         result.set(.height, to: VoiceMessageView.toggleContainerSize)
         result.set(.width, to: 44)
         
@@ -55,20 +75,20 @@ public final class VoiceMessageView: UIView {
 
     private lazy var countdownLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.textColor = .black
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.text = "0:00"
+        result.themeTextColor = .textPrimary
         
         return result
     }()
 
     private lazy var speedUpLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.textColor = .black
         result.font = .systemFont(ofSize: Values.smallFontSize)
-        result.alpha = 0
         result.text = "1.5x"
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.alpha = 0
         
         return result
     }()
@@ -97,18 +117,12 @@ public final class VoiceMessageView: UIView {
         set(.width, to: VoiceMessageView.width)
         
         // Toggle
-        let toggleContainer: UIView = UIView()
-        toggleContainer.backgroundColor = .white
-        toggleContainer.set(.width, to: toggleContainerSize)
-        toggleContainer.set(.height, to: toggleContainerSize)
         toggleContainer.addSubview(toggleImageView)
         toggleImageView.center(in: toggleContainer)
-        toggleContainer.layer.cornerRadius = (toggleContainerSize / 2)
-        toggleContainer.layer.masksToBounds = true
         
         // Line
         let lineView = UIView()
-        lineView.backgroundColor = .white
+        lineView.themeBackgroundColor = .backgroundSecondary
         lineView.set(.height, to: 1)
         
         // Countdown label
@@ -164,7 +178,8 @@ public final class VoiceMessageView: UIView {
                 loader.isHidden = true
                 loader.stopAnimating()
                 
-                toggleImageView.image = (isPlaying ? UIImage(named: "Pause") : UIImage(named: "Play"))
+                toggleImageView.image = (isPlaying ? UIImage(named: "Pause") : UIImage(named: "Play"))?
+                    .withRenderingMode(.alwaysTemplate)
                 countdownLabel.text = OWSFormat.formatDurationSeconds(max(0, Int(floor(attachment.duration.defaulting(to: 0) - progress))))
                 
                 guard let duration: TimeInterval = attachment.duration, duration > 0, progress > 0 else {

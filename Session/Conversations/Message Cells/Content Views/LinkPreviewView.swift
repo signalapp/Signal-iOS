@@ -33,11 +33,21 @@ final class LinkPreviewView: UIView {
         return result
     }()
 
-    private lazy var loader: NVActivityIndicatorView = {
-        // FIXME: This will have issues with theme transitions
-        let color: UIColor = (isLightMode ? .black : .white)
+    private let loader: NVActivityIndicatorView = {
+        let result: NVActivityIndicatorView = NVActivityIndicatorView(
+            frame: CGRect.zero,
+            type: .circleStrokeSpin,
+            color: .black,
+            padding: nil
+        )
         
-        return NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: color, padding: nil)
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
+            
+            result?.color = textPrimary
+        }
+        
+        return result
     }()
 
     private lazy var titleLabel: UILabel = {
@@ -55,10 +65,13 @@ final class LinkPreviewView: UIView {
     private lazy var hStackView: UIStackView = UIStackView()
 
     private lazy var cancelButton: UIButton = {
-        // FIXME: This will have issues with theme transitions
         let result: UIButton = UIButton(type: .custom)
-        result.setImage(UIImage(named: "X")?.withRenderingMode(.alwaysTemplate), for: UIControl.State.normal)
-        result.tintColor = (isLightMode ? .black : .white)
+        result.setImage(
+            UIImage(named: "X")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.themeTintColor = .textPrimary
         
         let cancelButtonSize = LinkPreviewView.cancelButtonSize
         result.set(.width, to: cancelButtonSize)
@@ -131,7 +144,7 @@ final class LinkPreviewView: UIView {
         isOutgoing: Bool,
         delegate: TappableLabelDelegate? = nil,
         cellViewModel: MessageViewModel? = nil,
-        bodyLabelTextColor: UIColor? = nil,
+        bodyLabelTextColor: ThemeValue? = nil,
         lastSearchText: String? = nil
     ) {
         cancelButton.removeFromSuperview()
@@ -139,7 +152,7 @@ final class LinkPreviewView: UIView {
         var image: UIImage? = state.image
         let stateHasImage: Bool = (image != nil)
         if image == nil && (state is LinkPreview.DraftState || state is LinkPreview.SentState) {
-            image = UIImage(named: "Link")?.withTint(isLightMode ? .black : .white)
+            image = UIImage(named: "Link")?.withRenderingMode(.alwaysTemplate)
         }
         
         // Image view
@@ -148,14 +161,11 @@ final class LinkPreviewView: UIView {
         imageViewContainerHeightConstraint.constant = imageViewContainerSize
         imageViewContainer.layer.cornerRadius = (state is LinkPreview.SentState ? 0 : 8)
         
-        if state is LinkPreview.LoadingState {
-            imageViewContainer.backgroundColor = .clear
-        }
-        else {
-            imageViewContainer.backgroundColor = isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06)
-        }
-        
         imageView.image = image
+        imageView.themeTintColor = (isOutgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         imageView.contentMode = (stateHasImage ? .scaleAspectFill : .center)
         
         // Loader
@@ -163,24 +173,25 @@ final class LinkPreviewView: UIView {
         if image != nil { loader.stopAnimating() } else { loader.startAnimating() }
         
         // Title
-        let sentLinkPreviewTextColor: UIColor = {
-            switch (isOutgoing, AppModeManager.shared.currentAppMode) {
-                case (false, .light): return .black
-                case (true, .light): return Colors.grey
-                default: return .white
-            }
-        }()
-        titleLabel.textColor = sentLinkPreviewTextColor
         titleLabel.text = state.title
+        titleLabel.themeTextColor = (isOutgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         
         // Horizontal stack view
         switch state {
+            case is LinkPreview.LoadingState:
+                imageViewContainer.themeBackgroundColor = .clear
+                hStackViewContainer.themeBackgroundColor = nil
+                
             case is LinkPreview.SentState:
-                // FIXME: This will have issues with theme transitions
-                hStackViewContainer.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
+                imageViewContainer.themeBackgroundColor = .messageBubble_overlay
+                hStackViewContainer.themeBackgroundColor = .messageBubble_overlay
                 
             default:
-                hStackViewContainer.backgroundColor = nil
+                imageViewContainer.themeBackgroundColor = .messageBubble_overlay
+                hStackViewContainer.themeBackgroundColor = nil
         }
         
         // Body text view
@@ -190,7 +201,7 @@ final class LinkPreviewView: UIView {
             let bodyTappableLabel = VisibleMessageCell.getBodyTappableLabel(
                 for: cellViewModel,
                 with: maxWidth,
-                textColor: (bodyLabelTextColor ?? sentLinkPreviewTextColor),
+                textColor: (bodyLabelTextColor ?? .textPrimary),
                 searchText: lastSearchText,
                 delegate: delegate
             )

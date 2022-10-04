@@ -26,16 +26,16 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
     
     private lazy var titleLabel: UILabel = {
         let titleLabel: UILabel = UILabel()
-        titleLabel.text = "vc_share_title".localized()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.text = "vc_share_title".localized()
+        titleLabel.themeTextColor = .textPrimary
         
         return titleLabel
     }()
 
     private lazy var tableView: UITableView = {
         let tableView: UITableView = UITableView()
-        tableView.backgroundColor = .clear
+        tableView.themeBackgroundColor = .backgroundPrimary
         tableView.separatorStyle = .none
         tableView.register(view: SimplifiedConversationCell.self)
         tableView.showsVerticalScrollIndicator = false
@@ -45,33 +45,15 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         return tableView
     }()
     
-    private lazy var fadeView: UIView = {
-        let view = UIView()
-        let gradient = Gradients.homeVCFade
-        view.setGradient(gradient)
-        view.isUserInteractionEnabled = false
-        
-        return view
-    }()
-    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupNavBar()
-        
-        // Gradient
-        view.backgroundColor = .clear
-        view.setGradient(Gradients.defaultBackground)
-        
-        // Title
         navigationItem.titleView = titleLabel
         
-        // Table view
-        
+        view.themeBackgroundColor = .backgroundPrimary
         view.addSubview(tableView)
-        view.addSubview(fadeView)
         
         setupLayout()
         
@@ -111,32 +93,10 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         dataChangeObservable?.cancel()
     }
     
-    private func setupNavBar() {
-        guard let navigationBar = navigationController?.navigationBar else { return }
-        if #available(iOS 15.0, *) {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = Colors.navigationBarBackground
-            navigationBar.standardAppearance = appearance;
-            navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
-        }
-    }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        view.setGradient(Gradients.defaultBackground)
-        fadeView.setGradient(Gradients.homeVCFade)
-    }
-    
     // MARK: Layout
     
     private func setupLayout() {
-        let topInset = 0.15 * view.height()
-        
         tableView.pin(to: view)
-        fadeView.pin(.leading, to: .leading, of: view)
-        fadeView.pin(.top, to: .top, of: view, withInset: topInset)
-        fadeView.pin(.trailing, to: .trailing, of: view)
-        fadeView.pin(.bottom, to: .bottom, of: view)
     }
     
     // MARK: - Updating
@@ -192,7 +152,7 @@ final class ThreadPickerVC: UIViewController, UITableViewDataSource, UITableView
         
         guard let attachments: [SignalAttachment] = ShareVC.attachmentPrepPromise?.value else { return }
         
-        let approvalVC: OWSNavigationController = AttachmentApprovalViewController.wrappedInNavController(
+        let approvalVC: UINavigationController = AttachmentApprovalViewController.wrappedInNavController(
             threadId: self.viewModel.viewData[indexPath.row].threadId,
             attachments: attachments,
             approvalDelegate: self
