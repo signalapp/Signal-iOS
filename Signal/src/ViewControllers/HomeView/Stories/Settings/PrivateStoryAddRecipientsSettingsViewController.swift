@@ -101,6 +101,10 @@ extension PrivateStoryAddRecipientsSettingsViewController: MemberViewDelegate {
         return thread.addresses.contains(address)
     }
 
+    public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? { nil }
+
+    public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? { nil }
+
     public func memberViewDismiss() {
         navigationController?.popViewController(animated: true)
     }

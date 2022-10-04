@@ -140,6 +140,14 @@ extension SelectMyStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: SDSAnyReadTransaction) -> Bool { false }
 
+    public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? {
+        mode == .blockList ? "x-circle-solid-24" : nil
+    }
+
+    public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? {
+        mode == .blockList ? .ows_accentRed : nil
+    }
+
     public func memberViewDismiss() {
         dismiss(animated: true)
     }

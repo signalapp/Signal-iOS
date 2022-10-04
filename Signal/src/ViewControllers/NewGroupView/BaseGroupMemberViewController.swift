@@ -262,6 +262,10 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         return groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient, transaction: transaction)
     }
 
+    public func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String? { nil }
+
+    public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? { nil }
+
     public func memberViewDismiss() {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")

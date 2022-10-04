@@ -32,6 +32,10 @@ public protocol MemberViewDelegate: AnyObject {
     func memberViewIsPreExistingMember(_ recipient: PickedRecipient,
                                        transaction: SDSAnyReadTransaction) -> Bool
 
+    func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String?
+
+    func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor?
+
     func memberViewDismiss()
 }
 
@@ -442,11 +446,14 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         let isPreExistingMember = memberViewDelegate.memberViewIsPreExistingMember(recipient,
                                                                                    transaction: transaction)
 
+        let pickedIconName = memberViewDelegate.memberViewCustomIconNameForPickedMember(recipient) ?? "check-circle-solid-24"
+        let pickedIconColor = memberViewDelegate.memberViewCustomIconColorForPickedMember(recipient) ?? Theme.accentBlueColor
+
         let imageView = CVImageView()
         if isPreExistingMember {
-            imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.washColor)
+            imageView.setTemplateImageName(pickedIconName, tintColor: Theme.washColor)
         } else if isCurrentMember {
-            imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.accentBlueColor)
+            imageView.setTemplateImageName(pickedIconName, tintColor: pickedIconColor)
         } else {
             imageView.setTemplateImageName("empty-circle-outline-24", tintColor: .ows_gray25)
         }
