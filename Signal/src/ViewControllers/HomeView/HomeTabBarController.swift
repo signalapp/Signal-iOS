@@ -80,6 +80,9 @@ class HomeTabBarController: UITabBarController {
             setTabBarHidden(false, animated: false)
         } else {
             setTabBarHidden(true, animated: false)
+            if selectedTab == .stories {
+                storiesNavController.popToRootViewController(animated: false)
+            }
             selectedTab = .chatList
         }
     }
