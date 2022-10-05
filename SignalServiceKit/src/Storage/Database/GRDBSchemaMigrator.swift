@@ -240,7 +240,6 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_dropSentStories
         case dataMigration_indexMultipleNameComponentsForReceipients
         case dataMigration_syncGroupStories
-        case dataMigration_populateLastReceivedStoryTimestamp
         case dataMigration_deleteOldGroupCapabilities
     }
 
@@ -2478,30 +2477,6 @@ public class GRDBSchemaMigrator: NSObject {
             for thread in AnyThreadFinder().storyThreads(includeImplicitGroupThreads: false, transaction: transaction.asAnyRead) {
                 guard let thread = thread as? TSGroupThread else { continue }
                 self.storageServiceManager.recordPendingUpdates(groupModel: thread.groupModel)
-            }
-        }
-
-        migrator.registerMigration(.dataMigration_populateLastReceivedStoryTimestamp) { db in
-            let transaction = GRDBWriteTransaction(database: db)
-            defer { transaction.finalizeTransaction() }
-
-            StoryMessage.anyEnumerate(transaction: transaction.asAnyRead) { message, _ in
-                guard !message.authorAddress.isLocalAddress else { return }
-                for thread in message.threads(transaction: transaction.asAnyRead) {
-                    let uniqueId = thread.uniqueId
-                    do {
-                        try transaction.database.execute(
-                            sql: """
-                            UPDATE model_TSThread
-                            SET lastReceivedStoryTimestamp = ?
-                            WHERE uniqueId = ? AND lastReceivedStoryTimestamp < ?
-                            """,
-                            arguments: [message.timestamp, uniqueId, message.timestamp]
-                        )
-                    } catch {
-                        owsFail("Error \(error)")
-                    }
-                }
             }
         }
 
