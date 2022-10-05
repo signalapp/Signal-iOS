@@ -26,13 +26,22 @@ open class InteractiveSheetViewController: OWSViewController {
         fileprivate static let dismissVelocityThreshold: CGFloat = 1000
     }
 
-    private let sheetContainerView: UIView = {
-        let view = UIView()
+    private lazy var sheetContainerView: UIView = {
+        let view: UIView
+        if let blurEffect = blurEffect {
+            view = UIVisualEffectView(effect: blurEffect)
+        } else {
+            view = UIView()
+        }
         view.layer.cornerRadius = 16
         view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         view.layer.masksToBounds = true
         return view
     }()
+
+    private var sheetContainerContentView: UIView {
+        return (sheetContainerView as? UIVisualEffectView)?.contentView ?? sheetContainerView
+    }
 
     private let sheetStackView: UIStackView = {
         let view = UIStackView()
@@ -56,7 +65,10 @@ open class InteractiveSheetViewController: OWSViewController {
     private let handle = UIView()
     private lazy var handleContainer = UIView()
 
-    public required override init() {
+    private let blurEffect: UIBlurEffect?
+
+    public init(blurEffect: UIBlurEffect? = nil) {
+        self.blurEffect = blurEffect
         super.init()
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -86,7 +98,7 @@ open class InteractiveSheetViewController: OWSViewController {
             sheetContainerView.autoPinWidthToSuperview()
         }
 
-        sheetContainerView.addSubview(sheetStackView)
+        sheetContainerContentView.addSubview(sheetStackView)
         sheetStackView.autoPinEdgesToSuperviewEdges()
 
         sheetStackView.addArrangedSubview(contentView)

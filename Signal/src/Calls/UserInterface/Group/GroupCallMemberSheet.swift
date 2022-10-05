@@ -19,7 +19,15 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
     init(call: SignalCall) {
         self.call = call
-        super.init()
+
+        let blurEffect: UIBlurEffect?
+        if UIAccessibility.isReduceTransparencyEnabled {
+            blurEffect = nil
+        } else {
+            blurEffect = .init(style: .dark)
+        }
+
+        super.init(blurEffect: blurEffect)
         call.addObserverAndSyncState(observer: self)
     }
 
@@ -33,12 +41,6 @@ class GroupCallMemberSheet: InteractiveSheetViewController {
 
     override public func viewDidLoad() {
         super.viewDidLoad()
-
-        if !UIAccessibility.isReduceTransparencyEnabled {
-            let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
-            contentView.addSubview(blurEffectView)
-            blurEffectView.autoPinEdgesToSuperviewEdges()
-        }
 
         tableView.dataSource = self
         tableView.delegate = self
