@@ -108,12 +108,15 @@ extension ContextMenuVC {
         currentThreadIsMessageRequest: Bool,
         delegate: ContextMenuActionDelegate?
     ) -> [Action]? {
-        // No context items for info messages
-        guard cellViewModel.variant != .standardIncomingDeleted else {
-            return [ Action.delete(cellViewModel, delegate) ]
-        }
-        guard cellViewModel.variant == .standardOutgoing || cellViewModel.variant == .standardIncoming else {
-            return nil
+        switch cellViewModel.variant {
+            case .standardIncomingDeleted, .infoCall,
+                .infoScreenshotNotification, .infoMediaSavedNotification,
+                .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
+                .infoMessageRequestAccepted, .infoDisappearingMessagesUpdate:
+                // Let the user delete info messages and unsent messages
+                return [ Action.delete(cellViewModel, delegate) ]
+                
+            case .standardOutgoing, .standardIncoming: break
         }
         
         let canReply: Bool = (

@@ -46,6 +46,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
     
     // MARK: - Variables
     
+    private let dependencies: Dependencies
     private let threadId: String
     private let threadVariant: SessionThread.Variant
     private let didTriggerSearch: () -> ()
@@ -54,13 +55,19 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
     
     // MARK: - Initialization
     
-    init(threadId: String, threadVariant: SessionThread.Variant, didTriggerSearch: @escaping () -> ()) {
+    init(
+        dependencies: Dependencies = Dependencies(),
+        threadId: String,
+        threadVariant: SessionThread.Variant,
+        didTriggerSearch: @escaping () -> ()
+    ) {
+        self.dependencies = dependencies
         self.threadId = threadId
         self.threadVariant = threadVariant
         self.didTriggerSearch = didTriggerSearch
         self.oldDisplayName = (threadVariant != .contact ?
             nil :
-            Storage.shared.read { db in
+            dependencies.storage.read { db in
                 try Profile
                     .filter(id: threadId)
                     .select(.nickname)
@@ -73,55 +80,8 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
     // MARK: - Navigation
     
     lazy var navState: AnyPublisher<NavState, Never> = {
-        Publishers
-            .MergeMany(
-                isEditing
-                    .filter { $0 }
-                    .map { _ in .editing }
-                    .eraseToAnyPublisher(),
-                navItemTapped
-                    .filter { $0 == .edit }
-                    .map { _ in .editing }
-                    .handleEvents(receiveOutput: { [weak self] _ in
-                        self?.setIsEditing(true)
-                    })
-                    .eraseToAnyPublisher(),
-                navItemTapped
-                    .filter { $0 == .cancel }
-                    .map { _ in .standard }
-                    .handleEvents(receiveOutput: { [weak self] _ in
-                        self?.setIsEditing(false)
-                        self?.editedDisplayName = self?.oldDisplayName
-                    })
-                    .eraseToAnyPublisher(),
-                navItemTapped
-                    .filter { $0 == .done }
-                    .filter { [weak self] _ in self?.threadVariant == .contact }
-                    .handleEvents(receiveOutput: { [weak self] _ in
-                        self?.setIsEditing(false)
-                        
-                        guard
-                            let threadId: String = self?.threadId,
-                            let editedDisplayName: String = self?.editedDisplayName
-                        else { return }
-                        
-                        let updatedNickname: String = editedDisplayName
-                            .trimmingCharacters(in: .whitespacesAndNewlines)
-                        self?.oldDisplayName = (updatedNickname.isEmpty ? nil : editedDisplayName)
-
-                        Storage.shared.writeAsync { db in
-                            try Profile
-                                .filter(id: threadId)
-                                .updateAll(
-                                    db,
-                                    Profile.Columns.nickname
-                                        .set(to: (updatedNickname.isEmpty ? nil : editedDisplayName))
-                                )
-                        }
-                    })
-                    .map { _ in .standard }
-                    .eraseToAnyPublisher()
-            )
+        isEditing
+            .map { isEditing in (isEditing ? .editing : .standard) }
             .removeDuplicates()
             .prepend(.standard)     // Initial value
             .eraseToAnyPublisher()
@@ -139,7 +99,10 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                        id: .cancel,
                        systemItem: .cancel,
                        accessibilityIdentifier: "Cancel button"
-                   )
+                   ) { [weak self] in
+                       self?.setIsEditing(false)
+                       self?.editedDisplayName = self?.oldDisplayName
+                   }
                ]
            }
            .eraseToAnyPublisher()
@@ -147,7 +110,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
 
     override var rightNavItems: AnyPublisher<[NavItem]?, Never> {
        navState
-           .map { [weak self] navState -> [NavItem] in
+           .map { [weak self, dependencies] navState -> [NavItem] in
                // Only show the 'Edit' button if it's a contact thread
                guard self?.threadVariant == .contact else { return [] }
 
@@ -158,7 +121,29 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                id: .done,
                                systemItem: .done,
                                accessibilityIdentifier: "Done button"
-                           )
+                           ) { [weak self] in
+                               self?.setIsEditing(false)
+                               
+                               guard
+                                   self?.threadVariant == .contact,
+                                   let threadId: String = self?.threadId,
+                                   let editedDisplayName: String = self?.editedDisplayName
+                               else { return }
+                               
+                               let updatedNickname: String = editedDisplayName
+                                   .trimmingCharacters(in: .whitespacesAndNewlines)
+                               self?.oldDisplayName = (updatedNickname.isEmpty ? nil : editedDisplayName)
+
+                               dependencies.storage.writeAsync { db in
+                                   try Profile
+                                       .filter(id: threadId)
+                                       .updateAll(
+                                           db,
+                                           Profile.Columns.nickname
+                                               .set(to: (updatedNickname.isEmpty ? nil : editedDisplayName))
+                                       )
+                               }
+                           }
                        ]
 
                    case .standard:
@@ -167,7 +152,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                id: .edit,
                                systemItem: .edit,
                                accessibilityIdentifier: "Edit button"
-                           )
+                           ) { [weak self] in self?.setIsEditing(true) }
                        ]
                }
            }
@@ -196,8 +181,8 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
     /// fetch (after the ones in `ValueConcurrentObserver.asyncStart`/`ValueConcurrentObserver.syncStart`)
     /// just in case the database has changed between the two reads - unfortunately it doesn't look like there is a way to prevent this
     private lazy var _observableSettingsData: ObservableData = ValueObservation
-        .trackingConstantRegion { [weak self, threadId = self.threadId, threadVariant = self.threadVariant] db -> [SectionModel] in
-            let userPublicKey: String = getUserHexEncodedPublicKey(db)
+        .trackingConstantRegion { [weak self, dependencies, threadId = self.threadId, threadVariant = self.threadVariant] db -> [SectionModel] in
+            let userPublicKey: String = getUserHexEncodedPublicKey(db, dependencies: dependencies)
             let maybeThreadViewModel: SessionThreadViewModel? = try SessionThreadViewModel
                 .conversationSettingsQuery(threadId: threadId, userPublicKey: userPublicKey)
                 .fetchOne(db)
@@ -387,7 +372,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                     cancelStyle: .alert_text
                                 ),
                                 onTap: { [weak self] in
-                                    Storage.shared.writeAsync { db in
+                                    dependencies.storage.writeAsync { db in
                                         try MessageSender.leave(db, groupPublicKey: threadId)
                                     }
                                 }
@@ -435,7 +420,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                 onTap: {
                                     let newValue: Bool = !(threadViewModel.threadOnlyNotifyForMentions == true)
                                     
-                                    Storage.shared.writeAsync { db in
+                                    dependencies.storage.writeAsync { db in
                                         try SessionThread
                                             .filter(id: threadId)
                                             .updateAll(
@@ -465,15 +450,19 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
                                 ),
                                 accessibilityIdentifier: "\(ThreadSettingsViewModel.self).mute",
                                 onTap: {
-                                    let newValue: Bool = !(threadViewModel.threadMutedUntilTimestamp != nil)
-                                    
-                                    Storage.shared.writeAsync { db in
+                                    dependencies.storage.writeAsync { db in
+                                        let currentValue: TimeInterval? = try SessionThread
+                                            .filter(id: threadId)
+                                            .select(.mutedUntilTimestamp)
+                                            .asRequest(of: TimeInterval.self)
+                                            .fetchOne(db)
+                                        
                                         try SessionThread
                                             .filter(id: threadId)
                                             .updateAll(
                                                 db,
                                                 SessionThread.Columns.mutedUntilTimestamp.set(
-                                                    to: (newValue ?
+                                                    to: (currentValue == nil ?
                                                         Date.distantFuture.timeIntervalSince1970 :
                                                         nil
                                                     )
@@ -538,7 +527,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
             ]
         }
         .removeDuplicates()
-        .publisher(in: Storage.shared)
+        .publisher(in: dependencies.storage, scheduling: dependencies.scheduler)
     
     // MARK: - Functions
 
@@ -575,7 +564,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
     private func addUsersToOpenGoup(selectedUsers: Set<String>) {
         let threadId: String = self.threadId
         
-        Storage.shared.writeAsync { db in
+        dependencies.storage.writeAsync { db in
             guard let openGroup: OpenGroup = try OpenGroup.fetchOne(db, id: threadId) else { return }
             
             let urlString: String = "\(openGroup.server)/\(openGroup.roomToken)?public_key=\(openGroup.publicKey)"
@@ -622,7 +611,7 @@ class ThreadSettingsViewModel: SessionTableViewModel<ThreadSettingsViewModel.Nav
     ) {
         guard oldBlockedState != isBlocked else { return }
         
-        Storage.shared.writeAsync(
+        dependencies.storage.writeAsync(
             updates: { db in
                 try Contact
                     .fetchOrCreate(db, id: threadId)

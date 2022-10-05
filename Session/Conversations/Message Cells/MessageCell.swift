@@ -10,8 +10,9 @@ public enum SwipeState {
 }
 
 public class MessageCell: UITableViewCell {
-    weak var delegate: MessageCellDelegate?
     var viewModel: MessageViewModel?
+    weak var delegate: MessageCellDelegate?
+    open var contextSnapshotView: UIView? { return nil }
 
     // MARK: - Lifecycle
     

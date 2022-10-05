@@ -15,9 +15,28 @@ final class ReactionButton: UIView {
     
     // MARK: - Settings
     
-    private var height: CGFloat = 22
+    public static var height: CGFloat = 22
     private var fontSize: CGFloat = Values.verySmallFontSize
     private var spacing: CGFloat = Values.verySmallSpacing
+    
+    // MARK: - UI
+    
+    private lazy var emojiLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.setContentHuggingPriority(.required, for: .horizontal)
+        result.setContentCompressionResistancePriority(.required, for: .horizontal)
+        result.font = .systemFont(ofSize: fontSize)
+        
+        return result
+    }()
+    
+    private lazy var numberLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = .systemFont(ofSize: fontSize)
+        result.themeTextColor = .textPrimary
+        
+        return result
+    }()
     
     // MARK: - Lifecycle
     
@@ -28,6 +47,7 @@ final class ReactionButton: UIView {
         super.init(frame: CGRect.zero)
         
         setUpViewHierarchy()
+        update(with: viewModel, showNumber: showNumber)
     }
     
     override init(frame: CGRect) {
@@ -39,35 +59,45 @@ final class ReactionButton: UIView {
     }
     
     private func setUpViewHierarchy() {
-        let emojiLabel: UILabel = UILabel()
-        emojiLabel.font = .systemFont(ofSize: fontSize)
         emojiLabel.text = viewModel.emoji.rawValue
         
-        let stackView: UIStackView = UIStackView(arrangedSubviews: [ emojiLabel ])
+        let stackView: UIStackView = UIStackView(arrangedSubviews: [ emojiLabel, numberLabel ])
         stackView.axis = .horizontal
         stackView.spacing = spacing
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.smallSpacing, bottom: 0, right: Values.smallSpacing)
-        stackView.isLayoutMarginsRelativeArrangement = true
         addSubview(stackView)
-        stackView.pin(to: self)
+        stackView.pin(.top, to: .top, of: self)
+        stackView.pin(.leading, to: .leading, of: self, withInset: Values.smallSpacing)
+        stackView.pin(.trailing, to: .trailing, of: self, withInset: -Values.smallSpacing)
+        stackView.pin(.bottom, to: .bottom, of: self)
         
         themeBorderColor = (viewModel.showBorder ? .primary : .clear)
         themeBackgroundColor = .messageBubble_incomingBackground
-        layer.cornerRadius = (self.height / 2)
+        layer.cornerRadius = (ReactionButton.height / 2)
         layer.borderWidth = 1   // Intentionally 1pt (instead of 'Values.separatorThickness')
-        set(.height, to: self.height)
+        set(.height, to: ReactionButton.height)
         
-        if showNumber || viewModel.number > 1 {
-            let numberLabel = UILabel()
-            numberLabel.font = .systemFont(ofSize: fontSize)
-            numberLabel.text = (viewModel.number < 1000 ?
-                "\(viewModel.number)" :
-                String(format: "%.1f", Float(viewModel.number) / 1000) + "k"
-            )
-            numberLabel.themeTextColor = .textPrimary
-            stackView.addArrangedSubview(numberLabel)
+        numberLabel.isHidden = (!showNumber && viewModel.number <= 1)
+    }
+    
+    func update(with viewModel: ReactionViewModel, showNumber: Bool) {
+        _ = updating(with: viewModel, showNumber: showNumber)
+    }
+    
+    func updating(with viewModel: ReactionViewModel, showNumber: Bool) -> ReactionButton {
+        emojiLabel.text = viewModel.emoji.rawValue
+        numberLabel.text = (viewModel.number < 1000 ?
+            "\(viewModel.number)" :
+            String(format: "%.1f", Float(viewModel.number) / 1000) + "k"
+        )
+        numberLabel.isHidden = (!showNumber && viewModel.number <= 1)
+        
+        UIView.performWithoutAnimation {
+            self.setNeedsLayout()
+            self.layoutIfNeeded()
         }
+        
+        return self
     }
 }
 

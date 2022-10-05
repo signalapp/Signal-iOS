@@ -63,66 +63,8 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
     // MARK: - Navigation
     
     lazy var navState: AnyPublisher<NavState, Never> = {
-        Publishers
-            .MergeMany(
-                isEditing
-                    .filter { $0 }
-                    .map { _ in .editing }
-                    .eraseToAnyPublisher(),
-                navItemTapped
-                    .filter { $0 == .cancel }
-                    .map { _ in .standard }
-                    .handleEvents(receiveOutput: { [weak self] _ in
-                        self?.setIsEditing(false)
-                        self?.editedDisplayName = self?.oldDisplayName
-                    })
-                    .eraseToAnyPublisher(),
-                navItemTapped
-                    .filter { $0 == .done }
-                    .handleEvents(receiveOutput: { [weak self] _ in
-                        let updatedNickname: String = (self?.editedDisplayName ?? "")
-                            .trimmingCharacters(in: .whitespacesAndNewlines)
-                        
-                        guard !updatedNickname.isEmpty else {
-                            self?.transitionToScreen(
-                                ConfirmationModal(
-                                    info: ConfirmationModal.Info(
-                                        title: "vc_settings_display_name_missing_error".localized(),
-                                        cancelTitle: "BUTTON_OK".localized(),
-                                        cancelStyle: .alert_text
-                                    )
-                                ),
-                                transitionType: .present
-                            )
-                            return
-                        }
-                        guard !ProfileManager.isToLong(profileName: updatedNickname) else {
-                            self?.transitionToScreen(
-                                ConfirmationModal(
-                                    info: ConfirmationModal.Info(
-                                        title: "vc_settings_display_name_too_long_error".localized(),
-                                        cancelTitle: "BUTTON_OK".localized(),
-                                        cancelStyle: .alert_text
-                                    )
-                                ),
-                                transitionType: .present
-                            )
-                            return
-                        }
-                        
-                        self?.setIsEditing(false)
-                        self?.oldDisplayName = updatedNickname
-                        self?.updateProfile(
-                            name: updatedNickname,
-                            profilePicture: nil,
-                            profilePictureFilePath: nil,
-                            isUpdatingDisplayName: true,
-                            isUpdatingProfilePicture: false
-                        )
-                    })
-                    .map { _ in .standard }
-                    .eraseToAnyPublisher()
-            )
+        isEditing
+            .map { isEditing in (isEditing ? .editing : .standard) }
             .removeDuplicates()
             .prepend(.standard)     // Initial value
             .eraseToAnyPublisher()
@@ -149,7 +91,10 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
                                id: .cancel,
                                systemItem: .cancel,
                                accessibilityIdentifier: "Cancel button"
-                           )
+                           ) { [weak self] in
+                               self?.setIsEditing(false)
+                               self?.editedDisplayName = self?.oldDisplayName
+                           }
                        ]
                }
            }
@@ -180,7 +125,47 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
                                 id: .done,
                                 systemItem: .done,
                                 accessibilityIdentifier: "Done button"
-                            )
+                            ) { [weak self] in
+                                let updatedNickname: String = (self?.editedDisplayName ?? "")
+                                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                                
+                                guard !updatedNickname.isEmpty else {
+                                    self?.transitionToScreen(
+                                        ConfirmationModal(
+                                            info: ConfirmationModal.Info(
+                                                title: "vc_settings_display_name_missing_error".localized(),
+                                                cancelTitle: "BUTTON_OK".localized(),
+                                                cancelStyle: .alert_text
+                                            )
+                                        ),
+                                        transitionType: .present
+                                    )
+                                    return
+                                }
+                                guard !ProfileManager.isToLong(profileName: updatedNickname) else {
+                                    self?.transitionToScreen(
+                                        ConfirmationModal(
+                                            info: ConfirmationModal.Info(
+                                                title: "vc_settings_display_name_too_long_error".localized(),
+                                                cancelTitle: "BUTTON_OK".localized(),
+                                                cancelStyle: .alert_text
+                                            )
+                                        ),
+                                        transitionType: .present
+                                    )
+                                    return
+                                }
+                                
+                                self?.setIsEditing(false)
+                                self?.oldDisplayName = updatedNickname
+                                self?.updateProfile(
+                                    name: updatedNickname,
+                                    profilePicture: nil,
+                                    profilePictureFilePath: nil,
+                                    isUpdatingDisplayName: true,
+                                    isUpdatingProfilePicture: false
+                                )
+                            }
                        ]
                }
            }

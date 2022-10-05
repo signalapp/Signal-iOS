@@ -6,7 +6,7 @@ import GRDB
 import PromiseKit
 import SignalCoreKit
 
-public final class Storage {
+open class Storage {
     private static let dbFileName: String = "Session.sqlite"
     private static let keychainService: String = "TSKeyChainService"
     private static let dbCipherKeySpecKey: String = "GRDBDatabaseCipherKeySpec"
@@ -305,17 +305,17 @@ public final class Storage {
     
     // MARK: - Functions
     
-    @discardableResult public func write<T>(updates: (Database) throws -> T?) -> T? {
+    @discardableResult public final func write<T>(updates: (Database) throws -> T?) -> T? {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return nil }
         
         return try? dbWriter.write(updates)
     }
     
-    public func writeAsync<T>(updates: @escaping (Database) throws -> T) {
+    open func writeAsync<T>(updates: @escaping (Database) throws -> T) {
         writeAsync(updates: updates, completion: { _, _ in })
     }
     
-    public func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Swift.Result<T, Error>) throws -> Void) {
+    open func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Swift.Result<T, Error>) throws -> Void) {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         
         dbWriter.asyncWrite(
@@ -326,7 +326,7 @@ public final class Storage {
         )
     }
     
-    @discardableResult public func read<T>(_ value: (Database) throws -> T?) -> T? {
+    @discardableResult public final func read<T>(_ value: (Database) throws -> T?) -> T? {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return nil }
         
         return try? dbWriter.read(value)
@@ -401,6 +401,7 @@ public extension Storage {
         }
     }
     
+    // FIXME: Can't overrwrite this in `SynchronousStorage` since it's in an extension
     @discardableResult func writeAsync<T>(updates: @escaping (Database) throws -> Promise<T>) -> Promise<T> {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else {
             return Promise(error: StorageError.databaseInvalid)

@@ -510,10 +510,12 @@ public extension MessageViewModel {
         
         // Interaction Info
         
-        let targetId: Int64 = (isTypingIndicator == true ?
-            MessageViewModel.typingIndicatorId :
-            MessageViewModel.genericId
-        )
+        let targetId: Int64 = {
+            guard isTypingIndicator != true else { return MessageViewModel.typingIndicatorId }
+            guard cellType != .dateHeader else { return -timestampMs }
+            
+            return MessageViewModel.genericId
+        }()
         self.rowId = targetId
         self.id = targetId
         self.variant = variant

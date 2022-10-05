@@ -573,6 +573,13 @@
 		FD17D7E727F6A16700122BE0 /* _003_YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7E627F6A16700122BE0 /* _003_YDBToGRDBMigration.swift */; };
 		FD17D7EA27F6A1C600122BE0 /* SUKLegacy.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD17D7E927F6A1C600122BE0 /* SUKLegacy.swift */; };
 		FD1C98E4282E3C5B00B76F9E /* UINavigationBar+Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD1C98E3282E3C5B00B76F9E /* UINavigationBar+Utilities.swift */; };
+		FD23EA5C28ED00F80058676E /* Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A527D860CE005DAE71 /* Mock.swift */; };
+		FD23EA5D28ED00FA0058676E /* TestConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD83B9BD27CF2243005E1583 /* TestConstants.swift */; };
+		FD23EA5E28ED00FD0058676E /* NimbleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC290A727D9B46D005DAE71 /* NimbleExtensions.swift */; };
+		FD23EA5F28ED00FF0058676E /* CommonMockedExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD078E4727E02561000769AF /* CommonMockedExtensions.swift */; };
+		FD23EA6128ED0B260058676E /* CombineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD23EA6028ED0B260058676E /* CombineExtensions.swift */; };
+		FD23EA6228ED0B260058676E /* CombineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD23EA6028ED0B260058676E /* CombineExtensions.swift */; };
+		FD23EA6328ED0B260058676E /* CombineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD23EA6028ED0B260058676E /* CombineExtensions.swift */; };
 		FD245C50285065C700B966DD /* VisibleMessage+Quote.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3C2A7552553A3AB00C340D1 /* VisibleMessage+Quote.swift */; };
 		FD245C51285065CC00B966DD /* MessageReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5FB2554B0A000555489 /* MessageReceiver.swift */; };
 		FD245C52285065D500B966DD /* SignalAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF224255B6D5D007E1867 /* SignalAttachment.swift */; };
@@ -599,6 +606,11 @@
 		FD245C6B2850667400B966DD /* VisibleMessage+Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C300A5B12554AF9800555489 /* VisibleMessage+Profile.swift */; };
 		FD245C6C2850669200B966DD /* MessageReceiveJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A31225574F5200338F3E /* MessageReceiveJob.swift */; };
 		FD245C6D285066A400B966DD /* NotifyPushServerJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = C352A32E2557549C00338F3E /* NotifyPushServerJob.swift */; };
+		FD2AAAED28ED3E1000A49611 /* MockGeneralCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */; };
+		FD2AAAEE28ED3E1100A49611 /* MockGeneralCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */; };
+		FD2AAAF028ED57B500A49611 /* SynchronousStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD2AAAEF28ED57B500A49611 /* SynchronousStorage.swift */; };
+		FD2AAAF128ED57B500A49611 /* SynchronousStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD2AAAEF28ED57B500A49611 /* SynchronousStorage.swift */; };
+		FD2AAAF228ED57B500A49611 /* SynchronousStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD2AAAEF28ED57B500A49611 /* SynchronousStorage.swift */; };
 		FD37E9C328A1C6F3003AE748 /* ThemeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37E9C228A1C6F3003AE748 /* ThemeManager.swift */; };
 		FD37E9C628A1D4EC003AE748 /* Theme+ClassicDark.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37E9C528A1D4EC003AE748 /* Theme+ClassicDark.swift */; };
 		FD37E9C828A1D73F003AE748 /* Theme+Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD37E9C728A1D73F003AE748 /* Theme+Colors.swift */; };
@@ -1678,8 +1690,10 @@
 		FD17D7E627F6A16700122BE0 /* _003_YDBToGRDBMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = _003_YDBToGRDBMigration.swift; sourceTree = "<group>"; };
 		FD17D7E927F6A1C600122BE0 /* SUKLegacy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SUKLegacy.swift; sourceTree = "<group>"; };
 		FD1C98E3282E3C5B00B76F9E /* UINavigationBar+Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+Utilities.swift"; sourceTree = "<group>"; };
+		FD23EA6028ED0B260058676E /* CombineExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombineExtensions.swift; sourceTree = "<group>"; };
 		FD245C612850664300B966DD /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		FD28A4F527EAD44C00FF65E7 /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		FD2AAAEF28ED57B500A49611 /* SynchronousStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SynchronousStorage.swift; sourceTree = "<group>"; };
 		FD37E9C228A1C6F3003AE748 /* ThemeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeManager.swift; sourceTree = "<group>"; };
 		FD37E9C528A1D4EC003AE748 /* Theme+ClassicDark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+ClassicDark.swift"; sourceTree = "<group>"; };
 		FD37E9C728A1D73F003AE748 /* Theme+Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Theme+Colors.swift"; sourceTree = "<group>"; };
@@ -3374,7 +3388,7 @@
 				C3C2A5A0255385C100C340D1 /* SessionSnodeKit */,
 				C3C2A67A255388CC00C340D1 /* SessionUtilitiesKit */,
 				C33FD9AC255A548A00E217F9 /* SignalUtilitiesKit */,
-				FD83B9BC27CF2215005E1583 /* SharedTest */,
+				FD83B9BC27CF2215005E1583 /* _SharedTestUtilities */,
 				FD71160A28D00BAE00B47552 /* SessionTests */,
 				FDC4388F27B9FFC700C60D73 /* SessionMessagingKitTests */,
 				FD83B9B027CF200A005E1583 /* SessionUtilitiesKitTests */,
@@ -3897,15 +3911,18 @@
 			path = General;
 			sourceTree = "<group>";
 		};
-		FD83B9BC27CF2215005E1583 /* SharedTest */ = {
+		FD83B9BC27CF2215005E1583 /* _SharedTestUtilities */ = {
 			isa = PBXGroup;
 			children = (
 				FDC290A527D860CE005DAE71 /* Mock.swift */,
+				FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */,
 				FD83B9BD27CF2243005E1583 /* TestConstants.swift */,
 				FDC290A727D9B46D005DAE71 /* NimbleExtensions.swift */,
 				FD078E4727E02561000769AF /* CommonMockedExtensions.swift */,
+				FD23EA6028ED0B260058676E /* CombineExtensions.swift */,
+				FD2AAAEF28ED57B500A49611 /* SynchronousStorage.swift */,
 			);
-			path = SharedTest;
+			path = _SharedTestUtilities;
 			sourceTree = "<group>";
 		};
 		FD83B9C127CF33EE005E1583 /* Models */ = {
@@ -4052,7 +4069,6 @@
 			isa = PBXGroup;
 			children = (
 				FDC438BC27BB2AB400C60D73 /* Mockable.swift */,
-				FDFD645C27F273F300808CA1 /* MockGeneralCache.swift */,
 				FD859EF327C2F49200510D0C /* MockSodium.swift */,
 				FD3C906E27E43E8700CD579F /* MockBox.swift */,
 				FD859EF927C2F5C500510D0C /* MockGenericHash.swift */,
@@ -5752,8 +5768,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				FD71161728D00DA400B47552 /* ThreadSettingsViewModelSpec.swift in Sources */,
+				FD2AAAF028ED57B500A49611 /* SynchronousStorage.swift in Sources */,
 				FD71161528D00D6700B47552 /* ThreadDisappearingMessagesViewModelSpec.swift in Sources */,
+				FD23EA5E28ED00FD0058676E /* NimbleExtensions.swift in Sources */,
+				FD23EA5F28ED00FF0058676E /* CommonMockedExtensions.swift in Sources */,
+				FD23EA5D28ED00FA0058676E /* TestConstants.swift in Sources */,
 				FD71161A28D00E1100B47552 /* NotificationContentViewModelSpec.swift in Sources */,
+				FD23EA5C28ED00F80058676E /* Mock.swift in Sources */,
+				FD23EA6128ED0B260058676E /* CombineExtensions.swift in Sources */,
+				FD2AAAED28ED3E1000A49611 /* MockGeneralCache.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5761,10 +5784,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD2AAAF228ED57B500A49611 /* SynchronousStorage.swift in Sources */,
 				FD078E4927E02576000769AF /* CommonMockedExtensions.swift in Sources */,
 				FD83B9BF27CF2294005E1583 /* TestConstants.swift in Sources */,
 				FD83B9BB27CF20AF005E1583 /* SessionIdSpec.swift in Sources */,
 				FDC290A927D9B46D005DAE71 /* NimbleExtensions.swift in Sources */,
+				FD23EA6328ED0B260058676E /* CombineExtensions.swift in Sources */,
+				FD2AAAEE28ED3E1100A49611 /* MockGeneralCache.swift in Sources */,
 				FD37EA1528AB42CB003AE748 /* IdentitySpec.swift in Sources */,
 				FDC290AA27D9B6FD005DAE71 /* Mock.swift in Sources */,
 			);
@@ -5789,6 +5815,7 @@
 				FD83B9C727CF3F10005E1583 /* CapabilitiesSpec.swift in Sources */,
 				FDC2909A27D71376005DAE71 /* NonceGeneratorSpec.swift in Sources */,
 				FD3C906427E4122F00CD579F /* RequestSpec.swift in Sources */,
+				FD2AAAF128ED57B500A49611 /* SynchronousStorage.swift in Sources */,
 				FD078E4827E02561000769AF /* CommonMockedExtensions.swift in Sources */,
 				FD859EF827C2F58900510D0C /* MockAeadXChaCha20Poly1305Ietf.swift in Sources */,
 				FDC2909827D7129B005DAE71 /* PersonalizationSpec.swift in Sources */,
@@ -5800,6 +5827,7 @@
 				FD83B9C027CF2294005E1583 /* TestConstants.swift in Sources */,
 				FD3C906F27E43E8700CD579F /* MockBox.swift in Sources */,
 				FDC4389A27BA002500C60D73 /* OpenGroupAPISpec.swift in Sources */,
+				FD23EA6228ED0B260058676E /* CombineExtensions.swift in Sources */,
 				FD83B9C527CF3E2A005E1583 /* OpenGroupSpec.swift in Sources */,
 				FDC2908B27D707F3005DAE71 /* SendMessageRequestSpec.swift in Sources */,
 				FDC290A827D9B46D005DAE71 /* NimbleExtensions.swift in Sources */,
