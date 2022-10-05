@@ -373,8 +373,8 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         let viewedTimestamp: UInt64?
         switch viewStatus.status {
         case .notViewed:
-            // Nothing to clean up
-            return
+            // Legacy clients might have viewed stories from before we recorded viewed status.
+            viewedTimestamp = nil
         case .viewedOnAnotherDevice:
             // Delete right away.
             forceDelete = true
@@ -399,6 +399,17 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }
         let stories = StoryFinder.listStoriesWithUniqueIds(messageUniqueIds, transaction: transaction)
         guard !stories.isEmpty else {
+            switch viewStatus.status {
+            case .notViewed:
+                // this is a legacy client with stories that were viewed before
+                // we kept track of viewed state independently.
+                try self.setOnboardingStoryViewedOnThisDevice(
+                    atTimestamp: Date.distantPast.ows_millisecondsSince1970,
+                    transaction: transaction
+                )
+            case .viewedOnAnotherDevice, .viewedOnThisDevice:
+                break
+            }
             return
         }
 
