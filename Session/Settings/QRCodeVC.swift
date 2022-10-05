@@ -234,9 +234,14 @@ private final class ViewMyQRCodeVC : UIViewController {
         let shareButtonContainer = UIView()
         shareButtonContainer.addSubview(shareButton)
         shareButton.pin(.top, to: .top, of: shareButtonContainer)
-        shareButton.pin(.leading, to: .leading, of: shareButtonContainer, withInset: 80)
-        shareButton.pin(.trailing, to: .trailing, of: shareButtonContainer, withInset: -80)
         shareButton.pin(.bottom, to: .bottom, of: shareButtonContainer)
+        if UIDevice.current.isIPad {
+            shareButton.center(in: shareButtonContainer)
+            shareButton.set(.width, to: Values.iPadButtonWidth)
+        } else {
+            shareButton.pin(.leading, to: .leading, of: shareButtonContainer, withInset: 80)
+            shareButton.pin(.trailing, to: .trailing, of: shareButtonContainer, withInset: -80)
+        }
         
         // Set up stack view
         let spacing = (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
