@@ -316,7 +316,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             let mutualGroupNames = groupThreads.filter { $0.isLocalUserFullMember && $0.shouldThreadBeVisible }.map { $0.groupNameOrDefault }
 
             let formatString: String
-            var groupsToInsert = mutualGroupNames
+            var formatArgs: [AttributedFormatArg] = mutualGroupNames.map { name in
+                return .string(name, attributes: [.font: UIFont.ows_dynamicTypeSubheadline.ows_semibold])
+            }
+
             switch mutualGroupNames.count {
             case 0:
                 return nil
@@ -340,46 +343,19 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                     "THREAD_DETAILS_MORE_MUTUAL_GROUP",
                     comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}}"
                 )
-                groupsToInsert = Array(groupsToInsert[0...1])
+
+                // For this string, we want to use the first two groups' names
+                // and add a final format arg for the number of remaining
+                // groups.
+                let firstTwoGroups = Array(formatArgs[0..<2])
+                let remainingGroupsCount = mutualGroupNames.count - firstTwoGroups.count
+                formatArgs = firstTwoGroups + [.raw(remainingGroupsCount)]
             }
 
-            var formatStringCount = formatString.components(separatedBy: "%@").count
-            if formatString.count > 1 { formatStringCount -= 1 }
-
-            guard formatStringCount == groupsToInsert.count else {
-                owsFailDebug("Incorrect number of format characters in string")
-                return nil
-            }
-
-            let mutableAttributedString = NSMutableAttributedString(string: formatString)
-
-            // We don't use `String(format:)` so that we can make sure each group name is bold.
-            for groupName in groupsToInsert {
-                let nextInsertionPoint = (mutableAttributedString.string as NSString).range(of: "%@")
-                guard nextInsertionPoint.location != NSNotFound else {
-                    owsFailDebug("Unexpectedly tried to insert too many group names")
-                    return nil
-                }
-
-                let boldGroupName = NSAttributedString(string: groupName, attributes: [.font: UIFont.ows_dynamicTypeSubheadline.ows_semibold])
-                mutableAttributedString.replaceCharacters(in: nextInsertionPoint, with: boldGroupName)
-            }
-
-            // We also need to insert the count if we're more than 3
-            if mutualGroupNames.count > 3 {
-                let nextInsertionPoint = (mutableAttributedString.string as NSString).range(of: "%lu")
-                guard nextInsertionPoint.location != NSNotFound else {
-                    owsFailDebug("Unexpectedly failed to insert more count")
-                    return nil
-                }
-
-                mutableAttributedString.replaceCharacters(in: nextInsertionPoint, with: "\(mutualGroupNames.count - 2)")
-            } else if mutableAttributedString.string.range(of: "%lu") != nil {
-                owsFailDebug("unexpected format string remaining in string")
-                return nil
-            }
-
-            return mutableAttributedString
+            return NSAttributedString.make(
+                fromFormat: formatString,
+                attributedFormatArgs: formatArgs
+            )
         }()
 
         return CVComponentState.ThreadDetails(avatarDataSource: avatarDataSource,
