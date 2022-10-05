@@ -7,7 +7,7 @@ import SignalUtilitiesKit
 final class ReactionContainerView: UIView {
     var showingAllReactions = false
     private var showNumbers = true
-    private var maxEmojisPerLine = isIPhone6OrSmaller ? 5 : 6
+    private var maxEmojisPerLine = UIDevice.current.isIPad ? 10 : (isIPhone6OrSmaller ? 5 : 6)
     private var oldSize: CGSize = .zero
     
     var reactions: [ReactionViewModel] = []
