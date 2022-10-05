@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d tittare</string>
+			<string>1 tittare</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d tittare</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d tittare</string>
+			<string>1 tittare</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d tittare</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>

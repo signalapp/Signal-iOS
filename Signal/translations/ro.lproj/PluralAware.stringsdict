@@ -31,11 +31,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Voice message 1 second</string>
+			<string>Mesaj vocal 1 secundă</string>
 			<key>few</key>
-			<string>Voice message %1$d seconds</string>
+			<string>Mesaj vocal %1$d secunde</string>
 			<key>other</key>
-			<string>Voice message %1$d seconds</string>
+			<string>Mesaj vocal %1$d de secunde</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_%d</key>
@@ -49,11 +49,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Add member to “%2$@”?</string>
+			<string>Adaugi ca membru la “%2$@”?</string>
 			<key>few</key>
-			<string>Add %1$d members to “%2$@”?</string>
+			<string>Adaugi %1$d membri la “%2$@”?</string>
 			<key>other</key>
-			<string>Add %1$d members to “%2$@”?</string>
+			<string>Adaugi %1$d de membri la “%2$@”?</string>
 		</dict>
 	</dict>
 	<key>ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_%d</key>
@@ -139,11 +139,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete Chat?</string>
+			<string>Ștergi conversația?</string>
 			<key>few</key>
-			<string>Delete %1$d Chats?</string>
+			<string>Ștergi %1$d conversații?</string>
 			<key>other</key>
-			<string>Delete %1$d Chats?</string>
+			<string>Ștergi %1$d de conversații?</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGES_%d</key>
@@ -175,11 +175,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>Nu poți selecta mai mult de 1 conversație.</string>
 			<key>few</key>
-			<string>You can’t select more than %1$d chats.</string>
+			<string>Nu poți selecta mai mult de %1$d conversații.</string>
 			<key>other</key>
-			<string>You can’t select more than %1$d chats.</string>
+			<string>Nu poți selecta mai mult de %1$d de conversații.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -197,7 +197,7 @@
 			<key>few</key>
 			<string>%1$d %2$#@total@</string>
 			<key>other</key>
-			<string>%1$d %2$#@total@</string>
+			<string>%1$d de %2$#@total@</string>
 		</dict>
 		<key>total</key>
 		<dict>
@@ -206,11 +206,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>match</string>
+			<string>rezultat</string>
 			<key>few</key>
-			<string>of %2$d matches</string>
+			<string>din %2$d rezultate</string>
 			<key>other</key>
-			<string>of %2$d matches</string>
+			<string>din %2$d de rezultate</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_%d</key>
@@ -278,11 +278,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 minute ago</string>
+			<string>acum 1 minut</string>
 			<key>few</key>
-			<string>%1$d minutes ago</string>
+			<string>acum %1$d minute</string>
 			<key>other</key>
-			<string>%1$d minutes ago</string>
+			<string>acum %1$d de minute</string>
 		</dict>
 	</dict>
 	<key>DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_%d</key>
@@ -296,11 +296,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete Message?</string>
+			<string>Ștergi mesajul?</string>
 			<key>few</key>
-			<string>Delete %1$d Messages?</string>
+			<string>Ștergi %1$d mesaje?</string>
 			<key>other</key>
-			<string>Delete %1$d Messages?</string>
+			<string>Ștergi %1$d de mesaje?</string>
 		</dict>
 	</dict>
 	<key>EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d</key>
@@ -332,11 +332,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Your version of Signal will expire in 1 day. Tap to update to the most recent version.</string>
+			<string>Versiunea ta Signal va expira mâine. Atinge pentru a actualiza la cea mai recentă versiune.</string>
 			<key>few</key>
-			<string>Your version of Signal will expire in %1$d days. Tap to update to the most recent version.</string>
+			<string>Versiunea ta Signal va expira în %1$d zile. Atinge pentru a actualiza la cea mai recentă versiune.</string>
 			<key>other</key>
-			<string>Your version of Signal will expire in %1$d days. Tap to update to the most recent version.</string>
+			<string>Versiunea ta Signal va expira în %1$d de zile. Atinge pentru a actualiza la cea mai recentă versiune.</string>
 		</dict>
 	</dict>
 	<key>FORWARD_MESSAGE_FIRST_FORWARD_PROCEED_%d</key>
@@ -368,11 +368,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>The maximum number of 1 participant has been reached for this call. Try again later.</string>
+			<string>Numărul maxim de 1 participant a fost atins pentru acest apel. Încearcă mai târziu.</string>
 			<key>few</key>
-			<string>The maximum number of %1$d participants has been reached for this call. Try again later.</string>
+			<string>Numărul maxim de %1$d participanți a fost atins pentru acest apel. Încearcă mai târziu.</string>
 			<key>other</key>
-			<string>The maximum number of %1$d participants has been reached for this call. Try again later.</string>
+			<string>Numărul maxim de %1$d de participanți a fost atins pentru acest apel. Încearcă mai târziu.</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_IN_THIS_CALL_%d</key>
@@ -440,11 +440,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Toate Conexiunile Signal · 1 spectator</string>
 			<key>few</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Toate Conexiunile Signal · %1$d spectatori</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Toate Conexiunile Signal · %1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -458,11 +458,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Toate conexiunile Signal · 1 exclusă</string>
 			<key>few</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Toate Conexiunile Signal · %1$d excluse</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Toate Conexiunile Signal · %1$d excluse</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -476,11 +476,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Trimite Doar Către · 1 spectator</string>
 			<key>few</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Trimite Doar Către · %1$d spectatori</string>
 			<key>other</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Trimite Doar Către · %1$d de spectatori</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -548,11 +548,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<string>Se apelează %2$@, %3$@, și încă unul…</string>
 			<key>few</key>
-			<string>Ringing %2$@, %3$@, and %1$d others…</string>
+			<string>Se apelează %2$@, %3$@, și încă %1$d…</string>
 			<key>other</key>
-			<string>Ringing %2$@, %3$@, and %1$d others…</string>
+			<string>Se apelează %2$@, %3$@, și încă %1$d…</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -584,11 +584,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other joined the call</string>
+			<string>%2$@, %3$@ și încă o persoană s-au alăturat apelului</string>
 			<key>few</key>
-			<string>%2$@, %3$@, and %1$d others joined the call</string>
+			<string>%2$@, %3$@ și alți %1$d s-au alăturat apelului</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %1$d others joined the call</string>
+			<string>%2$@, %3$@ și alți %1$d s-au alăturat apelului</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_NOTIFICATION_MANY_LEFT_%d</key>
@@ -602,11 +602,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@, %3$@, and 1 other left the call</string>
+			<string>%2$@, %3$@ și încă o persoană au părăsit apelul</string>
 			<key>few</key>
-			<string>%2$@, %3$@, and %1$d others left the call</string>
+			<string>%2$@, %3$@ și alți %1$d au părăsit apelul</string>
 			<key>other</key>
-			<string>%2$@, %3$@, and %1$d others left the call</string>
+			<string>%2$@, %3$@ și alți %1$d au părăsit apelul</string>
 		</dict>
 	</dict>
 	<key>GROUP_INVITES_SENT_ALERT_TITLE_%d</key>
@@ -620,11 +620,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitation Sent</string>
+			<string>Invitații trimise</string>
 			<key>few</key>
-			<string>%1$d Invitations Sent</string>
+			<string>%1$d invitații trimise</string>
 			<key>other</key>
-			<string>%1$d Invitations Sent</string>
+			<string>%1$d de invitații trimise</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBER_COUNT_LABEL_%d</key>
@@ -674,11 +674,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 group member has similar name.</string>
+			<string>1 membru al grupului are un nume similar.</string>
 			<key>few</key>
-			<string>%1$d group members have similar names.</string>
+			<string>%1$d membri ai grupului au nume similare.</string>
 			<key>other</key>
-			<string>%1$d group members have similar names.</string>
+			<string>%1$d de membri ai grupului au nume similare.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_MULTIPLE_COLLISION_HEADER_%d</key>
@@ -692,11 +692,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 group member has similar name, review the member below or choose to take action.</string>
+			<string>1 membru al grupului are nume similare, examinează membri mai jos sau ia măsuri.</string>
 			<key>few</key>
-			<string>%1$d group members have similar names, review the members below or choose to take action.</string>
+			<string>%1$d membri ai grupului au nume similare, examinează membri mai jos sau ia măsuri.</string>
 			<key>other</key>
-			<string>%1$d group members have similar names, review the members below or choose to take action.</string>
+			<string>%1$d de membri ai grupului au nume similare, examinează membri mai jos sau ia măsuri.</string>
 		</dict>
 	</dict>
 	<key>GROUP_MEMBERSHIP_NAME_SINGLE_COLLISION_HEADER_%d</key>
@@ -710,11 +710,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 group member has the same name, review the member below or choose to take action.</string>
+			<string>1 membru al grupului are același nume, examinează membrul mai jos sau ia măsuri.</string>
 			<key>few</key>
-			<string>%1$d group members have the same name, review the members below or choose to take action.</string>
+			<string>%1$d membri ai grupului au același nume, examinează membri mai jos sau ia măsuri.</string>
 			<key>other</key>
-			<string>%1$d group members have the same name, review the members below or choose to take action.</string>
+			<string>%1$d de membri ai grupului au același nume, examinează membri mai jos sau ia măsuri.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_%d</key>
@@ -728,11 +728,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Invitation to the group were revoked for 1 person.</string>
+			<string>Au fost revocate invitațiile la grup pentru 1 persoană.</string>
 			<key>few</key>
-			<string>Invitations to the group were revoked for %1$d people.</string>
+			<string>Au fost revocate invitațiile la grup pentru %1$d persoane.</string>
 			<key>other</key>
-			<string>Invitations to the group were revoked for %1$d people.</string>
+			<string>Au fost revocate invitațiile la grup pentru %1$d de persoane.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_%d</key>
@@ -746,11 +746,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ revoked an invitation to the group for 1 person.</string>
+			<string>%2$@ a revocat o invitație la grup pentru 1 persoană.</string>
 			<key>few</key>
-			<string>%2$@ revoked an invitation to the group for %1$d people.</string>
+			<string>%2$@ a revocat o invitație la grup pentru %1$d persoane.</string>
 			<key>other</key>
-			<string>%2$@ revoked an invitation to the group for %1$d people.</string>
+			<string>%2$@ a revocat o invitație la grup pentru %1$d de persoane.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_%d</key>
@@ -764,11 +764,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 person was invited to the group.</string>
+			<string>1 persoană a fost invitată la grup.</string>
 			<key>few</key>
-			<string>%1$d people were invited to the group.</string>
+			<string>%1$d persoane au fost invitate la grup.</string>
 			<key>other</key>
-			<string>%1$d people were invited to the group.</string>
+			<string>%1$d de persoane au fost invitate la grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_%d</key>
@@ -782,11 +782,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person to the group.</string>
+			<string>%2$@ a invitat 1 persoană la grup.</string>
 			<key>few</key>
-			<string>%2$@ invited %1$d people to the group.</string>
+			<string>%2$@ a invitat %1$d persoane la grup.</string>
 			<key>other</key>
-			<string>%2$@ invited %1$d people to the group.</string>
+			<string>%2$@ a invitat %1$d persoane la grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_AND_CANCELED_%d</key>
@@ -800,11 +800,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ requested and canceled their request to join via the group link.</string>
+			<string>%2$@ a cerut și a anulat solicitarea pentru a se alătura prin linkul de grup.</string>
 			<key>few</key>
-			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
+			<string>%2$@ a cerut și a anulat %1$d solicitări pentru a se alătura prin linkul de grup.</string>
 			<key>other</key>
-			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
+			<string>%2$@ a cerut și a anulat %1$d de solicitări pentru a se alătura prin linkul de grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -818,11 +818,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been removed from the group.</string>
+			<string>Un membru nu a putut fi adăugat noului grup și a fost eliminat din grup.</string>
 			<key>few</key>
-			<string>%1$d members couldn’t be added to the New Group and have been removed from the group.</string>
+			<string>%1$d membri nu au putut fi adăugați noului grup și au fost eliminați din grup.</string>
 			<key>other</key>
-			<string>%1$d members couldn’t be added to the New Group and have been removed from the group.</string>
+			<string>%1$d de membri nu au putut fi adăugați noului grup și au fost eliminați din grup.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_INVITED_%d</key>
@@ -836,11 +836,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>A member couldn’t be added to the New Group and has been invited to join.</string>
+			<string>Un membru nu a putut fi adăugat noului grup și a fost invitat să se alăture.</string>
 			<key>few</key>
-			<string>%1$d members couldn’t be added to the New Group and have been invited to join.</string>
+			<string>%1$d membri nu au putut fi adăugați noului grup și au fost invitați să se alăture.</string>
 			<key>other</key>
-			<string>%1$d members couldn’t be added to the New Group and have been invited to join.</string>
+			<string>%1$d de membri nu au putut fi adăugați noului grup și au fost invitați să se alăture.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_%d</key>
@@ -854,11 +854,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Acest grup nu poate fi creat deoarece 1 membru folosește o versiune Signal învechită. Poți crea un grup de tip nou cu acesta, după ce își actualizează Signal, sau elimină-l înainte de a crea grupul. %2$@</string>
 			<key>few</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Acest grup nu poate fi creat deoarece %1$d membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul. %2$@</string>
 			<key>other</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group. %2$@</string>
+			<string>Acest grup nu poate fi creat deoarece %1$d de membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul. %2$@</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_CREATION_ERROR_ALERT_TITLE_%d</key>
@@ -872,11 +872,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>This group cannot be created because 1 member is using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Acest grup nu poate fi creat deoarece 1 membru folosește o versiune Signal învechită. Poți crea un grup de tip nou cu acesta, după ce își actualizează Signal, sau elimină-l înainte de a crea grupul.</string>
 			<key>few</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Acest grup nu poate fi creat deoarece %1$d membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul.</string>
 			<key>other</key>
-			<string>This group cannot be created because %1$d members are using an old version of Signal. You can create a New Style Group with them after they update Signal, or remove them before creating the group.</string>
+			<string>Acest grup nu poate fi creat deoarece %1$d de membri folosesc o versiune Signal învechită. Poți crea un grup de tip nou cu aceștia, după ce își actualizează Signal, sau elimină-i înainte de a crea grupul.</string>
 		</dict>
 	</dict>
 	<key>GROUPS_LEGACY_GROUP_DROPPED_MEMBERS_BANNER_%d</key>
@@ -890,11 +890,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 member couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>1 membru nu a putut fi adăugat noului grup. Vrei să-l adaugi acum?</string>
 			<key>few</key>
-			<string>%1$d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>%1$d membri nu au putut fi adăugați noului grup. Vrei să-i adaugi acum?</string>
 			<key>other</key>
-			<string>%1$d members couldn’t be re-added to the New Group. Do you want to add them now?</string>
+			<string>%1$d de membri nu au putut fi adăugați noului grup. Vrei să-i adaugi acum?</string>
 		</dict>
 	</dict>
 	<key>GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d</key>
@@ -908,11 +908,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Signal groups perform best with 1 member or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Grupurile Signal funcționează cel mai bine cu 1 membru sau mai puțin. Adăugarea mai multor membri va cauza întârzieri la trimiterea și primirea mesajelor.</string>
 			<key>few</key>
-			<string>Signal groups perform best with %1$d members or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Grupurile Signal funcționează cel mai bine cu %1$d membri sau mai puțin. Adăugarea mai multor membri va cauza întârzieri la trimiterea și primirea mesajelor.</string>
 			<key>other</key>
-			<string>Signal groups perform best with %1$d members or less. Adding more members will cause delays sending and receiving messages.</string>
+			<string>Grupurile Signal funcționează cel mai bine cu %1$d de membri sau mai puțin. Adăugarea mai multor membri va cauza întârzieri la trimiterea și primirea mesajelor.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -926,11 +926,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t share more than 1 item.</string>
+			<string>Nu poți distribui mai mult de 1 element.</string>
 			<key>few</key>
-			<string>You can’t share more than %1$d items.</string>
+			<string>Nu poți distribui mai mult de %1$d elemente.</string>
 			<key>other</key>
-			<string>You can’t share more than %1$d items.</string>
+			<string>Nu poți distribui mai mult de %1$d de elemente.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -962,11 +962,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Delete 1 Message</string>
+			<string>Șterge 1 mesaj</string>
 			<key>few</key>
-			<string>Delete %1$d Messages</string>
+			<string>Șterge %1$d mesaje</string>
 			<key>other</key>
-			<string>Delete %1$d Messages</string>
+			<string>Șterge %1$d de mesaje</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d</key>
@@ -980,11 +980,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Photo</string>
+			<string>1 poză</string>
 			<key>few</key>
-			<string>%1$d Photos</string>
+			<string>%1$d poze</string>
 			<key>other</key>
-			<string>%1$d Photos</string>
+			<string>%1$d de poze</string>
 		</dict>
 	</dict>
 	<key>MEDIA_GALLERY_ITEM_MIXED_COUNT_%d</key>
@@ -1034,11 +1034,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You Blocked 1 Member of This Group</string>
+			<string>Ai blocat 1 membru al acestui grup</string>
 			<key>few</key>
-			<string>You Blocked %1$d Members of This Group</string>
+			<string>Ai blocat %1$d membri ai acestui grup</string>
 			<key>other</key>
-			<string>You Blocked %1$d Members of This Group</string>
+			<string>Ai blocat %1$d de membri ai acestui grup</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d</key>
@@ -1052,11 +1052,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 Exclusă</string>
 			<key>few</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d Excluse</string>
 			<key>other</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d Exclus</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1070,7 +1070,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d spectator</string>
+			<string>1 Spectator</string>
 			<key>few</key>
 			<string>%1$d Spectatori</string>
 			<key>other</key>
@@ -1142,11 +1142,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ invited 1 person</string>
+			<string>%2$@ a invitat o persoană</string>
 			<key>few</key>
-			<string>%2$@ invited %1$d people</string>
+			<string>%2$@ a invitat %1$d persoane</string>
 			<key>other</key>
-			<string>%2$@ invited %1$d people</string>
+			<string>%2$@ a invitat %1$d de persoane</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REQUEST_BANNER_%d</key>
@@ -1178,11 +1178,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke invalid invite</string>
+			<string>Anulează o invitație nevalidă</string>
 			<key>few</key>
-			<string>Revoke %1$d invalid invites</string>
+			<string>Anulează %1$d invitații nevalide</string>
 			<key>other</key>
-			<string>Revoke %1$d invalid invites</string>
+			<string>Anulează %1$d de invitații nevalide</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d</key>
@@ -1196,11 +1196,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke group invite sent by “%2$@”?</string>
+			<string>Anulezi invitația de grup trimisă de „%2$@”?</string>
 			<key>few</key>
-			<string>Revoke %1$d invites sent by “%2$@”?</string>
+			<string>Anulezi %1$d invitații trimise de „%2$@”?</string>
 			<key>other</key>
-			<string>Revoke %1$d invites sent by “%2$@”?</string>
+			<string>Anulezi %1$d de invitații trimise de „%2$@”?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1232,11 +1232,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
+			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie mâine.</string>
 			<key>few</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
+			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în %1$d zile.</string>
 			<key>other</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %1$d days.</string>
+			<string>Îți vom reaminti mai târziu. Crearea unui PIN va deveni obligatorie în %1$d de zile.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
@@ -1250,11 +1250,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Mai ai o încercare rămasă. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
 			<key>few</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Mai ai %1$d încercări rămase. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
 			<key>other</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.</string>
+			<string>Mai ai %1$d de încercări rămasă. Dacă rămâi fără încercări, poți crea un PIN nou. Poți să te înregistrezi și să-ți utilizezi contul, dar vei pierde unele setări salvate, cum ar fi informațiile despre profil.</string>
 		</dict>
 	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_%d</key>
@@ -1268,11 +1268,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>Mai ai o încercare rămasă. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 			<key>few</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>Mai ai %1$d încercări rămase. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 			<key>other</key>
-			<string>You have %1$d attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.</string>
+			<string>Mai ai %1$d de încercări rămase. Dacă rămâi fără încercări, contul tău va fi blocat. După 7 zile de inactivitate, te poți înregistra din nou fără PIN. Contul tău va fi eliminat și tot conținutul acestuia șters.</string>
 		</dict>
 	</dict>
 	<key>STORY_REPLIES_COUNT_%d</key>
@@ -1286,11 +1286,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; răspuns</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; răspunsuri</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; de răspunsuri</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1304,7 +1304,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d spectator</string>
+			<string>1 Spectator</string>
 			<key>few</key>
 			<string>%1$d Spectatori</string>
 			<key>other</key>
@@ -1322,11 +1322,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 Exclus</string>
 			<key>few</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d Excluse</string>
 			<key>other</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d de Excluse</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1340,11 +1340,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Se trimite...</string>
 			<key>few</key>
-			<string>Sending %1$d...</string>
+			<string>Se trimit %1$d...</string>
 			<key>other</key>
-			<string>Sending %1$d...</string>
+			<string>Se trimit %1$d...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1358,11 +1358,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; vizualizare</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vizualizări</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; de vizualizări</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
@@ -1376,11 +1376,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; vizualizare</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; vizualizări</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; de vizualizări</string>
 		</dict>
 		<key>replies</key>
 		<dict>
@@ -1389,11 +1389,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; răspuns</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; răspunsuri</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; de răspunsuri</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>
@@ -1407,11 +1407,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Member of %2$@, %3$@, and 1 additional group</string>
+			<string>Membru al %2$@, %3$@, și al încă unui grup</string>
 			<key>few</key>
-			<string>Member of %2$@, %3$@, and %1$d additional groups</string>
+			<string>Membru al %2$@, %3$@, și %1$d grupuri adiționale</string>
 			<key>other</key>
-			<string>Member of %2$@, %3$@, and %1$d additional groups</string>
+			<string>Membru al %2$@, %3$@, și %1$d de grupuri adiționale</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_DAYS_%d</key>
@@ -1443,11 +1443,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1d</string>
+			<string>1z</string>
 			<key>few</key>
-			<string>%1$dd</string>
+			<string>%1$dz</string>
 			<key>other</key>
-			<string>%1$dd</string>
+			<string>%1$dz</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_HOURS_%d</key>
@@ -1587,11 +1587,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1w</string>
+			<string>%1$dsăpt</string>
 			<key>few</key>
-			<string>%1$dw</string>
+			<string>%1$dsăpt</string>
 			<key>other</key>
-			<string>%1$dw</string>
+			<string>%1$dsăpt</string>
 		</dict>
 	</dict>
 	<key>TIME_AMOUNT_YEARS_%d</key>
@@ -1605,11 +1605,11 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 year</string>
+			<string>1 an</string>
 			<key>few</key>
-			<string>%1$d years</string>
+			<string>%1$d ani</string>
 			<key>other</key>
-			<string>%1$d years</string>
+			<string>%1$d de ani</string>
 		</dict>
 	</dict>
 </dict>

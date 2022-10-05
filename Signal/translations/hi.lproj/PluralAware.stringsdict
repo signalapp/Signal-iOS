@@ -952,7 +952,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d व्यूअर</string>
+			<string>1 व्यूअर</string>
 			<key>other</key>
 			<string>%1$d Viewers</string>
 		</dict>
@@ -1160,7 +1160,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%1$d व्यूअर</string>
+			<string>1 व्यूअर</string>
 			<key>other</key>
 			<string>%1$d Viewers</string>
 		</dict>
@@ -1192,9 +1192,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>भेजा जा रहा है…</string>
+			<string>भेजी जा रही है...</string>
 			<key>other</key>
-			<string>%1$d भेजा जा रहा है…</string>
+			<string>%1$d भेजी जा रही है…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

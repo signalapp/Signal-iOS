@@ -536,15 +536,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Gach Teagmhálaí Signal · 1 Amharcóir</string>
 			<key>two</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
 			<key>few</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
 			<key>many</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Gach Teagmhálaí Signal · %1$d nAmharcóir</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Gach Teagmhálaí Signal · %1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -558,15 +558,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Gach Teagmhálaí Signal · 1 as an áireamh</string>
 			<key>two</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
 			<key>few</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
 			<key>many</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Gach Teagmhálaí Signal · %1$d as an áireamh</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -580,15 +580,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Ná Comhroinn Ach Le · 1 Amharcóir</string>
 			<key>two</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
 			<key>few</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
 			<key>many</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Ná Comhroinn Ach Le · %1$d nAmharcóir</string>
 			<key>other</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Ná Comhroinn Ach Le · %1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -1284,15 +1284,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>1 as an áireamh</string>
 			<key>two</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d as an áireamh</string>
 			<key>few</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d as an áireamh</string>
 			<key>many</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d as an áireamh</string>
 			<key>other</key>
-			<string>%1$d Excluded</string>
+			<string>%1$d as an áireamh</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1306,15 +1306,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 Amharcóir</string>
 			<key>two</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Amharcóir</string>
 			<key>few</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Amharcóir</string>
 			<key>many</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d nAmharcóir</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1592,15 +1592,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Viewer</string>
+			<string>1 Amharcóir</string>
 			<key>two</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Amharcóir</string>
 			<key>few</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Amharcóir</string>
 			<key>many</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d nAmharcóir</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>%1$d Amharcóir</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1636,15 +1636,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Ceann á sheoladh...</string>
 			<key>two</key>
-			<string>Sending %1$d...</string>
+			<string>%1$d cheann á seoladh...</string>
 			<key>few</key>
-			<string>Sending %1$d...</string>
+			<string>%1$d cinn á seoladh...</string>
 			<key>many</key>
-			<string>Sending %1$d...</string>
+			<string>%1$d gcinn á seoladh...</string>
 			<key>other</key>
-			<string>Sending %1$d...</string>
+			<string>%1$d ceann á seoladh...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

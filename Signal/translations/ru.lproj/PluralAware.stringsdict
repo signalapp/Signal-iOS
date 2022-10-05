@@ -193,13 +193,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t select more than 1 chat.</string>
+			<string>Вы не можете выбрать более чем 1 чат.</string>
 			<key>few</key>
-			<string>You can’t select more than %1$d chats.</string>
+			<string>Вы не можете выбрать более чем %1$d чата.</string>
 			<key>many</key>
-			<string>You can’t select more than %1$d chats.</string>
+			<string>Вы не можете выбрать более чем %1$d чатов.</string>
 			<key>other</key>
-			<string>You can’t select more than %1$d chats.</string>
+			<string>Вы не можете выбрать более чем %1$d чата.</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_SEARCH_RESULTS_%d_%d</key>
@@ -488,13 +488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Viewer</string>
+			<string>Все контакты Signal · 1 зритель</string>
 			<key>few</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Все контакты Signal · %1$d зрителя</string>
 			<key>many</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Все контакты Signal · %1$d зрителей</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Viewers</string>
+			<string>Все контакты Signal · %1$d зрителя</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -508,13 +508,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>All Signal Connections · 1 Excluded</string>
+			<string>Все контакты Signal · Исключено: 1</string>
 			<key>few</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Все контакты Signal · Исключено: %1$d</string>
 			<key>many</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Все контакты Signal · Исключено: %1$d</string>
 			<key>other</key>
-			<string>All Signal Connections · %1$d Excluded</string>
+			<string>Все контакты Signal · Исключено: %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ONLY_%d</key>
@@ -528,13 +528,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Only Share With · 1 Viewer</string>
+			<string>Делиться только с · 1 зрителем</string>
 			<key>few</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Делиться только с · %1$d зрителями</string>
 			<key>many</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Делиться только с · %1$d зрителями</string>
 			<key>other</key>
-			<string>Only Share With · %1$d Viewers</string>
+			<string>Делиться только с · %1$d зрителя</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -608,13 +608,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Ringing %2$@, %3$@, and 1 other…</string>
+			<string>Звоним %2$@, %3$@ и ещё 1 человеку...</string>
 			<key>few</key>
-			<string>Ringing %2$@, %3$@, and %1$d others…</string>
+			<string>Звоним %2$@, %3$@ и ещё %1$d людям</string>
 			<key>many</key>
-			<string>Ringing %2$@, %3$@, and %1$d others…</string>
+			<string>Звоним %2$@, %3$@ и ещё %1$d людям</string>
 			<key>other</key>
-			<string>Ringing %2$@, %3$@, and %1$d others…</string>
+			<string>Звоним %2$@, %3$@ и ещё %1$d человека...</string>
 		</dict>
 	</dict>
 	<key>GROUP_CALL_MANY_PEOPLE_HERE_%d</key>
@@ -888,13 +888,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%2$@ requested and canceled their request to join via the group link.</string>
+			<string>%2$@ запросил(-а) и отменил(-а) свой запрос на присоединение к группе по ссылке.</string>
 			<key>few</key>
-			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
+			<string>%2$@ запросил(-а) и отменил(-а) %1$d запроса на присоединение к группе по ссылке.</string>
 			<key>many</key>
-			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
+			<string>%2$@ запросил(-а) и отменил(-а) %1$d запросов на присоединение к группе по ссылке.</string>
 			<key>other</key>
-			<string>%2$@ requested and canceled %1$d requests to join via the group link.</string>
+			<string>%2$@ запросил(-а) и отменил(-а) %1$d запроса на присоединение к группе по ссылке.</string>
 		</dict>
 	</dict>
 	<key>GROUP_WAS_MIGRATED_USERS_DROPPED_%d</key>
@@ -1028,13 +1028,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>You can’t share more than 1 item.</string>
+			<string>Вы не можете поделиться более чем 1 элементом.</string>
 			<key>few</key>
-			<string>You can’t share more than %1$d items.</string>
+			<string>Вы не можете поделиться более чем %1$d элементами.</string>
 			<key>many</key>
-			<string>You can’t share more than %1$d items.</string>
+			<string>Вы не можете поделиться более чем %1$d элементами.</string>
 			<key>other</key>
-			<string>You can’t share more than %1$d items.</string>
+			<string>Вы не можете поделиться более чем %1$d элемента.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1168,13 +1168,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>Исключено: 1</string>
 			<key>few</key>
-			<string>%1$d Excluded</string>
+			<string>Исключено: %1$d</string>
 			<key>many</key>
-			<string>%1$d Excluded</string>
+			<string>Исключено: %1$d</string>
 			<key>other</key>
-			<string>%1$d Excluded</string>
+			<string>Исключено: %1$d</string>
 		</dict>
 	</dict>
 	<key>MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d</key>
@@ -1328,13 +1328,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Revoke group invite sent by “%2$@”?</string>
+			<string>Отозвать приглашение в группу, которое отправил(-а) «%2$@»?</string>
 			<key>few</key>
-			<string>Revoke %1$d invites sent by “%2$@”?</string>
+			<string>Отозвать %1$d приглашения, которые отправил(-а) «%2$@»?</string>
 			<key>many</key>
-			<string>Revoke %1$d invites sent by “%2$@”?</string>
+			<string>Отозвать %1$d приглашений, которые отправил(-а) «%2$@»?</string>
 			<key>other</key>
-			<string>Revoke %1$d invites sent by “%2$@”?</string>
+			<string>Отозвать %1$d приглашения, которые отправил(-а) «%2$@»?</string>
 		</dict>
 	</dict>
 	<key>PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d</key>
@@ -1428,13 +1428,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; ответ</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; ответа</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; ответов</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; ответа</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1468,13 +1468,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>1 Excluded</string>
+			<string>Исключено: 1</string>
 			<key>few</key>
-			<string>%1$d Excluded</string>
+			<string>Исключено: %1$d</string>
 			<key>many</key>
-			<string>%1$d Excluded</string>
+			<string>Исключено: %1$d</string>
 			<key>other</key>
-			<string>%1$d Excluded</string>
+			<string>Исключено: %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_SENDING_%d</key>
@@ -1488,13 +1488,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sending...</string>
+			<string>Отправляем…</string>
 			<key>few</key>
-			<string>Sending %1$d...</string>
+			<string>Отправляем %1$d…</string>
 			<key>many</key>
-			<string>Sending %1$d...</string>
+			<string>Отправляем %1$d…</string>
 			<key>other</key>
-			<string>Sending %1$d...</string>
+			<string>Отправляем %1$d…</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>
@@ -1508,13 +1508,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; просмотр</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; просмотра</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; просмотров</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; просмотра</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_AND_REPLIES_COUNT_%d_%d</key>
@@ -1528,13 +1528,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; view</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; просмотр</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; просмотра</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; просмотров</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%1$d&lt;/bold&gt; views</string>
+			<string>&lt;bold&gt;%1$d&lt;/bold&gt; просмотра</string>
 		</dict>
 		<key>replies</key>
 		<dict>
@@ -1543,13 +1543,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>&lt;bold&gt;1&lt;/bold&gt; reply</string>
+			<string>&lt;bold&gt;1&lt;/bold&gt; ответ</string>
 			<key>few</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; ответа</string>
 			<key>many</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; ответов</string>
 			<key>other</key>
-			<string>&lt;bold&gt;%2$d&lt;/bold&gt; replies</string>
+			<string>&lt;bold&gt;%2$d&lt;/bold&gt; ответа</string>
 		</dict>
 	</dict>
 	<key>THREAD_DETAILS_MORE_MUTUAL_GROUP_%d</key>

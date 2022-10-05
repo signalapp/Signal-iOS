@@ -392,9 +392,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-contacten · 1 weergave</string>
+			<string>Alle Signal-contacten · 1 persoon</string>
 			<key>other</key>
-			<string>Alle Signal-contacten · %1$d weergaven</string>
+			<string>Alle Signal-contacten · %1$d personen</string>
 		</dict>
 	</dict>
 	<key>MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d</key>
@@ -408,7 +408,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alle Signal-contacten · verborgen voor %1$d</string>
+			<string>Alle Signal-contacten · verborgen voor 1</string>
 			<key>other</key>
 			<string>Alle Signal-contacten · verborgen voor %1$d</string>
 		</dict>
@@ -424,9 +424,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Alleen delen met · 1 weergave</string>
+			<string>Alleen delen met · 1 persoon</string>
 			<key>other</key>
-			<string>Alleen delen met · %1$d weergaven</string>
+			<string>Alleen delen met · %1$d personen</string>
 		</dict>
 	</dict>
 	<key>GROUP_STORY_VIEWERS_%d</key>
@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Door %1$d persoon gezien</string>
+			<string>Door 1 persoon gezien</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Door %1$d persoon gezien</string>
+			<string>Door 1 persoon gezien</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>Door %1$d personen gezien</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1194,7 +1194,7 @@
 			<key>one</key>
 			<string>Versturen...</string>
 			<key>other</key>
-			<string>%1$d versturen...</string>
+			<string>%1$d aan het versturen...</string>
 		</dict>
 	</dict>
 	<key>STORY_VIEWS_COUNT_%d</key>

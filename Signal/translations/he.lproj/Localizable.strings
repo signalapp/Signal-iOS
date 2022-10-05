@@ -185,7 +185,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
-"APPLICATION_SHORTCUT_NEW_MESSAGE" = "New Message";
+"APPLICATION_SHORTCUT_NEW_MESSAGE" = "הודעה חדשה";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "ארכב";
@@ -1721,7 +1721,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "הצג תגים בפרופיל שלי";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Do you want to use this proxy address?";
+"DO_YOU_WANT_TO_USE_PROXY" = "האם אתה רוצה להשתמש בכתובת יפוי כוח זו?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "מיקום עקיפת צנזורה";
@@ -1835,7 +1835,7 @@
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "נהל מינוי";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
-"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Monthly Donation to Signal";
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "תרומה חודשית ל–Signal";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "עוד";
@@ -3188,7 +3188,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "קובץ שמע בלתי תקף.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "כתובת הפרוקסי שהכנסת אינה חוקית, יש לבדוק את הכתובת ולנסות שוב.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "אתה יכול לאפשר גישה אל אנשי קשר ביישום הגדרות של iOS כדי להזמין את חבריך להצטרף אל Signal.";
@@ -3413,7 +3413,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "פתח קישור";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "פתיחת פרוקסי של Signal";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "הצג חבילת מדבקות";
@@ -3740,10 +3740,10 @@
 "MY_STORY_NAME" = "הסטורי שלי";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choose who can view your story";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "אפשר לבחור מי יכול לצפות בסטורי שלך";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "My Story Privacy";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "פרטיות הסטורי שלי";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "הסטורי שלי";
@@ -4687,8 +4687,8 @@
 /* Button to delete the story on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "מחיקת סטורי פרטי";
 
-/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "בטוח שמתחשק לך למחוק את הסטורי הזה?";
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "הסר";
@@ -4778,19 +4778,19 @@
 "PROFILE_VIEW_TITLE" = "פרופיל";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "כתובת יפוי כוח";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "You are connected to the proxy. You can turn the proxy off at any time from Settings.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "אתה מחובר אל יפוי הכוח. אתה יכול לכבות את יפוי הכוח בכל זמן מתוך ההגדרות.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "לא הצלחנו להתחבר לפרוקסי. יש לבדוק את כתובת הפרוקסי ולנסות שוב.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "הכנס כתובת יפוי כוח";
 
 /* Title for the signal proxy settings */
-"PROXY_SETTINGS_TITLE" = "Proxy";
+"PROXY_SETTINGS_TITLE" = "יפוי כוח";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "סמן כנקרא";
@@ -5927,7 +5927,7 @@
 "SETTINGS_PINS_TITLE" = "PIN של Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "הגדרות של עקיפת צנזורה, שיחות ממסר, ושולח אטום.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "מתקדם";
@@ -6200,7 +6200,7 @@
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "להסתיר סטורי?";
 
 /* Short context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION_SHORT" = "Hide";
+"STORIES_HIDE_STORY_ACTION_SHORT" = "הסתר";
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "סטורי מוסתר";
@@ -6244,8 +6244,11 @@
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "פרטיות של סטורי";
 
-/* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+/* Title for the action sheet confirming you want to turn off and delete all stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+
+/* Button to turn off and delete stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "לאחר כיבוי סטוריז, לא תהיה לך אפשרות לשתף או לראות סטוריז יותר.";
@@ -6269,7 +6272,7 @@
 "STORIES_UNHIDE_STORY_ACTION" = "ביטול הסתרת סטורי";
 
 /* Short context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Unhide";
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "ביטול הסתרה";
 
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "הסתרת סטורי בוטלה";
@@ -6332,7 +6335,7 @@
 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "לא הצלחנו לשלוח את הסטורי. כדאי לבדוק את החיבור ולנסות שוב.";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
-"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "This story couldn’t be sent to some people. Check your connection and try again";
+"STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "לא הצלחנו לשלוח את הסטורי הזה לחלק מהאנשים. כדא לבדוק את החיבור שלך ולנסות שוב";
 
 /* The title for the 'select connections for story' view. */
 "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "שיתוף רק עם...";
@@ -6347,25 +6350,44 @@
 "STORY_SEND_FAILED_RETRY" = "לחץ כדי לנסות שוב";
 
 /* Text indicating that the story send has failed */
-"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "Send failed. Tap to retry";
+"STORY_SEND_FAILED_TAP_FOR_DETAILS" = "השליחה נכשלה. יש ללחוץ כדי לנסות שוב";
 
 /* Text indicating that the story send has partially failed */
 "STORY_SEND_PARTIALLY_FAILED" = "נשלח חלקית";
 
 /* Text indicating that the story send has partially failed */
-"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "Partially sent. Tap for details";
+"STORY_SEND_PARTIALLY_FAILED_TAP_FOR_DETAILS" = "נשלח חלקית. אפשר ללחוץ לפרטים";
 
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "שולח…";
 
-/* Section footer for the 'viewers' section on the 'story settings' view */
+/* First bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+
+/* Second bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+
+/* Third bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+
+/* Footer for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+
+/* Header for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+
+/* Section footer for the 'viewers' section on the 'story settings' view
+   Section footer for the 'viewers' section on the 'story settings' view. */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
+/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
-"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Videos sent to Stories will be trimmed to %1$ds clips and sent as multiple stories.";
+"STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "סרטונים שנשלחים לסטוריז ייחתכו לקליפים של %1$d שניות ויישלחו כסטוריז נפרדים.";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
 "STORY_VIEWER_ONBOARDING_1" = "אפשר ללחוץ כדי להתקדם";
@@ -6722,10 +6744,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "תמונת הקבוצה לא יכלה להתעדכן. בדוק את חיבור האינטרנט שלך ונסה שוב.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "השתמש ביפוי כוח";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "יש להשתמש בפרוקסי רק אם אין לך אפשרות להתחבר ל–Signal דרך נתונים סלולריים או Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "שמות משתמש ב־Signal הם רשותיים. אם אתה בוחר ליצור שם משתמש, משתמשי Signal אחרים יוכלו למצוא אותך לפי שם משתמש זה וליצור איתך קשר בלי לדעת את מספר הטלפון שלך.";

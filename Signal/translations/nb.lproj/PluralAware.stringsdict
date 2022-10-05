@@ -952,9 +952,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sett av %1$d</string>
+			<string>Sett av 1</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>Sett av %1$d</string>
 		</dict>
 	</dict>
 	<key>NEW_GROUP_MEMBERS_VIEW_TITLE_%d</key>
@@ -1160,9 +1160,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sett av %1$d</string>
+			<string>Sett av 1</string>
 			<key>other</key>
-			<string>%1$d Viewers</string>
+			<string>Sett av %1$d</string>
 		</dict>
 	</dict>
 	<key>STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d</key>
@@ -1192,7 +1192,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sender ...</string>
+			<string>Sender ...</string>
 			<key>other</key>
 			<string>Sender %1$d ...</string>
 		</dict>

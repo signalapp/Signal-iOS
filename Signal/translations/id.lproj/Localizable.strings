@@ -185,7 +185,7 @@
 "APPLICATION_NAME" = "Signal";
 
 /* On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings. */
-"APPLICATION_SHORTCUT_NEW_MESSAGE" = "New Message";
+"APPLICATION_SHORTCUT_NEW_MESSAGE" = "Pesan Baru";
 
 /* Label for the archive button for conversations list view */
 "ARCHIVE_ACTION" = "Arsip";
@@ -1721,7 +1721,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "Tampilkan lencana pada profil";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "Do you want to use this proxy address?";
+"DO_YOU_WANT_TO_USE_PROXY" = "Apakah Anda ingin menggunakan alamat proksi ini?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lokasi penghindar penyensoran";
@@ -1835,7 +1835,7 @@
 "DONATION_VIEW_MANAGE_SUBSCRIPTION" = "Kelola Langganan";
 
 /* Text describing to the user that they're going to pay a monthly donation to Signal */
-"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Monthly Donation to Signal";
+"DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL" = "Donasi Bulanan ke Signal";
 
 /* Title for the 'more' section on the donation screen */
 "DONATION_VIEW_MORE_SECTION_TITLE" = "Selanjutnya";
@@ -2780,16 +2780,16 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ sampai %2$@";
 
 /* Button to delete the story on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Remove Group Story";
+"GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Hapus Cerita Grup";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION" = "Yakin ingin menghapus cerita ini?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Members of the group chat “%1$@” can view and reply to this story. You can update the membership for this chat in the group.";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "Anggota dari grup obrolan “%1$@” bisa melihat dan membalas cerita ini. Anda dapat memperbarui keanggotaan untuk obrolan ini dalam grup.";
 
 /* Section header for the 'viewers' section on the 'group story settings' view */
-"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Siapa yang Dapat Melihat Cerita Ini";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Group dimutakhirkan";
@@ -3188,7 +3188,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Berkas audio tidak valid.";
 
 /* The provided proxy host address is not valid */
-"INVALID_PROXY_HOST_ERROR" = "The proxy address you have entered is invalid, please check the address and try again.";
+"INVALID_PROXY_HOST_ERROR" = "Alamat proksi yang Anda masukkan tidak valid, periksa alamat dan coba lagi.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Anda dapat mengaktifkan akses kontak pada Pengaturan iOS untuk mengundang teman-teman Anda bergabung menggunakan Signal.";
@@ -3413,7 +3413,7 @@
 "MESSAGE_ACTION_LINK_OPEN_LINK" = "Buka Tautan";
 
 /* Label for button to open a signal proxy. */
-"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Open Signal Proxy";
+"MESSAGE_ACTION_LINK_OPEN_PROXY" = "Buka Proksi Signal";
 
 /* Label for button to open a sticker pack. */
 "MESSAGE_ACTION_LINK_OPEN_STICKER_PACK" = "Lihat Paket Stiker";
@@ -3725,7 +3725,7 @@
 "MY_STORIES_NO_STORIES" = "Pembaruan pada cerita Anda akan muncul di sini.";
 
 /* Title for the visibility option */
-"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "All Except...";
+"MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE" = "Semua Kecuali…";
 
 /* Title for the visibility option */
 "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE" = "Semua Koneksi Signal";
@@ -3740,10 +3740,10 @@
 "MY_STORY_NAME" = "Cerita saya";
 
 /* Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings. */
-"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Choose who can view your story";
+"MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE" = "Pilih siapa yang bisa melihat cerita Anda";
 
 /* Title for the my story settings sheet */
-"MY_STORY_SETTINGS_SHEET_TITLE" = "My Story Privacy";
+"MY_STORY_SETTINGS_SHEET_TITLE" = "Privasi Cerita Saya";
 
 /* Title for the my story settings view */
 "MY_STORY_SETTINGS_TITLE" = "Cerita saya";
@@ -3812,7 +3812,7 @@
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Pilih Anggota";
 
 /* notification title. Embeds {{ %1%@ author name, %2%@ group name}} */
-"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ to %2$@ · Story";
+"NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE" = "%1$@ ke %2$@ · Cerita";
 
 /* Title for the 'new group story' view */
 "NEW_GROUP_STORY_VIEW_CONTROLLER_TITLE" = "Pilih Grup";
@@ -3848,7 +3848,7 @@
 "NEW_PRIVATE_STORY_VIEWERS_HEADER" = "Penonton";
 
 /* table section header button to add a new story */
-"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Cerita baru";
+"NEW_STORY_HEADER_VIEW_ADD_NEW_STORY_BUTTON" = "Cerita Baru";
 
 /* Subtitle for create group story row on the 'new story sheet' */
 "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE" = "Bagikan grup yang sudah ada";
@@ -4687,14 +4687,14 @@
 /* Button to delete the story on the 'private story settings' view */
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "Hapus Cerita Privat";
 
-/* Action sheet title confirming deletion of a private story on the 'private story settings' view */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION" = "Yakin ingin menghapus cerita ini?";
+/* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "Hapus";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "This person will no longer be able to view this story.";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "Orang ini tidak akan bisa lagi melihat cerita ini.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "Hapus %1$@?";
@@ -4778,19 +4778,19 @@
 "PROFILE_VIEW_TITLE" = "Profil";
 
 /* The title for the address of the signal proxy */
-"PROXY_ADDRESS" = "Proxy Address";
+"PROXY_ADDRESS" = "Alamat proksi";
 
 /* The provided proxy connected successfully */
-"PROXY_CONNECTED_SUCCESSFULLY" = "You are connected to the proxy. You can turn the proxy off at any time from Settings.";
+"PROXY_CONNECTED_SUCCESSFULLY" = "Anda tersambung ke proksi. Anda dapat mematikannya kapanpun dari Pengaturan.";
 
 /* The provided proxy couldn't connect */
-"PROXY_FAILED_TO_CONNECT" = "Couldn’t connect to the proxy. Check the proxy address and try again.";
+"PROXY_FAILED_TO_CONNECT" = "Tidak dapat tersambung ke proksi. Periksa alamat proksi dan coba lagi.";
 
 /* Placeholder text for signal proxy host */
-"PROXY_PLACEHOLDER" = "Enter Proxy Address";
+"PROXY_PLACEHOLDER" = "Masukkan alamat proxy";
 
 /* Title for the signal proxy settings */
-"PROXY_SETTINGS_TITLE" = "Proxy";
+"PROXY_SETTINGS_TITLE" = "Proksi";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Tandai telah Dibaca";
@@ -5927,7 +5927,7 @@
 "SETTINGS_PINS_TITLE" = "PIN Signal";
 
 /* Footer for table section */
-"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Censorship circumvention, proxy, relay calls, and sealed sender settings.";
+"SETTINGS_PRIVACY_ADVANCED_FOOTER" = "Pengaturan pengelakan sensor, proksi, relay panggilan, dan pengirim tersembunyi.";
 
 /* Title for the advanced privacy settings */
 "SETTINGS_PRIVACY_ADVANCED_TITLE" = "Lanjutan";
@@ -6011,7 +6011,7 @@
 "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER" = "Berikan iOS akses ke kontak dan chat Signal untuk fitur-fitur seperti berbagi saran dan pemberitahuan.";
 
 /* Explanation for the 'stories' privacy settings. */
-"SETTINGS_STORIES_FOOTER" = "Manage your stories and who can view them.";
+"SETTINGS_STORIES_FOOTER" = "Kelola cerita Anda dan siapa yang bisa melihatnya.";
 
 /* Label for the stories section of the settings view */
 "SETTINGS_STORIES_TITLE" = "Cerita";
@@ -6185,7 +6185,7 @@
 "STORIES_GO_TO_CHAT_ACTION" = "Buka Percakapan";
 
 /* Text indicating you can't reply to a group story because you're not a member of the group */
-"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "You can’t reply to this story because you’re no longer a member of this group.";
+"STORIES_GROUP_REPLY_NOT_A_MEMBER" = "Anda tidak dapat membalas cerita ini karena Anda bukan lagi anggota grup ini.";
 
 /* Header for the hidden stories section of the stories list */
 "STORIES_HIDDEN_SECTION_HEADER" = "Cerita Tersembunyi";
@@ -6200,7 +6200,7 @@
 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE" = "Sembunyikan Cerita?";
 
 /* Short context menu action to hide the selected story */
-"STORIES_HIDE_STORY_ACTION_SHORT" = "Hide";
+"STORIES_HIDE_STORY_ACTION_SHORT" = "Sembunyikan";
 
 /* Toast shown when a story is successfuly hidden */
 "STORIES_HIDE_STORY_CONFIRMATION_TOAST" = "Cerita Disembunyikan";
@@ -6236,28 +6236,31 @@
 "STORIES_SAVE_STORY_ACTION" = "Simpan";
 
 /* Footer for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Cerita otomatis dihapus setelah 24 jam. Pilih siapa yang bisa melihat cerita Anda atau buat cerita baru dengan penonton atau grup spesifik.";
+"STORIES_SETTINGS_MY_STORIES_FOOTER" = "Cerita otomatis dihapus setelah 24 jam. Pilih siapa yang bisa melihat cerita Anda atau buat cerita baru dengan grup atau penonton spesifik.";
 
 /* Header for the 'My Stories' section of the stories settings */
-"STORIES_SETTINGS_MY_STORIES_HEADER" = "Cerita saya";
+"STORIES_SETTINGS_MY_STORIES_HEADER" = "Cerita Saya";
 
 /* Title for the story privacy settings view */
 "STORIES_SETTINGS_TITLE" = "Privasi Cerita";
 
-/* Title for the action sheet confirming you want to turn off stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_TITLE" = "You will no longer be able to share or view stories. Any stories you have recently shared will still be visible by others until they expire.";
+/* Title for the action sheet confirming you want to turn off and delete all stories */
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+
+/* Button to turn off and delete stories on the story privacy settings view */
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
 
 /* Footer for the 'turn off' section of the stories settings */
-"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Jika Anda menonaktifkan cerita, Anda akan tidak bisa lagi membagikan atau melihat cerita.";
+"STORIES_SETTINGS_TURN_OFF_FOOTER" = "Jika Anda menonaktifkan cerita, Anda tidak akan bisa lagi membagikan atau melihat cerita.";
 
 /* Button to turn off stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Turn Off Stories";
+"STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON" = "Nonaktifkan Cerita";
 
 /* Footer for the 'turn on' section of the stories settings */
-"STORIES_SETTINGS_TURN_ON_FOOTER" = "Share stories and view stories from others. Stories automatically disappear after 24 hours.";
+"STORIES_SETTINGS_TURN_ON_FOOTER" = "Bagikan dan lihat cerita dari pengguna lain. Cerita otomatis dihapus setelah 24 jam.";
 
 /* Button to turn on stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Turn On Stories";
+"STORIES_SETTINGS_TURN_ON_STORIES_BUTTON" = "Aktifkan Cerita";
 
 /* Context menu action to share the selected story */
 "STORIES_SHARE_STORY_ACTION" = "Bagikan";
@@ -6269,13 +6272,13 @@
 "STORIES_UNHIDE_STORY_ACTION" = "Tampilkan Cerita";
 
 /* Short context menu action to unhide the selected story */
-"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Unhide";
+"STORIES_UNHIDE_STORY_ACTION_SHORT" = "Perlihatkan";
 
 /* Toast shown when a story is successfuly unhidden */
 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST" = "Cerita Ditampilkan";
 
 /* Text explaining that you will not see any views for your story because you have read receipts turned off */
-"STORIES_VIEWS_OFF_DESCRIPTION" = "Enable read receipts to see who’s viewed your stories.";
+"STORIES_VIEWS_OFF_DESCRIPTION" = "Aktifkan bukti pesan terbaca untuk mengetahui siapa yang melihat cerita Anda.";
 
 /* Title text for the 'views' tab on the stories views & replies sheet */
 "STORIES_VIEWS_TAB" = "Dilihat";
@@ -6284,19 +6287,19 @@
 "STORY_COMPOSER_CAMERA" = "Kamera";
 
 /* Displayed when failed to fetch link preview in Text Story composer. */
-"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Couldn't load link. Check your connection and try again.";
+"STORY_COMPOSER_LINK_PREVIEW_ERROR" = "Tidak dapat memuat tautan. Periksa koneksi Anda dan coba lagi.";
 
 /* Displayed in text story composer when user is about to attach a link with preview */
-"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Bagikan sebuah link dengan penonton cerita Anda";
+"STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER" = "Bagikan sebuah tautan kepada penonton cerita Anda";
 
 /* Placeholder text in text stories compose UI */
-"STORY_COMPOSER_TAP_ADD_TEXT" = "Ketuk untuk menambahkan text";
+"STORY_COMPOSER_TAP_ADD_TEXT" = "Ketuk untuk menambahkan teks";
 
 /* One of two possible sources when composing a new story. Displayed at the bottom in in-app camera. */
 "STORY_COMPOSER_TEXT" = "Teks";
 
 /* Placeholder text for URL input field in Text Story composer UI. */
-"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Ketik atau tempel sebuah URL";
+"STORY_COMPOSER_URL_FIELD_PLACEHOLDER" = "Ketik atau tempel URL";
 
 /* Tooltip prompting the user to visit a story link. */
 "STORY_LINK_PREVIEW_VISIT_LINK_TOOLTIP" = "Kunjungi tautan";
@@ -6308,13 +6311,13 @@
 "STORY_PRIVACY_SETTINGS" = "Privasi";
 
 /* inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}} */
-"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to your story";
+"STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT" = "Memberi tanggapan %1$@ ke cerita Anda";
 
 /* quote text for a reaction to a story. Embeds {{reaction emoji}} */
-"STORY_REACTION_QUOTE_FORMAT" = "Reacted %1$@ to a story";
+"STORY_REACTION_QUOTE_FORMAT" = "Memberi tanggapan %1$@ ke sebuah cerita";
 
 /* inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }} */
-"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Reacted %1$@ to %2$@’s story";
+"STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT" = "Memberi tanggapan %1$@ ke cerita %2$@";
 
 /* Button for replying to a story with no existing replies. */
 "STORY_REPLY_BUTTON" = "Balas";
@@ -6329,16 +6332,16 @@
 "STORY_REPLY_TO_GROUP_BUTTON" = "Balas ke Grup";
 
 /* Title for the dialog asking user if they wish to resend a failed story message. */
-"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Cerita ini tidak dapat dikirim. Cek koneksi Anda dan coba lagi.";
+"STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET" = "Cerita ini tidak dapat dikirim. Periksa koneksi Anda dan coba lagi";
 
 /* Title for the dialog asking user if they wish to resend a partially failed story message. */
 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET" = "Cerita ini tidak dapat dikirim ke beberapa orang. Periksa koneksi Anda dan coba lagi";
 
 /* The title for the 'select connections for story' view. */
-"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Hanya Berbagi Dengan…";
+"STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE" = "Hanya Bagikan Dengan…";
 
 /* The title for the 'select excluded connections for story' view. */
-"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "All Except...";
+"STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE" = "Semua Kecuali…";
 
 /* Text indicating that the story send has failed */
 "STORY_SEND_FAILED" = "Pengiriman gagal";
@@ -6358,11 +6361,30 @@
 /* Text indicating that the story is currently sending */
 "STORY_SENDING" = "Mengirim...";
 
-/* Section footer for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
+/* First bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+
+/* Second bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+
+/* Third bullet point for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+
+/* Footer for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+
+/* Header for the explainer sheet for signal connections */
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+
+/* Section footer for the 'viewers' section on the 'story settings' view
+   Section footer for the 'viewers' section on the 'story settings' view. */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Pilih Koneksi Signal yang bisa melihat cerita Anda. Perubahan tidak akan memengaruhi cerita yang telah terkirim.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Siapa yang Dapat Melihat Cerita Ini";
+
+/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "Video yang dikirim ke Cerita akan dipangkas menjadi klip %1$d dtk dan terbagi menjadi beberapa Cerita.";
@@ -6371,13 +6393,13 @@
 "STORY_VIEWER_ONBOARDING_1" = "Ketuk untuk postingan berikutnya";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
-"STORY_VIEWER_ONBOARDING_2" = "Geser ke atas untuk melewati";
+"STORY_VIEWER_ONBOARDING_2" = "Usap ke atas untuk melewati";
 
 /* Text shown the first time the user opens the story viewer instructing them how to use it. */
-"STORY_VIEWER_ONBOARDING_3" = "Geser kanan untuk keluar";
+"STORY_VIEWER_ONBOARDING_3" = "Usap ke kanan untuk keluar";
 
 /* Confirmation text shown the first time the user opens the story viewer to dismiss instructions. */
-"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Paham";
+"STORY_VIEWER_ONBOARDING_CONFIRMATION" = "Mengerti";
 
 /* Text indicating that the user has views turned off */
 "STORY_VIEWS_OFF" = "Fitur Dilihat nonaktif";
@@ -6722,10 +6744,10 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Grup tidak dapat diperbarui. Periksa koneksi internet Anda dan coba lagi.";
 
 /* Button to activate the signal proxy */
-"USE_PROXY_BUTTON" = "Use Proxy";
+"USE_PROXY_BUTTON" = "Gunakan proksi";
 
 /* Explanation of when you should use a signal proxy */
-"USE_PROXY_EXPLANATION" = "Only use a proxy if you’re not able to connect to Signal on mobile data or Wi-Fi.";
+"USE_PROXY_EXPLANATION" = "Gunakan proksi hanya ketika Anda tidak dapat tersambung ke Signal menggunakan data seluler atau Wi-Fi.";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Nama pengguna pada Signal adalah opsional. Jika Anda memilih untuk membuat nama pengguna, pengguna Signal lain akan dapat menemukan Anda dengan nama pengguna Anda tanpa mengetahui nomor telepon Anda.";
@@ -6809,7 +6831,7 @@
 "VIEW_PHOTO" = "Lihat Foto";
 
 /* View the story of a group or user */
-"VIEW_STORY" = "View Story";
+"VIEW_STORY" = "Lihat Cerita";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Geser untuk membatalkan";
