@@ -33,9 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 // For use by Swift extension.
 - (void)updateBarButtonItems;
 - (void)updateViewState;
-- (void)updateFirstConversationLabel;
 - (void)presentGetStartedBannerIfNecessary;
 
+@property (nonatomic) UILabel *firstConversationLabel;
 @property (nonatomic) UIView *firstConversationCueView;
 @property (nonatomic) BOOL hasShownBadgeExpiration;
 
