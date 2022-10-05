@@ -656,8 +656,7 @@ class EmptySearchResultCell: UITableViewCell {
                 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT",
                 comment: "Format string when search returns no results. Embeds {{search term}}"
             )
-            let messageText: String = NSString(format: format as NSString, searchText) as String
-            messageLabel.text = messageText
+            messageLabel.text = String(format: format, searchText)
 
             messageLabel.textColor = Theme.primaryTextColor
             messageLabel.font = UIFont.ows_dynamicTypeBody
