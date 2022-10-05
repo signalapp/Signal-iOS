@@ -183,6 +183,8 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
         let hasSourceUuid = proto.hasSourceUuid && !proto.sourceUuid.isEmpty
         let sourceUuid: String? = proto.sourceUuid
         self.sourceAddress = {
+            guard hasSourceUuid else { return nil }
+
             let uuidString: String? = {
                 guard hasSourceUuid else { return nil }
 
@@ -197,7 +199,10 @@ public class SSKProtoEnvelope: NSObject, Codable, NSSecureCoding {
             guard let uuidString = uuidString else { return nil }
 
             let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -4072,6 +4077,8 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
         let hasAuthorUuid = proto.hasAuthorUuid && !proto.authorUuid.isEmpty
         let authorUuid: String? = proto.authorUuid
         self.authorAddress = {
+            guard hasAuthorUuid else { return nil }
+
             let uuidString: String? = {
                 guard hasAuthorUuid else { return nil }
 
@@ -4086,7 +4093,10 @@ public class SSKProtoDataMessageQuote: NSObject, Codable, NSSecureCoding {
             guard let uuidString = uuidString else { return nil }
 
             let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -6201,6 +6211,8 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
         let hasAuthorUuid = proto.hasAuthorUuid && !proto.authorUuid.isEmpty
         let authorUuid: String? = proto.authorUuid
         self.authorAddress = {
+            guard hasAuthorUuid else { return nil }
+
             let uuidString: String? = {
                 guard hasAuthorUuid else { return nil }
 
@@ -6215,7 +6227,10 @@ public class SSKProtoDataMessageReaction: NSObject, Codable, NSSecureCoding {
             guard let uuidString = uuidString else { return nil }
 
             let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -6605,6 +6620,8 @@ public class SSKProtoDataMessageBodyRange: NSObject, Codable, NSSecureCoding {
         let hasMentionUuid = proto.hasMentionUuid && !proto.mentionUuid.isEmpty
         let mentionUuid: String? = proto.mentionUuid
         self.mentionAddress = {
+            guard hasMentionUuid else { return nil }
+
             let uuidString: String? = {
                 guard hasMentionUuid else { return nil }
 
@@ -6619,7 +6636,10 @@ public class SSKProtoDataMessageBodyRange: NSObject, Codable, NSSecureCoding {
             guard let uuidString = uuidString else { return nil }
 
             let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -8395,6 +8415,8 @@ public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding 
         let hasAuthorUuid = proto.hasAuthorUuid && !proto.authorUuid.isEmpty
         let authorUuid: String? = proto.authorUuid
         self.authorAddress = {
+            guard hasAuthorUuid else { return nil }
+
             let uuidString: String? = {
                 guard hasAuthorUuid else { return nil }
 
@@ -8409,7 +8431,10 @@ public class SSKProtoDataMessageStoryContext: NSObject, Codable, NSSecureCoding 
             guard let uuidString = uuidString else { return nil }
 
             let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -9854,6 +9879,8 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
         let destinationUuid: String? = proto.destinationUuid
         let destinationE164: String? = proto.destinationE164
         self.destinationAddress = {
+            guard hasDestinationUuid || hasDestinationE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasDestinationUuid else { return nil }
 
@@ -9878,7 +9905,10 @@ public class SSKProtoVerified: NSObject, Codable, NSSecureCoding {
                 phoneNumber: phoneNumber,
                 trustLevel: .low
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -10132,6 +10162,8 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
         let destinationUuid: String? = proto.destinationUuid
         let destinationE164: String? = proto.destinationE164
         self.destinationAddress = {
+            guard hasDestinationUuid || hasDestinationE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasDestinationUuid else { return nil }
 
@@ -10156,7 +10188,10 @@ public class SSKProtoSyncMessageSentUnidentifiedDeliveryStatus: NSObject, Codabl
                 phoneNumber: phoneNumber,
                 trustLevel: .low
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -10373,6 +10408,8 @@ public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NS
         let hasDestinationUuid = proto.hasDestinationUuid && !proto.destinationUuid.isEmpty
         let destinationUuid: String? = proto.destinationUuid
         self.destinationAddress = {
+            guard hasDestinationUuid else { return nil }
+
             let uuidString: String? = {
                 guard hasDestinationUuid else { return nil }
 
@@ -10387,7 +10424,10 @@ public class SSKProtoSyncMessageSentStoryMessageRecipient: NSObject, Codable, NS
             guard let uuidString = uuidString else { return nil }
 
             let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -10640,6 +10680,8 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
         let destinationUuid: String? = proto.destinationUuid
         let destinationE164: String? = proto.destinationE164
         self.destinationAddress = {
+            guard hasDestinationUuid || hasDestinationE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasDestinationUuid else { return nil }
 
@@ -10664,7 +10706,10 @@ public class SSKProtoSyncMessageSent: NSObject, Codable, NSSecureCoding {
                 phoneNumber: phoneNumber,
                 trustLevel: .low
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -11684,6 +11729,8 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
         let senderUuid: String? = proto.senderUuid
         let senderE164: String? = proto.senderE164
         self.senderAddress = {
+            guard hasSenderUuid || hasSenderE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasSenderUuid else { return nil }
 
@@ -11708,7 +11755,10 @@ public class SSKProtoSyncMessageRead: NSObject, Codable, NSSecureCoding {
                 phoneNumber: phoneNumber,
                 trustLevel: .low
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -11940,6 +11990,8 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
         let senderUuid: String? = proto.senderUuid
         let senderE164: String? = proto.senderE164
         self.senderAddress = {
+            guard hasSenderUuid || hasSenderE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasSenderUuid else { return nil }
 
@@ -11964,7 +12016,10 @@ public class SSKProtoSyncMessageViewed: NSObject, Codable, NSSecureCoding {
                 phoneNumber: phoneNumber,
                 trustLevel: .low
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -12647,6 +12702,8 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
         let senderUuid: String? = proto.senderUuid
         let senderE164: String? = proto.senderE164
         self.senderAddress = {
+            guard hasSenderUuid || hasSenderE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasSenderUuid else { return nil }
 
@@ -12671,7 +12728,10 @@ public class SSKProtoSyncMessageViewOnceOpen: NSObject, Codable, NSSecureCoding 
                 phoneNumber: phoneNumber,
                 trustLevel: .low
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -13491,6 +13551,8 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
         let threadUuid: String? = proto.threadUuid
         let threadE164: String? = proto.threadE164
         self.threadAddress = {
+            guard hasThreadUuid || hasThreadE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasThreadUuid else { return nil }
 
@@ -13515,7 +13577,10 @@ public class SSKProtoSyncMessageMessageRequestResponse: NSObject, Codable, NSSec
                 phoneNumber: phoneNumber,
                 trustLevel: .low
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -14039,6 +14104,8 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCodi
         let hasRecipientUuid = proto.hasRecipientUuid && !proto.recipientUuid.isEmpty
         let recipientUuid: String? = proto.recipientUuid
         self.recipientAddress = {
+            guard hasRecipientUuid else { return nil }
+
             let uuidString: String? = {
                 guard hasRecipientUuid else { return nil }
 
@@ -14053,7 +14120,10 @@ public class SSKProtoSyncMessageOutgoingPayment: NSObject, Codable, NSSecureCodi
             guard let uuidString = uuidString else { return nil }
 
             let address = SignalServiceAddress(uuidString: uuidString)
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
@@ -16224,6 +16294,8 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
         let contactUuid: String? = proto.contactUuid
         let contactE164: String? = proto.contactE164
         self.contactAddress = {
+            guard hasContactUuid || hasContactE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasContactUuid else { return nil }
 
@@ -16248,7 +16320,10 @@ public class SSKProtoContactDetails: NSObject, Codable, NSSecureCoding {
                 phoneNumber: phoneNumber,
                 trustLevel: .high
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()

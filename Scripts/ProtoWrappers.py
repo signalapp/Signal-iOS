@@ -748,6 +748,12 @@ class MessageContext(BaseContext):
             writer.add('self.%s = {' % address_accessor)
             writer.push_indent()
 
+            if e164_field:
+                writer.add(f"guard {uuid_field.has_accessor_name()} || {e164_field.has_accessor_name()} else {{ return nil }}")
+            else:
+                writer.add(f"guard {uuid_field.has_accessor_name()} else {{ return nil }}")
+            writer.newline()
+
             writer.add('let uuidString: String? = {')
             writer.push_indent()
             writer.add('guard %s else { return nil }' % uuid_field.has_accessor_name())
@@ -791,7 +797,12 @@ class MessageContext(BaseContext):
 
                 writer.add("let address = SignalServiceAddress(uuidString: uuidString)")
 
-            writer.add('guard address.isValid else { return nil }')
+            writer.add("guard address.isValid else {")
+            writer.push_indent()
+            writer.add('owsFailDebug("address was unexpectedly invalid")')
+            writer.add("return nil")
+            writer.pop_indent()
+            writer.add("}")
             writer.newline()
             writer.add('return address')
             writer.pop_indent()

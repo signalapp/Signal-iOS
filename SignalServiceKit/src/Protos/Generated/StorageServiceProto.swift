@@ -1404,6 +1404,8 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
         let serviceUuid: String? = proto.serviceUuid
         let serviceE164: String? = proto.serviceE164
         self.serviceAddress = {
+            guard hasServiceUuid || hasServiceE164 else { return nil }
+
             let uuidString: String? = {
                 guard hasServiceUuid else { return nil }
 
@@ -1428,7 +1430,10 @@ public struct StorageServiceProtoContactRecord: Codable, CustomDebugStringConver
                 phoneNumber: phoneNumber,
                 trustLevel: .high
             )
-            guard address.isValid else { return nil }
+            guard address.isValid else {
+                owsFailDebug("address was unexpectedly invalid")
+                return nil
+            }
 
             return address
         }()
