@@ -431,8 +431,10 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
     OWSAssertDebug(authKey.length > 0);
 
     __block uint32_t registrationId;
+    __block uint32_t pniRegistrationId;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         registrationId = [self.tsAccountManager getOrGenerateRegistrationIdWithTransaction:transaction];
+        pniRegistrationId = [self.tsAccountManager getOrGeneratePniRegistrationIdWithTransaction:transaction];
     });
 
     OWSAES256Key *profileKey = [self.profileManager localProfileKey];
@@ -452,6 +454,7 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
         @"fetchesMessages" : @(isManualMessageFetchEnabled), // devices that don't support push must tell the server
                                                              // they fetch messages manually
         @"registrationId" : [NSString stringWithFormat:@"%i", registrationId],
+        @"pniRegistrationId" : [NSString stringWithFormat:@"%i", pniRegistrationId],
         @"unidentifiedAccessKey" : udAccessKey.keyData.base64EncodedString,
         @"unrestrictedUnidentifiedAccess" : @(allowUnrestrictedUD),
     } mutableCopy];

@@ -76,16 +76,37 @@ public extension TSAccountManager {
 
     // MARK: - Account Attributes & Capabilities
 
-    private static var registrationIdKey: String { "TSStorageLocalRegistrationId" }
+    private static var aciRegistrationIdKey: String { "TSStorageLocalRegistrationId" }
+    private static var pniRegistrationIdKey: String { "TSStorageLocalPniRegistrationId" }
     private static var needsAccountAttributesUpdateKey: String { "TSAccountManager_NeedsAccountAttributesUpdateKey" }
 
     @objc
     func getOrGenerateRegistrationId(transaction: SDSAnyWriteTransaction) -> UInt32 {
-        let key = Self.registrationIdKey
+        getOrGenerateRegistrationId(
+            forStorageKey: Self.aciRegistrationIdKey,
+            nounForLogging: "ACI registration ID",
+            transaction: transaction
+        )
+    }
+
+    @objc
+    func getOrGeneratePniRegistrationId(transaction: SDSAnyWriteTransaction) -> UInt32 {
+        getOrGenerateRegistrationId(
+            forStorageKey: Self.pniRegistrationIdKey,
+            nounForLogging: "PNI registration ID",
+            transaction: transaction
+        )
+    }
+
+    private func getOrGenerateRegistrationId(
+        forStorageKey key: String,
+        nounForLogging: String,
+        transaction: SDSAnyWriteTransaction
+    ) -> UInt32 {
         let storedId = keyValueStore.getUInt32(key, transaction: transaction) ?? 0
         if storedId == 0 {
             let result = Self.generateRegistrationId()
-            Logger.info("Generated a new registration ID: \(result)")
+            Logger.info("Generated a new \(nounForLogging): \(result)")
             keyValueStore.setUInt32(result, key: key, transaction: transaction)
             return result
         } else {
