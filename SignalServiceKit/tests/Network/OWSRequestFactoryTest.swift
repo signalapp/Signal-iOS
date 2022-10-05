@@ -41,12 +41,12 @@ class OWSRequestFactoryTest: SSKBaseTestSwift {
         let url = try XCTUnwrap(request.url, "request.url")
         XCTAssertEqual(request.httpMethod, "PUT")
         XCTAssertEqual(url.path, "v1/messages/\(recipientUuid.uuidString)")
-        XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online", "urgent", "story"]))
+        XCTAssertEqual(Set(request.parameters.keys), Set(["messages", "timestamp", "online", "urgent"]))
         XCTAssertEqual(request.parameters["messages"] as? NSArray, [])
         XCTAssertEqual(request.parameters["timestamp"] as? UInt, 1234)
         XCTAssertEqual(request.parameters["online"] as? Bool, true)
         XCTAssertEqual(request.parameters["urgent"] as? Bool, false)
-        XCTAssertEqual(request.parameters["story"] as? Bool, false)
+        XCTAssertEqual(try queryItemsAsDictionary(url: url), ["story": "false"])
         XCTAssertEqual(request.allHTTPHeaderFields?["Unidentified-Access-Key"], udAccessKey.keyData.base64EncodedString())
     }
 
