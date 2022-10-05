@@ -324,22 +324,22 @@ class MessageRequestView: UIStackView {
     }
 
     private func preparePromptTextView(formatString: String, embeddedString: String, appendLearnMoreLink: Bool) -> UITextView {
-        // Get the range of the formatter marker to calculate the start of the bold area
-        var boldRange = (formatString as NSString).range(of: "%@")
+        let defaultAttributes: AttributedFormatArg.Attributes = [
+            .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+            .foregroundColor: Theme.secondaryTextAndIconColor
+        ]
 
-        // Update the length of the range to reflect the length of the string that will be inserted
-        boldRange.length = (embeddedString as NSString).length
+        let attributesForEmbedded: AttributedFormatArg.Attributes = [
+            .font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold,
+            .foregroundColor: Theme.secondaryTextAndIconColor
+        ]
 
-        let promptString = String(format: formatString, embeddedString)
-
-        let attributedString = NSMutableAttributedString(
-            string: promptString,
-            attributes: [
-                .font: UIFont.ows_dynamicTypeSubheadlineClamped,
-                .foregroundColor: Theme.secondaryTextAndIconColor
-            ]
+        let attributedString = NSAttributedString.make(
+            fromFormat: formatString,
+            attributedFormatArgs: [.string(embeddedString, attributes: attributesForEmbedded)],
+            defaultAttributes: defaultAttributes
         )
-        attributedString.addAttributes([.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semibold], range: boldRange)
+
         return prepareTextView(attributedString: attributedString, appendLearnMoreLink: appendLearnMoreLink)
     }
 
