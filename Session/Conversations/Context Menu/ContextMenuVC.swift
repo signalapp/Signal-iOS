@@ -283,6 +283,11 @@ final class ContextMenuVC: UIViewController {
         }
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        snDismiss()
+    }
+    
     func calculateFrame(menuHeight: CGFloat, spacing: CGFloat) -> CGRect {
         var finalFrame: CGRect = frame
         let ratio: CGFloat = (frame.width / frame.height)
