@@ -13,7 +13,7 @@ public protocol ColorPickerBarViewDelegate: AnyObject {
 // We represent picker colors using this (color, phase)
 // tuple so that we can consistently restore palette view state.
 public class ColorPickerBarColor {
-    let color: UIColor
+    public let color: UIColor
 
     // Colors are chosen from a spectrum of colors.
     // This unit value represents the location of the

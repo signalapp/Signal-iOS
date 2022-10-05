@@ -6,121 +6,250 @@ import Foundation
 import UIKit
 import SignalServiceKit
 
-public class TextAttachmentView: UIView {
-    private(set) weak var linkPreviewView: UIView?
-    private let textAttachment: TextAttachment
+open class TextAttachmentView: UIView {
 
-    public init(attachment: TextAttachment) {
+    private var textAttachment: TextAttachment?
+
+    public let contentLayoutGuide = UILayoutGuide()
+
+    convenience public init(attachment: TextAttachment) {
+        self.init(
+            text: attachment.text,
+            textStyle: attachment.textStyle,
+            textForegroundColor: attachment.textForegroundColor,
+            textBackgroundColor: attachment.textBackgroundColor,
+            background: attachment.background,
+            linkPreview: attachment.preview
+        )
         self.textAttachment = attachment
+    }
+
+    public init(
+        text: String?,
+        textStyle: TextAttachment.TextStyle,
+        textForegroundColor: UIColor?,
+        textBackgroundColor: UIColor?,
+        background: TextAttachment.Background,
+        linkPreview: OWSLinkPreview?
+    ) {
+        self.text = text
+        self.textStyle = textStyle
+        self.textForegroundColor = textForegroundColor ?? Theme.darkThemePrimaryColor
+        self.textBackgroundColor = textBackgroundColor
+        self.background = background
 
         super.init(frame: .zero)
 
-        switch attachment.background {
-        case .color(let color):
-            backgroundColor = color
-        case .gradient(let gradient):
-            addGradientBackground(gradient)
-        }
+        addLayoutGuide(contentLayoutGuide)
+        let constraints = [
+            contentLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
+            contentLayoutGuide.topAnchor.constraint(equalTo: topAnchor, constant: 20),
+            contentLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -24),
+            contentLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20)
+        ]
+        constraints.forEach { $0.priority = .defaultHigh }
+        addConstraints(constraints)
 
-        let contentStackView = UIStackView()
-        contentStackView.axis = .vertical
-        contentStackView.alignment = .center
-        contentStackView.spacing = 16
-        addSubview(contentStackView)
-        contentStackView.autoPinEdgesToSuperviewEdges()
-
-        if let text = attachment.text {
-            let label = UILabel()
-            label.numberOfLines = 0
-            label.textColor = attachment.textForegroundColor ?? Theme.darkThemePrimaryColor
-            label.text = transformedText(text, for: attachment.textStyle)
-            label.textAlignment = .center
-            label.font = font(for: attachment.textStyle)
-            label.adjustsFontSizeToFitWidth = true
-            label.minimumScaleFactor = 0.2
-
-            if let textBackgroundColor = attachment.textBackgroundColor {
-                let labelBackgroundView = UIView()
-                labelBackgroundView.layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 16)
-                labelBackgroundView.backgroundColor = textBackgroundColor
-                labelBackgroundView.layer.cornerRadius = 18
-
-                labelBackgroundView.addSubview(label)
-                label.autoPinEdgesToSuperviewMargins()
-
-                let labelWrapper = UIView()
-                labelWrapper.addSubview(labelBackgroundView)
-                labelBackgroundView.autoPinWidthToSuperview(withMargin: 24)
-                labelBackgroundView.autoPinHeightToSuperview()
-                contentStackView.addArrangedSubview(labelWrapper)
-            } else {
-                let labelWrapper = UIView()
-                labelWrapper.addSubview(label)
-                label.autoPinWidthToSuperview(withMargin: 40)
-                label.autoPinHeightToSuperview()
-                contentStackView.addArrangedSubview(labelWrapper)
-            }
-        }
-
-        if let linkPreview = attachment.preview {
+        if let linkPreview = linkPreview {
             var attachment: TSAttachment?
             if let imageAttachmentId = linkPreview.imageAttachmentId {
                 attachment = databaseStorage.read(block: { TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: $0) })
             }
-            let linkPreviewView = LinkPreviewView(linkPreview: LinkPreviewSent(linkPreview: linkPreview,
-                                                                               imageAttachment: attachment,
-                                                                               conversationStyle: nil))
-            let previewWrapper = UIView()
-            previewWrapper.addSubview(linkPreviewView)
-            linkPreviewView.autoPinWidthToSuperview(withMargin: 36)
-            linkPreviewView.autoPinHeightToSuperview()
-            contentStackView.addArrangedSubview(previewWrapper)
-            self.linkPreviewView = linkPreviewView
+            self.linkPreview = LinkPreviewSent(
+                linkPreview: linkPreview,
+                imageAttachment: attachment,
+                conversationStyle: nil
+            )
         }
 
-        // Keep content vertically centered, but limit to screen size.
-        let topSpacer = UIView.vStretchingSpacer()
-        let bottomSpacer = UIView.vStretchingSpacer()
-        contentStackView.insertArrangedSubview(topSpacer, at: 0)
-        contentStackView.addArrangedSubview(bottomSpacer)
-        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+        updateTextAttributes()
+        reloadLinkPreviewAppearance()
+        updateBackground()
     }
 
     public func asThumbnailView() -> TextAttachmentThumbnailView { TextAttachmentThumbnailView(self) }
 
-    public var isPresentingLinkTooltip: Bool { linkPreviewTooltipView != nil }
-
-    private var linkPreviewTooltipView: LinkPreviewTooltipView?
-    public func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
-        if let linkPreviewTooltipView = linkPreviewTooltipView {
-            if let container = linkPreviewTooltipView.superview,
-               linkPreviewTooltipView.frame.contains(gesture.location(in: container)) {
-                CurrentAppContext().open(linkPreviewTooltipView.url)
-            } else {
-                linkPreviewTooltipView.removeFromSuperview()
-                self.linkPreviewTooltipView = nil
-            }
-
-            return true
-        } else if let linkPreviewView = linkPreviewView,
-                  let urlString = textAttachment.preview?.urlString,
-                  let container = linkPreviewView.superview,
-                  linkPreviewView.frame.contains(gesture.location(in: container)) {
-            let tooltipView = LinkPreviewTooltipView(
-                fromView: self,
-                tailReferenceView: linkPreviewView,
-                url: URL(string: urlString)!
-            )
-            self.linkPreviewTooltipView = tooltipView
-
-            return true
-        }
-
-        return false
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    public enum LayoutConstants {
+        public static let textBackgroundHMargin: CGFloat = 16
+        public static let textBackgroundVMargin: CGFloat = 16
+        public static let textBackgroundCornerRadius: CGFloat = 18
+        public static let linkPreviewAreaTopMargin: CGFloat = 8
+        public static let linkPreviewHMargin: CGFloat = 12
+        public static let linkPreviewVMargin: CGFloat = 20
+    }
+
+    open var isEditing: Bool { false }
+
+    public private(set) var textContentSize: CGSize = .zero
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+
+        // Resize link preview view to its desired size.
+        if let linkPreviewView = linkPreviewView {
+            let linkPreviewMaxSize = contentLayoutGuide.layoutFrame.inset(by: linkPreviewWrapperView.layoutMargins).size
+            let linkPreviewSize = linkPreviewView.systemLayoutSizeFitting(
+                linkPreviewMaxSize,
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
+
+            linkPreviewWrapperView.bounds.size = CGSize(
+                width: linkPreviewSize.width + 2 * LayoutConstants.linkPreviewHMargin,
+                height: linkPreviewSize.height + 2 * LayoutConstants.linkPreviewVMargin
+            )
+            linkPreviewView.frame = linkPreviewWrapperView.bounds.insetBy(
+                dx: LayoutConstants.linkPreviewHMargin,
+                dy: LayoutConstants.linkPreviewVMargin
+            )
+        }
+
+        textContentSize = calculateTextContentSize()
+
+        // If link preview view has "regular" (tall) layout and there's no enough vertical space for both link and text,
+        // we force "compact" layout for the link preview and trigger a new layout pass.
+        if let linkPreviewView = linkPreviewView, linkPreviewView.layout == .regular, textContentSize.height > 0 {
+            let contentHeight = textContentSize.height + LayoutConstants.linkPreviewAreaTopMargin + linkPreviewWrapperView.frame.height
+            if contentHeight > contentLayoutGuide.layoutFrame.height {
+                forceCompactLayoutForLinkPreview = true
+                reloadLinkPreviewAppearance()
+                return
+            }
+        }
+
+        layoutTextContentAndLinkPreview()
+    }
+
+    open func layoutTextContentAndLinkPreview() {
+        var maxTextAreaHeight = contentLayoutGuide.layoutFrame.height
+        var linkPreviewAreaHeight: CGFloat = 0
+        if linkPreviewView != nil {
+            linkPreviewAreaHeight = linkPreviewWrapperView.frame.height
+            maxTextAreaHeight -= (linkPreviewAreaHeight + LayoutConstants.linkPreviewAreaTopMargin)
+        }
+
+        var textAreaHeight: CGFloat = 0
+
+        // Position text and/or link preview.
+        if let textLabel = textLabel, textContentSize.height > 0 {
+            textLabel.bounds.size = textContentSize
+
+            let cappedTextContentHeight = min(textContentSize.height, maxTextAreaHeight - 2 * LayoutConstants.textBackgroundVMargin)
+            let scaleFactor = min(1, cappedTextContentHeight / textContentSize.height)
+            textLabel.transform = CGAffineTransform.scale(scaleFactor)
+
+            let verticalOffset = linkPreviewAreaHeight > 0 ? 0.5 * (linkPreviewAreaHeight + LayoutConstants.linkPreviewAreaTopMargin) : 0
+            textLabel.center = CGPoint(
+                x: contentLayoutGuide.layoutFrame.center.x,
+                y: contentLayoutGuide.layoutFrame.center.y - verticalOffset
+            )
+            if let textBackgroundView = textBackgroundView {
+                textBackgroundView.frame = convert(textLabel.bounds, from: textLabel).insetBy(
+                    dx: -LayoutConstants.textBackgroundHMargin,
+                    dy: -LayoutConstants.textBackgroundVMargin
+                )
+            }
+
+            textAreaHeight = cappedTextContentHeight + 2 * LayoutConstants.textBackgroundVMargin
+        }
+        if linkPreviewView != nil {
+            let verticalOffset = textAreaHeight > 0 ? 0.5 * (textAreaHeight + LayoutConstants.linkPreviewAreaTopMargin) : 0
+            linkPreviewWrapperView.center = CGPoint(
+                x: contentLayoutGuide.layoutFrame.center.x,
+                y: contentLayoutGuide.layoutFrame.center.y + verticalOffset
+            )
+        }
+    }
+
+    open func calculateTextContentSize() -> CGSize {
+        guard let textLabel = textLabel else {
+            return .zero
+        }
+
+        let maxTextLabelSize = contentLayoutGuide.layoutFrame.insetBy(
+            dx: LayoutConstants.textBackgroundHMargin,
+            dy: LayoutConstants.textBackgroundVMargin
+        ).size
+        return textLabel.systemLayoutSizeFitting(
+            maxTextLabelSize,
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        )
+    }
+
+    // MARK: - Attributes
+
+    public var text: String? {
+        didSet { updateTextAttributes() }
+    }
+
+    public var textStyle: TextAttachment.TextStyle = .regular {
+        didSet { updateTextAttributes() }
+    }
+
+    public private(set) var textForegroundColor: UIColor = Theme.darkThemePrimaryColor
+
+    public private(set) var textBackgroundColor: UIColor?
+
+    public func setTextForegroundColor(_ textForegroundColor: UIColor, backgroundColor: UIColor?) {
+        self.textForegroundColor = textForegroundColor
+        self.textBackgroundColor = backgroundColor
+        updateTextAttributes()
+    }
+
+    // MARK: - Text
+
+    public func sizeAndAlignment(forText text: String) -> (fontPointSize: CGFloat, textAlignment: NSTextAlignment) {
+        switch text.count {
+        case ..<50: return (34, .center)
+        case 50...199: return (24, .center)
+        default: return (18, .natural)
+        }
+    }
+
+    public func updateTextAttributes() {
+        defer { updateVisibilityOfComponents(animated: false) }
+
+        guard let text = text else { return }
+
+        var textLabel: UILabel
+        if let existingLabel = self.textLabel {
+            textLabel = existingLabel
+        } else {
+            textLabel = UILabel()
+            textLabel.adjustsFontSizeToFitWidth = true
+            textLabel.allowsDefaultTighteningForTruncation = true
+            textLabel.lineBreakMode = .byWordWrapping
+            textLabel.minimumScaleFactor = 0.2
+            textLabel.numberOfLines = 0
+            addSubview(textLabel)
+            self.textLabel = textLabel
+        }
+
+        let (fontPointSize, textAlignment) = sizeAndAlignment(forText: text)
+        textLabel.text = transformedText(text, for: textStyle)
+        textLabel.textAlignment = textAlignment
+        textLabel.font = font(for: textStyle, withPointSize: fontPointSize)
+        textLabel.textColor = textForegroundColor
+
+        if let textBackgroundColor = textBackgroundColor {
+            var textBackgroundView: UIView
+            if let existingBackgroundView = self.textBackgroundView {
+                textBackgroundView = existingBackgroundView
+            } else {
+                textBackgroundView = UIView()
+                textBackgroundView.layer.cornerRadius = LayoutConstants.textBackgroundCornerRadius
+                insertSubview(textBackgroundView, belowSubview: textLabel)
+                self.textBackgroundView = textBackgroundView
+            }
+            textBackgroundView.backgroundColor = textBackgroundColor
+        }
+
+        setNeedsLayout()
     }
 
     private func transformedText(_ text: String, for textStyle: TextAttachment.TextStyle) -> String {
@@ -128,7 +257,7 @@ public class TextAttachmentView: UIView {
         return text.uppercased()
     }
 
-    private func font(for textStyle: TextAttachment.TextStyle) -> UIFont {
+    public func font(for textStyle: TextAttachment.TextStyle, withPointSize pointSize: CGFloat) -> UIFont {
         let attributes: [UIFontDescriptor.AttributeName: Any]
 
         switch textStyle {
@@ -152,27 +281,147 @@ public class TextAttachmentView: UIView {
         // the built in OS fallbacks that don't tend to match the desired style.
         let descriptor = UIFontDescriptor(fontAttributes: attributes)
 
-        return UIFont(descriptor: descriptor, size: 28)
+        return UIFont(descriptor: descriptor, size: pointSize)
     }
 
-    private func addGradientBackground(_ gradient: TextAttachment.Background.Gradient) {
-        let gradientView = GradientView(colors: gradient.colors, locations: gradient.locations)
-        gradientView.setAngle(gradient.angle)
-
-        addSubview(gradientView)
-        gradientView.autoPinEdgesToSuperviewEdges()
+    open func updateVisibilityOfComponents(animated: Bool) {
+        let isEditing = isEditing
+        if text != nil {
+            textLabel?.setIsHidden(isEditing, animated: animated)
+            textBackgroundView?.setIsHidden(isEditing || textBackgroundColor == nil, animated: animated)
+        } else {
+            textLabel?.setIsHidden(true, animated: animated)
+            textBackgroundView?.setIsHidden(true, animated: animated)
+        }
     }
+
+    public private(set) var textLabel: UILabel?
+
+    public private(set) var textBackgroundView: UIView?
+
+    // MARK: - Background
+
+    public var background: TextAttachment.Background {
+        didSet { updateBackground() }
+    }
+
+    private var gradientView: GradientView?
+
+    private func updateBackground() {
+        switch background {
+        case .color(let color):
+            if let gradientView = gradientView {
+                gradientView.isHidden = true
+            }
+            backgroundColor = color
+
+        case .gradient(let gradient):
+            var gradientView: GradientView
+            if let existingGradientView = self.gradientView {
+                gradientView = existingGradientView
+            } else {
+                gradientView = GradientView(colors: [])
+                insertSubview(gradientView, at: 0)
+                gradientView.autoPinEdgesToSuperviewEdges()
+                self.gradientView = gradientView
+            }
+            gradientView.isHidden = false
+            gradientView.colors = gradient.colors
+            gradientView.locations = gradient.locations
+            gradientView.setAngle(gradient.angle)
+        }
+    }
+
+    // MARK: - Link Preview
+
+    public var linkPreview: LinkPreviewState? {
+        didSet { reloadLinkPreviewAppearance() }
+    }
+
+    public private(set) var linkPreviewView: LinkPreviewView?
+
+    public private(set) lazy var linkPreviewWrapperView = UIView()
+
+    private var forceCompactLayoutForLinkPreview = false
+
+    private func shouldUseCompactLayoutForLinkPreview() -> Bool {
+        if let text = text, text.count >= 50 { return true }
+        return forceCompactLayoutForLinkPreview
+    }
+
+    open func reloadLinkPreviewAppearance() {
+        if let linkPreviewView = linkPreviewView {
+            linkPreviewView.removeFromSuperview()
+            self.linkPreviewView = nil
+        }
+
+        defer {
+            setNeedsLayout()
+        }
+
+        guard let linkPreview = linkPreview else {
+            linkPreviewWrapperView.isHidden = true
+            return
+        }
+
+        if linkPreviewWrapperView.superview == nil {
+            addSubview(linkPreviewWrapperView)
+        }
+        linkPreviewWrapperView.isHidden = false
+
+        let linkPreviewView = TextAttachmentView.LinkPreviewView(
+            linkPreview: linkPreview,
+            forceCompactSize: shouldUseCompactLayoutForLinkPreview()
+        )
+        linkPreviewWrapperView.addSubview(linkPreviewView)
+        self.linkPreviewView = linkPreviewView
+    }
+
+    public var isPresentingLinkTooltip: Bool { linkPreviewTooltipView != nil }
+
+    private var linkPreviewTooltipView: LinkPreviewTooltipView?
+
+    public func willHandleTapGesture(_ gesture: UITapGestureRecognizer) -> Bool {
+        if let linkPreviewTooltipView = linkPreviewTooltipView {
+            if let container = linkPreviewTooltipView.superview,
+               linkPreviewTooltipView.frame.contains(gesture.location(in: container)) {
+                CurrentAppContext().open(linkPreviewTooltipView.url)
+            } else {
+                linkPreviewTooltipView.removeFromSuperview()
+                self.linkPreviewTooltipView = nil
+            }
+
+            return true
+        } else if let linkPreviewView = linkPreviewView,
+                  let urlString = textAttachment?.preview?.urlString,
+                  let container = linkPreviewView.superview,
+                  linkPreviewView.frame.contains(gesture.location(in: container)) {
+            let tooltipView = LinkPreviewTooltipView(
+                fromView: self,
+                tailReferenceView: linkPreviewView,
+                url: URL(string: urlString)!
+            )
+            self.linkPreviewTooltipView = tooltipView
+
+            return true
+        }
+
+        return false
+    }
+
+    // MARK: - LinkPreviewView
 
     public class LinkPreviewView: UIStackView {
 
-        private enum Layout {
+        public enum Layout {
             case regular
             case compact
             case draft
             case domainOnly
         }
+        public private(set) var layout: Layout = .regular
 
-        public init(linkPreview: LinkPreviewState, isDraft: Bool = false) {
+        public init(linkPreview: LinkPreviewState, isDraft: Bool = false, forceCompactSize: Bool = false) {
             super.init(frame: .zero)
 
             let backgroundColor: UIColor = isDraft ? Theme.darkThemeTableView2PresentedBackgroundColor : .ows_gray02
@@ -181,7 +430,13 @@ public class TextAttachmentView: UIView {
             let title = linkPreview.title()
             let description = linkPreview.previewDescription()
             let hasTitleOrDescription = title != nil || description != nil
-            var layout: Layout = isDraft ? .draft : (hasTitleOrDescription ? .regular : .domainOnly)
+            if isDraft {
+                layout = .draft
+            } else if hasTitleOrDescription {
+                layout = forceCompactSize ? .compact : .regular
+            } else {
+                layout = .domainOnly
+            }
 
             let thumbnailImageView = UIImageView()
             thumbnailImageView.clipsToBounds = true

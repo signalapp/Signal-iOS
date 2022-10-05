@@ -159,7 +159,7 @@ public class TextStylingToolbar: UIControl {
         set { colorPickerView.selectedValue = newValue }
     }
 
-    private static func defaultColor(forLayout layout: Layout) -> ColorPickerBarColor {
+    public static func defaultColor(forLayout layout: Layout) -> ColorPickerBarColor {
         switch layout {
         case .photoOverlay:
             return ColorPickerBarColor.defaultColor()

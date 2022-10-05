@@ -221,7 +221,7 @@ class PhotoCaptureViewController: OWSViewController {
 
         previewView.setIsHidden(composerMode == .text, animated: animated)
         if textEditorUIInitialized {
-            textViewContainerToolbar.setIsHidden(composerMode != .text, animated: animated)
+            textEditorToolbar.setIsHidden(composerMode != .text, animated: animated)
         }
     }
 
@@ -298,7 +298,7 @@ class PhotoCaptureViewController: OWSViewController {
     private func updateBottomBarVisibility(animated: Bool) {
         let isBarHidden: Bool = {
             if textEditorUIInitialized {
-                return textView.isFirstResponder
+                return textStoryComposerView.isEditing
             }
             if bottomBar.isContentTypeSelectionControlAvailable {
                 return false
@@ -344,70 +344,16 @@ class PhotoCaptureViewController: OWSViewController {
     private var textEditorUIInitialized = false
     private var textEditoriPhoneConstraints = [NSLayoutConstraint]()
     private var textEditoriPadConstraints = [NSLayoutConstraint]()
-    private lazy var textViewContentLayoutGuide = UILayoutGuide()
-    private lazy var textViewContainer: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.preservesSuperviewLayoutMargins = true
-        view.layer.masksToBounds = true
 
-        view.addSubview(textViewContainerBackgroundView)
-        textViewContainerBackgroundView.autoPinEdgesToSuperviewEdges()
+    private lazy var textStoryComposerView = TextStoryComposerView(text: "")
 
-        // This defines bounds for text content: text view and link preview.
-        view.addLayoutGuide(textViewContentLayoutGuide)
-        view.addConstraints([
-            textViewContentLayoutGuide.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
-            textViewContentLayoutGuide.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 8),
-            textViewContentLayoutGuide.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor)
-        ])
-
-        // This is a colored background for `inverted` text style.
-        let textViewWrapper = UIView()
-        textViewWrapper.addSubview(textViewBackgroundView)
-        textViewWrapper.addSubview(textView)
-        textViewBackgroundView.autoSetDimension(.width, toSize: 52, relation: .greaterThanOrEqual)
-        textViewBackgroundView.autoSetDimension(.height, toSize: 52, relation: .greaterThanOrEqual)
-        textViewBackgroundView.autoPinWidthToSuperview(relation: .lessThanOrEqual)
-        textViewBackgroundView.autoPinHeightToSuperview(relation: .lessThanOrEqual)
-        textViewBackgroundView.autoCenterInSuperview()
-        textView.autoPin(toEdgesOf: textViewBackgroundView, with: UIEdgeInsets(hMargin: 16, vMargin: 2))
-
-        // Text view and link preview are grouped together in a vertical stack view
-        // that is centered vertically in text content area.
-        let stackView = UIStackView(arrangedSubviews: [ textViewWrapper, linkPreviewWrapperView ])
-        stackView.axis = .vertical
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stackView)
-        view.addConstraints([
-            stackView.leadingAnchor.constraint(equalTo: textViewContentLayoutGuide.leadingAnchor),
-            stackView.topAnchor.constraint(greaterThanOrEqualTo: textViewContentLayoutGuide.topAnchor),
-            stackView.trailingAnchor.constraint(equalTo: textViewContentLayoutGuide.trailingAnchor),
-            stackView.bottomAnchor.constraint(lessThanOrEqualTo: textViewContentLayoutGuide.bottomAnchor),
-            stackView.centerYAnchor.constraint(equalTo: textViewContentLayoutGuide.centerYAnchor)
-        ])
-
-        // Placeholder text is centered in "text content area".
-        textViewPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(textViewPlaceholderLabel)
-        view.addConstraints([
-            textViewPlaceholderLabel.leadingAnchor.constraint(equalTo: textViewContentLayoutGuide.leadingAnchor),
-            textViewPlaceholderLabel.topAnchor.constraint(equalTo: textViewContentLayoutGuide.topAnchor),
-            textViewPlaceholderLabel.trailingAnchor.constraint(equalTo: textViewContentLayoutGuide.trailingAnchor),
-            textViewPlaceholderLabel.bottomAnchor.constraint(equalTo: textViewContentLayoutGuide.bottomAnchor)
-        ])
-
-        return view
-    }()
-    private lazy var textViewContainerBackgroundView = GradientView(colors: [])
-    private lazy var textViewContainerToolbar: UIView = {
+    private lazy var textEditorToolbar: UIView = {
         let stackView = UIStackView(arrangedSubviews: [ textBackgroundSelectionButton, textViewAttachLinkButton ])
         stackView.axis = .horizontal
         stackView.spacing = 16
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
-    private var textBackgroundIndex = 0
     private lazy var textBackgroundSelectionButton = RoundGradientButton()
     private lazy var textViewAttachLinkButton: UIButton = {
         let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "link-diagonal"), backgroundStyle: .blur)
@@ -415,57 +361,11 @@ class PhotoCaptureViewController: OWSViewController {
         button.layoutMargins = .zero
         return button
     }()
-    private lazy var textViewBackgroundView: UIView = {
-        let backgroundView = UIView()
-        backgroundView.layer.cornerRadius = 12
-        return backgroundView
-    }()
-    private lazy var textView: MediaTextView = {
-        let textView = MediaTextView()
-        textView.delegate = self
-        return textView
-    }()
-    private lazy var textViewAccessoryToolbar: TextStylingToolbar = {
-        let toolbar = TextStylingToolbar(layout: .textStory)
-        toolbar.preservesSuperviewLayoutMargins = true
-        toolbar.addTarget(self, action: #selector(didChangeTextColor), for: .valueChanged)
-        toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton), for: .touchUpInside)
-        toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton), for: .touchUpInside)
-        toolbar.doneButton.addTarget(self, action: #selector(didTapTextViewDoneButton), for: .touchUpInside)
-        return toolbar
-    }()
-    private lazy var textViewPlaceholderLabel: UILabel = {
-        let label = UILabel()
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        label.textColor = .ows_whiteAlpha60
-        label.font = .ows_dynamicTypeLargeTitle1Clamped
-        label.isUserInteractionEnabled = true
-        label.text = NSLocalizedString("STORY_COMPOSER_TAP_ADD_TEXT",
-                                       value: "Tap to add text",
-                                       comment: "Placeholder text in text stories compose UI")
-        return label
-    }()
 
     // This constraint gets updated when onscreen keyboard appears/disappears.
-    private var textViewBottomToScreenBottomConstraint: NSLayoutConstraint?
+    private var textStoryComposerContentLayoutGuideBottomIphone: NSLayoutConstraint?
+    private var textStoryComposerContentLayoutGuideBottomIpad: NSLayoutConstraint?
     private var observingKeyboardNotifications = false
-
-    private var linkPreview: OWSLinkPreviewDraft?
-    private var linkPreviewView: UIView?
-    private lazy var linkPreviewWrapperView: UIView = {
-        let view = UIView()
-        view.layoutMargins = UIEdgeInsets(margin: 20)
-        return view
-    }()
-    private lazy var deleteLinkPreviewButton: UIButton = {
-        let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "x-24"), backgroundStyle: .blurLight)
-        button.tintColor = Theme.lightThemePrimaryColor
-        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
-        button.layoutMargins = UIEdgeInsets(margin: 2)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
 
     private lazy var doneButton: MediaDoneButton = {
         let button = MediaDoneButton(type: .custom)
@@ -694,7 +594,7 @@ class PhotoCaptureViewController: OWSViewController {
         updateSideBarVisibility(animated: true)
 
         if textEditorUIInitialized {
-            textViewContainer.layer.cornerRadius = isIPadUIInRegularMode || UIDevice.current.hasIPhoneXNotch ? 18 : 0
+            textStoryComposerView.layer.cornerRadius = isIPadUIInRegularMode || UIDevice.current.hasIPhoneXNotch ? 18 : 0
 
             if isIPadUIInRegularMode {
                 view.removeConstraints(textEditoriPhoneConstraints)
@@ -780,56 +680,48 @@ extension PhotoCaptureViewController {
         bottomBar.proceedButton.addTarget(self, action: #selector(didTapTextStoryProceedButton), for: .touchUpInside)
         textBackgroundSelectionButton.addTarget(self, action: #selector(didTapTextBackgroundButton), for: .touchUpInside)
         textViewAttachLinkButton.addTarget(self, action: #selector(didTapAttachLinkPreviewButton), for: .touchUpInside)
-        textViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(textViewPlaceholderTapped)))
+        updateTextBackgroundSelectionButton()
 
-        // Prepare text styling toolbar (only visible when editing text).
-        let toolbarSize = textViewAccessoryToolbar.systemLayoutSizeFitting(CGSize(width: view.width, height: .greatestFiniteMagnitude),
-                                                                           withHorizontalFittingPriority: .required,
-                                                                           verticalFittingPriority: .fittingSizeLevel)
-        textViewAccessoryToolbar.bounds.size = toolbarSize
-        textView.inputAccessoryView = textViewAccessoryToolbar
-        updateTextViewAttributes(using: textViewAccessoryToolbar)
-
-        // Set up text view container.
-        textViewContainer.layer.cornerRadius = isIPadUIInRegularMode || UIDevice.current.hasIPhoneXNotch ? 18 : 0
-        view.insertSubview(textViewContainer, aboveSubview: previewView)
+        // Set up composer view.
+        textStoryComposerView.delegate = self
+        textStoryComposerView.translatesAutoresizingMaskIntoConstraints = false
+        textStoryComposerView.layer.cornerRadius = isIPadUIInRegularMode || UIDevice.current.hasIPhoneXNotch ? 18 : 0
+        view.insertSubview(textStoryComposerView, aboveSubview: previewView)
         textEditoriPhoneConstraints.append(contentsOf: [
-            textViewContainer.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
-            textViewContainer.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
-            textViewContainer.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
-            textViewContainer.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
+            textStoryComposerView.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            textStoryComposerView.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            textStoryComposerView.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            textStoryComposerView.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
         ])
 
-        // This constraint would allow to resize textView to clear onscreen keyboard.
-        textViewBottomToScreenBottomConstraint = textViewContainer.bottomAnchor.constraint(greaterThanOrEqualTo: textViewContentLayoutGuide.bottomAnchor)
-        textViewBottomToScreenBottomConstraint?.isActive = true
-
         // Choose Background and Attach Link buttons.
-        view.addSubview(textViewContainerToolbar)
+        // Toolbar is added to VC's view because it might be located outside of the textStoryComposerView.
+        view.addSubview(textEditorToolbar)
         // Align leading edge of Background button to leading edge of the Close button at the top.
-        view.addConstraint(textViewContainerToolbar.leadingAnchor.constraint(equalTo: topBar.controlsLayoutGuide.leadingAnchor))
-        textEditoriPhoneConstraints.append({
-            // On iPhones text content should not overlap with Background and Attach Link buttons.
-            let constraint = textViewContentLayoutGuide.bottomAnchor.constraint(
-                equalTo: textViewContainerToolbar.topAnchor, constant: -16)
-            constraint.priority = .defaultHigh
-            return constraint
-        }())
+        view.addConstraint(textEditorToolbar.leadingAnchor.constraint(equalTo: topBar.controlsLayoutGuide.leadingAnchor))
         if bottomBar.isCompactHeightLayout {
+            // On devices without top and bottom safe areas buttons are placed above CAMERA | TEXT controls.
             textEditoriPhoneConstraints.append(
-                textViewContainerToolbar.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor))
+                textEditorToolbar.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor))
         } else {
+            // On devices with bottom safe area buttons are pinned to the bottom edge of the colored background,
+            // which always clears CAMERA | TEXT controls.
             textEditoriPhoneConstraints.append(
-                textViewContainerToolbar.bottomAnchor.constraint(equalTo: textViewContainer.bottomAnchor, constant: -16))
+                textEditorToolbar.bottomAnchor.constraint(equalTo: textStoryComposerView.bottomAnchor, constant: -16))
         }
+
+        // This constraint defines bottom edge of the area that contains text view and link preview inside of the `textStoryComposerView`.
+        // Initially the bottom edge is pinned to the top of `textEditorToolbar`.
+        // If on-screen keyboard appears the constraint is updated so that content clears the keyboard.
+        textStoryComposerContentLayoutGuideBottomIphone = textStoryComposerView.contentLayoutGuide.bottomAnchor.constraint(
+            equalTo: textEditorToolbar.bottomAnchor)
+        textEditoriPhoneConstraints.append(textStoryComposerContentLayoutGuideBottomIphone!)
 
         if isIPadUIInRegularMode {
             initializeTextEditoriPadUI()
         } else {
             view.addConstraints(textEditoriPhoneConstraints)
         }
-
-        updateTextBackground()
 
         view.setNeedsLayout()
         UIView.performWithoutAnimation {
@@ -844,87 +736,40 @@ extension PhotoCaptureViewController {
 
         // Container - 16:9 aspect ratio, constrained vertically, centered on the screen horizontally.
         textEditoriPadConstraints.append(contentsOf: [
-            textViewContainer.topAnchor.constraint(equalTo: topBar.bottomAnchor, constant: -8),
-            textViewContainer.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor, constant: -24),
-            textViewContainer.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
-            textViewContainer.widthAnchor.constraint(equalTo: textViewContainer.heightAnchor, multiplier: 9/16)
+            textStoryComposerView.topAnchor.constraint(equalTo: topBar.bottomAnchor, constant: -8),
+            textStoryComposerView.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor, constant: -24),
+            textStoryComposerView.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
+            textStoryComposerView.widthAnchor.constraint(equalTo: textStoryComposerView.heightAnchor, multiplier: 9/16)
         ])
 
-        // Allow text view content take entire textViewContainer because all controls are outside of textViewContainer.
-        // This is a non-required constraint because it needs to fail when on-screen keyboard is visible.
-        textEditoriPadConstraints.append({
-            let constraint = textViewContentLayoutGuide.bottomAnchor.constraint(equalTo: textViewContainer.layoutMarginsGuide.bottomAnchor)
-            constraint.priority = .defaultHigh
-            return constraint
-        }())
+        // This constraint defines bottom edge of the text content area
+        // and would allow to resize content to clear onscreen keyboard.
+        textStoryComposerContentLayoutGuideBottomIpad = textStoryComposerView.contentLayoutGuide.bottomAnchor.constraint(
+            equalTo: textStoryComposerView.bottomAnchor, constant: -8)
+        textEditoriPadConstraints.append(textStoryComposerContentLayoutGuideBottomIpad!)
 
         // Background and Add Link buttons are vertically centered with CAMERA|TEXT switch and Proceed button.
         textEditoriPadConstraints.append(
-            textViewContainerToolbar.centerYAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.centerYAnchor))
+            textEditorToolbar.centerYAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.centerYAnchor))
 
         view.addConstraints(textEditoriPadConstraints)
     }
 
-    private var strippedTextViewText: String { textView.text.stripped }
-
-    private var isTextViewContentEmpty: Bool {
-        strippedTextViewText.isEmpty && linkPreview == nil
+    private func updateTextEditorToolbarVisibility(animated: Bool) {
+        textEditorToolbar.setIsHidden(textStoryComposerView.isEditing || composerMode != .text, animated: animated)
     }
 
-    private static func desiredAttributes(forText text: String) -> (fontPointSize: CGFloat, textAlignment: NSTextAlignment) {
-        switch text.count {
-        case ..<50: return (34, .center)
-        case 50...199: return (24, .center)
-        default: return (18, .natural)
+    // Update background of the background selection button to match the editor.
+    private func updateTextBackgroundSelectionButton() {
+        switch textStoryComposerView.background {
+        case .color(let color):
+            textBackgroundSelectionButton.gradientView.colors = [ color, color ]
+
+        case .gradient(let gradient):
+            textBackgroundSelectionButton.gradientView.colors = gradient.colors
+            textBackgroundSelectionButton.gradientView.locations = gradient.locations
+            textBackgroundSelectionButton.gradientView.setAngle(gradient.angle)
         }
-    }
-
-    private func updateTextViewAttributes(using textToolbar: TextStylingToolbar) {
-        let (fontPointSize, textAlignment) = PhotoCaptureViewController.desiredAttributes(forText: strippedTextViewText)
-        textView.update(using: textToolbar, fontPointSize: fontPointSize, textAlignment: textAlignment)
-        textViewBackgroundView.backgroundColor = textViewAccessoryToolbar.textBackgroundColor
-    }
-
-    private func adjustFontSizeIfNecessary() {
-        guard let currentFontSize = textView.font?.pointSize else { return }
-        let desiredFontSize = PhotoCaptureViewController.desiredAttributes(forText: strippedTextViewText).fontPointSize
-        guard desiredFontSize != currentFontSize else { return }
-        updateTextViewAttributes(using: textViewAccessoryToolbar)
-    }
-
-    private func updateLinkPreviewAppearance() {
-        if let linkPreviewView = linkPreviewView {
-            linkPreviewView.removeFromSuperview()
-            self.linkPreviewView = nil
-        }
-
-        guard let linkPreview = linkPreview else {
-            linkPreviewWrapperView.isHiddenInStackView = true
-            return
-        }
-
-        linkPreviewWrapperView.isHiddenInStackView = false
-
-        let linkPreviewView = TextAttachmentView.LinkPreviewView(linkPreview: LinkPreviewDraft(linkPreviewDraft: linkPreview))
-        linkPreviewWrapperView.addSubview(linkPreviewView)
-        linkPreviewView.autoPinEdgesToSuperviewMargins()
-        self.linkPreviewView = linkPreviewView
-
-        if deleteLinkPreviewButton.superview == nil {
-            linkPreviewWrapperView.addSubview(deleteLinkPreviewButton)
-            deleteLinkPreviewButton.addTarget(self, action: #selector(didTapDeleteLinkPreviewButton), for: .touchUpInside)
-        }
-        linkPreviewWrapperView.addConstraints([
-            deleteLinkPreviewButton.centerXAnchor.constraint(equalTo: linkPreviewView.trailingAnchor, constant: -5),
-            deleteLinkPreviewButton.centerYAnchor.constraint(equalTo: linkPreviewView.topAnchor, constant: 5)
-        ])
-        linkPreviewWrapperView.bringSubviewToFront(deleteLinkPreviewButton)
-    }
-
-    private func updateTextEditorUI(animated: Bool) {
-        let isPlaceholderHidden = textView.isFirstResponder || textView.hasText || linkPreview != nil
-        textViewPlaceholderLabel.setIsHidden(isPlaceholderHidden, animated: animated)
-        bottomBar.proceedButton.isEnabled = !isTextViewContentEmpty
     }
 
     // MARK: - Keyboard Handling
@@ -957,16 +802,18 @@ extension PhotoCaptureViewController {
     private func handleKeyboardNotification(_ notification: Notification) {
         guard composerMode == .text else { return }
 
-        guard let constraint = textViewBottomToScreenBottomConstraint else { return }
+        guard let iPhoneConstraint = textStoryComposerContentLayoutGuideBottomIphone else { return }
+        let iPadConstraint = textStoryComposerContentLayoutGuideBottomIpad
 
         guard let userInfo = notification.userInfo,
               let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
 
-        let convertedEndFrame = textViewContainer.convert(endFrame, from: nil)
-        let inset = textViewContainer.bounds.maxY - convertedEndFrame.minY
+        let iPhoneInset = textEditorToolbar.convert(endFrame, from: nil).minY - textEditorToolbar.bounds.maxY
+        let iPadInset = textStoryComposerView.convert(endFrame, from: nil).minY - textStoryComposerView.bounds.maxY
 
         let layoutUpdateBlock = {
-            constraint.constant = inset + 16
+            iPhoneConstraint.constant = min(iPhoneInset, 0) - 8
+            iPadConstraint?.constant = min(iPadInset, 0) - 8
         }
         if let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
@@ -988,19 +835,7 @@ extension PhotoCaptureViewController {
 
     // MARK: - Background
 
-    private static var textBackgrounds: [TextAttachment.Background] = [
-        .color(.init(rgbHex: 0x688BD4)),
-        .color(.init(rgbHex: 0x8687C1)),
-        .color(.init(rgbHex: 0xB47F8C)),
-        .color(.init(rgbHex: 0x899188)),
-        .color(.init(rgbHex: 0x539383)),
-        .gradient(.init(colors: [ .init(rgbHex: 0x19A9FA), .init(rgbHex: 0x7097D7), .init(rgbHex: 0xD1998D), .init(rgbHex: 0xFFC369) ])),
-        .gradient(.init(colors: [ .init(rgbHex: 0x4437D8), .init(rgbHex: 0x6B70DE), .init(rgbHex: 0xB774E0), .init(rgbHex: 0xFF8E8E) ])),
-        .gradient(.init(colors: [ .init(rgbHex: 0x004044), .init(rgbHex: 0x2C5F45), .init(rgbHex: 0x648E52), .init(rgbHex: 0x93B864) ]))
-    ]
-
     private class RoundGradientButton: RoundMediaButton {
-
         let gradientView = GradientView(colors: [])
 
         init() {
@@ -1021,113 +856,33 @@ extension PhotoCaptureViewController {
         override var intrinsicContentSize: CGSize { CGSize(square: 44) }
     }
 
-    private func switchToNextBackground() {
-        textBackgroundIndex += 1
-        if textBackgroundIndex > PhotoCaptureViewController.textBackgrounds.count - 1 {
-            textBackgroundIndex = 0
-        }
-        updateTextBackground()
-    }
-
-    private func updateTextBackground() {
-        let textBackground = PhotoCaptureViewController.textBackgrounds[textBackgroundIndex]
-        switch textBackground {
-        case .color(let color):
-            textViewContainerBackgroundView.colors = [ color, color ]
-            textBackgroundSelectionButton.gradientView.colors = [ color, color ]
-
-        case .gradient(let gradient):
-            textViewContainerBackgroundView.colors = gradient.colors
-            textViewContainerBackgroundView.locations = gradient.locations
-            textViewContainerBackgroundView.setAngle(gradient.angle)
-
-            textBackgroundSelectionButton.gradientView.colors = gradient.colors
-            textBackgroundSelectionButton.gradientView.locations = gradient.locations
-            textBackgroundSelectionButton.gradientView.setAngle(gradient.angle)
-        }
-    }
-
     // MARK: - Button Actions
 
     @objc
-    private func textViewPlaceholderTapped() {
-        textView.becomeFirstResponder()
-    }
-
-    @objc
-    private func didTapTextStyleButton() {
-        let currentTextStyle = textViewAccessoryToolbar.textStyle
-        let nextTextStyle = MediaTextView.TextStyle(rawValue: currentTextStyle.rawValue + 1) ?? .regular
-
-        // Update toolbar.
-        textViewAccessoryToolbar.textStyle = nextTextStyle
-
-        // Update text view.
-        if textView.isFirstResponder {
-            updateTextViewAttributes(using: textViewAccessoryToolbar)
-        }
-    }
-
-    @objc
-    private func didTapDecorationStyleButton() {
-        // Switch between colored text with no background and white text over colored background.
-        let currentDecorationStyle = textViewAccessoryToolbar.decorationStyle
-        let nextDecorationStyle: MediaTextView.DecorationStyle = currentDecorationStyle == .none ? .inverted : .none
-
-        // Update toolbar.
-        textViewAccessoryToolbar.decorationStyle = nextDecorationStyle
-
-        // Update text view.
-        updateTextViewAttributes(using: textViewAccessoryToolbar)
-    }
-
-    @objc
     private func didTapTextBackgroundButton() {
-        switchToNextBackground()
+        textStoryComposerView.switchToNextBackground()
+        updateTextBackgroundSelectionButton()
     }
 
     @objc
     private func didTapAttachLinkPreviewButton() {
-        let linkPreviewViewController = LinkPreviewAttachmentViewController(linkPreview)
+        let linkPreviewViewController = LinkPreviewAttachmentViewController(textStoryComposerView.linkPreviewDraft)
         linkPreviewViewController.delegate = self
         present(linkPreviewViewController, animated: true)
-    }
-
-    @objc
-    private func didTapDeleteLinkPreviewButton() {
-        linkPreview = nil
-        updateLinkPreviewAppearance()
-        updateTextEditorUI(animated: true)
-    }
-
-    @objc
-    private func didTapTextViewDoneButton() {
-        Logger.verbose("")
-
-        textView.acceptAutocorrectSuggestion()
-        textView.resignFirstResponder()
     }
 
     @objc
     private func didTapTextStoryProceedButton() {
         Logger.verbose("")
 
-        let textForegroundColor = textViewAccessoryToolbar.textForegroundColor
-        let textBackgroundColor = textViewAccessoryToolbar.textBackgroundColor
-
-        let textStyle: TextAttachment.TextStyle = {
-            switch textViewAccessoryToolbar.textStyle {
-            case .regular: return .regular
-            case .bold: return .bold
-            case .condensed: return .condensed
-            case .script: return .script
-            case .serif: return .serif
-            }
-        }()
-        let background = PhotoCaptureViewController.textBackgrounds[textBackgroundIndex]
+        let text = textStoryComposerView.text ?? ""
+        let textForegroundColor = textStoryComposerView.textForegroundColor
+        let textBackgroundColor = textStoryComposerView.textBackgroundColor
+        let textStyle = textStoryComposerView.textStyle
+        let background = textStoryComposerView.background
 
         var validatedLinkPreview: OWSLinkPreview?
-        if let linkPreview = linkPreview {
+        if let linkPreview = textStoryComposerView.linkPreviewDraft {
             self.databaseStorage.write { transaction in
                 do {
                     validatedLinkPreview = try OWSLinkPreview.buildValidatedLinkPreview(fromInfo: linkPreview, transaction: transaction)
@@ -1139,13 +894,13 @@ extension PhotoCaptureViewController {
             }
         }
 
-        guard validatedLinkPreview != nil || !strippedTextViewText.isEmpty else {
+        guard validatedLinkPreview != nil || !text.isEmpty else {
             owsFailDebug("Empty content")
             return
         }
 
         let textAttachment = TextAttachment(
-            text: strippedTextViewText,
+            text: text,
             textStyle: textStyle,
             textForegroundColor: textForegroundColor,
             textBackgroundColor: textBackgroundColor,
@@ -1153,40 +908,22 @@ extension PhotoCaptureViewController {
             linkPreview: validatedLinkPreview)
         delegate?.photoCaptureViewController(self, didFinishWithTextAttachment: textAttachment)
     }
-
-    @objc
-    private func didChangeTextColor() {
-        updateTextViewAttributes(using: textViewAccessoryToolbar)
-    }
 }
 
-extension PhotoCaptureViewController: UITextViewDelegate {
+extension PhotoCaptureViewController: TextStoryComposerViewDelegate {
 
-    func textViewDidBeginEditing(_ textView: UITextView) {
+    fileprivate func textStoryComposerDidBeginEditing(_ textStoryComposer: TextStoryComposerView) {
         updateBottomBarVisibility(animated: true)
-        textViewContainerToolbar.setIsHidden(true, animated: true)
-        updateTextEditorUI(animated: true)
+        updateTextEditorToolbarVisibility(animated: true)
     }
 
-    func textViewDidEndEditing(_ textView: UITextView) {
+    fileprivate func textStoryComposerDidEndEditing(_ textStoryComposer: TextStoryComposerView) {
         updateBottomBarVisibility(animated: true)
-        textViewContainerToolbar.setIsHidden(false, animated: true)
-        updateTextEditorUI(animated: true)
+        updateTextEditorToolbarVisibility(animated: true)
     }
 
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        // Truncate the replacement to fit.
-        return TextViewHelper.textView(
-            textView,
-            shouldChangeTextIn: range,
-            replacementText: text,
-            maxGlyphCount: 700
-        )
-    }
-
-    func textViewDidChange(_ textView: UITextView) {
-        adjustFontSizeIfNecessary()
-        updateTextEditorUI(animated: false)
+    fileprivate func textStoryComposerDidChange(_ textStoryComposer: TextStoryComposerView) {
+        bottomBar.proceedButton.isEnabled = !textStoryComposer.isEmpty
     }
 }
 
@@ -1194,9 +931,7 @@ extension PhotoCaptureViewController: LinkPreviewAttachmentViewControllerDelegat
 
     func linkPreviewAttachmentViewController(_ viewController: LinkPreviewAttachmentViewController,
                                              didFinishWith linkPreview: OWSLinkPreviewDraft) {
-        self.linkPreview = linkPreview
-        updateLinkPreviewAppearance()
-        updateTextEditorUI(animated: false)
+        textStoryComposerView.linkPreviewDraft = linkPreview
         viewController.dismiss(animated: true)
     }
 }
@@ -1288,12 +1023,12 @@ extension PhotoCaptureViewController {
         switch newComposerMode {
         case .camera:
             resumePhotoCapture()
-            textViewContainer.setIsHidden(true, animated: true)
+            textStoryComposerView.setIsHidden(true, animated: true)
 
         case .text:
             startObservingKeyboardNotifications()
             initializeTextEditorUIIfNecessary()
-            textViewContainer.setIsHidden(false, animated: true)
+            textStoryComposerView.setIsHidden(false, animated: true)
             pausePhotoCapture()
         }
     }
@@ -1583,5 +1318,364 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     func photoCapture(_ photoCapture: PhotoCapture, didCompleteFocusing focusPoint: CGPoint) {
         completeFocusAnimation(forFocusPoint: focusPoint)
+    }
+}
+
+private protocol TextStoryComposerViewDelegate: AnyObject {
+    func textStoryComposerDidBeginEditing(_ textStoryComposer: TextStoryComposerView)
+    func textStoryComposerDidEndEditing(_ textStoryComposer: TextStoryComposerView)
+    func textStoryComposerDidChange(_ textStoryComposer: TextStoryComposerView)
+}
+
+private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
+
+    weak var delegate: TextStoryComposerViewDelegate?
+
+    init(text: String) {
+        super.init(
+            text: text,
+            textStyle: .regular,
+            textForegroundColor: TextStylingToolbar.defaultColor(forLayout: .textStory).color,
+            textBackgroundColor: nil,
+            background: TextStoryComposerView.defaultBackground,
+            linkPreview: nil
+        )
+
+        // Placeholder Label
+        textPlaceholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(textPlaceholderLabel)
+        addConstraints([
+            textPlaceholderLabel.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
+            textPlaceholderLabel.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
+            textPlaceholderLabel.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
+            textPlaceholderLabel.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
+        ])
+
+        // Prepare text styling toolbar - attached to keyboard.
+        let toolbarSize = textViewAccessoryToolbar.systemLayoutSizeFitting(
+            CGSize(width: UIScreen.main.bounds.width, height: .greatestFiniteMagnitude),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        )
+        textViewAccessoryToolbar.bounds.size = toolbarSize
+        textView.inputAccessoryView = textViewAccessoryToolbar
+
+        // Text View
+        textViewBackgroundView.layer.cornerRadius = LayoutConstants.textBackgroundCornerRadius
+        textViewBackgroundView.addSubview(textView)
+        addSubview(textViewBackgroundView)
+
+        updateTextViewAttributes()
+        updateVisibilityOfComponents(animated: false)
+
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(placeholderTapped)))
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // Slightly smaller vertical margins for UITextView because UITextView
+    // has larger embedded padding above and below the text.
+    private static let textViewBackgroundVMargin = LayoutConstants.textBackgroundVMargin - 8
+    private static let textViewBackgroundHMargin = LayoutConstants.textBackgroundHMargin
+
+    public override func layoutTextContentAndLinkPreview() {
+        super.layoutTextContentAndLinkPreview()
+
+        var textViewSize = textContentSize
+
+        // Min dimensions for an empty text view.
+        textViewSize.width = max(textViewSize.width, 20)
+        textViewSize.height = max(textViewSize.height, 48)
+
+        // Limit text view height to available content height, deducting link preview area height if needed.
+        var linkPreviewAreaHeight: CGFloat = 0
+        if linkPreviewView != nil {
+            linkPreviewAreaHeight = linkPreviewWrapperView.frame.height + LayoutConstants.linkPreviewAreaTopMargin
+        }
+        textViewSize.height = min(
+            textViewSize.height,
+            contentLayoutGuide.layoutFrame.height - linkPreviewAreaHeight - 2 * TextStoryComposerView.textViewBackgroundVMargin
+        )
+
+        // Enable / disable vertical text scrolling if all text doesn't fit the available screen space.
+        if textContentSize.height > textViewSize.height {
+            textView.isScrollEnabled = true
+        } else {
+            textView.isScrollEnabled = false
+        }
+        textView.bounds.size = textViewSize
+
+        textViewBackgroundView.bounds.size = CGSize(
+            width: textViewSize.width + 2 * TextStoryComposerView.textViewBackgroundHMargin,
+            height: textViewSize.height + 2 * TextStoryComposerView.textViewBackgroundVMargin
+        )
+        textViewBackgroundView.center = CGPoint(
+            x: contentLayoutGuide.layoutFrame.center.x,
+            y: contentLayoutGuide.layoutFrame.center.y - 0.5 * linkPreviewAreaHeight
+        )
+        textView.center = textViewBackgroundView.bounds.center
+
+        linkPreviewWrapperView.center = CGPoint(
+            x: linkPreviewWrapperView.center.x,
+            y: textViewBackgroundView.frame.maxY + LayoutConstants.linkPreviewAreaTopMargin + 0.5 * linkPreviewWrapperView.bounds.height
+        )
+    }
+
+    override func calculateTextContentSize() -> CGSize {
+        guard isEditing else {
+            return super.calculateTextContentSize()
+        }
+        let maxTextViewSize = contentLayoutGuide.layoutFrame.insetBy(
+            dx: LayoutConstants.textBackgroundHMargin,
+            dy: TextStoryComposerView.textViewBackgroundVMargin
+        ).size
+        return textView.systemLayoutSizeFitting(
+            maxTextViewSize,
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        )
+    }
+
+    // MARK: -
+
+    override var isEditing: Bool { textView.isFirstResponder }
+
+    var isEmpty: Bool {
+        guard let text = text else { return true }
+        return text.isEmpty && linkPreview == nil
+    }
+
+    // MARK: - Text View
+
+    private lazy var textView: MediaTextView = {
+        let textView = MediaTextView()
+        textView.delegate = self
+        textView.showsVerticalScrollIndicator = false
+        return textView
+    }()
+
+    private let textViewBackgroundView = UIView()
+
+    private lazy var textViewAccessoryToolbar: TextStylingToolbar = {
+        let toolbar = TextStylingToolbar(layout: .textStory)
+        toolbar.preservesSuperviewLayoutMargins = true
+        toolbar.addTarget(self, action: #selector(didChangeTextColor), for: .valueChanged)
+        toolbar.textStyleButton.addTarget(self, action: #selector(didTapTextStyleButton), for: .touchUpInside)
+        toolbar.decorationStyleButton.addTarget(self, action: #selector(didTapDecorationStyleButton), for: .touchUpInside)
+        toolbar.doneButton.addTarget(self, action: #selector(didTapTextViewDoneButton), for: .touchUpInside)
+        return toolbar
+    }()
+
+    private let textPlaceholderLabel: UILabel = {
+        let label = UILabel()
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.textColor = .ows_whiteAlpha60
+        label.font = .ows_dynamicTypeLargeTitle1Clamped
+        label.text = NSLocalizedString("STORY_COMPOSER_TAP_ADD_TEXT",
+                                       value: "Tap to add text",
+                                       comment: "Placeholder text in text stories compose UI")
+        return label
+    }()
+
+    override public func updateVisibilityOfComponents(animated: Bool) {
+        super.updateVisibilityOfComponents(animated: animated)
+
+        let isEditing = isEditing
+        textPlaceholderLabel.setIsHidden(isEditing || !isEmpty, animated: animated)
+        textViewBackgroundView.setIsHidden(!isEditing, animated: animated)
+    }
+
+    private func updateTextViewAttributes() {
+        let text = textView.text.stripped
+        let (fontPointSize, textAlignment) = sizeAndAlignment(forText: text)
+        textView.updateWith(
+            textForegroundColor: textForegroundColor,
+            font: font(for: textStyle, withPointSize: fontPointSize),
+            textAlignment: textAlignment,
+            textDecorationColor: nil,
+            decorationStyle: .none)
+        textViewBackgroundView.backgroundColor = textBackgroundColor
+    }
+
+    private func adjustFontSizeIfNecessary() {
+        guard let currentFontSize = textView.font?.pointSize else { return }
+        let text = textView.text.stripped
+        let desiredFontSize = sizeAndAlignment(forText: text).fontPointSize
+        guard desiredFontSize != currentFontSize else { return }
+        self.text = text
+        updateTextAttributes()
+        updateTextViewAttributes()
+    }
+
+    @objc
+    private func placeholderTapped() {
+        textView.becomeFirstResponder()
+    }
+
+    @objc
+    private func didTapTextStyleButton() {
+        Logger.verbose("")
+
+        let currentTextStyle = textViewAccessoryToolbar.textStyle
+        let nextTextStyle = MediaTextView.TextStyle(rawValue: currentTextStyle.rawValue + 1) ?? .regular
+        textViewAccessoryToolbar.textStyle = nextTextStyle
+
+        textStyle = {
+            switch nextTextStyle {
+            case .regular: return .regular
+            case .bold: return .bold
+            case .serif: return .serif
+            case .script: return .script
+            case .condensed: return .condensed
+            }
+        }()
+
+        updateTextViewAttributes()
+    }
+
+    @objc
+    private func didTapDecorationStyleButton() {
+        Logger.verbose("")
+
+        // Switch between colored text with no background and white text over colored background.
+        let currentDecorationStyle = textViewAccessoryToolbar.decorationStyle
+        let nextDecorationStyle: MediaTextView.DecorationStyle = currentDecorationStyle == .none ? .inverted : .none
+        textViewAccessoryToolbar.decorationStyle = nextDecorationStyle
+
+        // `textViewAccessoryToolbar` defines both foreground and background color for text based on the decoration style.
+        let textForegroundColor = textViewAccessoryToolbar.textForegroundColor
+        let textBackgroundColor = textViewAccessoryToolbar.textBackgroundColor
+        setTextForegroundColor(textForegroundColor, backgroundColor: textBackgroundColor)
+
+        updateTextViewAttributes()
+    }
+
+    @objc
+    private func didChangeTextColor() {
+        Logger.verbose("")
+
+        // Depending on text decoration style color picker changes either color of the text or background color.
+        // That's why we need to update both.
+        let textForegroundColor = textViewAccessoryToolbar.textForegroundColor
+        let textBackgroundColor = textViewAccessoryToolbar.textBackgroundColor
+        setTextForegroundColor(textForegroundColor, backgroundColor: textBackgroundColor)
+
+        updateTextViewAttributes()
+    }
+
+    @objc
+    private func didTapTextViewDoneButton() {
+        Logger.verbose("")
+
+        textView.acceptAutocorrectSuggestion()
+        textView.resignFirstResponder()
+    }
+
+    // MARK: - UITextViewDelegate
+
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        updateVisibilityOfComponents(animated: true)
+        delegate?.textStoryComposerDidBeginEditing(self)
+        setNeedsLayout()
+    }
+
+    func textViewDidEndEditing(_ textView: UITextView) {
+        self.text = textView.text.stripped
+        updateVisibilityOfComponents(animated: true)
+        delegate?.textStoryComposerDidEndEditing(self)
+    }
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        // Truncate the replacement to fit.
+        return TextViewHelper.textView(
+            textView,
+            shouldChangeTextIn: range,
+            replacementText: text,
+            maxGlyphCount: 700
+        )
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+        self.text = textView.text.stripped
+        adjustFontSizeIfNecessary()
+        delegate?.textStoryComposerDidChange(self)
+        setNeedsLayout()
+    }
+
+    // MARK: - Link Preview
+
+    fileprivate var linkPreviewDraft: OWSLinkPreviewDraft? {
+        didSet {
+            if let linkPreviewDraft = linkPreviewDraft {
+                linkPreview = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
+            } else {
+                linkPreview = nil
+            }
+            delegate?.textStoryComposerDidChange(self)
+        }
+    }
+
+    private lazy var deleteLinkPreviewButton: UIButton = {
+        let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "x-24"), backgroundStyle: .blurLight)
+        button.tintColor = Theme.lightThemePrimaryColor
+        button.contentEdgeInsets = UIEdgeInsets(margin: 8)
+        button.layoutMargins = UIEdgeInsets(margin: 2)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(didTapDeleteLinkPreviewButton), for: .touchUpInside)
+        return button
+    }()
+
+    override func reloadLinkPreviewAppearance() {
+        super.reloadLinkPreviewAppearance()
+
+        guard let linkPreviewView = linkPreviewView else { return }
+
+        if deleteLinkPreviewButton.superview == nil {
+            linkPreviewWrapperView.addSubview(deleteLinkPreviewButton)
+        }
+        linkPreviewWrapperView.bringSubviewToFront(deleteLinkPreviewButton)
+        linkPreviewWrapperView.addConstraints([
+            deleteLinkPreviewButton.centerXAnchor.constraint(equalTo: linkPreviewView.trailingAnchor, constant: -5),
+            deleteLinkPreviewButton.centerYAnchor.constraint(equalTo: linkPreviewView.topAnchor, constant: 5)
+        ])
+
+        updateVisibilityOfComponents(animated: true)
+    }
+
+    @objc
+    private func didTapDeleteLinkPreviewButton() {
+        linkPreviewDraft = nil
+    }
+
+    // MARK: - Background
+
+    private var currentBackgroundIndex = 0 {
+        didSet {
+            background = TextStoryComposerView.textBackgrounds[currentBackgroundIndex]
+        }
+    }
+
+    private static var defaultBackground: TextAttachment.Background { textBackgrounds[0] }
+
+    private static var textBackgrounds: [TextAttachment.Background] = [
+        .color(.init(rgbHex: 0x688BD4)),
+        .color(.init(rgbHex: 0x8687C1)),
+        .color(.init(rgbHex: 0xB47F8C)),
+        .color(.init(rgbHex: 0x899188)),
+        .color(.init(rgbHex: 0x539383)),
+        .gradient(.init(colors: [ .init(rgbHex: 0x19A9FA), .init(rgbHex: 0x7097D7), .init(rgbHex: 0xD1998D), .init(rgbHex: 0xFFC369) ])),
+        .gradient(.init(colors: [ .init(rgbHex: 0x4437D8), .init(rgbHex: 0x6B70DE), .init(rgbHex: 0xB774E0), .init(rgbHex: 0xFF8E8E) ])),
+        .gradient(.init(colors: [ .init(rgbHex: 0x004044), .init(rgbHex: 0x2C5F45), .init(rgbHex: 0x648E52), .init(rgbHex: 0x93B864) ]))
+    ]
+
+    func switchToNextBackground() {
+        var nextBackgroundIndex = currentBackgroundIndex + 1
+        if nextBackgroundIndex > TextStoryComposerView.textBackgrounds.count - 1 {
+            nextBackgroundIndex = 0
+        }
+        currentBackgroundIndex = nextBackgroundIndex
     }
 }

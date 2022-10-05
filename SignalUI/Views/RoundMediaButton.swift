@@ -55,6 +55,8 @@ open class RoundMediaButton: UIButton {
         tintColor = Theme.darkThemePrimaryColor
         insetsLayoutMarginsFromSafeArea = false
 
+        setCompressionResistanceHigh()
+
         if backgroundView != nil || customView != nil {
             let backgroundContainerView = PillView()
             backgroundContainerView.isUserInteractionEnabled = false
