@@ -427,7 +427,11 @@ static NSString *_Nullable queryParamForIdentity(OWSIdentity identity)
                                              isSecondaryDevice:(BOOL)isSecondaryDevice
 {
     OWSAssertDebug(authKey.length > 0);
-    uint32_t registrationId = [self.tsAccountManager getOrGenerateRegistrationId];
+
+    __block uint32_t registrationId;
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        registrationId = [self.tsAccountManager getOrGenerateRegistrationIdWithTransaction:transaction];
+    });
 
     OWSAES256Key *profileKey = [self.profileManager localProfileKey];
     NSError *error;

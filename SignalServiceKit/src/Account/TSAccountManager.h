@@ -97,14 +97,6 @@ NSString *NSStringForOWSRegistrationState(OWSRegistrationState value);
                         deviceId:(UInt32)deviceId
                      transaction:(SDSAnyWriteTransaction *)transaction;
 
-/**
- *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled
- *
- *  @return registrationID;
- */
-- (uint32_t)getOrGenerateRegistrationId;
-- (uint32_t)getOrGenerateRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
 - (nullable NSString *)storedDeviceName;
 - (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction;
 
