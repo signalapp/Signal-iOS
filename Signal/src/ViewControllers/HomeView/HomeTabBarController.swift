@@ -116,6 +116,7 @@ class HomeTabBarController: UITabBarController {
     public func setTabBarHidden(
         _ hidden: Bool,
         animated: Bool = true,
+        duration: TimeInterval = 0.15,
         completion: ((Bool) -> Void)? = nil
     ) {
         defer {
@@ -148,7 +149,9 @@ class HomeTabBarController: UITabBarController {
         }
 
         if animated {
-            let animator = UIViewPropertyAnimator(duration: 0.15, curve: .easeOut) {
+            // Unhide for animations.
+            self.tabBar.isHidden = false
+            let animator = UIViewPropertyAnimator(duration: duration, curve: .easeOut) {
                 animations()
             }
             animator.addCompletion({

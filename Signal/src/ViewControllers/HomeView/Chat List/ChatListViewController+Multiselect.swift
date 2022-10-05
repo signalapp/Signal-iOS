@@ -68,6 +68,13 @@ extension ChatListViewController {
             tbc.autoPinEdge(toSuperviewEdge: .bottom)
             viewState.multiSelectState.toolbar = tbc
             let animateToolbar = {
+                // Hack to get the toolbar to update its safe area correctly after any
+                // tab bar hidden state changes. Unclear why this is needed or why it needs
+                // to be async, but without it the toolbar inherits stale safe area insets from
+                // its parent, and its own safe area doesn't line up.
+                DispatchQueue.main.async {
+                    self.adjustToolbarButtons(self.viewState.multiSelectState.toolbar?.toolbar)
+                }
                 UIView.animate(withDuration: 0.25, animations: {
                     tbc.alpha = 1
                 }) { [weak self] (_) in
@@ -75,7 +82,7 @@ extension ChatListViewController {
                 }
             }
             if StoryManager.areStoriesEnabled, let tabController = self.tabBarController as? HomeTabBarController {
-                tabController.setTabBarHidden(true, animated: true) { _ in
+                tabController.setTabBarHidden(true, animated: true, duration: 0.1) { _ in
                     animateToolbar()
                 }
             } else {
@@ -172,9 +179,9 @@ extension ChatListViewController {
             } completion: { [weak self] (_) in
                 toolbar.removeFromSuperview()
                 self?.viewState.multiSelectState.toolbar = nil
-            }
-            if StoryManager.areStoriesEnabled, let tabController = self.tabBarController as? HomeTabBarController {
-                tabController.setTabBarHidden(false, animated: true)
+                if StoryManager.areStoriesEnabled, let tabController = self?.tabBarController as? HomeTabBarController {
+                    tabController.setTabBarHidden(false, animated: true, duration: 0.1)
+                }
             }
         }
     }
