@@ -343,7 +343,7 @@ public class DebugFlags: BaseFlags {
     public static let forceGroupCalling = build.includes(.beta)
 
     @objc
-    public static let forceStories = build.includes(.qa)
+    public static let forceStories = build.includes(.beta)
 
     @objc
     public static let disableMessageProcessing = TestableFlag(false,
