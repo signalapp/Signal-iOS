@@ -516,3 +516,79 @@ extension ChatListViewController: ThreadSwipeHandler {
         updateViewState()
     }
 }
+
+// MARK: - First conversation label
+
+extension ChatListViewController {
+    @objc
+    func updateFirstConversationLabel() {
+        let signalAccounts = suggestedAccountsForFirstContact(maxCount: 3)
+
+        var contactNames = databaseStorage.read { transaction in
+            signalAccounts.map { account in
+                self.contactsManagerImpl.displayName(forSignalAccount: account, transaction: transaction)
+            }
+        }
+
+        let formatString = { () -> String in
+            switch contactNames.count {
+            case 0:
+                return OWSLocalizedString(
+                    "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS",
+                    comment: "A label offering to start a new conversation with your contacts, if you have no Signal contacts."
+                )
+            case 1:
+                return OWSLocalizedString(
+                    "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT",
+                    comment: "Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}."
+                )
+            case 2:
+                return OWSLocalizedString(
+                    "HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT",
+                    comment: "Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}."
+                )
+            case 3:
+                break
+            default:
+                owsFailDebug("Unexpectedly had \(contactNames.count) names, expected at most 3!")
+                contactNames = Array(contactNames.prefix(3))
+            }
+
+            return OWSLocalizedString(
+                "HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT",
+                comment: "Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}."
+            )
+        }()
+
+        let attributedString = NSAttributedString.make(
+            fromFormat: formatString,
+            attributedFormatArgs: contactNames.map { name in
+                return .string(name, attributes: [.font: firstConversationLabel.font.ows_semibold])
+            }
+        )
+
+        firstConversationLabel.attributedText = attributedString
+    }
+
+    private func suggestedAccountsForFirstContact(maxCount: UInt) -> [SignalAccount] {
+        // Load all signal accounts even though we only need the first N;
+        // we want the returned value to be stable so we need to sort.
+        let sortedSignalAccounts = contactsManagerImpl.sortedSignalAccountsWithSneakyTransaction()
+
+        // Get up to 3 accounts to suggest, excluding ourselves.
+        var suggestedAccounts = [SignalAccount]()
+        for account in sortedSignalAccounts {
+            guard suggestedAccounts.count < maxCount else {
+                break
+            }
+
+            guard !account.recipientAddress.isLocalAddress else {
+                continue
+            }
+
+            suggestedAccounts.append(account)
+        }
+
+        return suggestedAccounts
+    }
+}

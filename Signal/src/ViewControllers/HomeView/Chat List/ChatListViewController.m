@@ -46,8 +46,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic) UIView *emptyInboxView;
 
-@property (nonatomic) UILabel *firstConversationLabel;
-
 // Get Started banner
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 @property (nonatomic, nullable) OWSGetStartedBannerViewController *getStartedBanner;
@@ -266,109 +264,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSLogInfo(@"");
 
     [self showNewConversationView];
-}
-
-- (NSArray<SignalAccount *> *)suggestedAccountsForFirstContact
-{
-    // Load all signal accounts even though we only need the first N;
-    // we want the returned value to be stable so we need to sort.
-    NSArray<SignalAccount *> *sortedSignalAccounts = [self.contactsManagerImpl sortedSignalAccountsWithSneakyTransaction];
-    
-    NSMutableArray<SignalAccount *> *accounts = [NSMutableArray new];
-    for (SignalAccount *account in sortedSignalAccounts) {
-        if (account.recipientAddress.isLocalAddress) {
-            continue;
-        }
-        if (accounts.count >= 3) {
-            break;
-        }
-        [accounts addObject:account];
-    }
-
-    return [accounts copy];
-}
-
-- (void)updateFirstConversationLabel
-{
-    NSArray<SignalAccount *> *signalAccounts = self.suggestedAccountsForFirstContact;
-
-    __block NSString *formatString = @"";
-    NSMutableArray<NSString *> *contactNames = [NSMutableArray new];
-    
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        if (signalAccounts.count >= 3) {
-            [contactNames addObject:[self.contactsManagerImpl displayNameForSignalAccount:signalAccounts[0]
-                                                                              transaction:transaction]];
-            [contactNames addObject:[self.contactsManagerImpl displayNameForSignalAccount:signalAccounts[1]
-                                                                              transaction:transaction]];
-            [contactNames addObject:[self.contactsManagerImpl displayNameForSignalAccount:signalAccounts[2]
-                                                                              transaction:transaction]];
-            
-            formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT",
-                                             @"Format string for a label offering to start a new conversation with your contacts, if you have at least "
-                                             @"3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}.");
-        } else if (signalAccounts.count == 2) {
-            [contactNames addObject:[self.contactsManagerImpl displayNameForSignalAccount:signalAccounts[0]
-                                                                              transaction:transaction]];
-            [contactNames addObject:[self.contactsManagerImpl displayNameForSignalAccount:signalAccounts[1]
-                                                                              transaction:transaction]];
-            
-            formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT",
-                                             @"Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal "
-                                             @"contacts.  Embeds {{The names of 2 of your Signal contacts}}.");
-        } else if (signalAccounts.count == 1) {
-            [contactNames addObject:[self.contactsManagerImpl displayNameForSignalAccount:signalAccounts[0]
-                                                                              transaction:transaction]];
-            
-            formatString = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT",
-                                             @"Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal "
-                                             @"contact.  Embeds {{The name of 1 of your Signal contacts}}.");
-        }
-    }];
-
-    NSString *embedToken = @"%@";
-    NSArray<NSString *> *formatSplits = [formatString componentsSeparatedByString:embedToken];
-    // We need to use a complicated format string that possibly embeds multiple contact names.
-    // Translator error could easily lead to an invalid format string.
-    // We need to verify that it was translated properly.
-    BOOL isValidFormatString = (contactNames.count > 0 && formatSplits.count == contactNames.count + 1);
-    for (NSString *contactName in contactNames) {
-        if ([contactName containsString:embedToken]) {
-            isValidFormatString = NO;
-        }
-    }
-
-    NSMutableAttributedString *_Nullable attributedString = nil;
-    if (isValidFormatString) {
-        attributedString = [[NSMutableAttributedString alloc] initWithString:formatString];
-        while (contactNames.count > 0) {
-            NSString *contactName = contactNames.firstObject;
-            [contactNames removeObjectAtIndex:0];
-
-            NSRange range = [attributedString.string rangeOfString:embedToken];
-            if (range.location == NSNotFound) {
-                // Error
-                attributedString = nil;
-                break;
-            }
-
-            NSAttributedString *formattedName =
-                [[NSAttributedString alloc] initWithString:contactName
-                                                attributes:@{
-                                                    NSFontAttributeName : self.firstConversationLabel.font.ows_semibold,
-                                                }];
-            [attributedString replaceCharactersInRange:range withAttributedString:formattedName];
-        }
-    }
-
-    if (!attributedString) {
-        // The default case handles the no-contacts scenario and all error cases.
-        NSString *defaultText = NSLocalizedString(@"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS",
-            @"A label offering to start a new conversation with your contacts, if you have no Signal contacts.");
-        attributedString = [[NSMutableAttributedString alloc] initWithString:defaultText];
-    }
-
-    self.firstConversationLabel.attributedText = [attributedString copy];
 }
 
 - (void)viewDidLoad
