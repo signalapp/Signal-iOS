@@ -75,7 +75,6 @@ final class ReactionContainerView: UIView {
         arrow.pin(.top, to: .top, of: result)
         arrow.pin(.leading, to: .leading, of: result)
         arrow.pin(.bottom, to: .bottom, of: result)
-//        arrow.set(.width, to: Self.arrowSize.width)
         
         textLabel.pin(.top, to: .top, of: result)
         textLabel.pin(.leading, to: .trailing, of: arrow, withInset: ReactionContainerView.arrowSpacing)
