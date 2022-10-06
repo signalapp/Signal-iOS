@@ -66,16 +66,19 @@ public enum ThemeIcon: UInt {
     case attachmentPayment
 
     case messageActionReply
-    case messageActionForward
+    case messageActionForward20
+    case messageActionForward24
     case messageActionCopy
-    case messageActionShare
+    case messageActionShare20
+    case messageActionShare24
     case messageActionDelete
     case messageActionSave20
     case messageActionSave24
     case messageActionSelect
 
     case contextMenuSelect
-    case contextMenuInfo
+    case contextMenuInfo20
+    case contextMenuInfo24
 
     case privateStory40
 
@@ -90,16 +93,19 @@ public enum ThemeIcon: UInt {
     case cancel20
     case search20
 
+    case trash20
     case trash24
     case copy24
     case color24
     case text24
     case cancel24
     case xCircle24
+    case open20
     case open24
     case more16
     case more24
 
+    case checkCircle20
     case checkCircle24
     case message
     case audioCall
@@ -155,6 +161,7 @@ public enum ThemeIcon: UInt {
 
     case profilePlaceholder
 
+    case hide20
     case hide24
 }
 
@@ -314,11 +321,15 @@ public extension Theme {
             return "payments-outline-32"
         case .messageActionReply:
             return isDarkThemeEnabled ? "reply-filled-24" : "reply-outline-24"
-        case .messageActionForward:
+        case .messageActionForward20:
+            return isDarkThemeEnabled ? "forward-solid-20" : "forward-outline-20"
+        case .messageActionForward24:
             return isDarkThemeEnabled ? "forward-solid-24" : "forward-outline-24"
         case .messageActionCopy:
             return isDarkThemeEnabled ? "copy-solid-24" : "ic_copy"
-        case .messageActionShare:
+        case .messageActionShare20:
+            return isDarkThemeEnabled ? "share-solid-20" : "share-outline-20"
+        case .messageActionShare24:
             return isDarkThemeEnabled ? "share-solid-24" : "share-outline-24"
         case .messageActionSpeak:
             return "speaker-solid-28"
@@ -334,7 +345,9 @@ public extension Theme {
             return "select-24"
         case .contextMenuSelect:
             return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"
-        case .contextMenuInfo:
+        case .contextMenuInfo20:
+            return isDarkThemeEnabled ? "info-solid-20" : "info-outline-20"
+        case .contextMenuInfo24:
             return isDarkThemeEnabled ? "info-solid-24" : "info-outline-24"
         case .compose24:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
@@ -360,6 +373,8 @@ public extension Theme {
             return "search-20"
         case .xCircle24:
             return isDarkThemeEnabled ? "x-circle-solid-24" : "x-circle-outline-24"
+        case .open20:
+            return isDarkThemeEnabled ? "open-solid-20" : "open-outline-20"
         case .open24:
             return isDarkThemeEnabled ? "open-solid-24" : "open-outline-24"
         case .more16:
@@ -367,6 +382,8 @@ public extension Theme {
         case .more24:
             return "more-horiz-24"
 
+        case .trash20:
+            return isDarkThemeEnabled ? "trash-solid-20" : "trash-outline-20"
         case .trash24:
             return isDarkThemeEnabled ? "trash-solid-24" : "trash-outline-24"
         case .copy24:
@@ -376,6 +393,8 @@ public extension Theme {
         case .text24:
             return "text-24"
 
+        case .checkCircle20:
+            return isDarkThemeEnabled ? "check-circle-solid-20" : "check-circle-outline-20"
         case .checkCircle24:
             return isDarkThemeEnabled ? "check-circle-solid-24" : "check-circle-outline-24"
         case .message:
@@ -480,6 +499,8 @@ public extension Theme {
         case .profilePlaceholder:
             return isDarkThemeEnabled ? "profile-placeholder-dark-56" : "profile-placeholder-56"
 
+        case .hide20:
+            return isDarkThemeEnabled ? "hide-solid-20" : "hide-outline-20"
         case .hide24:
             return isDarkThemeEnabled ? "hide-solid-24" : "hide-outline-24"
         }

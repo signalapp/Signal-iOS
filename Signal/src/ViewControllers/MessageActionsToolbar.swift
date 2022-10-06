@@ -48,13 +48,13 @@ public class MessageAction: NSObject {
         case .copy:
             return Theme.iconImage(.messageActionCopy)
         case .info:
-            return Theme.iconImage(.contextMenuInfo)
+            return Theme.iconImage(.contextMenuInfo24)
         case .delete:
             return Theme.iconImage(.messageActionDelete)
         case .share:
-            return Theme.iconImage(.messageActionShare)
+            return Theme.iconImage(.messageActionShare24)
         case .forward:
-            return Theme.iconImage(.messageActionForward)
+            return Theme.iconImage(.messageActionForward24)
         case .select:
             return Theme.iconImage(.contextMenuSelect)
         case .speak:

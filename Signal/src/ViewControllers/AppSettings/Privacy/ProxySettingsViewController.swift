@@ -124,7 +124,7 @@ class ProxySettingsViewController: OWSTableViewController2, OWSNavigationView {
         let shareSection = OWSTableSection()
         shareSection.add(.init(
             customCellBlock: {
-                let cell = OWSTableItem.buildImageNameCell(image: Theme.iconImage(.messageActionShare), itemName: CommonStrings.shareButton)
+                let cell = OWSTableItem.buildImageNameCell(image: Theme.iconImage(.messageActionShare24), itemName: CommonStrings.shareButton)
                 cell.selectionStyle = .none
 
                 if !useProxy {
