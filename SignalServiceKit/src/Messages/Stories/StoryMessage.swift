@@ -75,6 +75,10 @@ public final class StoryMessage: NSObject, SDSCodableModel {
         }
     }
 
+    public var isViewed: Bool {
+        return localUserViewedTimestamp != nil
+    }
+
     public var remoteViewCount: Int {
         switch manifest {
         case .incoming:

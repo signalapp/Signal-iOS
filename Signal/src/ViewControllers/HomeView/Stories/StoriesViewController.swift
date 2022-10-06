@@ -26,7 +26,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
 
     private lazy var dataSource = StoryListDataSource(delegate: self)
 
-    private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self)
+    private lazy var contextMenuGenerator = StoryContextMenuGenerator(presentingController: self, delegate: self)
 
     override init() {
         super.init()
@@ -239,6 +239,53 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate {
         let vc = StoryPrivacySettingsViewController()
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
     }
+
+    // MARK: - Scrolling after reload
+
+    private enum ScrollTarget {
+        // Scroll to a section so its first cell is at the top.
+        case section(Section)
+        // Scroll to a context, optionally restricted to a given section.
+        // Highlights after scroll.
+        case context(StoryContext, section: Section?)
+    }
+
+    private var scrollTarget: ScrollTarget?
+
+    public func tableViewDidUpdate() {
+        guard let scrollTarget = scrollTarget else {
+            return
+        }
+        switch scrollTarget {
+        case .section(let section):
+            guard tableView.numberOfRows(inSection: section.rawValue) > 0 else {
+                return
+            }
+            tableView.scrollToRow(at: IndexPath(item: 0, section: section.rawValue), at: .top, animated: true)
+            self.scrollTarget = nil
+        case let .context(context, sectionConstraint):
+            let section: Section
+            let index: Int
+            if
+                sectionConstraint ?? .visibleStories == .visibleStories,
+                let visibleStoryIndex = dataSource.visibleStories.firstIndex(where: { $0.context == context }) {
+                section = .visibleStories
+                index = visibleStoryIndex
+            } else if
+                sectionConstraint ?? .hiddenStories == .hiddenStories,
+                let hiddenStoryIndex = dataSource.hiddenStories.firstIndex(where: { $0.context == context }),
+                !dataSource.isHiddenStoriesSectionCollapsed {
+                section = .hiddenStories
+                index = hiddenStoryIndex
+            } else {
+                // Not found.
+                return
+            }
+            let indexPath = IndexPath(row: index, section: section.rawValue)
+            tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+            self.scrollTarget = nil
+        }
+    }
 }
 
 extension StoriesViewController: CameraFirstCaptureDelegate {
@@ -265,7 +312,12 @@ extension StoriesViewController: UITableViewDelegate {
         case .hiddenStories:
             if indexPath.row == 0 {
                 // Tapping the collapsing header.
-                dataSource.isHiddenStoriesSectionCollapsed = !dataSource.isHiddenStoriesSectionCollapsed
+                let wasCollapsed = dataSource.isHiddenStoriesSectionCollapsed
+                dataSource.isHiddenStoriesSectionCollapsed = !wasCollapsed
+                if wasCollapsed {
+                    // Scroll to it once we reload.
+                    self.scrollTarget = .section(.hiddenStories)
+                }
             } else {
                 fallthrough
             }
@@ -301,7 +353,11 @@ extension StoriesViewController: UITableViewDelegate {
                 .filter { startedFromHidden == $0.isHidden }
                 .map(\.context)
 
-            let vc = StoryPageViewController(context: model.context, viewableContexts: viewableContexts)
+            let vc = StoryPageViewController(
+                context: model.context,
+                viewableContexts: viewableContexts,
+                hiddenStoryFilter: startedFromHidden
+            )
             vc.contextDataSource = self
             presentFullScreen(vc, animated: true)
         case .none:
@@ -462,7 +518,29 @@ extension StoriesViewController: UITableViewDataSource {
 }
 
 extension StoriesViewController: StoryPageViewControllerDataSource {
-    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
-        return dataSource.threadSafeStoryContexts
+    func storyPageViewControllerAvailableContexts(
+        _ storyPageViewController: StoryPageViewController,
+        hiddenStoryFilter: Bool?
+    ) -> [StoryContext] {
+        if hiddenStoryFilter == true {
+            return dataSource.threadSafeHiddenStoryContexts
+        } else if hiddenStoryFilter == false {
+            return dataSource.threadSafeVisibleStoryContexts
+        } else {
+            return dataSource.threadSafeStoryContexts
+        }
+    }
+}
+
+extension StoriesViewController: StoryContextMenuDelegate {
+
+    func storyContextMenuDidUpdateHiddenState(_ message: StoryMessage, isHidden: Bool) -> Bool {
+        if isHidden {
+            // Uncollapse so we can scroll to the section.
+            dataSource.isHiddenStoriesSectionCollapsed = false
+        }
+        self.scrollTarget = .context(message.context, section: isHidden ? .hiddenStories : .visibleStories)
+        // Don't show a toast, we have the scroll action.
+        return false
     }
 }

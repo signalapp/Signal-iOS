@@ -16,7 +16,27 @@ protocol StoryContextMenuDelegate: AnyObject {
     /// and call the completion block to proceed with deletion.
     func storyContextMenuWillDelete(_ completion: @escaping () -> Void)
 
+    /// Called when a story is hidden or unhidden via context action.
+    /// Returns - true if a toast should be shown, false for no toast. Defaults true.
+    func storyContextMenuDidUpdateHiddenState(_ message: StoryMessage, isHidden: Bool) -> Bool
+
     func storyContextMenuDidFinishDisplayingFollowups()
+}
+
+extension StoryContextMenuDelegate {
+    func storyContextMenuWillNavigateToConversation(_ completion: @escaping () -> Void) {
+        completion()
+    }
+
+    func storyContextMenuWillDelete(_ completion: @escaping () -> Void) {
+        completion()
+    }
+
+    func storyContextMenuDidUpdateHiddenState(_ message: StoryMessage, isHidden: Bool) -> Bool {
+        return true
+    }
+
+    func storyContextMenuDidFinishDisplayingFollowups() {}
 }
 
 class StoryContextMenuGenerator: Dependencies {
@@ -344,7 +364,9 @@ extension StoryContextMenuGenerator {
                 comment: "Toast shown when a story is successfuly unhidden"
             )
         }
-        presentingController?.presentToast(text: toastText)
+        if delegate?.storyContextMenuDidUpdateHiddenState(message, isHidden: shouldHide) ?? true {
+            presentingController?.presentToast(text: toastText)
+        }
     }
 }
 

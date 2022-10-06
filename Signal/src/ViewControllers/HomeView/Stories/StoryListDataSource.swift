@@ -10,6 +10,8 @@ protocol StoryListDataSourceDelegate: AnyObject {
 
     // If null, will still load data but won't update the tableview.
     var tableViewIfLoaded: UITableView? { get }
+
+    func tableViewDidUpdate()
 }
 
 class StoryListDataSource: NSObject, Dependencies {
@@ -57,6 +59,14 @@ class StoryListDataSource: NSObject, Dependencies {
         return syncingModels.threadSafeStoryContexts
     }
 
+    var threadSafeVisibleStoryContexts: [StoryContext] {
+        return syncingModels.threadSafeVisibleStoryContexts
+    }
+
+    var threadSafeHiddenStoryContexts: [StoryContext] {
+        return syncingModels.threadSafeHiddenStoryContexts
+    }
+
     public var isHiddenStoriesSectionCollapsed: Bool {
         get {
             return syncingModels.exposedModel.isHiddenStoriesSectionCollapsed
@@ -99,6 +109,7 @@ class StoryListDataSource: NSObject, Dependencies {
             } sync: { _ in
                 self.tableView?.reloadData()
                 self.observeAssociatedDataChangesForAvailableModels()
+                self.delegate?.tableViewDidUpdate()
             }
         }
     }
@@ -415,13 +426,13 @@ class StoryListDataSource: NSObject, Dependencies {
     }
 
     // Sort story models for display.
-    // * We show system stories first, then other stories. Within each bucket:
-    //   * We show unviewed stories first, sorted by their sent timestamp, with the most recently sent at the top
-    //   * We then show viewed stories, sorted by when they were viewed, with the most recently viewed at the top
+    // * We show unviewed stories first, sorted by their sent timestamp, with the most recently sent at the top
+    //   * Any system story context with all its stories unviewed is always sorted at the top.
+    // * We then show viewed stories, sorted by when they were viewed, with the most recently viewed at the top
     private static func sortStoryModels(lhs: StoryViewModel, rhs: StoryViewModel) -> Bool {
-        if lhs.isSystemStory {
+        if lhs.isSystemStory && lhs.messages.allSatisfy(\.isViewed.negated) {
             return true
-        } else if rhs.isSystemStory {
+        } else if rhs.isSystemStory && rhs.messages.allSatisfy(\.isViewed.negated) {
             return false
         } else if
             let lhsViewedTimestamp = lhs.latestMessageViewedTimestamp,
@@ -468,6 +479,7 @@ class StoryListDataSource: NSObject, Dependencies {
         tableView.beginUpdates()
         defer {
             tableView.endUpdates()
+            self.delegate?.tableViewDidUpdate()
         }
 
         if changes.oldModel.myStory == nil, changes.newModel.myStory != nil {
@@ -639,6 +651,9 @@ private class SyncingStoryListViewModel {
     // callbacks in the story viewer.
     private var _threadSafeStoryContexts = AtomicArray<StoryContext>()
 
+    private var _threadSafeVisibleStoryContexts = AtomicArray<StoryContext>()
+    private var _threadSafeHiddenStoryContexts = AtomicArray<StoryContext>()
+
     init(loadingQueue: DispatchQueue) {
         self.loadingQueue = loadingQueue
     }
@@ -665,6 +680,8 @@ private class SyncingStoryListViewModel {
         trueModel.wrappedValue = changes.newModel
         DispatchQueue.main.async {
             self._threadSafeStoryContexts.set(changes.newModel.stories.map(\.context))
+            self._threadSafeVisibleStoryContexts.set(changes.newModel.stories.lazy.filter(\.isHidden.negated).map(\.context))
+            self._threadSafeHiddenStoryContexts.set(changes.newModel.stories.lazy.filter(\.isHidden).map(\.context))
             self.exposedModel = changes.newModel
             sync(changes)
         }
@@ -673,6 +690,8 @@ private class SyncingStoryListViewModel {
     }
 
     var threadSafeStoryContexts: [StoryContext] { _threadSafeStoryContexts.get() }
+    var threadSafeVisibleStoryContexts: [StoryContext] { _threadSafeVisibleStoryContexts.get() }
+    var threadSafeHiddenStoryContexts: [StoryContext] { _threadSafeHiddenStoryContexts.get() }
 }
 
 // MARK: - StoryContexts

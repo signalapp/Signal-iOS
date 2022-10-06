@@ -302,7 +302,10 @@ extension MyStoriesViewController: ForwardMessageDelegate {
 }
 
 extension MyStoriesViewController: StoryPageViewControllerDataSource {
-    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext] {
+    func storyPageViewControllerAvailableContexts(
+        _ storyPageViewController: StoryPageViewController,
+        hiddenStoryFilter: Bool?
+    ) -> [StoryContext] {
         items.orderedKeys.map { $0.storyContext }
     }
 }
