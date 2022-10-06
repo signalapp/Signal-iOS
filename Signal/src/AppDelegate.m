@@ -218,12 +218,15 @@ static void uncaughtExceptionHandler(NSException *exception)
         return YES;
     }
 
-    [self launchToHomeScreenWithLaunchOptions:launchOptions instrumentsMonitorId:monitorId];
+    [self launchToHomeScreenWithLaunchOptions:launchOptions
+                         instrumentsMonitorId:monitorId
+                    isEnvironmentAlreadySetUp:NO];
     return YES;
 }
 
 - (BOOL)launchToHomeScreenWithLaunchOptions:(NSDictionary *_Nullable)launchOptions
                        instrumentsMonitorId:(unsigned long long)monitorId
+                  isEnvironmentAlreadySetUp:(BOOL)isEnvironmentAlreadySetUp
 {
     [self setupNSEInteroperation];
 
@@ -237,17 +240,8 @@ static void uncaughtExceptionHandler(NSException *exception)
     AppReadinessRunNowOrWhenMainAppDidBecomeReadyAsync(
         ^{ [[CurrentAppContext() appUserDefaults] removeObjectForKey:kAppLaunchesAttemptedKey]; });
 
-    [AppSetup setupEnvironmentWithPaymentsEvents:[PaymentsEventsMainApp new]
-                                mobileCoinHelper:[MobileCoinHelperSDK new]
-                                webSocketFactory:[WebSocketFactoryHybrid new]
-                       appSpecificSingletonBlock:^{
-            // Create SUIEnvironment.
-            [SUIEnvironment.shared setup];
-            // Create AppEnvironment.
-            [AppEnvironment.shared setup];
-            [SignalApp.shared setup];
-        }
-        migrationCompletion:^(NSError *_Nullable error) {
+    if (!isEnvironmentAlreadySetUp) {
+        [AppDelegate setUpMainAppEnvironmentWithCompletion:^(NSError *_Nullable error) {
             OWSAssertIsOnMainThread();
 
             if (error != nil) {
@@ -257,6 +251,7 @@ static void uncaughtExceptionHandler(NSException *exception)
                 [self versionMigrationsDidComplete];
             }
         }];
+    }
 
     [UIUtil setupSignalAppearence];
 

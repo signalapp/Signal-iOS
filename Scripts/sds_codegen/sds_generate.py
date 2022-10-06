@@ -1264,6 +1264,15 @@ extension %s: SDSModel {
     public static var table: SDSTableMetadata {
         %sSerializer.table
     }
+
+    public class func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
+    }
 }
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
 

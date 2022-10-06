@@ -407,6 +407,15 @@ public extension SDSCodableModel {
         )
     }
 
+    static func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
+    }
+
     // Traverses all records' unique ids.
     // Records are not visited in any particular order.
     static func anyEnumerateUniqueIds(

@@ -148,6 +148,15 @@ extension SignalRecipient: SDSModel {
     public static var table: SDSTableMetadata {
         SignalRecipientSerializer.table
     }
+
+    public class func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
+    }
 }
 
 // MARK: - DeepCopyable

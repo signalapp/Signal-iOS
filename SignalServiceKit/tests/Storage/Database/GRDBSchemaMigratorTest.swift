@@ -12,7 +12,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             delegate: DatabaseTestHelpers.TestSDSDatabaseStorageDelegate()
         )
 
-        GRDBSchemaMigrator.migrateDatabase(
+        try GRDBSchemaMigrator.migrateDatabase(
             databaseStorage: databaseStorage,
             isMainDatabase: false
         )

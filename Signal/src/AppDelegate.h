@@ -26,7 +26,8 @@ extern NSString *const kAppLaunchesAttemptedKey;
 @property (nonatomic, readwrite) BOOL shouldKillAppWhenBackgrounded;
 
 - (BOOL)launchToHomeScreenWithLaunchOptions:(NSDictionary *_Nullable)launchOptions
-                       instrumentsMonitorId:(unsigned long long)monitorId;
+                       instrumentsMonitorId:(unsigned long long)monitorId
+                  isEnvironmentAlreadySetUp:(BOOL)isEnvironmentAlreadySetUp;
 
 @end
 

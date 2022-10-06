@@ -266,14 +266,4 @@ public class SSKPreferences: NSObject {
     public static func setShouldKeepMutedChatsArchived(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
         store.setBool(newValue, key: shouldKeepMutedChatsArchivedKey, transaction: transaction)
     }
-
-    private static var hasGrdbDatabaseCorruptionKey: String { "hasGrdbDatabaseCorruption" }
-    @objc
-    public static func hasGrdbDatabaseCorruption() -> Bool {
-        let appUserDefaults = CurrentAppContext().appUserDefaults()
-        guard let preference = appUserDefaults.object(forKey: hasGrdbDatabaseCorruptionKey) as? NSNumber else {
-            return false
-        }
-        return preference.boolValue
-    }
 }

@@ -169,14 +169,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super setContactsManagerRef:contactsManager];
 }
 
-- (void)configureGrdb
-{
-    OWSAssertIsOnMainThread();
-
-    SDSDatabaseStorage *mainDatabase = self.databaseStorage;
-    [GRDBSchemaMigrator migrateDatabase:mainDatabase isMainDatabase:true];
-}
-
 @end
 
 #endif

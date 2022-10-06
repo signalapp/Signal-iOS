@@ -344,6 +344,15 @@ extension TSAttachment: SDSModel {
     public static var table: SDSTableMetadata {
         TSAttachmentSerializer.table
     }
+
+    public class func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
+    }
 }
 
 // MARK: - DeepCopyable

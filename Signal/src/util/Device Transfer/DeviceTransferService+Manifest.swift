@@ -210,8 +210,7 @@ extension DeviceTransferService {
         // Check if there is enough space on disk to receive the transfer
 
         guard let freeSpaceInBytes = try? OWSFileSystem.freeSpaceInBytes(
-            forPath: DeviceTransferService.pendingTransferDirectory.path,
-            fileManager: FileManager.default
+            forPath: DeviceTransferService.pendingTransferDirectory
         ) else {
             return self.failTransfer(.assertion, "failed to calculate available disk space")
         }

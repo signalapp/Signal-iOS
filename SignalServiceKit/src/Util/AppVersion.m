@@ -122,6 +122,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
     OWSLogInfo(@"lastCompletedLaunchSAEAppVersion: %@", self.lastCompletedLaunchSAEAppVersion);
     OWSLogInfo(@"lastCompletedLaunchNSEAppVersion: %@", self.lastCompletedLaunchNSEAppVersion);
 
+    OWSLogInfo(@"Database corruption state: %@", self.databaseCorruptionStateString);
+
     OWSLogInfo(@"iOS Version: %@", [[self class] iOSVersionString]);
 
     NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];

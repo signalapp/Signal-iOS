@@ -1133,6 +1133,7 @@
 		F900F2DD27F25AB400431E09 /* DonationReceiptViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */; };
 		F903C29B28EC7AE60035B42B /* TSAccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */; };
 		F9066F0727ECE41B008C9530 /* DonationReceiptsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */; };
+		F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */; };
 		F908AA7D28CE629700472E68 /* test-apng.png in Resources */ = {isa = PBXBuildFile; fileRef = F908AA7C28CE629700472E68 /* test-apng.png */; };
 		F908AA8028CE7F8D00472E68 /* TSGroupThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7F28CE7F8D00472E68 /* TSGroupThreadTest.swift */; };
 		F92074762888648A00B7F087 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F92074752888648A00B7F087 /* AppDelegate.swift */; };
@@ -1230,6 +1231,7 @@
 		F94262A2289B1B5600460798 /* SSKBaseTestSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */; };
 		F94BFA9528EBB0D800A5F34E /* FakeMessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */; };
 		F94D12FF28BD0DD900B2C478 /* SpeechManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */; };
+		F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */; };
 		F95427E6286E042200314EDA /* BadgeGiftingThanksSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */; };
 		F96A534328A1AE7C003262D4 /* OutgoingGroupUpdateMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */; };
 		F97217F628DC9A5000113D9F /* OWSFileSystemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217F528DC9A5000113D9F /* OWSFileSystemTest.swift */; };
@@ -1238,6 +1240,7 @@
 		F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */; };
 		F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */; };
 		F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180128DCFDF100113D9F /* TSContactThreadTest.swift */; };
+		F972180628DE37A200113D9F /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180528DE37A200113D9F /* AppVersion.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
@@ -1269,9 +1272,12 @@
 		F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4D28948656004E07B7 /* GTSR4.crt */; };
 		F9B0DC6028948656004E07B7 /* textsecure.cer in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4E28948656004E07B7 /* textsecure.cer */; };
 		F9B652BC28D514E6006914CA /* RecipientPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */; };
+		F9B652C128D8CB75006914CA /* DatabaseRecoveryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B652C028D8CB75006914CA /* DatabaseRecoveryViewController.swift */; };
+		F9B652C328D8E3DF006914CA /* DatabaseRecovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */; };
 		F9B93CDC28E1FE3500B3F8A0 /* SignalProxyTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B93CDB28E1FE3500B3F8A0 /* SignalProxyTest.swift */; };
 		F9B93CE028E246D900B3F8A0 /* AppDelegateTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9B93CDF28E246D900B3F8A0 /* AppDelegateTest.swift */; };
 		F9BC0A2527FB8E730085B23D /* AppSettingsViewsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */; };
+		F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */; };
 		F9C5C89F289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
 		F9C5C8A7289451B900548EEE /* SignalServiceKit.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C899289451B900548EEE /* SignalServiceKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5C8AA289451B900548EEE /* SignalServiceKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9C5C897289451B900548EEE /* SignalServiceKit.framework */; };
@@ -3457,6 +3463,7 @@
 		F900F2DC27F25AB300431E09 /* DonationReceiptViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptViewController.swift; sourceTree = "<group>"; };
 		F903C29A28EC7AE60035B42B /* TSAccountManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSAccountManagerTest.swift; sourceTree = "<group>"; };
 		F9066F0627ECE41B008C9530 /* DonationReceiptsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptsViewController.swift; sourceTree = "<group>"; };
+		F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBDatabaseStorageAdapterTest.swift; sourceTree = "<group>"; };
 		F908AA7728CB894400472E68 /* PngChunkerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunkerTest.swift; sourceTree = "<group>"; };
 		F908AA7928CB89CC00472E68 /* PngChunker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PngChunker.swift; sourceTree = "<group>"; };
 		F908AA7C28CE629700472E68 /* test-apng.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-apng.png"; sourceTree = "<group>"; };
@@ -3555,6 +3562,7 @@
 		F942623A289B1B5500460798 /* SSKBaseTestSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = SSKBaseTestSwift.swift; path = SignalServiceKit/tests/SSKBaseTestSwift.swift; sourceTree = SOURCE_ROOT; };
 		F94BFA9428EBB0D800A5F34E /* FakeMessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeMessageSender.swift; sourceTree = "<group>"; };
 		F94D12FE28BD0DD900B2C478 /* SpeechManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechManager.swift; sourceTree = "<group>"; };
+		F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryTest.swift; sourceTree = "<group>"; };
 		F95427E5286E042200314EDA /* BadgeGiftingThanksSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingThanksSheet.swift; sourceTree = "<group>"; };
 		F965C5B87BFDF8F86556C04C /* Pods-SignalNSE.profiling.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalNSE.profiling.xcconfig"; path = "Pods/Target Support Files/Pods-SignalNSE/Pods-SignalNSE.profiling.xcconfig"; sourceTree = "<group>"; };
 		F96A534228A1AE7B003262D4 /* OutgoingGroupUpdateMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessage.swift; sourceTree = "<group>"; };
@@ -3564,6 +3572,7 @@
 		F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRDBSchemaMigratorTest.swift; sourceTree = "<group>"; };
 		F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTestHelpers.swift; sourceTree = "<group>"; };
 		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
+		F972180528DE37A200113D9F /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
@@ -3592,10 +3601,13 @@
 		F9B0DC4D28948656004E07B7 /* GTSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GTSR4.crt; sourceTree = "<group>"; };
 		F9B0DC4E28948656004E07B7 /* textsecure.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = textsecure.cer; sourceTree = "<group>"; };
 		F9B652BB28D514E6006914CA /* RecipientPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerViewController.swift; sourceTree = "<group>"; };
+		F9B652C028D8CB75006914CA /* DatabaseRecoveryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseRecoveryViewController.swift; sourceTree = "<group>"; };
+		F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseRecovery.swift; sourceTree = "<group>"; };
 		F9B93CDB28E1FE3500B3F8A0 /* SignalProxyTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalProxyTest.swift; sourceTree = "<group>"; };
 		F9B93CDF28E246D900B3F8A0 /* AppDelegateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegateTest.swift; sourceTree = "<group>"; };
 		F9BC0A2427FB8E730085B23D /* AppSettingsViewsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsViewsUtil.swift; sourceTree = "<group>"; };
 		F9BC9C6428B7C00A0077D442 /* OutgoingGroupUpdateMessageTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutgoingGroupUpdateMessageTest.swift; sourceTree = "<group>"; };
+		F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockSSKEnvironment.swift; sourceTree = "<group>"; };
 		F9C5C897289451B900548EEE /* SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9C5C899289451B900548EEE /* SignalServiceKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SignalServiceKit.h; sourceTree = "<group>"; };
 		F9C5C89E289451B900548EEE /* SignalServiceKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SignalServiceKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5480,6 +5492,7 @@
 				348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */,
 				34E88D252098C5AE00A608F4 /* ContactViewController.swift */,
 				346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */,
+				F9B652C028D8CB75006914CA /* DatabaseRecoveryViewController.swift */,
 				340E9ABF235F876800FA362C /* ForwardMessageViewController.swift */,
 				327CF66725ACE7DC00DA0A6F /* GetStartedBannerViewController.swift */,
 				340D8FFF24FEE6A9007B5504 /* GroupInviteLinksUI.swift */,
@@ -7039,7 +7052,9 @@
 			isa = PBXGroup;
 			children = (
 				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
+				F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */,
 				F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */,
+				F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */,
 				F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */,
 			);
 			path = Database;
@@ -7726,6 +7741,7 @@
 				F9C5CA35289453B100548EEE /* Records */,
 				F9C5CA3C289453B100548EEE /* Snapshots */,
 				F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */,
+				F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */,
 				F9C5CA48289453B100548EEE /* DeepCopy.swift */,
 				F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */,
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
@@ -8021,6 +8037,7 @@
 				F9C5CB81289453B200548EEE /* AppReadiness.swift */,
 				F9C5CB34289453B200548EEE /* AppVersion.h */,
 				F9C5CB77289453B200548EEE /* AppVersion.m */,
+				F972180528DE37A200113D9F /* AppVersion.swift */,
 				F9C5CB38289453B200548EEE /* Array+SSK.swift */,
 				F9C5CB25289453B200548EEE /* Atomics.swift */,
 				F9C5CB62289453B200548EEE /* AudioWaveform.swift */,
@@ -8173,6 +8190,7 @@
 				F9C5CB84289453B200548EEE /* FakeStorageServiceManager.swift */,
 				F9C5CB85289453B200548EEE /* MockSSKEnvironment.h */,
 				F9C5CB8D289453B200548EEE /* MockSSKEnvironment.m */,
+				F9C57FAC28E5F1E2001D3596 /* MockSSKEnvironment.swift */,
 				F9C5CB86289453B200548EEE /* MockSubscriptionManager.swift */,
 				F9C5CB92289453B200548EEE /* NoopNotificationsManager.swift */,
 				F9C5CB88289453B200548EEE /* NoopPendingReadReceiptRecorder.swift */,
@@ -10098,6 +10116,7 @@
 				341D392925472F3B00996E7B /* CVViewState.swift in Sources */,
 				345772B6257E4E01001D7D44 /* CVViewStateSnapshot.swift in Sources */,
 				3420CF6F2638A01A00E7DCB0 /* CVWallpaperBlurView.swift in Sources */,
+				F9B652C128D8CB75006914CA /* DatabaseRecoveryViewController.swift in Sources */,
 				346C19DF25ACDF0B00061D3A /* DataSettingsTableViewController.swift in Sources */,
 				88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */,
 				34DC9BD921543E0C00FDDCEC /* DebugContactsUtils.m in Sources */,
@@ -10500,6 +10519,7 @@
 				F9C5CE40289453B400548EEE /* AppExpiry.swift in Sources */,
 				F9C5CE52289453B400548EEE /* AppReadiness.swift in Sources */,
 				F9C5CE48289453B400548EEE /* AppVersion.m in Sources */,
+				F972180628DE37A200113D9F /* AppVersion.swift in Sources */,
 				F9C5CE0A289453B400548EEE /* Array+SSK.swift in Sources */,
 				F9C5CDF7289453B400548EEE /* Atomics.swift in Sources */,
 				F9C5CD16289453B300548EEE /* AttachmentFinder.swift in Sources */,
@@ -10542,6 +10562,7 @@
 				F9C5CDFF289453B400548EEE /* Data+SSK.swift in Sources */,
 				F9C5CD1D289453B300548EEE /* DatabaseChangeObserver.swift in Sources */,
 				F97217F828DC9F3700113D9F /* DatabaseCorruptionState.swift in Sources */,
+				F9B652C328D8E3DF006914CA /* DatabaseRecovery.swift in Sources */,
 				F9C5CDD9289453B400548EEE /* DataSource.m in Sources */,
 				F9C5CE4D289453B400548EEE /* Date+SSK.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
@@ -10646,6 +10667,7 @@
 				F9C5CE30289453B400548EEE /* MIMETypeUtil.m in Sources */,
 				F9C5CD7B289453B300548EEE /* MobileCoinHelper.swift in Sources */,
 				F9C5CE5D289453B400548EEE /* MockSSKEnvironment.m in Sources */,
+				F9C57FAD28E5F1E2001D3596 /* MockSSKEnvironment.swift in Sources */,
 				F9C5CE56289453B400548EEE /* MockSubscriptionManager.swift in Sources */,
 				F9C5CE29289453B400548EEE /* ModelReadCache.swift in Sources */,
 				F9C5CDC4289453B400548EEE /* NetworkInterfaceSet.swift in Sources */,
@@ -11067,12 +11089,14 @@
 				F9426286289B1B5600460798 /* ContactSortingTest.m in Sources */,
 				509BBF7A28CA556700F4D8A0 /* Data+SSKTest.swift in Sources */,
 				F97217FB28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift in Sources */,
+				F94D130628C1667600B2C478 /* DatabaseRecoveryTest.swift in Sources */,
 				F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
 				F942629B289B1B5600460798 /* DeliveryReceiptContextTests.swift in Sources */,
 				F9426263289B1B5500460798 /* DeviceNamesTest.swift in Sources */,
 				F9426267289B1B5500460798 /* DispatchQueue+OWSTest.swift in Sources */,
 				F9426254289B1B5500460798 /* FeatureFlagsTests.swift in Sources */,
+				F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */,
 				F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */,
 				F9426251289B1B5500460798 /* GroupModelsTest.swift in Sources */,
 				F9426245289B1B5500460798 /* HTMLMetadataTests.swift in Sources */,
