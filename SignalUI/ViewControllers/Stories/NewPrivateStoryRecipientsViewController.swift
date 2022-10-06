@@ -43,12 +43,12 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
         if recipientSet.isEmpty {
-            title = NSLocalizedString(
+            title = OWSLocalizedString(
                 "NEW_PRIVATE_STORY_VIEW_TITLE",
                 comment: "The title for the 'new private story' view.")
 
         } else {
-            let format = NSLocalizedString(
+            let format = OWSLocalizedString(
                 "NEW_PRIVATE_STORY_VIEW_TITLE_%d",
                 tableName: "PluralAware",
                 comment: "The title for the 'new private story' view if already some connections are selected. Embeds {{number}} of connections.")
