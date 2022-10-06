@@ -821,6 +821,7 @@
 		83B9573927C9A1FA00A678FD /* CaptchaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83B9573827C9A1FA00A678FD /* CaptchaView.swift */; };
 		8803C2F528B02FDB00183D2B /* OutgoingStoryMessage+AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8803C2F328B02FDB00183D2B /* OutgoingStoryMessage+AttachmentMultisend.swift */; };
 		8803C2F628B02FDB00183D2B /* TSOutgoingMessage+AttachmentMultisend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8803C2F428B02FDB00183D2B /* TSOutgoingMessage+AttachmentMultisend.swift */; };
+		8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */; };
 		8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */; };
 		8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */; };
 		8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809CE8622F8FE6D00D38867 /* AttachmentKeyboard.swift */; };
@@ -1065,7 +1066,6 @@
 		88F5D78A2880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */; };
 		88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */; };
 		88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9228EBD484007AA1BF /* StorySharing.swift */; };
-		88F5FA9628EF7E02007AA1BF /* StorySharingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */; };
 		88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7EE92230253C5003ADF7D /* UsernameViewController.swift */; };
 		88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */; };
@@ -5078,7 +5078,6 @@
 			isa = PBXGroup;
 			children = (
 				34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */,
-				88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */,
 			);
 			path = SignalUITests;
 			sourceTree = "<group>";
@@ -6677,6 +6676,7 @@
 				45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */,
 				B660F6B31C29868000687D6E /* UtilTest.h */,
 				B660F6B41C29868000687D6E /* UtilTest.m */,
+				88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -9802,7 +9802,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				34BB78B9272C51E800DA0D04 /* MobileCoinHelperTests.swift in Sources */,
-				88F5FA9628EF7E02007AA1BF /* StorySharingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10478,6 +10477,7 @@
 				4C9D347B23679C25006A4307 /* GroupAndContactStreamTest.swift in Sources */,
 				349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
+				8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */,
 				34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */,
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
 				1700E33B28B5684C0073D949 /* MediaGallerySectionsTest.swift in Sources */,

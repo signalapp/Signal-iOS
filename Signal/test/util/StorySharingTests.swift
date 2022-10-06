@@ -5,7 +5,7 @@
 import XCTest
 @testable import SignalUI
 
-class StorySharingTests: XCTestCase {
+class StorySharingTests: SignalBaseTest {
     func testUrlStripping() {
         let inputOutput = [
             "https://signal.org test": "test",
@@ -33,5 +33,16 @@ class StorySharingTests: XCTestCase {
             )
             XCTAssertEqual(output, expectedOutput)
         }
+    }
+
+    func testMentionFlattening() {
+        let mentionUuid = UUID()
+        let output = StorySharing.text(
+            for: .init(
+                text: "\(MessageBody.mentionPlaceholder) Some text",
+                ranges: .init(mentions: [NSMakeRange(0, MessageBody.mentionPlaceholder.utf16.count): mentionUuid])),
+            with: nil
+        )
+        XCTAssertEqual(output, "@Fake name Some text")
     }
 }
