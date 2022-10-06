@@ -4,12 +4,6 @@
 
 import Foundation
 
-public protocol FileManagerProtocol {
-    func attributesOfFileSystem(forPath path: String) throws -> [FileAttributeKey: Any]
-}
-
-extension FileManager: FileManagerProtocol {}
-
 @objc
 public extension OWSFileSystem {
     class func fileOrFolderExists(atPath filePath: String) -> Bool {
@@ -162,14 +156,15 @@ public extension OWSFileSystem {
 
 public extension OWSFileSystem {
     /// Get the remaining free space for a path's volume in bytes.
-    class func freeSpaceInBytes(
-        forPath path: String,
-        fileManager: FileManagerProtocol
-    ) throws -> UInt64 {
-        let fileSystemAttributes = try fileManager.attributesOfFileSystem(forPath: path)
-        guard let result = fileSystemAttributes[.systemFreeSize] as? UInt64 else {
+    ///
+    /// See [Apple's example][0]. It checks "important" storage (versus "opportunistic" storage).
+    ///
+    /// [0]: https://developer.apple.com/documentation/foundation/nsurlresourcekey/checking_volume_storage_capacity
+    class func freeSpaceInBytes(forPath path: URL) throws -> UInt64 {
+        let resourceValues = try path.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
+        guard let result = resourceValues.volumeAvailableCapacityForImportantUsage else {
             throw OWSGenericError("Could not determine remaining disk space")
         }
-        return result
+        return UInt64(result)
     }
 }

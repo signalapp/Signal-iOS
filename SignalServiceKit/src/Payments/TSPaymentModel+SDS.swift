@@ -194,6 +194,15 @@ extension TSPaymentModel: SDSModel {
     public static var table: SDSTableMetadata {
         TSPaymentModelSerializer.table
     }
+
+    public class func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
+    }
 }
 
 // MARK: - DeepCopyable

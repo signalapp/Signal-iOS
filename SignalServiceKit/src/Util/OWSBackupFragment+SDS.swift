@@ -157,6 +157,15 @@ extension OWSBackupFragment: SDSModel {
     public static var table: SDSTableMetadata {
         OWSBackupFragmentSerializer.table
     }
+
+    public class func anyEnumerateIndexable(
+        transaction: SDSAnyReadTransaction,
+        block: @escaping (SDSIndexableModel) -> Void
+    ) {
+        anyEnumerate(transaction: transaction, batched: false) { model, _ in
+            block(model)
+        }
+    }
 }
 
 // MARK: - DeepCopyable
