@@ -1085,22 +1085,6 @@
 			<string>Revoke Invites</string>
 		</dict>
 	</dict>
-	<key>PINS_MEGAPHONE_SNOOZE_TOAST_%d</key>
-	<dict>
-		<key>NSStringLocalizedFormatKey</key>
-		<string>%#@caption@</string>
-		<key>caption</key>
-		<dict>
-			<key>NSStringFormatSpecTypeKey</key>
-			<string>NSStringPluralRuleType</string>
-			<key>NSStringFormatValueTypeKey</key>
-			<string>d</string>
-			<key>one</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in 1 day.</string>
-			<key>other</key>
-			<string>We’ll remind you later. Creating a PIN will become mandatory in %d days.</string>
-		</dict>
-	</dict>
 	<key>REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_%d</key>
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
