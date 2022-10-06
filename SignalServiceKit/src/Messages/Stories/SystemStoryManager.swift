@@ -371,10 +371,12 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         let viewStatus = self.onboardingStoryViewStatus(transaction: transaction)
 
         let viewedTimestamp: UInt64?
+        var markViewedIfNotFound = false
         switch viewStatus.status {
         case .notViewed:
             // Legacy clients might have viewed stories from before we recorded viewed status.
             viewedTimestamp = nil
+            markViewedIfNotFound = true
         case .viewedOnAnotherDevice:
             // Delete right away.
             forceDelete = true
@@ -390,7 +392,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             Date().timeIntervalSince(Date(millisecondsSince1970: $0)) >= Constants.postViewingTimeout
         } ?? false
 
-        guard isExpired || forceDelete else {
+        guard isExpired || forceDelete || markViewedIfNotFound else {
             return
         }
 
@@ -399,16 +401,13 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         }
         let stories = StoryFinder.listStoriesWithUniqueIds(messageUniqueIds, transaction: transaction)
         guard !stories.isEmpty else {
-            switch viewStatus.status {
-            case .notViewed:
+            if markViewedIfNotFound {
                 // this is a legacy client with stories that were viewed before
                 // we kept track of viewed state independently.
                 try self.setOnboardingStoryViewedOnThisDevice(
                     atTimestamp: Date.distantPast.ows_millisecondsSince1970,
                     transaction: transaction
                 )
-            case .viewedOnAnotherDevice, .viewedOnThisDevice:
-                break
             }
             return
         }
@@ -584,7 +583,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         return status
     }
 
-    private func markOnboardingStoryDownloaded(
+    internal func markOnboardingStoryDownloaded(
         messageUniqueIds: [String],
         transaction: SDSAnyWriteTransaction
     ) throws {
