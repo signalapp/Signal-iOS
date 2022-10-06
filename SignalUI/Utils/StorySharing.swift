@@ -39,39 +39,42 @@ public enum StorySharing: Dependencies {
     }
 
     internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreview?) -> String? {
+        // Turn any mentions in the message body to plaintext
+        let plaintextMessageBody = databaseStorage.read { messageBody.plaintextBody(transaction: $0.unwrapGrdbRead) }
+
         let text: String?
-        if linkPreview != nil, let linkPreviewUrlString = linkPreview?.urlString, messageBody.text.contains(linkPreviewUrlString) {
-            if messageBody.text == linkPreviewUrlString {
+        if linkPreview != nil, let linkPreviewUrlString = linkPreview?.urlString, plaintextMessageBody.contains(linkPreviewUrlString) {
+            if plaintextMessageBody == linkPreviewUrlString {
                 // If the only message text is the URL of the link preview, omit the message text
                 text = nil
             } else if
-                messageBody.text.hasPrefix(linkPreviewUrlString),
+                plaintextMessageBody.hasPrefix(linkPreviewUrlString),
                 CharacterSet.whitespacesAndNewlines.contains(
-                    messageBody.text[messageBody.text.index(
-                        messageBody.text.startIndex,
+                    plaintextMessageBody[plaintextMessageBody.index(
+                        plaintextMessageBody.startIndex,
                         offsetBy: linkPreviewUrlString.count
                     )]
                 )
             {
                 // If the URL is at the start of the message, strip it off
-                text = String(messageBody.text.dropFirst(linkPreviewUrlString.count)).stripped
+                text = String(plaintextMessageBody.dropFirst(linkPreviewUrlString.count)).stripped
             } else if
-                messageBody.text.hasSuffix(linkPreviewUrlString),
+                plaintextMessageBody.hasSuffix(linkPreviewUrlString),
                 CharacterSet.whitespacesAndNewlines.contains(
-                    messageBody.text[messageBody.text.index(
-                        messageBody.text.endIndex,
+                    plaintextMessageBody[plaintextMessageBody.index(
+                        plaintextMessageBody.endIndex,
                         offsetBy: -(linkPreviewUrlString.count + 1)
                     )]
                 )
             {
                 // If the URL is at the end of the message, strip it off
-                text = String(messageBody.text.dropLast(linkPreviewUrlString.count)).stripped
+                text = String(plaintextMessageBody.dropLast(linkPreviewUrlString.count)).stripped
             } else {
                 // If the URL is in the middle of the message, send the message as is
-                text = messageBody.text
+                text = plaintextMessageBody
             }
         } else {
-            text = messageBody.text
+            text = plaintextMessageBody
         }
         return text
     }
