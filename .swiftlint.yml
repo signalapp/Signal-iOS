@@ -1,5 +1,8 @@
 excluded:
 - SignalServiceKit/src/Protos/Generated
+# SwiftLint has trouble with these files. See <https://github.com/realm/SwiftLint/issues/3988>.
+- Signal/src/util/Emoji/Emoji+SkinTones.swift
+- Signal/src/util/Emoji/EmojiWithSkinTones+String.swift
 disabled_rules:
 - block_based_kvo
 - cyclomatic_complexity
