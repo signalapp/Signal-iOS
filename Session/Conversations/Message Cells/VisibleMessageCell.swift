@@ -372,7 +372,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             for: cellViewModel,
             maxWidth: VisibleMessageCell.getMaxWidth(
                 for: cellViewModel,
-                includingOppositeGutter: UIDevice.current.isIPad
+                includingOppositeGutter: false
             ),
             showExpandedReactions: showExpandedReactions
         )
