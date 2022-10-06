@@ -5,8 +5,8 @@
 import Foundation
 
 struct DiscoveredContactInfo: Hashable {
-    let e164: String?
-    let uuid: UUID?         // This should be made non-optional when we drop Legacy CDS
+    let e164: String
+    let uuid: UUID
 }
 
 /// An item that fetches contact info from the ContactDiscoveryService

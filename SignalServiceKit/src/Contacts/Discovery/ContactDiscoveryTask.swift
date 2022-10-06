@@ -69,7 +69,7 @@ public class ContactDiscoveryTask: NSObject {
             return discoveryOperation.perform(on: workQueue)
 
         }.map(on: workQueue) { (discoveredContacts: Set<DiscoveredContactInfo>) -> Set<SignalRecipient> in
-            let discoveredIdentifiers = Set(discoveredContacts.compactMap { $0.e164 })
+            let discoveredIdentifiers = Set(discoveredContacts.map { $0.e164 })
 
             let discoveredAddresses = discoveredContacts
                 .map { SignalServiceAddress(uuid: $0.uuid, phoneNumber: $0.e164, trustLevel: .high) }
