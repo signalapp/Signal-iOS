@@ -70,7 +70,13 @@ class StoryReplyInputToolbar: UIView {
         } else {
             self.backgroundColor = .clear
 
-            let blurEffectView = UIVisualEffectView(effect: Theme.darkThemeBarBlurEffect)
+            let blurEffect: UIBlurEffect
+            if #available(iOS 13, *), quotedReplyModel != nil {
+                blurEffect = UIBlurEffect(style: .systemThickMaterialDark)
+            } else {
+                blurEffect = Theme.darkThemeBarBlurEffect
+            }
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
             blurEffectView.layer.zPosition = -1
             addSubview(blurEffectView)
             blurEffectView.autoPinWidthToSuperview()
@@ -180,15 +186,20 @@ class StoryReplyInputToolbar: UIView {
     }()
 
     private lazy var textContainer: UIView = {
-        let textContainer = UIView()
+        let textContainer = UIStackView()
+        textContainer.axis = .vertical
+        textContainer.spacing = 10
+
+        let headerLabel = buildHeaderLabel()
+        textContainer.addArrangedSubview(headerLabel)
 
         let bubbleView = UIStackView()
         bubbleView.axis = .vertical
         bubbleView.addBackgroundView(withBackgroundColor: .ows_gray75, cornerRadius: minTextViewHeight / 2)
 
-        textContainer.addSubview(bubbleView)
-        let inset = (40 - minTextViewHeight) / 2
-        bubbleView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 0, leading: 0, bottom: inset, trailing: 0))
+        textContainer.addArrangedSubview(bubbleView)
+        let bottomSpace = (40 - minTextViewHeight) / 2 - textContainer.spacing
+        textContainer.addArrangedSubview(.spacer(withHeight: bottomSpace))
 
         if let quotedReplyModel = quotedReplyModel {
             let previewView = StoryReplyPreviewView(quotedReplyModel: quotedReplyModel)
@@ -228,6 +239,34 @@ class StoryReplyInputToolbar: UIView {
         textView.textContainerInset.right = 7
 
         return textView
+    }
+
+    private func buildHeaderLabel() -> UIView {
+        let container = UIView()
+
+        let label = UILabel()
+        label.textColor = Theme.darkThemeSecondaryTextAndIconColor
+        label.font = .ows_dynamicTypeFootnote
+
+        switch quotedReplyModel {
+        case .some(let quotedReplyModel):
+            guard !quotedReplyModel.authorAddress.isLocalAddress else {
+                fallthrough
+            }
+            let format = OWSLocalizedString(
+                "STORY_REPLY_TEXT_FIELD_HEADER_FORMAT",
+                comment: "header text for replying to private story. Embeds {{author name}}"
+            )
+            let authorName = contactsManager.displayName(for: quotedReplyModel.authorAddress)
+            label.text = String(format: format, authorName)
+        case .none:
+            container.isHiddenInStackView = true
+        }
+
+        container.addSubview(label)
+        label.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 4, vMargin: 0))
+
+        return container
     }
 
     // MARK: - Actions
