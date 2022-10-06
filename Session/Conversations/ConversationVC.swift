@@ -713,10 +713,23 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                 let newSectionIndex: Int = updatedData.firstIndex(where: { $0.model == .messages }),
                 let newFirstItemIndex: Int = updatedData[newSectionIndex].elements
                     .firstIndex(where: { item -> Bool in
-                        item.id == self.viewModel.interactionData[oldSectionIndex].elements.first?.id
+                        // Since the first item is probably a `DateHeaderCell` (which would likely
+                        // be removed when inserting items above it) we check if the id matches
+                        // either the first or second item
+                        let messages: [MessageViewModel] = self.viewModel
+                            .interactionData[oldSectionIndex]
+                            .elements
+                        
+                        return (
+                            item.id == messages[safe: 0]?.id ||
+                            item.id == messages[safe: 1]?.id
+                        )
                     }),
                 let firstVisibleIndexPath: IndexPath = self.tableView.indexPathsForVisibleRows?
-                    .filter({ $0.section == oldSectionIndex })
+                    .filter({
+                        $0.section == oldSectionIndex &&
+                        self.viewModel.interactionData[$0.section].elements[$0.row].cellType != .dateHeader
+                    })
                     .sorted()
                     .first,
                 let newVisibleIndex: Int = updatedData[newSectionIndex].elements
@@ -730,7 +743,9 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             return ItemChangeInfo(
                 isInsertAtTop: (
                     newSectionIndex > oldSectionIndex ||
-                    newFirstItemIndex > 0
+                    // Note: Using `1` here instead of `0` as the first item will generally
+                    // be a `DateHeaderCell` instead of a message
+                    newFirstItemIndex > 1
                 ),
                 firstIndexIsVisible: (firstVisibleIndexPath.row == 0),
                 visibleIndexPath: IndexPath(row: newVisibleIndex, section: newSectionIndex),

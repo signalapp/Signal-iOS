@@ -225,7 +225,8 @@ final class ContextMenuVC: UIViewController {
                 menuView.pin(.left, to: .left, of: view, withInset: targetFrame.minX)
                 emojiBar.pin(.left, to: .left, of: view, withInset: targetFrame.minX)
                 
-            default: break // Should never occur
+            default:    // Should generally only be the 'delete' action
+                menuView.pin(.left, to: .left, of: view, withInset: targetFrame.minX)
         }
         
         // Tap gesture

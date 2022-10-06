@@ -25,8 +25,9 @@ extension Sodium {
     /// 64-byte blake2b hash then reduce to get the blinding factor
     public func generateBlindingFactor(serverPublicKey: String, genericHash: GenericHashType) -> Bytes? {
         /// k = salt.crypto_core_ed25519_scalar_reduce(blake2b(server_pk, digest_size=64).digest())
-        guard let serverPubKeyData: Data = serverPublicKey.dataFromHex() else { return nil }
-        guard let serverPublicKeyHashBytes: Bytes = genericHash.hash(message: [UInt8](serverPubKeyData), outputLength: 64) else {
+        let serverPubKeyData: Data = Data(hex: serverPublicKey)
+        
+        guard !serverPubKeyData.isEmpty, let serverPublicKeyHashBytes: Bytes = genericHash.hash(message: [UInt8](serverPubKeyData), outputLength: 64) else {
             return nil
         }
         

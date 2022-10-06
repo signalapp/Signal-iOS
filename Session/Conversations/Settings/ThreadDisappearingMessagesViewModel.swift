@@ -28,8 +28,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
     
     // MARK: - Variables
     
-    private let storage: Storage
-    private let scheduler: ValueObservationScheduler
+    private let dependencies: Dependencies
     private let threadId: String
     private let config: DisappearingMessagesConfiguration
     private var storedSelection: TimeInterval
@@ -38,13 +37,11 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
     // MARK: - Initialization
     
     init(
-        storage: Storage = Storage.shared,
-        scheduling scheduler: ValueObservationScheduler = Storage.defaultPublisherScheduler,
+        dependencies: Dependencies = Dependencies(),
         threadId: String,
         config: DisappearingMessagesConfiguration
     ) {
-        self.storage = storage
-        self.scheduler = scheduler
+        self.dependencies = dependencies
         self.threadId = threadId
         self.config = config
         self.storedSelection = (config.isEnabled ? config.durationSeconds : 0)
@@ -133,7 +130,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
             ]
         }
         .removeDuplicates()
-        .publisher(in: storage, scheduling: scheduler)
+        .publisher(in: dependencies.storage, scheduling: dependencies.scheduler)
     
     // MARK: - Functions
 
@@ -152,7 +149,7 @@ class ThreadDisappearingMessagesViewModel: SessionTableViewModel<ThreadDisappear
         
         guard self.config != updatedConfig else { return }
         
-        storage.writeAsync { db in
+        dependencies.storage.writeAsync { db in
             guard let thread: SessionThread = try SessionThread.fetchOne(db, id: threadId) else {
                 return
             }

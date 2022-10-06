@@ -6,16 +6,16 @@ import Curve25519Kit
 
 extension Box.KeyPair: Mocked {
     static var mockValue: Box.KeyPair = Box.KeyPair(
-        publicKey: Data.data(fromHex: TestConstants.publicKey)!.bytes,
-        secretKey: Data.data(fromHex: TestConstants.edSecretKey)!.bytes
+        publicKey: Data(hex: TestConstants.publicKey).bytes,
+        secretKey: Data(hex: TestConstants.edSecretKey).bytes
     )
 }
 
 extension ECKeyPair: Mocked {
     static var mockValue: Self {
         try! Self.init(
-            publicKeyData: Data.data(fromHex: TestConstants.publicKey)!,
-            privateKeyData: Data.data(fromHex: TestConstants.privateKey)!
+            publicKeyData: Data(hex: TestConstants.publicKey),
+            privateKeyData: Data(hex: TestConstants.privateKey)
         )
     }
 }

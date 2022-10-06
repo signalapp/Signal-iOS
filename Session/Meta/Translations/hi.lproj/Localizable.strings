@@ -477,6 +477,7 @@
 "EMOJI_REACTS_MORE_REACTORS_ONE" = "And 1 other has reacted %@ to this message.";
 "EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted %@ to this message.";
 "EMOJI_REACTS_SHOW_LESS" = "Show less";
+"EMOJI_REACTS_RATE_LIMIT_TOAST" = "Slow down! You've sent too many emoji reacts. Try again soon.";
 /* New conversation screen*/
 "vc_new_conversation_title" = "New Conversation";
 "CREATE_GROUP_BUTTON_TITLE" = "Create";

@@ -76,15 +76,11 @@ final class DocumentView: UIView {
         stackView.axis = .horizontal
         stackView.spacing = Values.mediumSpacing
         stackView.alignment = .center
-        stackView.layoutMargins = UIEdgeInsets(
-            top: Values.smallSpacing,
-            leading: Values.mediumSpacing,
-            bottom: Values.smallSpacing,
-            trailing: Values.mediumSpacing
-        )
-        stackView.isLayoutMarginsRelativeArrangement = true
         addSubview(stackView)
-        stackView.pin(to: self)
+        stackView.pin(.top, to: .top, of: self, withInset: Values.smallSpacing)
+        stackView.pin(.leading, to: .leading, of: self, withInset: Values.mediumSpacing)
+        stackView.pin(.trailing, to: .trailing, of: self, withInset: -Values.mediumSpacing)
+        stackView.pin(.bottom, to: .bottom, of: self, withInset: -Values.smallSpacing)
         
         imageBackgroundView.pin(.top, to: .top, of: self)
         imageBackgroundView.pin(.leading, to: .leading, of: self)

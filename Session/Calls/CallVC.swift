@@ -46,27 +46,18 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         return result
     }()
     
-    private lazy var fadeView: UIView = {
-        let height: CGFloat = ((UIApplication.shared.keyWindow?.safeAreaInsets.top).map { $0 + Values.veryLargeSpacing } ?? 64)
-        
-        let result = UIView()
-        var frame = UIScreen.main.bounds
-        frame.size.height = height
-        
-        let layer = CAGradientLayer()
-        layer.frame = frame
-        result.layer.insertSublayer(layer, at: 0)
+    private lazy var fadeView: GradientView = {
+        let height: CGFloat = ((UIApplication.shared.keyWindow?.safeAreaInsets.top)
+            .map { $0 + Values.veryLargeSpacing })
+            .defaulting(to: 64)
+
+        let result: GradientView = GradientView()
+        result.themeBackgroundGradient = [
+            .value(.backgroundPrimary, alpha: 0.4),
+            .value(.backgroundPrimary, alpha: 0)
+        ]
         result.set(.height, to: height)
-        
-        ThemeManager.onThemeChange(observer: result) { [weak layer] theme, _ in
-            guard let backgroundPrimary: UIColor = theme.color(for: .backgroundPrimary) else { return }
-            
-            layer?.colors = [
-                backgroundPrimary.withAlphaComponent(0.4).cgColor,
-                backgroundPrimary.withAlphaComponent(0).cgColor
-            ]
-        }
-        
+
         return result
     }()
     

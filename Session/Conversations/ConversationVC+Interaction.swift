@@ -766,8 +766,9 @@ extension ConversationVC:
             let index = self.viewModel.interactionData[sectionIndex]
                 .elements
                 .firstIndex(of: cellViewModel),
-            let cell = tableView.cellForRow(at: IndexPath(row: index, section: sectionIndex)) as? VisibleMessageCell,
-            let snapshot = cell.snContentView.snapshotView(afterScreenUpdates: false),
+            let cell = tableView.cellForRow(at: IndexPath(row: index, section: sectionIndex)) as? MessageCell,
+            let contextSnapshotView: UIView = cell.contextSnapshotView,
+            let snapshot = contextSnapshotView.snapshotView(afterScreenUpdates: false),
             contextMenuWindow == nil,
             let actions: [ContextMenuVC.Action] = ContextMenuVC.actions(
                 for: cellViewModel,
@@ -789,7 +790,7 @@ extension ConversationVC:
         self.contextMenuWindow = ContextMenuWindow()
         self.contextMenuVC = ContextMenuVC(
             snapshot: snapshot,
-            frame: cell.convert(cell.snContentView.frame, to: keyWindow),
+            frame: contextSnapshotView.convert(contextSnapshotView.bounds, to: keyWindow),
             cellViewModel: cellViewModel,
             actions: actions
         ) { [weak self] in
@@ -1218,7 +1219,18 @@ extension ConversationVC:
         guard
             recentReactionTimestamps.count < 20 ||
             (sentTimestamp - (recentReactionTimestamps.first ?? sentTimestamp)) > (60 * 1000)
-        else { return }
+        else {
+            let toastController: ToastController = ToastController(
+                text: "EMOJI_REACTS_RATE_LIMIT_TOAST".localized(),
+                background: .backgroundSecondary
+            )
+            toastController.presentToastView(
+                fromBottomOfView: self.view,
+                inset: (snInputView.bounds.height + Values.largeSpacing),
+                duration: .milliseconds(2500)
+            )
+            return
+        }
         
         General.cache.mutate {
             $0.recentReactionTimestamps = Array($0.recentReactionTimestamps
@@ -1593,17 +1605,22 @@ extension ConversationVC:
     }
 
     func delete(_ cellViewModel: MessageViewModel) {
-        // Only allow deletion on incoming and outgoing messages
-        guard cellViewModel.variant != .standardIncomingDeleted else {
-            Storage.shared.writeAsync { db in
-                _ = try Interaction
-                    .filter(id: cellViewModel.id)
-                    .deleteAll(db)
-            }
-            return
-        }
-        guard cellViewModel.variant == .standardIncoming || cellViewModel.variant == .standardOutgoing else {
-            return
+        switch cellViewModel.variant {
+            case .standardIncomingDeleted, .infoCall,
+                .infoScreenshotNotification, .infoMediaSavedNotification,
+                .infoClosedGroupCreated, .infoClosedGroupUpdated, .infoClosedGroupCurrentUserLeft,
+                .infoMessageRequestAccepted, .infoDisappearingMessagesUpdate:
+                // Info messages and unsent messages should just trigger a local
+                // deletion (they are created as side effects so we wouldn't be
+                // able to delete them for all participants anyway)
+                Storage.shared.writeAsync { db in
+                    _ = try Interaction
+                        .filter(id: cellViewModel.id)
+                        .deleteAll(db)
+                }
+                return
+                
+            case .standardOutgoing, .standardIncoming: break
         }
         
         let threadId: String = self.viewModel.threadData.threadId

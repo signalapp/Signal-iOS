@@ -14,8 +14,8 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
 
     override func spec() {
         var mockStorage: Storage!
-        var dataChangeCancellable: AnyCancellable?
-        var otherCancellables: [AnyCancellable] = []
+        var cancellables: [AnyCancellable] = []
+        var dependencies: Dependencies!
         var viewModel: ThreadDisappearingMessagesViewModel!
         
         describe("a ThreadDisappearingMessagesViewModel") {
@@ -31,6 +31,10 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
                         SNUIKit.migrations()
                     ]
                 )
+                dependencies = Dependencies(
+                    storage: mockStorage,
+                    scheduler: .immediate
+                )
                 mockStorage.write { db in
                     try SessionThread(
                         id: "TestId",
@@ -38,26 +42,26 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
                     ).insert(db)
                 }
                 viewModel = ThreadDisappearingMessagesViewModel(
-                    storage: mockStorage,
-                    scheduling: .immediate,
+                    dependencies: dependencies,
                     threadId: "TestId",
                     config: DisappearingMessagesConfiguration.defaultWith("TestId")
                 )
-                dataChangeCancellable = viewModel.observableSettingsData
-                    .receiveOnMain(immediately: true)
-                    .sink(
-                        receiveCompletion: { _ in },
-                        receiveValue: { viewModel.updateSettings($0) }
-                    )
+                cancellables.append(
+                    viewModel.observableSettingsData
+                        .receiveOnMain(immediately: true)
+                        .sink(
+                            receiveCompletion: { _ in },
+                            receiveValue: { viewModel.updateSettings($0) }
+                        )
+                )
             }
             
             afterEach {
-                dataChangeCancellable?.cancel()
-                otherCancellables.forEach { $0.cancel() }
+                cancellables.forEach { $0.cancel() }
                 
                 mockStorage = nil
-                dataChangeCancellable = nil
-                otherCancellables = []
+                cancellables = []
+                dependencies = nil
                 viewModel = nil
             }
             
@@ -118,17 +122,18 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
                     _ = try config.saved(db)
                 }
                 viewModel = ThreadDisappearingMessagesViewModel(
-                    storage: mockStorage,
-                    scheduling: .immediate,
+                    dependencies: dependencies,
                     threadId: "TestId",
                     config: config
                 )
-                dataChangeCancellable = viewModel.observableSettingsData
-                    .receiveOnMain(immediately: true)
-                    .sink(
-                        receiveCompletion: { _ in },
-                        receiveValue: { viewModel.updateSettings($0) }
-                    )
+                cancellables.append(
+                    viewModel.observableSettingsData
+                        .receiveOnMain(immediately: true)
+                        .sink(
+                            receiveCompletion: { _ in },
+                            receiveValue: { viewModel.updateSettings($0) }
+                        )
+                )
                 
                 expect(viewModel.settingsData.first?.elements.first)
                     .to(
@@ -165,7 +170,7 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
             it("has no right bar button") {
                 var items: [ParentType.NavItem]?
                 
-                otherCancellables.append(
+                cancellables.append(
                     viewModel.rightNavItems
                         .receiveOnMain(immediately: true)
                         .sink(
@@ -181,7 +186,7 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
                 var items: [ParentType.NavItem]?
                 
                 beforeEach {
-                    otherCancellables.append(
+                    cancellables.append(
                         viewModel.rightNavItems
                             .receiveOnMain(immediately: true)
                             .sink(
@@ -208,7 +213,7 @@ class ThreadDisappearingMessagesViewModelSpec: QuickSpec {
                     it("dismisses the screen") {
                         var didDismissScreen: Bool = false
                         
-                        otherCancellables.append(
+                        cancellables.append(
                             viewModel.dismissScreen
                                 .receiveOnMain(immediately: true)
                                 .sink(
