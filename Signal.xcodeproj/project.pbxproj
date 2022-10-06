@@ -577,7 +577,6 @@
 		34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */; };
 		34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E5DC8120D8050D00C08145 /* RegistrationUtils.m */; };
 		34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E88D252098C5AE00A608F4 /* ContactViewController.swift */; };
-		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34E93F9226668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */; };
 		34E95C1B269F4F1B004807EC /* CLVLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1A269F4F1A004807EC /* CLVLoader.swift */; };
 		34E95C22269F4F4F004807EC /* CLVRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E95C1D269F4F4F004807EC /* CLVRenderState.swift */; };
@@ -1242,6 +1241,7 @@
 		F972180028DCBD4700113D9F /* DatabaseTestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */; };
 		F972180228DCFDF100113D9F /* TSContactThreadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180128DCFDF100113D9F /* TSContactThreadTest.swift */; };
 		F972180628DE37A200113D9F /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = F972180528DE37A200113D9F /* AppVersion.swift */; };
+		F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */; };
 		F973DFBA0991C967C4934B08 /* Pods_SignalUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D81F9D93CB5BADE6B9709 /* Pods_SignalUITests.framework */; };
 		F97823F328CD0AA1005533BF /* PngChunker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7928CB89CC00472E68 /* PngChunker.swift */; };
 		F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F908AA7728CB894400472E68 /* PngChunkerTest.swift */; };
@@ -2791,7 +2791,6 @@
 		34E5DC8020D8050D00C08145 /* RegistrationUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegistrationUtils.h; sourceTree = "<group>"; };
 		34E5DC8120D8050D00C08145 /* RegistrationUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegistrationUtils.m; sourceTree = "<group>"; };
 		34E88D252098C5AE00A608F4 /* ContactViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
-		34E8A8D02085238900B272B1 /* ProtoParsingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoParsingTest.m; sourceTree = "<group>"; };
 		34E93F9126668F7500CE6FA5 /* ConversationViewController+BodyTextItems.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+BodyTextItems.swift"; sourceTree = "<group>"; };
 		34E95C1A269F4F1A004807EC /* CLVLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLVLoader.swift; sourceTree = "<group>"; };
 		34E95C1D269F4F4F004807EC /* CLVRenderState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CLVRenderState.swift; sourceTree = "<group>"; };
@@ -3575,6 +3574,7 @@
 		F97217FF28DCBD4700113D9F /* DatabaseTestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTestHelpers.swift; sourceTree = "<group>"; };
 		F972180128DCFDF100113D9F /* TSContactThreadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSContactThreadTest.swift; sourceTree = "<group>"; };
 		F972180528DE37A200113D9F /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
+		F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProtoParsingTest.swift; sourceTree = "<group>"; };
 		F97A2EE828247C1300610669 /* BadgeExpirationSheetStateTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeExpirationSheetStateTest.swift; sourceTree = "<group>"; };
 		F9844C482867936400B16DD4 /* SignalMeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalMeTest.swift; sourceTree = "<group>"; };
 		F988DC12289DC8F2003B4B82 /* OWSOutgoingReactionMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingReactionMessageTest.swift; sourceTree = "<group>"; };
@@ -6668,15 +6668,14 @@
 				34C1A93A2656E904004FA478 /* MiscTest.swift */,
 				34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */,
 				45666F571D9B2880008FE134 /* OWSScrubbingLogFormatterTest.m */,
-				34E8A8D02085238900B272B1 /* ProtoParsingTest.m */,
 				349D21E7268E044700D98870 /* QRCodeParserTest.swift */,
 				3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */,
 				F9844C482867936400B16DD4 /* SignalMeTest.swift */,
+				88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */,
 				452D1AF02081059C00A67F7F /* StringAdditionsTest.swift */,
 				45A3579727DAAC6A0051CE8B /* UserProfileTest.swift */,
 				B660F6B31C29868000687D6E /* UtilTest.h */,
 				B660F6B41C29868000687D6E /* UtilTest.m */,
-				88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -7063,6 +7062,14 @@
 			path = Database;
 			sourceTree = "<group>";
 		};
+		F97391A128EF0AFB002DDE5D /* Protos */ = {
+			isa = PBXGroup;
+			children = (
+				F97391A228EF0B20002DDE5D /* ProtoParsingTest.swift */,
+			);
+			path = Protos;
+			sourceTree = "<group>";
+		};
 		F988DC11289DC8DE003B4B82 /* Reactions */ = {
 			isa = PBXGroup;
 			children = (
@@ -7172,6 +7179,7 @@
 				F94261E2289B1B5400460798 /* Groups */,
 				F942621C289B1B5500460798 /* Messages */,
 				F94261CF289B1B5400460798 /* Network */,
+				F97391A128EF0AFB002DDE5D /* Protos */,
 				F94261CB289B1B5300460798 /* Security */,
 				F94261D7289B1B5400460798 /* Storage */,
 				884BF73A28D37D5F00D94636 /* Stories */,
@@ -10477,7 +10485,6 @@
 				4C9D347B23679C25006A4307 /* GroupAndContactStreamTest.swift in Sources */,
 				349BC861253A2651003C949A /* GroupsV2MigrationTest.swift in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
-				8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */,
 				34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */,
 				45360B911F952AA900FA666C /* MarqueeLabel.swift in Sources */,
 				1700E33B28B5684C0073D949 /* MediaGallerySectionsTest.swift in Sources */,
@@ -10494,7 +10501,6 @@
 				3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */,
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
 				4C5250D421E7C51900CE3D95 /* PhoneNumberValidatorTest.swift in Sources */,
-				34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */,
 				349D21E9268E045500D98870 /* QRCodeParserTest.swift in Sources */,
 				3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */,
 				3499998122EF1E2100654932 /* SearcherTest.swift in Sources */,
@@ -10503,6 +10509,7 @@
 				34843B2421432293004DED45 /* SignalBaseTest.m in Sources */,
 				F9844C492867936400B16DD4 /* SignalMeTest.swift in Sources */,
 				4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */,
+				8803FF6628EF89B50023574A /* StorySharingTests.swift in Sources */,
 				452D1AF12081059C00A67F7F /* StringAdditionsTest.swift in Sources */,
 				E75DD3E02810CDBD00E32C36 /* SubscriptionManagerTest.swift in Sources */,
 				45A3579827DAAC6A0051CE8B /* UserProfileTest.swift in Sources */,
@@ -11145,6 +11152,7 @@
 				F9426272289B1B5500460798 /* PhoneNumberUtilTest.m in Sources */,
 				F9426277289B1B5600460798 /* PhoneNumberUtilTest.swift in Sources */,
 				F97823F428CD0AC7005533BF /* PngChunkerTest.swift in Sources */,
+				F97391A328EF0B20002DDE5D /* ProtoParsingTest.swift in Sources */,
 				F942625D289B1B5500460798 /* RefineryTest.swift in Sources */,
 				F9426259289B1B5500460798 /* RemoteConfigManagerTests.swift in Sources */,
 				F942624E289B1B5500460798 /* SDSDatabaseStorageObservationTest.swift in Sources */,
