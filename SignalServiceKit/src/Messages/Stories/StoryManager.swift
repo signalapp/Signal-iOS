@@ -268,6 +268,7 @@ extension StoryManager {
 
     private static var areStoriesEnabledCache = AtomicBool(true)
 
+    /// A cache of if stories are enabled for the local user. For convenience, this also factors in whether the overall feature is available to the user.
     @objc
     public static var areStoriesEnabled: Bool { RemoteConfig.stories && areStoriesEnabledCache.get() }
 
@@ -284,6 +285,7 @@ extension StoryManager {
         }
     }
 
+    /// Have stories been enabled by the local user. This never factors in any remote information, like is the feature available to the user.
     public static func areStoriesEnabled(transaction: SDSAnyReadTransaction) -> Bool {
         keyValueStore.getBool(areStoriesEnabledKey, defaultValue: true, transaction: transaction)
     }
