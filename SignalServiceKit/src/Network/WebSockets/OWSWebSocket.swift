@@ -757,13 +757,9 @@ public class OWSWebSocket: NSObject {
             return .closed(reason: "isCensorshipCircumventionActive")
         }
 
-        if SignalProxy.isEnabled {
-            if #available(iOS 13, *) {
-                // All good, native websockets support the proxy
-            } else {
-                // Starscream doesn't support the proxy
-                return .closed(reason: "signalProxyIsEnabled")
-            }
+        // Starscream doesn't support the proxy
+        if SignalProxy.isEnabled, #unavailable(iOS 13) {
+            return .closed(reason: "signalProxyIsEnabled")
         }
 
         if let currentWebSocket = self.currentWebSocket,

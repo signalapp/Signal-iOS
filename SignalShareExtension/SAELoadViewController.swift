@@ -57,9 +57,8 @@ class SAELoadViewController: UIViewController {
     override func loadView() {
         super.loadView()
 
-        if #available(iOS 13, *) {
-            // Do nothing, you can swipe to cancel
-        } else {
+        // You can't swipe to cancel on iOS 12-.
+        if #unavailable(iOS 13) {
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                     target: self,
                                                                     action: #selector(cancelPressed))
