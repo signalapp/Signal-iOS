@@ -95,6 +95,10 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
         groupReplyViewController.view.autoPinHeightToSuperview()
         groupReplyViewController.view.autoPinEdge(.leading, to: .trailing, of: viewsViewController.view)
         groupReplyViewController.view.autoPinEdge(toSuperviewEdge: .trailing)
+
+        pagingScrollViewObservation = pagingScrollView.observe(\.contentSize, changeHandler: { [weak self] _, _ in
+            self?.didUpdatePagingScrollViewContentSize()
+        })
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -105,21 +109,22 @@ class StoryGroupRepliesAndViewsSheet: InteractiveSheetViewController, StoryGroup
             break
         case .replies:
             maximizeHeight()
-            groupReplyViewController.inputToolbar.becomeFirstResponder()
         }
     }
 
-    private var hasCompletedInitialLayout = false
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
+    private var pagingScrollViewObservation: NSKeyValueObservation?
 
-        guard !hasCompletedInitialLayout, view.frame != .zero else { return }
-        hasCompletedInitialLayout = true
+    private func didUpdatePagingScrollViewContentSize() {
+        guard view.frame != .zero, self.pagingScrollView.contentSize.width > 0 else { return }
+        // Only need to trigger once.
+        pagingScrollViewObservation = nil
 
         // Once we have a frame, we need to re-switch to the tab
         switch focusedTab {
         case .views: switchToViewsTab(animated: false)
-        case .replies: switchToRepliesTab(animated: false)
+        case .replies:
+            switchToRepliesTab(animated: false)
+            groupReplyViewController.inputToolbar.becomeFirstResponder()
         }
     }
 

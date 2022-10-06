@@ -89,6 +89,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         emptyStateView.autoPinEdge(.bottom, to: .top, of: bottomBar)
 
         updateBottomBarContents()
+        updateBottomBarPosition()
     }
 
     public override var inputAccessoryView: UIView? { inputAccessoryPlaceholder }
@@ -272,6 +273,10 @@ extension StoryGroupReplyViewController: InputAccessoryViewPlaceholderDelegate {
     }
 
     func updateBottomBarPosition() {
+        guard isViewLoaded else {
+            return
+        }
+
         bottomBarBottomConstraint.constant = -inputAccessoryPlaceholder.keyboardOverlap
 
         // We always want to apply the new bottom bar position immediately,
