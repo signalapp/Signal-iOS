@@ -13,7 +13,6 @@ final class ReactionContainerView: UIView {
     private var collapsedCount: Int = 0
     private var showingAllReactions: Bool = false
     private var showNumbers: Bool = true
-    private var maxEmojisPerLine = UIDevice.current.isIPad ? 10 : (isIPhone6OrSmaller ? 5 : 6)
     private var oldSize: CGSize = .zero
     
     var reactions: [ReactionViewModel] = []
@@ -114,7 +113,7 @@ final class ReactionContainerView: UIView {
         // button appear horizontally centered (if we don't do this it gets offset to one side)
         guard frame != CGRect.zero, frame.size != oldSize else { return }
         
-        var targetSuperview: UIView? = {
+        let targetSuperview: UIView? = {
             var result: UIView? = self.superview
             
             while result != nil, result?.isKind(of: UITableViewCell.self) != true {
