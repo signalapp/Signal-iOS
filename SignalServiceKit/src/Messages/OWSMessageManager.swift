@@ -647,7 +647,7 @@ class MessageManagerRequest: NSObject {
                     return nil
                 }
 
-                if envelope.story {
+                if envelope.story && contentProto.dataMessage?.delete == nil {
                     guard StoryManager.areStoriesEnabled(transaction: transaction) else {
                         Logger.info("Discarding story message received while stories are disabled")
                         return nil
