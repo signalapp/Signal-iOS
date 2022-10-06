@@ -13,11 +13,6 @@ class ExperienceUpgradeManager: NSObject {
     // before we display the splash.
     static let splashStartDay = 7
 
-    private static func dismissLastPresented() {
-        lastPresented?.dismiss(animated: false, completion: nil)
-        lastPresented = nil
-    }
-
     @objc
     static func presentNext(fromViewController: UIViewController) -> Bool {
         let optionalNext = databaseStorage.read(block: { transaction in
@@ -82,28 +77,41 @@ class ExperienceUpgradeManager: NSObject {
 
     @objc
     static func dismissPINReminderIfNecessary() {
-        guard lastPresented?.experienceUpgrade.experienceId == .pinReminder else { return }
-        lastPresented?.dismiss(animated: false, completion: nil)
+        dismissLastPresented(ifMatching: .pinReminder)
     }
 
     /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
     static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
+
         transaction.addAsyncCompletion(queue: .main) {
-            // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
-            lastPresented?.dismiss(animated: false, completion: nil)
+            dismissLastPresented(ifMatching: experienceUpgradeId)
         }
     }
 
     /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
     static func snoozeExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         ExperienceUpgradeFinder.markAsSnoozed(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
+
         transaction.addAsyncCompletion(queue: .main) {
-            // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
-            lastPresented?.dismiss(animated: false, completion: nil)
+            dismissLastPresented(ifMatching: experienceUpgradeId)
         }
+    }
+
+    private static func dismissLastPresented(ifMatching upgradeId: ExperienceUpgradeId? = nil) {
+        guard let lastPresented = lastPresented else {
+            return
+        }
+
+        if
+            let upgradeId = upgradeId,
+            lastPresented.experienceUpgrade.experienceId != upgradeId
+        {
+            return
+        }
+
+        lastPresented.dismiss(animated: false, completion: nil)
+        self.lastPresented = nil
     }
 
     // MARK: - Splash
