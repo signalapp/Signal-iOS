@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) uint64_t messageTimestamp;
 @property (nonatomic, readonly, nullable) NSString *messageUniqueId;
+@property (nonatomic, readonly) BOOL isDeletingStoryMessage;
 
 @end
 
@@ -33,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _messageTimestamp = message.timestamp;
     _messageUniqueId = message.uniqueId;
+    _isDeletingStoryMessage = NO;
 
     return self;
 }
@@ -51,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _messageTimestamp = storyMessage.timestamp;
     _messageUniqueId = storyMessage.uniqueId;
+    _isDeletingStoryMessage = YES;
 
     return self;
 }
@@ -58,6 +61,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldBeSaved
 {
     return NO;
+}
+
+- (BOOL)isStorySend
+{
+    return self.isDeletingStoryMessage;
 }
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread

@@ -493,6 +493,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
 
         switch thread {
         case thread as TSGroupThread:
+            Logger.info("Remotely deleting group story with timestamp \(timestamp)")
+
             // Group story deletes are simple, just delete for everyone in the group
             let deleteMessage = TSOutgoingDeleteMessage(
                 thread: thread,
@@ -514,6 +516,8 @@ public final class StoryMessage: NSObject, SDSCodableModel {
             guard let threadUuid = UUID(uuidString: thread.uniqueId) else {
                 return owsFailDebug("Thread has invalid uniqueId \(thread.uniqueId)")
             }
+
+            Logger.info("Remotely deleting private story with timestamp \(timestamp) from dList \(thread.uniqueId)")
 
             for (uuid, var state) in recipientStates {
                 if state.contexts.contains(threadUuid) {
