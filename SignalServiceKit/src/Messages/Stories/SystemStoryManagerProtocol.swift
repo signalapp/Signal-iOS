@@ -4,6 +4,10 @@
 
 import Foundation
 
+extension NSNotification.Name {
+    public static let onboardingStoryStateDidChange = NSNotification.Name("onboardingStoryStateDidChange")
+}
+
 /// Expose to objc for dependency injection support (SSKEnvironment is objc-only) but put the
 /// actual methods on a swift protocol that inherits from this one.
 @objc

@@ -54,6 +54,12 @@ class HomeTabBarController: UITabBarController {
         applyTheme()
 
         databaseStorage.appendDatabaseChangeDelegate(self)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onboardingStoryStateDidChange),
+            name: .onboardingStoryStateDidChange,
+            object: nil
+        )
 
         viewControllers = [chatListNavController, storiesNavController]
 
@@ -85,6 +91,11 @@ class HomeTabBarController: UITabBarController {
             }
             selectedTab = .chatList
         }
+    }
+
+    @objc
+    func onboardingStoryStateDidChange() {
+        updateStoriesBadge()
     }
 
     func updateAllBadges() {

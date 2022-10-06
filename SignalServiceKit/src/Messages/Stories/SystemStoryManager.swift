@@ -543,6 +543,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             key: Constants.kvStoreOnboardingStoryViewStatusKey,
             transaction: transaction
         )
+        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 
     // TODO: exposed to internal for testing, it really shouldn't be. But we dont have
@@ -561,6 +562,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
             transaction: transaction
         )
         Self.storageServiceManager.recordPendingLocalAccountUpdates()
+        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 
     // MARK: Onboarding Story Download Status
@@ -595,6 +597,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         )
         DispatchQueue.main.async {
             self.beginObservingOnboardingStoryEventsIfNeeded(downloadStatus: status)
+            NotificationCenter.default.post(name: .onboardingStoryStateDidChange, object: nil)
         }
     }
 
@@ -607,6 +610,7 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
 
     private func setSystemStoryHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
         kvStore.setBool(hidden, key: Constants.kvStoreHiddenStateKey, transaction: transaction)
+        NotificationCenter.default.postNotificationNameAsync(.onboardingStoryStateDidChange, object: nil)
     }
 
     internal enum Constants {
