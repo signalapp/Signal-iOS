@@ -92,7 +92,6 @@ open class BaseMemberViewController: OWSViewController {
         memberCountLabel.autoPinEdgesToSuperviewMargins()
         memberCountWrapper.layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
 
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.groupsToShow = .showNoGroups
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.showUseAsyncSelection = true

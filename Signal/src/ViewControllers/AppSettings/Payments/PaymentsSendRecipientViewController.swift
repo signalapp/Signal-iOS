@@ -32,7 +32,6 @@ class PaymentsSendRecipientViewController: OWSViewController {
 
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
-        recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.allowsAddByPhoneNumber = false
         recipientPicker.shouldHideLocalRecipient = true
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
