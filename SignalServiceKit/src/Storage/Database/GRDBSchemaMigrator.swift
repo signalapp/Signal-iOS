@@ -241,6 +241,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_indexMultipleNameComponentsForReceipients
         case dataMigration_syncGroupStories
         case dataMigration_deleteOldGroupCapabilities
+        case dataMigration_updateStoriesDisabledInAccountRecord
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2491,6 +2492,10 @@ public class GRDBSchemaMigrator: NSObject {
             } catch {
                 owsFail("Error \(error)")
             }
+        }
+
+        migrator.registerMigration(.dataMigration_updateStoriesDisabledInAccountRecord) { db in
+            storageServiceManager.recordPendingLocalAccountUpdates()
         }
 
         // MARK: - Data Migration Insertion Point
