@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -70,7 +70,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         // default always true, but can be overridden on an individual basis.
         guard isReadyToComplete, !isDismissWithoutCompleting else { return }
 
-        markAsComplete()
+        markAsCompleteWithSneakyTransaction()
     }
 
     @objc

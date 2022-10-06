@@ -21,7 +21,7 @@ class IntroducingPinsMegaphone: MegaphoneView {
                     Logger.error("failed to create pin: \(error)")
                 } else {
                     // success
-                    self?.markAsComplete()
+                    self?.markAsCompleteWithSneakyTransaction()
                 }
                 fromViewController.navigationController?.popToViewController(fromViewController, animated: true) {
                     fromViewController.navigationController?.setNavigationBarHidden(false, animated: false)

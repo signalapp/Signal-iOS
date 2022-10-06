@@ -24,7 +24,7 @@ class DonationMegaphone: MegaphoneView {
                 "DONATE_MEGAPHONE_CANCEL",
                 comment: "Cancel text for donate megaphone"
             )) { [weak self] in
-                self?.markAsSnoozed()
+                self?.markAsSnoozedWithSneakyTransaction()
                 self?.dismiss()
             }
         )

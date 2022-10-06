@@ -352,7 +352,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
 
     func snoozeButton(fromViewController: UIViewController, snoozeTitle: String = MegaphoneStrings.remindMeLater, snoozeCopy: @escaping () -> String = { MegaphoneStrings.weWillRemindYouLater }) -> Button {
         return Button(title: snoozeTitle) { [weak self] in
-            self?.markAsSnoozed()
+            self?.markAsSnoozedWithSneakyTransaction()
             self?.dismiss {
                 self?.presentToast(text: snoozeCopy(), fromViewController: fromViewController)
             }

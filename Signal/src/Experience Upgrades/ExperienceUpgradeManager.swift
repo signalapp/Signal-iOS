@@ -86,26 +86,6 @@ class ExperienceUpgradeManager: NSObject {
         lastPresented?.dismiss(animated: false, completion: nil)
     }
 
-    static func clearExperienceUpgradeWithSneakyTransaction(_ experienceUpgradeId: ExperienceUpgradeId) {
-        // Check if we need to do a write, we'll skip opening a write
-        // transaction if we're able.
-        let hasIncomplete = databaseStorage.read { transaction in
-            ExperienceUpgradeFinder.hasIncomplete(
-                experienceUpgradeId: experienceUpgradeId,
-                transaction: transaction.unwrapGrdbRead
-            )
-        }
-
-        guard hasIncomplete else {
-            // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
-            lastPresented?.dismiss(animated: false, completion: nil)
-            return
-        }
-
-        databaseStorage.asyncWrite { clearExperienceUpgrade(experienceUpgradeId, transaction: $0.unwrapGrdbWrite) }
-    }
-
     /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
     static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)
@@ -114,26 +94,6 @@ class ExperienceUpgradeManager: NSObject {
             guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
             lastPresented?.dismiss(animated: false, completion: nil)
         }
-    }
-
-    static func snoozeExperienceUpgradeWithSneakyTransaction(_ experienceUpgradeId: ExperienceUpgradeId) {
-        // Check if we need to do a write, we'll skip opening a write
-        // transaction if we're able.
-        let hasUnsnoozed = databaseStorage.read { transaction in
-            ExperienceUpgradeFinder.hasUnsnoozed(
-                experienceUpgradeId: experienceUpgradeId,
-                transaction: transaction.unwrapGrdbRead
-            )
-        }
-
-        guard hasUnsnoozed else {
-            // If it's currently being presented, dismiss it.
-            guard lastPresented?.experienceUpgrade.experienceId == experienceUpgradeId else { return }
-            lastPresented?.dismiss(animated: false, completion: nil)
-            return
-        }
-
-        databaseStorage.asyncWrite { snoozeExperienceUpgrade(experienceUpgradeId, transaction: $0.unwrapGrdbWrite) }
     }
 
     /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
@@ -205,35 +165,21 @@ protocol ExperienceUpgradeView: AnyObject, Dependencies {
 
 extension ExperienceUpgradeView {
 
-    /// - Parameter transaction: An optional transaction to write the completion in.
-    /// If nil is provided for `transaction` then the write will be performed under a synchronous write transaction
-    func markAsSnoozed(transaction: SDSAnyWriteTransaction? = nil) {
-        let performUpdate: (SDSAnyWriteTransaction) -> Void = { transaction in
+    func markAsSnoozedWithSneakyTransaction() {
+        databaseStorage.write { transaction in
             ExperienceUpgradeFinder.markAsSnoozed(
                 experienceUpgrade: self.experienceUpgrade,
                 transaction: transaction.unwrapGrdbWrite
             )
         }
-        if let transaction = transaction {
-            performUpdate(transaction)
-        } else {
-            databaseStorage.write(block: performUpdate)
-        }
     }
 
-    /// - Parameter transaction: An optional transaction to write the completion in.
-    /// If nil is provided for `transaction` then the write will be performed under a synchronous write transaction
-    func markAsComplete(transaction: SDSAnyWriteTransaction? = nil) {
-        let performUpdate: (SDSAnyWriteTransaction) -> Void = { transaction in
+    func markAsCompleteWithSneakyTransaction() {
+        databaseStorage.write { transaction in
             ExperienceUpgradeFinder.markAsComplete(
                 experienceUpgrade: self.experienceUpgrade,
                 transaction: transaction.unwrapGrdbWrite
             )
-        }
-        if let transaction = transaction {
-            performUpdate(transaction)
-        } else {
-            databaseStorage.write(block: performUpdate)
         }
     }
 }
