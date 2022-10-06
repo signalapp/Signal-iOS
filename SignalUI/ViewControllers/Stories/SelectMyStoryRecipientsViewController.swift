@@ -55,12 +55,12 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
         switch mode {
         case .explicit:
             if recipientSet.isEmpty {
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE",
                     comment: "The title for the 'select connections for story' view.")
 
             } else {
-                let format = NSLocalizedString(
+                let format = OWSLocalizedString(
                     "STORY_SELECT_ALLOWED_CONNECTIONS_VIEW_TITLE_%d",
                     tableName: "PluralAware",
                     comment: "The title for the 'select connections for story' view if already some connections are selected. Embeds {{number}} of connections.")
@@ -68,12 +68,12 @@ public class SelectMyStoryRecipientsViewController: BaseMemberViewController {
             }
         case .blockList:
             if recipientSet.isEmpty {
-                title = NSLocalizedString(
+                title = OWSLocalizedString(
                     "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE",
                     comment: "The title for the 'select excluded connections for story' view.")
 
             } else {
-                let format = NSLocalizedString(
+                let format = OWSLocalizedString(
                     "STORY_SELECT_EXCLUDED_CONNECTIONS_VIEW_TITLE_%d",
                     tableName: "PluralAware",
                     comment: "The title for the 'select excluded connections for story' view if already some connections are selected. Embeds {{number}} of excluded connections.")
