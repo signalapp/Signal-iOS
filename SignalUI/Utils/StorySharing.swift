@@ -26,16 +26,8 @@ public enum StorySharing: Dependencies {
             linkPreview = nil
         }
 
-        // If the only message text is the URL of the link preview, omit the message text
-        let text: String?
-        if linkPreview != nil, messageBody.text == linkPreview?.urlString {
-            text = nil
-        } else {
-            text = messageBody.text
-        }
-
         let textAttachment = TextAttachment(
-            text: text,
+            text: text(for: messageBody, with: linkPreview),
             textStyle: .regular,
             textForegroundColor: .white,
             textBackgroundColor: nil,
@@ -44,5 +36,49 @@ public enum StorySharing: Dependencies {
         )
 
         return AttachmentMultisend.sendTextAttachment(textAttachment, to: storyConversations).asVoid()
+    }
+
+    internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreview?) -> String? {
+        let text: String?
+        if linkPreview != nil, let linkPreviewUrlString = linkPreview?.urlString, messageBody.text.contains(linkPreviewUrlString) {
+            if messageBody.text == linkPreviewUrlString {
+                // If the only message text is the URL of the link preview, omit the message text
+                text = nil
+            } else if
+                messageBody.text.hasPrefix(linkPreviewUrlString),
+                CharacterSet.whitespacesAndNewlines.contains(
+                    messageBody.text[messageBody.text.index(
+                        messageBody.text.startIndex,
+                        offsetBy: linkPreviewUrlString.count
+                    )]
+                )
+            {
+                // If the URL is at the start of the message, strip it off
+                text = String(messageBody.text.dropFirst(linkPreviewUrlString.count)).stripped
+            } else if
+                messageBody.text.hasSuffix(linkPreviewUrlString),
+                CharacterSet.whitespacesAndNewlines.contains(
+                    messageBody.text[messageBody.text.index(
+                        messageBody.text.endIndex,
+                        offsetBy: -(linkPreviewUrlString.count + 1)
+                    )]
+                )
+            {
+                // If the URL is at the end of the message, strip it off
+                text = String(messageBody.text.dropLast(linkPreviewUrlString.count)).stripped
+            } else {
+                // If the URL is in the middle of the message, send the message as is
+                text = messageBody.text
+            }
+        } else {
+            text = messageBody.text
+        }
+        return text
+    }
+}
+
+private extension CharacterSet {
+    func contains(_ character: Character) -> Bool {
+        character.unicodeScalars.allSatisfy(contains(_:))
     }
 }

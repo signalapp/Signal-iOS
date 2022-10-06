@@ -1065,6 +1065,7 @@
 		88F5D78A2880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */; };
 		88F5D78C2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */; };
 		88F5FA9428EBD4CF007AA1BF /* StorySharing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9228EBD484007AA1BF /* StorySharing.swift */; };
+		88F5FA9628EF7E02007AA1BF /* StorySharingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */; };
 		88F67A0C24E5126D00435A71 /* HapticFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C090A1A210FD9C7001FD7F9 /* HapticFeedback.swift */; };
 		88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7EE92230253C5003ADF7D /* UsernameViewController.swift */; };
 		88FE237E249C22080041670F /* ConversationViewController+Scroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */; };
@@ -3356,6 +3357,7 @@
 		88F5D7892880A55E00CE4D2D /* NewPrivateStoryRecipientsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPrivateStoryRecipientsViewController.swift; sourceTree = "<group>"; };
 		88F5D78B2880ABF900CE4D2D /* NewPrivateStoryConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPrivateStoryConfirmViewController.swift; sourceTree = "<group>"; };
 		88F5FA9228EBD484007AA1BF /* StorySharing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySharing.swift; sourceTree = "<group>"; };
+		88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorySharingTests.swift; sourceTree = "<group>"; };
 		88F7EE92230253C5003ADF7D /* UsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameViewController.swift; sourceTree = "<group>"; };
 		88FE237D249C22080041670F /* ConversationViewController+Scroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+Scroll.swift"; sourceTree = "<group>"; };
 		89095AC0DD065D55A4A5F8C6 /* Pods_SignalServiceKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalServiceKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -5076,6 +5078,7 @@
 			isa = PBXGroup;
 			children = (
 				34BB78B8272C51E800DA0D04 /* MobileCoinHelperTests.swift */,
+				88F5FA9528EF7E02007AA1BF /* StorySharingTests.swift */,
 			);
 			path = SignalUITests;
 			sourceTree = "<group>";
@@ -9799,6 +9802,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				34BB78B9272C51E800DA0D04 /* MobileCoinHelperTests.swift in Sources */,
+				88F5FA9628EF7E02007AA1BF /* StorySharingTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
