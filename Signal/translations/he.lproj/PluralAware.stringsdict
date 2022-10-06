@@ -1188,7 +1188,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צופה %1$d</string>
+			<string>צופה 1</string>
 			<key>two</key>
 			<string>%1$d צופים</string>
 			<key>many</key>
@@ -1448,7 +1448,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>צופה %1$d</string>
+			<string>צופה 1</string>
 			<key>two</key>
 			<string>%1$d צופים</string>
 			<key>many</key>
