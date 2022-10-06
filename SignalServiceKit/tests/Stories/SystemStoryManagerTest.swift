@@ -310,6 +310,45 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
         }
     }
 
+    func testLegacyClientDownloadedButUnviewed() throws {
+        // Legacy clients might have downloaded the onboarding story, but not kept track
+        // of its viewed state separate from the viewed timestamp on the story messages themselves.
+        // Force getting into this state by setting download state as downloaded but not creating
+        // any stories or marking viewed state, and check that we clean up and mark viewed.
+
+        // NOTE: if this test ever becomes a nuisance, its okay to delete it. This was written on
+        // Oct 5 2022, and only internal clients had the ability to download the onboarding
+        // story in this legacy state. Dropping support for those old internal clients is fine eventually.
+        try write {
+            try manager.markOnboardingStoryDownloaded(messageUniqueIds: ["1234"], transaction: $0)
+        }
+
+        let cleanupExpectation = self.expectation(description: "cleanup")
+        // Triggering a download should do the cleanup.
+        let cleanupPromise = manager.enqueueOnboardingStoryDownload()
+
+        cleanupPromise.observe { result in
+            switch result {
+            case .success:
+                break
+            case .failure(let error):
+                XCTFail("Error when cleaning up: \(error)")
+            }
+            cleanupExpectation.fulfill()
+        }
+        self.wait(for: [cleanupExpectation], timeout: timeout)
+
+        read { transaction in
+            if let mockManager = Self.systemStoryManager as? SystemStoryManagerMock {
+                mockManager.areSystemStoriesHidden = manager.areSystemStoriesHidden(transaction: transaction)
+                mockManager.isOnboardingStoryViewed = manager.isOnboardingStoryViewed(transaction: transaction)
+            }
+
+            let stories = StoryFinder.unviewedSenderCount(transaction: transaction)
+            XCTAssert(stories == 0)
+        }
+    }
+
     #if BROKEN_TESTS
 
     func testCleanUpViewedStory_notTimedOut() throws {

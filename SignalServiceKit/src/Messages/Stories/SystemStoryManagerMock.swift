@@ -43,8 +43,10 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
         fatalError("Unimplemented for tests")
     }
 
+    public var areSystemStoriesHidden: Bool = false
+
     public func areSystemStoriesHidden(transaction: SDSAnyReadTransaction) -> Bool {
-        fatalError("Unimplemented for tests")
+        return areSystemStoriesHidden
     }
 
     public func setSystemStoriesHidden(_ hidden: Bool, transaction: SDSAnyWriteTransaction) {
