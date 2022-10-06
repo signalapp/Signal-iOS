@@ -604,6 +604,7 @@ struct StorageServiceProtos_AccountRecord {
     set {_uniqueStorage()._viewedOnboardingStory = newValue}
   }
 
+  /// reserved deprecatedStoriesDisabled 28;
   var storiesDisabled: Bool {
     get {return _storage._storiesDisabled}
     set {_uniqueStorage()._storiesDisabled = newValue}
@@ -1512,7 +1513,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     25: .same(proto: "keepMutedChatsArchived"),
     26: .same(proto: "myStoryPrivacyHasBeenSet"),
     27: .same(proto: "viewedOnboardingStory"),
-    28: .same(proto: "storiesDisabled"),
+    29: .same(proto: "storiesDisabled"),
   ]
 
   fileprivate class _StorageClass {
@@ -1620,7 +1621,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         case 25: try { try decoder.decodeSingularBoolField(value: &_storage._keepMutedChatsArchived) }()
         case 26: try { try decoder.decodeSingularBoolField(value: &_storage._myStoryPrivacyHasBeenSet) }()
         case 27: try { try decoder.decodeSingularBoolField(value: &_storage._viewedOnboardingStory) }()
-        case 28: try { try decoder.decodeSingularBoolField(value: &_storage._storiesDisabled) }()
+        case 29: try { try decoder.decodeSingularBoolField(value: &_storage._storiesDisabled) }()
         default: break
         }
       }
@@ -1712,7 +1713,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
         try visitor.visitSingularBoolField(value: _storage._viewedOnboardingStory, fieldNumber: 27)
       }
       if _storage._storiesDisabled != false {
-        try visitor.visitSingularBoolField(value: _storage._storiesDisabled, fieldNumber: 28)
+        try visitor.visitSingularBoolField(value: _storage._storiesDisabled, fieldNumber: 29)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
