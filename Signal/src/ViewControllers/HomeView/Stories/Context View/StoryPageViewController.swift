@@ -7,7 +7,10 @@ import UIKit
 import SignalUI
 
 protocol StoryPageViewControllerDataSource: AnyObject {
-    func storyPageViewControllerAvailableContexts(_ storyPageViewController: StoryPageViewController) -> [StoryContext]
+    func storyPageViewControllerAvailableContexts(
+        _ storyPageViewController: StoryPageViewController,
+        hiddenStoryFilter: Bool?
+    ) -> [StoryContext]
 }
 
 class StoryPageViewController: UIPageViewController {
@@ -28,6 +31,7 @@ class StoryPageViewController: UIPageViewController {
 
     weak var contextDataSource: StoryPageViewControllerDataSource?
     let viewableContexts: [StoryContext]
+    private let hiddenStoryFilter: Bool?
     private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
 
     private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
@@ -45,12 +49,14 @@ class StoryPageViewController: UIPageViewController {
     required init(
         context: StoryContext,
         viewableContexts: [StoryContext]? = nil,
+        hiddenStoryFilter: Bool? = nil, /* If true only hidden stories, if false only unhidden. */
         loadMessage: StoryMessage? = nil,
         action: StoryContextViewController.Action = .none,
         onlyRenderMyStories: Bool = false
     ) {
         self.onlyRenderMyStories = onlyRenderMyStories
         self.viewableContexts = viewableContexts ?? [context]
+        self.hiddenStoryFilter = hiddenStoryFilter
         super.init(transitionStyle: .scroll, navigationOrientation: .vertical, options: nil)
         self.currentContext = context
         currentContextViewController.loadMessage = loadMessage
@@ -315,21 +321,21 @@ extension StoryPageViewController: UIPageViewControllerDataSource {
 extension StoryPageViewController: StoryContextViewControllerDelegate {
     var availableContexts: [StoryContext] {
         guard let contextDataSource = contextDataSource else { return viewableContexts }
-        let availableContexts = contextDataSource.storyPageViewControllerAvailableContexts(self)
+        let availableContexts = contextDataSource.storyPageViewControllerAvailableContexts(self, hiddenStoryFilter: hiddenStoryFilter)
         return viewableContexts.filter { availableContexts.contains($0) }
     }
 
     var previousStoryContext: StoryContext? {
-        guard let contextIndex = viewableContexts.firstIndex(of: currentContext),
-              let contextBefore = viewableContexts[safe: contextIndex.advanced(by: -1)] else {
+        guard let contextIndex = availableContexts.firstIndex(of: currentContext),
+              let contextBefore = availableContexts[safe: contextIndex.advanced(by: -1)] else {
             return nil
         }
         return contextBefore
     }
 
     var nextStoryContext: StoryContext? {
-        guard let contextIndex = viewableContexts.firstIndex(of: currentContext),
-              let contextAfter = viewableContexts[safe: contextIndex.advanced(by: 1)] else {
+        guard let contextIndex = availableContexts.firstIndex(of: currentContext),
+              let contextAfter = availableContexts[safe: contextIndex.advanced(by: 1)] else {
             return nil
         }
         return contextAfter
@@ -339,6 +345,13 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
         _ storyContextViewController: StoryContextViewController,
         loadPositionIfRead: StoryContextViewController.LoadPosition
     ) {
+        guard
+            pendingTransitionViewControllers.isEmpty,
+            storyContextViewController == currentContextViewController
+        else {
+            return
+        }
+
         guard let nextContext = nextStoryContext else {
             dismiss(animated: true)
             return
@@ -374,8 +387,8 @@ extension StoryPageViewController: StoryContextViewControllerDelegate {
     }
 
     func storyContextViewController(_ storyContextViewController: StoryContextViewController, contextAfter context: StoryContext) -> StoryContext? {
-        guard let contextIndex = viewableContexts.firstIndex(of: context),
-              let contextAfter = viewableContexts[safe: contextIndex.advanced(by: 1)] else {
+        guard let contextIndex = availableContexts.firstIndex(of: context),
+              let contextAfter = availableContexts[safe: contextIndex.advanced(by: 1)] else {
             return nil
         }
         return contextAfter

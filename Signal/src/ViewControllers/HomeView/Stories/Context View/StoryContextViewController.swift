@@ -901,7 +901,7 @@ extension StoryContextViewController: DatabaseChangeDelegate {
 
         databaseStorage.asyncRead { transaction in
             var newItems = self.items
-            var shouldDismiss = false
+            var shouldGoToNextContext = false
             for (idx, item) in self.items.enumerated().reversed() {
                 guard let id = item.message.id, databaseChanges.storyMessageRowIds.contains(id) else { continue }
                 if let message = StoryMessage.anyFetch(uniqueId: item.message.uniqueId, transaction: transaction) {
@@ -918,12 +918,14 @@ extension StoryContextViewController: DatabaseChangeDelegate {
 
                 newItems.remove(at: idx)
                 if item.message.uniqueId == currentItem.message.uniqueId {
-                    shouldDismiss = true
+                    shouldGoToNextContext = true
                     break
                 }
             }
             DispatchQueue.main.async {
-                if shouldDismiss {
+                if shouldGoToNextContext, let delegate = self.delegate {
+                    delegate.storyContextViewControllerWantsTransitionToNextContext(self, loadPositionIfRead: .default)
+                } else if shouldGoToNextContext {
                     self.presentingViewController?.dismiss(animated: true)
                 } else {
                     self.items = newItems
@@ -1007,8 +1009,17 @@ extension StoryContextViewController: StoryContextMenuDelegate {
     }
 
     func storyContextMenuWillDelete(_ completion: @escaping () -> Void) {
-        // Dismiss the viewer before deleting otherwise things get messed up.
-        self.dismiss(animated: true, completion: completion)
+        // Go to the next item after deleting.
+        self.transitionToNextItem()
+        completion()
+    }
+
+    func storyContextMenuDidUpdateHiddenState(_ message: StoryMessage, isHidden: Bool) -> Bool {
+        // Go to the next context after hiding or unhiding; the current context is no longer
+        // a part of this view session as its hide state is now opposite.
+        self.delegate?.storyContextViewControllerWantsTransitionToNextContext(self, loadPositionIfRead: .default)
+        // Return true so we show a toast confirming the hide action.
+        return true
     }
 
     func storyContextMenuDidFinishDisplayingFollowups() {
