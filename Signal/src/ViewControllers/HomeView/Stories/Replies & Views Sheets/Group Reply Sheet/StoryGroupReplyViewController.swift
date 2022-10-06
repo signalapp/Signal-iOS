@@ -368,7 +368,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
                     guard let message = Self.databaseStorage.read(
                         block: { TSMessage.anyFetchMessage(uniqueId: item.interactionUniqueId, transaction: $0) }
                     ) else { return }
-                    message.presentDeletionActionSheet(from: self)
+                    message.presentDeletionActionSheet(from: self, forceDarkTheme: true)
                 }))
 
             return .init(actions)
