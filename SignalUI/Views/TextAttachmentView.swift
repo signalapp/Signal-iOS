@@ -40,6 +40,8 @@ open class TextAttachmentView: UIView {
 
         super.init(frame: .zero)
 
+        clipsToBounds = true
+
         addLayoutGuide(contentLayoutGuide)
         let constraints = [
             contentLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
