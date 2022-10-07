@@ -184,7 +184,7 @@ public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
             self.sourceContext.asStoryContext,
             transaction: transaction,
             block: { message, _ in
-                if message.timestamp > latestUnexpiredTimestamp ?? 0 {
+                if message.direction == .incoming, message.timestamp > latestUnexpiredTimestamp ?? 0 {
                     latestUnexpiredTimestamp = message.timestamp
                 }
             }
