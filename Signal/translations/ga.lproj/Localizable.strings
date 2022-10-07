@@ -1493,7 +1493,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Reset";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Athshocraigh";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
@@ -1502,7 +1502,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Submit Debug Log";
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Seol an Logchomhad Dífhabhtaithe";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
@@ -6372,6 +6372,9 @@
 
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reacted to the story";
+
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
 
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Freagair";

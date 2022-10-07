@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "ڈیٹا بیس ڈائگناسٹک چلائیں؟";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "آپ کی کچھ میسج ہسٹری خراب ہو سکتی ہے۔ آپ کے اکاؤنٹ یا میسجز کی سکیورٹی پر کوئی اثر نہیں پڑا۔ اپنا ڈیٹا بحال کرنے کے لیے \"جاری رکھیں\" پر ٹیپ کریں۔";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "ڈیٹا واپس حاصل کرنے میں مسئلہ";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "بہر صورت جاری رکھیں";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "ڈیٹا کی بحالی مکمل کرنے کے لیے، ہمارا مشورہ ہے کہ آپ کے پاس اپنی ڈیوائس پر کم از کم %1$@ اسٹوریج اسپیس خالی ہو۔";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "زیادہ سٹوریج اسپیس درکار ہے";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "آپ کی میسج ہسٹری بحال نہیں کی جا سکی۔ آپ دوبارہ انسٹال کرنے کے بعد Signal استعمال کرنا جاری رکھ سکتے ہیں۔ ایک نقص ازالہ کاری کا لاگ جمع کروائیں تاکہ ہم بہتر طور پر سمجھ سکیں کہ کیا غلط ہوا۔";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Signal ری سیٹ کریں";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Reset";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "دوبارہ بحال کریں";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "آپ کے اکاؤنٹ کی معلومات، پروفائل، اور آپ کے تمام میسجز صاف ہو جائیں گے۔ ایپ اس عمل کے مکمل ہونے کے بعد بند ہو جائے گی۔";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Signal ری سیٹ کریں";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Submit Debug Log";
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "ڈی بَگ لاگ پیش کریں";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "ڈیٹا بحال نہیں ہوا";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "بحالی کے دوران ایپ کھلی رکھیں۔ اس میں کئی منٹس لگ سکتے ہیں۔";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "ڈیٹا کی بحالی";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "بحالی کامیاب رہی، لیکن کچھ میسجز بحال نہیں ہو سکے۔";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "ڈیٹا کامیابی سے بحال ہو گیا";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "اس میں چند منٹ لگ سکتے ہیں";
@@ -4736,7 +4736,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "پرائیویٹ سٹوری ڈیلیٹ کریں";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "کیا آپ واقعی \"%1$@\" کو ڈیلیٹ کرنا چاہتے ہیں؟ اس سٹوری پر شیئر کردہ اپ ڈیٹس بھی ڈیلیٹ کر دی جائیں گی۔";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ہٹا دیں";
@@ -6293,10 +6293,10 @@
 "STORIES_SETTINGS_TITLE" = "اسٹوری کی رازداری";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "آپ مزید سٹوریز شیئر کرنے یا دیکھنے سے قاصر ہوں گے۔ آپ کی طرف سے حالیہ شیئر کردہ سٹوری اپ ڈیٹس بھی ڈیلیٹ ہو جائیں گی۔";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "آف کریں اور سٹوریز ڈیلیٹ کریں";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "اگر آپ سٹوریز غیر منتخب کرتے ہیں تو آپ سٹوریز مزید شیئر کرنے یا دیکھنے سے قاصر ہوں گے۔";
@@ -6373,6 +6373,9 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "اسٹوری پر ردعمل دیا";
 
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "جواب دیں";
 
@@ -6410,19 +6413,19 @@
 "STORY_SENDING" = "بھیج رہا ہے ...";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "گفتگو شروع کرنا";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "پیغام کی درخواست قبول کرنے سے";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "اپنے سسٹم کے روابط میں انہیں رکھنے سے";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "آپ کے کنکشنز آپ کا نام اور تصویر، اور یہ دیکھ سکتے ہیں جو آپ \"میری سٹوری\" پر بھیجتے ہیں تاوقتیکہ آپ اسے ان سے مخفی کریں۔";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal کنکشنز</bold> وہ لوگ ہیں جن پر آپ نے اعتماد کیا ہے، یا تو بذریعہ:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
@@ -6432,7 +6435,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "کون یہ سٹوری دیکھ سکتا ہے";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "منتخب کریں کہ کون سے Signal کنکشنز آپ کی سٹوری دیکھ سکتے ہیں۔ آپ اسے کسی بھی وقت پرائیویسی سیٹنگز میں تبدیل کر سکتے ہیں۔";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "سٹوریز پر بھیجی جانے والی ویڈیوز %1$dسیکنڈ کے کلپس میں کاٹ کر متعدد سٹوریز کے طور پر بھیجی جائیں گی۔";

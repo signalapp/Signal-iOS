@@ -1493,7 +1493,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Reset";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Reiniciar";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
@@ -1502,7 +1502,7 @@
 "DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Submit Debug Log";
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Enviar registro de depuración";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
 "DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
@@ -3422,7 +3422,7 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Copiar mensaje";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar del chat";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Eliminar para todos";
 
 /* A one-time confirmation that you want to delete for everyone */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Este mensaje se eliminará para tod@s en el chat si usan una versión reciente de Signal. En el chat se mostrará que lo has eliminado.";
@@ -6373,6 +6373,9 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "Reaccionó a la historia";
 
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "Responder";
 
@@ -6410,13 +6413,13 @@
 "STORY_SENDING" = "Enviando…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Has iniciado un chat con ellas";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Has aceptado una solicitud de chat";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Están entre tus contactos del sistema";
 
 /* Footer for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";

@@ -1472,52 +1472,52 @@
 "DATABASE_INTEGRITY_CHECK_TITLE" = "ดำเนินการตรวจสอบฐานข้อมูลหรือไม่";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so keep that in mind. This is the description on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Some of your message history may be corrupted. There has been no impact to the security of your account or messages. Tap “Continue” to recover your data.";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "ประวัติการส่งข้อความบางส่วนของคุณอาจได้รับความเสียหาย ไม่พบผลกระทบต่อความปลอดภัยในบัญชีหรือข้อความของคุณ แตะ “ดำเนินการต่อ” เพื่อกู้คืนข้อมูล";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Problem Retrieving Data";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "พบปัญหาในการดึงข้อมูล";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continue Anyway";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "ยืนยันที่จะดำเนินการต่อ";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the line of text on that screen. Embeds an amount like \"2GB\". */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "In order to complete data recovery, we recommend you have at least %1$@ of storage space free on your device.";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_DESCRIPTION" = "เราขอแนะนำให้อุปกรณ์มีพื้นที่จัดเก็บเหลืออย่างน้อย %1$@ เพื่อการกู้คืนข้อมูลที่สมบูรณ์";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the title of that screen. */
-"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "More Storage Space Needed";
+"DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_TITLE" = "ต้องการพื้นที่จัดเก็บเพิ่ม";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the description on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "Your message history couldn’t recover. You can continue to use Signal after reinstalling. Submit a debug log so we can better understand what went wrong.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_DESCRIPTION" = "ไม่สามารถกู้คืนประวัติการส่งข้อความของคุณได้ หลังจากติดตั้ง Signal อีกครั้งแล้ว คุณจะสามารถใช้งานแอปได้ตามปกติ ส่งบันทึกดีบักเพื่อให้เราได้ศึกษาและตรวจสอบข้อผิดพลาดนี้";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This button lets them delete all of their data. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_BUTTON" = "รีเซ็ต Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the final button they will press before their data is reset. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "Reset";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_CONFIRM" = "รีเซ็ต";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the description text in that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "Your account info, profile, and all of your messages will be cleared. The app will close after this process is complete.";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_DESCRIPTION" = "ข้อมูลบัญชี โปรไฟล์ และข้อความทั้งหมดของคุณจะถูกล้าง แอปจะปิดหลังขั้นตอนนี้เสร็จสิ้น";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) If they want to delete the app and restart, they will be presented with a confirmation dialog. This is the title of that dialog. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "Reset Signal";
+"DATABASE_RECOVERY_RECOVERY_FAILED_RESET_APP_CONFIRMATION_TITLE" = "รีเซ็ต Signal";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) They were asked to submit a debug log. This is the button that submits this log. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "Submit Debug Log";
+"DATABASE_RECOVERY_RECOVERY_FAILED_SUBMIT_DEBUG_LOG_BUTTON" = "ส่งบันทึกดีบัก";
 
 /* The user has tried to recover their data after it was lost due to corruption. (They have not been hacked.) This is the title on the screen where we show an error message. */
-"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "Data Not Recovered";
+"DATABASE_RECOVERY_RECOVERY_FAILED_TITLE" = "ไม่สามารถกู้คืนข้อมูลได้";
 
 /* On the database recovery screen, this is the description text shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "Keep the app open during the recovery process. It may take several minutes.";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_DESCRIPTION" = "โปรดเปิดแอปไว้ระหว่างที่กำลังดำเนินการกู้คืน ขั้นตอนนี้อาจใช้เวลาสักครู่";
 
 /* On the database recovery screen, this is the title shown as the user's data is being recovered. */
-"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "Recovering Data";
+"DATABASE_RECOVERY_RECOVERY_IN_PROGRESS_TITLE" = "กำลังกู้คืนข้อมูล";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the description on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "Recovery was successful, but some messages may not have been recovered.";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_DESCRIPTION" = "กู้คืนสำเร็จ แต่บางข้อความอาจไม่ได้รับการกู้คืน";
 
 /* The user has successfully recovered their database after it was lost due to corruption. (They have not been hacked.) This is the title on the screen that tells them things worked. */
-"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "Data Successfully Recovered";
+"DATABASE_RECOVERY_RECOVERY_SUCCEEDED_TITLE" = "กู้คืนข้อมูลสำเร็จ";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "นี่อาจใช้เวลาสองสามนาที";
@@ -4736,7 +4736,7 @@
 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON" = "ลบสตอรี่ส่วนตัว";
 
 /* Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }} */
-"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "Are you sure you want to delete “%1$@”? Updates shared to this story will also be deleted.";
+"PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "คุณแน่ใจหรือไม่ว่าต้องการลบ “%1$@” การอัปเดตต่างๆ ที่แชร์ในสตอรี่นี้จะถูกลบด้วยเช่นกัน";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "ลบ";
@@ -6293,10 +6293,10 @@
 "STORIES_SETTINGS_TITLE" = "ความเป็นส่วนตัวของสตอรี่";
 
 /* Title for the action sheet confirming you want to turn off and delete all stories */
-"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "You will no longer be able to share or view stories. Story updates you have recently shared will also be deleted.";
+"STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE" = "คุณจะไม่สามารถแชร์หรือดูสตอรี่ได้อีกต่อไป การอัปเดตสตอรี่ที่คุณเพิ่งแชร์จะถูกลบด้วยเช่นกัน";
 
 /* Button to turn off and delete stories on the story privacy settings view */
-"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "Turn Off and Delete Stories";
+"STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON" = "ปิดใช้งานและลบสตอรี่";
 
 /* Footer for the 'turn off' section of the stories settings */
 "STORIES_SETTINGS_TURN_OFF_FOOTER" = "หากปิดใช้งานสตอรี่ คุณจะไม่สามารถแชร์หรือดูสตอรี่ได้อีกต่อไป";
@@ -6373,6 +6373,9 @@
 /* Text indicating a story has been reacted to */
 "STORY_REPLY_REACTION" = "โต้ตอบสตอรี่ของคุณ";
 
+/* header text for replying to private story. Embeds {{author name}} */
+"STORY_REPLY_TEXT_FIELD_HEADER_FORMAT" = "Private reply to %1$@";
+
 /* placeholder text for replying to a story */
 "STORY_REPLY_TEXT_FIELD_PLACEHOLDER" = "ตอบกลับ";
 
@@ -6410,19 +6413,19 @@
 "STORY_SENDING" = "กำลังส่ง…";
 
 /* First bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "Starting a conversation";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1" = "เริ่มต้นการสนทนา";
 
 /* Second bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "Accepting a message request";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2" = "รับคำขอส่งข้อความ";
 
 /* Third bullet point for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "Having them in your system contacts";
+"STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3" = "มีรายชื่ออยู่ในระบบผู้ติดต่อของคุณ";
 
 /* Footer for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "Your connections can see your name and photo, and what you send to “My Story” unless you hide it from them.";
+"STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER" = "เครือข่ายของคุณจะเห็นชื่อและรูปภาพของคุณ รวมถึงโพสต์ที่คุณส่งใน “สตอรี่ของฉัน” เว้นแต่ว่าคุณจะซ่อนสตอรี่นั้นจากพวกเขา";
 
 /* Header for the explainer sheet for signal connections */
-"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
+"STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>เครือข่าย Signal</bold> คือคนที่คุณเลือกที่จะไว้ใจ ด้วยการ:";
 
 /* Section footer for the 'viewers' section on the 'story settings' view
    Section footer for the 'viewers' section on the 'story settings' view. */
@@ -6432,7 +6435,7 @@
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "ใครเห็นสตอรี่นี้บ้าง";
 
 /* Header for the 'viewers' section on the 'story settings' bottom sheet. */
-"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
+"STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "เลือกว่าจะให้เครือข่าย Signal คนไหนเห็นสตอรี่ของคุณบ้าง คุณสามารถเปลี่ยนแปลงตัวเลือกนี้ได้ทุกเมื่อในการตั้งค่าความเป็นส่วนตัว";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */
 "STORY_VIDEO_SEGMENTATION_TOOLTIP_FORMAT" = "วิดีโอที่ส่งเป็นสตอรี่จะถูกตัดเป็นคลิปยาว %1$d วินาที และส่งเป็นสตอรี่หลายสตอรี่";
