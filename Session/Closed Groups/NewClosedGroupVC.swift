@@ -170,25 +170,14 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             let explanationLabel: UILabel = UILabel()
             explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
             explanationLabel.text = "vc_create_closed_group_empty_state_message".localized()
-            explanationLabel.themeTextColor = .textPrimary
+            explanationLabel.themeTextColor = .textSecondary
             explanationLabel.textAlignment = .center
             explanationLabel.lineBreakMode = .byWordWrapping
             explanationLabel.numberOfLines = 0
             
-            let createNewPrivateChatButton: SessionButton = SessionButton(style: .bordered, size: .medium)
-            createNewPrivateChatButton.setTitle("vc_create_closed_group_empty_state_button_title".localized(), for: .normal)
-            createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: .touchUpInside)
-            createNewPrivateChatButton.set(.width, to: 196)
-            
-            let stackView: UIStackView = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
-            stackView.axis = .vertical
-            stackView.spacing = Values.mediumSpacing
-            stackView.alignment = .center
-            view.addSubview(stackView)
-            stackView.center(.horizontal, in: view)
-            
-            let verticalCenteringConstraint = stackView.center(.vertical, in: view)
-            verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
+            view.addSubview(explanationLabel)
+            explanationLabel.pin(.top, to: .top, of: view, withInset: Values.largeSpacing)
+            explanationLabel.center(.horizontal, in: view)
             return
         }
         
@@ -356,12 +345,6 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
                 }
                 .retainUntilComplete()
         }
-    }
-    
-    @objc private func createNewDM() {
-        presentingViewController?.dismiss(animated: true, completion: nil)
-        
-        SessionApp.homeViewController.wrappedValue?.createNewDM()
     }
 }
 

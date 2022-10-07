@@ -7,6 +7,22 @@ public final class Separator: UIView {
     
     // MARK: - Components
     
+    private let leftLine: UIView = {
+        let result: UIView = UIView()
+        result.themeBackgroundColor = .textSecondary
+        result.set(.height, to: Values.separatorThickness)
+        
+        return result
+    }()
+    
+    private let roundedLine: UIView = {
+        let result: UIView = UIView()
+        result.themeBorderColor = .textSecondary
+        result.layer.borderWidth = Values.separatorThickness
+        
+        return result
+    }()
+    
     private lazy var titleLabel: UILabel = {
         let result = UILabel()
         result.font = .systemFont(ofSize: Values.smallFontSize)
@@ -16,11 +32,10 @@ public final class Separator: UIView {
         return result
     }()
     
-    private lazy var lineLayer: CAShapeLayer = {
-        let result = CAShapeLayer()
-        result.lineWidth = Values.separatorThickness
-        result.themeStrokeColor = .textSecondary
-        result.themeFillColor = .clear
+    private let rightLine: UIView = {
+        let result: UIView = UIView()
+        result.themeBackgroundColor = .textSecondary
+        result.set(.height, to: Values.separatorThickness)
         
         return result
     }()
@@ -47,40 +62,35 @@ public final class Separator: UIView {
     
     private func setUpViewHierarchy(title: String?) {
         titleLabel.text = title
+        
+        addSubview(leftLine)
+        addSubview(roundedLine)
+        addSubview(rightLine)
         addSubview(titleLabel)
         
         titleLabel.center(.horizontal, in: self)
         titleLabel.center(.vertical, in: self)
-        layer.insertSublayer(lineLayer, at: 0)
-        
-        set(.height, to: Separator.height)
+        roundedLine.pin(.top, to: .top, of: self)
+        roundedLine.pin(.top, to: .top, of: titleLabel, withInset: -6)
+        roundedLine.pin(.leading, to: .leading, of: titleLabel, withInset: -10)
+        roundedLine.pin(.trailing, to: .trailing, of: titleLabel, withInset: 10)
+        roundedLine.pin(.bottom, to: .bottom, of: titleLabel, withInset: 6)
+        roundedLine.pin(.bottom, to: .bottom, of: self)
+        leftLine.pin(.leading, to: .leading, of: self)
+        leftLine.pin(.trailing, to: .leading, of: roundedLine)
+        leftLine.center(.vertical, in: self)
+        rightLine.pin(.leading, to: .trailing, of: roundedLine)
+        rightLine.pin(.trailing, to: .trailing, of: self)
+        rightLine.center(.vertical, in: self)
     }
-    
-    // MARK: - Updating
     
     public override func layoutSubviews() {
         super.layoutSubviews()
         
-        updateLineLayer()
+        roundedLine.layer.cornerRadius = (roundedLine.bounds.height / 2)
     }
     
-    private func updateLineLayer() {
-        let w = bounds.width
-        let h = bounds.height
-        let path = UIBezierPath()
-        path.move(to: CGPoint(x: 0, y: h / 2))
-        
-        let titleLabelFrame = titleLabel.frame.insetBy(dx: -10, dy: -6)
-        path.addLine(to: CGPoint(x: titleLabelFrame.origin.x, y: h / 2))
-        
-        let oval = UIBezierPath(roundedRect: titleLabelFrame, cornerRadius: Separator.height / 2)
-        path.append(oval)
-        path.move(to: CGPoint(x: titleLabelFrame.origin.x + titleLabelFrame.width, y: h / 2))
-        path.addLine(to: CGPoint(x: w, y: h / 2))
-        path.close()
-        
-        lineLayer.path = path.cgPath
-    }
+    // MARK: - Updating
     
     public func update(title: String?) {
         titleLabel.text = title

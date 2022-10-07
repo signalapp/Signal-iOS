@@ -85,7 +85,9 @@ public enum ThemeManager {
             
             // Note: We need to set this to 'unspecified' to force the UI to properly update as the
             // 'TraitObservingWindow' won't actually trigger the trait change otherwise
-            mainWindow?.overrideUserInterfaceStyle = .unspecified
+            DispatchQueue.main.async {
+                self.mainWindow?.overrideUserInterfaceStyle = .unspecified
+            }
         }
     }
     
@@ -122,6 +124,10 @@ public enum ThemeManager {
     }
     
     public static func applyNavigationStyling() {
+        guard Thread.isMainThread else {
+            return DispatchQueue.main.async { applyNavigationStyling() }
+        }
+        
         let textPrimary: UIColor = (ThemeManager.currentTheme.color(for: .textPrimary) ?? .white)
         
         // Set the `mainWindow.tintColor` for system screens to use the right colour for text
@@ -244,6 +250,10 @@ public enum ThemeManager {
     }
     
     public static func applyWindowStyling() {
+        guard Thread.isMainThread else {
+            return DispatchQueue.main.async { applyWindowStyling() }
+        }
+        
         mainWindow?.overrideUserInterfaceStyle = {
             guard !ThemeManager.matchSystemNightModeSetting else { return .unspecified }
             
@@ -268,10 +278,7 @@ public enum ThemeManager {
     
     private static func updateAllUI() {
         guard Thread.isMainThread else {
-            DispatchQueue.main.async {
-                updateAllUI()
-            }
-            return
+            return DispatchQueue.main.async { updateAllUI() }
         }
         
         ThemeManager.uiRegistry.objectEnumerator()?.forEach { applier in

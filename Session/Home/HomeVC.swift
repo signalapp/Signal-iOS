@@ -185,7 +185,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
         
         let createNewPrivateChatButton = SessionButton(style: .bordered, size: .large)
         createNewPrivateChatButton.setTitle("vc_home_empty_state_button_title".localized(), for: .normal)
-        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: .touchUpInside)
+        createNewPrivateChatButton.addTarget(self, action: #selector(createNewConversation), for: .touchUpInside)
         createNewPrivateChatButton.set(.width, to: Values.iPadButtonWidth)
         
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
@@ -764,16 +764,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedRemi
     @objc func createNewConversation() {
         let newConversationVC = NewConversationVC()
         let navigationController = StyledNavigationController(rootViewController: newConversationVC)
-        if UIDevice.current.isIPad {
-            navigationController.modalPresentationStyle = .fullScreen
-        }
-        navigationController.modalPresentationCapturesStatusBarAppearance = true
-        present(navigationController, animated: true, completion: nil)
-    }
-    
-    @objc func createNewDM() {
-        let newDMVC = NewDMVC(shouldShowBackButton: false)
-        let navigationController = StyledNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
