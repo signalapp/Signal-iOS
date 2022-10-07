@@ -6427,14 +6427,13 @@
 /* Header for the explainer sheet for signal connections */
 "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT" = "<bold>Signal Connections</bold> are people you’ve chosen to trust, either by:";
 
-/* Section footer for the 'viewers' section on the 'story settings' view
-   Section footer for the 'viewers' section on the 'story settings' view. */
+/* Section footer for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER" = "Choose which Signal Connections can view your story. Changes won’t affect stories you’ve already sent.";
 
 /* Section header for the 'viewers' section on the 'story settings' view */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER" = "Who Can View This Story";
 
-/* Header for the 'viewers' section on the 'story settings' bottom sheet. */
+/* Header for the 'viewers' section on the 'story settings' bottom sheet */
 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER" = "Choose which Signal Connections can view your story. You can change this anytime in privacy settings.";
 
 /* Tooltip text shown when the user selects a story as a destination for a long duration video that will be split into shorter segments. Embeds {{ segment duration in seconds }} */

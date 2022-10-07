@@ -332,13 +332,13 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
             textAlignment = .natural
             baseString = OWSLocalizedString(
                 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
-                comment: "Section footer for the 'viewers' section on the 'story settings' view."
+                comment: "Section footer for the 'viewers' section on the 'story settings' view"
             )
         case .sheet:
             textAlignment = .center
             baseString = OWSLocalizedString(
                 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER",
-                comment: "Header for the 'viewers' section on the 'story settings' bottom sheet."
+                comment: "Header for the 'viewers' section on the 'story settings' bottom sheet"
             )
         }
 
