@@ -519,6 +519,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                     // Constraints
                     bubbleView.addSubview(stackView)
                     stackView.pin(to: bubbleView, withInset: inset)
+                    stackView.widthAnchor.constraint(lessThanOrEqualToConstant: maxWidth).isActive = true
                     snContentView.addArrangedSubview(bubbleBackgroundView)
                 }
                 

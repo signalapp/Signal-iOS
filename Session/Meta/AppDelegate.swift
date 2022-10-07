@@ -481,7 +481,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             guard Identity.userExists() else { return }
             
-            SessionApp.homeViewController.wrappedValue?.createNewDM()
+            SessionApp.homeViewController.wrappedValue?.createNewConversation()
             completionHandler(true)
         }
     }
