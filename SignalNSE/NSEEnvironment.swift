@@ -109,7 +109,7 @@ class NSEEnvironment: Dependencies {
                 return
             }
             // This should be the first thing we do.
-            SetCurrentAppContext(NSEContext(logger: logger))
+            SetCurrentAppContext(NSEContext(logger: logger), false)
             _hasAppContext = true
         }
     }

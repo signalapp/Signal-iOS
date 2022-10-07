@@ -134,11 +134,6 @@ typedef NS_ENUM(uint8_t, OWSIdentity);
 
 + (void)setShared:(SSKEnvironment *)env;
 
-#ifdef TESTABLE_BUILD
-// Should only be called by tests.
-+ (void)clearSharedForTests;
-#endif
-
 + (BOOL)hasShared;
 
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManagerRef;

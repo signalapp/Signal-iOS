@@ -26,8 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [DDLog addLogger:DDTTYLogger.sharedInstance];
 
-    ClearCurrentAppContextForTests();
-    SetCurrentAppContext([TestAppContext new]);
+    SetCurrentAppContext([TestAppContext new], true);
 
     [MockSSKEnvironment activate];
     

@@ -30,8 +30,7 @@ public class SSKBaseTestSwift: XCTestCase {
 
         DDLog.add(DDTTYLogger.sharedInstance!)
 
-        ClearCurrentAppContextForTests()
-        SetCurrentAppContext(TestAppContext())
+        SetCurrentAppContext(TestAppContext(), true)
 
         MockSSKEnvironment.activate()
 

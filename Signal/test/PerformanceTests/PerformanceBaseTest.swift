@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,8 +13,7 @@ public class PerformanceBaseTest: XCTestCase {
     public override func setUp() {
         super.setUp()
 
-        ClearCurrentAppContextForTests()
-        SetCurrentAppContext(TestAppContext())
+        SetCurrentAppContext(TestAppContext(), true)
         SDSDatabaseStorage.shouldLogDBQueries = false
 
         MockSSKEnvironment.activate()

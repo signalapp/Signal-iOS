@@ -154,7 +154,7 @@ static void uncaughtExceptionHandler(NSException *exception)
     NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
 
     // This should be the first thing we do.
-    SetCurrentAppContext([MainAppContext new]);
+    SetCurrentAppContext([MainAppContext new], NO);
 
     self.launchStartedAt = CACurrentMediaTime();
     [BenchManager startEventWithTitle:@"Presenting HomeView" eventId:@"AppStart" logInProduction:TRUE];

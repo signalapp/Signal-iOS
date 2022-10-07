@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
@@ -19,11 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [super setUp];
 
-    ClearCurrentAppContextForTests();
-    [Environment clearSharedForTests];
-    [SSKEnvironment clearSharedForTests];
-
-    SetCurrentAppContext([TestAppContext new]);
+    SetCurrentAppContext([TestAppContext new], YES);
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
 

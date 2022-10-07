@@ -40,15 +40,10 @@ static Environment *sharedEnvironment = nil;
     //
     // App extensions may be opened multiple times in the same process,
     // so statics will persist.
-    OWSAssertDebug(!sharedEnvironment || !CurrentAppContext().isMainApp);
     OWSAssertDebug(environment);
+    OWSAssertDebug(!sharedEnvironment || !CurrentAppContext().isMainApp || CurrentAppContext().isRunningTests);
 
     sharedEnvironment = environment;
-}
-
-+ (void)clearSharedForTests
-{
-    sharedEnvironment = nil;
 }
 
 - (instancetype)initWithIncomingContactSyncJobQueue:(OWSIncomingContactSyncJobQueue *)incomingContactSyncJobQueue

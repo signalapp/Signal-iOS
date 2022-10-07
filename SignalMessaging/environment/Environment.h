@@ -56,11 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (class, nonatomic) Environment *shared;
 
-#ifdef TESTABLE_BUILD
-// Should only be called by tests.
-+ (void)clearSharedForTests;
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -148,13 +148,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 @end
 
 id<AppContext> CurrentAppContext(void);
-void SetCurrentAppContext(id<AppContext> appContext);
+void SetCurrentAppContext(id<AppContext> appContext, BOOL isRunningTests);
 
 void ExitShareExtension(void);
-
-#ifdef TESTABLE_BUILD
-void ClearCurrentAppContextForTests(void);
-#endif
-
 
 NS_ASSUME_NONNULL_END

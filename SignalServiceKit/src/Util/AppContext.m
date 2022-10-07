@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2021 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2022 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppContext.h"
@@ -32,23 +32,16 @@ id<AppContext> CurrentAppContext(void)
     return currentAppContext;
 }
 
-void SetCurrentAppContext(id<AppContext> appContext)
+void SetCurrentAppContext(id<AppContext> appContext, BOOL isRunningTests)
 {
     // The main app context should only be set once.
     //
     // App extensions may be opened multiple times in the same process,
     // so statics will persist.
-    OWSCAssertDebug(!currentAppContext || !currentAppContext.isMainApp);
+    OWSCAssertDebug(!currentAppContext || !currentAppContext.isMainApp || isRunningTests);
 
     currentAppContext = appContext;
 }
-
-#ifdef TESTABLE_BUILD
-void ClearCurrentAppContextForTests()
-{
-    currentAppContext = nil;
-}
-#endif
 
 void ExitShareExtension(void)
 {

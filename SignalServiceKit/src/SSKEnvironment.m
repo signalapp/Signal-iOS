@@ -213,11 +213,6 @@ static SSKEnvironment *sharedSSKEnvironment;
     sharedSSKEnvironment = env;
 }
 
-+ (void)clearSharedForTests
-{
-    sharedSSKEnvironment = nil;
-}
-
 + (BOOL)hasShared
 {
     return sharedSSKEnvironment != nil;
