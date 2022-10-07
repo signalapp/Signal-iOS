@@ -32,7 +32,7 @@ class StoryPageViewController: UIPageViewController {
     weak var contextDataSource: StoryPageViewControllerDataSource?
     let viewableContexts: [StoryContext]
     private let hiddenStoryFilter: Bool?
-    private var interactiveDismissCoordinator: StoryInteractiveTransitionCoordinator?
+    private lazy var interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
 
     private let audioActivity = AudioActivity(audioDescription: "StoriesViewer", behavior: .playbackMixWithOthers)
 
@@ -81,7 +81,8 @@ class StoryPageViewController: UIPageViewController {
         delegate = self
         view.backgroundColor = .black
 
-        interactiveDismissCoordinator = StoryInteractiveTransitionCoordinator(pageViewController: self)
+        // Init the lazy coordinator
+        _ = interactiveDismissCoordinator
     }
 
     private var isDisplayLinkPaused = false {
@@ -440,13 +441,13 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             presentingViewController: presentingViewController,
             isPresenting: false
         ) else {
-            return StorySlideAnimator(interactiveEdge: interactiveDismissCoordinator?.interactiveEdge ?? .none)
+            return StorySlideAnimator(coordinator: interactiveDismissCoordinator)
         }
         return StoryZoomAnimator(storyTransitionContext: storyTransitionContext)
     }
 
     public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        guard let interactiveDismissCoordinator = interactiveDismissCoordinator, interactiveDismissCoordinator.interactionInProgress else { return nil }
+        guard interactiveDismissCoordinator.interactionInProgress else { return nil }
         interactiveDismissCoordinator.mode = animator is StoryZoomAnimator ? .zoom : .slide
         return interactiveDismissCoordinator
     }
@@ -504,8 +505,7 @@ extension StoryPageViewController: UIViewControllerTransitioningDelegate {
             storyThumbnailSize: try storyThumbnailSize(for: storyMessage),
             thumbnailRepresentsStoryView: thumbnailRepresentsStoryView,
             pageViewController: self,
-            interactiveGesture: interactiveDismissCoordinator?.interactionInProgress == true
-                ? interactiveDismissCoordinator?.panGestureRecognizer : nil
+            coordinator: interactiveDismissCoordinator
         )
     }
 

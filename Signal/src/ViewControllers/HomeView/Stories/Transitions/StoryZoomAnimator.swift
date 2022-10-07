@@ -12,7 +12,7 @@ struct StoryTransitionContext {
     let storyThumbnailSize: CGSize?
     let thumbnailRepresentsStoryView: Bool
     weak var pageViewController: StoryPageViewController!
-    weak var interactiveGesture: UIPanGestureRecognizer?
+    weak var coordinator: StoryInteractiveTransitionCoordinator!
 }
 
 class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
@@ -114,7 +114,6 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             }
         } else {
             containerView.addSubview(toVC.view)
-            containerView.addSubview(storyViewContainer)
             containerView.addSubview(context.pageViewController.view)
 
             storyViewContainer.layer.cornerRadius = UIDevice.current.hasIPhoneXNotch || UIDevice.current.isIPad ? 18 : 0
@@ -127,33 +126,57 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
             context.thumbnailView.alpha = 0
 
-            if let interactiveGesture = context.interactiveGesture {
-                interactiveGesture.addTarget(self, action: #selector(handlePan(_:)))
+            if context.coordinator.interactionInProgress {
+                containerView.addSubview(storyViewContainer)
+                storyViewContainer.isHidden = true
 
-                UIView.animate(withDuration: totalDuration) {
-                    self.context.pageViewController.view.backgroundColor = .clear
+                context.coordinator.updateHandler = { percentComplete in
+                    self.storyViewContainer.frame = self.mediaFrame(
+                        in: self.context.pageViewController.currentContextViewController.view.frame,
+                        containerView: self.context.pageViewController.view
+                    ).insetBy(
+                        dx: presentedFrame.width * (0.1 * percentComplete),
+                        dy: presentedFrame.height * (0.1 * percentComplete)
+                    )
+                    self.context.storyView.frame = self.storyViewContainer.bounds
                 }
 
-                interactiveCompletion = {
-                    if transitionContext.transitionWasCancelled {
-                        self.animateCancelledInteractiveDismissal(
-                            interactiveGesture: interactiveGesture
-                        ) {
-                            toVC.view.removeFromSuperview()
-                            self.context.pageViewController.view.alpha = 1
-                            self.context.thumbnailView.alpha = 1
+                context.coordinator.finishAnimations = {
+                    self.storyViewContainer.isHidden = false
+                    self.context.pageViewController.currentContextViewController.view.isHidden = true
 
-                            transitionContext.completeTransition(false)
-                        }
+                    if let storyView = self.context.storyView as? TextAttachmentThumbnailView {
+                        storyView.renderSize = TextAttachmentThumbnailView.defaultRenderSize
+                    }
+                    self.storyViewContainer.layer.cornerRadius = 12
+                    self.storyViewContainer.frame = centerCroppedDismissedFrame
+                    self.context.storyView.frame = self.storyViewContainer.bounds.centerCropping(fullSize: storyViewDismissedSize)
+                    self.context.storyView.layoutIfNeeded()
+                }
+
+                context.coordinator.cancelAnimations = {
+                    self.storyViewContainer.frame = self.mediaFrame(in: self.context.pageViewController.view.frame, containerView: self.context.pageViewController.view)
+                    self.context.storyView.frame = self.storyViewContainer.bounds
+                }
+
+                context.coordinator.completionHandler = {
+                    if transitionContext.transitionWasCancelled {
+                        self.storyViewContainer.removeFromSuperview()
+                        self.context.storyView.removeFromSuperview()
+
+                        toVC.view.removeFromSuperview()
+
+                        self.context.thumbnailView.alpha = 1
+
+                        transitionContext.completeTransition(false)
                     } else {
-                        self.animateCompletedInteractiveDismissal(
-                            endFrame: centerCroppedDismissedFrame,
-                            storyViewEndSize: storyViewDismissedSize,
-                            interactiveGesture: interactiveGesture
-                        ) {
+                        let duration = self.context.thumbnailRepresentsStoryView ? 0 : self.crossFadeDuration
+                        UIView.animate(withDuration: duration) {
+                            self.storyViewContainer.alpha = self.context.isPresenting ? 1 : 0
+                            self.context.thumbnailView.alpha = self.context.isPresenting ? 0 : 1
+                        } completion: { _ in
                             self.storyViewContainer.removeFromSuperview()
                             self.context.storyView.removeFromSuperview()
-                            self.backgroundView.removeFromSuperview()
                             self.context.pageViewController.view.removeFromSuperview()
 
                             transitionContext.completeTransition(true)
@@ -161,6 +184,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                     }
                 }
             } else {
+                containerView.insertSubview(storyViewContainer, aboveSubview: toVC.view)
                 containerView.insertSubview(backgroundView, aboveSubview: toVC.view)
 
                 UIView.animateKeyframes(withDuration: totalDuration, delay: 0) {
@@ -213,91 +237,6 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         }
 
         return mediaFrame
-    }
-
-    @objc
-    func handlePan(_ interactiveGesture: UIPanGestureRecognizer) {
-        switch interactiveGesture.state {
-        case .changed:
-            let translation = interactiveGesture.translation(in: context.pageViewController.view)
-            let translatedFrame = context.pageViewController.view.frame.offsetBy(dx: translation.x, dy: translation.y)
-            context.pageViewController.currentContextViewController.view.center = translatedFrame.center
-            self.storyViewContainer.frame = mediaFrame(in: translatedFrame, containerView: context.pageViewController.view)
-        case .ended, .cancelled:
-            interactiveCompletion?()
-            interactiveCompletion = nil
-            interactiveGesture.removeTarget(self, action: #selector(handlePan(_:)))
-        default:
-            break
-        }
-    }
-
-    /// When finishing the interactive dismissal, we spring from the translated position to the final position
-    private func animateCompletedInteractiveDismissal(
-        endFrame: CGRect,
-        storyViewEndSize: CGSize,
-        interactiveGesture: UIPanGestureRecognizer,
-        completion: @escaping () -> Void
-    ) {
-        context.pageViewController.view.alpha = 0
-
-        let velocity = interactiveGesture.velocity(in: context.pageViewController.view)
-        let averageVelocity = abs(velocity.x) + abs(velocity.y) / 2
-        let translation = interactiveGesture.translation(in: context.pageViewController.view)
-        let averageTranslation = abs(translation.x) + abs(translation.y) / 2
-        let springVelocity = averageVelocity / averageTranslation
-
-        UIView.animate(
-            withDuration: 0.25,
-            delay: 0,
-            usingSpringWithDamping: 0.98,
-            initialSpringVelocity: springVelocity,
-            options: .curveLinear
-        ) {
-            if let storyView = self.context.storyView as? TextAttachmentThumbnailView {
-                storyView.renderSize = TextAttachmentThumbnailView.defaultRenderSize
-            }
-            self.storyViewContainer.layer.cornerRadius = 12
-            self.storyViewContainer.frame = endFrame
-            self.context.storyView.frame = self.storyViewContainer.bounds.centerCropping(fullSize: storyViewEndSize)
-            self.context.storyView.layoutIfNeeded()
-        } completion: { _ in
-            let duration = self.context.thumbnailRepresentsStoryView ? 0 : self.crossFadeDuration
-            UIView.animate(withDuration: duration) {
-                self.storyViewContainer.alpha = self.context.isPresenting ? 1 : 0
-                self.context.thumbnailView.alpha = self.context.isPresenting ? 0 : 1
-            } completion: { _ in
-                completion()
-            }
-        }
-    }
-
-    /// When cancelling the interactive dismissal, we spring from the translated position to the original position
-    private func animateCancelledInteractiveDismissal(
-        interactiveGesture: UIPanGestureRecognizer,
-        completion: @escaping () -> Void
-    ) {
-        context.storyView.removeFromSuperview()
-        storyViewContainer.removeFromSuperview()
-
-        let velocity = interactiveGesture.velocity(in: context.pageViewController.view)
-        let averageVelocity = abs(velocity.x) + abs(velocity.y) / 2
-        let translation = interactiveGesture.translation(in: context.pageViewController.view)
-        let averageTranslation = abs(translation.x) + abs(translation.y) / 2
-        let springVelocity = averageVelocity / averageTranslation
-
-        UIView.animate(
-            withDuration: 0.25,
-            delay: 0,
-            usingSpringWithDamping: 0.98,
-            initialSpringVelocity: springVelocity,
-            options: .curveLinear
-        ) {
-            self.context.pageViewController.currentContextViewController.view.frame = self.context.pageViewController.view.bounds
-            self.context.pageViewController.view.backgroundColor = .black
-        } completion: { _ in
-            completion()
-        }
     }
 
     /// Cross-fade the thumbnail on the stories list if it doesn't match the presented story

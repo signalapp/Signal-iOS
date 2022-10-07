@@ -5,9 +5,9 @@
 import Foundation
 
 class StorySlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
-    let interactiveEdge: StoryInteractiveTransitionCoordinator.Edge
-    init(interactiveEdge: StoryInteractiveTransitionCoordinator.Edge) {
-        self.interactiveEdge = interactiveEdge
+    weak var coordinator: StoryInteractiveTransitionCoordinator!
+    init(coordinator: StoryInteractiveTransitionCoordinator) {
+        self.coordinator = coordinator
     }
 
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
@@ -25,30 +25,9 @@ class StorySlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         }
 
         containerView.addSubview(toVC.view)
-
         containerView.addSubview(fromVC.view)
-        fromVC.view.frame = transitionContext.initialFrame(for: fromVC)
 
-        let endFrame: CGRect
-        switch interactiveEdge {
-        case .leading:
-            endFrame = fromVC.view.frame.offsetBy(dx: (CurrentAppContext().isRTL ? -1 : 1) * fromVC.view.width, dy: 0)
-        case .trailing:
-            endFrame = fromVC.view.frame.offsetBy(dx: (CurrentAppContext().isRTL ? 1 : -1) * fromVC.view.width, dy: 0)
-        case .top, .none:
-            endFrame = fromVC.view.frame.offsetBy(dx: 0, dy: fromVC.view.height)
-        case .bottom:
-            endFrame = fromVC.view.frame.offsetBy(dx: 0, dy: -fromVC.view.height)
-        }
-
-        UIView.animate(
-            withDuration: transitionDuration(using: transitionContext),
-            delay: 0,
-            options: interactiveEdge != .none ? .curveLinear : .curveEaseInOut
-        ) {
-            fromVC.currentContextViewController.view.frame = endFrame
-            fromVC.view.backgroundColor = .clear
-        } completion: { _ in
+        let completion = {
             if transitionContext.transitionWasCancelled {
                 toVC.view.removeFromSuperview()
             } else {
@@ -57,5 +36,56 @@ class StorySlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
 
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
+
+        if coordinator.interactionInProgress {
+            coordinator.finishAnimations = {
+                let velocity = self.coordinator.panGestureRecognizer.velocity(in: fromVC.view)
+                var interactiveEndFrame: CGRect = fromVC.currentContextViewController.view.frame
+
+                // Follow a straight line to the nearest edge
+                // based on the velocity at time of release.
+
+                let distanceToHorizontalEdge = CurrentAppContext().isRTL ? -interactiveEndFrame.maxX : fromVC.view.frame.width - interactiveEndFrame.minX
+                let distanceToVerticalEdge = velocity.y < 1 ? -interactiveEndFrame.maxY : fromVC.view.frame.height - interactiveEndFrame.minY
+
+                let timeToHorizontalEdge = self.timeToEdge(velocity: velocity.x, distance: distanceToHorizontalEdge)
+                let timeToVerticalEdge = self.timeToEdge(velocity: velocity.y, distance: distanceToVerticalEdge)
+
+                if timeToHorizontalEdge < timeToVerticalEdge {
+                    interactiveEndFrame.origin.x += distanceToHorizontalEdge
+                    interactiveEndFrame.origin.y += timeToHorizontalEdge * velocity.y
+                } else {
+                    interactiveEndFrame.origin.x += timeToVerticalEdge * velocity.x
+                    interactiveEndFrame.origin.y += distanceToVerticalEdge
+                }
+
+                fromVC.currentContextViewController.view.frame = interactiveEndFrame
+            }
+            coordinator.completionHandler = completion
+        } else {
+            let endFrame: CGRect
+            switch coordinator.interactiveEdge {
+            case .leading:
+                endFrame = fromVC.view.frame.offsetBy(dx: (CurrentAppContext().isRTL ? -1 : 1) * fromVC.view.width, dy: 0)
+            case .trailing:
+                endFrame = fromVC.view.frame.offsetBy(dx: (CurrentAppContext().isRTL ? 1 : -1) * fromVC.view.width, dy: 0)
+            case .top, .none:
+                endFrame = fromVC.view.frame.offsetBy(dx: 0, dy: fromVC.view.height)
+            case .bottom:
+                endFrame = fromVC.view.frame.offsetBy(dx: 0, dy: -fromVC.view.height)
+            }
+
+            UIView.animate(withDuration: transitionDuration(using: transitionContext), animations: {
+                fromVC.currentContextViewController.view.frame = endFrame
+                fromVC.view.backgroundColor = .clear
+            }, completion: { _ in completion()})
+        }
+    }
+
+    private func timeToEdge(velocity: CGFloat, distance: CGFloat) -> TimeInterval {
+        guard (velocity < 0 && distance < 0) || (velocity > 0 && distance > 0) else {
+            return .greatestFiniteMagnitude
+        }
+        return distance / velocity
     }
 }
