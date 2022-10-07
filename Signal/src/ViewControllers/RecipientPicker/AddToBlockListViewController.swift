@@ -117,11 +117,6 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
         return AnyPromise(Promise.value(()))
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient) {
-        owsFailDebug("Unexpected error.")
-    }
-
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,

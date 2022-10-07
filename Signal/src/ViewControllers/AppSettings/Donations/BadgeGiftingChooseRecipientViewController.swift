@@ -97,9 +97,6 @@ extension BadgeGiftingChooseRecipientViewController: RecipientPickerDelegate {
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient) {}
-
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryMessageForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> String? { nil }
 

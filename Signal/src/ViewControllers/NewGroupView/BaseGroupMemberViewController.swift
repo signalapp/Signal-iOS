@@ -226,11 +226,6 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
         }
     }
 
-    public func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient) {
-        AssertIsOnMainThread()
-        GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
-    }
-
     public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? {
         return NSLocalizedString("NEW_GROUP_CREATION_MEMBER_DOES_NOT_SUPPORT_NEW_GROUPS",
                                  comment: "Indicates that a group member does not support New Groups.")

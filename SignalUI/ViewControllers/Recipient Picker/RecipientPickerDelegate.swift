@@ -28,10 +28,6 @@ public protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise
 
-    // This delegate method is only used if shouldUseAsyncSelection is set.
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         showInvalidRecipientAlert recipient: PickedRecipient)
-
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryMessageForRecipient recipient: PickedRecipient,
                          transaction: SDSAnyReadTransaction) -> String?

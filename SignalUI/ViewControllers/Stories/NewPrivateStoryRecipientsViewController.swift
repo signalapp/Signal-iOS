@@ -93,8 +93,6 @@ extension NewPrivateStoryRecipientsViewController: MemberViewDelegate {
 
     public func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise { AnyPromise(Promise.value(())) }
 
-    public func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient) {}
-
     public func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String? { nil }
 
     public func memberViewShouldShowMemberCount() -> Bool { false }

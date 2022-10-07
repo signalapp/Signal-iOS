@@ -19,8 +19,6 @@ public protocol MemberViewDelegate: AnyObject {
 
     func memberViewPrepareToSelectRecipient(_ recipient: PickedRecipient) -> AnyPromise
 
-    func memberViewShowInvalidRecipientAlert(_ recipient: PickedRecipient)
-
     func memberViewNoUuidSubtitleForRecipient(_ recipient: PickedRecipient) -> String?
 
     func memberViewShouldShowMemberCount() -> Bool
@@ -401,20 +399,6 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         }
 
         return memberViewDelegate.memberViewPrepareToSelectRecipient(recipient)
-    }
-
-    public func recipientPicker(
-        _ recipientPickerViewController: RecipientPickerViewController,
-        showInvalidRecipientAlert recipient: PickedRecipient
-    ) {
-        AssertIsOnMainThread()
-
-        guard let memberViewDelegate = memberViewDelegate else {
-            owsFailDebug("Missing memberViewDelegate.")
-            return
-        }
-
-        memberViewDelegate.memberViewShowInvalidRecipientAlert(recipient)
     }
 
     public func recipientPicker(
