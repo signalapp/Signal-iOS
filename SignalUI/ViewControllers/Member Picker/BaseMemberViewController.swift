@@ -94,7 +94,7 @@ open class BaseMemberViewController: OWSViewController {
 
         recipientPicker.groupsToShow = .showNoGroups
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.showUseAsyncSelection = true
+        recipientPicker.shouldUseAsyncSelection = true
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)

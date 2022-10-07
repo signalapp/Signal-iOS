@@ -24,11 +24,11 @@ public protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          willRenderRecipient recipient: PickedRecipient)
 
-    // This delegate method is only used if showUseAsyncSelection is set.
+    // This delegate method is only used if shouldUseAsyncSelection is set.
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise
 
-    // This delegate method is only used if showUseAsyncSelection is set.
+    // This delegate method is only used if shouldUseAsyncSelection is set.
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          showInvalidRecipientAlert recipient: PickedRecipient)
 
@@ -108,7 +108,7 @@ extension RecipientPickerViewController {
         }
 
         guard let delegate = delegate else { return }
-        guard showUseAsyncSelection else {
+        guard shouldUseAsyncSelection else {
             AssertIsOnMainThread()
 
             let recipientPickerRecipientState = delegate.recipientPicker(self, getRecipientState: recipient)

@@ -28,7 +28,7 @@ class BadgeGiftingChooseRecipientViewController: OWSViewController {
         recipientPicker.shouldHideLocalRecipient = true
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.groupsToShow = .showNoGroups
-        recipientPicker.showUseAsyncSelection = false
+        recipientPicker.shouldUseAsyncSelection = false
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
