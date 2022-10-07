@@ -160,7 +160,8 @@ public class SystemStoryManager: NSObject, Dependencies, SystemStoryManagerProto
         )
     }
 
-    @objc private func onboardingStateDidChange() {
+    @objc
+    private func onboardingStateDidChange() {
         guard Self.tsAccountManager.isOnboarded() else {
             return
         }

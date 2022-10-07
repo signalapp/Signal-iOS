@@ -161,7 +161,11 @@ public class PrivateStoryNameSettingsViewController: OWSTableViewController2 {
 extension PrivateStoryNameSettingsViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if string == "\n" {
-            hasPendingChanges ? didTapDone() : didTapCancel()
+            if hasPendingChanges {
+                didTapDone()
+            } else {
+                didTapCancel()
+            }
             return false
         } else {
             return true

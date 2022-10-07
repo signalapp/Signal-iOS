@@ -8,7 +8,7 @@ import Foundation
 public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
 
     /// In tests, set some other handler to this to return different results when the system under test calls enqueueOnboardingStoryDownload
-    public lazy var downloadOnboardingStoryHandler: () -> Promise<Void> = { [weak self] in
+    public lazy var downloadOnboardingStoryHandler: () -> Promise<Void> = {
         return .value(())
     }
 
@@ -17,7 +17,7 @@ public class SystemStoryManagerMock: NSObject, SystemStoryManagerProtocol {
     }
 
     /// In tests, set some other handler to this to return different results when the system under test calls cleanUpOnboardingStoryIfNeeded
-    public lazy var cleanUpOnboardingStoryHandler: () -> Promise<Void> = { [weak self] in
+    public lazy var cleanUpOnboardingStoryHandler: () -> Promise<Void> = {
         return .value(())
     }
 

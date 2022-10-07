@@ -373,8 +373,7 @@ class StoryListDataSource: NSObject, Dependencies {
             }
             // At this point all that remains is new contexts, any update ones got
             // removed when we looped over old models above.
-            let modelsFromNewContexts = try newContexts.compactMap {
-                (context: StoryContext, contextChanges: StoryContextChanges) throws -> StoryViewModel? in
+            let modelsFromNewContexts = try newContexts.compactMap { (context: StoryContext, contextChanges: StoryContextChanges) throws -> StoryViewModel? in
                 switch contextChanges {
                 case .hiddenStateChanged:
                     // At this point, all remaining contexts are new (not in old models) but we should only

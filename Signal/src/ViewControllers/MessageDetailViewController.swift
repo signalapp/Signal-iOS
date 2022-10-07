@@ -340,7 +340,8 @@ class MessageDetailViewController: OWSTableViewController2 {
         return section
     }
 
-    @objc private func didTapCell(_ sender: UITapGestureRecognizer) {
+    @objc
+    private func didTapCell(_ sender: UITapGestureRecognizer) {
         // For now, only allow tapping on audio cells. The full gamut of cell types
         // might result in unexpected behaviors if made tappable from the detail view.
         guard renderItem?.componentState.audioAttachment != nil else {

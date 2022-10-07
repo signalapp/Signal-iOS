@@ -37,12 +37,15 @@ class StorySharingTests: SignalBaseTest {
 
     func testMentionFlattening() {
         let mentionUuid = UUID()
+        let range = NSRange(location: 0, length: MessageBody.mentionPlaceholder.utf16.count)
         let output = StorySharing.text(
             for: .init(
                 text: "\(MessageBody.mentionPlaceholder) Some text",
-                ranges: .init(mentions: [NSMakeRange(0, MessageBody.mentionPlaceholder.utf16.count): mentionUuid])),
+                ranges: .init(mentions: [range: mentionUuid])
+            ),
             with: nil
         )
+
         XCTAssertEqual(output, "@Fake name Some text")
     }
 }

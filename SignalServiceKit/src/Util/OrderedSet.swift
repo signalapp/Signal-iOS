@@ -55,11 +55,11 @@ public struct OrderedSet<Element> where Element: Hashable {
         return orderedMembers.first
     }
 
-    public static func ==(lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
+    public static func == (lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
         lhs.set == rhs.set
     }
 
-    public static func !=(lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
+    public static func != (lhs: OrderedSet<Element>, rhs: OrderedSet<Element>) -> Bool {
         lhs.set != rhs.set
     }
 

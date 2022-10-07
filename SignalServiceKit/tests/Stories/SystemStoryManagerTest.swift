@@ -71,7 +71,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
                         downloadUrl: URL(fileURLWithPath: url.lastPathComponent)
                     ))
                 } else {
-                    XCTFail()
+                    XCTFail("No URL")
                     fatalError()
                 }
             }
@@ -141,7 +141,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
                         downloadUrl: URL(fileURLWithPath: url.lastPathComponent)
                     ))
                 } else {
-                    XCTFail()
+                    XCTFail("No URL")
                     fatalError()
                 }
             }
@@ -247,7 +247,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
                         downloadUrl: URL(fileURLWithPath: url.lastPathComponent)
                     ))
                 } else {
-                    XCTFail()
+                    XCTFail("No URL")
                     fatalError()
                 }
             }
@@ -399,7 +399,7 @@ class SystemStoryManagerTest: SSKBaseTestSwift {
                         downloadUrl: URL(fileURLWithPath: url.lastPathComponent)
                     ))
                 } else {
-                    XCTFail()
+                    XCTFail("No URL")
                     fatalError()
                 }
             }

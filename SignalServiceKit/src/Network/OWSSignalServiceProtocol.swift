@@ -6,23 +6,31 @@ import Foundation
 
 @objc
 public protocol OWSSignalServiceProtocol: AnyObject {
+    @objc
+    var keyValueStore: SDSKeyValueStore { get }
 
-    @objc var keyValueStore: SDSKeyValueStore { get }
-
-    @objc func warmCaches()
+    @objc
+    func warmCaches()
 
     // MARK: - Censorship Circumvention
 
-    @objc var isCensorshipCircumventionActive: Bool { get }
-    @objc var hasCensoredPhoneNumber: Bool { get }
-    @objc var isCensorshipCircumventionManuallyActivated: Bool { get set }
-    @objc var isCensorshipCircumventionManuallyDisabled: Bool { get set }
-    @objc var manualCensorshipCircumventionCountryCode: String? { get set }
+    @objc
+    var isCensorshipCircumventionActive: Bool { get }
+    @objc
+    var hasCensoredPhoneNumber: Bool { get }
+    @objc
+    var isCensorshipCircumventionManuallyActivated: Bool { get set }
+    @objc
+    var isCensorshipCircumventionManuallyDisabled: Bool { get set }
+    @objc
+    var manualCensorshipCircumventionCountryCode: String? { get set }
 
     /// should only be accessed if censorship circumvention is active.
-    @objc var domainFrontBaseURL: URL { get }
+    @objc
+    var domainFrontBaseURL: URL { get }
 
-    @objc func buildCensorshipConfiguration() -> OWSCensorshipConfiguration
+    @objc
+    func buildCensorshipConfiguration() -> OWSCensorshipConfiguration
 
     // The _real types here can't be exposed to objc, but this protocol must be exposed,
     // so do a not-type-safe thing to enforce that all implemetors must implement this.

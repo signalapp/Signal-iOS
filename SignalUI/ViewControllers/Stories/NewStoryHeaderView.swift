@@ -4,7 +4,7 @@
 
 import Foundation
 
-public protocol NewStoryHeaderDelegate: OWSTableViewController2 {
+public protocol NewStoryHeaderDelegate: AnyObject, OWSTableViewController2 {
     func newStoryHeaderView(_ newStoryHeaderView: NewStoryHeaderView, didCreateNewStoryItems items: [StoryConversationItem])
 }
 

@@ -12,7 +12,8 @@ import UIKit
 /// sent to (if sent to a group).
 /// Outgoing story threads are not represented, but this table could be extended to include
 /// them in the future.
-@objc public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
+@objc
+public final class StoryContextAssociatedData: NSObject, SDSCodableModel {
     public static let databaseTableName = "model_StoryContextAssociatedData"
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {

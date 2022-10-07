@@ -735,7 +735,12 @@ public extension GroupMembership {
         ) {
             for address in addresses {
                 guard memberStates[address] == nil else {
-                    failOnDupe ? owsFailDebug("Duplicate address.") : Logger.warn("Duplicate address.")
+                    let errorMessage = "Duplicate address."
+                    if failOnDupe {
+                        owsFailDebug(errorMessage)
+                    } else {
+                        Logger.warn(errorMessage)
+                    }
                     continue
                 }
 

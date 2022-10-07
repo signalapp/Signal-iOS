@@ -67,7 +67,6 @@ extension ConversationViewController {
             didTapOrLongPressMention(mentionItem.mention)
         case .referencedUser(let referencedUserItem):
             owsFailDebug("Should never have a referenced user item in body text, but tapped \(referencedUserItem)")
-            break
         }
     }
 
@@ -111,7 +110,6 @@ extension ConversationViewController {
             didTapOrLongPressMention(mentionItem.mention)
         case .referencedUser(let referencedUserItem):
             owsFailDebug("Should never have a referenced user item in body text, but long pressed \(referencedUserItem)")
-            break
         }
     }
 

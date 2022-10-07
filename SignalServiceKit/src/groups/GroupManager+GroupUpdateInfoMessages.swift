@@ -183,10 +183,10 @@ private extension GroupManager {
                 transaction: transaction
             )
         case .onlyBannedMemberChange:
-            /// If we know only banned members changed we don't want to make a
-            /// new info message, and should simply update the most recent info
-            /// message with the new group model so it accurately reflects the
-            /// latest group state, i.e. is aware of the now-banned members.
+            // If we know only banned members changed we don't want to make a
+            // new info message, and should simply update the most recent info
+            // message with the new group model so it accurately reflects the
+            // latest group state, i.e. is aware of the now-banned members.
 
             mostRecentInfoMsg.setNewGroupModel(newGroupModel)
             mostRecentInfoMsg.anyUpsert(transaction: transaction)

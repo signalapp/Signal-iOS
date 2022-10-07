@@ -139,7 +139,8 @@ class StoryPageViewController: UIPageViewController {
         viewIsAppeared = false
     }
 
-    @objc func owsApplicationWillEnterForeground() {
+    @objc
+    func owsApplicationWillEnterForeground() {
         // reset mute state if foregrounded while this is on screen.
         self.isMuted = true
     }

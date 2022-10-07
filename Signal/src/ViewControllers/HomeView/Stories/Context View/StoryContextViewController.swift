@@ -742,18 +742,26 @@ class StoryContextViewController: OWSViewController {
 extension StoryContextViewController: UIGestureRecognizerDelegate {
     @objc
     func didTapLeft() {
-        guard currentItemMediaView?.willHandleTapGesture(leftTapGestureRecognizer) != true else { return }
-        CurrentAppContext().isRTL
-            ? transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
-            : transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
+        guard currentItemMediaView?.willHandleTapGesture(leftTapGestureRecognizer) != true else {
+            return
+        }
+        if CurrentAppContext().isRTL {
+            transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
+        } else {
+            transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
+        }
     }
 
     @objc
     func didTapRight() {
-        guard currentItemMediaView?.willHandleTapGesture(rightTapGestureRecognizer) != true else { return }
-        CurrentAppContext().isRTL
-            ? transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
-            : transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
+        guard currentItemMediaView?.willHandleTapGesture(rightTapGestureRecognizer) != true else {
+            return
+        }
+        if CurrentAppContext().isRTL {
+            transitionToPreviousItem(previousContextLoadPositionIfRead: .newest)
+        } else {
+            transitionToNextItem(nextContextLoadPositionIfRead: .oldest)
+        }
     }
 
     func willHandleInteractivePanGesture(_ gestureRecognizer: UIPanGestureRecognizer) -> Bool {

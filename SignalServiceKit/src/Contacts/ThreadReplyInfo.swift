@@ -30,11 +30,13 @@ public class ThreadReplyInfo: NSObject {
         internalContents = decoded
     }
 
-    @objc public var timestamp: UInt64 {
+    @objc
+    public var timestamp: UInt64 {
         internalContents.timestamp
     }
 
-    @objc public var author: SignalServiceAddress {
+    @objc
+    public var author: SignalServiceAddress {
         internalContents.author
     }
 

@@ -74,7 +74,7 @@ public class MyStorySettingsSheetViewController: OWSTableSheetViewController, My
     }
 }
 
-private protocol MyStorySettingsDataSourceDelegate: UIViewController {
+private protocol MyStorySettingsDataSourceDelegate: AnyObject, UIViewController {
     func reloadTableContents()
 }
 
@@ -106,7 +106,6 @@ private class MyStorySettingsDataSource: NSObject, Dependencies {
         switch style {
         case .sheet:
             visibilitySection.customHeaderView = SheetHeaderView(frame: .zero, dataSource: self)
-            break
         case .fullscreen:
             visibilitySection.headerTitle = OWSLocalizedString(
                 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
