@@ -183,7 +183,7 @@ final class NukeDataModal: Modal {
                             let modal: ConfirmationModal = ConfirmationModal(
                                 targetView: self?.view,
                                 info: ConfirmationModal.Info(
-                                    title: "Error",
+                                    title: "ALERT_ERROR_TITLE".localized(),
                                     explanation: message,
                                     cancelTitle: "BUTTON_OK".localized(),
                                     cancelStyle: .alert_text
@@ -198,7 +198,7 @@ final class NukeDataModal: Modal {
                         let modal: ConfirmationModal = ConfirmationModal(
                             targetView: self?.view,
                             info: ConfirmationModal.Info(
-                                title: "Error",
+                                title: "ALERT_ERROR_TITLE".localized(),
                                 explanation: error.localizedDescription,
                                 cancelTitle: "BUTTON_OK".localized(),
                                 cancelStyle: .alert_text

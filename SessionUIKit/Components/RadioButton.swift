@@ -2,6 +2,7 @@
 
 import UIKit
 
+// FIXME: Remove this and use the 'SessionCell' instead
 public class RadioButton: UIView {
     private static let selectionBorderSize: CGFloat = 26
     private static let selectionSize: CGFloat = 20
@@ -112,10 +113,10 @@ public class RadioButton: UIView {
         selectionButton.pin(to: self)
         
         titleLabel.center(.vertical, in: self)
-        titleLabel.pin(.left, to: .left, of: self)
+        titleLabel.pin(.leading, to: .leading, of: self)
         
         selectionBorderView.center(.vertical, in: self)
-        selectionBorderView.pin(.right, to: .right, of: self)
+        selectionBorderView.pin(.trailing, to: .trailing, of: self)
         selectionBorderView.set(.width, to: size.borderSize)
         selectionBorderView.set(.height, to: size.borderSize)
         

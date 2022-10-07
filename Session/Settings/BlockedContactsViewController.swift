@@ -462,8 +462,10 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                     String(
                         format: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_2_SINGLE".localized(),
                         lastName
-                    ),
-                ].joined(separator: " ")
+                    )
+                ]
+                .reversed(if: CurrentAppContext().isRTL)
+                .joined(separator: " ")
             }
             
             // If we have exactly 4 users, show the first two names followed by 'and X others', for
@@ -479,8 +481,10 @@ class BlockedContactsViewController: BaseVC, UITableViewDelegate, UITableViewDat
                 String(
                     format: "CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_3".localized(),
                     (contactNames.count - numNamesToShow)
-                ),
-            ].joined(separator: " ")
+                )
+            ]
+            .reversed(if: CurrentAppContext().isRTL)
+            .joined(separator: " ")
         }()
         let confirmationModal: ConfirmationModal = ConfirmationModal(
             info: ConfirmationModal.Info(

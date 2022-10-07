@@ -15,23 +15,23 @@
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "خطا در ارسال فایل ضمیمه";
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "امکان تبدیل نگاره وجود ندارد.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "امکان تبدیل تصویر وجود ندارد.";
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "مشکل در پردازش ویدئو.";
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "قادر به تجزیه تصویر نیست.";
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "امکان حذف فرادیتا از عکس وجود ندارد.";
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "امکان تغییر اندازه تصویر وجود ندارد.";
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Attachment is too large.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "حجم فایل پیوستی خیلی بزرگ می‌باشد.";
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "فایل پیوستی دارای محتوی غیرمعتبر می‌باشد.";
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "فایل پیوستی، فرمت نامعتبر دارد.";
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Attachment is empty.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "فایل پیوستی خالی می‌باشد.";
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "خطا در انتخاب سند.";
 /* Alert body when picking a document fails because user picked a directory/bundle */
@@ -44,10 +44,10 @@
 "BLOCK_LIST_BLOCK_BUTTON" = "مسدود کردن";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "%@ مسدود شود؟";
-/* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@از حالت مسدود خارج شود؟";
+/* A format for the 'unblock user' action sheet title. Embeds {{the unblocked user's name or phone number}}. */
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "%@ از حالت مسدود خارج شود؟";
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "رفع مسدودی";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "دفع مسدودیت";
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ مسدود شد.";
 /* The title of the 'user blocked' alert. */
@@ -69,7 +69,7 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "گفتگو حذف شود؟";
 /* keyboard toolbar label when starting to search with no current results */
-"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
+"CONVERSATION_SEARCH_SEARCHING" = "درحال جستجو...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "مشابهی یافت نشد";
 /* keyboard toolbar label when exactly 1 message matches the search string */
@@ -93,7 +93,7 @@
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "پیام‌های محوشونده";
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "وایرایش گروه";
+"EDIT_GROUP_ACTION" = "ویرایش گروه";
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "شما در این مکالمه هیچ مدیایی ندارید.";
 /* Label indicating loading is in progress */
@@ -115,9 +115,9 @@
 /* No comment provided by engineer. */
 "GROUP_CREATED" = "گروه ساخته شد.";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "%@ به گروه ملحق شد.";
+"GROUP_MEMBER_JOINED" = "%@ به گروه اضافه شد. ";
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = "%@ از گروه خارج شد.";
+"GROUP_MEMBER_LEFT" = "%@ از گروه خارج شد. ";
 /* No comment provided by engineer. */
 "GROUP_MEMBER_REMOVED" = "%@ از گروه حذف شد. ";
 /* No comment provided by engineer. */
@@ -248,10 +248,10 @@
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "شما زمان محوشدن پیام‌ها را به %@ تنظیم کردید.";
 // MARK: - Session
 "continue_2" = "ادامه ";
-"copy" = "کپی کردن";
-"invalid_url" = "URL نامعتبر است";
-"next" = "بعدی";
-"share" = "اشتراک‌گذاری";
+"copy" = "کپی";
+"invalid_url" = "URL غیرمعتبر";
+"next" = "بعد";
+"share" = "به‌اشتراک‌گذاری";
 "invalid_session_id" = "شناسه‌ی Session نامعتبر است.";
 "cancel" = "لغو";
 "your_session_id" = "شناسه‌ی Session شما";
@@ -294,23 +294,23 @@
 "vc_path_service_node_row_title" = "گره سرویس";
 "vc_path_destination_row_title" = "مقصد";
 "vc_path_learn_more_button_title" = "بیشتر بدانید";
-"vc_create_private_chat_title" = "Session جدید";
+"vc_create_private_chat_title" = "پیام جدید";
 "vc_create_private_chat_enter_session_id_tab_title" = "شناسه‌ی Session را وارد کنید";
-"vc_create_private_chat_scan_qr_code_tab_title" = "کد QR را اسکن کنید";
-"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
+"vc_create_private_chat_scan_qr_code_tab_title" = "اسکن کد QR";
+"vc_enter_public_key_explanation" = "یک مکالمه جدید را با وارد کردن شناسه جلسه شخصی شروع کنید یا شناسه جلسه خود را با آنها به اشتراک بگذارید.";
 "vc_scan_qr_code_camera_access_explanation" = "اپ Session برای اسکن کدهای QR احتیاج دارد به دوربین دسترسی داشته باشد";
-"vc_scan_qr_code_grant_camera_access_button_title" = "اجازه دسترسی به دوربین";
-"vc_create_closed_group_title" = "گروه خصوصی جدید";
-"vc_create_closed_group_text_field_hint" = "نام گروه را وارد کنید";
-"vc_create_closed_group_empty_state_message" = "فهرست مخاطبان شما خالی است";
+"vc_scan_qr_code_grant_camera_access_button_title" = "اعطای دسترسی دوربین";
+"vc_create_closed_group_title" = "ایجاد گروه";
+"vc_create_closed_group_text_field_hint" = "وارد کردن یک نام گروه";
+"vc_create_closed_group_empty_state_message" = "هنوز هیچ مخاطبی ندارید";
 "vc_create_closed_group_empty_state_button_title" = "شروع Session";
-"vc_create_closed_group_group_name_missing_error" = "لطفا یک نام گروه وارد کنید";
-"vc_create_closed_group_group_name_too_long_error" = "لطفا نام گروه کوتاه‌تری وارد کنید";
-"vc_create_closed_group_too_many_group_members_error" = "یک گروه خصوصی نمی‌تواند بیش از یکصد عضو داشته باشد";
-"vc_join_public_chat_title" = "به گروه باز بپیوندید";
-"vc_join_public_chat_enter_group_url_tab_title" = "آدرس اینترنتی گروه را باز کنید";
+"vc_create_closed_group_group_name_missing_error" = "لطفاً یک نام گروه را وارد کنید";
+"vc_create_closed_group_group_name_too_long_error" = "لطفاً یک نام گروه کوتاه‌تر را وارد کنید";
+"vc_create_closed_group_too_many_group_members_error" = "یک گروه نمی‌تواند بیش از ۱۰۰ عضو داشته باشد.";
+"vc_join_public_chat_title" = "پیوستن به انجمن";
+"vc_join_public_chat_enter_group_url_tab_title" = "URL انجمن";
 "vc_join_public_chat_scan_qr_code_tab_title" = "اسکن کد QR";
-"vc_enter_chat_url_text_field_hint" = "یک URL گروه باز وارد کنید";
+"vc_enter_chat_url_text_field_hint" = "URL انجمن را وارد کنید";
 "vc_settings_title" = "تنظیمات";
 "vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_missing_error" = "لطفا یک نام نمایشی را انتخاب کنید";
@@ -336,9 +336,9 @@
 "vc_enter_recovery_phrase_explanation" = "برای وصل کردن دستگاهتان، عبارت بازیابی که در زمان ثبت نام به شما داده شده بود را وارد کنید.";
 "vc_enter_public_key_text_field_hint" = "شناسه Session یا اسم سرویس نام Oxen را وارد کنید";
 "admin_group_leave_warning" = "به دلیل اینکه شما مدیر گروه هستید، این گروه برای همه اعضا ی گروه پاک میشود. این قابل بازگشت نیست.";
-"vc_join_open_group_suggestions_title" = "یا به یکی از اینها بپیوندید...";
+"vc_join_open_group_suggestions_title" = "یا به یکی از این محلق شوید ...";
 "vc_settings_invite_a_friend_button_title" = "دعوت از یک دوست";
-"copied" = "کپی شد";
+"copied" = "کپی‌شده";
 "vc_conversation_settings_copy_session_id_button_title" = "کپی کردن شناسه‌ی Session شما";
 "vc_conversation_input_prompt" = "پیام";
 "vc_conversation_voice_message_cancel_message" = "برای کنسل کردن به کناره بکشید";
@@ -358,18 +358,18 @@
 "vc_share_title" = "اشتراک گذاری با Session";
 "vc_share_loading_message" = "آماده سازی پیوست‌ها...";
 "vc_share_sending_message" = "در حال ارسال...";
-"vc_share_link_previews_unsecure" = "Preview not loaded for unsecure link";
-"vc_share_link_previews_error" = "Unable to load preview";
-"vc_share_link_previews_disabled_title" = "Link Previews Disabled";
-"vc_share_link_previews_disabled_explanation" = "Enabling link previews will show previews for URLs you share. This can be useful, but Session will need to contact linked websites to generate previews.\n\nYou can enable link previews in Session's settings.";
-"view_open_group_invitation_description" = "Open group invitation";
+"vc_share_link_previews_unsecure" = "پیش نمایش برای لینک ناامن کامل نشد";
+"vc_share_link_previews_error" = "ناتوان برای بارگذاری پیش نمایش";
+"vc_share_link_previews_disabled_title" = "پیش نمایش های لینک غیرفعال شد";
+"vc_share_link_previews_disabled_explanation" = "با فعال کردن این گزینه، پیش‌نمایش لینک‌ها در پیام‌های ارسالی و دریافتی دیده می‌شود. این گزینه می‌تواند مفید باشد اما Session باید با سایت ها ارتباط برقرار کند تا پیش‌نمایش را نشان دهد. n\\شما می‌توانید در تنظیمات این پیش‌نمایش را غیرفعال کنید.";
+"view_open_group_invitation_description" = "باز کردن دعوت به گروه";
 "vc_conversation_settings_invite_button_title" = "اضافه‌کردن اعضا";
 "modal_send_seed_title" = "هشدار";
 "modal_send_seed_explanation" = "این عبارت بازیابی شماست. اگر آن را برای شخصی ارسال کنید ، دسترسی کامل به حساب شما خواهد داشت.";
 "modal_send_seed_send_button_title" = "ارسال";
-"vc_conversation_settings_notify_for_mentions_only_title" = "Notify for Mentions Only";
-"vc_conversation_settings_notify_for_mentions_only_explanation" = "When enabled, you'll only be notified for messages mentioning you.";
-"view_conversation_title_notify_for_mentions_only" = "Notifying for Mentions Only";
+"vc_conversation_settings_notify_for_mentions_only_title" = "فقط برای ذکر شده ها اطلاع دهید";
+"vc_conversation_settings_notify_for_mentions_only_explanation" = "وقتی فعال باشد، فقط برای پیام هایی که از شما نام می برند مطلع می شوید.";
+"view_conversation_title_notify_for_mentions_only" = "فقط برای ذکر شده ها اطلاع داده شود";
 "message_deleted" = "این پیام حذف شده است";
 "delete_message_for_me" = "حذف برای من";
 "delete_message_for_everyone" = "حذف برای همه";
@@ -377,59 +377,59 @@
 "context_menu_reply" = "پاسخ";
 "context_menu_save" = "ذخیره";
 "context_menu_ban_user" = "مسدود کردن کاربر";
-"context_menu_ban_and_delete_all" = "Ban and Delete All";
-"context_menu_ban_user_error_alert_message" = "Unable to ban user";
-"accessibility_expanding_attachments_button" = "Add attachments";
-"accessibility_gif_button" = "Gif";
-"accessibility_document_button" = "Document";
-"accessibility_library_button" = "Photo library";
-"accessibility_camera_button" = "Camera";
-"accessibility_main_button_collapse" = "Collapse attachment options";
-"invalid_recovery_phrase" = "Invalid Recovery Phrase";
-"DISMISS_BUTTON_TEXT" = "Dismiss";
+"context_menu_ban_and_delete_all" = "مسدود و پاک کردن همه";
+"context_menu_ban_user_error_alert_message" = "امکان ممنوع کردن کاربر مسدود شود";
+"accessibility_expanding_attachments_button" = "افزودن پیوست ها";
+"accessibility_gif_button" = "گیف";
+"accessibility_document_button" = "مدرک";
+"accessibility_library_button" = "گالری عکس";
+"accessibility_camera_button" = "دوربین";
+"accessibility_main_button_collapse" = "کوچک کردن گزینه‌های پیوست";
+"invalid_recovery_phrase" = "جمله ی بازیابی نامعتبر است";
+"DISMISS_BUTTON_TEXT" = "رد کردن";
 /* Button text which opens the settings app */
-"OPEN_SETTINGS_BUTTON" = "Settings";
-"call_outgoing" = "You called %@";
-"call_incoming" = "%@ called you";
-"call_missed" = "Missed Call from %@";
-"APN_Message" = "You've got a new message.";
-"APN_Collapsed_Messages" = "You've got %@ new messages.";
-"PIN_BUTTON_TEXT" = "Pin";
-"UNPIN_BUTTON_TEXT" = "Unpin";
-"modal_call_missed_tips_title" = "Call missed";
-"modal_call_missed_tips_explanation" = "Call missed from '%@' because you needed to enable the 'Voice and video calls' permission in the Privacy Settings.";
-"media_saved" = "Media saved by %@.";
-"screenshot_taken" = "%@ took a screenshot.";
-"SEARCH_SECTION_CONTACTS" = "Contacts & Groups";
-"SEARCH_SECTION_MESSAGES" = "پیام ها";
-"MESSAGE_REQUESTS_TITLE" = "Message Requests";
-"MESSAGE_REQUESTS_EMPTY_TEXT" = "No pending message requests";
-"MESSAGE_REQUESTS_CLEAR_ALL" = "Clear All";
-"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "Are you sure you want to clear all message requests?";
-"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "Clear";
-"MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "Are you sure you want to delete this message request?";
-"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON" = "Are you sure you want to block this contact?";
-"MESSAGE_REQUESTS_INFO" = "Sending a message to this user will automatically accept their message request and reveal your Session ID.";
-"MESSAGE_REQUESTS_ACCEPTED" = "Your message request has been accepted.";
-"MESSAGE_REQUESTS_NOTIFICATION" = "You have a new message request";
-"TXT_HIDE_TITLE" = "Hide";
-"TXT_DELETE_ACCEPT" = "Accept";
-"TXT_DECLINE_TITLE" = "Decline";
-"TXT_BLOCK_USER_TITLE" = "Block User";
-"ALERT_ERROR_TITLE" = "خطاء";
-"modal_call_permission_request_title" = "Call Permissions Required";
-"modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
-"DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
-"DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
-"LOADING_CONVERSATIONS" = "Loading Conversations...";
-"DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database\n\nYou can export your application logs to be able to share for troubleshooting or you can restore your device\n\nWarning: Restoring your device will result in loss of any data older than two weeks";
-"RECOVERY_PHASE_ERROR_GENERIC" = "Something went wrong. Please check your recovery phrase and try again.";
-"RECOVERY_PHASE_ERROR_LENGTH" = "Looks like you didn't enter enough words. Please check your recovery phrase and try again.";
-"RECOVERY_PHASE_ERROR_LAST_WORD" = "You seem to be missing the last word of your recovery phrase. Please check what you entered and try again.";
-"RECOVERY_PHASE_ERROR_INVALID_WORD" = "There appears to be an invalid word in your recovery phrase. Please check what you entered and try again.";
-"RECOVERY_PHASE_ERROR_FAILED" = "Your recovery phrase couldn't be verified. Please check what you entered and try again.";
+"OPEN_SETTINGS_BUTTON" = "تنظیمات";
+"call_outgoing" = "شما با%@ تماس گرفتید";
+"call_incoming" = "%@ با شما تماس گرفت";
+"call_missed" = "شما تماس از دست رفته از طرف %@ دارید";
+"APN_Message" = "شما یک پیام جدید دریافت کردید.";
+"APN_Collapsed_Messages" = "شما از طرف %@ پیام جدید دارید.";
+"PIN_BUTTON_TEXT" = "سنجاق کردن";
+"UNPIN_BUTTON_TEXT" = "برداشتن سنجاق";
+"modal_call_missed_tips_title" = "تماس از دست رفت";
+"modal_call_missed_tips_explanation" = "تماس از '%@' از دست رفت زیرا باید مجوز «تماس‌های صوتی و تصویری» را در تنظیمات حریم خصوصی فعال کنید.";
+"media_saved" = "تصویر/ ویدیو توسط %@ ذخیره شد.";
+"screenshot_taken" = "%@ از صفحه یک عکس گرفته است.";
+"SEARCH_SECTION_CONTACTS" = "گروه‌ها و مخاطبین";
+"SEARCH_SECTION_MESSAGES" = "پیام‌ها";
+"MESSAGE_REQUESTS_TITLE" = "درخواست های پیام";
+"MESSAGE_REQUESTS_EMPTY_TEXT" = "هیچ درخواست پیامی وجود ندارد";
+"MESSAGE_REQUESTS_CLEAR_ALL" = "حذف همه";
+"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_TITLE" = "آیا مطمئن هستید که می خواهید تمام درخواست های پیام را پاک کنید؟";
+"MESSAGE_REQUESTS_CLEAR_ALL_CONFIRMATION_ACTON" = "پاک کردن";
+"MESSAGE_REQUESTS_DELETE_CONFIRMATION_ACTON" = "آیا مطمئن هستید که می خواهید این درخواست پیام را رد کنید؟";
+"MESSAGE_REQUESTS_BLOCK_CONFIRMATION_ACTON" = "آیا مطمئن هستید که می‌خواهید این مخاطب را مسدود کنید؟";
+"MESSAGE_REQUESTS_INFO" = "ارسال پیام به این کاربر درخواست پیام او را به صورت خودکار قبول می‌کند و باعث آشکار شدن کد شناسایی Session شما میشود.";
+"MESSAGE_REQUESTS_ACCEPTED" = "درخواست پیام شما قبول شد.";
+"MESSAGE_REQUESTS_NOTIFICATION" = "شما درخواست پیام جدیدی دارید";
+"TXT_HIDE_TITLE" = "پنهان کردن";
+"TXT_DELETE_ACCEPT" = "پذیرفتن";
+"TXT_DECLINE_TITLE" = "رد کردن";
+"TXT_BLOCK_USER_TITLE" = "مسدود کردن کاربر";
+"ALERT_ERROR_TITLE" = "خطا";
+"modal_call_permission_request_title" = "دسترسی تلفن مورد نیاز است";
+"modal_call_permission_request_explanation" = "شما می‌توانید مجوز «تماس صوتی و تصویری» را در تنظیمات حریم خصوصی فعال کنید.";
+"DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "متاسفانه خطایی رخ داده است";
+"DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "لطفا بعدا دوباره تلاش کنید";
+"LOADING_CONVERSATIONS" = "درحال بارگزاری پیام ها...";
+"DATABASE_MIGRATION_FAILED" = "هنگام بهینه‌سازی پایگاه داده خطایی روی داد\n\nشما می‌توانید گزارش‌های برنامه خود را صادر کنید تا بتوانید برای عیب‌یابی به اشتراک بگذارید یا می‌توانید دستگاه خود را بازیابی کنید\n\nهشدار: بازیابی دستگاه شما منجر به از دست رفتن داده‌های قدیمی‌تر از دو هفته می‌شود.";
+"RECOVERY_PHASE_ERROR_GENERIC" = "مشکلی پیش آمد. لطفاً عبارت بازیابی خود را بررسی کنید و دوباره امتحان کنید.";
+"RECOVERY_PHASE_ERROR_LENGTH" = "به نظر می رسد کلمات کافی وارد نکرده اید. لطفاً عبارت بازیابی خود را بررسی کنید و دوباره امتحان کنید.";
+"RECOVERY_PHASE_ERROR_LAST_WORD" = "به نظر می رسد که شما آخرین کلمه بازیابی حساب خود را وارد نکرده اید. لطفاً آنچه را وارد کرده‌اید بررسی کنید و دوباره امتحان کنید.";
+"RECOVERY_PHASE_ERROR_INVALID_WORD" = "به نظر می رسد که شما کلمات بازیابی حساب خود را اشتباه وارد کرده اید. لطفاً آنچه را وارد کرده‌اید بررسی کنید و دوباره امتحان کنید.";
+"RECOVERY_PHASE_ERROR_FAILED" = "کلمات بازیابی وارد شده قابل تائید نمی‌باشد. لطفا آنچه را که وارد کردید را مجددا بررسی نمائید.";
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "اعتبارسنجی ناموفق بود.";
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "احراز هویت ناموفق بود.";
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
@@ -437,131 +437,161 @@
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "برای استفاده از قفل صفحه نمایش می بایستی یک رمزعبور از تنظیمات iOS خود فعال کنید.";
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "شما برای استفاده از قفل صفحه نمایس می بایستی یک رمزعبور از تنظیمات iOS خود فعال کنید.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "باید ابتدا رمز عبور را در تنظیمات دستگاه فعال کنید تا بتوانید از قفل صفحه استفاده کنید.";
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "برای استفاده از قفل صفحه نمایش می بایستی یک رمزعبور از تنظیمات iOS فعال کنید.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "برای استفاده از قفل صفحه نمایش می بایستی یک رمزعبور از تنظیمات iOS خود فعال کنید.";
 /* Label for the button to send a message */
-"SEND_BUTTON_TITLE" = "Send";
+"SEND_BUTTON_TITLE" = "ارسال";
 /* Generic text for button that retries whatever the last action was. */
-"RETRY_BUTTON_TEXT" = "Retry";
+"RETRY_BUTTON_TEXT" = "تلاش مجدد";
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Chat";
+"SHOW_THREAD_BUTTON_TITLE" = "نمایش گفتگو";
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
-"INVALID_SESSION_ID_MESSAGE" = "Please check the Session ID and try again.";
-"INVALID_RECOVERY_PHRASE_MESSAGE" = "Please check the Recovery Phrase and try again.";
-"MEDIA_TAB_TITLE" = "Media";
-"DOCUMENT_TAB_TITLE" = "Documents";
-"DOCUMENT_TILES_EMPTY_DOCUMENT" = "You don't have any document in this conversation.";
-"DOCUMENT_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Document…";
-"DOCUMENT_TILES_LOADING_OLDER_LABEL" = "Loading Older Document…";
+"SEND_FAILED_NOTIFICATION_BODY" = "پیام شما ارسال نشد.";
+"INVALID_SESSION_ID_MESSAGE" = "لطفاً شناسه Session را مجدد بررسی کنید.";
+"INVALID_RECOVERY_PHRASE_MESSAGE" = "لطفاً شناسه بازیابی را مجدد بررسی کنید.";
+"MEDIA_TAB_TITLE" = "مدیا";
+"DOCUMENT_TAB_TITLE" = "مدارک";
+"DOCUMENT_TILES_EMPTY_DOCUMENT" = "شما در این مکالمه هیچ مدرکی ندارید.";
+"DOCUMENT_TILES_LOADING_MORE_RECENT_LABEL" = "در حال بار گذاری مدارک جدید…";
+"DOCUMENT_TILES_LOADING_OLDER_LABEL" = "در حال بارگذاری مدارک قدیمی تر…";
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "فعالیت‌ها";
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "حیوانات و طبیعت";
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "پرچم‌ها";
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "غذا و نوشیدنی";
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "اشیا";
 /* The name for the emoji category 'Recents' */
-"EMOJI_CATEGORY_RECENTS_NAME" = "Recently Used";
+"EMOJI_CATEGORY_RECENTS_NAME" = "اخیراً استفاده شده";
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "شکلک‌ها و مردم";
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "نمادها";
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
-"EMOJI_REACTS_NOTIFICATION" = "%@ reacts to a message with %@.";
-"EMOJI_REACTS_MORE_REACTORS_ONE" = "And 1 other has reacted %@ to this message.";
-"EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted %@ to this message.";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "مسافرت و اماکن";
+"EMOJI_REACTS_NOTIFICATION" = "%@  به پیامی با %@ واکنش نشان می‌دهد. ";
+"EMOJI_REACTS_MORE_REACTORS_ONE" = "و ۱ نفر دیگر به این پیام واکنش %@ نشان داده است.";
+"EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "و %@ نفر دیگر به این پیام واکنش %@ نشان داده‌اند.";
 "EMOJI_REACTS_RATE_LIMIT_TOAST" = "Slow down! You've sent too many emoji reacts. Try again soon.";
 /* New conversation screen*/
-"vc_new_conversation_title" = "New Conversation";
-"CREATE_GROUP_BUTTON_TITLE" = "Create";
-"JOIN_COMMUNITY_BUTTON_TITLE" = "Join";
+"vc_new_conversation_title" = "مکالمه جدید";
+"CREATE_GROUP_BUTTON_TITLE" = "ایجاد";
+"JOIN_COMMUNITY_BUTTON_TITLE" = "محلق شدن";
 "PRIVACY_TITLE" = "حریم خصوصی";
-"PRIVACY_SECTION_SCREEN_SECURITY" = "امنیت صفحه نمایش";
-"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "Lock Session";
-"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = "Require Touch ID, Face ID or your passcode to unlock Session.";
-"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE" = "Screenshot Notifications";
-"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "Receive a notification when a contact takes a screenshot of a one-to-one chat.";
-"PRIVACY_SECTION_READ_RECEIPTS" = "رسید خوانده‌ شدن";
-"PRIVACY_READ_RECEIPTS_TITLE" = "رسید خوانده‌ شدن";
-"PRIVACY_READ_RECEIPTS_DESCRIPTION" = "Send read receipts in one-to-one chats.";
-"PRIVACY_SECTION_TYPING_INDICATORS" = "نشانگر های نوشته";
-"PRIVACY_TYPING_INDICATORS_TITLE" = "نشانگر های نوشته";
-"PRIVACY_TYPING_INDICATORS_DESCRIPTION" = "See and share typing indicators in one-to-one conversations.";
-"PRIVACY_SECTION_LINK_PREVIEWS" = "Link Previews";
-"PRIVACY_LINK_PREVIEWS_TITLE" = "ارسال پیش نمایش لینک";
-"PRIVACY_LINK_PREVIEWS_DESCRIPTION" = "Generate link previews for supported URLs.";
-"PRIVACY_SECTION_CALLS" = "Calls (Beta)";
-"PRIVACY_CALLS_TITLE" = "تماس های صوتی و تصویری";
-"PRIVACY_CALLS_DESCRIPTION" = "Enables voice and video calls to and from other users.";
-"PRIVACY_CALLS_WARNING_TITLE" = "Voice and Video Calls (Beta)";
-"PRIVACY_CALLS_WARNING_DESCRIPTION" = "Your IP address is visible to your call partner and an Oxen Foundation server while using beta calls. Are you sure you want to enable Voice and Video Calls?";
-"NOTIFICATIONS_TITLE" = "Notifiche";
+"PRIVACY_SECTION_SCREEN_SECURITY" = "امنیت صفحه";
+"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "قفل سیسشن";
+"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = " برای باز کردن قفل سیسشن به شناسه لمسی، شناسه صورت و یا رمز عبوری ضرورت است.";
+"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE" = "اعلانات اسکرین‌شات.";
+"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "هنگامی که یک مخاطب از یک چت یک به یک اسکرین شات می‌گیرد، اعلان دریافت کنید.";
+"PRIVACY_SECTION_READ_RECEIPTS" = "رسیدهای خواندن";
+"PRIVACY_READ_RECEIPTS_TITLE" = "رسیدهای خواندن";
+"PRIVACY_READ_RECEIPTS_DESCRIPTION" = "رسیدهای خواندن در چت‌های یک به یک روان شود.";
+"PRIVACY_SECTION_TYPING_INDICATORS" = "نشانگر‌های در حال تایپ";
+"PRIVACY_TYPING_INDICATORS_TITLE" = "نشانگر‌های در حال تایپ";
+"PRIVACY_TYPING_INDICATORS_DESCRIPTION" = "مشاهده و به‌اشتراک‌گذاری نشانگر‌های در حال تایپ در مکالمات یک به یک.";
+"PRIVACY_SECTION_LINK_PREVIEWS" = "پیش‌نمایش‌های لینک";
+"PRIVACY_LINK_PREVIEWS_TITLE" = "ارسال پیش‌نمایش‌های لینک";
+"PRIVACY_LINK_PREVIEWS_DESCRIPTION" = "ایجاد پیش‌نمایش‌های لینک برای URLهای تحت پشتیبانی.";
+"PRIVACY_SECTION_CALLS" = "تماس‌ها (بتا)";
+"PRIVACY_CALLS_TITLE" = "تماس‌های صوتی و تصویری";
+"PRIVACY_CALLS_DESCRIPTION" = "فعال‌سازی تماس‌های صوتی و تصویری به و از  کاربران دیگر.";
+"PRIVACY_CALLS_WARNING_TITLE" = "تماس‌های صوتی و تصویری (بتا)";
+"PRIVACY_CALLS_WARNING_DESCRIPTION" = "آدرس IP شما برای طرف تماس شما و سرور Oxen Foundation هنگام استفاده از تما‌س های بتا قابل مشاهده است. آیا مطمئن هستید که می‌خواهید تماس‌های صوتی و تصویری را فعال کنید؟";
+"NOTIFICATIONS_TITLE" = "اعلانات";
 "NOTIFICATIONS_SECTION_STRATEGY" = "استراتژی اعلان";
 "NOTIFICATIONS_STRATEGY_FAST_MODE_TITLE" = "استفاده از حالت سریع";
-"NOTIFICATIONS_STRATEGY_FAST_MODE_DESCRIPTION" = "You'll be notified of new message reliably and immediately using Apple's notification servers.";
-"NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION" = "Go to device notification settings";
-"NOTIFICATIONS_SECTION_STYLE" = "Notification Style";
-"NOTIFICATIONS_STYLE_SOUND_TITLE" = "Sound";
-"NOTIFICATIONS_STYLE_SOUND_WHEN_OPEN_TITLE" = "Sound When App is Open";
-"NOTIFICATIONS_STYLE_CONTENT_TITLE" = "محتوای نوتیفیکیشن";
-"NOTIFICATIONS_STYLE_CONTENT_DESCRIPTION" = "The information shown in notifications.";
-"NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT" = "Name & Content";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_DESCRIPTION" = "با استفاده از سرورهای اعلان اپل (Apple)، از هر پیام جدید به طور قابل اعتماد و بلافاصله مطلع خواهید شد.";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION" = "رفتن به تنظیمات اعلان دستگاه";
+"NOTIFICATIONS_SECTION_STYLE" = "سبک اعلان";
+"NOTIFICATIONS_STYLE_SOUND_TITLE" = "صدا";
+"NOTIFICATIONS_STYLE_SOUND_WHEN_OPEN_TITLE" = "صدا وقتی برنامه باز است";
+"NOTIFICATIONS_STYLE_CONTENT_TITLE" = "محتوی اعلان";
+"NOTIFICATIONS_STYLE_CONTENT_DESCRIPTION" = "اطلاعات که در اعلانات نمایش میشود.";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT" = "نام و محتوا";
 "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_ONLY" = "فقط نام";
-"NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT" = "هیچ نام و یا محتوایی وجود ندارد";
-"CONVERSATION_SETTINGS_TITLE" = "Conversations";
-"CONVERSATION_SETTINGS_SECTION_MESSAGE_TRIMMING" = "Message Trimming";
-"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_TITLE" = "Trim Communities";
-"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_DESCRIPTION" = "Delete messages older than 6 months from Communities that have over 2,000 messages.";
-"CONVERSATION_SETTINGS_SECTION_AUDIO_MESSAGES" = "Audio Messages";
-"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_TITLE" = "Autoplay Audio Messages";
-"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_DESCRIPTION" = "Autoplay consecutive audio messages.";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE" = "Blocked Contacts";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_EMPTY_STATE" = "You have no blocked contacts.";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK" = "Unblock";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_SINGLE" = "Are you sure you want to unblock %@?";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_FALLBACK" = "this contact";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_1" = "Are you sure you want to unblock %@";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_2_SINGLE" = "and %@?";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_3" = "and %d others?";
-"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_ACTON" = "Unblock";
-"APPEARANCE_TITLE" = "Appearance";
-"APPEARANCE_THEMES_TITLE" = "Themes";
-"APPEARANCE_PRIMARY_COLOR_TITLE" = "Primary colour";
-"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_QUOTE" = "How are you?";
-"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_MESSAGE" = "I'm good thanks, you?";
-"APPEARANCE_PRIMARY_COLOR_PREVIEW_OUT_MESSAGE" = "I'm doing great, thanks.";
-"APPEARANCE_NIGHT_MODE_TITLE" = "Auto night-mode";
-"APPEARANCE_NIGHT_MODE_TOGGLE" = "Match system settings";
-"HELP_TITLE" = "Help";
-"HELP_REPORT_BUG_TITLE" = "Report a Bug";
-"HELP_REPORT_BUG_DESCRIPTION" = "Export your logs, then upload the file though Session's Help Desk.";
-"HELP_REPORT_BUG_ACTION_TITLE" = "Export Logs";
-"HELP_TRANSLATE_TITLE" = "Translate Session";
-"HELP_FEEDBACK_TITLE" = "We'd love your Feedback";
-"HELP_FAQ_TITLE" = "سوالات متداول";
-"HELP_SUPPORT_TITLE" = "Support";
-"modal_clear_all_data_title" = "پاک کردن همه داده‌ها";
-"modal_clear_all_data_explanation" = "This will permanently delete your messages and contacts. Would you like to clear this device only, or delete your data from the network as well?";
-"modal_clear_all_data_explanation_2" = "Are you sure you want to delete your data from the network?   If you continue, you will not be able to restore your messages or contacts.";
-"modal_clear_all_data_device_only_button_title" = "Clear Device Only";
-"modal_clear_all_data_entire_account_button_title" = "Clear Device and Network";
-"dialog_clear_all_data_deletion_failed_1" = "داده ها توسط ۱ گره سرویس حذف نشده است. شناسه گره سرویس: %@.";
-"dialog_clear_all_data_deletion_failed_2" = "داده ها توسط گره سرویس %@ حذف نشدند. شناسه گره سرویس: %@.";
-"modal_clear_all_data_confirm" = "Clear";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT" = "عدم نمایش نام یا محتوا";
+"CONVERSATION_SETTINGS_TITLE" = "مکالمات";
+"CONVERSATION_SETTINGS_SECTION_MESSAGE_TRIMMING" = "مرتب‌سازی پیام";
+"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_TITLE" = "مرتب‌سازی انجمن‌ها";
+"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_DESCRIPTION" = "پیام‌های قدیمی‌تر از ۶ ماه را از انجمن‌های دارای بیش از ۲۰۰۰ پیام، حذف کنید.";
+"CONVERSATION_SETTINGS_SECTION_AUDIO_MESSAGES" = "پیام های صوتی";
+"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_TITLE" = "پخش خودکار پیام‌های صوتی";
+"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_DESCRIPTION" = "پخش خودکار پیام‌های صوتی پشت‌سرهم";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE" = "مخاطبین مسدودشده";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_EMPTY_STATE" = "شما هیچ مخاطب مسدود‌شده‌ای ندارید.";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK" = "رفع مسدودیت";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_SINGLE" = "آیا مطمئن هستید که می‌خواهید مسدودیت %@ را رفع کنید؟ ";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_FALLBACK" = "این مخاطب";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_1" = "آیا مطمئن هستید که می‌خواهید مسدودیت %@ را رفع کنید؟ ";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_2_SINGLE" = "و %@؟";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_3" = "و %@ مخاطب دیگر؟ ";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_ACTON" = "رفع مسدودیت";
+"APPEARANCE_TITLE" = "ظاهر";
+"APPEARANCE_THEMES_TITLE" = "تم‌ها";
+"APPEARANCE_PRIMARY_COLOR_TITLE" = "رنگ اولیه";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_QUOTE" = "حالت چطور است؟";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_MESSAGE" = "من خوبم، تو چی؟";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_OUT_MESSAGE" = "من عالی‌ام، ممنون.";
+"APPEARANCE_NIGHT_MODE_TITLE" = "حالت شب خودکار";
+"APPEARANCE_NIGHT_MODE_TOGGLE" = "مطابق‌سازی تنظیمات سیستم";
+"HELP_TITLE" = "کمک";
+"HELP_REPORT_BUG_TITLE" = "گزارش خرابی";
+"HELP_REPORT_BUG_DESCRIPTION" = "گزارش‌های خود را صادر کنید، سپس فایل را از طریق Session's Help Desk آپلود کنید.";
+"HELP_REPORT_BUG_ACTION_TITLE" = "صدور گزارش‌ها";
+"HELP_TRANSLATE_TITLE" = "ترجمه سیسشن";
+"HELP_FEEDBACK_TITLE" = "قدردان نظریات شما هستیم.";
+"HELP_FAQ_TITLE" = "سؤالات متداول";
+"HELP_SUPPORT_TITLE" = "همایت";
+"modal_clear_all_data_title" = "پاک کردن همه داتا";
+"modal_clear_all_data_explanation" = "این کار پیام‌ها و مخاطبین شما را برای همیشه حذف می‌کند. آیا می‌خواهید فقط این دستگاه را پاک کنید یا داتا خود را از شبکه نیز حذف کنید؟";
+"modal_clear_all_data_explanation_2" = "آیا مطمئن هستید که می خواهید داتا های خود را از شبکه حذف کنید؟ اگر ادامه دهید، نمی‌توانید پیام‌ها یا مخاطبین خود را بازیابی کنید.";
+"modal_clear_all_data_device_only_button_title" = "فقط پاک کردن دستگاه";
+"modal_clear_all_data_entire_account_button_title" = "پاک کردن دستگاه و شبکه";
+"dialog_clear_all_data_deletion_failed_1" = "داتا ها توسط ۱ گره سرویس حذف نشده است. شناسه گره سرویس: %@.";
+"dialog_clear_all_data_deletion_failed_2" = "داتا ها توسط %@ گره سرویس حذف نشده است. شناسه‌های گره سرویس: %@.";
+"modal_clear_all_data_confirm" = "پاک ";
 "modal_seed_title" = "عبارت بازیابی شما";
-"modal_seed_explanation" = "You can use your recovery phrase to restore your account or link a device.";
-"modal_permission_explanation" = "Session needs %@ access to continue. You can enable access in the iOS settings.";
-"modal_permission_settings_title" = "Settings";
-"modal_permission_camera" = "camera";
-"modal_permission_microphone" = "microphone";
-"modal_permission_library" = "library";
-"DISAPPEARING_MESSAGES_OFF" = "Off";
-"DISAPPEARING_MESSAGES_SUBTITLE_OFF" = "Off";
-"DISAPPEARING_MESSAGES_SUBTITLE_DISAPPEAR_AFTER" = "Disappear After: %@";
-"COPY_GROUP_URL" = "Copy Group URL";
+"modal_seed_explanation" = "می توانید از عبارت بازیابی یا برای بازیابی حساب خود و یا برای وصل با یک دستگاه استفاده کنید.";
+"modal_permission_explanation" = "سیسشن برای ادامه دسترسی نیاز به ‌منظور %@  دارد. می توانید دسترسی را در تنظیمات iOS فعال سازید.";
+"modal_permission_settings_title" = "تنظیمات";
+"modal_permission_camera" = "دوربین";
+"modal_permission_microphone" = "میکروفون";
+"modal_permission_library" = "کتابخانه";
+"DISAPPEARING_MESSAGES_OFF" = "خاموش";
+"DISAPPEARING_MESSAGES_SUBTITLE_OFF" = "خاموش";
+"DISAPPEARING_MESSAGES_SUBTITLE_DISAPPEAR_AFTER" = "ناپدید شدن پس از: %@";
+"COPY_GROUP_URL" = "کپی کردن URL گروه";
+"NEW_CONVERSATION_CONTACTS_SECTION_TITLE" = "مخاطبین";
+"GROUP_ERROR_NO_MEMBER_SELECTION" = "لطفاً حداقل یک عضو گروه را انتخاب کنید";
+"GROUP_CREATION_PLEASE_WAIT" = "تا زمانی که گروه ایجاد شود، لطفاً صبر کنید...";
+"GROUP_CREATION_ERROR_TITLE" = "نمی‌توانید گروه ایجاد کنید";
+"GROUP_CREATION_ERROR_MESSAGE" = "لطفاً اتصال اینترنت خود را بررسی و مجدداً سعی کنید";
+"GROUP_UPDATE_ERROR_TITLE" = "نمی‌توانید گروه را آپدیت کنید";
+"GROUP_UPDATE_ERROR_MESSAGE" = "هنگام افزودن یا حذف سایر اعضا، نمی‌توانید گروه را ترک کنید";
+"GROUP_ACTION_REMOVE" = "حذف";
+"GROUP_TITLE_MEMBERS" = "اعضا";
+"GROUP_TITLE_FALLBACK" = "گروه";
+"DM_ERROR_DIRECT_BLINDED_ID" = "فقط از داخل یک انجمن می‌توانید به شناسه‌های نابینا پیام ارسال کنید";
+"DM_ERROR_INVALID" = "لطفاً شناسه جلسه یا نام ONS را بررسی کنید و دوباره امتحان کنید";
+"COMMUNITY_ERROR_INVALID_URL" = "";
+"COMMUNITY_ERROR_GENERIC" = "نمی‌توانید محلق شوید";
+"DISAPPERING_MESSAGES_TITLE" = "پیام‌ها ناپدید میشوند";
+"DISAPPERING_MESSAGES_TYPE_TITLE" = "حذف تایپ";
+"DISAPPERING_MESSAGES_TYPE_AFTER_READ_TITLE" = "ناپدید‌شدن پس از خواندن";
+"DISAPPERING_MESSAGES_TYPE_AFTER_READ_DESCRIPTION" = "حذف پیام‌ها بعد از خواندن شان";
+"DISAPPERING_MESSAGES_TYPE_AFTER_SEND_TITLE" = "ناپدیدشدن پس از ارسال";
+"DISAPPERING_MESSAGES_TYPE_AFTER_SEND_DESCRIPTION" = "حذف پیام‌ها بعد از ارسال شان";
+"DISAPPERING_MESSAGES_TIMER_TITLE" = "تایمر";
+"DISAPPERING_MESSAGES_SAVE_TITLE" = "تنظیم";
+"DISAPPERING_MESSAGES_GROUP_WARNING" = "این تنظیمات بالای هر کسی در این مکالمه عملی می‌شود.";
+"DISAPPERING_MESSAGES_GROUP_WARNING_ADMIN_ONLY" = "این تنظیمات بالای هر کسی در این مکالمه عملی می‌شود. فقط ادمین‌های گروه می‌توانند این تنظیمات را تغییر دهند.";
+"DISAPPERING_MESSAGES_SUMMARY" = "ناپدیدظشدن پس از %@ - %@ ";
+"DISAPPERING_MESSAGES_INFO_ENABLE" = "%@ تنظیم کرده تا پیام‌ها %@ پس از آنکه %@ شدند، ناپدید شوند.";
+"DISAPPERING_MESSAGES_INFO_UPDATE" = "%@ پیام‌ها را تغییر داده تا %@ پس از آنکه %@ شدند، ناپدید شوند.";
+"DISAPPERING_MESSAGES_INFO_DISABLE" = "%@ ناپدید‌شدن پیام ها را خاموش کرده است";
+"MESSAGE_STATE_READ" = "خوانده شد";
+"MESSAGE_STATE_SENT" = "ارسال شد";

@@ -300,13 +300,13 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
             return showError(title: "vc_create_closed_group_group_name_too_long_error".localized())
         }
         guard selectedContacts.count >= 1 else {
-            return showError(title: "Please pick at least 1 group member")
+            return showError(title: "GROUP_ERROR_NO_MEMBER_SELECTION".localized())
         }
         guard selectedContacts.count < 100 else { // Minus one because we're going to include self later
             return showError(title: "vc_create_closed_group_too_many_group_members_error".localized())
         }
         let selectedContacts = self.selectedContacts
-        let message: String? = (selectedContacts.count > 20) ? "Please wait while the group is created..." : nil
+        let message: String? = (selectedContacts.count > 20 ? "GROUP_CREATION_PLEASE_WAIT".localized() : nil)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, message: message) { [weak self] _ in
             Storage.shared
                 .writeAsync { db in
@@ -326,8 +326,8 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
                     let modal: ConfirmationModal = ConfirmationModal(
                         targetView: self?.view,
                         info: ConfirmationModal.Info(
-                            title: "Couldn't Create Group",
-                            explanation: "Please check your internet connection and try again.",
+                            title: "GROUP_CREATION_ERROR_TITLE".localized(),
+                            explanation: "GROUP_CREATION_ERROR_MESSAGE".localized(),
                             cancelTitle: "BUTTON_OK".localized(),
                             cancelStyle: .alert_text
                         )

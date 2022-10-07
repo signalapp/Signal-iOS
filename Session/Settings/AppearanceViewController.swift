@@ -22,6 +22,8 @@ final class AppearanceViewController: BaseVC {
         return result
     }()
     
+    private let contentView: UIView = UIView()
+    
     private let themesTitleLabel: UILabel = {
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
@@ -90,6 +92,10 @@ final class AppearanceViewController: BaseVC {
             bottom: 0,
             trailing: Values.largeSpacing
         )
+        
+        if CurrentAppContext().isRTL {
+            result.transform = CGAffineTransform.identity.scaledBy(x: -1, y: 1)
+        }
         
         return result
     }()
@@ -176,13 +182,17 @@ final class AppearanceViewController: BaseVC {
         view.themeBackgroundColor = .backgroundPrimary
         view.addSubview(scrollView)
         
-        scrollView.addSubview(themesTitleLabel)
-        scrollView.addSubview(themesStackView)
-        scrollView.addSubview(primaryColorTitleLabel)
-        scrollView.addSubview(primaryColorPreviewStackView)
-        scrollView.addSubview(primaryColorScrollView)
-        scrollView.addSubview(nightModeTitleLabel)
-        scrollView.addSubview(nightModeStackView)
+        // Note: Need to add to a 'contentView' to ensure the automatic RTL behaviour
+        // works properly (apparently it doesn't play nicely with UIScrollView internals)
+        scrollView.addSubview(contentView)
+        
+        contentView.addSubview(themesTitleLabel)
+        contentView.addSubview(themesStackView)
+        contentView.addSubview(primaryColorTitleLabel)
+        contentView.addSubview(primaryColorPreviewStackView)
+        contentView.addSubview(primaryColorScrollView)
+        contentView.addSubview(nightModeTitleLabel)
+        contentView.addSubview(nightModeStackView)
         
         themesStackView.addArrangedSubview(UIView.separator())
         themeSelectionViews.forEach { view in
@@ -224,45 +234,47 @@ final class AppearanceViewController: BaseVC {
     
     private func setupLayout() {
         scrollView.pin(to: view)
+        contentView.pin(to: scrollView)
+        contentView.set(.width, to: .width, of: scrollView)
         
-        themesTitleLabel.pin(.top, to: .top, of: scrollView)
-        themesTitleLabel.pin(.left, to: .left, of: scrollView, withInset: Values.largeSpacing)
+        themesTitleLabel.pin(.top, to: .top, of: contentView)
+        themesTitleLabel.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         
         themesStackView.pin(.top, to: .bottom, of: themesTitleLabel, withInset: Values.mediumSpacing)
-        themesStackView.pin(.left, to: .left, of: scrollView)
-        themesStackView.set(.width, to: .width, of: scrollView)
+        themesStackView.pin(.leading, to: .leading, of: contentView)
+        themesStackView.set(.width, to: .width, of: contentView)
         
         primaryColorTitleLabel.pin(.top, to: .bottom, of: themesStackView, withInset: Values.mediumSpacing)
-        primaryColorTitleLabel.pin(.left, to: .left, of: scrollView, withInset: Values.largeSpacing)
+        primaryColorTitleLabel.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
         
         primaryColorPreviewStackView.pin(.top, to: .bottom, of: primaryColorTitleLabel, withInset: Values.smallSpacing)
-        primaryColorPreviewStackView.pin(.left, to: .left, of: scrollView)
-        primaryColorPreviewStackView.set(.width, to: .width, of: scrollView)
+        primaryColorPreviewStackView.pin(.leading, to: .leading, of: contentView)
+        primaryColorPreviewStackView.set(.width, to: .width, of: contentView)
         
         primaryColorScrollView.pin(.top, to: .bottom, of: primaryColorPreviewStackView, withInset: Values.mediumSpacing)
-        primaryColorScrollView.pin(.left, to: .left, of: scrollView)
-        primaryColorScrollView.set(.width, to: .width, of: scrollView)
+        primaryColorScrollView.pin(.leading, to: .leading, of: contentView)
+        primaryColorScrollView.set(.width, to: .width, of: contentView)
         
         primaryColorSelectionStackView.pin(to: primaryColorScrollView)
         primaryColorSelectionStackView.set(.height, to: .height, of: primaryColorScrollView)
         
         nightModeTitleLabel.pin(.top, to: .bottom, of: primaryColorScrollView, withInset: Values.largeSpacing)
-        nightModeTitleLabel.pin(.left, to: .left, of: scrollView, withInset: Values.largeSpacing)
-        nightModeTitleLabel.set(.width, to: .width, of: scrollView)
+        nightModeTitleLabel.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
+        nightModeTitleLabel.set(.width, to: .width, of: contentView, withOffset: -(Values.largeSpacing * 2))
         
         nightModeStackView.pin(.top, to: .bottom, of: nightModeTitleLabel, withInset: Values.smallSpacing)
-        nightModeStackView.pin(.bottom, to: .bottom, of: scrollView)
-        nightModeStackView.pin(.left, to: .left, of: scrollView)
-        nightModeStackView.set(.width, to: .width, of: scrollView)
+        nightModeStackView.pin(.bottom, to: .bottom, of: contentView)
+        nightModeStackView.pin(.leading, to: .leading, of: contentView)
+        nightModeStackView.set(.width, to: .width, of: contentView)
         
         nightModeToggleLabel.setContentHuggingVerticalHigh()
         nightModeToggleLabel.setCompressionResistanceVerticalHigh()
         nightModeToggleLabel.center(.vertical, in: nightModeToggleView)
-        nightModeToggleLabel.pin(.left, to: .left, of: nightModeToggleView, withInset: Values.largeSpacing)
+        nightModeToggleLabel.pin(.leading, to: .leading, of: nightModeToggleView, withInset: Values.largeSpacing)
         
         nightModeToggleSwitch.pin(.top, to: .top, of: nightModeToggleView, withInset: Values.smallSpacing)
         nightModeToggleSwitch.pin(.bottom, to: .bottom, of: nightModeToggleView, withInset: -Values.smallSpacing)
-        nightModeToggleSwitch.pin(.right, to: .right, of: nightModeToggleView, withInset: -Values.largeSpacing)
+        nightModeToggleSwitch.pin(.trailing, to: .trailing, of: nightModeToggleView, withInset: -Values.largeSpacing)
     }
     
     // MARK: - Actions

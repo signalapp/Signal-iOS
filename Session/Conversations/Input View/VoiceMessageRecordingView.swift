@@ -8,7 +8,7 @@ import SignalUtilitiesKit
 final class VoiceMessageRecordingView: UIView {
     private let voiceMessageButtonFrame: CGRect
     private weak var delegate: VoiceMessageRecordingViewDelegate?
-    private lazy var slideToCancelStackViewRightConstraint = slideToCancelStackView.pin(.right, to: .right, of: self)
+    private lazy var slideToCancelStackViewTrailingConstraint = slideToCancelStackView.pin(.trailing, to: .trailing, of: self)
     private lazy var slideToCancelLabelCenterHorizontalConstraint = slideToCancelLabel.center(.horizontal, in: self)
     private lazy var pulseViewWidthConstraint = pulseView.set(.width, to: VoiceMessageRecordingView.circleSize)
     private lazy var pulseViewHeightConstraint = pulseView.set(.height, to: VoiceMessageRecordingView.circleSize)
@@ -62,7 +62,10 @@ final class VoiceMessageRecordingView: UIView {
 
     private lazy var chevronImageView: UIImageView = {
         let result: UIImageView = UIImageView(
-            image: UIImage(named: "small_chevron_left")?
+            image: (CurrentAppContext().isRTL ?
+                    UIImage(named: "small_chevron_left")?.withHorizontallyFlippedOrientation() :
+                    UIImage(named: "small_chevron_left")
+                )?
                 .withRenderingMode(.alwaysTemplate)
         )
         result.themeTintColor = .textPrimary
@@ -166,6 +169,8 @@ final class VoiceMessageRecordingView: UIView {
         let iconSize = VoiceMessageRecordingView.iconSize
         addSubview(iconImageView)
         
+        // Note: We intentionally pin to '.left' here as the frame calculations don't take
+        // LRT/RTL language direction into account
         let voiceMessageButtonCenter = voiceMessageButtonFrame.center
         iconImageView.pin(.left, to: .left, of: self, withInset: (voiceMessageButtonCenter.x - (iconSize / 2)))
         iconImageView.pin(.top, to: .top, of: self, withInset: (voiceMessageButtonCenter.y - (iconSize / 2)))
@@ -182,7 +187,7 @@ final class VoiceMessageRecordingView: UIView {
         slideToCancelStackView.addArrangedSubview(chevronImageView)
         slideToCancelStackView.addArrangedSubview(slideToCancelLabel)
         addSubview(slideToCancelStackView)
-        slideToCancelStackViewRightConstraint.isActive = true
+        slideToCancelStackViewTrailingConstraint.isActive = true
         slideToCancelStackView.center(.vertical, in: iconImageView)
         
         // Cancel button
@@ -195,7 +200,7 @@ final class VoiceMessageRecordingView: UIView {
         durationStackView.addArrangedSubview(durationLabel)
         addSubview(durationStackView)
         
-        durationStackView.pin(.left, to: .left, of: self, withInset: Values.largeSpacing)
+        durationStackView.pin(.leading, to: .leading, of: self, withInset: Values.largeSpacing)
         durationStackView.center(.vertical, in: iconImageView)
         
         // Lock view
@@ -216,7 +221,7 @@ final class VoiceMessageRecordingView: UIView {
     func animate() {
         layoutIfNeeded()
         
-        slideToCancelStackViewRightConstraint.isActive = false
+        slideToCancelStackViewTrailingConstraint.isActive = false
         slideToCancelLabelCenterHorizontalConstraint.isActive = true
         lockViewBottomConstraint.constant = -Values.mediumSpacing
         
@@ -271,9 +276,9 @@ final class VoiceMessageRecordingView: UIView {
     // MARK: - Interaction
     
     func handleLongPressMoved(to location: CGPoint) {
-        if location.x < bounds.center.x {
+        if (!CurrentAppContext().isRTL && location.x < bounds.center.x) || (CurrentAppContext().isRTL && location.x > bounds.center.x) {
             let translationX = location.x - bounds.center.x
-            let sign: CGFloat = -1
+            let sign: CGFloat = (CurrentAppContext().isRTL ? 1 : -1)
             let chevronDamping: CGFloat = 4
             let labelDamping: CGFloat = 3
             let chevronX = (chevronDamping * (sqrt(abs(translationX)) / sqrt(chevronDamping))) * sign
