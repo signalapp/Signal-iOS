@@ -8,6 +8,9 @@ import GRDB
 @objc
 public class StoryFinder: NSObject {
     public static func unviewedSenderCount(transaction: SDSAnyReadTransaction) -> Int {
+        let ownUUIDClause = tsAccountManager.localUuid.map {
+            "AND \(StoryContextAssociatedData.columnName(.contactUuid)) != '\($0)'"
+        } ?? ""
         let sql = """
             SELECT COUNT(*)
             FROM \(StoryContextAssociatedData.databaseTableName)
@@ -21,7 +24,9 @@ public class StoryFinder: NSObject {
                     \(StoryContextAssociatedData.columnName(.lastViewedTimestamp)) IS NULL
                     OR \(StoryContextAssociatedData.columnName(.lastViewedTimestamp))
                         < \(StoryContextAssociatedData.columnName(.latestUnexpiredTimestamp))
-                );
+                )
+                \(ownUUIDClause)
+                ;
         """
         do {
             let unviewedStoryCount = try Int.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? 0
