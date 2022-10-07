@@ -81,7 +81,7 @@ public class AccountManager: NSObject {
 
     func getPreauthChallenge(e164: String) -> Promise<String?> {
         return firstly {
-            return self.pushRegistrationManager.requestPushTokens()
+            return self.pushRegistrationManager.requestPushTokens(forceRotation: false)
         }.then { (vanillaToken: String, voipToken: String?) -> Promise<String?> in
             let (pushPromise, pushFuture) = Promise<String>.pending()
             self.pushRegistrationManager.preauthChallengeFuture = pushFuture
@@ -499,7 +499,7 @@ public class AccountManager: NSObject {
 
     private func syncPushTokens() -> Promise<Void> {
         Logger.info("")
-        let job = SyncPushTokensJob(uploadOnlyIfStale: false)
+        let job = SyncPushTokensJob(mode: .forceUpload)
         return job.run()
     }
 

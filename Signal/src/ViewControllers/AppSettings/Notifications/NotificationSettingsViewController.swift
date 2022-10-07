@@ -138,7 +138,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
     }
 
     private func syncPushTokens() {
-        let job = SyncPushTokensJob(uploadOnlyIfStale: false)
+        let job = SyncPushTokensJob(mode: .forceRotation)
         job.run().done {
             OWSActionSheets.showActionSheet(title: NSLocalizedString(
                 "PUSH_REGISTER_SUCCESS",

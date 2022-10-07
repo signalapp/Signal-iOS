@@ -166,7 +166,7 @@ extension DeviceTransferService: MCSessionDelegate {
                 self.finalizeRestorationIfNecessary()
             }.done(on: .main) {
                 // After transfer our push token has changed, update it.
-                SyncPushTokensJob.run(uploadOnlyIfStale: false)
+                SyncPushTokensJob.run(mode: .forceUpload)
                 SignalApp.shared().showConversationSplitView()
             }
 

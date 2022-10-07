@@ -10,10 +10,16 @@ class SyncPushTokensJob: NSObject {
     @objc
     public static let PushTokensDidChange = Notification.Name("PushTokensDidChange")
 
-    private let uploadOnlyIfStale: Bool
+    enum Mode {
+        case normal
+        case forceUpload
+        case forceRotation
+    }
 
-    required init(uploadOnlyIfStale: Bool) {
-        self.uploadOnlyIfStale = uploadOnlyIfStale
+    private let mode: Mode
+
+    required init(mode: Mode) {
+        self.mode = mode
     }
 
     private static let hasUploadedTokensOnce = AtomicBool(false)
@@ -22,7 +28,7 @@ class SyncPushTokensJob: NSObject {
         Logger.info("Starting.")
 
         return firstly {
-            return self.pushRegistrationManager.requestPushTokens()
+            return self.pushRegistrationManager.requestPushTokens(forceRotation: mode == .forceRotation)
         }.then(on: .global()) { (pushToken: String, voipToken: String?) -> Promise<Void> in
             Logger.info("Fetched pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
@@ -31,7 +37,7 @@ class SyncPushTokensJob: NSObject {
             if self.preferences.getPushToken() != pushToken || self.preferences.getVoipToken() != voipToken {
                 Logger.info("Push tokens changed.")
                 shouldUploadTokens = true
-            } else if !self.uploadOnlyIfStale {
+            } else if self.mode == .forceUpload {
                 Logger.info("Forced uploading, even though tokens didn't change.")
                 shouldUploadTokens = true
             } else if Self.appVersion.lastAppVersion != Self.appVersion.currentAppReleaseVersion {
@@ -64,13 +70,12 @@ class SyncPushTokensJob: NSObject {
 
     @objc
     class func run() {
-        run(uploadOnlyIfStale: true)
+        run(mode: .normal)
     }
 
-    @objc
-    class func run(uploadOnlyIfStale: Bool) {
+    class func run(mode: Mode) {
         firstly {
-            SyncPushTokensJob(uploadOnlyIfStale: uploadOnlyIfStale).run()
+            SyncPushTokensJob(mode: mode).run()
         }.done(on: .global()) {
             Logger.info("completed successfully.")
         }.catch(on: .global()) { error in
