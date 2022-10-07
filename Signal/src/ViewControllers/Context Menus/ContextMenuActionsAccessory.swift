@@ -184,6 +184,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         let margin: CGFloat = 16
         let verticalPadding: CGFloat = 23
         let iconSize: CGFloat = 20
+        let titleMaxLines = 2
 
         public init(
             title: String,
@@ -195,7 +196,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             titleLabel = UILabel(frame: CGRect.zero)
             titleLabel.text = title
             titleLabel.font = .ows_dynamicTypeBodyClamped
-            titleLabel.numberOfLines = 2
+            titleLabel.numberOfLines = titleMaxLines
 
             self.attributes = attributes
             hostEffect = hostBlurEffect
@@ -265,14 +266,29 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             titleFrame.y = ceil((bounds.height - titleFrame.height) / 2)
             iconViewFrame.y = max(0, (bounds.height - iconView.height) / 2)
 
+            let titleWidth = bounds.width - iconViewFrame.width - 3 * margin
+            if titleWidth < titleFrame.width {
+                // Give it more height for a second line.
+                let originalHeight = titleLabel.textRect(forBounds: CGRect.infinite, limitedToNumberOfLines: 1).height
+                let multiLineHeight = titleLabel.textRect(
+                    forBounds: CGRect(
+                        origin: .zero,
+                        size: .init(width: titleWidth, height: .infinity)
+                    ),
+                    limitedToNumberOfLines: titleMaxLines
+                ).height
+                let extraHeight = multiLineHeight - originalHeight
+                titleFrame.origin.y -= extraHeight / 2
+                titleFrame.height += extraHeight
+            }
+            titleFrame.width = titleWidth
+
             if !isRTL {
                 titleFrame.x = margin
-                titleFrame.width = bounds.width - iconViewFrame.width - 3*margin
                 iconViewFrame.x = titleFrame.maxX + margin
             } else {
                 iconViewFrame.x = margin
                 titleFrame.x = iconViewFrame.maxX + margin
-                titleFrame.width = bounds.width - iconViewFrame.width  - 3*margin
             }
 
             titleLabel.frame = titleFrame
