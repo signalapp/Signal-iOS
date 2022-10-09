@@ -20,13 +20,13 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     // Constraints
     private lazy var authorLabelTopConstraint = authorLabel.pin(.top, to: .top, of: self)
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
-    private lazy var profilePictureViewLeftConstraint = profilePictureView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
+    private lazy var profilePictureViewLeadingConstraint = profilePictureView.pin(.leading, to: .leading, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var profilePictureViewWidthConstraint = profilePictureView.set(.width, to: Values.verySmallProfilePictureSize)
-    private lazy var contentViewLeftConstraint1 = snContentView.pin(.left, to: .right, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
-    private lazy var contentViewLeftConstraint2 = snContentView.leftAnchor.constraint(greaterThanOrEqualTo: leftAnchor, constant: VisibleMessageCell.gutterSize)
+    private lazy var contentViewLeadingConstraint1 = snContentView.pin(.leading, to: .trailing, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
+    private lazy var contentViewLeadingConstraint2 = snContentView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: VisibleMessageCell.gutterSize)
     private lazy var contentViewTopConstraint = snContentView.pin(.top, to: .bottom, of: authorLabel, withInset: VisibleMessageCell.authorLabelBottomSpacing)
-    private lazy var contentViewRightConstraint1 = snContentView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
-    private lazy var contentViewRightConstraint2 = snContentView.rightAnchor.constraint(lessThanOrEqualTo: rightAnchor, constant: -VisibleMessageCell.gutterSize)
+    private lazy var contentViewTrailingConstraint1 = snContentView.pin(.trailing, to: .trailing, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
+    private lazy var contentViewTrailingConstraint2 = snContentView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -VisibleMessageCell.gutterSize)
     private lazy var contentBottomConstraint = snContentView.bottomAnchor
         .constraint(lessThanOrEqualTo: self.bottomAnchor, constant: -1)
     
@@ -36,8 +36,8 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     private lazy var underBubbleStackViewOutgoingTrailingConstraint: NSLayoutConstraint = underBubbleStackView.pin(.trailing, to: .trailing, of: snContentView)
     private lazy var underBubbleStackViewNoHeightConstraint: NSLayoutConstraint = underBubbleStackView.set(.height, to: 0)
     
-    private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.contactThreadHSpacing)
-    private lazy var timerViewIncomingMessageConstraint = timerView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
+    private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.leading, to: .leading, of: self, withInset: VisibleMessageCell.contactThreadHSpacing)
+    private lazy var timerViewIncomingMessageConstraint = timerView.pin(.trailing, to: .trailing, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
 
     private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         let result = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
@@ -117,6 +117,13 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         result.image = UIImage(named: "ic_reply")?.withRenderingMode(.alwaysTemplate)
         result.themeTintColor = .textPrimary
         
+        // Flip horizontally for RTL languages
+        result.transform = CGAffineTransform.identity
+            .scaledBy(
+                x: (CurrentAppContext().isRTL ? -1 : 1),
+                y: 1
+            )
+        
         return result
     }()
 
@@ -185,7 +192,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         // Profile picture view
         addSubview(profilePictureView)
-        profilePictureViewLeftConstraint.isActive = true
+        profilePictureViewLeadingConstraint.isActive = true
         profilePictureViewWidthConstraint.isActive = true
         
         // Moderator icon image view
@@ -197,9 +204,9 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         // Content view
         addSubview(snContentView)
-        contentViewLeftConstraint1.isActive = true
+        contentViewLeadingConstraint1.isActive = true
         contentViewTopConstraint.isActive = true
-        contentViewRightConstraint1.isActive = true
+        contentViewTrailingConstraint1.isActive = true
         snContentView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: -1)
         
         // Bubble background view
@@ -215,11 +222,11 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         addSubview(replyButton)
         replyButton.addSubview(replyIconImageView)
         replyIconImageView.center(in: replyButton)
-        replyButton.pin(.left, to: .right, of: snContentView, withInset: Values.smallSpacing)
+        replyButton.pin(.leading, to: .trailing, of: snContentView, withInset: Values.smallSpacing)
         replyButton.center(.vertical, in: snContentView)
         
         // Remaining constraints
-        authorLabel.pin(.left, to: .left, of: snContentView, withInset: VisibleMessageCell.authorLabelInset)
+        authorLabel.pin(.leading, to: .leading, of: snContentView, withInset: VisibleMessageCell.authorLabelInset)
         
         // Under bubble content
         addSubview(underBubbleStackView)
@@ -273,7 +280,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         let isGroupThread: Bool = (cellViewModel.threadVariant == .openGroup || cellViewModel.threadVariant == .closedGroup)
         
         // Profile picture view
-        profilePictureViewLeftConstraint.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : 0)
+        profilePictureViewLeadingConstraint.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : 0)
         profilePictureViewWidthConstraint.constant = (isGroupThread ? VisibleMessageCell.profilePictureSize : 0)
         profilePictureView.isHidden = (!cellViewModel.shouldShowProfile || cellViewModel.profile == nil)
         profilePictureView.update(
@@ -284,15 +291,15 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         moderatorIconImageView.isHidden = (!cellViewModel.isSenderOpenGroupModerator || !cellViewModel.shouldShowProfile)
        
         // Bubble view
-        contentViewLeftConstraint1.isActive = (
+        contentViewLeadingConstraint1.isActive = (
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         )
-        contentViewLeftConstraint1.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : VisibleMessageCell.contactThreadHSpacing)
-        contentViewLeftConstraint2.isActive = (cellViewModel.variant == .standardOutgoing)
+        contentViewLeadingConstraint1.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : VisibleMessageCell.contactThreadHSpacing)
+        contentViewLeadingConstraint2.isActive = (cellViewModel.variant == .standardOutgoing)
         contentViewTopConstraint.constant = (cellViewModel.senderName == nil ? 0 : VisibleMessageCell.authorLabelBottomSpacing)
-        contentViewRightConstraint1.isActive = (cellViewModel.variant == .standardOutgoing)
-        contentViewRightConstraint2.isActive = (
+        contentViewTrailingConstraint1.isActive = (cellViewModel.variant == .standardOutgoing)
+        contentViewTrailingConstraint2.isActive = (
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         )
@@ -735,9 +742,12 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == panGestureRecognizer {
             let v = panGestureRecognizer.velocity(in: self)
-            // Only allow swipes to the left; allowing swipes to the right gets in the way of the default
-            // iOS swipe to go back gesture
-            guard v.x < 0 else { return false }
+            // Only allow swipes to the left; allowing swipes to the right gets in the way of
+            // the default iOS swipe to go back gesture
+            guard
+                (CurrentAppContext().isRTL && v.x > 0) ||
+                (!CurrentAppContext().isRTL && v.x < 0)
+            else { return false }
             
             return abs(v.x) > abs(v.y) // It has to be more horizontal than vertical
         }
@@ -868,7 +878,13 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
-        let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
+        let translationX = gestureRecognizer
+            .translation(in: self)
+            .x
+            .clamp(
+                (CurrentAppContext().isRTL ? 0 : -CGFloat.greatestFiniteMagnitude),
+                (CurrentAppContext().isRTL ? CGFloat.greatestFiniteMagnitude : 0)
+            )
         
         switch gestureRecognizer.state {
             case .began: delegate?.handleItemSwiped(cellViewModel, state: .began)
@@ -876,14 +892,17 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             case .changed:
                 // The idea here is to asymptotically approach a maximum drag distance
                 let damping: CGFloat = 20
-                let sign: CGFloat = -1
+                let sign: CGFloat = (CurrentAppContext().isRTL ? 1 : -1)
                 let x = (damping * (sqrt(abs(translationX)) / sqrt(damping))) * sign
                 viewsToMoveForReply.forEach { $0.transform = CGAffineTransform(translationX: x, y: 0) }
+                
                 if timerView.isHidden {
                     replyButton.alpha = abs(translationX) / VisibleMessageCell.maxBubbleTranslationX
-                } else {
+                }
+                else {
                     replyButton.alpha = 0 // Always hide the reply button if the timer view is showing, otherwise they can overlap
                 }
+                
                 if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold && abs(previousX) < VisibleMessageCell.swipeToReplyThreshold {
                     UIImpactFeedbackGenerator(style: .heavy).impactOccurred() // Let the user know when they've hit the swipe to reply threshold
                 }

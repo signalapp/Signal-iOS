@@ -260,8 +260,8 @@ public class SessionCell: UITableViewCell {
                 withInset: (lastGlyphRect.minY + ((lastGlyphRect.height / 2) - (subtitleExtraView.bounds.height / 2)))
             )
             subtitleExtraView.pin(
-                .left,
-                to: .left,
+                .leading,
+                to: .leading,
                 of: subtitleLabel,
                 withInset: lastGlyphRect.maxX
             )

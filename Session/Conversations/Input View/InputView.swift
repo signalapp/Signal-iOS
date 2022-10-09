@@ -192,13 +192,13 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         addSubview(disabledInputLabel)
 
         disabledInputLabel.pin(.top, to: .top, of: mainStackView)
-        disabledInputLabel.pin(.left, to: .left, of: mainStackView)
-        disabledInputLabel.pin(.right, to: .right, of: mainStackView)
+        disabledInputLabel.pin(.leading, to: .leading, of: mainStackView)
+        disabledInputLabel.pin(.trailing, to: .trailing, of: mainStackView)
         disabledInputLabel.set(.height, to: InputViewButton.expandedSize)
 
         // Mentions
         insertSubview(mentionsViewContainer, belowSubview: mainStackView)
-        mentionsViewContainer.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
+        mentionsViewContainer.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: self)
         mentionsViewContainer.pin(.bottom, to: .top, of: self)
         mentionsViewContainer.addSubview(mentionsView)
         mentionsView.pin(to: mentionsViewContainer)
@@ -256,9 +256,9 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
         }
         
         additionalContentContainer.addSubview(quoteView)
-        quoteView.pin(.left, to: .left, of: additionalContentContainer, withInset: hInset)
+        quoteView.pin(.leading, to: .leading, of: additionalContentContainer, withInset: hInset)
         quoteView.pin(.top, to: .top, of: additionalContentContainer, withInset: 12)
-        quoteView.pin(.right, to: .right, of: additionalContentContainer, withInset: -hInset)
+        quoteView.pin(.trailing, to: .trailing, of: additionalContentContainer, withInset: -hInset)
         quoteView.pin(.bottom, to: .bottom, of: additionalContentContainer, withInset: -6)
     }
 
@@ -306,9 +306,9 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
 
         // Add the link preview view
         additionalContentContainer.addSubview(linkPreviewView)
-        linkPreviewView.pin(.left, to: .left, of: additionalContentContainer, withInset: InputView.linkPreviewViewInset)
+        linkPreviewView.pin(.leading, to: .leading, of: additionalContentContainer, withInset: InputView.linkPreviewViewInset)
         linkPreviewView.pin(.top, to: .top, of: additionalContentContainer, withInset: 10)
-        linkPreviewView.pin(.right, to: .right, of: additionalContentContainer)
+        linkPreviewView.pin(.trailing, to: .trailing, of: additionalContentContainer)
         linkPreviewView.pin(.bottom, to: .bottom, of: additionalContentContainer, withInset: -4)
         
         // Build the link preview
@@ -428,11 +428,17 @@ final class InputView: UIView, InputViewButtonDelegate, InputTextViewDelegate, M
     }
 
     @objc private func showVoiceMessageUI() {
+        guard let targetSuperview: UIView = voiceMessageButton.superview else { return }
+        
         voiceMessageRecordingView?.removeFromSuperview()
-        let voiceMessageButtonFrame = voiceMessageButton.superview!.convert(voiceMessageButton.frame, to: self)
-        let voiceMessageRecordingView = VoiceMessageRecordingView(voiceMessageButtonFrame: voiceMessageButtonFrame, delegate: delegate)
+        let voiceMessageButtonFrame = targetSuperview.convert(voiceMessageButton.frame, to: self)
+        let voiceMessageRecordingView = VoiceMessageRecordingView(
+            voiceMessageButtonFrame: voiceMessageButtonFrame,
+            delegate: delegate
+        )
         voiceMessageRecordingView.alpha = 0
         addSubview(voiceMessageRecordingView)
+        
         voiceMessageRecordingView.pin(to: self)
         self.voiceMessageRecordingView = voiceMessageRecordingView
         voiceMessageRecordingView.animate()

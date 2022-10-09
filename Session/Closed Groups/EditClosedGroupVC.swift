@@ -50,7 +50,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
 
     private lazy var addMembersButton: SessionButton = {
         let result: SessionButton = SessionButton(style: .bordered, size: .medium)
-        result.setTitle("Add Members", for: UIControl.State.normal)
+        result.setTitle("vc_conversation_settings_invite_button_title".localized(), for: .normal)
         result.addTarget(self, action: #selector(addMembers), for: UIControl.Event.touchUpInside)
         result.contentEdgeInsets = UIEdgeInsets(top: 0, leading: Values.mediumSpacing, bottom: 0, trailing: Values.mediumSpacing)
         
@@ -84,7 +84,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setNavBarTitle("Edit Group")
+        setNavBarTitle("EDIT_GROUP_ACTION".localized())
         
         let threadId: String = self.threadId
         
@@ -96,7 +96,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
                 .filter(id: threadId)
                 .asRequest(of: String.self)
                 .fetchOne(db)
-                .defaulting(to: "Group")
+                .defaulting(to: "GROUP_TITLE_FALLBACK".localized())
             self?.originalName = (self?.name ?? "")
             
             let profileAlias: TypedTableAlias<Profile> = TypedTableAlias()
@@ -159,7 +159,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         let membersLabel = UILabel()
         membersLabel.font = .systemFont(ofSize: Values.mediumFontSize)
         membersLabel.themeTextColor = .textPrimary
-        membersLabel.text = "Members"
+        membersLabel.text = "GROUP_TITLE_MEMBERS".localized()
         
         addMembersButton.isEnabled = self.hasContactsToAdd
         
@@ -238,7 +238,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         
         let delete: UIContextualAction = UIContextualAction(
             style: .destructive,
-            title: "Remove"
+            title: "GROUP_ACTION_REMOVE".localized()
         ) { [weak self] _, _, completionHandler in
             self?.adminIds.remove(profileId)
             self?.membersAndZombies.remove(at: indexPath.row)
@@ -326,7 +326,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
     }
 
     @objc private func addMembers() {
-        let title: String = "Add Members"
+        let title: String = "vc_conversation_settings_invite_button_title".localized()
         
         let userPublicKey: String = self.userPublicKey
         let userSelectionVC: UserSelectionVC = UserSelectionVC(
@@ -419,8 +419,8 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
         if !updatedMemberIds.contains(userPublicKey) {
             guard self.originalMembersAndZombieIds.removing(userPublicKey) == updatedMemberIds else {
                 return showError(
-                    title: "Couldn't Update Group",
-                    message: "Can't leave while adding or removing other members."
+                    title: "GROUP_UPDATE_ERROR_TITLE".localized(),
+                    message: "GROUP_UPDATE_ERROR_MESSAGE".localized()
                 )
             }
         }
@@ -448,7 +448,7 @@ final class EditClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegat
                 }
                 .catch(on: DispatchQueue.main) { [weak self] error in
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                    self?.showError(title: "Couldn't Update Group", message: error.localizedDescription)
+                    self?.showError(title: "GROUP_UPDATE_ERROR_TITLE".localized(), message: error.localizedDescription)
                 }
                 .retainUntilComplete()
         }

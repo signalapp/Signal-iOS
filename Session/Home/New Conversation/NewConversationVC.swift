@@ -52,7 +52,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
         result.font = .systemFont(ofSize: Values.mediumFontSize)
         result.text = (newConversationViewModel.sectionData.isEmpty ?
             "vc_create_closed_group_empty_state_message".localized() :
-            "Contacts"
+            "NEW_CONVERSATION_CONTACTS_SECTION_TITLE".localized()
         )
         result.themeTextColor = (newConversationViewModel.sectionData.isEmpty ?
             .textSecondary :
@@ -153,7 +153,7 @@ final class NewConversationVC: BaseVC, ThemedNavigation, UITableViewDelegate, UI
         headerView.themeBackgroundColor = .newConversation_background
         headerView.addSubview(label)
         
-        label.pin(.left, to: .left, of: headerView, withInset: Values.mediumSpacing)
+        label.pin(.leading, to: .leading, of: headerView, withInset: Values.mediumSpacing)
         label.pin(.top, to: .top, of: headerView, withInset: Values.verySmallSpacing)
         label.pin(.bottom, to: .bottom, of: headerView, withInset: -Values.verySmallSpacing)
         

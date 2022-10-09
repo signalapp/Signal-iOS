@@ -1505,7 +1505,7 @@ extension ConversationVC:
                     guard let (room, server, publicKey) = OpenGroupManager.parseOpenGroup(from: url) else {
                         let errorModal: ConfirmationModal = ConfirmationModal(
                             info: ConfirmationModal.Info(
-                                title: "Couldn't Join",
+                                title: "COMMUNITY_ERROR_GENERIC".localized(),
                                 cancelTitle: "BUTTON_OK".localized(),
                                 cancelStyle: .alert_text
                             )
@@ -1532,7 +1532,7 @@ extension ConversationVC:
                         .catch(on: DispatchQueue.main) { error in
                             let errorModal: ConfirmationModal = ConfirmationModal(
                                 info: ConfirmationModal.Info(
-                                    title: "Couldn't Join",
+                                    title: "COMMUNITY_ERROR_GENERIC".localized(),
                                     explanation: error.localizedDescription,
                                     cancelTitle: "BUTTON_OK".localized(),
                                     cancelStyle: .alert_text

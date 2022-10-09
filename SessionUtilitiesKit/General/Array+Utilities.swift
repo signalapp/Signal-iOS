@@ -55,3 +55,11 @@ public extension Array where Element: Hashable {
         return Set(self)
     }
 }
+
+public extension Array where Element == String {
+    func reversed(if flag: Bool) -> [Element] {
+        guard flag else { return self }
+        
+        return self.reversed()
+    }
+}

@@ -76,10 +76,10 @@ public class ThemePreviewView: UIView {
     
     private func setupLayout() {
         incomingMessagePreview.pin(.top, to: .top, of: self)
-        incomingMessagePreview.pin(.left, to: .left, of: self, withInset: Values.veryLargeSpacing)
+        incomingMessagePreview.pin(.leading, to: .leading, of: self, withInset: Values.veryLargeSpacing)
         
         outgoingMessagePreview.pin(.top, to: .bottom, of: incomingMessagePreview)
+        outgoingMessagePreview.pin(.trailing, to: .trailing, of: self, withInset: -Values.veryLargeSpacing)
         outgoingMessagePreview.pin(.bottom, to: .bottom, of: self, withInset: -Values.mediumSpacing)
-        outgoingMessagePreview.pin(.right, to: .right, of: self, withInset: -Values.veryLargeSpacing)
     }
 }

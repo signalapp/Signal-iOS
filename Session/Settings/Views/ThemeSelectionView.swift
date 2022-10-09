@@ -101,7 +101,7 @@ class ThemeSelectionView: UIView {
         backgroundButton.pin(to: self)
         
         previewView.pin(.top, to: .top, of: self, withInset: Values.smallSpacing)
-        previewView.pin(.left, to: .left, of: self, withInset: Values.largeSpacing)
+        previewView.pin(.leading, to: .leading, of: self, withInset: Values.largeSpacing)
         previewView.pin(.bottom, to: .bottom, of: self, withInset: -Values.smallSpacing)
         previewView.set(.width, to: 76)
         previewView.set(.height, to: 70)
@@ -109,20 +109,20 @@ class ThemeSelectionView: UIView {
         previewIncomingMessageView.bottomAnchor
             .constraint(equalTo: previewView.centerYAnchor, constant: -1)
             .isActive = true
-        previewIncomingMessageView.pin(.left, to: .left, of: previewView, withInset: Values.smallSpacing)
+        previewIncomingMessageView.pin(.leading, to: .leading, of: previewView, withInset: Values.smallSpacing)
         previewIncomingMessageView.set(.width, to: 40)
         previewIncomingMessageView.set(.height, to: 12)
         
         previewOutgoingMessageView.topAnchor
             .constraint(equalTo: previewView.centerYAnchor, constant: 1)
             .isActive = true
-        previewOutgoingMessageView.pin(.right, to: .right, of: previewView, withInset: -Values.smallSpacing)
+        previewOutgoingMessageView.pin(.trailing, to: .trailing, of: previewView, withInset: -Values.smallSpacing)
         previewOutgoingMessageView.set(.width, to: 40)
         previewOutgoingMessageView.set(.height, to: 12)
         
         selectionView.center(.vertical, in: self)
-        selectionView.pin(.left, to: .right, of: previewView, withInset: Values.mediumSpacing)
-        selectionView.pin(.right, to: .right, of: self, withInset: -Values.veryLargeSpacing)
+        selectionView.pin(.leading, to: .trailing, of: previewView, withInset: Values.mediumSpacing)
+        selectionView.pin(.trailing, to: .trailing, of: self, withInset: -Values.veryLargeSpacing)
     }
     
     // MARK: - Content

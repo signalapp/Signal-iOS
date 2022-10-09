@@ -630,15 +630,19 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
     }
     
     private func handleInteractionUpdates(_ updatedData: [ConversationViewModel.SectionModel], initialLoad: Bool = false) {
-        // Ensure the first load or a load when returning from a child screen runs without animations (if
-        // we don't do this the cells will animate in from a frame of CGRect.zero or have a buggy transition)
+        // Ensure the first load or a load when returning from a child screen runs without
+        // animations (if we don't do this the cells will animate in from a frame of
+        // CGRect.zero or have a buggy transition)
         guard self.hasLoadedInitialInteractionData else {
-            self.hasLoadedInitialInteractionData = true
-            self.viewModel.updateInteractionData(updatedData)
-            
-            UIView.performWithoutAnimation {
-                self.tableView.reloadData()
-                self.performInitialScrollIfNeeded()
+            // Need to dispatch async to prevent this from causing glitches in the push animation
+            DispatchQueue.main.async {
+                self.hasLoadedInitialInteractionData = true
+                self.viewModel.updateInteractionData(updatedData)
+                
+                UIView.performWithoutAnimation {
+                    self.tableView.reloadData()
+                    self.performInitialScrollIfNeeded()
+                }
             }
             return
         }

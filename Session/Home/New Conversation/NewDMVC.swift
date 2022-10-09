@@ -198,15 +198,15 @@ final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControlle
                                 }
                                 
                                 return (maybeSessionId?.prefix == .blinded ?
-                                    "You can only send messages to Blinded IDs from within a Community" :
-                                    "Please check the Session ID or ONS name and try again"
+                                    "DM_ERROR_DIRECT_BLINDED_ID".localized() :
+                                    "DM_ERROR_INVALID".localized()
                                 )
                             }()
                             
                             let modal: ConfirmationModal = ConfirmationModal(
                                 targetView: self?.view,
                                 info: ConfirmationModal.Info(
-                                    title: "Error",
+                                    title: "ALERT_ERROR_TITLE".localized(),
                                     explanation: message,
                                     cancelTitle: "BUTTON_OK".localized(),
                                     cancelStyle: .alert_text

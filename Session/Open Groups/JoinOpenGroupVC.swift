@@ -146,7 +146,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         guard let (room, server, publicKey) = OpenGroupManager.parseOpenGroup(from: urlString) else {
             showError(
                 title: "invalid_url".localized(),
-                message: "Please check the URL you entered and try again."
+                message: "COMMUNITY_ERROR_INVALID_URL".localized()
             )
             return
         }
@@ -190,7 +190,7 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
                 }
                 .catch(on: DispatchQueue.main) { [weak self] error in
                     self?.dismiss(animated: true, completion: nil) // Dismiss the loader
-                    let title = "Couldn't Join"
+                    let title = "COMMUNITY_ERROR_GENERIC".localized()
                     let message = error.localizedDescription
                     self?.isJoining = false
                     self?.showError(title: title, message: message)
