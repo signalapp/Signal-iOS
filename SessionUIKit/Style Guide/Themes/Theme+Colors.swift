@@ -60,7 +60,7 @@ internal extension UIColor {
     static let classicDark6: UIColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)       // #FFFFFF
     
     static let classicLight0: UIColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)      // #000000
-    static let classicLight1: UIColor = #colorLiteral(red: 0.1058823529, green: 0.1058823529, blue: 0.1058823529, alpha: 1)      // #6D6D6D
+    static let classicLight1: UIColor = #colorLiteral(red: 0.4274509804, green: 0.4274509804, blue: 0.4274509804, alpha: 1)      // #6D6D6D
     static let classicLight2: UIColor = #colorLiteral(red: 0.631372549, green: 0.6352941176, blue: 0.631372549, alpha: 1)      // #A1A2A1
     static let classicLight3: UIColor = #colorLiteral(red: 0.8745098039, green: 0.8745098039, blue: 0.8745098039, alpha: 1)      // #DFDFDF
     static let classicLight4: UIColor = #colorLiteral(red: 0.9411764706, green: 0.9411764706, blue: 0.9411764706, alpha: 1)      // #F0F0F0

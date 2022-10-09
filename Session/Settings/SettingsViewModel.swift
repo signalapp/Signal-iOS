@@ -376,6 +376,11 @@ class SettingsViewModel: SessionTableViewModel<SettingsViewModel.NavButton, Sett
         .removeDuplicates()
         .publisher(in: Storage.shared)
     
+    public override var footerView: AnyPublisher<UIView?, Never> {
+        Just(VersionFooterView())
+            .eraseToAnyPublisher()
+    }
+    
     // MARK: - Functions
 
     public override func updateSettings(_ updatedSettings: [SectionModel]) {
