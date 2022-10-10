@@ -20,4 +20,3 @@ FOUNDATION_EXPORT const unsigned char SignalUtilitiesKitVersionString[];
 #import <SignalUtilitiesKit/SSKAsserts.h>
 #import <SignalUtilitiesKit/TSConstants.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
-#import <SignalUtilitiesKit/UIColor+OWS.h>

@@ -111,7 +111,7 @@ final class ConversationTitleView: UIView {
         
         ThemeManager.onThemeChange(observer: self.subtitleLabel) { [weak subtitleLabel] theme, _ in
             guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
-            //subtitleLabel?.attributedText = subtitle
+            
             guard Date().timeIntervalSince1970 > (mutedUntilTimestamp ?? 0) else {
                 subtitleLabel?.attributedText = NSAttributedString(
                     string: "\u{e067}  ",
@@ -140,9 +140,19 @@ final class ConversationTitleView: UIView {
             }
             guard let userCount: Int = userCount else { return }
             
-            subtitleLabel?.attributedText = NSAttributedString(
-                string: "\(userCount) member\(userCount == 1 ? "" : "s")"
-            )
+            switch threadVariant {
+                case .contact: break
+                    
+                case .closedGroup:
+                    subtitleLabel?.attributedText = NSAttributedString(
+                        string: "\(userCount) member\(userCount == 1 ? "" : "s")"
+                    )
+                    
+                case .openGroup:
+                    subtitleLabel?.attributedText = NSAttributedString(
+                        string: "\(userCount) active member\(userCount == 1 ? "" : "s")"
+                    )
+            }
         }
         
         // Contact threads also have the call button to compensate for
