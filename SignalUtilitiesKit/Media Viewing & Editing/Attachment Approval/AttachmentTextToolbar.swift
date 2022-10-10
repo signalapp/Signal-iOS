@@ -9,7 +9,7 @@ import SessionUIKit
 // Coincides with Android's max text message length
 let kMaxMessageBodyCharacterCount = 2000
 
-protocol AttachmentTextToolbarDelegate: class {
+protocol AttachmentTextToolbarDelegate: AnyObject {
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
@@ -55,7 +55,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         // sizing when used as an input accessory view.
         self.autoresizingMask = .flexibleHeight
         self.translatesAutoresizingMaskIntoConstraints = false
-        self.backgroundColor = UIColor.clear
+        self.themeBackgroundColor = .clear
 
         textView.delegate = self
 
@@ -65,7 +65,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         sendButton.titleLabel?.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         sendButton.titleLabel?.textAlignment = .center
-        sendButton.tintColor = Colors.accent
+        sendButton.themeTintColor = .textPrimary
 
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
@@ -138,12 +138,12 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         let lengthLimitLabel = UILabel()
 
         // Length Limit Label shown when the user inputs too long of a message
-        lengthLimitLabel.textColor = .white
-        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the media message field.")
+        lengthLimitLabel.text = "ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED".localized()
+        lengthLimitLabel.themeTextColor = .textPrimary
         lengthLimitLabel.textAlignment = .center
 
         // Add shadow in case overlayed on white content
-        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
+        lengthLimitLabel.themeShadowColor = .black
         lengthLimitLabel.layer.shadowOffset = .zero
         lengthLimitLabel.layer.shadowOpacity = 0.8
         lengthLimitLabel.layer.shadowRadius = 2.0
@@ -173,7 +173,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private lazy var textContainer: UIView = {
         let textContainer = UIView()
 
-        textContainer.layer.borderColor = UIColor.white.cgColor
+        textContainer.themeBorderColor = .borderSeparator
         textContainer.layer.borderWidth = Values.separatorThickness
         textContainer.layer.cornerRadius = (AttachmentTextToolbar.kMinTextViewHeight / 2)
         textContainer.clipsToBounds = true
@@ -190,14 +190,17 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private func buildTextView() -> UITextView {
         let textView = AttachmentTextView()
 
-        textView.keyboardAppearance = isLightMode ? .default : .dark
-        textView.backgroundColor = .clear
-        textView.tintColor = .white
+        textView.themeBackgroundColor = .clear
+        textView.themeTintColor = .textPrimary
 
         textView.font = .systemFont(ofSize: Values.mediumFontSize)
-        textView.textColor = .white
+        textView.themeTextColor = .textPrimary
         textView.showsVerticalScrollIndicator = false
         textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        
+        ThemeManager.onThemeChange(observer: textView) { [weak textView] theme, _ in
+            textView?.keyboardAppearance = theme.keyboardAppearance
+        }
 
         return textView
     }

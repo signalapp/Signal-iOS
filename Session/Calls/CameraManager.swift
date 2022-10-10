@@ -47,16 +47,24 @@ final class CameraManager : NSObject {
     
     func start() {
         guard !isCapturing else { return }
-        print("[Calls] Starting camera.")
-        isCapturing = true
-        captureSession.startRunning()
+        
+        // Note: The 'startRunning' task is blocking so we want to do it on a non-main thread
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            print("[Calls] Starting camera.")
+            self?.isCapturing = true
+            self?.captureSession.startRunning()
+        }
     }
     
     func stop() {
         guard isCapturing else { return }
-        print("[Calls] Stopping camera.")
-        isCapturing = false
-        captureSession.stopRunning()
+        
+        // Note: The 'stopRunning' task is blocking so we want to do it on a non-main thread
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            print("[Calls] Stopping camera.")
+            self?.isCapturing = false
+            self?.captureSession.stopRunning()
+        }
     }
     
     func switchCamera() {

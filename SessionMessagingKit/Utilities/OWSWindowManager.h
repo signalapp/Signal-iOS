@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *const OWSWindowManagerCallDidChangeNotification;
-
 extern NSString *const IsScreenBlockActiveDidChangeNotification;
 
 // This VC can become first responder
@@ -32,26 +30,9 @@ extern const UIWindowLevel UIWindowLevel_Background;
 - (void)setupWithRootWindow:(UIWindow *)rootWindow screenBlockingWindow:(UIWindow *)screenBlockingWindow;
 
 @property (nonatomic, readonly) UIWindow *rootWindow;
-@property (nonatomic, readonly) UIWindow *menuActionsWindow;
 @property (nonatomic) BOOL isScreenBlockActive;
 
 - (BOOL)isAppWindow:(UIWindow *)window;
-
-#pragma mark - Message Actions
-
-@property (nonatomic, readonly) BOOL isPresentingMenuActions;
-
-- (void)showMenuActionsWindow:(UIViewController *)menuActionsViewController;
-- (void)hideMenuActionsWindow;
-
-#pragma mark - Calls
-
-@property (nonatomic, readonly) BOOL shouldShowCallView;
-
-- (void)startCall:(UIViewController *)callViewController;
-- (void)endCall:(UIViewController *)callViewController;
-- (void)leaveCallView;
-- (BOOL)hasCall;
 
 @end
 

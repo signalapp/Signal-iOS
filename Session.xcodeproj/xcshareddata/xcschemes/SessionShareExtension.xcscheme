@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1320"
+   LastUpgradeVersion = "1400"
    wasCreatedForAppExtension = "YES"
    version = "2.0">
    <BuildAction
@@ -56,7 +56,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FDC4388027B9FF1E00C60D73"
+               BlueprintIdentifier = "FD71160828D00BAE00B47552"
                BuildableName = "SessionTests.xctest"
                BlueprintName = "SessionTests"
                ReferencedContainer = "container:Session.xcodeproj">

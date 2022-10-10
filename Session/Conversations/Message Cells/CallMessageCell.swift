@@ -9,46 +9,44 @@ final class CallMessageCell: MessageCell {
     private static let inset = Values.mediumSpacing
     private static let margin = UIScreen.main.bounds.width * 0.1
     
-    private lazy var iconImageViewWidthConstraint = iconImageView.set(.width, to: 0)
-    private lazy var iconImageViewHeightConstraint = iconImageView.set(.height, to: 0)
+    private var isHandlingLongPress: Bool = false
     
-    private lazy var infoImageViewWidthConstraint = infoImageView.set(.width, to: 0)
-    private lazy var infoImageViewHeightConstraint = infoImageView.set(.height, to: 0)
+    override var contextSnapshotView: UIView? { return container }
     
     // MARK: - UI
     
+    private lazy var topConstraint: NSLayoutConstraint = container.pin(.top, to: .top, of: self, withInset: CallMessageCell.inset)
+    private lazy var iconImageViewWidthConstraint: NSLayoutConstraint = iconImageView.set(.width, to: 0)
+    private lazy var iconImageViewHeightConstraint: NSLayoutConstraint = iconImageView.set(.height, to: 0)
+    private lazy var infoImageViewWidthConstraint: NSLayoutConstraint = infoImageView.set(.width, to: 0)
+    private lazy var infoImageViewHeightConstraint: NSLayoutConstraint = infoImageView.set(.height, to: 0)
+    
     private lazy var iconImageView: UIImageView = UIImageView()
     private lazy var infoImageView: UIImageView = {
-        let result: UIImageView = UIImageView(image: UIImage(named: "ic_info")?.withRenderingMode(.alwaysTemplate))
-        result.tintColor = Colors.text
-        
-        return result
-    }()
-    
-    private lazy var timestampLabel: UILabel = {
-        let result: UILabel = UILabel()
-        result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        result.textColor = Colors.text
-        result.textAlignment = .center
+        let result: UIImageView = UIImageView(
+            image: UIImage(named: "ic_info")?
+                .withRenderingMode(.alwaysTemplate)
+        )
+        result.themeTintColor = .textPrimary
         
         return result
     }()
     
     private lazy var label: UILabel = {
         let result: UILabel = UILabel()
-        result.numberOfLines = 0
-        result.lineBreakMode = .byWordWrapping
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
         
         return result
     }()
     
     private lazy var container: UIView = {
         let result: UIView = UIView()
+        result.themeBackgroundColor = .backgroundSecondary
         result.layer.cornerRadius = 18
-        result.backgroundColor = Colors.callMessageBackground
         result.addSubview(label)
         
         label.pin(.top, to: .top, of: result, withInset: CallMessageCell.inset)
@@ -77,15 +75,6 @@ final class CallMessageCell: MessageCell {
         return result
     }()
     
-    private lazy var stackView: UIStackView = {
-        let result: UIStackView = UIStackView(arrangedSubviews: [ timestampLabel, container ])
-        result.axis = .vertical
-        result.alignment = .center
-        result.spacing = Values.smallSpacing
-        
-        return result
-    }()
-    
     // MARK: - Lifecycle
     
     override func setUpViewHierarchy() {
@@ -93,16 +82,18 @@ final class CallMessageCell: MessageCell {
         
         iconImageViewWidthConstraint.isActive = true
         iconImageViewHeightConstraint.isActive = true
-        addSubview(stackView)
+        addSubview(container)
         
-        container.autoPinWidthToSuperview()
-        stackView.pin(.left, to: .left, of: self, withInset: CallMessageCell.margin)
-        stackView.pin(.top, to: .top, of: self, withInset: CallMessageCell.inset)
-        stackView.pin(.right, to: .right, of: self, withInset: -CallMessageCell.margin)
-        stackView.pin(.bottom, to: .bottom, of: self, withInset: -CallMessageCell.inset)
+        topConstraint.isActive = true
+        container.pin(.left, to: .left, of: self, withInset: CallMessageCell.margin)
+        container.pin(.right, to: .right, of: self, withInset: -CallMessageCell.margin)
+        container.pin(.bottom, to: .bottom, of: self, withInset: -CallMessageCell.inset)
     }
     
     override func setUpGestureRecognizers() {
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        addGestureRecognizer(longPressRecognizer)
+        
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         tapGestureRecognizer.numberOfTapsRequired = 1
         addGestureRecognizer(tapGestureRecognizer)
@@ -127,6 +118,7 @@ final class CallMessageCell: MessageCell {
         else { return }
         
         self.viewModel = cellViewModel
+        self.topConstraint.constant = (cellViewModel.shouldShowDateHeader ? 0 : CallMessageCell.inset)
         
         iconImageView.image = {
             switch messageInfo.state {
@@ -136,10 +128,10 @@ final class CallMessageCell: MessageCell {
                 default: return nil
             }
         }()
-        iconImageView.tintColor = {
+        iconImageView.themeTintColor = {
             switch messageInfo.state {
-                case .outgoing, .incoming: return Colors.text
-                case .missed, .permissionDenied: return Colors.destructive
+                case .outgoing, .incoming: return .textPrimary
+                case .missed, .permissionDenied: return .danger
                 default: return nil
             }
         }()
@@ -154,10 +146,22 @@ final class CallMessageCell: MessageCell {
         infoImageViewHeightConstraint.constant = (shouldShowInfoIcon ? CallMessageCell.iconSize : 0)
         
         label.text = cellViewModel.body
-        timestampLabel.text = cellViewModel.dateForUI?.formattedForDisplay
     }
     
     override func dynamicUpdate(with cellViewModel: MessageViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+    }
+    
+    // MARK: - Interaction
+    
+    @objc func handleLongPress(_ gestureRecognizer: UITapGestureRecognizer) {
+        if [ .ended, .cancelled, .failed ].contains(gestureRecognizer.state) {
+            isHandlingLongPress = false
+            return
+        }
+        guard !isHandlingLongPress, let cellViewModel: MessageViewModel = self.viewModel else { return }
+        
+        delegate?.handleItemLongPressed(cellViewModel)
+        isHandlingLongPress = true
     }
     
     @objc private func handleTap(_ gestureRecognizer: UITapGestureRecognizer) {

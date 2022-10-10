@@ -6,20 +6,24 @@ import SessionUIKit
 import SessionMessagingKit
 
 public enum MentionUtilities {
-    public static func highlightMentions(
+    public static func highlightMentionsNoAttributes(
         in string: String,
         threadVariant: SessionThread.Variant,
         currentUserPublicKey: String,
         currentUserBlindedPublicKey: String?
     ) -> String {
+        /// **Note:** We are returning the string here so the 'textColor' and 'primaryColor' values are irrelevant
         return highlightMentions(
             in: string,
             threadVariant: threadVariant,
             currentUserPublicKey: currentUserPublicKey,
             currentUserBlindedPublicKey: currentUserBlindedPublicKey,
             isOutgoingMessage: false,
+            textColor: .black,
+            theme: .classicDark,
+            primaryColor: Theme.PrimaryColor.green,
             attributes: [:]
-        ).string // isOutgoingMessage and attributes are irrelevant
+        ).string
     }
 
     public static func highlightMentions(
@@ -28,6 +32,9 @@ public enum MentionUtilities {
         currentUserPublicKey: String?,
         currentUserBlindedPublicKey: String?,
         isOutgoingMessage: Bool,
+        textColor: UIColor,
+        theme: Theme,
+        primaryColor: Theme.PrimaryColor,
         attributes: [NSAttributedString.Key: Any]
     ) -> NSAttributedString {
         guard
@@ -87,18 +94,22 @@ public enum MentionUtilities {
                 // to maintain a "rounded rect" effect rather than a "pill" effect
                 result.addAttribute(.currentUserMentionBackgroundCornerRadius, value: (8 * sizeDiff), range: mention.range)
                 result.addAttribute(.currentUserMentionBackgroundPadding, value: (3 * sizeDiff), range: mention.range)
-                result.addAttribute(.currentUserMentionBackgroundColor, value: Colors.accent, range: mention.range)
-                result.addAttribute(.foregroundColor, value: UIColor.black, range: mention.range)
+                result.addAttribute(.currentUserMentionBackgroundColor, value: primaryColor.color, range: mention.range)
+                result.addAttribute(
+                    .foregroundColor,
+                    value: UIColor.black,   // Note: This text should always be black
+                    range: mention.range
+                )
             }
             else {
-                let color: UIColor = {
-                    switch (isLightMode, isOutgoingMessage) {
-                        case (_, true): return .black
-                        case (true, false): return .black
-                        case (false, false): return Colors.accent
-                    }
-                }()
-                result.addAttribute(.foregroundColor, value: color, range: mention.range)
+                result.addAttribute(
+                    .foregroundColor,
+                    value: (isOutgoingMessage || theme.interfaceStyle == .light ?
+                        textColor :
+                        primaryColor.color
+                    ),
+                    range: mention.range
+                )
             }
         }
         

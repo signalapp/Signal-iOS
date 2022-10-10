@@ -1,7 +1,9 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 
 @objc(SNTextField)
-public final class TextField : UITextField {
+public final class TextField: UITextField {
     private let usesDefaultHeight: Bool
     private let height: CGFloat
     private let horizontalInset: CGFloat
@@ -20,8 +22,11 @@ public final class TextField : UITextField {
         self.height = customHeight ?? TextField.height
         self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
         self.verticalInset = customVerticalInset ?? (isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing)
+        
         super.init(frame: CGRect.zero)
+        
         self.placeholder = placeholder
+        
         setUpStyle()
     }
     
@@ -34,26 +39,37 @@ public final class TextField : UITextField {
     }
     
     private func setUpStyle() {
-        textColor = Colors.text
         font = .systemFont(ofSize: Values.smallFontSize)
-        let placeholder = NSMutableAttributedString(string: self.placeholder!)
-        let placeholderColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
-        placeholder.addAttribute(.foregroundColor, value: placeholderColor, range: NSRange(location: 0, length: placeholder.length))
-        attributedPlaceholder = placeholder
-        tintColor = Colors.accent
-        keyboardAppearance = isLightMode ? .light : .dark
+        themeTextColor = .textPrimary
+        themeTintColor = .primary
+        themeBorderColor = .borderSeparator
+        layer.borderWidth = 1
+        layer.cornerRadius = TextField.cornerRadius
+        
         if usesDefaultHeight {
             set(.height, to: height)
         }
-        layer.borderColor = isLightMode ? Colors.text.cgColor : Colors.border.withAlphaComponent(Values.lowOpacity).cgColor
-        layer.borderWidth = 1
-        layer.cornerRadius = TextField.cornerRadius
+        
+        ThemeManager.onThemeChange(observer: self) { [weak self] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: self?.keyboardAppearance = .light
+                default: self?.keyboardAppearance = .dark
+            }
+            
+            if let textSecondary: UIColor = theme.color(for: .textSecondary), let placeholder: String = self?.placeholder {
+                self?.attributedPlaceholder = NSAttributedString(
+                    string: placeholder,
+                    attributes: [ .foregroundColor: textSecondary]
+                )
+            }
+        }
     }
     
     public override func textRect(forBounds bounds: CGRect) -> CGRect {
         if usesDefaultHeight {
             return bounds.insetBy(dx: horizontalInset, dy: verticalInset)
-        } else {
+        }
+        else {
             return bounds.insetBy(dx: Values.mediumSpacing, dy: Values.smallSpacing)
         }
     }
@@ -61,7 +77,8 @@ public final class TextField : UITextField {
     public override func editingRect(forBounds bounds: CGRect) -> CGRect {
         if usesDefaultHeight {
             return bounds.insetBy(dx: horizontalInset, dy: verticalInset)
-        } else {
+        }
+        else {
             return bounds.insetBy(dx: Values.mediumSpacing, dy: Values.smallSpacing)
         }
     }

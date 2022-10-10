@@ -1,9 +1,10 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
-import GRDB
-import SessionUtilitiesKit
 import AudioToolbox
+import GRDB
+import DifferenceKit
+import SessionUtilitiesKit
 
 public extension Setting.EnumKey {
     /// Controls how notifications should appear for the user (See `NotificationPreviewType` for the options)
@@ -14,12 +15,6 @@ public extension Setting.EnumKey {
 }
 
 public extension Setting.BoolKey {
-    /// Controls whether the preview screen in the app switcher should be enabled
-    ///
-    /// **Note:** In the legacy setting this flag controlled whether the preview was "disabled" (and defaulted to
-    /// true), by inverting this flag we can default it to false as is standard for Bool values
-    static let appSwitcherPreviewEnabled: Setting.BoolKey = "appSwitcherPreviewEnabled"
-    
     /// Controls whether typing indicators are enabled
     ///
     /// **Note:** Only works if both participants in a "contact" thread have this setting enabled
@@ -61,6 +56,14 @@ public extension Setting.BoolKey {
     
     /// A flag indicating whether the app is ready for app extensions to run
     static let isReadyForAppExtensions: Setting.BoolKey = "isReadyForAppExtensions"
+    
+    /// Controls whether the device should show screenshot notifications in one-to-one conversations (will always
+    /// send screenshot notifications, this just controls whether they get filtered out or not)
+    static let showScreenshotNotifications: Setting.BoolKey = "showScreenshotNotifications"
+    
+    /// Controls whether concurrent audio messages should automatically be played after the one the user starts
+    /// playing finishes
+    static let shouldAutoPlayConsecutiveAudioMessages: Setting.BoolKey = "shouldAutoPlayConsecutiveAudioMessages"
 }
 
 public extension Setting.StringKey {
@@ -81,11 +84,14 @@ public extension Setting.StringKey {
 
 public extension Setting.DoubleKey {
     /// The duration of the timeout for screen lock in seconds
+    @available(*, unavailable, message: "Screen Lock should always be instant now")
     static let screenLockTimeoutSeconds: Setting.DoubleKey = "screenLockTimeoutSeconds"
 }
 
 public enum Preferences {
-    public enum NotificationPreviewType: Int, CaseIterable, EnumSetting {
+    public enum NotificationPreviewType: Int, CaseIterable, EnumIntSetting, Differentiable {
+        public static var defaultPreviewType: NotificationPreviewType = .nameAndPreview
+        
         /// Notifications should include both the sender name and a preview of the message content
         case nameAndPreview
         
@@ -95,16 +101,16 @@ public enum Preferences {
         /// Notifications should be a generic message
         case noNameNoPreview
         
-        var name: String {
+        public var name: String {
             switch self {
-                case .nameAndPreview: return "NOTIFICATIONS_SENDER_AND_MESSAGE".localized()
-                case .nameNoPreview: return "NOTIFICATIONS_SENDER_ONLY".localized()
-                case .noNameNoPreview: return "NOTIFICATIONS_NONE".localized()
+                case .nameAndPreview: return "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT".localized()
+                case .nameNoPreview: return "NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_ONLY".localized()
+                case .noNameNoPreview: return "NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT".localized()
             }
         }
     }
     
-    public enum Sound: Int, Codable, DatabaseValueConvertible, EnumSetting {
+    public enum Sound: Int, Codable, DatabaseValueConvertible, EnumIntSetting, Differentiable {
         public static var defaultiOSIncomingRingtone: Sound = .opening
         public static var defaultNotificationSound: Sound = .note
         
@@ -165,7 +171,7 @@ public enum Preferences {
             ]
         }
         
-        var displayName: String {
+        public var displayName: String {
             // TODO: Should we localize these sound names?
             switch self {
                 case .`default`: return ""
@@ -286,10 +292,10 @@ public enum Preferences {
         
         // MARK: - AudioPlayer
         
-        public static func audioPlayer(for sound: Sound, behaviour: OWSAudioBehavior) -> OWSAudioPlayer? {
+        public static func audioPlayer(for sound: Sound, behavior: OWSAudioBehavior) -> OWSAudioPlayer? {
             guard let soundUrl: URL = sound.soundUrl(quiet: false) else { return nil }
             
-            let player = OWSAudioPlayer(mediaUrl: soundUrl, audioBehavior: behaviour)
+            let player = OWSAudioPlayer(mediaUrl: soundUrl, audioBehavior: behavior)
             
             // These two cases should loop
             if sound == .callConnecting || sound == .callOutboundRinging {
@@ -305,166 +311,5 @@ public enum Preferences {
         guard !regionCode.contains("CN") && !regionCode.contains("CHN") else { return false }
         
         return true
-    }
-}
-
-// MARK: - Objective C Support
-
-// FIXME: Remove the below the 'NotificationSettingsViewController' and 'OWSSoundSettingsViewController' have been refactored to Swift
-
-@objc(SMKPreferences)
-public class SMKPreferences: NSObject {
-    @objc public static let notificationTypes: [Int] = Preferences.NotificationPreviewType
-        .allCases
-        .map { $0.rawValue }
-    
-    @objc public static func nameForNotificationPreviewType(_ previewType: Int) -> String {
-        return Preferences.NotificationPreviewType(rawValue: previewType)
-            .defaulting(to: .nameAndPreview)
-            .name
-    }
-    
-    @objc public static func notificationPreviewType() -> Int {
-        return Storage.shared[.preferencesNotificationPreviewType]
-            .defaulting(to: Preferences.NotificationPreviewType.nameAndPreview)
-            .rawValue
-    }
-    
-    @objc public static func setNotificationPreviewType(_ previewType: Int) {
-        Storage.shared.write { db in
-            db[.preferencesNotificationPreviewType] = Preferences.NotificationPreviewType(rawValue: previewType)
-                .defaulting(to: .nameAndPreview)
-        }
-    }
-    
-    @objc public static func accessibilityIdentifierForNotificationPreviewType(_ previewType: Int) -> String {
-        let notificationPreviewType: Preferences.NotificationPreviewType = Preferences.NotificationPreviewType(rawValue: previewType)
-            .defaulting(to: .nameAndPreview)
-        
-        switch notificationPreviewType {
-            case .nameAndPreview: return "NotificationNamePreview"
-            case .nameNoPreview: return "NotificationNameNoPreview"
-            case .noNameNoPreview: return "NotificationNoNameNoPreview"
-        }
-    }
-    
-    @objc(setPlayNotificationSoundInForeground:)
-    static func objc_setPlayNotificationSoundInForeground(_ enabled: Bool) {
-        Storage.shared.write { db in db[.playNotificationSoundInForeground] = enabled }
-    }
-    
-    @objc(playNotificationSoundInForeground)
-    static func objc_playNotificationSoundInForeground() -> Bool {
-        return Storage.shared[.playNotificationSoundInForeground]
-    }
-    
-    @objc(setScreenSecurity:)
-    static func objc_setScreenSecurity(_ enabled: Bool) {
-        Storage.shared.write { db in db[.appSwitcherPreviewEnabled] = enabled }
-    }
-    
-    @objc(isScreenSecurityEnabled)
-    static func objc_isScreenSecurityEnabled() -> Bool {
-        return Storage.shared[.appSwitcherPreviewEnabled]
-    }
-    
-    @objc(setAreReadReceiptsEnabled:)
-    static func objc_setAreReadReceiptsEnabled(_ enabled: Bool) {
-        Storage.shared.write { db in db[.areReadReceiptsEnabled] = enabled }
-    }
-    
-    @objc(areReadReceiptsEnabled)
-    static func objc_areReadReceiptsEnabled() -> Bool {
-        return Storage.shared[.areReadReceiptsEnabled]
-    }
-    
-    @objc(setTypingIndicatorsEnabled:)
-    static func objc_setTypingIndicatorsEnabled(_ enabled: Bool) {
-        Storage.shared.write { db in db[.typingIndicatorsEnabled] = enabled }
-    }
-    
-    @objc(areTypingIndicatorsEnabled)
-    static func objc_areTypingIndicatorsEnabled() -> Bool {
-        return Storage.shared[.typingIndicatorsEnabled]
-    }
-    
-    @objc(setLinkPreviewsEnabled:)
-    static func objc_setLinkPreviewsEnabled(_ enabled: Bool) {
-        Storage.shared.write { db in db[.areLinkPreviewsEnabled] = enabled }
-    }
-    
-    @objc(areLinkPreviewsEnabled)
-    static func objc_areLinkPreviewsEnabled() -> Bool {
-        return Storage.shared[.areLinkPreviewsEnabled]
-    }
-    
-    @objc(setCallsEnabled:)
-    static func objc_setCallsEnabled(_ enabled: Bool) {
-        Storage.shared.write { db in db[.areCallsEnabled] = enabled }
-    }
-    
-    @objc(areCallsEnabled)
-    static func objc_areCallsEnabled() -> Bool {
-        return Storage.shared[.areCallsEnabled]
-    }
-}
-
-@objc(SMKSound)
-public class SMKSound: NSObject {
-    @objc public static var notificationSounds: [Int] = Preferences.Sound.notificationSounds.map { $0.rawValue }
-    
-    @objc public static func displayName(for sound: Int) -> String {
-        return (Preferences.Sound(rawValue: sound) ?? Preferences.Sound.default).displayName
-    }
-    
-    @objc public static func isNote(_ sound: Int) -> Bool {
-        return (sound == Preferences.Sound.note.rawValue)
-    }
-    
-    @objc public static func audioPlayer(for sound: Int, audioBehavior: OWSAudioBehavior) -> OWSAudioPlayer? {
-        guard let sound: Preferences.Sound = Preferences.Sound(rawValue: sound) else { return nil }
-        
-        return Preferences.Sound.audioPlayer(for: sound, behaviour: audioBehavior)
-    }
-    
-    @objc public static var defaultNotificationSound: Int {
-        return Storage.shared[.defaultNotificationSound]
-            .defaulting(to: Preferences.Sound.defaultNotificationSound)
-            .rawValue
-    }
-    
-    @objc public static func setGlobalNotificationSound(_ sound: Int) {
-        guard let sound: Preferences.Sound = Preferences.Sound(rawValue: sound) else { return }
-        
-        Storage.shared.write { db in
-            db[.defaultNotificationSound] = sound
-        }
-    }
-    
-    @objc public static func notificationSound(for threadId: String?) -> Int {
-        guard let threadId: String = threadId else { return defaultNotificationSound }
-
-        return (Storage.shared
-            .read { db in
-                try Preferences.Sound
-                    .fetchOne(
-                        db,
-                        SessionThread
-                            .select(.notificationSound)
-                            .filter(id: threadId)
-                    )
-            }?
-            .rawValue)
-            .defaulting(to: defaultNotificationSound)
-    }
-    
-    @objc public static func setNotificationSound(_ sound: Int, forThreadId threadId: String) {
-        guard let sound: Preferences.Sound = Preferences.Sound(rawValue: sound) else { return }
-        
-        Storage.shared.write { db in
-            try SessionThread
-                .filter(id: threadId)
-                .updateAll(db, SessionThread.Columns.notificationSound.set(to: sound))
-        }
     }
 }

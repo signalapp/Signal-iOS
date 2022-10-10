@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import Sodium
 import SessionSnodeKit
 import SessionUtilitiesKit
@@ -66,6 +67,7 @@ public class SMKDependencies: Dependencies {
         onionApi: OnionRequestAPIType.Type? = nil,
         generalCache: Atomic<GeneralCacheType>? = nil,
         storage: Storage? = nil,
+        scheduler: ValueObservationScheduler? = nil,
         sodium: SodiumType? = nil,
         box: BoxType? = nil,
         genericHash: GenericHashType? = nil,
@@ -90,6 +92,7 @@ public class SMKDependencies: Dependencies {
         super.init(
             generalCache: generalCache,
             storage: storage,
+            scheduler: scheduler,
             standardUserDefaults: standardUserDefaults,
             date: date
         )

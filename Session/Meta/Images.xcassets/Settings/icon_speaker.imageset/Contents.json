@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "icon_speaker.pdf",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

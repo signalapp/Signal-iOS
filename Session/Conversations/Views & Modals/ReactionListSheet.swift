@@ -29,13 +29,13 @@ final class ReactionListSheet: BaseVC {
     
     private lazy var contentView: UIView = {
         let result: UIView = UIView()
-        result.backgroundColor = Colors.modalBackground
+        result.themeBackgroundColor = .backgroundSecondary
         
         let line: UIView = UIView()
-        line.backgroundColor = Colors.border.withAlphaComponent(0.5)
+        line.themeBackgroundColor = .borderSeparator
         result.addSubview(line)
         
-        line.set(.height, to: 0.5)
+        line.set(.height, to: Values.separatorThickness)
         line.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: result)
         
         return result
@@ -61,7 +61,7 @@ final class ReactionListSheet: BaseVC {
         let result: UICollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         result.register(view: Cell.self)
         result.set(.height, to: 48)
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.isScrollEnabled = true
         result.showsHorizontalScrollIndicator = false
         result.dataSource = self
@@ -73,18 +73,17 @@ final class ReactionListSheet: BaseVC {
     private lazy var detailInfoLabel: UILabel = {
         let result: UILabel = UILabel()
         result.font = .systemFont(ofSize: Values.mediumFontSize)
-        result.textColor = Colors.grey.withAlphaComponent(0.8)
+        result.themeTextColor = .textSecondary
         result.set(.height, to: 32)
         
         return result
     }()
     
-    private lazy var clearAllButton: Button = {
-        let result: Button = Button(style: .destructiveOutline, size: .small)
+    private lazy var clearAllButton: SessionButton = {
+        let result: SessionButton = SessionButton(style: .destructiveBorderless, size: .small)
         result.translatesAutoresizingMaskIntoConstraints = false
         result.setTitle("MESSAGE_REQUESTS_CLEAR_ALL".localized(), for: .normal)
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
-        result.layer.borderWidth = 0
         result.isHidden = true
         
         return result
@@ -94,10 +93,10 @@ final class ReactionListSheet: BaseVC {
         let result: UITableView = UITableView()
         result.dataSource = self
         result.delegate = self
-        result.register(view: UserCell.self)
+        result.register(view: SessionCell.self)
         result.register(view: FooterCell.self)
         result.separatorStyle = .none
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         
         return result
@@ -123,7 +122,7 @@ final class ReactionListSheet: BaseVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .clear
+        view.themeBackgroundColor = .clear
         
         let swipeGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(close))
         swipeGestureRecognizer.direction = .down
@@ -134,6 +133,7 @@ final class ReactionListSheet: BaseVC {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
         reactionContainer.scrollToItem(
             at: IndexPath(item: lastSelectedReactionIndex, section: 0),
             at: .centeredHorizontally,
@@ -151,7 +151,7 @@ final class ReactionListSheet: BaseVC {
         view.addSubview(contentView)
         contentView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.bottom ], to: view)
         // Emoji collectionView height + seleted emoji detail height + 5 × user cell height + footer cell height + bottom safe area inset
-        let contentViewHeight: CGFloat = 100 + 5 * 65 + 45 + UIApplication.shared.keyWindow!.safeAreaInsets.bottom
+        let contentViewHeight: CGFloat = 100 + 5 * 65 + 45 + (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
         contentView.set(.height, to: contentViewHeight)
         populateContentView()
     }
@@ -164,7 +164,7 @@ final class ReactionListSheet: BaseVC {
         
         // Seperator
         let seperator = UIView()
-        seperator.backgroundColor = Colors.border.withAlphaComponent(0.1)
+        seperator.themeBackgroundColor = .borderSeparator
         seperator.set(.height, to: 0.5)
         contentView.addSubview(seperator)
         seperator.pin(.leading, to: .leading, of: contentView, withInset: Values.smallSpacing)
@@ -181,7 +181,7 @@ final class ReactionListSheet: BaseVC {
         // Line
         let line = UIView()
         line.set(.height, to: 0.5)
-        line.backgroundColor = Colors.border.withAlphaComponent(0.5)
+        line.themeBackgroundColor = .borderSeparator
         contentView.addSubview(line)
         line.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing ], to: contentView)
         line.pin(.top, to: .bottom, of: stackView, withInset: Values.smallSpacing)
@@ -425,17 +425,31 @@ extension ReactionListSheet: UITableViewDelegate, UITableViewDataSource {
             return footerCell
         }
         
-        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
         let cellViewModel: MessageViewModel.ReactionInfo = self.selectedReactionUserList[indexPath.row]
+        let authorId: String = cellViewModel.reaction.authorId
         cell.update(
-            with: cellViewModel.reaction.authorId,
-            profile: cellViewModel.profile,
-            isZombie: false,
-            mediumFont: true,
-            accessory: (cellViewModel.reaction.authorId == self.messageViewModel.currentUserPublicKey ?
-                .x :
-                .none
-            )
+            with: SessionCell.Info(
+                id: cellViewModel,
+                leftAccessory: .profile(authorId, cellViewModel.profile),
+                title: (
+                    cellViewModel.profile?.displayName() ??
+                    Profile.truncated(
+                        id: authorId,
+                        threadVariant: self.messageViewModel.threadVariant
+                    )
+                ),
+                rightAccessory: (authorId != self.messageViewModel.currentUserPublicKey ? nil :
+                    .icon(
+                        UIImage(named: "X")?
+                            .withRenderingMode(.alwaysTemplate),
+                        size: .fit
+                    )
+                ),
+                isEnabled: (authorId == self.messageViewModel.currentUserPublicKey)
+            ),
+            style: .edgeToEdge,
+            position: Position.with(indexPath.row, count: self.selectedReactionUserList.count)
         )
         
         return cell
@@ -471,22 +485,25 @@ extension ReactionListSheet {
         
         private lazy var snContentView: UIView = {
             let result = UIView()
-            result.backgroundColor = Colors.receivedMessageBackground
-            result.set(.height, to: Cell.contentViewHeight)
+            result.themeBackgroundColor = .messageBubble_incomingBackground
             result.layer.cornerRadius = Cell.contentViewCornerRadius
+            result.layer.borderWidth = 1 // Intentionally 1pt (instead of 'Values.separatorThickness')
+            result.set(.height, to: Cell.contentViewHeight)
+            
             return result
         }()
         
         private lazy var emojiLabel: UILabel = {
-            let result = UILabel()
+            let result: UILabel = UILabel()
             result.font = .systemFont(ofSize: Values.mediumFontSize)
+            
             return result
         }()
         
         private lazy var numberLabel: UILabel = {
-            let result = UILabel()
-            result.textColor = Colors.text
+            let result: UILabel = UILabel()
             result.font = .systemFont(ofSize: Values.mediumFontSize)
+            result.themeTextColor = .textPrimary
             
             return result
         }()
@@ -528,25 +545,22 @@ extension ReactionListSheet {
             count: Int,
             isCurrentSelection: Bool
         ) {
-            snContentView.addBorder(
-                with: (isCurrentSelection == true ? Colors.accent : .clear)
-            )
-            
             emojiLabel.text = emoji
             numberLabel.text = (count < 1000 ?
                 "\(count)" :
                 String(format: "%.1fk", Float(count) / 1000)
             )
+            snContentView.themeBorderColor = (isCurrentSelection ? .primary : .clear)
         }
     }
     
     fileprivate final class FooterCell: UITableViewCell {
-        
         private lazy var label: UILabel = {
-            let result = UILabel()
-            result.textAlignment = .center
+            let result: UILabel = UILabel()
             result.font = .systemFont(ofSize: Values.smallFontSize)
-            result.textColor = Colors.grey.withAlphaComponent(0.8)
+            result.themeTextColor = .textSecondary
+            result.textAlignment = .center
+            
             return result
         }()
         
@@ -554,17 +568,19 @@ extension ReactionListSheet {
         
         override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
             super.init(style: style, reuseIdentifier: reuseIdentifier)
+            
             setUpViewHierarchy()
         }
 
         required init?(coder: NSCoder) {
             super.init(coder: coder)
+            
             setUpViewHierarchy()
         }
 
         private func setUpViewHierarchy() {
             // Background color
-            backgroundColor = Colors.cellBackground
+            themeBackgroundColor = .backgroundSecondary
             
             contentView.addSubview(label)
             label.pin(to: contentView)
@@ -572,9 +588,10 @@ extension ReactionListSheet {
         }
         
         func update(moreReactorCount: Int, emoji: String) {
-            label.text = (moreReactorCount == 1) ?
+            label.text = (moreReactorCount == 1 ?
                 String(format: "EMOJI_REACTS_MORE_REACTORS_ONE".localized(), "\(emoji)") :
                 String(format: "EMOJI_REACTS_MORE_REACTORS_MUTIPLE".localized(), "\(moreReactorCount)" ,"\(emoji)")
+            )
         }
     }
 }

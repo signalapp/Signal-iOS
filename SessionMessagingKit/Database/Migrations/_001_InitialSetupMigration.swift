@@ -10,11 +10,13 @@ enum _001_InitialSetupMigration: Migration {
     static let needsConfigSync: Bool = false
     static let minExpectedRunDuration: TimeInterval = 0.1
     
-    static func migrate(_ db: Database) throws {
+    public static let fullTextSearchTokenizer: FTS5TokenizerDescriptor = {
         // Define the tokenizer to be used in all the FTS tables
         // https://github.com/groue/GRDB.swift/blob/master/Documentation/FullTextSearch.md#fts5-tokenizers
-        let fullTextSearchTokenizer: FTS5TokenizerDescriptor = .porter(wrapping: .unicode61())
-        
+        return .porter(wrapping: .unicode61())
+    }()
+    
+    static func migrate(_ db: Database) throws {
         try db.create(table: Contact.self) { t in
             t.column(.id, .text)
                 .notNull()
@@ -50,7 +52,7 @@ enum _001_InitialSetupMigration: Migration {
         /// Create a full-text search table synchronized with the Profile table
         try db.create(virtualTable: Profile.fullTextSearchTableName, using: FTS5()) { t in
             t.synchronize(withTable: Profile.databaseTableName)
-            t.tokenizer = fullTextSearchTokenizer
+            t.tokenizer = _001_InitialSetupMigration.fullTextSearchTokenizer
             
             t.column(Profile.Columns.nickname.name)
             t.column(Profile.Columns.name.name)
@@ -97,7 +99,7 @@ enum _001_InitialSetupMigration: Migration {
         /// Create a full-text search table synchronized with the ClosedGroup table
         try db.create(virtualTable: ClosedGroup.fullTextSearchTableName, using: FTS5()) { t in
             t.synchronize(withTable: ClosedGroup.databaseTableName)
-            t.tokenizer = fullTextSearchTokenizer
+            t.tokenizer = _001_InitialSetupMigration.fullTextSearchTokenizer
             
             t.column(ClosedGroup.Columns.name.name)
         }
@@ -148,7 +150,7 @@ enum _001_InitialSetupMigration: Migration {
         /// Create a full-text search table synchronized with the OpenGroup table
         try db.create(virtualTable: OpenGroup.fullTextSearchTableName, using: FTS5()) { t in
             t.synchronize(withTable: OpenGroup.databaseTableName)
-            t.tokenizer = fullTextSearchTokenizer
+            t.tokenizer = _001_InitialSetupMigration.fullTextSearchTokenizer
             
             t.column(OpenGroup.Columns.name.name)
         }
@@ -259,7 +261,7 @@ enum _001_InitialSetupMigration: Migration {
         /// Create a full-text search table synchronized with the Interaction table
         try db.create(virtualTable: Interaction.fullTextSearchTableName, using: FTS5()) { t in
             t.synchronize(withTable: Interaction.databaseTableName)
-            t.tokenizer = fullTextSearchTokenizer
+            t.tokenizer = _001_InitialSetupMigration.fullTextSearchTokenizer
             
             t.column(Interaction.Columns.body.name)
         }

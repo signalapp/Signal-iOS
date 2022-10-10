@@ -1,8 +1,7 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 
 public class EditorTextLayer: CATextLayer {
     let itemId: String
@@ -71,13 +70,13 @@ public class ImageEditorCanvasView: UIView {
 
     @objc
     public func configureSubviews() {
-        self.backgroundColor = .clear
+        self.themeBackgroundColor = .clear
         self.isOpaque = false
 
         self.srcImage = loadSrcImage()
 
         clipView.clipsToBounds = true
-        clipView.backgroundColor = .clear
+        clipView.themeBackgroundColor = .clear
         clipView.isOpaque = false
         clipView.layoutCallback = { [weak self] (_) in
             guard let strongSelf = self else {
@@ -92,7 +91,7 @@ public class ImageEditorCanvasView: UIView {
             imageLayer.contentsScale = srcImage.scale
         }
 
-        contentView.backgroundColor = .clear
+        contentView.themeBackgroundColor = .clear
         contentView.isOpaque = false
         contentView.layer.addSublayer(imageLayer)
         contentView.layoutCallback = { [weak self] (_) in
@@ -396,7 +395,7 @@ public class ImageEditorCanvasView: UIView {
 
         let shapeLayer = CAShapeLayer()
         shapeLayer.lineWidth = strokeWidth
-        shapeLayer.strokeColor = item.color.cgColor
+        shapeLayer.themeStrokeColorForced = .color(item.color)
         shapeLayer.frame = CGRect(origin: .zero, size: viewSize)
 
         // Stroke samples are specified in "image unit" coordinates, but
@@ -469,7 +468,7 @@ public class ImageEditorCanvasView: UIView {
         }
 
         shapeLayer.path = bezierPath.cgPath
-        shapeLayer.fillColor = nil
+        shapeLayer.themeFillColor = nil
         shapeLayer.lineCap = CAShapeLayerLineCap.round
         shapeLayer.lineJoin = CAShapeLayerLineJoin.round
         shapeLayer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: brushLayerZ)
@@ -501,14 +500,17 @@ public class ImageEditorCanvasView: UIView {
         let fontSize = item.font.pointSize * imageFrame.size.width / item.fontReferenceImageWidth
 
         let text = item.text.filterForDisplay ?? ""
-        let attributedString = NSAttributedString(string: text,
-                                                  attributes: [
-                                                    NSAttributedString.Key.font: item.font.withSize(fontSize),
-                                                    NSAttributedString.Key.foregroundColor: item.color.color
-            ])
+        let attributedString: NSMutableAttributedString = NSMutableAttributedString(
+            string: text,
+            attributes: [ .font: item.font.withSize(fontSize) ]
+        )
+        attributedString.addThemeAttribute(
+            .foreground(item.color.color),
+            range: NSRange(location: 0, length: text.count)
+        )
         let layer = EditorTextLayer(itemId: item.itemId)
         layer.string = attributedString
-        layer.foregroundColor = item.color.cgColor
+        layer.themeForegroundColorForced = .color(item.color.color)
         layer.font = CGFont(item.font.fontName as CFString)
         layer.fontSize = fontSize
         layer.isWrapped = true
@@ -608,14 +610,14 @@ public class ImageEditorCanvasView: UIView {
         // Because CALayer.renderInContext() doesn't honor CALayer properties like frame,
         // transform, etc.
         let view = UIView()
-        view.backgroundColor = UIColor.clear
+        view.themeBackgroundColor = .clear
         view.isOpaque = false
         view.frame = CGRect(origin: .zero, size: viewSize)
 
         // Rendering a UIView to an image will not honor the root image's layer transform.
         // We therefore use a subview.
         let contentView = UIView()
-        contentView.backgroundColor = UIColor.clear
+        contentView.themeBackgroundColor = .clear
         contentView.isOpaque = false
         contentView.frame = CGRect(origin: .zero, size: viewSize)
         view.addSubview(contentView)
@@ -657,8 +659,8 @@ public class ImageEditorCanvasView: UIView {
         }
 
         CATransaction.commit()
-
-        let image = view.renderAsImage(opaque: !hasAlpha, scale: dstScale)
+        
+        let image = view.toImage(isOpaque: !hasAlpha, scale: dstScale)
         return image
     }
 

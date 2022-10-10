@@ -1,3 +1,7 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionUIKit
 
 extension UIView {
 

@@ -3,12 +3,14 @@
 import UIKit
 import GRDB
 import DifferenceKit
+import SessionUIKit
 import SessionMessagingKit
 import SessionUtilitiesKit
 import SignalUtilitiesKit
 
-final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConversationButtonSetDelegate, SeedReminderViewDelegate {
-    private static let loadingHeaderHeight: CGFloat = 20
+final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, SeedReminderViewDelegate {
+    private static let loadingHeaderHeight: CGFloat = 40
+    public static let newConversationButtonSize: CGFloat = 60
     
     private let viewModel: HomeViewModel = HomeViewModel()
     private var dataChangeObservable: DatabaseCancellable?
@@ -41,22 +43,30 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     private lazy var seedReminderView: SeedReminderView = {
         let result = SeedReminderView(hasContinueButton: true)
         let title = "You're almost finished! 80%"
-        let attributedTitle = NSMutableAttributedString(string: title)
-        attributedTitle.addAttribute(.foregroundColor, value: Colors.accent, range: (title as NSString).range(of: "80%"))
-        result.title = attributedTitle
-        result.subtitle = NSLocalizedString("view_seed_reminder_subtitle_1", comment: "")
+        result.subtitle = "view_seed_reminder_subtitle_1".localized()
         result.setProgress(0.8, animated: false)
         result.delegate = self
         result.isHidden = !self.viewModel.state.showViewedSeedBanner
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] _, primaryColor in
+            let attributedTitle = NSMutableAttributedString(string: title)
+            attributedTitle.addAttribute(
+                .foregroundColor,
+                value: primaryColor.color,
+                range: (title as NSString).range(of: "80%")
+            )
+            result?.title = attributedTitle
+        }
         
         return result
     }()
     
     private lazy var loadingConversationsLabel: UILabel = {
         let result: UILabel = UILabel()
-        result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = .systemFont(ofSize: Values.smallFontSize)
         result.text = "LOADING_CONVERSATIONS".localized()
-        result.textColor = Colors.text
+        result.themeTextColor = .textSecondary
         result.textAlignment = .center
         result.numberOfLines = 0
         
@@ -65,16 +75,16 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
     private lazy var tableView: UITableView = {
         let result = UITableView()
-        result.backgroundColor = .clear
         result.separatorStyle = .none
+        result.themeBackgroundColor = .clear
         result.contentInset = UIEdgeInsets(
             top: 0,
             left: 0,
             bottom: (
-                Values.newConversationButtonBottomOffset +
-                NewConversationButtonSet.expandedButtonSize +
                 Values.largeSpacing +
-                NewConversationButtonSet.collapsedButtonSize
+                HomeVC.newConversationButtonSize +
+                Values.smallSpacing +
+                (UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0)
             ),
             right: 0
         )
@@ -90,34 +100,94 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         
         return result
     }()
+    
+    private lazy var newConversationButton: UIButton = {
+        let result = UIButton(type: .system)
+        result.clipsToBounds = false
+        result.setImage(
+            UIImage(named: "Plus")?
+                .withRenderingMode(.alwaysTemplate),
+            for: .normal
+        )
+        result.contentMode = .center
+        result.themeBackgroundColor = .menuButton_background
+        result.themeTintColor = .menuButton_icon
+        result.contentEdgeInsets = UIEdgeInsets(
+            top: ((HomeVC.newConversationButtonSize - 24) / 2),
+            leading: ((HomeVC.newConversationButtonSize - 24) / 2),
+            bottom: ((HomeVC.newConversationButtonSize - 24) / 2),
+            trailing: ((HomeVC.newConversationButtonSize - 24) / 2)
+        )
+        result.layer.cornerRadius = (HomeVC.newConversationButtonSize / 2)
+        result.addTarget(self, action: #selector(createNewConversation), for: .touchUpInside)
+        result.set(.width, to: HomeVC.newConversationButtonSize)
+        result.set(.height, to: HomeVC.newConversationButtonSize)
+        
+        // Add the outer shadow
+        result.themeShadowColor = .menuButton_outerShadow
+        result.layer.shadowRadius = 15
+        result.layer.shadowOpacity = 0.3
+        result.layer.shadowOffset = .zero
+        result.layer.cornerRadius = (HomeVC.newConversationButtonSize / 2)
+        result.layer.shadowPath = UIBezierPath(
+            ovalIn: CGRect(
+                origin: CGPoint.zero,
+                size: CGSize(
+                    width: HomeVC.newConversationButtonSize,
+                    height: HomeVC.newConversationButtonSize
+                )
+            )
+        ).cgPath
+        
+        // Add the inner shadow
+        let innerShadowLayer: CALayer = CALayer()
+        innerShadowLayer.masksToBounds = true
+        innerShadowLayer.themeShadowColor = .menuButton_innerShadow
+        innerShadowLayer.position = CGPoint(
+            x: (HomeVC.newConversationButtonSize / 2),
+            y: (HomeVC.newConversationButtonSize / 2)
+        )
+        innerShadowLayer.bounds = CGRect(
+            x: 0,
+            y: 0,
+            width: HomeVC.newConversationButtonSize,
+            height: HomeVC.newConversationButtonSize
+        )
+        innerShadowLayer.cornerRadius = (HomeVC.newConversationButtonSize / 2)
+        innerShadowLayer.shadowOffset = .zero
+        innerShadowLayer.shadowOpacity = 0.4
+        innerShadowLayer.shadowRadius = 2
 
-    private lazy var newConversationButtonSet: NewConversationButtonSet = {
-        let result = NewConversationButtonSet()
-        result.delegate = self
+        let cutout: UIBezierPath = UIBezierPath(
+            roundedRect: innerShadowLayer.bounds
+                .insetBy(dx: innerShadowLayer.shadowRadius, dy: innerShadowLayer.shadowRadius),
+            cornerRadius: (HomeVC.newConversationButtonSize / 2)
+        ).reversing()
+        let path: UIBezierPath = UIBezierPath(
+            roundedRect: innerShadowLayer.bounds,
+            cornerRadius: (HomeVC.newConversationButtonSize / 2)
+        )
+        path.append(cutout)
+        innerShadowLayer.shadowPath = path.cgPath
+        result.layer.addSublayer(innerShadowLayer)
+
         return result
     }()
     
-    private lazy var fadeView: UIView = {
-        let result = UIView()
-        let gradient = Gradients.homeVCFade
-        result.setGradient(gradient)
-        result.isUserInteractionEnabled = false
-        
-        return result
-    }()
-
     private lazy var emptyStateView: UIView = {
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.text = "vc_home_empty_state_message".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.textAlignment = .center
-        explanationLabel.text = NSLocalizedString("vc_home_empty_state_message", comment: "")
-        let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
-        createNewPrivateChatButton.setTitle(NSLocalizedString("vc_home_empty_state_button_title", comment: ""), for: UIControl.State.normal)
-        createNewPrivateChatButton.addTarget(self, action: #selector(createNewDM), for: UIControl.Event.touchUpInside)
+        explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
+        let createNewPrivateChatButton = SessionButton(style: .bordered, size: .large)
+        createNewPrivateChatButton.setTitle("vc_home_empty_state_button_title".localized(), for: .normal)
+        createNewPrivateChatButton.addTarget(self, action: #selector(createNewConversation), for: .touchUpInside)
         createNewPrivateChatButton.set(.width, to: Values.iPadButtonWidth)
+        
         let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
         result.axis = .vertical
         result.spacing = Values.mediumSpacing
@@ -140,11 +210,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         // Preparation
         SessionApp.homeViewController.mutate { $0 = self }
         
-        // Gradient & nav bar
-        setUpGradientBackground()
-        if navigationController?.navigationBar != nil {
-            setUpNavBarStyle()
-        }
         updateNavBarButtons()
         setUpNavBarSessionHeading()
         
@@ -172,12 +237,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         }
         tableView.pin(.trailing, to: .trailing, of: view)
         tableView.pin(.bottom, to: .bottom, of: view)
-        view.addSubview(fadeView)
-        fadeView.pin(.leading, to: .leading, of: view)
-        let topInset = 0.15 * view.height()
-        fadeView.pin(.top, to: .top, of: view, withInset: topInset)
-        fadeView.pin(.trailing, to: .trailing, of: view)
-        fadeView.pin(.bottom, to: .bottom, of: view)
         
         // Empty state view
         view.addSubview(emptyStateView)
@@ -185,10 +244,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         let verticalCenteringConstraint = emptyStateView.center(.vertical, in: view)
         verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
         
-        // New conversation button set
-        view.addSubview(newConversationButtonSet)
-        newConversationButtonSet.center(.horizontal, in: view)
-        newConversationButtonSet.pin(.bottom, to: .bottom, of: view, withInset: -Values.newConversationButtonBottomOffset) // Negative due to how the constraint is set up
+        // New conversation button
+        view.addSubview(newConversationButton)
+        newConversationButton.center(.horizontal, in: view)
+        newConversationButton.pin(.bottom, to: .bottom, of: view.safeAreaLayoutGuide, withInset: -Values.smallSpacing)
         
         // Notifications
         NotificationCenter.default.addObserver(
@@ -272,7 +331,9 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         // PagedDatabaseObserver won't have them so we need to force a re-fetch of the current
         // data to ensure everything is up to date
         if didReturnFromBackground {
-            self.viewModel.pagedDataObserver?.reload()
+            DispatchQueue.global(qos: .default).async { [weak self] in
+                self?.viewModel.pagedDataObserver?.reload()
+            }
         }
     }
     
@@ -403,8 +464,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         // Path status indicator
         let pathStatusView = PathStatusView()
         pathStatusView.accessibilityLabel = "Current onion routing path indicator"
-        pathStatusView.set(.width, to: PathStatusView.size)
-        pathStatusView.set(.height, to: PathStatusView.size)
         
         // Container view
         let profilePictureViewContainer = UIView()
@@ -426,14 +485,6 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         rightBarButtonItem.accessibilityLabel = "Search button"
         rightBarButtonItem.isAccessibilityElement  = true
         navigationItem.rightBarButtonItem = rightBarButtonItem
-    }
-
-    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
-        super.handleAppModeChangedNotification(notification)
-        
-        let gradient = Gradients.homeVCFade
-        fadeView.setGradient(gradient) // Re-do the gradient
-        tableView.reloadData()
     }
     
     // MARK: - UITableViewDataSource
@@ -474,7 +525,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         switch section.model {
             case .loadMore:
                 let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
-                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.themeTintColor = .textPrimary
                 loadingIndicator.alpha = 0.5
                 loadingIndicator.startAnimating()
                 
@@ -545,112 +596,118 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         return true
     }
     
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let section: HomeViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
+        let unswipeAnimationDelay: DispatchTimeInterval = .milliseconds(500)
         
         switch section.model {
             case .messageRequests:
-                let hide = UITableViewRowAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { _, _ in
+                let hide: UIContextualAction = UIContextualAction(style: .destructive, title: "TXT_HIDE_TITLE".localized()) { _, _, completionHandler  in
                     Storage.shared.write { db in db[.hasHiddenMessageRequests] = true }
+                    completionHandler(true)
                 }
-                hide.backgroundColor = Colors.destructive
+                hide.themeBackgroundColor = .conversationButton_swipeDestructive
                 
-                return [hide]
+                return UISwipeActionsConfiguration(actions: [hide])
                 
             case .threads:
                 let threadViewModel: SessionThreadViewModel = section.elements[indexPath.row]
-                let delete: UITableViewRowAction = UITableViewRowAction(
+                let delete: UIContextualAction = UIContextualAction(
                     style: .destructive,
                     title: "TXT_DELETE_TITLE".localized()
-                ) { [weak self] _, _ in
-                    let message = (threadViewModel.currentUserIsClosedGroupAdmin == true ?
-                        "admin_group_leave_warning".localized() :
-                        "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE".localized()
+                ) { [weak self] _, _, completionHandler in
+                    let confirmationModal: ConfirmationModal = ConfirmationModal(
+                        info: ConfirmationModal.Info(
+                            title: "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE".localized(),
+                            explanation: (threadViewModel.currentUserIsClosedGroupAdmin == true ?
+                                "admin_group_leave_warning".localized() :
+                                "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE".localized()
+                            ),
+                            confirmTitle: "TXT_DELETE_TITLE".localized(),
+                            confirmStyle: .danger,
+                            cancelStyle: .alert_text,
+                            dismissOnConfirm: true,
+                            onConfirm: { [weak self] _ in
+                                self?.viewModel.delete(
+                                    threadId: threadViewModel.threadId,
+                                    threadVariant: threadViewModel.threadVariant
+                                )
+                                self?.dismiss(animated: true, completion: nil)
+                                
+                                completionHandler(true)
+                            },
+                            afterClosed: { completionHandler(false) }
+                        )
                     )
                     
-                    let alert = UIAlertController(
-                        title: "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE".localized(),
-                        message: message,
-                        preferredStyle: .alert
-                    )
-                    alert.addAction(UIAlertAction(
-                        title: "TXT_DELETE_TITLE".localized(),
-                        style: .destructive
-                    ) { _ in
-                        Storage.shared.writeAsync { db in
-                            switch threadViewModel.threadVariant {
-                                case .closedGroup:
-                                    try MessageSender
-                                        .leave(db, groupPublicKey: threadViewModel.threadId)
-                                        .retainUntilComplete()
-                                    
-                                case .openGroup:
-                                    OpenGroupManager.shared.delete(db, openGroupId: threadViewModel.threadId)
-                                    
-                                default: break
-                            }
-                            
-                            _ = try SessionThread
-                                .filter(id: threadViewModel.threadId)
-                                .deleteAll(db)
-                        }
-                    })
-                    alert.addAction(UIAlertAction(
-                        title: "TXT_CANCEL_TITLE".localized(),
-                        style: .default
-                    ))
-                    
-                    self?.present(alert, animated: true, completion: nil)
+                    self?.present(confirmationModal, animated: true, completion: nil)
                 }
-                delete.backgroundColor = Colors.destructive
+                delete.themeBackgroundColor = .conversationButton_swipeDestructive
 
-                let pin: UITableViewRowAction = UITableViewRowAction(
+                let pin: UIContextualAction = UIContextualAction(
                     style: .normal,
                     title: (threadViewModel.threadIsPinned ?
                         "UNPIN_BUTTON_TEXT".localized() :
                         "PIN_BUTTON_TEXT".localized()
                     )
-                ) { _, _ in
-                    Storage.shared.writeAsync { db in
-                        try SessionThread
-                            .filter(id: threadViewModel.threadId)
-                            .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadViewModel.threadIsPinned))
+                ) { _, _, completionHandler in
+                    (tableView.cellForRow(at: indexPath) as? FullConversationCell)?.optimisticUpdate(
+                        isPinned: !threadViewModel.threadIsPinned
+                    )
+                    completionHandler(true)
+                    
+                    // Delay the change to give the cell "unswipe" animation some time to complete
+                    DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + unswipeAnimationDelay) {
+                        Storage.shared.writeAsync { db in
+                            try SessionThread
+                                .filter(id: threadViewModel.threadId)
+                                .updateAll(db, SessionThread.Columns.isPinned.set(to: !threadViewModel.threadIsPinned))
+                        }
                     }
                 }
+                pin.themeBackgroundColor = .conversationButton_swipeTertiary
                 
                 guard threadViewModel.threadVariant == .contact && !threadViewModel.threadIsNoteToSelf else {
-                    return [ delete, pin ]
+                    return UISwipeActionsConfiguration(actions: [ delete, pin ])
                 }
 
-                let block: UITableViewRowAction = UITableViewRowAction(
+                let block: UIContextualAction = UIContextualAction(
                     style: .normal,
                     title: (threadViewModel.threadIsBlocked == true ?
                         "BLOCK_LIST_UNBLOCK_BUTTON".localized() :
                         "BLOCK_LIST_BLOCK_BUTTON".localized()
                     )
-                ) { _, _ in
-                    Storage.shared.writeAsync { db in
-                        try Contact
-                            .filter(id: threadViewModel.threadId)
-                            .updateAll(
-                                db,
-                                Contact.Columns.isBlocked.set(
-                                    to: (threadViewModel.threadIsBlocked == false ?
-                                        true:
-                                        false
+                ) { _, _, completionHandler in
+                    (tableView.cellForRow(at: indexPath) as? FullConversationCell)?.optimisticUpdate(
+                        isBlocked: (threadViewModel.threadIsBlocked == false)
+                    )
+                    completionHandler(true)
+                    
+                    // Delay the change to give the cell "unswipe" animation some time to complete
+                    DispatchQueue.global(qos: .default).asyncAfter(deadline: .now() + unswipeAnimationDelay) {
+                        Storage.shared.writeAsync { db in
+                            try Contact
+                                .filter(id: threadViewModel.threadId)
+                                .updateAll(
+                                    db,
+                                    Contact.Columns.isBlocked.set(
+                                        to: (threadViewModel.threadIsBlocked == false ?
+                                            true:
+                                            false
+                                        )
                                     )
                                 )
-                            )
-                        
-                        try MessageSender.syncConfiguration(db, forceSyncNow: true)
-                            .retainUntilComplete()
+                            
+                            try MessageSender.syncConfiguration(db, forceSyncNow: true)
+                                .retainUntilComplete()
+                        }
                     }
                 }
-                block.backgroundColor = Colors.blockActionBackground
+                block.themeBackgroundColor = .conversationButton_swipeSecondary
                 
-                return [ delete, block, pin ]
+                return UISwipeActionsConfiguration(actions: [ delete, block, pin ])
                 
-            default: return []
+            default: return nil
         }
     }
     
@@ -658,7 +715,7 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     
     func handleContinueButtonTapped(from seedReminderView: SeedReminderView) {
         let seedVC = SeedVC()
-        let navigationController = OWSNavigationController(rootViewController: seedVC)
+        let navigationController = StyledNavigationController(rootViewController: seedVC)
         present(navigationController, animated: true, completion: nil)
     }
     
@@ -688,8 +745,10 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
     }
     
     @objc private func openSettings() {
-        let settingsVC = SettingsVC()
-        let navigationController = OWSNavigationController(rootViewController: settingsVC)
+        let settingsViewController: SessionTableViewController = SessionTableViewController(
+            viewModel: SettingsViewModel()
+        )
+        let navigationController = StyledNavigationController(rootViewController: settingsViewController)
         navigationController.modalPresentationStyle = .fullScreen
         present(navigationController, animated: true, completion: nil)
     }
@@ -702,42 +761,23 @@ final class HomeVC: BaseVC, UITableViewDataSource, UITableViewDelegate, NewConve
         self.navigationController?.setViewControllers([ self, searchController ], animated: true)
     }
     
-    @objc func joinOpenGroup() {
-        let joinOpenGroupVC: JoinOpenGroupVC = JoinOpenGroupVC()
-        let navigationController: OWSNavigationController = OWSNavigationController(rootViewController: joinOpenGroupVC)
-        
+    @objc func createNewConversation() {
+        let newConversationVC = NewConversationVC()
+        let navigationController = StyledNavigationController(rootViewController: newConversationVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
-        
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
     
-    @objc func createNewDM() {
-        let newDMVC = NewDMVC()
-        let navigationController = OWSNavigationController(rootViewController: newDMVC)
+    func createNewDMFromDeepLink(sessionId: String) {
+        let newDMVC = NewDMVC(sessionId: sessionId, shouldShowBackButton: false)
+        let navigationController = StyledNavigationController(rootViewController: newDMVC)
         if UIDevice.current.isIPad {
             navigationController.modalPresentationStyle = .fullScreen
         }
-        present(navigationController, animated: true, completion: nil)
-    }
-    
-    @objc(createNewDMFromDeepLink:)
-    func createNewDMFromDeepLink(sessionID: String) {
-        let newDMVC = NewDMVC(sessionID: sessionID)
-        let navigationController = OWSNavigationController(rootViewController: newDMVC)
-        if UIDevice.current.isIPad {
-            navigationController.modalPresentationStyle = .fullScreen
-        }
-        present(navigationController, animated: true, completion: nil)
-    }
-    
-    @objc func createClosedGroup() {
-        let newClosedGroupVC = NewClosedGroupVC()
-        let navigationController = OWSNavigationController(rootViewController: newClosedGroupVC)
-        if UIDevice.current.isIPad {
-            navigationController.modalPresentationStyle = .fullScreen
-        }
+        navigationController.modalPresentationCapturesStatusBarAppearance = true
         present(navigationController, animated: true, completion: nil)
     }
 }

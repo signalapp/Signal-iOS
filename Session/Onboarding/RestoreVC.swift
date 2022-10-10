@@ -1,7 +1,9 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 import SessionUtilitiesKit
+import SignalUtilitiesKit
 
 final class RestoreVC: BaseVC {
     private var spacer1HeightConstraint: NSLayoutConstraint!
@@ -10,55 +12,67 @@ final class RestoreVC: BaseVC {
     private var restoreButtonBottomOffsetConstraint: NSLayoutConstraint!
     private var bottomConstraint: NSLayoutConstraint!
     
-    // MARK: Components
+    // MARK: - Components
+    
     private lazy var mnemonicTextView: TextView = {
-        let result = TextView(placeholder: NSLocalizedString("vc_restore_seed_text_field_hint", comment: ""))
+        let result = TextView(placeholder: "vc_restore_seed_text_field_hint".localized())
         result.autocapitalizationType = .none
-        result.layer.borderColor = Colors.text.cgColor
+        result.themeBorderColor = .textPrimary
         result.accessibilityLabel = "Recovery phrase text view"
+        
         return result
     }()
     
     private lazy var legalLabel: UILabel = {
         let result = UILabel()
-        result.textColor = Colors.text
         result.font = .systemFont(ofSize: Values.verySmallFontSize)
         let text = "By using this service, you agree to our Terms of Service, End User License Agreement (EULA) and Privacy Policy"
-        let attributedText = NSMutableAttributedString(string: text, attributes: [ .font : UIFont.systemFont(ofSize: Values.verySmallFontSize) ])
+        let attributedText = NSMutableAttributedString(
+            string: text,
+            attributes: [
+                .font: UIFont.systemFont(ofSize: Values.verySmallFontSize)
+            ]
+        )
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Terms of Service"))
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "End User License Agreement (EULA)"))
         attributedText.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.verySmallFontSize), range: (text as NSString).range(of: "Privacy Policy"))
+        result.themeTextColor = .textPrimary
         result.attributedText = attributedText
-        result.numberOfLines = 0
         result.textAlignment = .center
         result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
         return result
     }()
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpGradientBackground()
-        setUpNavBarStyle()
+        
         setUpNavBarSessionIcon()
+        
         // Set up title label
         let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = NSLocalizedString("vc_restore_title", comment: "")
-        titleLabel.numberOfLines = 0
+        titleLabel.text = "vc_restore_title".localized()
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 0
+        
         // Set up explanation label
         let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("vc_restore_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
+        explanationLabel.text = "vc_restore_explanation".localized()
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
         // Set up legal label
         legalLabel.isUserInteractionEnabled = true
         let legalLabelTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleLegalLabelTapped))
         legalLabel.addGestureRecognizer(legalLabelTapGestureRecognizer)
+        
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let spacer1 = UIView()
@@ -70,17 +84,20 @@ final class RestoreVC: BaseVC {
         let bottomSpacer = UIView.vStretchingSpacer()
         let restoreButtonBottomOffsetSpacer = UIView()
         restoreButtonBottomOffsetConstraint = restoreButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
+        
         // Set up restore button
-        let restoreButton = Button(style: .prominentFilled, size: .large)
-        restoreButton.setTitle(NSLocalizedString("continue_2", comment: ""), for: UIControl.State.normal)
-        restoreButton.titleLabel!.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        let restoreButton = SessionButton(style: .filled, size: .large)
+        restoreButton.setTitle("continue_2".localized(), for: UIControl.State.normal)
         restoreButton.addTarget(self, action: #selector(restore), for: UIControl.Event.touchUpInside)
+        
         // Set up restore button container
         let restoreButtonContainer = UIView(wrapping: restoreButton, withInsets: UIEdgeInsets(top: 0, leading: Values.massiveSpacing, bottom: 0, trailing: Values.massiveSpacing), shouldAdaptForIPadWithWidth: Values.iPadButtonWidth)
+        
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, mnemonicTextView, spacer3, legalLabel ])
         topStackView.axis = .vertical
         topStackView.alignment = .fill
+        
         // Set up top stack view container
         let topStackViewContainer = UIView()
         topStackViewContainer.addSubview(topStackView)
@@ -88,19 +105,23 @@ final class RestoreVC: BaseVC {
         topStackView.pin(.top, to: .top, of: topStackViewContainer)
         topStackViewContainer.pin(.trailing, to: .trailing, of: topStackView, withInset: Values.veryLargeSpacing)
         topStackViewContainer.pin(.bottom, to: .bottom, of: topStackView)
+        
         // Set up main stack view
         let mainStackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, restoreButtonContainer, restoreButtonBottomOffsetSpacer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
+        
         view.addSubview(mainStackView)
         mainStackView.pin(.leading, to: .leading, of: view)
         mainStackView.pin(.top, to: .top, of: view)
         mainStackView.pin(.trailing, to: .trailing, of: view)
         bottomConstraint = mainStackView.pin(.bottom, to: .bottom, of: view)
         topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor, multiplier: 1).isActive = true
+        
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGestureRecognizer)
+        
         // Listen to keyboard notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleKeyboardWillChangeFrameNotification(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -128,12 +149,15 @@ final class RestoreVC: BaseVC {
     // MARK: Updating
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
+        
         bottomConstraint.constant = -newHeight // Negative due to how the constraint is set up
         restoreButtonBottomOffsetConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.largeSpacing
         spacer1HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         spacer2HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         spacer3HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        
         if isIPhone5OrSmaller { legalLabel.isUserInteractionEnabled = false }
+        
         UIView.animate(withDuration: 0.25) {
             if isIPhone5OrSmaller { self.legalLabel.alpha = 0 }
             self.view.layoutIfNeeded()
@@ -146,20 +170,30 @@ final class RestoreVC: BaseVC {
         spacer1HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
         spacer2HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
         spacer3HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
+        
         if isIPhone5OrSmaller { legalLabel.isUserInteractionEnabled = true }
+        
         UIView.animate(withDuration: 0.25) {
             if isIPhone5OrSmaller { self.legalLabel.alpha = 1 }
             self.view.layoutIfNeeded()
         }
     }
     
-    // MARK: Interaction
+    // MARK: - Interaction
+    
     @objc private func restore() {
         func showError(title: String, message: String = "") {
-            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OK", comment: ""), style: .default, handler: nil))
-            presentAlert(alert)
+            let modal: ConfirmationModal = ConfirmationModal(
+                info: ConfirmationModal.Info(
+                    title: title,
+                    explanation: message,
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
+            )
+            present(modal, animated: true)
         }
+        
         let mnemonic = mnemonicTextView.text!.lowercased()
         do {
             let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
@@ -167,6 +201,7 @@ final class RestoreVC: BaseVC {
             let (ed25519KeyPair, x25519KeyPair) = try! Identity.generate(from: seed)
             Onboarding.Flow.recover.preregister(with: seed, ed25519KeyPair: ed25519KeyPair, x25519KeyPair: x25519KeyPair)
             mnemonicTextView.resignFirstResponder()
+            
             Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { _ in
                 let displayNameVC = DisplayNameVC()
                 self.navigationController!.pushViewController(displayNameVC, animated: true)
@@ -184,6 +219,7 @@ final class RestoreVC: BaseVC {
         let ppRange = (legalLabel.text! as NSString).range(of: "Privacy Policy")
         let touchInLegalLabelCoordinates = tapGestureRecognizer.location(in: legalLabel)
         let characterIndex = legalLabel.characterIndex(for: touchInLegalLabelCoordinates)
+        
         if tosRange.contains(characterIndex) {
             urlAsString = "https://getsession.org/terms-of-service/"
         } else if eulaRange.contains(characterIndex) {
@@ -193,6 +229,7 @@ final class RestoreVC: BaseVC {
         } else {
             urlAsString = nil
         }
+        
         if let urlAsString = urlAsString {
             let url = URL(string: urlAsString)!
             UIApplication.shared.open(url)

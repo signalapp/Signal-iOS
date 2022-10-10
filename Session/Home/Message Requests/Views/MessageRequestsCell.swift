@@ -28,7 +28,7 @@ class MessageRequestsCell: UITableViewCell {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
-        result.backgroundColor = Colors.sessionMessageRequestsBubble
+        result.themeBackgroundColor = .conversationButton_unreadBubbleBackground
         result.layer.cornerRadius = (Values.mediumProfilePictureSize / 2)
         
         return result
@@ -37,7 +37,7 @@ class MessageRequestsCell: UITableViewCell {
     private let iconImageView: UIImageView = {
         let result: UIImageView = UIImageView(image: #imageLiteral(resourceName: "message_requests").withRenderingMode(.alwaysTemplate))
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.tintColor = Colors.sessionMessageRequestsIcon
+        result.themeTintColor = .conversationButton_unreadBubbleText
         
         return result
     }()
@@ -48,8 +48,8 @@ class MessageRequestsCell: UITableViewCell {
         result.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         result.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        result.text = NSLocalizedString("MESSAGE_REQUESTS_TITLE", comment: "")
-        result.textColor = Colors.sessionMessageRequestsTitle
+        result.text = "MESSAGE_REQUESTS_TITLE".localized()
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byTruncatingTail
         
         return result
@@ -59,7 +59,7 @@ class MessageRequestsCell: UITableViewCell {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
-        result.backgroundColor = Colors.text.withAlphaComponent(Values.veryLowOpacity)
+        result.themeBackgroundColor = .conversationButton_unreadBubbleBackground
         result.layer.cornerRadius = (FullConversationCell.unreadCountViewSize / 2)
         
         return result
@@ -69,17 +69,16 @@ class MessageRequestsCell: UITableViewCell {
         let result = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .conversationButton_unreadBubbleText
         result.textAlignment = .center
         
         return result
     }()
     
     private func setUpViewHierarchy() {
-        backgroundColor = Colors.cellPinned
+        themeBackgroundColor = .conversationButton_unreadBackground
         selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = Colors.cellSelected
-        
+        selectedBackgroundView?.themeBackgroundColor = .conversationButton_unreadHighlight
         
         contentView.addSubview(iconContainerView)
         contentView.addSubview(titleLabel)
@@ -115,12 +114,12 @@ class MessageRequestsCell: UITableViewCell {
             
             unreadCountView.leftAnchor.constraint(equalTo: titleLabel.rightAnchor, constant: (Values.smallSpacing / 2)),
             unreadCountView.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
-            unreadCountView.widthAnchor.constraint(equalToConstant: FullConversationCell.unreadCountViewSize),
+            unreadCountView.widthAnchor.constraint(greaterThanOrEqualToConstant: FullConversationCell.unreadCountViewSize),
             unreadCountView.heightAnchor.constraint(equalToConstant: FullConversationCell.unreadCountViewSize),
             
             unreadCountLabel.topAnchor.constraint(equalTo: unreadCountView.topAnchor),
-            unreadCountLabel.leftAnchor.constraint(equalTo: unreadCountView.leftAnchor),
-            unreadCountLabel.rightAnchor.constraint(equalTo: unreadCountView.rightAnchor),
+            unreadCountLabel.leftAnchor.constraint(equalTo: unreadCountView.leftAnchor, constant: 4),
+            unreadCountLabel.rightAnchor.constraint(equalTo: unreadCountView.rightAnchor, constant: -4),
             unreadCountLabel.bottomAnchor.constraint(equalTo: unreadCountView.bottomAnchor)
         ])
     }

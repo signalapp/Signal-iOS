@@ -23,6 +23,13 @@ public extension NSAttributedString {
     func appending(string: String, attributes: [Key: Any]? = nil) -> NSAttributedString {
         return appending(NSAttributedString(string: string, attributes: attributes))
     }
+    
+    func adding(attributes: [Key: Any], range: NSRange) -> NSAttributedString {
+        let mutableString: NSMutableAttributedString = NSMutableAttributedString(attributedString: self)
+        mutableString.addAttributes(attributes, range: range)
+
+        return mutableString
+    }
 
     // The actual Swift implementation of 'uppercased' is pretty nuts (see
     // https://github.com/apple/swift/blob/main/stdlib/public/core/String.swift#L901)

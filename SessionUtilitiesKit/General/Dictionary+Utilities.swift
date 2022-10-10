@@ -28,7 +28,7 @@ public extension Dictionary.Values {
 // MARK: - Functional Convenience
 
 public extension Dictionary {
-    public subscript(_ key: Key?) -> Value? {
+    subscript(_ key: Key?) -> Value? {
         guard let key: Key = key else { return nil }
         
         return self[key]

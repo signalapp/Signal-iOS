@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 import SessionUtilitiesKit
 
 protocol EmojiPickerCollectionViewDelegate: AnyObject {
@@ -63,7 +64,7 @@ class EmojiPickerCollectionView: UICollectionView {
             withReuseIdentifier: EmojiSectionHeader.reuseIdentifier
         )
 
-        backgroundColor = .clear
+        themeBackgroundColor = .clear
 
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
         panGestureRecognizer.require(toFail: longPressGesture)
@@ -303,7 +304,7 @@ private class EmojiCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = .clear
+        themeBackgroundColor = .clear
 
         emojiLabel.font = .boldSystemFont(ofSize: 32)
         contentView.addSubview(emojiLabel)
@@ -341,7 +342,7 @@ private class EmojiSectionHeader: UICollectionReusableView {
         )
 
         label.font = .systemFont(ofSize: Values.smallFontSize)
-        label.textColor = Colors.text
+        label.themeTextColor = .textPrimary
         addSubview(label)
         label.autoPinEdgesToSuperviewMargins()
         label.setCompressionResistanceHigh()
@@ -355,6 +356,7 @@ private class EmojiSectionHeader: UICollectionReusableView {
         var labelSize = label.sizeThatFits(size)
         labelSize.width += layoutMargins.left + layoutMargins.right
         labelSize.height += layoutMargins.top + layoutMargins.bottom
+        
         return labelSize
     }
 }

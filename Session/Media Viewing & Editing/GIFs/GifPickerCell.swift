@@ -218,7 +218,7 @@ class GifPickerCell: UICollectionViewCell {
             return
         }
         imageView.image = image
-        self.backgroundColor = nil
+        self.themeBackgroundColor = nil
 
         if self.isCellSelected {
             let activityIndicator = UIActivityIndicatorView(style: .gray)
@@ -229,11 +229,12 @@ class GifPickerCell: UICollectionViewCell {
 
             // Render activityIndicator on a white tile to ensure it's visible on
             // when overlayed on a variety of potential gifs.
-            activityIndicator.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+            activityIndicator.themeBackgroundColor = .white
+            activityIndicator.alpha = 0.3
             activityIndicator.autoSetDimension(.width, toSize: 30)
             activityIndicator.autoSetDimension(.height, toSize: 30)
+            activityIndicator.themeShadowColor = .black
             activityIndicator.layer.cornerRadius = 3
-            activityIndicator.layer.shadowColor = UIColor.black.cgColor
             activityIndicator.layer.shadowOffset = CGSize(width: 1, height: 1)
             activityIndicator.layer.shadowOpacity = 0.7
             activityIndicator.layer.shadowRadius = 1.0
@@ -270,9 +271,7 @@ class GifPickerCell: UICollectionViewCell {
 
     private func clearViewState() {
         imageView?.image = nil
-        self.backgroundColor = (isDarkMode
-            ? UIColor(white: 0.25, alpha: 1.0)
-            : UIColor(white: 0.95, alpha: 1.0))
+        self.themeBackgroundColor = .backgroundSecondary
     }
 
     private func pickBestAsset() -> ProxiedContentAsset? {

@@ -60,7 +60,7 @@ public class NSENotificationPresenter: NSObject, NotificationsProtocol {
         
         // Title & body
         let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
-            .defaulting(to: .nameAndPreview)
+            .defaulting(to: .defaultPreviewType)
         
         switch previewType {
             case .nameAndPreview:

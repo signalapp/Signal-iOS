@@ -86,9 +86,10 @@ public class GalleryRailCellView: UIView {
         layoutMargins = UIEdgeInsets(top: 0, left: cellBorderWidth, bottom: 0, right: cellBorderWidth)
 
         if isSelected {
-            contentContainer.layer.borderColor = Colors.accent.cgColor
+            contentContainer.themeBorderColor = .primary
             contentContainer.layer.borderWidth = cellBorderWidth
-        } else {
+        }
+        else {
             contentContainer.layer.borderWidth = 0
         }
     }
@@ -197,6 +198,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
             UIView.animate(
                 withDuration: animationDuration,
                 animations: { [weak self] in
+                    self?.isHidden = true
                     self?.stackView.frame = oldFrame.offsetBy(
                         dx: 0,
                         dy: oldFrame.height
@@ -205,7 +207,6 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                 completion: { [weak self] _ in
                     self?.stackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
                     self?.stackView.frame = oldFrame
-                    self?.isHidden = true
                     self?.cellViews = []
                 }
             )
@@ -247,8 +248,8 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                 }
                 self?.cellViews = newCellViews
                 
-                self?.updateFocusedItem(focusedItem)
                 self?.stackView.layoutIfNeeded()
+                self?.updateFocusedItem(focusedItem)
                 self?.isHidden = false
                 
                 updatedOldFrame = (self?.stackView.frame)
@@ -268,6 +269,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
                 options: .curveEaseOut,
                 animations: { [weak self] in
                     self?.stackView.frame = oldFrame
+                    self?.isHidden = false
                 },
                 completion: nil
             )
@@ -276,6 +278,11 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         // If we don't have arranged subviews already we can skip the 'animateOut'
         guard !self.stackView.arrangedSubviews.isEmpty else {
             let updatedOldFrame: CGRect = layoutNewItems(self.stackView.frame)
+            
+            // Hide self again because it would have previously been hidden and we want to
+            // properly animate it's appearance
+            self.isHidden = true
+            
             animateIn(updatedOldFrame)
             return
         }

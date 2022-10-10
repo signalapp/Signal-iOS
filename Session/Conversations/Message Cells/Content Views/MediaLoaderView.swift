@@ -1,13 +1,19 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class MediaLoaderView : UIView {
+import UIKit
+import SessionUIKit
+
+final class MediaLoaderView: UIView {
     private let bar = UIView()
     
     private lazy var barLeftConstraint = bar.pin(.left, to: .left, of: self)
     private lazy var barRightConstraint = bar.pin(.right, to: .right, of: self)
     
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setUpViewHierarchy()
     }
     
@@ -17,9 +23,10 @@ final class MediaLoaderView : UIView {
     }
     
     private func setUpViewHierarchy() {
-        bar.backgroundColor = Colors.accent
+        bar.themeBackgroundColor = .primary
         bar.set(.height, to: 8)
         addSubview(bar)
+        
         barLeftConstraint.isActive = true
         bar.pin(.top, to: .top, of: self)
         barRightConstraint.isActive = true
@@ -27,7 +34,8 @@ final class MediaLoaderView : UIView {
         step1()
     }
     
-    // MARK: Animation
+    // MARK: - Animation
+    
     func step1() {
         barRightConstraint.constant = -bounds.width
         UIView.animate(withDuration: 0.5, animations: { [weak self] in

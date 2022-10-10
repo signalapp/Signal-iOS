@@ -31,6 +31,7 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         return [ result.map { ArraySection(model: .contactsAndGroups, elements: [$0]) } ]
             .compactMap { $0 }
     }()
+    private var readConnection: Atomic<Database?> = Atomic(nil)
     private lazy var searchResultSet: [SectionModel] = self.defaultSearchResults
     private var termForCurrentSearchResultSet: String = ""
     private var lastSearchText: String?
@@ -50,14 +51,16 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
     internal lazy var searchBar: SearchBar = {
         let result: SearchBar = SearchBar()
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
         result.delegate = self
         result.showsCancelButton = true
+        
         return result
     }()
 
     internal lazy var tableView: UITableView = {
         let result: UITableView = UITableView(frame: .zero, style: .grouped)
+        result.themeBackgroundColor = .clear
         result.rowHeight = UITableView.automaticDimension
         result.estimatedRowHeight = 60
         result.separatorStyle = .none
@@ -74,8 +77,6 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        setUpGradientBackground()
-
         tableView.dataSource = self
         tableView.delegate = self
         view.addSubview(tableView)
@@ -116,9 +117,10 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
         if UIDevice.current.isIPad {
             let ipadCancelButton = UIButton()
             ipadCancelButton.setTitle("Cancel", for: .normal)
+            ipadCancelButton.setThemeTitleColor(.textPrimary, for: .normal)
             ipadCancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
-            ipadCancelButton.setTitleColor(Colors.text, for: .normal)
             searchBarContainer.addSubview(ipadCancelButton)
+            
             ipadCancelButton.pin(.trailing, to: .trailing, of: searchBarContainer)
             ipadCancelButton.autoVCenterInSuperview()
             searchBar.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets.zero, excludingEdge: .trailing)
@@ -155,52 +157,60 @@ class GlobalSearchViewController: BaseVC, UITableViewDelegate, UITableViewDataSo
 
         lastSearchText = searchText
 
-        let result: Result<[SectionModel], Error>? = Storage.shared.read { db -> Result<[SectionModel], Error> in
-            do {
-                let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                let contactsAndGroupsResults: [SessionThreadViewModel] = try SessionThreadViewModel
-                    .contactsAndGroupsQuery(
-                        userPublicKey: userPublicKey,
-                        pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText),
-                        searchTerm: searchText
-                    )
-                    .fetchAll(db)
-                let messageResults: [SessionThreadViewModel] = try SessionThreadViewModel
-                    .messagesQuery(
-                        userPublicKey: userPublicKey,
-                        pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
-                    )
-                    .fetchAll(db)
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            self?.readConnection.wrappedValue?.interrupt()
+            
+            let result: Result<[SectionModel], Error>? = Storage.shared.read { db -> Result<[SectionModel], Error> in
+                self?.readConnection.mutate { $0 = db }
                 
-                return .success([
-                    ArraySection(model: .contactsAndGroups, elements: contactsAndGroupsResults),
-                    ArraySection(model: .messages, elements: messageResults)
-                ])
+                do {
+                    let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                    let contactsAndGroupsResults: [SessionThreadViewModel] = try SessionThreadViewModel
+                        .contactsAndGroupsQuery(
+                            userPublicKey: userPublicKey,
+                            pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText),
+                            searchTerm: searchText
+                        )
+                        .fetchAll(db)
+                    let messageResults: [SessionThreadViewModel] = try SessionThreadViewModel
+                        .messagesQuery(
+                            userPublicKey: userPublicKey,
+                            pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
+                        )
+                        .fetchAll(db)
+                    
+                    return .success([
+                        ArraySection(model: .contactsAndGroups, elements: contactsAndGroupsResults),
+                        ArraySection(model: .messages, elements: messageResults)
+                    ])
+                }
+                catch {
+                    return .failure(error)
+                }
             }
-            catch {
-                return .failure(error)
+            
+            DispatchQueue.main.async {
+                switch result {
+                    case .success(let sections):
+                        let hasResults: Bool = (
+                            !searchText.isEmpty &&
+                            (sections.map { $0.elements.count }.reduce(0, +) > 0)
+                        )
+                        
+                        self?.termForCurrentSearchResultSet = searchText
+                        self?.searchResultSet = [
+                            (hasResults ? nil : [ArraySection(model: .noResults, elements: [SessionThreadViewModel(unreadCount: 0)])]),
+                            (hasResults ? sections : nil)
+                        ]
+                        .compactMap { $0 }
+                        .flatMap { $0 }
+                        self?.isLoading = false
+                        self?.reloadTableData()
+                        self?.refreshTimer = nil
+                        
+                    default: break
+                }
             }
-        }
-        
-        switch result {
-            case .success(let sections):
-                let hasResults: Bool = (
-                    !searchText.isEmpty &&
-                    (sections.map { $0.elements.count }.reduce(0, +) > 0)
-                )
-                
-                self.termForCurrentSearchResultSet = searchText
-                self.searchResultSet = [
-                    (hasResults ? nil : [ArraySection(model: .noResults, elements: [SessionThreadViewModel(unreadCount: 0)])]),
-                    (hasResults ? sections : nil)
-                ]
-                .compactMap { $0 }
-                .flatMap { $0 }
-                self.isLoading = false
-                self.reloadTableData()
-                self.refreshTimer = nil
-                
-            default: break
         }
     }
     
@@ -312,16 +322,19 @@ extension GlobalSearchViewController {
         }
 
         let titleLabel = UILabel()
+        titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
         titleLabel.text = title
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        titleLabel.themeTextColor = .textPrimary
 
         let container = UIView()
-        container.backgroundColor = Colors.cellBackground
-        container.layoutMargins = UIEdgeInsets(top: Values.smallSpacing, left: Values.mediumSpacing, bottom: Values.smallSpacing, right: Values.mediumSpacing)
+        container.themeBackgroundColor = .backgroundPrimary
         container.addSubview(titleLabel)
-        titleLabel.autoPinEdgesToSuperviewMargins()
-
+        
+        titleLabel.pin(.top, to: .top, of: container, withInset: Values.mediumSpacing)
+        titleLabel.pin(.bottom, to: .bottom, of: container, withInset: -Values.mediumSpacing)
+        titleLabel.pin(.left, to: .left, of: container, withInset: Values.largeSpacing)
+        titleLabel.pin(.right, to: .right, of: container, withInset: -Values.largeSpacing)
+        
         return container
     }
 

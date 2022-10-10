@@ -14,7 +14,7 @@ import UIKit
 import SignalUtilitiesKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, AppModeManagerDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var window: UIWindow?
     var backgroundSnapshotBlockerWindow: UIWindow?
     var appStartupWindow: UIWindow?
@@ -31,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         SetCurrentAppContext(MainAppContext())
         verifyDBKeysAvailableBeforeBackgroundLaunch()
 
-        AppModeManager.configure(delegate: self)
         Cryptography.seedRandom()
         AppVersion.sharedInstance()
 
@@ -41,8 +40,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // This block will be cleared in storageIsReady.
         DeviceSleepManager.sharedInstance.addBlock(blockObject: self)
         
-        let mainWindow: UIWindow = UIWindow(frame: UIScreen.main.bounds)
+        let mainWindow: UIWindow = TraitObservingWindow(frame: UIScreen.main.bounds)
         self.loadingViewController = LoadingViewController()
+        
+        // Store a weak reference in the ThemeManager so it can properly apply themes as needed
+        ThemeManager.mainWindow = mainWindow
         
         AppSetup.setupEnvironment(
             appSpecificBlock: {
@@ -52,12 +54,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 // Note: Intentionally dispatching sync as we want to wait for these to complete before
                 // continuing
                 DispatchQueue.main.sync {
-                    OWSScreenLockUI.sharedManager().setup(withRootWindow: mainWindow)
+                    ScreenLockUI.shared.setupWithRootWindow(rootWindow: mainWindow)
                     OWSWindowManager.shared().setup(
                         withRootWindow: mainWindow,
-                        screenBlockingWindow: OWSScreenLockUI.sharedManager().screenBlockingWindow
+                        screenBlockingWindow: ScreenLockUI.shared.screenBlockingWindow
                     )
-                    OWSScreenLockUI.sharedManager().startObserving()
+                    ScreenLockUI.shared.startObserving()
                 }
             },
             migrationProgressChanged: { [weak self] progress, minEstimatedTotalTime in
@@ -76,8 +78,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         )
         
-        SNAppearance.switchToSessionAppearance()
-        
         if Environment.shared?.callManager.wrappedValue?.currentCall == nil {
             UserDefaults.sharedLokiProject?.set(false, forKey: "isCallOngoing")
         }
@@ -91,8 +91,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Show LoadingViewController until the async database view registrations are complete.
         mainWindow.rootViewController = self.loadingViewController
         mainWindow.makeKeyAndVisible()
-
-        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
 
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
         // miss notifications.
@@ -162,7 +160,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UserDefaults.sharedLokiProject?[.isMainAppActive] = true
         
         ensureRootViewController()
-        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
 
         AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
             self?.handleActivation()
@@ -303,8 +300,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             message: "DATABASE_MIGRATION_FAILED".localized(),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "modal_share_logs_title".localized(), style: .default) { _ in
-            ShareLogsModal.shareLogs(from: alert) { [weak self] in
+        alert.addAction(UIAlertAction(title: "HELP_REPORT_BUG_ACTION_TITLE".localized(), style: .default) { _ in
+            HelpViewModel.shareLogs(viewControllerToDismiss: alert) { [weak self] in
                 self?.showFailedMigrationAlert(error: error)
             }
         })
@@ -400,7 +397,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         self.hasInitialRootViewController = true
-        self.window?.rootViewController = OWSNavigationController(
+        self.window?.rootViewController = StyledNavigationController(
             rootViewController: (Identity.userExists() ?
                 HomeVC() :
                 LandingVC()
@@ -484,7 +481,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             guard Identity.userExists() else { return }
             
-            SessionApp.homeViewController.wrappedValue?.createNewDM()
+            SessionApp.homeViewController.wrappedValue?.createNewConversation()
             completionHandler(true)
         }
     }
@@ -575,39 +572,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         OpenGroupManager.shared.stopPolling()
     }
     
-    // MARK: - App Mode
-
-    private func adapt(appMode: AppMode) {
-        // FIXME: Need to update this when an appropriate replacement is added (see https://teng.pub/technical/2021/11/9/uiapplication-key-window-replacement)
-        guard let window: UIWindow = UIApplication.shared.keyWindow else { return }
-        
-        switch (appMode) {
-            case .light:
-                window.overrideUserInterfaceStyle = .light
-                window.backgroundColor = .white
-            
-            case .dark:
-                window.overrideUserInterfaceStyle = .dark
-                window.backgroundColor = .black
-        }
-        
-        if LKAppModeUtilities.isSystemDefault {
-            window.overrideUserInterfaceStyle = .unspecified
-        }
-        
-        NotificationCenter.default.post(name: .appModeChanged, object: nil)
-    }
-    
-    func setCurrentAppMode(to appMode: AppMode) {
-        UserDefaults.standard[.appMode] = appMode.rawValue
-        adapt(appMode: appMode)
-    }
-    
-    func setAppModeToSystemDefault() {
-        UserDefaults.standard.removeObject(forKey: SNUserDefaults.Int.appMode.rawValue)
-        adapt(appMode: AppModeManager.getAppModeOrSystemDefault())
-    }
-    
     // MARK: - App Link
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
@@ -631,11 +595,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     private func createNewDMFromDeepLink(sessionId: String) {
-        guard let homeViewController: HomeVC = (window?.rootViewController as? OWSNavigationController)?.visibleViewController as? HomeVC else {
+        guard let homeViewController: HomeVC = (window?.rootViewController as? UINavigationController)?.visibleViewController as? HomeVC else {
             return
         }
         
-        homeViewController.createNewDMFromDeepLink(sessionID: sessionId)
+        homeViewController.createNewDMFromDeepLink(sessionId: sessionId)
     }
         
     // MARK: - Call handling

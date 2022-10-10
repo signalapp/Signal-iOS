@@ -1,9 +1,7 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
 import UIKit
+import SessionUIKit
 
 protocol ApprovalRailCellViewDelegate: AnyObject {
     func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView, didRemoveItem attachmentItem: SignalAttachmentItem)
@@ -29,8 +27,8 @@ public class ApprovalRailCellView: GalleryRailCellView {
         }
 
         button.setImage(UIImage(named: "x-24")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.tintColor = .white
-        button.layer.shadowColor = UIColor.black.cgColor
+        button.themeTintColor = .white
+        button.themeShadowColor = .black
         button.layer.shadowRadius = 2
         button.layer.shadowOpacity = 0.66
         button.layer.shadowOffset = .zero
@@ -44,11 +42,12 @@ public class ApprovalRailCellView: GalleryRailCellView {
     lazy var captionIndicator: UIView = {
         let image = UIImage(named: "image_editor_caption")?.withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: image)
-        imageView.tintColor = .white
-        imageView.layer.shadowColor = UIColor.black.cgColor
+        imageView.themeTintColor = .white
+        imageView.themeShadowColor = .black
         imageView.layer.shadowRadius = 2
         imageView.layer.shadowOpacity = 0.66
         imageView.layer.shadowOffset = .zero
+        
         return imageView
     }()
 

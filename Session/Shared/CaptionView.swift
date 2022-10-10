@@ -1,6 +1,7 @@
-//
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+
+import UIKit
+import SessionUIKit
 
 public protocol CaptionContainerViewDelegate: AnyObject {
     func captionContainerViewDidUpdateText(_ captionContainerView: CaptionContainerView)
@@ -100,15 +101,23 @@ private class CaptionView: UIView {
         let textView = CaptionTextView()
 
         textView.font = UIFont.ows_dynamicTypeBody
-        textView.textColor = Colors.text
-        textView.backgroundColor = .clear
+        textView.themeTextColor = .textPrimary
+        textView.themeBackgroundColor = .clear
         textView.isEditable = false
         textView.isSelectable = false
 
         return textView
     }()
 
-    let scrollFadeView = GradientView(from: .clear, to: .black)
+    let scrollFadeView: GradientView = {
+        let result: GradientView = GradientView()
+        result.themeBackgroundGradient = [
+            .clear,
+            .black
+        ]
+        
+        return result
+    }()
 
     // MARK: Initializers
 

@@ -12,6 +12,8 @@ public struct QuotedReplyModel {
     public let contentType: String?
     public let sourceFileName: String?
     public let thumbnailDownloadFailed: Bool
+    public let currentUserPublicKey: String?
+    public let currentUserBlindedPublicKey: String?
     
     // MARK: - Initialization
     
@@ -23,7 +25,9 @@ public struct QuotedReplyModel {
         attachment: Attachment?,
         contentType: String?,
         sourceFileName: String?,
-        thumbnailDownloadFailed: Bool
+        thumbnailDownloadFailed: Bool,
+        currentUserPublicKey: String?,
+        currentUserBlindedPublicKey: String?
     ) {
         self.attachment = attachment
         self.threadId = threadId
@@ -33,6 +37,8 @@ public struct QuotedReplyModel {
         self.contentType = contentType
         self.sourceFileName = sourceFileName
         self.thumbnailDownloadFailed = thumbnailDownloadFailed
+        self.currentUserPublicKey = currentUserPublicKey
+        self.currentUserBlindedPublicKey = currentUserBlindedPublicKey
     }
     
     public static func quotedReplyForSending(
@@ -42,7 +48,9 @@ public struct QuotedReplyModel {
         body: String?,
         timestampMs: Int64,
         attachments: [Attachment]?,
-        linkPreviewAttachment: Attachment?
+        linkPreviewAttachment: Attachment?,
+        currentUserPublicKey: String?,
+        currentUserBlindedPublicKey: String?
     ) -> QuotedReplyModel? {
         guard variant == .standardOutgoing || variant == .standardIncoming else { return nil }
         guard (body != nil && body?.isEmpty == false) || attachments?.isEmpty == false else { return nil }
@@ -57,7 +65,9 @@ public struct QuotedReplyModel {
             attachment: targetAttachment,
             contentType: targetAttachment?.contentType,
             sourceFileName: targetAttachment?.sourceFilename,
-            thumbnailDownloadFailed: false
+            thumbnailDownloadFailed: false,
+            currentUserPublicKey: currentUserPublicKey,
+            currentUserBlindedPublicKey: currentUserBlindedPublicKey
         )
     }
 }

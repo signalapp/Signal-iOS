@@ -25,7 +25,7 @@ public class LoadingViewController: UIViewController {
     private var logoView: UIImageView = {
         let result: UIImageView = UIImageView(image: #imageLiteral(resourceName: "SessionGreen64"))
         result.contentMode = .scaleAspectFit
-        result.layer.shadowColor = Colors.accent.cgColor
+        result.themeShadowColorForced = .primary(.green)
         result.layer.shadowOffset = .zero
         result.layer.shadowRadius = 3
         result.layer.shadowOpacity = 0
@@ -37,8 +37,8 @@ public class LoadingViewController: UIViewController {
         let result: UIProgressView = UIProgressView(progressViewStyle: .bar)
         result.clipsToBounds = true
         result.progress = 0
-        result.tintColor = Colors.accent
-        result.trackTintColor = Colors.text.withAlphaComponent(0.1)
+        result.themeTintColorForced = .primary(.green)
+        result.themeProgressTintColorForced = .theme(.classicDark, color: .textPrimary, alpha: 0.1)
         result.layer.cornerRadius = 6
 
         return result
@@ -48,7 +48,7 @@ public class LoadingViewController: UIViewController {
         let result: UILabel = UILabel()
         result.font = UIFont.systemFont(ofSize: Values.mediumFontSize)
         result.text = "DATABASE_VIEW_OVERLAY_TITLE".localized()
-        result.textColor = Colors.text
+        result.themeTextColorForced = .theme(.classicDark, color: .textPrimary)
         result.textAlignment = .center
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
@@ -60,7 +60,7 @@ public class LoadingViewController: UIViewController {
         let result: UILabel = UILabel()
         result.font = UIFont.systemFont(ofSize: Values.verySmallFontSize)
         result.text = "DATABASE_VIEW_OVERLAY_SUBTITLE".localized()
-        result.textColor = Colors.text
+        result.themeTextColorForced = .theme(.classicDark, color: .textPrimary)
         result.textAlignment = .center
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
@@ -84,7 +84,7 @@ public class LoadingViewController: UIViewController {
     override public func loadView() {
         self.view = UIView()
         
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.themeBackgroundColorForced = .theme(.classicDark, color: .backgroundPrimary)
 
         self.view.addSubview(self.logoView)
         self.view.addSubview(self.labelStack)

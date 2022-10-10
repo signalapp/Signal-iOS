@@ -42,19 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (NSString *)formatDurationSeconds:(long)timeSeconds
-{
-    long seconds = timeSeconds % 60;
-    long minutes = (timeSeconds / 60) % 60;
-    long hours = timeSeconds / 3600;
-
-    if (hours > 0) {
-        return [NSString stringWithFormat:@"%ld:%02ld:%02ld", hours, minutes, seconds];
-    } else {
-        return [NSString stringWithFormat:@"%ld:%02ld", minutes, seconds];
-    }
-}
-
 @end
 
 NS_ASSUME_NONNULL_END
