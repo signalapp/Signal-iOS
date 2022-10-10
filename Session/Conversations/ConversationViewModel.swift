@@ -199,7 +199,6 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     }()
                 )
             ],
-            joinSQL: MessageViewModel.optimisedJoinSQL,
             filterSQL: MessageViewModel.filterSQL(threadId: threadId),
             groupSQL: MessageViewModel.groupSQL,
             orderSQL: MessageViewModel.orderSQL,

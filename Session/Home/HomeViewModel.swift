@@ -136,16 +136,6 @@ public class HomeViewModel {
                         
                         return SQL("LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])")
                     }()
-                ),
-                PagedData.ObservedChanges(
-                    table: Setting.self,
-                    columns: [.value],
-                    joinToPagedType: {
-                        let setting: TypedTableAlias<Setting> = TypedTableAlias()
-                        let targetSetting: String = Setting.BoolKey.showScreenshotNotifications.rawValue
-                        
-                        return SQL("LEFT JOIN \(Setting.self) ON \(setting[.key]) = \(targetSetting)")
-                    }()
                 )
             ],
             /// **Note:** This `optimisedJoinSQL` value includes the required minimum joins needed for the query but differs
