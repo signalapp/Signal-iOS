@@ -1559,7 +1559,9 @@ extension ConversationVC:
             body: cellViewModel.body,
             timestampMs: cellViewModel.timestampMs,
             attachments: cellViewModel.attachments,
-            linkPreviewAttachment: cellViewModel.linkPreviewAttachment
+            linkPreviewAttachment: cellViewModel.linkPreviewAttachment,
+            currentUserPublicKey: cellViewModel.currentUserPublicKey,
+            currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey
         )
         
         guard let quoteDraft: QuotedReplyModel = maybeQuoteDraft else { return }

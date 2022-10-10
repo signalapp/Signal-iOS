@@ -808,7 +808,8 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         /// Unfortunately the UITableView also does some weird things when updating (where it won't have updated it's internal data until
         /// after it performs the next layout); the below code checks a condition on layout and if it passes it calls a closure
         if let itemChangeInfo: ItemChangeInfo = itemChangeInfo, itemChangeInfo.isInsertAtTop {
-            let oldCellHeight: CGFloat = self.tableView.rectForRow(at: itemChangeInfo.oldVisibleIndexPath).height
+            let oldCellRect: CGRect = self.tableView.rectForRow(at: itemChangeInfo.oldVisibleIndexPath)
+            let oldCellTopOffset: CGFloat = (self.tableView.frame.minY - self.tableView.convert(oldCellRect, to: self.tableView.superview).minY)
             
             // The the user triggered the 'scrollToTop' animation (by tapping in the nav bar) then we
             // need to stop the animation before attempting to lock the offset (otherwise things break)
@@ -828,27 +829,13 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                     // loaded was smaller than 2 pages (this will prevent calculating the frames of
                     // a large number of cells when getting search results which are very far away
                     // only to instantly start scrolling making the calculation redundant)
-                    if (abs(itemChangeInfo.visibleIndexPath.row - itemChangeInfo.oldVisibleIndexPath.row) <= (ConversationViewModel.pageSize * 2)) {
-                        UIView.performWithoutAnimation {
-                            let calculatedRowHeights: CGFloat = (0..<itemChangeInfo.visibleIndexPath.row)
-                                .reduce(into: 0) { result, next in
-                                    result += (self?.tableView
-                                        .rectForRow(
-                                            at: IndexPath(
-                                                row: next,
-                                                section: itemChangeInfo.visibleIndexPath.section
-                                            )
-                                        )
-                                        .height)
-                                        .defaulting(to: 0)
-                                }
-                            let newTargetHeight: CGFloat? = self?.tableView
-                                .rectForRow(at: itemChangeInfo.visibleIndexPath)
-                                .height
-                            let heightDiff: CGFloat = (oldCellHeight - (newTargetHeight ?? oldCellHeight))
-                            
-                            self?.tableView.contentOffset.y += (calculatedRowHeights - heightDiff)
-                        }
+                    UIView.performWithoutAnimation {
+                        self?.tableView.scrollToRow(
+                            at: itemChangeInfo.visibleIndexPath,
+                            at: .top,
+                            animated: false
+                        )
+                        self?.tableView.contentOffset.y += oldCellTopOffset
                     }
                     
                     if let focusedInteractionId: Int64 = self?.focusedInteractionId {
@@ -1327,6 +1314,15 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             return
         }
         
+        // Note: In this case we need to force a tableView layout to ensure updating the
+        // scroll position has the correct offset (otherwise there are some cases where
+        // the screen will jump up - eg. when sending a reply while the soft keyboard
+        // is visible)
+        UIView.performWithoutAnimation {
+            self.tableView.setNeedsLayout()
+            self.tableView.layoutIfNeeded()
+        }
+        
         let targetIndexPath: IndexPath = IndexPath(
             row: (self.viewModel.interactionData[messagesSectionIndex].elements.count - 1),
             section: messagesSectionIndex
@@ -1337,7 +1333,6 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             animated: isAnimated
         )
         
-        self.handleInitialOffsetBounceBug(targetIndexPath: targetIndexPath, at: .bottom)
         self.viewModel.markAsRead(beforeInclusive: nil)
     }
 
@@ -1577,7 +1572,6 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                 at: position,
                 animated: (self.didFinishInitialLayout && isAnimated)
             )
-            self.handleInitialOffsetBounceBug(targetIndexPath: targetIndexPath, at: position)
             
             // If we haven't finished the initial layout then we want to delay the highlight slightly
             // so it doesn't look buggy with the push transition
@@ -1604,7 +1598,6 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
         }
         
         self.tableView.scrollToRow(at: targetIndexPath, at: position, animated: true)
-        self.handleInitialOffsetBounceBug(targetIndexPath: targetIndexPath, at: position)
     }
     
     func highlightCellIfNeeded(interactionId: Int64) {
@@ -1618,39 +1611,6 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
                 .first(where: { ($0 as? VisibleMessageCell)?.viewModel?.id == interactionId })
                 .asType(VisibleMessageCell.self)?
                 .highlight()
-        }
-    }
-    
-    private func handleInitialOffsetBounceBug(targetIndexPath: IndexPath, at position: UITableView.ScrollPosition) {
-        /// Note: This code is a hack to prevent a weird 'bounce' behaviour that occurs when triggering the initial scroll due
-        /// to the UITableView properly calculating it's cell sizes (it seems to layout ~3 times each with slightly different sizes)
-        if !self.hasPerformedInitialScroll {
-            let initialUpdateTime: CFTimeInterval = CACurrentMediaTime()
-            var lastSize: CGSize = .zero
-            
-            self.tableView.afterNextLayoutSubviews(
-                when: { [weak self] numSections, numRowInSections, updatedContentSize in
-                    // If too much time has passed or the section/row count doesn't match then
-                    // just stop the callback
-                    guard
-                        (CACurrentMediaTime() - initialUpdateTime) < 2 &&
-                        lastSize != updatedContentSize &&
-                        numSections > targetIndexPath.section &&
-                        numRowInSections[targetIndexPath.section] > targetIndexPath.row
-                    else { return true }
-                    
-                    lastSize = updatedContentSize
-                    
-                    self?.tableView.scrollToRow(
-                        at: targetIndexPath,
-                        at: position,
-                        animated: false
-                    )
-                        
-                    return false
-                },
-                then: {}
-            )
         }
     }
 }
