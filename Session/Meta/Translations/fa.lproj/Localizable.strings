@@ -485,8 +485,6 @@
 "PRIVACY_SECTION_SCREEN_SECURITY" = "امنیت صفحه";
 "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "قفل Session";
 "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = " برای باز کردن قفل Session به شناسه لمسی، شناسه صورت و یا رمز عبوری ضرورت است.";
-"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE" = "اعلانات اسکرین‌شات.";
-"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "هنگامی که یک مخاطب از یک چت یک به یک اسکرین شات می‌گیرد، اعلان دریافت کنید.";
 "PRIVACY_SECTION_READ_RECEIPTS" = "رسیدهای خواندن";
 "PRIVACY_READ_RECEIPTS_TITLE" = "رسیدهای خواندن";
 "PRIVACY_READ_RECEIPTS_DESCRIPTION" = "رسیدهای خواندن در چت‌های یک به یک روان شود.";
