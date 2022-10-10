@@ -1,14 +1,38 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import GRDB
 import SignalUtilitiesKit
+
+public class StyledSearchController: UISearchController {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return ThemeManager.currentTheme.statusBarStyle
+    }
+    
+    let stubbableSearchBar: StubbableSearchBar = StubbableSearchBar()
+    override public var searchBar: UISearchBar {
+        get { stubbableSearchBar }
+    }
+}
+
+public class StubbableSearchBar: UISearchBar {
+    weak var stubbedNextResponder: UIResponder?
+    
+    public override var next: UIResponder? {
+        if let stubbedNextResponder = self.stubbedNextResponder {
+            return stubbedNextResponder
+        }
+        
+        return super.next
+    }
+}
 
 public class ConversationSearchController: NSObject {
     public static let minimumSearchTextLength: UInt = 2
 
     private let threadId: String
     public weak var delegate: ConversationSearchControllerDelegate?
-    public let uiSearchController: UISearchController = UISearchController(searchResultsController: nil)
+    public let uiSearchController: StyledSearchController = StyledSearchController(searchResultsController: nil)
     public let resultsBar: SearchResultsBar = SearchResultsBar()
     
     private var lastSearchText: String?
@@ -57,17 +81,31 @@ extension ConversationSearchController: UISearchResultsUpdating {
         }
         
         let threadId: String = self.threadId
-        let results: [Int64] = Storage.shared.read { db -> [Int64] in
-            try Interaction.idsForTermWithin(
-                threadId: threadId,
-                pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
-            )
-            .fetchAll(db)
-        }
-        .defaulting(to: [])
         
-        self.resultsBar.updateResults(results: results)
-        self.delegate?.conversationSearchController(self, didUpdateSearchResults: results, searchText: searchText)
+        DispatchQueue.global(qos: .default).async { [weak self] in
+            let results: [Int64]? = Storage.shared.read { db -> [Int64] in
+                self?.resultsBar.willStartSearching(readConnection: db)
+                
+                return try Interaction.idsForTermWithin(
+                    threadId: threadId,
+                    pattern: try SessionThreadViewModel.pattern(db, searchTerm: searchText)
+                )
+                .fetchAll(db)
+            }
+            
+            // If we didn't get results back then we most likely interrupted the query so
+            // should ignore the results (if there are no results we would succeed and get
+            // an empty array back)
+            guard let results: [Int64] = results else { return }
+            
+            DispatchQueue.main.async {
+                guard let strongSelf = self else { return }
+                
+                self?.resultsBar.stopLoading()
+                self?.resultsBar.updateResults(results: results)
+                self?.delegate?.conversationSearchController(strongSelf, didUpdateSearchResults: results, searchText: searchText)
+            }
+        }
     }
 }
 
@@ -94,7 +132,9 @@ protocol SearchResultsBarDelegate: AnyObject {
 }
 
 public final class SearchResultsBar: UIView {
-    private var results: [Int64]?
+    private var readConnection: Atomic<Database?> = Atomic(nil)
+    private var results: Atomic<[Int64]?> = Atomic(nil)
+    
     var currentIndex: Int?
     weak var resultsBarDelegate: SearchResultsBarDelegate?
     
@@ -103,43 +143,49 @@ public final class SearchResultsBar: UIView {
     private lazy var label: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
+        
         return result
     }()
     
     private lazy var upButton: UIButton = {
         let icon = #imageLiteral(resourceName: "ic_chevron_up").withRenderingMode(.alwaysTemplate)
-        let result = UIButton()
+        let result: UIButton = UIButton()
         result.setImage(icon, for: UIControl.State.normal)
-        result.tintColor = Colors.accent
+        result.themeTintColor = .primary
         result.addTarget(self, action: #selector(handleUpButtonTapped), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
     private lazy var downButton: UIButton = {
         let icon = #imageLiteral(resourceName: "ic_chevron_down").withRenderingMode(.alwaysTemplate)
-        let result = UIButton()
+        let result: UIButton = UIButton()
         result.setImage(icon, for: UIControl.State.normal)
-        result.tintColor = Colors.accent
+        result.themeTintColor = .primary
         result.addTarget(self, action: #selector(handleDownButtonTapped), for: UIControl.Event.touchUpInside)
+        
         return result
     }()
     
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let result = UIActivityIndicatorView(style: .medium)
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
         result.alpha = 0.5
         result.hidesWhenStopped = true
+        
         return result
     }()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setUpViewHierarchy()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        
         setUpViewHierarchy()
     }
     
@@ -148,18 +194,26 @@ public final class SearchResultsBar: UIView {
         
         // Background & blur
         let backgroundView = UIView()
-        backgroundView.backgroundColor = isLightMode ? .white : .black
+        backgroundView.themeBackgroundColor = .backgroundSecondary
         backgroundView.alpha = Values.lowOpacity
         addSubview(backgroundView)
         backgroundView.pin(to: self)
-        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        
+        let blurView = UIVisualEffectView()
         addSubview(blurView)
         blurView.pin(to: self)
         
+        ThemeManager.onThemeChange(observer: blurView) { [weak blurView] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: blurView?.effect = UIBlurEffect(style: .light)
+                default: blurView?.effect = UIBlurEffect(style: .dark)
+            }
+        }
+        
         // Separator
         let separator = UIView()
-        separator.backgroundColor = Colors.text.withAlphaComponent(0.2)
-        separator.set(.height, to: 1 / UIScreen.main.scale)
+        separator.themeBackgroundColor = .borderSeparator
+        separator.set(.height, to: Values.separatorThickness)
         addSubview(separator)
         separator.pin([ UIView.HorizontalEdge.leading, UIView.VerticalEdge.top, UIView.HorizontalEdge.trailing ], to: self)
         
@@ -191,11 +245,10 @@ public final class SearchResultsBar: UIView {
         label.center(.horizontal, in: self)
     }
     
-    // MARK: - Functions
+    // MARK: - Actions
     
-    @objc
-    public func handleUpButtonTapped() {
-        guard let results: [Int64] = results else { return }
+    @objc public func handleUpButtonTapped() {
+        guard let results: [Int64] = results.wrappedValue else { return }
         guard let currentIndex: Int = currentIndex else { return }
         guard currentIndex + 1 < results.count else { return }
 
@@ -205,10 +258,9 @@ public final class SearchResultsBar: UIView {
         resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: newIndex, results: results)
     }
 
-    @objc
-    public func handleDownButtonTapped() {
+    @objc public func handleDownButtonTapped() {
         Logger.debug("")
-        guard let results: [Int64] = results else { return }
+        guard let results: [Int64] = results.wrappedValue else { return }
         guard let currentIndex: Int = currentIndex, currentIndex > 0 else { return }
 
         let newIndex = currentIndex - 1
@@ -216,8 +268,29 @@ public final class SearchResultsBar: UIView {
         updateBarItems()
         resultsBarDelegate?.searchResultsBar(self, setCurrentIndex: newIndex, results: results)
     }
+    
+    // MARK: - Content
+    
+    /// This method will be called within a DB read block
+    func willStartSearching(readConnection: Database) {
+        let hasNoExistingResults: Bool = (self.results.wrappedValue?.isEmpty != false)
+        
+        DispatchQueue.main.async { [weak self] in
+            if hasNoExistingResults {
+                self?.label.text = "CONVERSATION_SEARCH_SEARCHING".localized()
+            }
+            
+            self?.startLoading()
+        }
+        
+        self.readConnection.wrappedValue?.interrupt()
+        self.readConnection.mutate { $0 = readConnection }
+    }
 
     func updateResults(results: [Int64]?) {
+        // We want to ignore search results that don't match the current searchId (this
+        // will happen when searching large threads with short terms as the shorter terms
+        // will take much longer to resolve than the longer terms)
         currentIndex = {
             guard let results: [Int64] = results, !results.isEmpty else { return nil }
             
@@ -228,7 +301,8 @@ public final class SearchResultsBar: UIView {
             return 0
         }()
 
-        self.results = results
+        self.readConnection.mutate { $0 = nil }
+        self.results.mutate { $0 = results }
 
         updateBarItems()
         
@@ -238,7 +312,7 @@ public final class SearchResultsBar: UIView {
     }
 
     func updateBarItems() {
-        guard let results: [Int64] = results else {
+        guard let results: [Int64] = results.wrappedValue else {
             label.text = ""
             downButton.isEnabled = false
             upButton.isEnabled = false

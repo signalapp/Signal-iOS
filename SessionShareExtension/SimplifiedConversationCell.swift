@@ -3,6 +3,7 @@
 import UIKit
 import SessionUIKit
 import SessionMessagingKit
+import SignalUtilitiesKit
 
 final class SimplifiedConversationCell: UITableViewCell {
     // MARK: - Initialization
@@ -32,7 +33,7 @@ final class SimplifiedConversationCell: UITableViewCell {
     private lazy var accentLineView: UIView = {
         let result = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.backgroundColor = Colors.destructive
+        result.themeBackgroundColor = .danger
         
         return result
     }()
@@ -47,7 +48,7 @@ final class SimplifiedConversationCell: UITableViewCell {
     private lazy var displayNameLabel: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.lineBreakMode = .byTruncatingTail
         
         return result
@@ -56,10 +57,10 @@ final class SimplifiedConversationCell: UITableViewCell {
     // MARK: - Initialization
     
     private func setUpViewHierarchy() {
-        backgroundColor = Colors.cellBackground
+        themeBackgroundColor = .conversationButton_background
         
         let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = Colors.cellSelected
+        selectedBackgroundView.themeBackgroundColor = .conversationButton_highlight
         self.selectedBackgroundView = selectedBackgroundView
         
         addSubview(stackView)

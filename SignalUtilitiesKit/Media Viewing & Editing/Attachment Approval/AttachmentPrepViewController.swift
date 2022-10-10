@@ -1,6 +1,4 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
 import UIKit
@@ -49,7 +47,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
         AttachmentTextToolbar.kMinTextViewHeight + (AttachmentTextToolbar.kToolbarMargin * 2)
     )
     
-    private lazy var scrollView: UIScrollView = {
+    public lazy var scrollView: UIScrollView = {
         // Scroll View - used to zoom/pan on images and video
         let scrollView: UIScrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -124,9 +122,8 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }()
 
     public var shouldHideControls: Bool {
-        guard let imageEditorView = imageEditorView else {
-            return false
-        }
+        guard let imageEditorView = imageEditorView else { return false }
+        
         return imageEditorView.shouldHideControls
     }
 
@@ -134,7 +131,9 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
 
     init(attachmentItem: SignalAttachmentItem) {
         self.attachmentItem = attachmentItem
+        
         super.init(nibName: nil, bundle: nil)
+        
         if attachment.hasError {
             owsFailDebug(attachment.error.debugDescription)
         }
@@ -149,12 +148,16 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = Colors.navigationBarBackground
+        navigationItem.backButtonTitle = ""
+        view.themeBackgroundColor = .newConversation_background
 
         view.addSubview(contentContainerView)
         
         contentContainerView.addSubview(scrollView)
         scrollView.addSubview(mediaMessageView)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(screenTapped))
+        mediaMessageView.addGestureRecognizer(tapGesture)
         
         if attachment.isImage, let editorView: ImageEditorView = imageEditorView {
             view.addSubview(editorView)
@@ -292,9 +295,13 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
     }
 
     // MARK: - Event Handlers
+    
+    @objc func screenTapped() {
+        self.view.window?.endEditing(true)
+    }
 
     @objc public func didTapPlayerView(_ gestureRecognizer: UIGestureRecognizer) {
-        assert(self.videoPlayer != nil)
+        self.view.window?.endEditing(true)
         self.pauseVideo()
     }
 
@@ -527,25 +534,14 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 // MARK: -
 
 extension AttachmentPrepViewController: ImageEditorViewDelegate {
-    public func imageEditor(presentFullScreenView viewController: UIViewController,
-                            isTransparent: Bool) {
-
-        let navigationController = OWSNavigationController(rootViewController: viewController)
-        navigationController.modalPresentationStyle = (isTransparent
-            ? .overFullScreen
-            : .fullScreen)
-        navigationController.ows_prefersStatusBarHidden = true
-        navigationController.view.backgroundColor = Colors.navigationBarBackground
-
-        if let navigationBar = navigationController.navigationBar as? OWSNavigationBar {
-            navigationBar.overrideTheme(type: .clear)
-        } else {
-            owsFailDebug("navigationBar was nil or unexpected class")
-        }
-
-        self.present(navigationController, animated: false) {
-            // Do nothing.
-        }
+    public func imageEditor(presentFullScreenView viewController: UIViewController, isTransparent: Bool) {
+        let navigationController = StyledNavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = (isTransparent ?
+            .overFullScreen :
+            .fullScreen
+        )
+        
+        self.present(navigationController, animated: false, completion: nil)
     }
 
     public func imageEditorUpdateNavigationBar() {

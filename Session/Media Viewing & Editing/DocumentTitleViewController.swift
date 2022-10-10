@@ -23,7 +23,7 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     private var isAutoLoadingNextPage: Bool = false
     private var currentTargetOffset: CGPoint?
     
-    public var delegate: DocumentTileViewControllerDelegate?
+    public weak var delegate: DocumentTileViewControllerDelegate?
     
     // MARK: - Initialization
 
@@ -49,8 +49,8 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
     }
     
     lazy var tableView: UITableView = {
-        let result = UITableView(frame: .zero, style: .grouped)
-        result.backgroundColor = Colors.navigationBarBackground
+        let result: UITableView = UITableView()
+        result.themeBackgroundColor = .newConversation_background
         result.separatorStyle = .none
         result.showsVerticalScrollIndicator = false
         result.register(view: DocumentCell.self)
@@ -58,6 +58,10 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
         result.dataSource = self
         // Feels a bit weird to have content smashed all the way to the bottom edge.
         result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
+        
+        if #available(iOS 15.0, *) {
+            result.sectionHeaderTopPadding = 0
+        }
         
         return result
     }()
@@ -69,7 +73,7 @@ public class DocumentTileViewController: UIViewController, UITableViewDelegate, 
 
         // Add a custom back button if this is the only view controller
         if self.navigationController?.viewControllers.first == self {
-            let backButton = OWSViewController.createOWSBackButton(withTarget: self, selector: #selector(didPressDismissButton))
+            let backButton = UIViewController.createOWSBackButton(target: self, selector: #selector(didPressDismissButton))
             self.navigationItem.leftBarButtonItem = backButton
         }
         
@@ -363,7 +367,8 @@ class DocumentCell: UITableViewCell {
     private let iconImageView: UIImageView = {
         let result: UIImageView = UIImageView(image: #imageLiteral(resourceName: "File").withRenderingMode(.alwaysTemplate))
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
+        result.contentMode = .scaleAspectFit
         
         return result
     }()
@@ -374,7 +379,20 @@ class DocumentCell: UITableViewCell {
         result.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         result.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
+        result.lineBreakMode = .byTruncatingTail
+        result.numberOfLines = 2
+        
+        return result
+    }()
+    
+    private let timeLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        result.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.themeTextColor = .textSecondary
         result.lineBreakMode = .byTruncatingTail
         
         return result
@@ -386,20 +404,26 @@ class DocumentCell: UITableViewCell {
         result.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         result.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         result.font = .systemFont(ofSize: Values.smallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textSecondary
         result.lineBreakMode = .byTruncatingTail
         
         return result
     }()
     
     private func setUpViewHierarchy() {
-        backgroundColor = Colors.cellBackground
-        selectedBackgroundView = UIView()
-        selectedBackgroundView?.backgroundColor = Colors.cellSelected
+        themeBackgroundColor = .clear
         
+        backgroundView = UIView()
+        backgroundView?.themeBackgroundColor = .settings_tabBackground
+        backgroundView?.layer.cornerRadius = 5
+        
+        selectedBackgroundView = UIView()
+        selectedBackgroundView?.themeBackgroundColor = .settings_tabHighlight
+        selectedBackgroundView?.layer.cornerRadius = 5
         
         contentView.addSubview(iconImageView)
         contentView.addSubview(titleLabel)
+        contentView.addSubview(timeLabel)
         contentView.addSubview(detailLabel)
     }
     
@@ -407,57 +431,110 @@ class DocumentCell: UITableViewCell {
     
     private func setupLayout() {
         NSLayoutConstraint.activate([
-            contentView.heightAnchor.constraint(equalToConstant: 68),
-            
-            iconImageView.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: Values.mediumSpacing),
             iconImageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: Self.iconImageViewSize.width),
-            iconImageView.heightAnchor.constraint(equalToConstant: Self.iconImageViewSize.height),
+            iconImageView.topAnchor.constraint(
+                greaterThanOrEqualTo: contentView.topAnchor,
+                constant: (Values.verySmallSpacing + Values.verySmallSpacing)
+            ),
+            iconImageView.leftAnchor.constraint(
+                equalTo: contentView.leftAnchor,
+                constant: (Values.largeSpacing + Values.mediumSpacing)
+            ),
+            iconImageView.bottomAnchor.constraint(
+                lessThanOrEqualTo: contentView.bottomAnchor,
+                constant: -(Values.verySmallSpacing + Values.verySmallSpacing)
+            ),
             
+            titleLabel.topAnchor.constraint(
+                equalTo: contentView.topAnchor,
+                constant: (Values.verySmallSpacing + Values.verySmallSpacing)
+            ),
             titleLabel.leftAnchor.constraint(equalTo: iconImageView.rightAnchor, constant: Values.mediumSpacing),
-            titleLabel.rightAnchor.constraint(lessThanOrEqualTo: contentView.rightAnchor, constant: -Values.mediumSpacing),
-            titleLabel.topAnchor.constraint(equalTo: iconImageView.topAnchor),
+            titleLabel.rightAnchor.constraint(
+                lessThanOrEqualTo: timeLabel.leftAnchor,
+                constant: -Values.mediumSpacing
+            ),
             
+            timeLabel.topAnchor.constraint(equalTo: iconImageView.topAnchor),
+            timeLabel.rightAnchor.constraint(
+                equalTo: contentView.rightAnchor,
+                constant: -(Values.mediumSpacing + Values.largeSpacing)
+            ),
+            
+            detailLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Values.smallSpacing),
             detailLabel.leftAnchor.constraint(equalTo: iconImageView.rightAnchor, constant: Values.mediumSpacing),
-            detailLabel.rightAnchor.constraint(lessThanOrEqualTo: contentView.rightAnchor, constant: -Values.mediumSpacing),
-            detailLabel.bottomAnchor.constraint(equalTo: iconImageView.bottomAnchor),
+            detailLabel.rightAnchor.constraint(
+                lessThanOrEqualTo: contentView.rightAnchor,
+                constant: -(Values.verySmallSpacing + Values.largeSpacing)
+            ),
+            detailLabel.bottomAnchor.constraint(
+                lessThanOrEqualTo: contentView.bottomAnchor,
+                constant: -(Values.verySmallSpacing + Values.smallSpacing)
+            ),
         ])
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        backgroundView?.frame = CGRect(
+            x: Values.largeSpacing,
+            y: Values.verySmallSpacing,
+            width: (contentView.bounds.width - (Values.largeSpacing * 2)),
+            height: (contentView.bounds.height - (Values.verySmallSpacing * 2))
+        )
+        selectedBackgroundView?.frame = (backgroundView?.frame ?? .zero)
     }
     
     // MARK: - Content
     
     func update(with item: MediaGalleryViewModel.Item) {
         let attachment = item.attachment
-        titleLabel.text = attachment.sourceFilename ?? "File"
+        titleLabel.text = (attachment.sourceFilename ?? "File")
         detailLabel.text = "\(OWSFormat.formatFileSize(UInt(attachment.byteCount)))"
+        timeLabel.text = Date(
+            timeIntervalSince1970: TimeInterval(item.interactionTimestampMs / 1000)
+        ).formattedForDisplay
     }
 }
 
 class DocumentSectionHeaderView: UIView {
+    // HACK: scrollbar incorrectly appears *behind* section headers
+    // in collection view on iOS11 =(
+    private class AlwaysOnTopLayer: CALayer {
+        override var zPosition: CGFloat {
+            get { return 0 }
+            set {}
+        }
+    }
     
     let label: UILabel
+    
+    override class var layerClass: AnyClass {
+        get {
+            // HACK: scrollbar incorrectly appears *behind* section headers
+            // in collection view on iOS11 =(
+            return AlwaysOnTopLayer.self
+        }
+    }
 
     override init(frame: CGRect) {
         label = UILabel()
-        label.textColor = Colors.text
-
-        let blurEffect = UIBlurEffect(style: .dark)
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        label.themeTextColor = .textPrimary
 
         super.init(frame: frame)
 
-        self.backgroundColor = isLightMode ? Colors.cellBackground : UIColor.ows_black.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+        self.themeBackgroundColor = .clear
+        
+        let backgroundView: UIView = UIView()
+        backgroundView.themeBackgroundColor = .newConversation_background
+        addSubview(backgroundView)
+        backgroundView.pin(to: self)
 
-        self.addSubview(blurEffectView)
         self.addSubview(label)
-
-        blurEffectView.autoPinEdgesToSuperviewEdges()
-        blurEffectView.isHidden = isLightMode
-        label.autoPinEdge(toSuperviewMargin: .trailing)
-        label.autoPinEdge(toSuperviewMargin: .leading)
-        label.autoVCenterInSuperview()
+        label.pin(.leading, to: .leading, of: self, withInset: Values.largeSpacing)
+        label.pin(.trailing, to: .trailing, of: self, withInset: -Values.largeSpacing)
+        label.center(.vertical, in: self)
     }
 
     @available(*, unavailable, message: "Unimplemented")
@@ -479,7 +556,7 @@ class DocumentStaticHeaderView: UIView {
 
         addSubview(label)
 
-        label.textColor = Colors.text
+        label.themeTextColor = .textPrimary
         label.textAlignment = .center
         label.numberOfLines = 0
         label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 0, leading: Values.largeSpacing, bottom: 0, trailing: Values.largeSpacing))

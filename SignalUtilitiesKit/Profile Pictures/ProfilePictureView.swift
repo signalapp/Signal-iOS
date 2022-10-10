@@ -6,10 +6,9 @@ import YYImage
 import SessionUIKit
 import SessionMessagingKit
 
-@objc(LKProfilePictureView)
 public final class ProfilePictureView: UIView {
     private var hasTappableProfilePicture: Bool = false
-    @objc public var size: CGFloat = 0 // Not an implicitly unwrapped optional due to Obj-C limitations
+    public var size: CGFloat = 0
     
     // Constraints
     private var imageViewWidthConstraint: NSLayoutConstraint!
@@ -23,7 +22,7 @@ public final class ProfilePictureView: UIView {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
-        result.backgroundColor = Colors.unimportant
+        result.themeBackgroundColor = .backgroundSecondary
         
         return result
     }()
@@ -50,7 +49,8 @@ public final class ProfilePictureView: UIView {
         let result: UIView = UIView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.clipsToBounds = true
-        result.backgroundColor = Colors.unimportant
+        result.themeBackgroundColor = .primary
+        result.themeBorderColor = .backgroundPrimary
         result.layer.cornerRadius = (Values.smallProfilePictureSize / 2)
         result.isHidden = true
         
@@ -63,7 +63,7 @@ public final class ProfilePictureView: UIView {
         )
         result.translatesAutoresizingMaskIntoConstraints = false
         result.contentMode = .scaleAspectFill
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
         result.isHidden = true
         
         return result
@@ -73,7 +73,7 @@ public final class ProfilePictureView: UIView {
         let result: UIImageView = UIImageView()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.contentMode = .scaleAspectFill
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
         result.isHidden = true
         
         return result
@@ -130,35 +130,7 @@ public final class ProfilePictureView: UIView {
         additionalProfilePlaceholderImageView.pin(.top, to: .top, of: additionalImageContainerView, withInset: 3)
         additionalProfilePlaceholderImageView.pin(.left, to: .left, of: additionalImageContainerView)
         additionalProfilePlaceholderImageView.pin(.right, to: .right, of: additionalImageContainerView)
-        additionalProfilePlaceholderImageView.pin(.bottom, to: .bottom, of: additionalImageContainerView, withInset: 3)
-    }
-    
-    // FIXME: Remove this once we refactor the OWSConversationSettingsViewController to Swift (use the HomeViewModel approach)
-    @objc(updateForThreadId:)
-    public func update(forThreadId threadId: String?) {
-        guard
-            let threadId: String = threadId,
-            let viewModel: SessionThreadViewModel = Storage.shared.read({ db -> SessionThreadViewModel? in
-                let userPublicKey: String = getUserHexEncodedPublicKey(db)
-                
-                return try SessionThreadViewModel
-                    .conversationSettingsProfileQuery(threadId: threadId, userPublicKey: userPublicKey)
-                    .fetchOne(db)
-            })
-        else { return }
-        
-        update(
-            publicKey: viewModel.threadId,
-            profile: viewModel.profile,
-            additionalProfile: viewModel.additionalProfile,
-            threadVariant: viewModel.threadVariant,
-            openGroupProfilePictureData: viewModel.openGroupProfilePictureData,
-            useFallbackPicture: (
-                viewModel.threadVariant == .openGroup &&
-                viewModel.openGroupProfilePictureData == nil
-            ),
-            showMultiAvatarForClosedGroup: true
-        )
+        additionalProfilePlaceholderImageView.pin(.bottom, to: .bottom, of: additionalImageContainerView, withInset: 5)
     }
 
     public func update(
@@ -181,7 +153,7 @@ public final class ProfilePictureView: UIView {
             imageView.contentMode = .center
             imageView.isHidden = false
             animatedImageView.isHidden = true
-            imageContainerView.backgroundColor = UIColor(rgbHex: 0x353535)
+            imageContainerView.themeBackgroundColorForced = .theme(.classicDark, color: .borderSeparator)
             imageContainerView.layer.cornerRadius = (self.size / 2)
             imageViewWidthConstraint.constant = self.size
             imageViewHeightConstraint.constant = self.size
@@ -314,7 +286,7 @@ public final class ProfilePictureView: UIView {
         
         imageView.contentMode = .scaleAspectFill
         animatedImageView.contentMode = .scaleAspectFill
-        imageContainerView.backgroundColor = Colors.unimportant
+        imageContainerView.themeBackgroundColor = .backgroundSecondary
         imageContainerView.layer.cornerRadius = (targetSize / 2)
         additionalImageContainerView.layer.cornerRadius = (targetSize / 2)
     }

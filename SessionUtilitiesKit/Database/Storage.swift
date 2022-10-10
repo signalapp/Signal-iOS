@@ -1,11 +1,12 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import Combine
 import GRDB
 import PromiseKit
 import SignalCoreKit
 
-public final class Storage {
+open class Storage {
     private static let dbFileName: String = "Session.sqlite"
     private static let keychainService: String = "TSKeyChainService"
     private static let dbCipherKeySpecKey: String = "GRDBDatabaseCipherKeySpec"
@@ -25,8 +26,9 @@ public final class Storage {
     public static let shared: Storage = Storage()
     public private(set) var isValid: Bool = false
     public private(set) var hasCompletedMigrations: Bool = false
+    public static let defaultPublisherScheduler: ValueObservationScheduler = .async(onQueue: .main)
     
-    private var dbWriter: DatabaseWriter?
+    fileprivate var dbWriter: DatabaseWriter?
     private var migrator: DatabaseMigrator?
     private var migrationProgressUpdater: Atomic<((String, CGFloat) -> ())>?
     
@@ -303,17 +305,17 @@ public final class Storage {
     
     // MARK: - Functions
     
-    @discardableResult public func write<T>(updates: (Database) throws -> T?) -> T? {
+    @discardableResult public final func write<T>(updates: (Database) throws -> T?) -> T? {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return nil }
         
         return try? dbWriter.write(updates)
     }
     
-    public func writeAsync<T>(updates: @escaping (Database) throws -> T) {
+    open func writeAsync<T>(updates: @escaping (Database) throws -> T) {
         writeAsync(updates: updates, completion: { _, _ in })
     }
     
-    public func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Swift.Result<T, Error>) throws -> Void) {
+    open func writeAsync<T>(updates: @escaping (Database) throws -> T, completion: @escaping (Database, Swift.Result<T, Error>) throws -> Void) {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         
         dbWriter.asyncWrite(
@@ -324,7 +326,7 @@ public final class Storage {
         )
     }
     
-    @discardableResult public func read<T>(_ value: (Database) throws -> T?) -> T? {
+    @discardableResult public final func read<T>(_ value: (Database) throws -> T?) -> T? {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return nil }
         
         return try? dbWriter.read(value)
@@ -359,14 +361,26 @@ public final class Storage {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         guard let observer: TransactionObserver = observer else { return }
         
-        dbWriter.add(transactionObserver: observer)
+        // Note: This actually triggers a write to the database so can be blocked by other
+        // writes, since it's usually called on the main thread when creating a view controller
+        // this can result in the UI hanging - to avoid this we dispatch (and hope there isn't
+        // negative impact)
+        DispatchQueue.global(qos: .default).async {
+            dbWriter.add(transactionObserver: observer)
+        }
     }
     
     public func removeObserver(_ observer: TransactionObserver?) {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else { return }
         guard let observer: TransactionObserver = observer else { return }
         
-        dbWriter.remove(transactionObserver: observer)
+        // Note: This actually triggers a write to the database so can be blocked by other
+        // writes, since it's usually called on the main thread when creating a view controller
+        // this can result in the UI hanging - to avoid this we dispatch (and hope there isn't
+        // negative impact)
+        DispatchQueue.global(qos: .default).async {
+            dbWriter.remove(transactionObserver: observer)
+        }
     }
 }
 
@@ -387,6 +401,7 @@ public extension Storage {
         }
     }
     
+    // FIXME: Can't overrwrite this in `SynchronousStorage` since it's in an extension
     @discardableResult func writeAsync<T>(updates: @escaping (Database) throws -> Promise<T>) -> Promise<T> {
         guard isValid, let dbWriter: DatabaseWriter = dbWriter else {
             return Promise(error: StorageError.databaseInvalid)
@@ -410,5 +425,21 @@ public extension Storage {
         )
         
         return promise
+    }
+}
+
+// MARK: - Combine Extensions
+
+public extension ValueObservation {
+    func publisher(
+        in storage: Storage,
+        scheduling scheduler: ValueObservationScheduler = Storage.defaultPublisherScheduler
+    ) -> AnyPublisher<Reducer.Value, Error> {
+        guard storage.isValid, let dbWriter: DatabaseWriter = storage.dbWriter else {
+            return Fail(error: StorageError.databaseInvalid).eraseToAnyPublisher()
+        }
+        
+        return self.publisher(in: dbWriter, scheduling: scheduler)
+            .eraseToAnyPublisher()
     }
 }

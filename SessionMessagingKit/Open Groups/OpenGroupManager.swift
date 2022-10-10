@@ -384,6 +384,8 @@ public final class OpenGroupManager: NSObject {
         
         // Only update the database columns which have changed (this is to prevent the UI from triggering
         // updates due to changing database columns to the existing value)
+        let permissions = OpenGroup.Permissions(roomInfo: pollInfo)
+
         try OpenGroup
             .filter(id: openGroup.id)
             .updateAll(
@@ -411,6 +413,10 @@ public final class OpenGroupManager: NSObject {
                     ),
                     (openGroup.infoUpdates != pollInfo.details?.infoUpdates ?
                         (pollInfo.details?.infoUpdates).map { OpenGroup.Columns.infoUpdates.set(to: $0) } :
+                        nil
+                    ),
+                    (openGroup.permissions != permissions ?
+                        OpenGroup.Columns.permissions.set(to: permissions) :
                         nil
                     )
                 ].compactMap { $0 }
@@ -1123,6 +1129,7 @@ extension OpenGroupManager {
             onionApi: OnionRequestAPIType.Type? = nil,
             generalCache: Atomic<GeneralCacheType>? = nil,
             storage: Storage? = nil,
+            scheduler: ValueObservationScheduler? = nil,
             sodium: SodiumType? = nil,
             box: BoxType? = nil,
             genericHash: GenericHashType? = nil,
@@ -1140,6 +1147,7 @@ extension OpenGroupManager {
                 onionApi: onionApi,
                 generalCache: generalCache,
                 storage: storage,
+                scheduler: scheduler,
                 sodium: sodium,
                 box: box,
                 genericHash: genericHash,

@@ -33,7 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.opaque = NO;
     self.userInteractionEnabled = NO;
-    self.backgroundColor = [UIColor clearColor];
 }
 
 - (void)setFrame:(CGRect)frame

@@ -1,6 +1,7 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
+import SessionUIKit
 
 @objc class TypingIndicatorView: UIStackView {
     // This represents the spacing between the dots
@@ -122,12 +123,18 @@
             autoSetDimension(.height, toSize: kMaxRadiusPt)
 
             layer.addSublayer(shapeLayer)
+            
+            ThemeManager.onThemeChange(observer: self) { [weak self] _, _ in
+                guard self?.shapeLayer.animationKeys()?.isEmpty == false else { return }
+                
+                self?.startAnimation()
+            }
         }
 
         fileprivate func startAnimation() {
             stopAnimation()
 
-            let baseColor = Colors.text
+            let baseColor: UIColor = (ThemeManager.currentTheme.color(for: .messageBubble_incomingText) ?? .white)
             let timeIncrement: CFTimeInterval = 0.15
             var colorValues = [CGColor]()
             var pathValues = [CGPath]()

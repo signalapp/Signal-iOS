@@ -136,12 +136,23 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         return stackView
     }()
     
-    private lazy var loadingView: NVActivityIndicatorView = {
-        let view: NVActivityIndicatorView = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.isHidden = true
+    private let loadingView: NVActivityIndicatorView = {
+        let result: NVActivityIndicatorView = NVActivityIndicatorView(
+            frame: CGRect.zero,
+            type: .circleStrokeSpin,
+            color: .black,
+            padding: nil
+        )
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.isHidden = true
         
-        return view
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
+            
+            result?.color = textPrimary
+        }
+        
+        return result
     }()
     
     private lazy var imageView: UIImageView = {
@@ -149,7 +160,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.contentMode = .scaleAspectFit
         view.image = UIImage(named: "FileLarge")?.withRenderingMode(.alwaysTemplate)
-        view.tintColor = Colors.text
+        view.themeTintColor = .textPrimary
         view.isHidden = true
         
         // Override the image to the correct one
@@ -163,9 +174,9 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         else if attachment.isUrl {
             view.clipsToBounds = true
             view.image = UIImage(named: "Link")?.withRenderingMode(.alwaysTemplate)
-            view.tintColor = Colors.text
+            view.themeTintColor = .messageBubble_outgoingText
             view.contentMode = .center
-            view.backgroundColor = (isDarkMode ? .black : UIColor.black.withAlphaComponent(0.06))
+            view.themeBackgroundColor = .messageBubble_overlay
             view.layer.cornerRadius = 8
         }
         
@@ -191,7 +202,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         else {
             view.contentMode = .scaleAspectFit
             view.image = UIImage(named: "FileLarge")?.withRenderingMode(.alwaysTemplate)
-            view.tintColor = Colors.text
+            view.themeTintColor = .textPrimary
         }
         
         return view
@@ -211,8 +222,14 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let button: UIButton = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.clipsToBounds = true
-        button.setBackgroundImage(UIColor.white.toImage(isDarkMode: isDarkMode), for: .normal)
-        button.setBackgroundImage(UIColor.white.darken(by: 0.2).toImage(isDarkMode: isDarkMode), for: .highlighted)
+        button.setThemeBackgroundColorForced(
+            .theme(.classicLight, color: .settings_tabBackground),
+            for: .normal
+        )
+        button.setThemeBackgroundColorForced(
+            .theme(.classicLight, color: .settings_tabHighlight),
+            for: .highlighted
+        )
         button.addTarget(self, action: #selector(audioPlayPauseButtonPressed), for: .touchUpInside)
         button.isHidden = true
         
@@ -243,15 +260,15 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         switch mode {
             case .attachmentApproval:
                 label.font = UIFont.ows_boldFont(withSize: ScaleFromIPhone5To7Plus(16, 22))
-                label.textColor = Colors.text
+                label.themeTextColor = .textPrimary
                 
             case .large:
                 label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
-                label.textColor = Colors.accent
+                label.themeTextColor = .primary
                 
             case .small:
                 label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14, 14))
-                label.textColor = Colors.accent
+                label.themeTextColor = .primary
         }
         
         // Content
@@ -298,15 +315,15 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         switch mode {
             case .attachmentApproval:
                 label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(12, 18))
-                label.textColor = Colors.pinIcon
+                label.themeTextColor = .textSecondary
                 
             case .large:
                 label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(18, 24))
-                label.textColor = Colors.accent
+                label.themeTextColor = .primary
                 
             case .small:
                 label.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14, 14))
-                label.textColor = Colors.accent
+                label.themeTextColor = .primary
         }
         
         // Content
@@ -316,13 +333,16 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
                 if let targetUrl: URL = URL(string: linkPreviewURL), targetUrl.scheme?.lowercased() != "https" {
                     label.font = UIFont.ows_regularFont(withSize: Values.verySmallFontSize)
                     label.text = "vc_share_link_previews_unsecure".localized()
-                    label.textColor = (mode == .attachmentApproval ? Colors.pinIcon : Colors.accent)
+                    label.themeTextColor = (mode == .attachmentApproval ?
+                        .textSecondary :
+                        .primary
+                    )
                 }
             }
             // If we have no link preview info at this point then assume link previews are disabled
             else {
                 label.text = "vc_share_link_previews_disabled_explanation".localized()
-                label.textColor = Colors.text
+                label.themeTextColor = .textPrimary
                 label.textAlignment = .center
                 label.numberOfLines = 0
             }
@@ -385,7 +405,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
             
             fileTypeImageView.image = UIImage(named: "table_ic_notification_sound")?
                 .withRenderingMode(.alwaysTemplate)
-            fileTypeImageView.tintColor = Colors.text
+            fileTypeImageView.themeTintColor = .textPrimary
             fileTypeImageView.isHidden = false
             
             // Note: There is an annoying bug where the MediaMessageView will fill the screen if the
@@ -576,7 +596,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
                 else {
                     self?.subtitleLabel.font = UIFont.ows_regularFont(withSize: Values.verySmallFontSize)
                     self?.subtitleLabel.text = "vc_share_link_previews_error".localized()
-                    self?.subtitleLabel.textColor = (self?.mode == .attachmentApproval ? Colors.pinIcon : Colors.accent )
+                    self?.subtitleLabel.themeTextColor = (self?.mode == .attachmentApproval ?
+                        .textSecondary :
+                        .primary
+                    )
                     self?.subtitleLabel.textAlignment = .left
                 }
             }
@@ -626,7 +649,16 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     }
     
     public func showInvalidAudioFileAlert() {
-        OWSAlerts.showErrorAlert(message: NSLocalizedString("INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE", comment: "Message for the alert indicating that an audio file is invalid."))
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: CurrentAppContext().frontmostViewController()?.view,
+            info: ConfirmationModal.Info(
+                title: CommonStrings.errorAlertTitle,
+                explanation: "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE".localized(),
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text
+            )
+        )
+        CurrentAppContext().frontmostViewController()?.present(modal, animated: true)
     }
 
     public func audioPlayerDidFinishPlaying(_ player: OWSAudioPlayer, successfully flag: Bool) {

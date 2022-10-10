@@ -10,7 +10,7 @@ final class OpenGroupInvitationView: UIView {
     
     // MARK: - Lifecycle
     
-    init(name: String, url: String, textColor: UIColor, isOutgoing: Bool) {
+    init(name: String, url: String, textColor: ThemeValue, isOutgoing: Bool) {
         super.init(frame: CGRect.zero)
         
         setUpViewHierarchy(
@@ -29,24 +29,24 @@ final class OpenGroupInvitationView: UIView {
         preconditionFailure("Use init(name:url:textColor:) instead.")
     }
     
-    private func setUpViewHierarchy(name: String, rawUrl: String, textColor: UIColor, isOutgoing: Bool) {
+    private func setUpViewHierarchy(name: String, rawUrl: String, textColor: ThemeValue, isOutgoing: Bool) {
         // Title
         let titleLabel = UILabel()
-        titleLabel.lineBreakMode = .byTruncatingTail
-        titleLabel.text = name
-        titleLabel.textColor = textColor
         titleLabel.font = .boldSystemFont(ofSize: Values.largeFontSize)
+        titleLabel.text = name
+        titleLabel.themeTextColor = textColor
+        titleLabel.lineBreakMode = .byTruncatingTail
         
         // Subtitle
         let subtitleLabel = UILabel()
-        subtitleLabel.lineBreakMode = .byTruncatingTail
-        subtitleLabel.text = NSLocalizedString("view_open_group_invitation_description", comment: "")
-        subtitleLabel.textColor = textColor
         subtitleLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        subtitleLabel.text = "view_open_group_invitation_description".localized()
+        subtitleLabel.themeTextColor = textColor
+        subtitleLabel.lineBreakMode = .byTruncatingTail
         
         // URL
         let urlLabel = UILabel()
-        urlLabel.lineBreakMode = .byCharWrapping
+        urlLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         urlLabel.text = {
             if let range = rawUrl.range(of: "?public_key=") {
                 return String(rawUrl[..<range.lowerBound])
@@ -54,9 +54,9 @@ final class OpenGroupInvitationView: UIView {
 
             return rawUrl
         }()
-        urlLabel.textColor = textColor
+        urlLabel.themeTextColor = textColor
+        urlLabel.lineBreakMode = .byCharWrapping
         urlLabel.numberOfLines = 0
-        urlLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         
         // Label stack
         let labelStackView = UIStackView(arrangedSubviews: [ titleLabel, UIView.vSpacer(2), subtitleLabel, UIView.vSpacer(4), urlLabel ])
@@ -71,11 +71,11 @@ final class OpenGroupInvitationView: UIView {
                 .resizedImage(to: CGSize(width: iconSize, height: iconSize))?
                 .withRenderingMode(.alwaysTemplate)
         )
-        iconImageView.tintColor = .white
+        iconImageView.themeTintColor = (isOutgoing ? .messageBubble_outgoingText : .textPrimary)
         iconImageView.contentMode = .center
         iconImageView.layer.cornerRadius = iconImageViewSize / 2
         iconImageView.layer.masksToBounds = true
-        iconImageView.backgroundColor = Colors.accent
+        iconImageView.themeBackgroundColor = (isOutgoing ? .messageBubble_overlay : .primary)
         iconImageView.set(.width, to: iconImageViewSize)
         iconImageView.set(.height, to: iconImageViewSize)
         

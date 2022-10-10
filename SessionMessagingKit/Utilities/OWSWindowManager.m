@@ -8,30 +8,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSWindowManagerCallDidChangeNotification = @"OWSWindowManagerCallDidChangeNotification";
-
 NSString *const IsScreenBlockActiveDidChangeNotification = @"IsScreenBlockActiveDidChangeNotification";
-
-const CGFloat OWSWindowManagerCallBannerHeight(void)
-{
-    return CurrentAppContext().statusBarHeight + 20;
-}
 
 // Behind everything, especially the root window.
 const UIWindowLevel UIWindowLevel_Background = -1.f;
-
-const UIWindowLevel UIWindowLevel_ReturnToCall(void);
-const UIWindowLevel UIWindowLevel_ReturnToCall(void)
-{
-    return UIWindowLevelStatusBar - 1;
-}
-
-// In front of the root window, behind the screen blocking window.
-const UIWindowLevel UIWindowLevel_CallView(void);
-const UIWindowLevel UIWindowLevel_CallView(void)
-{
-    return UIWindowLevelNormal + 1.f;
-}
 
 // In front of the status bar and CallView
 const UIWindowLevel UIWindowLevel_ScreenBlocking(void);
@@ -39,36 +19,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
     return UIWindowLevelStatusBar + 2.f;
 }
-
-// In front of everything
-const UIWindowLevel UIWindowLevel_MessageActions(void);
-const UIWindowLevel UIWindowLevel_MessageActions(void)
-{
-    // Note: To cover the keyboard, this is higher than the ScreenBlocking level,
-    // but this window is hidden when screen protection is shown.
-    return CGFLOAT_MAX - 100;
-}
-
-#pragma mark -
-
-@interface MessageActionsWindow : UIWindow
-
-@end
-
-#pragma mark -
-
-@implementation MessageActionsWindow
-
-- (UIWindowLevel)windowLevel
-{
-    // As of iOS11, setWindowLevel clamps the value below
-    // the height of the keyboard window.
-    // Because we want to display above the keyboard, we hardcode
-    // the `windowLevel` getter.
-    return UIWindowLevel_MessageActions();
-}
-
-@end
 
 #pragma mark -
 
@@ -114,21 +64,9 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 // UIWindowLevelNormal
 @property (nonatomic) UIWindow *rootWindow;
 
-// UIWindowLevel_CallView
-@property (nonatomic) UIWindow *callViewWindow;
-@property (nonatomic) UINavigationController *callNavigationController;
-
-// UIWindowLevel_MessageActions
-@property (nonatomic) UIWindow *menuActionsWindow;
-@property (nonatomic, nullable) UIViewController *menuActionsViewController;
-
 // UIWindowLevel_Background if inactive,
 // UIWindowLevel_ScreenBlocking() if active.
 @property (nonatomic) UIWindow *screenBlockingWindow;
-
-@property (nonatomic) BOOL shouldShowCallView;
-
-@property (nonatomic, nullable) UIViewController *callViewController;
 
 @end
 
@@ -156,10 +94,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 {
     self.rootWindow = rootWindow;
     self.screenBlockingWindow = screenBlockingWindow;
-
-    self.callViewWindow = [self createCallViewWindow:rootWindow];
-    self.menuActionsWindow = [self createMenuActionsWindowWithRoowWindow:rootWindow];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didChangeStatusBarFrame:)
                                                  name:UIApplicationDidChangeStatusBarFrameNotification
@@ -175,47 +110,10 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (void)didChangeStatusBarFrame:(NSNotification *)notification
 {
-    
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
 {
-    [self hideMenuActionsWindow];
-}
-
-- (UIWindow *)createMenuActionsWindowWithRoowWindow:(UIWindow *)rootWindow
-{
-    UIWindow *window = [[MessageActionsWindow alloc] initWithFrame:rootWindow.bounds];
-    window.hidden = YES;
-    window.backgroundColor = UIColor.clearColor;
-
-    return window;
-}
-
-- (UIWindow *)createCallViewWindow:(UIWindow *)rootWindow
-{
-    UIWindow *window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
-    window.hidden = YES;
-    window.windowLevel = UIWindowLevel_CallView();
-    window.opaque = YES;
-    // TODO: What's the right color to use here?
-    window.backgroundColor = [UIColor blackColor];
-
-    UIViewController *viewController = [OWSWindowRootViewController new];
-    viewController.view.backgroundColor = [UIColor blackColor];
-
-    // NOTE: Do not use OWSNavigationController for call window.
-    // It adjusts the size of the navigation bar to reflect the
-    // call window.  We don't want those adjustments made within
-    // the call window itself.
-    OWSWindowRootNavigationViewController *navigationController =
-        [[OWSWindowRootNavigationViewController alloc] initWithRootViewController:viewController];
-    navigationController.navigationBarHidden = YES;
-    self.callNavigationController = navigationController;
-
-    window.rootViewController = navigationController;
-
-    return window;
 }
 
 - (void)setIsScreenBlockActive:(BOOL)isScreenBlockActive
@@ -231,92 +129,7 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 
 - (BOOL)isAppWindow:(UIWindow *)window
 {
-    return (window == self.rootWindow || window == self.callViewWindow
-        || window == self.menuActionsWindow || window == self.screenBlockingWindow);
-}
-
-#pragma mark - Message Actions
-
-- (BOOL)isPresentingMenuActions
-{
-    return self.menuActionsViewController != nil;
-}
-
-- (void)showMenuActionsWindow:(UIViewController *)menuActionsViewController
-{
-    self.menuActionsViewController = menuActionsViewController;
-    self.menuActionsWindow.rootViewController = menuActionsViewController;
-
-    [self ensureWindowState];
-}
-
-- (void)hideMenuActionsWindow
-{
-    self.menuActionsWindow.rootViewController = nil;
-    self.menuActionsViewController = nil;
-
-    [self ensureWindowState];
-}
-
-#pragma mark - Calls
-
-- (void)setCallViewController:(nullable UIViewController *)callViewController
-{
-    if (callViewController == _callViewController) {
-        return;
-    }
-
-    _callViewController = callViewController;
-
-    [NSNotificationCenter.defaultCenter postNotificationName:OWSWindowManagerCallDidChangeNotification object:nil];
-}
-
-- (void)startCall:(UIViewController *)callViewController
-{
-    self.callViewController = callViewController;
-
-    // Attach callViewController to window.
-    [self.callNavigationController popToRootViewControllerAnimated:NO];
-    [self.callNavigationController pushViewController:callViewController animated:NO];
-    self.shouldShowCallView = YES;
-    // CallViewController only supports portrait, but if we're _already_ landscape it won't
-    // automatically switch.
-    [UIDevice.currentDevice ows_setOrientation:UIInterfaceOrientationPortrait];
-    [self ensureWindowState];
-}
-
-- (void)endCall:(UIViewController *)callViewController
-{
-    if (self.callViewController != callViewController) {
-        return;
-    }
-
-    // Dettach callViewController from window.
-    [self.callNavigationController popToRootViewControllerAnimated:NO];
-    self.callViewController = nil;
-
-    self.shouldShowCallView = NO;
-
-    [self ensureWindowState];
-}
-
-- (void)leaveCallView
-{
-    self.shouldShowCallView = NO;
-
-    [self ensureWindowState];
-}
-
-- (void)showCallView
-{
-    self.shouldShowCallView = YES;
-
-    [self ensureWindowState];
-}
-
-- (BOOL)hasCall
-{
-    return self.callViewController != nil;
+    return (window == self.rootWindow || window == self.screenBlockingWindow);
 }
 
 #pragma mark - Window State
@@ -332,30 +145,13 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         // Show Screen Block.
 
         [self ensureRootWindowHidden];
-        [self ensureCallViewWindowHidden];
-        [self ensureMessageActionsWindowHidden];
         [self ensureScreenBlockWindowShown];
-    } else if (self.callViewController && self.shouldShowCallView) {
-        // Show Call View.
-
-        [self ensureRootWindowHidden];
-        [self ensureCallViewWindowShown];
-        [self ensureMessageActionsWindowHidden];
-        [self ensureScreenBlockWindowHidden];
-    } else {
+    }
+    else {
         // Show Root Window
 
         [self ensureRootWindowShown];
-        [self ensureCallViewWindowHidden];
         [self ensureScreenBlockWindowHidden];
-
-        if (self.menuActionsViewController) {
-            // Add "Message Actions" action sheet
-
-            [self ensureMessageActionsWindowShown];
-        } else {
-            [self ensureMessageActionsWindowHidden];
-        }
     }
 }
 
@@ -372,27 +168,6 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
 - (void)ensureRootWindowHidden
 {
     self.rootWindow.hidden = YES;
-}
-
-- (void)ensureCallViewWindowShown
-{
-    [self.callViewWindow makeKeyAndVisible];
-}
-
-- (void)ensureCallViewWindowHidden
-{
-    self.callViewWindow.hidden = YES;
-}
-
-- (void)ensureMessageActionsWindowShown
-{
-    // Do not make key, we want the keyboard to stay popped.
-    self.menuActionsWindow.hidden = NO;
-}
-
-- (void)ensureMessageActionsWindowHidden
-{
-    self.menuActionsWindow.hidden = YES;
 }
 
 - (void)ensureScreenBlockWindowShown

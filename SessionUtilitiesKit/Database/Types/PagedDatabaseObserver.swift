@@ -141,7 +141,6 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         
         // The 'event' object only exists during this method so we need to copy the info
         // from it, otherwise it will cease to exist after this metod call finishes
-        changesInCommit.mutate { $0.insert(PagedData.TrackedChange(event: event)) }
         changesInCommit.mutate { $0.insert(trackedChange) }
     }
     
@@ -288,9 +287,14 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         }
         
         // Fetch the indexes of the rowIds so we can determine whether they should be added to the screen
+        let directRowIds: Set<Int64> = changesToQuery.map { $0.rowId }.asSet()
+        let pagedRowIdsForRelatedDeletions: Set<Int64> = relatedDeletions
+            .compactMap { $0.pagedRowIdsForRelatedDeletion }
+            .flatMap { $0 }
+            .asSet()
         let itemIndexes: [PagedData.RowIndexInfo] = PagedData.indexes(
             db,
-            rowIds: changesToQuery.map { $0.rowId },
+            rowIds: Array(directRowIds),
             tableName: pagedTableName,
             requiredJoinSQL: joinSQL,
             orderSQL: orderSQL,
@@ -306,9 +310,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         )
         let relatedDeletionIndexes: [PagedData.RowIndexInfo] = PagedData.indexes(
             db,
-            rowIds: relatedDeletions
-                .compactMap { $0.pagedRowIdsForRelatedDeletion }
-                .flatMap { $0 },
+            rowIds: Array(pagedRowIdsForRelatedDeletions),
             tableName: pagedTableName,
             requiredJoinSQL: joinSQL,
             orderSQL: orderSQL,
@@ -353,6 +355,37 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
         let validRelatedDeletionRowIds: [Int64] = determineValidChanges(for: relatedDeletionIndexes)
         let countBefore: Int = itemIndexes.filter { $0.rowIndex < updatedPageInfo.pageOffset }.count
         
+        // If the number of indexes doesn't match the number of rowIds then it means something changed
+        // resulting in an item being filtered out
+        func performRemovalsIfNeeded(for rowIds: Set<Int64>, indexes: [PagedData.RowIndexInfo]) {
+            let uniqueIndexes: Set<Int64> = indexes.map { $0.rowId }.asSet()
+            
+            // If they have the same count then nothin was filtered out so do nothing
+            guard rowIds.count != uniqueIndexes.count else { return }
+            
+            // Otherwise something was probably removed so try to remove it from the cache
+            let rowIdsRemoved: Set<Int64> = rowIds.subtracting(uniqueIndexes)
+            let preDeletionCount: Int = updatedDataCache.count
+            updatedDataCache = updatedDataCache.deleting(rowIds: Array(rowIdsRemoved))
+
+            // Lastly make sure there were actually changes before updating the page info
+            guard updatedDataCache.count != preDeletionCount else { return }
+            
+            let dataSizeDiff: Int = (updatedDataCache.count - preDeletionCount)
+
+            updatedPageInfo = PagedData.PageInfo(
+                pageSize: updatedPageInfo.pageSize,
+                pageOffset: updatedPageInfo.pageOffset,
+                currentCount: (updatedPageInfo.currentCount + dataSizeDiff),
+                totalCount: (updatedPageInfo.totalCount + dataSizeDiff)
+            )
+        }
+        
+        // Actually perform any required removals
+        performRemovalsIfNeeded(for: directRowIds, indexes: itemIndexes)
+        performRemovalsIfNeeded(for: pagedRowIdsForRelatedChanges, indexes: relatedChangeIndexes)
+        performRemovalsIfNeeded(for: pagedRowIdsForRelatedDeletions, indexes: relatedDeletionIndexes)
+        
         // Update the offset and totalCount even if the rows are outside of the current page (need to
         // in order to ensure the 'load more' sections are accurate)
         updatedPageInfo = PagedData.PageInfo(
@@ -374,7 +407,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
             updateDataAndCallbackIfNeeded(updatedDataCache, updatedPageInfo, true)
             return
         }
-
+        
         // Fetch the inserted/updated rows
         let targetRowIds: [Int64] = Array((validChangeRowIds + validRelatedChangeRowIds + validRelatedDeletionRowIds).asSet())
         let updatedItems: [T] = (try? dataQuery(targetRowIds)
@@ -499,6 +532,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             for: targetId,
                             tableName: pagedTableName,
                             idColumn: idColumnName,
+                            requiredJoinSQL: joinSQL,
                             orderSQL: orderSQL,
                             filterSQL: filterSQL
                         )
@@ -548,6 +582,7 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                             for: targetId,
                             tableName: pagedTableName,
                             idColumn: idColumnName,
+                            requiredJoinSQL: joinSQL,
                             orderSQL: orderSQL,
                             filterSQL: filterSQL
                         )
@@ -630,8 +665,14 @@ public class PagedDatabaseObserver<ObservedTable, T>: TransactionObserver where 
                 limit: queryInfo.limit,
                 offset: queryInfo.offset
             )
-            let newData: [T] = try dataQuery(pageRowIds)
-                .fetchAll(db)
+            let newData: [T]
+            
+            do { newData = try dataQuery(pageRowIds).fetchAll(db) }
+            catch {
+                SNLog("PagedDatabaseObserver threw exception: \(error)")
+                throw error
+            }
+            
             let updatedLimitInfo: PagedData.PageInfo = PagedData.PageInfo(
                 pageSize: currentPageInfo.pageSize,
                 pageOffset: queryInfo.updatedCacheOffset,

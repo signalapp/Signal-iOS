@@ -109,18 +109,18 @@ public final class MessageSender {
         }
         
         // Attach the user's profile if needed
-        if let message: VisibleMessage = message as? VisibleMessage {
+        if var messageWithProfile: MessageWithProfile = message as? MessageWithProfile {
             let profile: Profile = Profile.fetchOrCreateCurrentUser(db)
             
             if let profileKey: Data = profile.profileEncryptionKey?.keyData, let profilePictureUrl: String = profile.profilePictureUrl {
-                message.profile = VisibleMessage.VMProfile(
+                messageWithProfile.profile = VisibleMessage.VMProfile(
                     displayName: profile.name,
                     profileKey: profileKey,
                     profilePictureUrl: profilePictureUrl
                 )
             }
             else {
-                message.profile = VisibleMessage.VMProfile(displayName: profile.name)
+                messageWithProfile.profile = VisibleMessage.VMProfile(displayName: profile.name)
             }
         }
         
@@ -202,7 +202,7 @@ public final class MessageSender {
             recipient: message.recipient!,
             data: base64EncodedData,
             ttl: message.ttl,
-            timestampMs: UInt64(messageSendTimestamp + SnodeAPI.clockOffset)
+            timestampMs: UInt64(messageSendTimestamp + SnodeAPI.clockOffset.wrappedValue)
         )
         
         SnodeAPI

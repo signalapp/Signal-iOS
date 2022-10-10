@@ -6,13 +6,12 @@ import UIKit
 import SessionUIKit
 
 public extension NSObject {
-
-    func navigationBarButton(imageName: String,
-                                     selector: Selector) -> UIView {
+    func navigationBarButton(imageName: String, selector: Selector) -> UIView {
         let button = OWSButton()
         button.setImage(imageName: imageName)
-        button.tintColor = isLightMode ? UIColor.black : UIColor.white
+        button.themeTintColor = .textPrimary
         button.addTarget(self, action: selector, for: .touchUpInside)
+        
         return button
     }
 }
@@ -46,16 +45,5 @@ public extension UIViewController {
         stackView.frame = CGRect(origin: .zero, size: stackSize)
 
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: stackView)
-        
-        // Loki: Set navigation bar background color
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        let color = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x161616)
-        navigationBar.barTintColor = color
-        navigationBar.backgroundColor = color
-        let backgroundImage = UIImage(color: color)
-        navigationBar.setBackgroundImage(backgroundImage, for: .default)
     }
 }

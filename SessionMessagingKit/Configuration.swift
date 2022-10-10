@@ -22,7 +22,9 @@ public enum SNMessagingKit { // Just to make the external API nice
                     _007_HomeQueryOptimisationIndexes.self
                 ],
                 [
-                    _008_EmojiReacts.self
+                    _008_EmojiReacts.self,
+                    _009_OpenGroupPermission.self,
+                    _010_AddThreadIdToFTS.self
                 ]
             ]
         )

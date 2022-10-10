@@ -523,8 +523,13 @@ public extension Interaction {
             .asRequest(of: Int64.self)
             .fetchAll(db)
         
-        // Don't bother continuing if there are not interactions to mark as read
-        guard !interactionIdsToMarkAsRead.isEmpty else { return }
+        // If there are no other interactions to mark as read then just schedule the jobs
+        // for this interaction (need to ensure the disapeparing messages run for sync'ed
+        // outgoing messages which will always have 'wasRead' as false)
+        guard !interactionIdsToMarkAsRead.isEmpty else {
+            scheduleJobs(interactionIds: [interactionId])
+            return
+        }
         
         // Update the `wasRead` flag to true
         try interactionQuery.updateAll(db, Columns.wasRead.set(to: true))
@@ -560,15 +565,16 @@ public extension Interaction {
     static func idsForTermWithin(threadId: String, pattern: FTS5Pattern) -> SQLRequest<Int64> {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
         let interactionFullTextSearch: SQL = SQL(stringLiteral: Interaction.fullTextSearchTableName)
+        let threadIdLiteral: SQL = SQL(stringLiteral: Interaction.Columns.threadId.name)
         
         let request: SQLRequest<Int64> = """
             SELECT \(interaction[.id])
             FROM \(Interaction.self)
             JOIN \(interactionFullTextSearch) ON (
                 \(interactionFullTextSearch).rowid = \(interaction.alias[Column.rowID]) AND
+                \(SQL("\(interactionFullTextSearch).\(threadIdLiteral) = \(threadId)")) AND
                 \(interactionFullTextSearch).\(SQL(stringLiteral: Interaction.Columns.body.name)) MATCH \(pattern)
             )
-            WHERE \(SQL("\(interaction[.threadId]) = \(threadId)"))
         
             ORDER BY \(interaction[.timestampMs].desc)
         """
@@ -629,10 +635,10 @@ public extension Interaction {
             timestampMs: timestampMs,
             receivedAtTimestampMs: receivedAtTimestampMs,
             wasRead: (wasRead || !Variant.standardIncomingDeleted.canBeUnread),
-            hasMention: hasMention,
+            hasMention: false,
             expiresInSeconds: expiresInSeconds,
             expiresStartedAtMs: expiresStartedAtMs,
-            linkPreviewUrl: linkPreviewUrl,
+            linkPreviewUrl: nil,
             openGroupServerMessageId: openGroupServerMessageId,
             openGroupWhisperMods: openGroupWhisperMods,
             openGroupWhisperTo: openGroupWhisperTo

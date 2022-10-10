@@ -15,26 +15,29 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     var voiceMessageView: VoiceMessageView?
     var audioStateChanged: ((TimeInterval, Bool) -> ())?
     
+    override var contextSnapshotView: UIView? { return snContentView }
+    
     // Constraints
-    private lazy var headerViewTopConstraint = headerView.pin(.top, to: .top, of: self, withInset: 1)
+    private lazy var authorLabelTopConstraint = authorLabel.pin(.top, to: .top, of: self)
     private lazy var authorLabelHeightConstraint = authorLabel.set(.height, to: 0)
-    private lazy var profilePictureViewLeftConstraint = profilePictureView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
+    private lazy var profilePictureViewLeadingConstraint = profilePictureView.pin(.leading, to: .leading, of: self, withInset: VisibleMessageCell.groupThreadHSpacing)
     private lazy var profilePictureViewWidthConstraint = profilePictureView.set(.width, to: Values.verySmallProfilePictureSize)
-    private lazy var contentViewLeftConstraint1 = snContentView.pin(.left, to: .right, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
-    private lazy var contentViewLeftConstraint2 = snContentView.leftAnchor.constraint(greaterThanOrEqualTo: leftAnchor, constant: VisibleMessageCell.gutterSize)
+    private lazy var contentViewLeadingConstraint1 = snContentView.pin(.leading, to: .trailing, of: profilePictureView, withInset: VisibleMessageCell.groupThreadHSpacing)
+    private lazy var contentViewLeadingConstraint2 = snContentView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: VisibleMessageCell.gutterSize)
     private lazy var contentViewTopConstraint = snContentView.pin(.top, to: .bottom, of: authorLabel, withInset: VisibleMessageCell.authorLabelBottomSpacing)
-    private lazy var contentViewRightConstraint1 = snContentView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
-    private lazy var contentViewRightConstraint2 = snContentView.rightAnchor.constraint(lessThanOrEqualTo: rightAnchor, constant: -VisibleMessageCell.gutterSize)
+    private lazy var contentViewTrailingConstraint1 = snContentView.pin(.trailing, to: .trailing, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
+    private lazy var contentViewTrailingConstraint2 = snContentView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -VisibleMessageCell.gutterSize)
+    private lazy var contentBottomConstraint = snContentView.bottomAnchor
+        .constraint(lessThanOrEqualTo: self.bottomAnchor, constant: -1)
     
-    private lazy var reactionContainerViewLeftConstraint = reactionContainerView.pin(.left, to: .left, of: snContentView)
-    private lazy var reactionContainerViewRightConstraint = reactionContainerView.pin(.right, to: .right, of: snContentView)
+    private lazy var underBubbleStackViewIncomingLeadingConstraint: NSLayoutConstraint = underBubbleStackView.pin(.leading, to: .leading, of: snContentView)
+    private lazy var underBubbleStackViewIncomingTrailingConstraint: NSLayoutConstraint = underBubbleStackView.pin(.trailing, to: .trailing, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
+    private lazy var underBubbleStackViewOutgoingLeadingConstraint: NSLayoutConstraint = underBubbleStackView.pin(.leading, to: .leading, of: self, withInset: VisibleMessageCell.contactThreadHSpacing)
+    private lazy var underBubbleStackViewOutgoingTrailingConstraint: NSLayoutConstraint = underBubbleStackView.pin(.trailing, to: .trailing, of: snContentView)
+    private lazy var underBubbleStackViewNoHeightConstraint: NSLayoutConstraint = underBubbleStackView.set(.height, to: 0)
     
-    private lazy var messageStatusImageViewTopConstraint = messageStatusImageView.pin(.top, to: .bottom, of: reactionContainerView, withInset: 0)
-    private lazy var messageStatusImageViewWidthConstraint = messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
-    private lazy var messageStatusImageViewHeightConstraint = messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
-    
-    private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.left, to: .left, of: self, withInset: VisibleMessageCell.contactThreadHSpacing)
-    private lazy var timerViewIncomingMessageConstraint = timerView.pin(.right, to: .right, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
+    private lazy var timerViewOutgoingMessageConstraint = timerView.pin(.leading, to: .leading, of: self, withInset: VisibleMessageCell.contactThreadHSpacing)
+    private lazy var timerViewIncomingMessageConstraint = timerView.pin(.trailing, to: .trailing, of: self, withInset: -VisibleMessageCell.contactThreadHSpacing)
 
     private lazy var panGestureRecognizer: UIPanGestureRecognizer = {
         let result = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
@@ -77,9 +80,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         result.set(.width, greaterThanOrEqualTo: VisibleMessageCell.largeCornerRadius * 2)
         return result
     }()
-
-    private lazy var headerView = UIView()
-
+    
     private lazy var authorLabel: UILabel = {
         let result = UILabel()
         result.font = .boldSystemFont(ofSize: Values.smallFontSize)
@@ -94,26 +95,17 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         return result
     }()
 
-    private lazy var reactionContainerView = ReactionContainerView()
-    
-    internal lazy var messageStatusImageView: UIImageView = {
-        let result = UIImageView()
-        result.contentMode = .scaleAspectFit
-        result.layer.cornerRadius = VisibleMessageCell.messageStatusImageViewSize / 2
-        result.layer.masksToBounds = true
-        return result
-    }()
-
     private lazy var replyButton: UIView = {
         let result = UIView()
         let size = VisibleMessageCell.replyButtonSize + 8
         result.set(.width, to: size)
         result.set(.height, to: size)
+        result.themeBorderColor = .textPrimary
         result.layer.borderWidth = 1
-        result.layer.borderColor = Colors.text.cgColor
-        result.layer.cornerRadius = size / 2
+        result.layer.cornerRadius = (size / 2)
         result.layer.masksToBounds = true
         result.alpha = 0
+        
         return result
     }()
 
@@ -123,11 +115,40 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         result.set(.width, to: size)
         result.set(.height, to: size)
         result.image = UIImage(named: "ic_reply")?.withRenderingMode(.alwaysTemplate)
-        result.tintColor = Colors.text
+        result.themeTintColor = .textPrimary
+        
+        // Flip horizontally for RTL languages
+        result.transform = CGAffineTransform.identity
+            .scaledBy(
+                x: (CurrentAppContext().isRTL ? -1 : 1),
+                y: 1
+            )
+        
         return result
     }()
 
     private lazy var timerView: OWSMessageTimerView = OWSMessageTimerView()
+    
+    lazy var underBubbleStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [])
+        result.setContentHuggingPriority(.required, for: .vertical)
+        result.setContentCompressionResistancePriority(.required, for: .vertical)
+        result.axis = .vertical
+        result.spacing = Values.verySmallSpacing
+        result.alignment = .trailing
+        
+        return result
+    }()
+
+    private lazy var reactionContainerView = ReactionContainerView()
+    
+    internal lazy var messageStatusImageView: UIImageView = {
+        let result = UIImageView()
+        result.contentMode = .scaleAspectFit
+        result.layer.cornerRadius = VisibleMessageCell.messageStatusImageViewSize / 2
+        result.layer.masksToBounds = true
+        return result
+    }()
 
     // MARK: - Settings
     
@@ -164,19 +185,14 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     override func setUpViewHierarchy() {
         super.setUpViewHierarchy()
         
-        // Header view
-        addSubview(headerView)
-        headerViewTopConstraint.isActive = true
-        headerView.pin([ UIView.HorizontalEdge.left, UIView.HorizontalEdge.right ], to: self)
-        
         // Author label
         addSubview(authorLabel)
+        authorLabelTopConstraint.isActive = true
         authorLabelHeightConstraint.isActive = true
-        authorLabel.pin(.top, to: .bottom, of: headerView)
         
         // Profile picture view
         addSubview(profilePictureView)
-        profilePictureViewLeftConstraint.isActive = true
+        profilePictureViewLeadingConstraint.isActive = true
         profilePictureViewWidthConstraint.isActive = true
         
         // Moderator icon image view
@@ -188,42 +204,43 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         // Content view
         addSubview(snContentView)
-        contentViewLeftConstraint1.isActive = true
+        contentViewLeadingConstraint1.isActive = true
         contentViewTopConstraint.isActive = true
-        contentViewRightConstraint1.isActive = true
+        contentViewTrailingConstraint1.isActive = true
         snContentView.pin(.bottom, to: .bottom, of: profilePictureView, withInset: -1)
         
         // Bubble background view
         bubbleBackgroundView.addSubview(bubbleView)
-        bubbleBackgroundView.pin(to: bubbleView)
+        bubbleView.pin(to: bubbleBackgroundView)
         
         // Timer view
         addSubview(timerView)
         timerView.center(.vertical, in: snContentView)
         timerViewOutgoingMessageConstraint.isActive = true
         
-        // Reaction view
-        addSubview(reactionContainerView)
-        reactionContainerView.pin(.top, to: .bottom, of: snContentView, withInset: Values.verySmallSpacing)
-        reactionContainerViewLeftConstraint.isActive = true
-        
-        // Message status image view
-        addSubview(messageStatusImageView)
-        messageStatusImageViewTopConstraint.isActive = true
-        messageStatusImageView.pin(.right, to: .right, of: snContentView, withInset: -1)
-        messageStatusImageView.pin(.bottom, to: .bottom, of: self, withInset: -1)
-        messageStatusImageViewWidthConstraint.isActive = true
-        messageStatusImageViewHeightConstraint.isActive = true
-        
         // Reply button
         addSubview(replyButton)
         replyButton.addSubview(replyIconImageView)
         replyIconImageView.center(in: replyButton)
-        replyButton.pin(.left, to: .right, of: snContentView, withInset: Values.smallSpacing)
+        replyButton.pin(.leading, to: .trailing, of: snContentView, withInset: Values.smallSpacing)
         replyButton.center(.vertical, in: snContentView)
         
         // Remaining constraints
-        authorLabel.pin(.left, to: .left, of: snContentView, withInset: VisibleMessageCell.authorLabelInset)
+        authorLabel.pin(.leading, to: .leading, of: snContentView, withInset: VisibleMessageCell.authorLabelInset)
+        
+        // Under bubble content
+        addSubview(underBubbleStackView)
+        underBubbleStackView.pin(.top, to: .bottom, of: snContentView, withInset: 5)
+        underBubbleStackView.pin(.bottom, to: .bottom, of: self)
+        
+        underBubbleStackView.addArrangedSubview(reactionContainerView)
+        underBubbleStackView.addArrangedSubview(messageStatusImageView)
+        
+        reactionContainerView.widthAnchor
+            .constraint(lessThanOrEqualTo: underBubbleStackView.widthAnchor)
+            .isActive = true
+        messageStatusImageView.set(.width, to: VisibleMessageCell.messageStatusImageViewSize)
+        messageStatusImageView.set(.height, to: VisibleMessageCell.messageStatusImageViewSize)
     }
 
     override func setUpGestureRecognizers() {
@@ -251,17 +268,19 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     ) {
         self.viewModel = cellViewModel
         
-        let isGroupThread: Bool = (cellViewModel.threadVariant == .openGroup || cellViewModel.threadVariant == .closedGroup)
-        let shouldInsetHeader: Bool = (
-            cellViewModel.previousVariant?.isInfoMessage != true &&
-            (
+        // We want to add spacing between "clusters" of messages to indicate that time has
+        // passed (even if there wasn't enough time to warrant showing a date header)
+        let shouldAddTopInset: Bool = (
+            !cellViewModel.shouldShowDateHeader &&
+            cellViewModel.previousVariant?.isInfoMessage != true && (
                 cellViewModel.positionInCluster == .top ||
                 cellViewModel.isOnlyMessageInCluster
             )
         )
+        let isGroupThread: Bool = (cellViewModel.threadVariant == .openGroup || cellViewModel.threadVariant == .closedGroup)
         
         // Profile picture view
-        profilePictureViewLeftConstraint.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : 0)
+        profilePictureViewLeadingConstraint.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : 0)
         profilePictureViewWidthConstraint.constant = (isGroupThread ? VisibleMessageCell.profilePictureSize : 0)
         profilePictureView.isHidden = (!cellViewModel.shouldShowProfile || cellViewModel.profile == nil)
         profilePictureView.update(
@@ -272,23 +291,25 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         moderatorIconImageView.isHidden = (!cellViewModel.isSenderOpenGroupModerator || !cellViewModel.shouldShowProfile)
        
         // Bubble view
-        contentViewLeftConstraint1.isActive = (
+        contentViewLeadingConstraint1.isActive = (
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         )
-        contentViewLeftConstraint1.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : VisibleMessageCell.contactThreadHSpacing)
-        contentViewLeftConstraint2.isActive = (cellViewModel.variant == .standardOutgoing)
+        contentViewLeadingConstraint1.constant = (isGroupThread ? VisibleMessageCell.groupThreadHSpacing : VisibleMessageCell.contactThreadHSpacing)
+        contentViewLeadingConstraint2.isActive = (cellViewModel.variant == .standardOutgoing)
         contentViewTopConstraint.constant = (cellViewModel.senderName == nil ? 0 : VisibleMessageCell.authorLabelBottomSpacing)
-        contentViewRightConstraint1.isActive = (cellViewModel.variant == .standardOutgoing)
-        contentViewRightConstraint2.isActive = (
+        contentViewTrailingConstraint1.isActive = (cellViewModel.variant == .standardOutgoing)
+        contentViewTrailingConstraint2.isActive = (
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
         )
-        bubbleView.backgroundColor = ((
+        
+        let bubbleBackgroundColor: ThemeValue = ((
             cellViewModel.variant == .standardIncoming ||
             cellViewModel.variant == .standardIncomingDeleted
-        ) ? Colors.receivedMessageBackground : Colors.sentMessageBackground)
-        bubbleBackgroundView.backgroundColor = bubbleView.backgroundColor
+        ) ? .messageBubble_incomingBackground : .messageBubble_outgoingBackground)
+        bubbleView.themeBackgroundColor = bubbleBackgroundColor
+        bubbleBackgroundView.themeBackgroundColor = bubbleBackgroundColor
         updateBubbleViewCorners()
         
         // Content view
@@ -299,45 +320,16 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             lastSearchText: lastSearchText
         )
         
-        // Reaction view
-        reactionContainerView.isHidden = (cellViewModel.reactionInfo?.isEmpty == true)
-        reactionContainerViewLeftConstraint.isActive = (cellViewModel.variant == .standardIncoming)
-        reactionContainerViewRightConstraint.isActive = (cellViewModel.variant == .standardOutgoing)
-        populateReaction(for: cellViewModel, showExpandedReactions: showExpandedReactions)
-        
-        // Date break
-        headerViewTopConstraint.constant = (shouldInsetHeader ? Values.mediumSpacing : 1)
-        headerView.subviews.forEach { $0.removeFromSuperview() }
-        populateHeader(for: cellViewModel, shouldInsetHeader: shouldInsetHeader)
-        
         // Author label
-        authorLabel.textColor = Colors.text
+        authorLabelTopConstraint.constant = (shouldAddTopInset ? Values.mediumSpacing : 0)
         authorLabel.isHidden = (cellViewModel.senderName == nil)
         authorLabel.text = cellViewModel.senderName
+        authorLabel.themeTextColor = .textPrimary
         
         let authorLabelAvailableWidth: CGFloat = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * VisibleMessageCell.authorLabelInset)
         let authorLabelAvailableSpace = CGSize(width: authorLabelAvailableWidth, height: .greatestFiniteMagnitude)
         let authorLabelSize = authorLabel.sizeThatFits(authorLabelAvailableSpace)
         authorLabelHeightConstraint.constant = (cellViewModel.senderName != nil ? authorLabelSize.height : 0)
-        
-        // Message status image view
-        let (image, tintColor, backgroundColor) = getMessageStatusImage(for: cellViewModel)
-        messageStatusImageView.image = image
-        messageStatusImageView.tintColor = tintColor
-        messageStatusImageView.backgroundColor = backgroundColor
-        messageStatusImageView.isHidden = (
-            cellViewModel.variant != .standardOutgoing ||
-            cellViewModel.variant == .infoCall ||
-            (
-                cellViewModel.state == .sent &&
-                !cellViewModel.isLast
-            )
-        )
-        messageStatusImageViewTopConstraint.constant = (messageStatusImageView.isHidden ? 0 : 5)
-        [ messageStatusImageViewWidthConstraint, messageStatusImageViewHeightConstraint ]
-            .forEach {
-                $0.constant = (messageStatusImageView.isHidden ? 0 : VisibleMessageCell.messageStatusImageViewSize)
-            }
         
         // Timer
         if
@@ -348,9 +340,9 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             
             timerView.configure(
                 withExpirationTimestamp: UInt64(floor(expirationTimestampMs)),
-                initialDurationSeconds: UInt32(floor(expiresInSeconds)),
-                tintColor: Colors.text
+                initialDurationSeconds: UInt32(floor(expiresInSeconds))
             )
+            timerView.themeTintColor = .textPrimary
             timerView.isHidden = false
         }
         else {
@@ -370,27 +362,43 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         else {
             addGestureRecognizer(panGestureRecognizer)
         }
-    }
-
-    private func populateHeader(for cellViewModel: MessageViewModel, shouldInsetHeader: Bool) {
-        guard let date: Date = cellViewModel.dateForUI else { return }
         
-        let dateBreakLabel: UILabel = UILabel()
-        dateBreakLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        dateBreakLabel.textColor = Colors.text
-        dateBreakLabel.textAlignment = .center
-        dateBreakLabel.text = date.formattedForDisplay
-        headerView.addSubview(dateBreakLabel)
-        dateBreakLabel.pin(.top, to: .top, of: headerView, withInset: Values.smallSpacing)
+        // Under bubble content
+        underBubbleStackView.alignment = (cellViewModel.variant == .standardOutgoing ?
+            .trailing :
+            .leading
+        )
+        underBubbleStackViewIncomingLeadingConstraint.isActive = (cellViewModel.variant != .standardOutgoing)
+        underBubbleStackViewIncomingTrailingConstraint.isActive = (cellViewModel.variant != .standardOutgoing)
+        underBubbleStackViewOutgoingLeadingConstraint.isActive = (cellViewModel.variant == .standardOutgoing)
+        underBubbleStackViewOutgoingTrailingConstraint.isActive = (cellViewModel.variant == .standardOutgoing)
         
-        let additionalBottomInset = (shouldInsetHeader ? Values.mediumSpacing : 1)
-        headerView.pin(.bottom, to: .bottom, of: dateBreakLabel, withInset: Values.smallSpacing + additionalBottomInset)
-        dateBreakLabel.center(.horizontal, in: headerView)
+        // Reaction view
+        reactionContainerView.isHidden = (cellViewModel.reactionInfo?.isEmpty != false)
+        populateReaction(
+            for: cellViewModel,
+            maxWidth: VisibleMessageCell.getMaxWidth(
+                for: cellViewModel,
+                includingOppositeGutter: false
+            ),
+            showExpandedReactions: showExpandedReactions
+        )
         
-        let availableWidth = VisibleMessageCell.getMaxWidth(for: cellViewModel)
-        let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
-        let dateBreakLabelSize = dateBreakLabel.sizeThatFits(availableSpace)
-        dateBreakLabel.set(.height, to: dateBreakLabelSize.height)
+        // Message status image view
+        let (image, tintColor) = cellViewModel.state.statusIconInfo(
+            variant: cellViewModel.variant,
+            hasAtLeastOneReadReceipt: cellViewModel.hasAtLeastOneReadReceipt
+        )
+        messageStatusImageView.image = image
+        messageStatusImageView.themeTintColor = tintColor
+        messageStatusImageView.isHidden = (
+            cellViewModel.variant != .standardOutgoing ||
+            cellViewModel.variant == .infoCall ||
+            (
+                cellViewModel.state == .sent &&
+                !cellViewModel.isLast
+            )
+        )
     }
 
     private func populateContentView(
@@ -399,16 +407,15 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         playbackInfo: ConversationViewModel.PlaybackInfo?,
         lastSearchText: String?
     ) {
-        let direction: Direction = cellViewModel.variant == .standardOutgoing ? .outgoing : .incoming
-        let bodyLabelTextColor: UIColor = {
-            switch (direction, AppModeManager.shared.currentAppMode) {
-                case (.outgoing, .dark), (.incoming, .light): return .black
-                case (.outgoing, .light): return Colors.grey
-                default: return .white
-            }
-        }()
+        let bodyLabelTextColor: ThemeValue = (cellViewModel.variant == .standardOutgoing ?
+            .messageBubble_outgoingText :
+            .messageBubble_incomingText
+        )
         
-        snContentView.alignment = direction == .incoming ? .leading : .trailing
+        snContentView.alignment = (cellViewModel.variant == .standardOutgoing ?
+            .trailing :
+            .leading
+        )
         
         for subview in snContentView.arrangedSubviews {
             snContentView.removeArrangedSubview(subview)
@@ -439,7 +446,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         }
 
         switch cellViewModel.cellType {
-            case .typingIndicator: break
+            case .typingIndicator, .dateHeader: break
             
             case .textOnlyMessage:
                 let inset: CGFloat = 12
@@ -519,6 +526,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                     // Constraints
                     bubbleView.addSubview(stackView)
                     stackView.pin(to: bubbleView, withInset: inset)
+                    stackView.widthAnchor.constraint(lessThanOrEqualToConstant: maxWidth).isActive = true
                     snContentView.addArrangedSubview(bubbleBackgroundView)
                 }
                 
@@ -584,7 +592,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 
                 let inset: CGFloat = 12
                 let maxWidth = (VisibleMessageCell.getMaxWidth(for: cellViewModel) - 2 * inset)
-            
+                
                 // Stack view
                 let stackView = UIStackView(arrangedSubviews: [])
                 stackView.axis = .vertical
@@ -596,6 +604,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             
                 // Body text view
                 if let body: String = cellViewModel.body, !body.isEmpty { // delegate should always be set at this point
+                    let bodyContainerView: UIView = UIView()
                     let bodyTappableLabel = VisibleMessageCell.getBodyTappableLabel(
                         for: cellViewModel,
                         with: maxWidth,
@@ -605,16 +614,25 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                     )
                     
                     self.bodyTappableLabel = bodyTappableLabel
-                    stackView.addArrangedSubview(bodyTappableLabel)
+                    bodyContainerView.addSubview(bodyTappableLabel)
+                    bodyTappableLabel.pin(.top, to: .top, of: bodyContainerView)
+                    bodyTappableLabel.pin(.leading, to: .leading, of: bodyContainerView, withInset: 12)
+                    bodyTappableLabel.pin(.trailing, to: .trailing, of: bodyContainerView, withInset: -12)
+                    bodyTappableLabel.pin(.bottom, to: .bottom, of: bodyContainerView, withInset: -12)
+                    stackView.addArrangedSubview(bodyContainerView)
                 }
                 
                 bubbleView.addSubview(stackView)
-                stackView.pin(to: bubbleView, withInset: inset)
+                stackView.pin(to: bubbleView)
                 snContentView.addArrangedSubview(bubbleBackgroundView)
         }
     }
     
-    private func populateReaction(for cellViewModel: MessageViewModel, showExpandedReactions: Bool) {
+    private func populateReaction(
+        for cellViewModel: MessageViewModel,
+        maxWidth: CGFloat,
+        showExpandedReactions: Bool
+    ) {
         let reactions: OrderedDictionary<EmojiWithSkinTones, ReactionViewModel> = (cellViewModel.reactionInfo ?? [])
             .reduce(into: OrderedDictionary()) { result, reactionInfo in
                 guard let emoji: EmojiWithSkinTones = EmojiWithSkinTones(rawValue: reactionInfo.reaction.emoji) else {
@@ -645,9 +663,10 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 }
             }
         
-        reactionContainerView.showingAllReactions = showExpandedReactions
         reactionContainerView.update(
             reactions.orderedValues,
+            maxWidth: maxWidth,
+            showingAllReactions: showExpandedReactions,
             showNumbers: (
                 cellViewModel.threadVariant == .closedGroup ||
                 cellViewModel.threadVariant == .openGroup
@@ -723,9 +742,12 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == panGestureRecognizer {
             let v = panGestureRecognizer.velocity(in: self)
-            // Only allow swipes to the left; allowing swipes to the right gets in the way of the default
-            // iOS swipe to go back gesture
-            guard v.x < 0 else { return false }
+            // Only allow swipes to the left; allowing swipes to the right gets in the way of
+            // the default iOS swipe to go back gesture
+            guard
+                (CurrentAppContext().isRTL && v.x > 0) ||
+                (!CurrentAppContext().isRTL && v.x < 0)
+            else { return false }
             
             return abs(v.x) > abs(v.y) // It has to be more horizontal than vertical
         }
@@ -734,21 +756,26 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     }
 
     func highlight() {
-        // FIXME: This will have issues with themes
-        let shawdowColour = (isLightMode ? UIColor.black.cgColor : Colors.accent.cgColor)
-        let opacity: Float = (isLightMode ? 0.5 : 1)
+        let shadowColor: ThemeValue = (ThemeManager.currentTheme.interfaceStyle == .light ?
+            .black :
+            .primary
+        )
+        let opacity: Float = (ThemeManager.currentTheme.interfaceStyle == .light ?
+            0.5 :
+            1
+        )
         
         DispatchQueue.main.async { [weak self] in
             let oldMasksToBounds: Bool = (self?.layer.masksToBounds ?? false)
             self?.layer.masksToBounds = false
-            self?.bubbleBackgroundView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shawdowColour)
+            self?.bubbleBackgroundView.setShadow(radius: 10, opacity: opacity, offset: .zero, color: shadowColor)
             
             UIView.animate(
                 withDuration: 1.6,
                 delay: 0,
                 options: .curveEaseInOut,
                 animations: {
-                    self?.bubbleBackgroundView.setShadow(radius: 0, opacity: 0, offset: .zero, color: UIColor.clear.cgColor)
+                    self?.bubbleBackgroundView.setShadow(radius: 0, opacity: 0, offset: .zero, color: .clear)
                 },
                 completion: { _ in
                     self?.layer.masksToBounds = oldMasksToBounds
@@ -766,7 +793,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         let location = gestureRecognizer.location(in: self)
         
-        if reactionContainerView.frame.contains(location) {
+        if reactionContainerView.bounds.contains(reactionContainerView.convert(location, from: self)) {
             let convertedLocation = reactionContainerView.convert(location, from: self)
             
             for reactionView in reactionContainerView.reactionViews {
@@ -788,7 +815,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         let location = gestureRecognizer.location(in: self)
         
-        if profilePictureView.frame.contains(location), cellViewModel.shouldShowProfile {
+        if profilePictureView.bounds.contains(profilePictureView.convert(location, from: self)), cellViewModel.shouldShowProfile {
             // For open groups only attempt to start a conversation if the author has a blinded id
             guard cellViewModel.threadVariant != .openGroup else {
                 guard SessionId.Prefix(from: cellViewModel.authorId) == .blinded else { return }
@@ -807,11 +834,11 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 openGroupPublicKey: nil
             )
         }
-        else if replyButton.alpha > 0 && replyButton.frame.contains(location) {
+        else if replyButton.alpha > 0 && replyButton.bounds.contains(replyButton.convert(location, from: self)) {
             UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             reply()
         }
-        else if reactionContainerView.frame.contains(location) {
+        else if reactionContainerView.bounds.contains(reactionContainerView.convert(location, from: self)) {
             let convertedLocation = reactionContainerView.convert(location, from: self)
             
             for reactionView in reactionContainerView.reactionViews {
@@ -827,7 +854,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 }
             }
             
-            if let expandButton = reactionContainerView.expandButton, expandButton.frame.contains(convertedLocation) {
+            if let expandButton = reactionContainerView.expandButton, expandButton.bounds.contains(expandButton.convert(location, from: self)) {
                 reactionContainerView.showAllEmojis()
                 delegate?.needsLayout(for: cellViewModel, expandingReactions: true)
             }
@@ -837,7 +864,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 delegate?.needsLayout(for: cellViewModel, expandingReactions: false)
             }
         }
-        else if snContentView.frame.contains(location) {
+        else if snContentView.bounds.contains(snContentView.convert(location, from: self)) {
             delegate?.handleItemTapped(cellViewModel, gestureRecognizer: gestureRecognizer)
         }
     }
@@ -851,7 +878,13 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     @objc private func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         guard let cellViewModel: MessageViewModel = self.viewModel else { return }
         
-        let translationX = gestureRecognizer.translation(in: self).x.clamp(-CGFloat.greatestFiniteMagnitude, 0)
+        let translationX = gestureRecognizer
+            .translation(in: self)
+            .x
+            .clamp(
+                (CurrentAppContext().isRTL ? 0 : -CGFloat.greatestFiniteMagnitude),
+                (CurrentAppContext().isRTL ? CGFloat.greatestFiniteMagnitude : 0)
+            )
         
         switch gestureRecognizer.state {
             case .began: delegate?.handleItemSwiped(cellViewModel, state: .began)
@@ -859,14 +892,17 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
             case .changed:
                 // The idea here is to asymptotically approach a maximum drag distance
                 let damping: CGFloat = 20
-                let sign: CGFloat = -1
+                let sign: CGFloat = (CurrentAppContext().isRTL ? 1 : -1)
                 let x = (damping * (sqrt(abs(translationX)) / sqrt(damping))) * sign
                 viewsToMoveForReply.forEach { $0.transform = CGAffineTransform(translationX: x, y: 0) }
+                
                 if timerView.isHidden {
                     replyButton.alpha = abs(translationX) / VisibleMessageCell.maxBubbleTranslationX
-                } else {
+                }
+                else {
                     replyButton.alpha = 0 // Always hide the reply button if the timer view is showing, otherwise they can overlap
                 }
+                
                 if abs(translationX) > VisibleMessageCell.swipeToReplyThreshold && abs(previousX) < VisibleMessageCell.swipeToReplyThreshold {
                     UIImpactFeedbackGenerator(style: .heavy).impactOccurred() // Let the user know when they've hit the swipe to reply threshold
                 }
@@ -932,34 +968,6 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         }
     }
 
-    private func getMessageStatusImage(for cellViewModel: MessageViewModel) -> (image: UIImage?, tintColor: UIColor?, backgroundColor: UIColor?) {
-        guard cellViewModel.variant == .standardOutgoing else { return (nil, nil, nil) }
-
-        let image: UIImage
-        var tintColor: UIColor? = nil
-        var backgroundColor: UIColor? = nil
-        
-        switch (cellViewModel.state, cellViewModel.hasAtLeastOneReadReceipt) {
-            case (.sending, _):
-                image = #imageLiteral(resourceName: "CircleDotDotDot").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.text
-            
-            case (.sent, false), (.skipped, _):
-                image = #imageLiteral(resourceName: "CircleCheck").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.text
-                
-            case (.sent, true):
-                image = isLightMode ? #imageLiteral(resourceName: "FilledCircleCheckLightMode") : #imageLiteral(resourceName: "FilledCircleCheckDarkMode")
-                backgroundColor = isLightMode ? .black : .white
-                
-            case (.failed, _):
-                image = #imageLiteral(resourceName: "message_status_failed").withRenderingMode(.alwaysTemplate)
-                tintColor = Colors.destructive
-        }
-
-        return (image, tintColor, backgroundColor)
-    }
-
     private func getSize(for cellViewModel: MessageViewModel) -> CGSize {
         guard let mediaAttachments: [Attachment] = cellViewModel.attachments?.filter({ $0.isVisualMedia }) else {
             preconditionFailure()
@@ -1008,11 +1016,14 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         return CGSize(width: width, height: height)
     }
 
-    static func getMaxWidth(for cellViewModel: MessageViewModel) -> CGFloat {
+    static func getMaxWidth(for cellViewModel: MessageViewModel, includingOppositeGutter: Bool = true) -> CGFloat {
         let screen: CGRect = UIScreen.main.bounds
+        let oppositeEdgePadding: CGFloat = (includingOppositeGutter ? gutterSize : contactThreadHSpacing)
         
         switch cellViewModel.variant {
-            case .standardOutgoing: return (screen.width - contactThreadHSpacing - gutterSize)
+            case .standardOutgoing:
+                return (screen.width - contactThreadHSpacing - oppositeEdgePadding)
+                
             case .standardIncoming, .standardIncomingDeleted:
                 let isGroupThread = (
                     cellViewModel.threadVariant == .openGroup ||
@@ -1020,7 +1031,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
                 )
                 let leftGutterSize = (isGroupThread ? leftGutterSize : contactThreadHSpacing)
                 
-                return (screen.width - leftGutterSize - gutterSize)
+                return (screen.width - leftGutterSize - oppositeEdgePadding)
                 
             default: preconditionFailure()
         }
@@ -1029,114 +1040,144 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
     static func getBodyTappableLabel(
         for cellViewModel: MessageViewModel,
         with availableWidth: CGFloat,
-        textColor: UIColor,
+        textColor: ThemeValue,
         searchText: String?,
         delegate: TappableLabelDelegate?
     ) -> TappableLabel {
-        let result = TappableLabel()
         let isOutgoing: Bool = (cellViewModel.variant == .standardOutgoing)
-        
-        let attributedText: NSMutableAttributedString = NSMutableAttributedString(
-            attributedString: MentionUtilities.highlightMentions(
-                in: (cellViewModel.body ?? ""),
-                threadVariant: cellViewModel.threadVariant,
-                currentUserPublicKey: cellViewModel.currentUserPublicKey,
-                currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
-                isOutgoingMessage: isOutgoing,
-                attributes: [
-                    .foregroundColor : textColor,
-                    .font : UIFont.systemFont(ofSize: getFontSize(for: cellViewModel))
-                ]
-            )
-        )
-        
-        // Custom handle links
-        let links: [String: NSRange] = {
-            guard
-                let body: String = cellViewModel.body,
-                let detector: NSDataDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue)
-            else { return [:] }
-            
-            var links: [String: NSRange] = [:]
-            let matches = detector.matches(
-                in: body,
-                options: [],
-                range: NSRange(location: 0, length: body.count)
-            )
-            
-            for match in matches {
-                guard let matchURL = match.url else { continue }
-                
-                /// If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
-                /// set the scheme to 'https' instead as we don't load previews for 'http' so this will result
-                /// in more previews actually getting loaded without forcing the user to enter 'https://' before
-                /// every URL they enter
-                let urlString: String = (matchURL.absoluteString == "http://\(body)" ?
-                    "https://\(body)" :
-                    matchURL.absoluteString
-                )
-                
-                if URL(string: urlString) != nil {
-                    links[urlString] = (body as NSString).range(of: urlString)
-                }
-            }
-            
-            return links
-        }()
-        
-        for (urlString, range) in links {
-            guard let url: URL = URL(string: urlString) else { continue }
-            
-            attributedText.addAttributes(
-                [
-                    .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel)),
-                    .foregroundColor: textColor,
-                    .underlineColor: textColor,
-                    .underlineStyle: NSUnderlineStyle.single.rawValue,
-                    .attachment: url
-                ],
-                range: range
-            )
-        }
-        
-        // If there is a valid search term then highlight each part that matched
-        if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
-            let normalizedBody: String = attributedText.string.lowercased()
-            
-            SessionThreadViewModel.searchTermParts(searchText)
-                .map { part -> String in
-                    guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
-                    
-                    return String(part[part.index(after: part.startIndex)..<part.endIndex])
-                }
-                .forEach { part in
-                    // Highlight all ranges of the text (Note: The search logic only finds results that start
-                    // with the term so we use the regex below to ensure we only highlight those cases)
-                    normalizedBody
-                        .ranges(
-                            of: (CurrentAppContext().isRTL ?
-                                 "\(part.lowercased())(^|[ ])" :
-                                 "(^|[ ])\(part.lowercased())"
-                            ),
-                            options: [.regularExpression]
-                        )
-                        .forEach { range in
-                            let legacyRange: NSRange = NSRange(range, in: normalizedBody)
-                            attributedText.addAttribute(.backgroundColor, value: UIColor.white, range: legacyRange)
-                            attributedText.addAttribute(.foregroundColor, value: UIColor.black, range: legacyRange)
-                        }
-                }
-        }
-        
-        result.attributedText = attributedText
-        result.backgroundColor = .clear
+        let result: TappableLabel = TappableLabel()
+        result.themeBackgroundColor = .clear
         result.isOpaque = false
         result.isUserInteractionEnabled = true
         result.delegate = delegate
         
-        let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
-        let size = result.sizeThatFits(availableSpace)
-        result.set(.height, to: size.height)
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, primaryColor in
+            guard
+                let actualTextColor: UIColor = theme.color(for: textColor),
+                let backgroundPrimaryColor: UIColor = theme.color(for: .backgroundPrimary),
+                let textPrimaryColor: UIColor = theme.color(for: .textPrimary)
+            else { return }
+            
+            let hasPreviousSetText: Bool = ((result?.attributedText?.length ?? 0) > 0)
+            
+            let attributedText: NSMutableAttributedString = NSMutableAttributedString(
+                attributedString: MentionUtilities.highlightMentions(
+                    in: (cellViewModel.body ?? ""),
+                    threadVariant: cellViewModel.threadVariant,
+                    currentUserPublicKey: cellViewModel.currentUserPublicKey,
+                    currentUserBlindedPublicKey: cellViewModel.currentUserBlindedPublicKey,
+                    isOutgoingMessage: isOutgoing,
+                    textColor: actualTextColor,
+                    theme: theme,
+                    primaryColor: primaryColor,
+                    attributes: [
+                        .foregroundColor: actualTextColor,
+                        .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel))
+                    ]
+                )
+            )
+            
+            // Custom handle links
+            let links: [URL: NSRange] = {
+                guard let detector: NSDataDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) else {
+                    return [:]
+                }
+                
+                return detector
+                    .matches(
+                        in: attributedText.string,
+                        options: [],
+                        range: NSRange(location: 0, length: attributedText.string.count)
+                    )
+                    .reduce(into: [:]) { result, match in
+                        guard
+                            let matchUrl: URL = match.url,
+                            let originalRange: Range = Range(match.range, in: attributedText.string)
+                        else { return }
+                        
+                        /// If the URL entered didn't have a scheme it will default to 'http', we want to catch this and
+                        /// set the scheme to 'https' instead as we don't load previews for 'http' so this will result
+                        /// in more previews actually getting loaded without forcing the user to enter 'https://' before
+                        /// every URL they enter
+                        let originalString: String = String(attributedText.string[originalRange])
+                        
+                        guard matchUrl.absoluteString != "http://\(originalString)" else {
+                            guard let httpsUrl: URL = URL(string: "https://\(originalString)") else {
+                                return
+                            }
+                            
+                            result[httpsUrl] = match.range
+                            return
+                        }
+                        
+                        result[matchUrl] = match.range
+                    }
+            }()
+            
+            for (linkUrl, urlRange) in links {
+                attributedText.addAttributes(
+                    [
+                        .font: UIFont.systemFont(ofSize: getFontSize(for: cellViewModel)),
+                        .foregroundColor: actualTextColor,
+                        .underlineColor: actualTextColor,
+                        .underlineStyle: NSUnderlineStyle.single.rawValue,
+                        .attachment: linkUrl
+                    ],
+                    range: urlRange
+                )
+            }
+            
+            // If there is a valid search term then highlight each part that matched
+            if let searchText = searchText, searchText.count >= ConversationSearchController.minimumSearchTextLength {
+                let normalizedBody: String = attributedText.string.lowercased()
+                
+                SessionThreadViewModel.searchTermParts(searchText)
+                    .map { part -> String in
+                        guard part.hasPrefix("\"") && part.hasSuffix("\"") else { return part }
+                        
+                        let partRange = (part.index(after: part.startIndex)..<part.index(before: part.endIndex))
+                        return String(part[partRange])
+                    }
+                    .forEach { part in
+                        // Highlight all ranges of the text (Note: The search logic only finds
+                        // results that start with the term so we use the regex below to ensure
+                        // we only highlight those cases)
+                        normalizedBody
+                            .ranges(
+                                of: (CurrentAppContext().isRTL ?
+                                     "(\(part.lowercased()))(^|[^a-zA-Z0-9])" :
+                                     "(^|[^a-zA-Z0-9])(\(part.lowercased()))"
+                                ),
+                                options: [.regularExpression]
+                            )
+                            .forEach { range in
+                                let targetRange: Range<String.Index> = {
+                                    let term: String = String(normalizedBody[range])
+                                    
+                                    // If the matched term doesn't actually match the "part" value then it means
+                                    // we've matched a term after a non-alphanumeric character so need to shift
+                                    // the range over by 1
+                                    guard term.starts(with: part.lowercased()) else {
+                                        return (normalizedBody.index(after: range.lowerBound)..<range.upperBound)
+                                    }
+                                    
+                                    return range
+                                }()
+                                
+                                let legacyRange: NSRange = NSRange(targetRange, in: normalizedBody)
+                                attributedText.addThemeAttribute(.background(backgroundPrimaryColor), range: legacyRange)
+                                attributedText.addThemeAttribute(.foreground(textPrimaryColor), range: legacyRange)
+                            }
+                    }
+            }
+            result?.attributedText = attributedText
+            
+            if let result: TappableLabel = result, !hasPreviousSetText {
+                let availableSpace = CGSize(width: availableWidth, height: .greatestFiniteMagnitude)
+                let size = result.sizeThatFits(availableSpace)
+                result.set(.height, to: size.height)
+            }
+        }
         
         return result
     }

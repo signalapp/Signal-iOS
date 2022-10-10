@@ -1,17 +1,5 @@
-/* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Neskôr";
-/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Verzia %@ je teraz dostupná v App Store.";
-/* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Je dostupná nová verzia Session";
-/* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aktualizovať";
 /* No comment provided by engineer. */
 "ATTACHMENT" = "Príloha";
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Dosiahnutý limit titulku.";
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Pridať titulok…";
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Titulok";
 /* Format string for file extension label in call interstitial view */
@@ -52,44 +40,6 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nepodporovaný súbor";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Hlasová správa";
-/* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Záložné údaje nebolo možné exportovať.";
-/* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Neplatná odpoveď služby";
-/* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Čistenie záloh";
-/* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Inicializácia zálohovania";
-/* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Export údajov";
-/* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Záloha sa exportuje";
-/* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Nahrávanie zálohy";
-/* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Zálohu nebolo možné importovať.";
-/* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfigurácia zálohovania";
-/* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Sťahovanie zálohy";
-/* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Zálohovanie sa dokončuje";
-/* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Záloha sa importuje.";
-/* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Obnovovanie databázy";
-/* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Obnova súborov";
-/* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Dostupná záloha";
-/* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Obnovenie zálohy";
-/* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "Priebeh";
-/* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "Stav";
-/* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Nečakaná Chyba Zálohy";
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokovať";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
@@ -104,24 +54,12 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Používateľ Zablokovaný";
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ bol/a odblokovaný/á.";
-/* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Súčasný členovia skupiny vás teraz už môžu znova pridať.";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Zablokovaný používatelia vám nebudú môcť zavolať ani posielať správy.";
 /* Label for generic done button. */
 "BUTTON_DONE" = "Hotovo";
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Vybrať";
-/* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Neobnovovať";
-/* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "Obnoviť";
-/* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session sa nepodarilo zistiť stav vášho iCloud účtu. Prihláste sa do svojho iCloud účtu v iOS nastaveniach pre zálohovanie vašich Session dát.";
-/* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Žiadny iCloud účet. Prihláste sa do vášho iCloud účtu v iOS nastaveniach pre zálohovanie vašich Session dát.";
-/* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Prístup pre Session do Vášho iCloud účtu na účely zálohovania bol zamietnutý. Povoľte aplikácii Session prístup do Vášho iCloud Účtu v aplikácii iOS Nastavenia aby sa dáta mohli zálohovať.";
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Už nebudete môcť posielať a prijímať správy v tejto skupine.";
 /* Alert title */
@@ -130,58 +68,30 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Táto akcia sa nedá vrátiť.";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Zmazať konverzáciu?";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Žiadne zhody";
 /* keyboard toolbar label when exactly 1 message matches the search string */
 "CONVERSATION_SEARCH_ONE_RESULT" = "1 zhoda";
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "nájdených %d z %d";
-/* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Nastavenia konverzácie";
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokovať tohto používateľa";
-/* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stíšiť";
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Stíšiť";
-/* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nestíšené";
-/* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Stíšiť na jeden deň";
-/* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Stíšiť na 1 hodinu";
-/* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Stíšiť na jednu minútu";
-/* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Stíšiť na 1 týždeň";
-/* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Stíšiť na 1 rok";
-/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "do %@";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Hľadať v konverzácii";
-/* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Zrušiť stíšenie";
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Presun a zmena veľkosti";
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Môže to trvať zopár minút.";
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimalizácia databázy";
-/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "Pred %@ h";
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "Pred %@ min";
 /* The present; the current time. */
 "DATE_NOW" = "Teraz";
-/* The current day. */
-"DATE_TODAY" = "Dnes";
-/* The day before today. */
-"DATE_YESTERDAY" = "Včera";
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Miznúce správy";
-/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Správy v tejto konverzácii zmiznú po %@.";
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Upraviť skupinu";
 /* Label indicating media gallery is empty */
@@ -226,14 +136,10 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Nepodarilo sa vybrať prílohu.";
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Chybný audio súbor.";
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Správy nemiznú.";
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Opustiť";
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "Opustiť skupinu";
-/* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "Správa";
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "Všetky média";
 /* media picker option to choose from library */
@@ -250,48 +156,22 @@
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Vy";
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Tento mesiac";
-/* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "Doručené";
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Odosielanie zlyhalo.";
-/* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "Nepodarilo sa";
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Prečítané";
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Vynechané";
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "Odosiela sa…";
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Odoslané";
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Odovzdáva sa…";
-/* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Toto povolenie môžete povoliť v aplikácii Nastavenia iOS.";
-/* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Session potrebuje prístup k vašim fotkám pre túto funkciu.";
-/* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Na stíšené konverzácie nebudete dostávať upozornenia.";
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ do %@";
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Poznámka pre seba";
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Je možné, že ste dostali správy kým sa váš %@ reštartoval.";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Kvôli známym chybám v rámci Apple push sa náhľady správ zobrazia len vtedy, ak sa správa načíta do 30 sekúnd po odoslaní. V dôsledku toho môže byť odznak aplikácie nepresný.";
-/* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Hrať keď je apka otvorená";
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "Zvuky";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Meno a obsah";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Iba meno";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Ani meno ani obsah";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "Zobraziť";
 /* No comment provided by engineer. */
 "BUTTON_OK" = "OK";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -310,10 +190,6 @@
 "PUSH_MANAGER_MARKREAD" = "Označiť ako prečítané";
 /* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Odpovedať";
-/* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Nemôžeme aktivovať váš účet kým neoveríte kód, ktorý sme vám poslali.";
-/* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Okamžite";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Pre otvorenie %1$s potvrďte svoju totožnosť.";
 /* Title for alert indicating that screen lock could not be unlocked. */
@@ -322,82 +198,10 @@
 "SEND_MEDIA_ABANDON_TITLE" = "Zahodiť médiá?";
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Zahodiť médiá";
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Vrátiť sa ku kamere";
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Vrátiť sa do knižnice médií";
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (predvolené)";
-/* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "Zálohovať";
-/* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Zálohovať teraz";
-/* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "Zrušiť zálohovanie";
-/* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Zálohovanie povolené";
-/* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "Stav iCloud";
-/* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Obnovenie zálohy zlyhalo";
-/* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Obnovenie zálohy zlyhalo";
-/* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Prebieha obnovenie zálohy";
-/* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Obnovenie zálohy sa podarilo";
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "Fáza";
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "Priebeh";
-/* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "Status";
-/* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Zálohovanie zlyhalo";
-/* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "Čaká sa";
-/* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Zálohovanie";
-/* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Zálohovanie prebehlo úspešne";
-/* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Zmazať históriu konverzácie";
-/* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Zmazať všetko";
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Zmazať históriu konverzácie";
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Zvuk správy";
-/* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Posielať náhľady odkazov";
-/* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Náhľady sú podporované pre väčšinu adries.";
-/* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Náhľady odkazov";
-/* Setting for enabling & disabling voice & video calls. */
-"SETTINGS_CALLS" = "Hlasové a video hovory";
-/* Footer for setting for enabling & disabling voice & video calls. */
-"SETTINGS_CALLS_FOOTER" = "Povoliť prístup k prijímaniu hlasových a video hovorov od ostatných používateľov.";
-/* Header for setting for enabling & disabling voice & video calls. */
-"SETTINGS_CALLS_HEADER" = "Hovory";
-/* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Obsah upozornenia";
-/* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Potvrdenia o prečítaní";
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Zobrazte a zdieľajte, keď boli správy prečítané. Toto nastavenie je voliteľné a vzťahuje sa na všetky konverzácie.";
-/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Časový limit zamknutia obrazovky";
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Zámok obrazovky";
-/* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Zámok obrazovky";
-/* Header Label for the sounds section of settings views. */
-"SETTINGS_SECTION_SOUNDS" = "Zvuky";
-/* Section header */
-"SETTINGS_SECURITY_TITLE" = "Zabezpečenie obrazovky";
-/* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Indikátory písania";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Žiaden";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
@@ -493,8 +297,7 @@
 "vc_create_private_chat_title" = "Nová relácia";
 "vc_create_private_chat_enter_session_id_tab_title" = "Zadajte Session ID";
 "vc_create_private_chat_scan_qr_code_tab_title" = "Skenovať QR kód";
-"vc_create_private_chat_scan_qr_code_explanation" = "Začnite stretnutie naskenovaním QR kódu iného používateľa. QR kód nájdete ťuknutím na ikonu QR kódu v nastaveniach účtu.";
-"vc_enter_public_key_explanation" = "Používatelia môžu zdieľať svoje Session ID tak, že prejdú do nastavení svojho konta a klepnú na \"Zdieľať Session ID\" alebo zdieľajú svoj QR kód.";
+"vc_enter_public_key_explanation" = "Start a new conversation by entering someone's Session ID or share your Session ID with them.";
 "vc_scan_qr_code_camera_access_explanation" = "Session potrebuje prístup ku kamere na skenovanie QR kódov";
 "vc_scan_qr_code_grant_camera_access_button_title" = "Povoliť prístup ku kamere";
 "vc_create_closed_group_title" = "Nová uzatvorená skupina";
@@ -507,28 +310,15 @@
 "vc_join_public_chat_title" = "Pripojiť sa k otvorenej skupine";
 "vc_join_public_chat_enter_group_url_tab_title" = "Otvoriť URL skupiny";
 "vc_join_public_chat_scan_qr_code_tab_title" = "Skenovať QR kód";
-"vc_join_public_chat_scan_qr_code_explanation" = "Oskenujte QR kód skupiny ku ktorej sa chcete pripojiť";
 "vc_enter_chat_url_text_field_hint" = "Zadajte URL otvorenej skupiny";
 "vc_settings_title" = "Nastavenia";
-"vc_settings_display_name_text_field_hint" = "Zadajte zobrazované meno";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_missing_error" = "Zvoľte prosím zobrazované meno";
 "vc_settings_display_name_too_long_error" = "Zvoľte prosím kratšie zobrazované meno";
 "vc_settings_privacy_button_title" = "Súkromie";
 "vc_settings_notifications_button_title" = "Hlásenia";
 "vc_settings_recovery_phrase_button_title" = "Fráza pre obnovenie";
 "vc_settings_clear_all_data_button_title" = "Odstrániť dáta";
-"vc_notification_settings_title" = "Hlásenia";
-"vc_privacy_settings_title" = "Súkromie";
-"preferences_notifications_strategy_category_title" = "Stratégia upozornení";
-"modal_seed_title" = "Vaša fráza pre obnovenie";
-"modal_seed_explanation" = "Toto je vaša fráza pre obnovenie. S jej pomocou môžete obnoviť alebo presunúť svoje Session ID na nové zariadenie.";
-"modal_clear_all_data_title" = "Odstrániť všetky dáta";
-"modal_clear_all_data_explanation" = "Toto navždy vymaže vaše správy, stretnutia a kontakty.";
-"modal_clear_all_data_explanation_2" = "Chcete vymazať iba toto zariadenie alebo celý účet?";
-"dialog_clear_all_data_deletion_failed_1" = "Data neboli odstránené 1 Servisným Uzlom. Servisný Uzol ID:%@.";
-"dialog_clear_all_data_deletion_failed_2" = "Data neboli odstránené 1 Servisným Uzlom. Servisný Uzol ID:%@.";
-"modal_clear_all_data_device_only_button_title" = "Iba zariadenie";
-"modal_clear_all_data_entire_account_button_title" = "Celý Účet";
 "vc_qr_code_title" = "QR kód";
 "vc_qr_code_view_my_qr_code_tab_title" = "Zobraziť môj QR kód";
 "vc_qr_code_view_scan_qr_code_tab_title" = "Skenovať QR kód";
@@ -540,17 +330,14 @@
 "slow_mode_explanation" = "Session občas na pozadí skontroluje nové správy.";
 "slow_mode" = "Pomalý režim";
 "vc_pn_mode_title" = "Upozornenia na správy";
-"vc_notification_settings_notification_mode_title" = "Použiť rýchly režim";
 "vc_link_device_recovery_phrase_tab_title" = "Fráza pre obnovenie";
 "vc_link_device_scan_qr_code_explanation" = "Prejdite do Nastavenia → Fráza pre Obnovenie na inom Vašom zariadení pre zobrazenie QR kódu.";
 "vc_enter_recovery_phrase_title" = "Fráza pre obnovenie";
 "vc_enter_recovery_phrase_explanation" = "Pre prepojenie Vášho zariadenia, zadajte Frázu pre Obnovenie, ktorá Vám bola poskytnutá pri registrácii.";
 "vc_enter_public_key_text_field_hint" = "Vložte Session ID alebo ONS meno";
-"vc_home_title" = "Správy";
 "admin_group_leave_warning" = "Pretože tvorcom skupiny ste vy, skupina bude vymazaná pre každého. Táto akcia sa nedá vrátiť.";
 "vc_join_open_group_suggestions_title" = "Alebo sa pripojte k jednej z týchto...";
 "vc_settings_invite_a_friend_button_title" = "Pozvať priateľa";
-"vc_settings_help_us_translate_button_title" = "Pomôžte nám preložiť Session";
 "copied" = "Skopírované";
 "vc_conversation_settings_copy_session_id_button_title" = "Kopírovať Session ID";
 "vc_conversation_input_prompt" = "Správa";
@@ -568,10 +355,6 @@
 "modal_link_previews_title" = "Povoliť náhľad odkazov?";
 "modal_link_previews_explanation" = "Zapnutie ukážok linkov ukáže ukážky pre URL, ktoré vy pošlete a príjmete. Toto môže byť užitočné, ale Session bude potrebovať navštíviť dané webstránky pre vygenerovanie ukážok. Kedykoľvek môžete vypnúť ukážky linkov v nastaveniach Session.";
 "modal_link_previews_button_title" = "Povoliť";
-"modal_call_title" = "Hlasové / video hovory";
-"modal_call_explanation" = "Súčasná implementácia hlasových/video hovorov odhalí vašu IP adresu serverom Oxen Foundation a volajúcemu/volanému používateľovi.";
-"modal_share_logs_title" = "Zdieľať záznamy";
-"modal_share_logs_explanation" = "Chcete exportovať záznamy činnosti vašej aplikácie pre zdieľanie za účelom vyriešenia problémov?";
 "vc_share_title" = "Zdieľať do Session";
 "vc_share_loading_message" = "Pripravujú sa prílohy...";
 "vc_share_sending_message" = "Odosiela sa...";
@@ -581,9 +364,6 @@
 "vc_share_link_previews_disabled_explanation" = "Zapnutie ukážok linkov ukáže ukážky pre URL, ktoré vy pošlete a príjmete. Toto môže byť užitočné, ale Session bude potrebovať navštíviť dané webstránky pre vygenerovanie ukážok.\n\nKedykoľvek môžete vypnúť ukážky linkov v nastaveniach Session.";
 "view_open_group_invitation_description" = "Otvoriť skupinovú pozvánku";
 "vc_conversation_settings_invite_button_title" = "Pridať členov";
-"vc_settings_faq_button_title" = "Časté otázky";
-"vc_settings_survey_button_title" = "Spätná väzba / Anketa";
-"vc_settings_support_button_title" = "Ladiaci log";
 "modal_send_seed_title" = "Varovanie";
 "modal_send_seed_explanation" = "Toto je Vaša Fáza pre Obnovenie. Ak ju niekomu poskytnete, dotýčný má plný prístup do Vášho účtu.";
 "modal_send_seed_send_button_title" = "Odoslať";
@@ -612,16 +392,8 @@
 "call_outgoing" = "Volali ste %@";
 "call_incoming" = "%@ vám volal/a";
 "call_missed" = "Zmeškaný Hovor od %@";
-"call_rejected" = "Odmietnutý Hovor";
-"call_cancelled" = "Zrušený Hovor";
-"call_timeout" = "Neprijatý Hovor";
-"voice_call" = "Hlasový Hovor";
-"video_call" = "Video Hovor";
 "APN_Message" = "Máte novú správu";
 "APN_Collapsed_Messages" = "Máte %@ nových správ.";
-"system_mode_theme" = "Systém";
-"dark_mode_theme" = "Tmavý";
-"light_mode_theme" = "Svetlý";
 "PIN_BUTTON_TEXT" = "Pripnúť";
 "UNPIN_BUTTON_TEXT" = "Zrušiť pripnutie";
 "modal_call_missed_tips_title" = "Zmeškaný hovor";
@@ -630,8 +402,6 @@
 "screenshot_taken" = "%@ urobili snímku obrazovky.";
 "SEARCH_SECTION_CONTACTS" = "Kontakty a Skupiny";
 "SEARCH_SECTION_MESSAGES" = "Správy";
-"SEARCH_SECTION_RECENT" = "Nedávne";
-"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "posledná správa: %@";
 "MESSAGE_REQUESTS_TITLE" = "Žiadosti o Správu";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "Žiadne prebiehajúce žiadosti o správu";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "Vymazať Všetko";
@@ -647,19 +417,12 @@
 "TXT_DECLINE_TITLE" = "Decline";
 "TXT_BLOCK_USER_TITLE" = "Block User";
 "ALERT_ERROR_TITLE" = "Error";
-"NEW_CONVERSATION_MENU_OPEN_GROUP" = "Open Group";
-"NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "Direct Message";
-"NEW_CONVERSATION_MENU_CLOSED_GROUP" = "Closed Group";
 "modal_call_permission_request_title" = "Call Permissions Required";
 "modal_call_permission_request_explanation" = "You can enable the 'Voice and video calls' permission in the Privacy Settings.";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "LOADING_CONVERSATIONS" = "Loading Conversations...";
 "DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database\n\nYou can export your application logs to be able to share for troubleshooting or you can restore your device\n\nWarning: Restoring your device will result in loss of any data older than two weeks";
-"CHATS_TITLE" = "Chats";
-"MESSAGE_TRIMMING_TITLE" = "Message Trimming";
-"MESSAGE_TRIMMING_OPEN_GROUP_TITLE" = "Delete Old Open Group Messages";
-"MESSAGE_TRIMMING_OPEN_GROUP_DESCRIPTION" = "Automatically delete messages which are older than 6 months from open groups with over 2,000 messages when starting the app";
 "RECOVERY_PHASE_ERROR_GENERIC" = "Something went wrong. Please check your recovery phrase and try again.";
 "RECOVERY_PHASE_ERROR_LENGTH" = "Looks like you didn't enter enough words. Please check your recovery phrase and try again.";
 "RECOVERY_PHASE_ERROR_LAST_WORD" = "You seem to be missing the last word of your recovery phrase. Please check what you entered and try again.";
@@ -714,3 +477,122 @@
 "EMOJI_REACTS_NOTIFICATION" = "%@ reacts to a message with %@.";
 "EMOJI_REACTS_MORE_REACTORS_ONE" = "And 1 other has reacted %@ to this message.";
 "EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted %@ to this message.";
+"EMOJI_REACTS_RATE_LIMIT_TOAST" = "Slow down! You've sent too many emoji reacts. Try again soon.";
+/* New conversation screen*/
+"vc_new_conversation_title" = "New Conversation";
+"CREATE_GROUP_BUTTON_TITLE" = "Create";
+"JOIN_COMMUNITY_BUTTON_TITLE" = "Join";
+"PRIVACY_TITLE" = "Súkromie";
+"PRIVACY_SECTION_SCREEN_SECURITY" = "Zabezpečenie obrazovky";
+"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "Lock Session";
+"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = "Require Touch ID, Face ID or your passcode to unlock Session.";
+"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE" = "Screenshot Notifications";
+"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "Receive a notification when a contact takes a screenshot of a one-to-one chat.";
+"PRIVACY_SECTION_READ_RECEIPTS" = "Potvrdenia o prečítaní";
+"PRIVACY_READ_RECEIPTS_TITLE" = "Potvrdenia o prečítaní";
+"PRIVACY_READ_RECEIPTS_DESCRIPTION" = "Send read receipts in one-to-one chats.";
+"PRIVACY_SECTION_TYPING_INDICATORS" = "Indikátory písania";
+"PRIVACY_TYPING_INDICATORS_TITLE" = "Indikátory písania";
+"PRIVACY_TYPING_INDICATORS_DESCRIPTION" = "See and share typing indicators in one-to-one conversations.";
+"PRIVACY_SECTION_LINK_PREVIEWS" = "Link Previews";
+"PRIVACY_LINK_PREVIEWS_TITLE" = "Posielať náhľady odkazov";
+"PRIVACY_LINK_PREVIEWS_DESCRIPTION" = "Generate link previews for supported URLs.";
+"PRIVACY_SECTION_CALLS" = "Calls (Beta)";
+"PRIVACY_CALLS_TITLE" = "Hlasové a video hovory";
+"PRIVACY_CALLS_DESCRIPTION" = "Enables voice and video calls to and from other users.";
+"PRIVACY_CALLS_WARNING_TITLE" = "Voice and Video Calls (Beta)";
+"PRIVACY_CALLS_WARNING_DESCRIPTION" = "Your IP address is visible to your call partner and an Oxen Foundation server while using beta calls. Are you sure you want to enable Voice and Video Calls?";
+"NOTIFICATIONS_TITLE" = "Hlásenia";
+"NOTIFICATIONS_SECTION_STRATEGY" = "Stratégia upozornení";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_TITLE" = "Použiť rýchly režim";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_DESCRIPTION" = "You'll be notified of new message reliably and immediately using Apple's notification servers.";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION" = "Go to device notification settings";
+"NOTIFICATIONS_SECTION_STYLE" = "Notification Style";
+"NOTIFICATIONS_STYLE_SOUND_TITLE" = "Sound";
+"NOTIFICATIONS_STYLE_SOUND_WHEN_OPEN_TITLE" = "Sound When App is Open";
+"NOTIFICATIONS_STYLE_CONTENT_TITLE" = "Obsah upozornenia";
+"NOTIFICATIONS_STYLE_CONTENT_DESCRIPTION" = "The information shown in notifications.";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT" = "Name & Content";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_ONLY" = "Iba meno";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT" = "Ani meno ani obsah";
+"CONVERSATION_SETTINGS_TITLE" = "Conversations";
+"CONVERSATION_SETTINGS_SECTION_MESSAGE_TRIMMING" = "Message Trimming";
+"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_TITLE" = "Trim Communities";
+"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_DESCRIPTION" = "Delete messages older than 6 months from Communities that have over 2,000 messages.";
+"CONVERSATION_SETTINGS_SECTION_AUDIO_MESSAGES" = "Audio Messages";
+"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_TITLE" = "Autoplay Audio Messages";
+"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_DESCRIPTION" = "Autoplay consecutive audio messages.";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE" = "Blocked Contacts";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_EMPTY_STATE" = "You have no blocked contacts.";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK" = "Unblock";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_SINGLE" = "Are you sure you want to unblock %@?";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_FALLBACK" = "this contact";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_1" = "Are you sure you want to unblock %@";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_2_SINGLE" = "and %@?";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_3" = "and %d others?";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_ACTON" = "Unblock";
+"APPEARANCE_TITLE" = "Appearance";
+"APPEARANCE_THEMES_TITLE" = "Themes";
+"APPEARANCE_PRIMARY_COLOR_TITLE" = "Primary colour";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_QUOTE" = "How are you?";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_MESSAGE" = "I'm good thanks, you?";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_OUT_MESSAGE" = "I'm doing great, thanks.";
+"APPEARANCE_NIGHT_MODE_TITLE" = "Auto night-mode";
+"APPEARANCE_NIGHT_MODE_TOGGLE" = "Match system settings";
+"HELP_TITLE" = "Help";
+"HELP_REPORT_BUG_TITLE" = "Report a Bug";
+"HELP_REPORT_BUG_DESCRIPTION" = "Export your logs, then upload the file though Session's Help Desk.";
+"HELP_REPORT_BUG_ACTION_TITLE" = "Export Logs";
+"HELP_TRANSLATE_TITLE" = "Translate Session";
+"HELP_FEEDBACK_TITLE" = "We'd love your Feedback";
+"HELP_FAQ_TITLE" = "Časté otázky";
+"HELP_SUPPORT_TITLE" = "Support";
+"modal_clear_all_data_title" = "Odstrániť všetky dáta";
+"modal_clear_all_data_explanation" = "This will permanently delete your messages and contacts. Would you like to clear this device only, or delete your data from the network as well?";
+"modal_clear_all_data_explanation_2" = "Are you sure you want to delete your data from the network?   If you continue, you will not be able to restore your messages or contacts.";
+"modal_clear_all_data_device_only_button_title" = "Clear Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Clear Device and Network";
+"dialog_clear_all_data_deletion_failed_1" = "Data neboli odstránené 1 Servisným Uzlom. Servisný Uzol ID:%@.";
+"dialog_clear_all_data_deletion_failed_2" = "Data neboli odstránené 1 Servisným Uzlom. Servisný Uzol ID:%@.";
+"modal_clear_all_data_confirm" = "Clear";
+"modal_seed_title" = "Vaša fráza pre obnovenie";
+"modal_seed_explanation" = "You can use your recovery phrase to restore your account or link a device.";
+"modal_permission_explanation" = "Session needs %@ access to continue. You can enable access in the iOS settings.";
+"modal_permission_settings_title" = "Settings";
+"modal_permission_camera" = "camera";
+"modal_permission_microphone" = "microphone";
+"modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"DISAPPEARING_MESSAGES_SUBTITLE_OFF" = "Off";
+"DISAPPEARING_MESSAGES_SUBTITLE_DISAPPEAR_AFTER" = "Disappear After: %@";
+"COPY_GROUP_URL" = "Copy Group URL";
+"NEW_CONVERSATION_CONTACTS_SECTION_TITLE" = "Contacts";
+"GROUP_ERROR_NO_MEMBER_SELECTION" = "Please pick at least 1 group member";
+"GROUP_CREATION_PLEASE_WAIT" = "Please wait while the group is created...";
+"GROUP_CREATION_ERROR_TITLE" = "Couldn't Create Group";
+"GROUP_CREATION_ERROR_MESSAGE" = "Please check your internet connection and try again.";
+"GROUP_UPDATE_ERROR_TITLE" = "Couldn't Update Group";
+"GROUP_UPDATE_ERROR_MESSAGE" = "Can't leave while adding or removing other members.";
+"GROUP_ACTION_REMOVE" = "Remove";
+"GROUP_TITLE_MEMBERS" = "Members";
+"GROUP_TITLE_FALLBACK" = "Group";
+"DM_ERROR_DIRECT_BLINDED_ID" = "You can only send messages to Blinded IDs from within a Community";
+"DM_ERROR_INVALID" = "Please check the Session ID or ONS name and try again";
+"COMMUNITY_ERROR_INVALID_URL" = "Please check the URL you entered and try again.";
+"COMMUNITY_ERROR_GENERIC" = "Couldn't Join";
+"DISAPPERING_MESSAGES_TITLE" = "Disappearing Messages";
+"DISAPPERING_MESSAGES_TYPE_TITLE" = "Delete Type";
+"DISAPPERING_MESSAGES_TYPE_AFTER_READ_TITLE" = "Disappear After Read";
+"DISAPPERING_MESSAGES_TYPE_AFTER_READ_DESCRIPTION" = "Messages delete after they have been read.";
+"DISAPPERING_MESSAGES_TYPE_AFTER_SEND_TITLE" = "Disappear After Send";
+"DISAPPERING_MESSAGES_TYPE_AFTER_SEND_DESCRIPTION" = "Messages delete after they have been sent.";
+"DISAPPERING_MESSAGES_TIMER_TITLE" = "Timer";
+"DISAPPERING_MESSAGES_SAVE_TITLE" = "Set";
+"DISAPPERING_MESSAGES_GROUP_WARNING" = "This setting applies to everyone in this conversation.";
+"DISAPPERING_MESSAGES_GROUP_WARNING_ADMIN_ONLY" = "This setting applies to everyone in this conversation. Only group admins can change this setting.";
+"DISAPPERING_MESSAGES_SUMMARY" = "Disappear After %@ - %@";
+"DISAPPERING_MESSAGES_INFO_ENABLE" = "%@ has set messages to disappear %@ after they have been %@";
+"DISAPPERING_MESSAGES_INFO_UPDATE" = "%@ has changed messages to disappear %@ after they have been %@";
+"DISAPPERING_MESSAGES_INFO_DISABLE" = "%@ has turned off disappearing messages";
+"MESSAGE_STATE_READ" = "Read";
+"MESSAGE_STATE_SENT" = "Sent";

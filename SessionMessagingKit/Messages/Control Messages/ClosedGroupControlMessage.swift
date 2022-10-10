@@ -369,9 +369,15 @@ public extension ClosedGroupControlMessage.Kind {
                 return String(format: "GROUP_TITLE_CHANGED".localized(), name)
                 
             case .membersAdded(let membersAsData):
-                let addedMemberNames: [String] = try Profile
-                    .fetchAll(db, ids: membersAsData.map { $0.toHexString() })
-                    .map { $0.displayName() }
+                let memberIds: [String] = membersAsData.map { $0.toHexString() }
+                let knownMemberNameMap: [String: String] = try Profile
+                    .fetchAll(db, ids: memberIds)
+                    .reduce(into: [:]) { result, next in result[next.id] = next.displayName() }
+                let addedMemberNames: [String] = memberIds
+                    .map {
+                        knownMemberNameMap[$0] ??
+                        Profile.truncated(id: $0, threadVariant: .closedGroup)
+                    }
                 
                 return String(
                     format: "GROUP_MEMBER_JOINED".localized(),
@@ -387,9 +393,14 @@ public extension ClosedGroupControlMessage.Kind {
                 var infoMessage: String = ""
                 
                 if !memberIds.removing(userPublicKey).isEmpty {
-                    let removedMemberNames: [String] = try Profile
+                    let knownMemberNameMap: [String: String] = try Profile
                         .fetchAll(db, ids: memberIds.removing(userPublicKey))
-                        .map { $0.displayName() }
+                        .reduce(into: [:]) { result, next in result[next.id] = next.displayName() }
+                    let removedMemberNames: [String] = memberIds.removing(userPublicKey)
+                        .map {
+                            knownMemberNameMap[$0] ??
+                            Profile.truncated(id: $0, threadVariant: .closedGroup)
+                        }
                     let format: String = (removedMemberNames.count > 1 ?
                         "GROUP_MEMBERS_REMOVED".localized() :
                         "GROUP_MEMBER_REMOVED".localized()

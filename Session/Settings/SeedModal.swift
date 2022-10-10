@@ -1,11 +1,10 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 import SessionUtilitiesKit
 
-@objc(LKSeedModal)
 final class SeedModal: Modal {
-
     private let mnemonic: String = {
         if let hexEncodedSeed: String = Identity.fetchHexEncodedSeed() {
             return Mnemonic.encode(hexEncodedString: hexEncodedSeed)
@@ -15,75 +14,117 @@ final class SeedModal: Modal {
         return Mnemonic.encode(hexEncodedString: Identity.fetchUserPrivateKey()!.toHexString())
     }()
     
+    // MARK: - Initialization
+    
+    override init(targetView: UIView? = nil, afterClosed: (() -> ())? = nil) {
+        super.init(targetView: targetView, afterClosed: afterClosed)
+        
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Components
+    
+    private let titleLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        result.text = "modal_seed_title".localized()
+        result.themeTextColor = .textPrimary
+        result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
+    private let explanationLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = "modal_seed_explanation".localized()
+        result.themeTextColor = .textPrimary
+        result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
+    private lazy var mnemonicLabelContainer: UIView = {
+        let result: UIView = UIView()
+        result.themeBorderColor = .textPrimary
+        result.layer.cornerRadius = TextField.cornerRadius
+        result.layer.borderWidth = 1
+        
+        return result
+    }()
+    
+    private lazy var mnemonicLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = Fonts.spaceMono(ofSize: Values.smallFontSize)
+        result.text = mnemonic
+        result.themeTextColor = .textPrimary
+        result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
+    private lazy var copyButton: UIButton = {
+        let result: UIButton = Modal.createButton(
+            title: "copy".localized(),
+            titleColor: .textPrimary
+        )
+        result.addTarget(self, action: #selector(copySeed), for: .touchUpInside)
+        
+        return result
+    }()
+    
+    private lazy var buttonStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ copyButton, cancelButton ])
+        result.axis = .horizontal
+        result.spacing = Values.mediumSpacing
+        result.distribution = .fillEqually
+        
+        return result
+    }()
+    
+    private lazy var contentStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, mnemonicLabelContainer ])
+        result.axis = .vertical
+        result.spacing = Values.smallSpacing
+        result.isLayoutMarginsRelativeArrangement = true
+        result.layoutMargins = UIEdgeInsets(
+            top: Values.largeSpacing,
+            leading: Values.largeSpacing,
+            bottom: Values.verySmallSpacing,
+            trailing: Values.largeSpacing
+        )
+        
+        return result
+    }()
+    
+    private lazy var mainStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
+        result.axis = .vertical
+        result.spacing = Values.largeSpacing - Values.smallFontSize / 2
+        
+        return result
+    }()
+    
     // MARK: - Lifecycle
     
     override func populateContentView() {
-        // Set up title label
-        let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        titleLabel.text = NSLocalizedString("modal_seed_title", comment: "")
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.textAlignment = .center
+        contentView.addSubview(mainStackView)
         
-        // Set up mnemonic label
-        let mnemonicLabel = UILabel()
-        mnemonicLabel.textColor = Colors.text
-        mnemonicLabel.font = Fonts.spaceMono(ofSize: Values.smallFontSize)
-        mnemonicLabel.text = mnemonic
-        mnemonicLabel.numberOfLines = 0
-        mnemonicLabel.lineBreakMode = .byWordWrapping
-        mnemonicLabel.textAlignment = .center
+        mainStackView.pin(to: contentView)
         
-        // Set up mnemonic label container
-        let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
         mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone6OrSmaller ? 4 : Values.smallSpacing)
-        mnemonicLabelContainer.layer.cornerRadius = TextField.cornerRadius
-        mnemonicLabelContainer.layer.borderWidth = 1
-        mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
-        
-        // Set up explanation label
-        let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
-        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("modal_seed_explanation", comment: "")
-        explanationLabel.numberOfLines = 0
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.textAlignment = .center
-        
-        // Set up copy button
-        let copyButton = UIButton()
-        copyButton.set(.height, to: Values.mediumButtonHeight)
-        copyButton.layer.cornerRadius = Modal.buttonCornerRadius
-        copyButton.backgroundColor = Colors.buttonBackground
-        copyButton.titleLabel!.font = .systemFont(ofSize: Values.smallFontSize)
-        copyButton.setTitleColor(Colors.text, for: UIControl.State.normal)
-        copyButton.setTitle(NSLocalizedString("copy", comment: ""), for: UIControl.State.normal)
-        copyButton.addTarget(self, action: #selector(copySeed), for: UIControl.Event.touchUpInside)
-        
-        // Set up button stack view
-        let buttonStackView = UIStackView(arrangedSubviews: [ cancelButton, copyButton ])
-        buttonStackView.axis = .horizontal
-        buttonStackView.spacing = Values.mediumSpacing
-        buttonStackView.distribution = .fillEqually
-        
-        // Content stack view
-        let contentStackView = UIStackView(arrangedSubviews: [ titleLabel, mnemonicLabelContainer, explanationLabel ])
-        contentStackView.axis = .vertical
-        contentStackView.spacing = Values.largeSpacing
-        
-        // Set up stack view
-        let spacing = Values.largeSpacing - Values.smallFontSize / 2
-        let stackView = UIStackView(arrangedSubviews: [ contentStackView, buttonStackView ])
-        stackView.axis = .vertical
-        stackView.spacing = spacing
-        contentView.addSubview(stackView)
-        stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
-        stackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
-        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: spacing)
         
         // Mark seed as viewed
         Storage.shared.writeAsync { db in db[.hasViewedSeed] = true }
@@ -93,6 +134,7 @@ final class SeedModal: Modal {
     
     @objc private func copySeed() {
         UIPasteboard.general.string = mnemonic
+        
         dismiss(animated: true, completion: nil)
     }
 }

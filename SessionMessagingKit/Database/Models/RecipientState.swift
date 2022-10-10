@@ -4,6 +4,7 @@ import Foundation
 import GRDB
 import SignalCoreKit
 import SessionUtilitiesKit
+import SessionUIKit
 
 public struct RecipientState: Codable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "recipientState" }
@@ -61,6 +62,19 @@ public struct RecipientState: Codable, Equatable, FetchableRecord, PersistableRe
                 default:
                     owsFailDebug("Message has unexpected status: \(self).")
                     return "MESSAGE_STATUS_SENT".localized()
+            }
+        }
+        
+        public func statusIconInfo(variant: Interaction.Variant, hasAtLeastOneReadReceipt: Bool) -> (image: UIImage?, themeTintColor: ThemeValue) {
+            guard variant == .standardOutgoing else { return (nil, .textPrimary) }
+
+            switch (self, hasAtLeastOneReadReceipt) {
+                case (.sending, _): return (UIImage(systemName: "ellipsis.circle"), .textPrimary)
+                case (.sent, false), (.skipped, _):
+                    return (UIImage(systemName: "checkmark.circle"), .textPrimary)
+                    
+                case (.sent, true): return (UIImage(systemName: "checkmark.circle.fill"), .textPrimary)
+                case (.failed, _): return (UIImage(systemName: "exclamationmark.circle"), .danger)
             }
         }
     }

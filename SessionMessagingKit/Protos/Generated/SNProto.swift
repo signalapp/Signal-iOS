@@ -463,6 +463,12 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SNProtoMessageRequestResponseBuilder {
         let builder = SNProtoMessageRequestResponseBuilder(isApproved: isApproved)
+        if let _value = profileKey {
+            builder.setProfileKey(_value)
+        }
+        if let _value = profile {
+            builder.setProfile(_value)
+        }
         return builder
     }
 
@@ -482,6 +488,14 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
             proto.isApproved = valueParam
         }
 
+        @objc public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
+        @objc public func setProfile(_ valueParam: SNProtoLokiProfile) {
+            proto.profile = valueParam.proto
+        }
+
         @objc public func build() throws -> SNProtoMessageRequestResponse {
             return try SNProtoMessageRequestResponse.parseProto(proto)
         }
@@ -495,10 +509,24 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
 
     @objc public let isApproved: Bool
 
+    @objc public let profile: SNProtoLokiProfile?
+
+    @objc public var profileKey: Data? {
+        guard proto.hasProfileKey else {
+            return nil
+        }
+        return proto.profileKey
+    }
+    @objc public var hasProfileKey: Bool {
+        return proto.hasProfileKey
+    }
+
     private init(proto: SessionProtos_MessageRequestResponse,
-                 isApproved: Bool) {
+                 isApproved: Bool,
+                 profile: SNProtoLokiProfile?) {
         self.proto = proto
         self.isApproved = isApproved
+        self.profile = profile
     }
 
     @objc
@@ -517,12 +545,18 @@ extension SNProtoUnsendRequest.SNProtoUnsendRequestBuilder {
         }
         let isApproved = proto.isApproved
 
+        var profile: SNProtoLokiProfile? = nil
+        if proto.hasProfile {
+            profile = try SNProtoLokiProfile.parseProto(proto.profile)
+        }
+
         // MARK: - Begin Validation Logic for SNProtoMessageRequestResponse -
 
         // MARK: - End Validation Logic for SNProtoMessageRequestResponse -
 
         let result = SNProtoMessageRequestResponse(proto: proto,
-                                                   isApproved: isApproved)
+                                                   isApproved: isApproved,
+                                                   profile: profile)
         return result
     }
 
@@ -1194,6 +1228,117 @@ extension SNProtoDataExtractionNotification.SNProtoDataExtractionNotificationBui
 
 #endif
 
+// MARK: - SNProtoLokiProfile
+
+@objc public class SNProtoLokiProfile: NSObject {
+
+    // MARK: - SNProtoLokiProfileBuilder
+
+    @objc public class func builder() -> SNProtoLokiProfileBuilder {
+        return SNProtoLokiProfileBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SNProtoLokiProfileBuilder {
+        let builder = SNProtoLokiProfileBuilder()
+        if let _value = displayName {
+            builder.setDisplayName(_value)
+        }
+        if let _value = profilePicture {
+            builder.setProfilePicture(_value)
+        }
+        return builder
+    }
+
+    @objc public class SNProtoLokiProfileBuilder: NSObject {
+
+        private var proto = SessionProtos_LokiProfile()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setDisplayName(_ valueParam: String) {
+            proto.displayName = valueParam
+        }
+
+        @objc public func setProfilePicture(_ valueParam: String) {
+            proto.profilePicture = valueParam
+        }
+
+        @objc public func build() throws -> SNProtoLokiProfile {
+            return try SNProtoLokiProfile.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SNProtoLokiProfile.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SessionProtos_LokiProfile
+
+    @objc public var displayName: String? {
+        guard proto.hasDisplayName else {
+            return nil
+        }
+        return proto.displayName
+    }
+    @objc public var hasDisplayName: Bool {
+        return proto.hasDisplayName
+    }
+
+    @objc public var profilePicture: String? {
+        guard proto.hasProfilePicture else {
+            return nil
+        }
+        return proto.profilePicture
+    }
+    @objc public var hasProfilePicture: Bool {
+        return proto.hasProfilePicture
+    }
+
+    private init(proto: SessionProtos_LokiProfile) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoLokiProfile {
+        let proto = try SessionProtos_LokiProfile(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SessionProtos_LokiProfile) throws -> SNProtoLokiProfile {
+        // MARK: - Begin Validation Logic for SNProtoLokiProfile -
+
+        // MARK: - End Validation Logic for SNProtoLokiProfile -
+
+        let result = SNProtoLokiProfile(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SNProtoLokiProfile {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SNProtoLokiProfile.SNProtoLokiProfileBuilder {
+    @objc public func buildIgnoringErrors() -> SNProtoLokiProfile? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SNProtoDataMessageQuoteQuotedAttachment
 
 @objc public class SNProtoDataMessageQuoteQuotedAttachment: NSObject {
@@ -1792,117 +1937,6 @@ extension SNProtoDataMessageReaction {
 
 extension SNProtoDataMessageReaction.SNProtoDataMessageReactionBuilder {
     @objc public func buildIgnoringErrors() -> SNProtoDataMessageReaction? {
-        return try! self.build()
-    }
-}
-
-#endif
-
-// MARK: - SNProtoDataMessageLokiProfile
-
-@objc public class SNProtoDataMessageLokiProfile: NSObject {
-
-    // MARK: - SNProtoDataMessageLokiProfileBuilder
-
-    @objc public class func builder() -> SNProtoDataMessageLokiProfileBuilder {
-        return SNProtoDataMessageLokiProfileBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SNProtoDataMessageLokiProfileBuilder {
-        let builder = SNProtoDataMessageLokiProfileBuilder()
-        if let _value = displayName {
-            builder.setDisplayName(_value)
-        }
-        if let _value = profilePicture {
-            builder.setProfilePicture(_value)
-        }
-        return builder
-    }
-
-    @objc public class SNProtoDataMessageLokiProfileBuilder: NSObject {
-
-        private var proto = SessionProtos_DataMessage.LokiProfile()
-
-        @objc fileprivate override init() {}
-
-        @objc public func setDisplayName(_ valueParam: String) {
-            proto.displayName = valueParam
-        }
-
-        @objc public func setProfilePicture(_ valueParam: String) {
-            proto.profilePicture = valueParam
-        }
-
-        @objc public func build() throws -> SNProtoDataMessageLokiProfile {
-            return try SNProtoDataMessageLokiProfile.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SNProtoDataMessageLokiProfile.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SessionProtos_DataMessage.LokiProfile
-
-    @objc public var displayName: String? {
-        guard proto.hasDisplayName else {
-            return nil
-        }
-        return proto.displayName
-    }
-    @objc public var hasDisplayName: Bool {
-        return proto.hasDisplayName
-    }
-
-    @objc public var profilePicture: String? {
-        guard proto.hasProfilePicture else {
-            return nil
-        }
-        return proto.profilePicture
-    }
-    @objc public var hasProfilePicture: Bool {
-        return proto.hasProfilePicture
-    }
-
-    private init(proto: SessionProtos_DataMessage.LokiProfile) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SNProtoDataMessageLokiProfile {
-        let proto = try SessionProtos_DataMessage.LokiProfile(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SessionProtos_DataMessage.LokiProfile) throws -> SNProtoDataMessageLokiProfile {
-        // MARK: - Begin Validation Logic for SNProtoDataMessageLokiProfile -
-
-        // MARK: - End Validation Logic for SNProtoDataMessageLokiProfile -
-
-        let result = SNProtoDataMessageLokiProfile(proto: proto)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SNProtoDataMessageLokiProfile {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SNProtoDataMessageLokiProfile.SNProtoDataMessageLokiProfileBuilder {
-    @objc public func buildIgnoringErrors() -> SNProtoDataMessageLokiProfile? {
         return try! self.build()
     }
 }
@@ -2510,7 +2544,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             proto.reaction = valueParam.proto
         }
 
-        @objc public func setProfile(_ valueParam: SNProtoDataMessageLokiProfile) {
+        @objc public func setProfile(_ valueParam: SNProtoLokiProfile) {
             proto.profile = valueParam.proto
         }
 
@@ -2547,7 +2581,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
 
     @objc public let reaction: SNProtoDataMessageReaction?
 
-    @objc public let profile: SNProtoDataMessageLokiProfile?
+    @objc public let profile: SNProtoLokiProfile?
 
     @objc public let openGroupInvitation: SNProtoDataMessageOpenGroupInvitation?
 
@@ -2610,7 +2644,7 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
                  quote: SNProtoDataMessageQuote?,
                  preview: [SNProtoDataMessagePreview],
                  reaction: SNProtoDataMessageReaction?,
-                 profile: SNProtoDataMessageLokiProfile?,
+                 profile: SNProtoLokiProfile?,
                  openGroupInvitation: SNProtoDataMessageOpenGroupInvitation?,
                  closedGroupControlMessage: SNProtoDataMessageClosedGroupControlMessage?) {
         self.proto = proto
@@ -2656,9 +2690,9 @@ extension SNProtoDataMessageClosedGroupControlMessage.SNProtoDataMessageClosedGr
             reaction = try SNProtoDataMessageReaction.parseProto(proto.reaction)
         }
 
-        var profile: SNProtoDataMessageLokiProfile? = nil
+        var profile: SNProtoLokiProfile? = nil
         if proto.hasProfile {
-            profile = try SNProtoDataMessageLokiProfile.parseProto(proto.profile)
+            profile = try SNProtoLokiProfile.parseProto(proto.profile)
         }
 
         var openGroupInvitation: SNProtoDataMessageOpenGroupInvitation? = nil

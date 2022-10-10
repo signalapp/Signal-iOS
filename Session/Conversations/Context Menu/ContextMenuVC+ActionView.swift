@@ -11,6 +11,27 @@ extension ContextMenuVC {
         
         private let action: Action
         private let dismiss: () -> Void
+        private var didTouchDownInside: Bool = false
+        
+        // MARK: - UI
+        
+        private let iconImageView: UIImageView = {
+            let result: UIImageView = UIImageView()
+            result.contentMode = .center
+            result.themeTintColor = .textPrimary
+            result.set(.width, to: ActionView.iconImageViewSize)
+            result.set(.height, to: ActionView.iconImageViewSize)
+            
+            return result
+        }()
+        
+        private let titleLabel: UILabel = {
+            let result: UILabel = UILabel()
+            result.font = .systemFont(ofSize: Values.mediumFontSize)
+            result.themeTextColor = .textPrimary
+            
+            return result
+        }()
 
         // MARK: - Lifecycle
         
@@ -32,23 +53,12 @@ extension ContextMenuVC {
         }
 
         private func setUpViewHierarchy() {
-            // Icon
-            let iconSize = ActionView.iconSize
-            let iconImageView: UIImageView = UIImageView(
-                image: action.icon?
-                    .resizedImage(to: CGSize(width: iconSize, height: iconSize))?
-                    .withRenderingMode(.alwaysTemplate)
-            )
-            iconImageView.set(.width, to: ActionView.iconImageViewSize)
-            iconImageView.set(.height, to: ActionView.iconImageViewSize)
-            iconImageView.contentMode = .center
-            iconImageView.tintColor = Colors.text
+            themeBackgroundColor = .clear
             
-            // Title
-            let titleLabel = UILabel()
+            iconImageView.image = action.icon?
+                .resizedImage(to: CGSize(width: ActionView.iconSize, height: ActionView.iconSize))?
+                .withRenderingMode(.alwaysTemplate)
             titleLabel.text = action.title
-            titleLabel.textColor = Colors.text
-            titleLabel.font = .systemFont(ofSize: Values.mediumFontSize)
             
             // Stack view
             let stackView: UIStackView = UIStackView(arrangedSubviews: [ iconImageView, titleLabel ])
@@ -77,6 +87,59 @@ extension ContextMenuVC {
         @objc private func handleTap() {
             action.work()
             dismiss()
+        }
+        
+        override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+            guard
+                isUserInteractionEnabled,
+                let location: CGPoint = touches.first?.location(in: self),
+                bounds.contains(location)
+            else { return }
+            
+            didTouchDownInside = true
+            themeBackgroundColor = .contextMenu_highlight
+            iconImageView.themeTintColor = .contextMenu_textHighlight
+            titleLabel.themeTextColor = .contextMenu_textHighlight
+        }
+
+        override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+            guard
+                isUserInteractionEnabled,
+                let location: CGPoint = touches.first?.location(in: self),
+                bounds.contains(location),
+                didTouchDownInside
+            else {
+                if didTouchDownInside {
+                    themeBackgroundColor = .clear
+                    iconImageView.themeTintColor = .contextMenu_text
+                    titleLabel.themeTextColor = .contextMenu_text
+                }
+                return
+            }
+            
+            themeBackgroundColor = .contextMenu_highlight
+            iconImageView.themeTintColor = .contextMenu_textHighlight
+            titleLabel.themeTextColor = .contextMenu_textHighlight
+        }
+
+        override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+            if didTouchDownInside {
+                themeBackgroundColor = .clear
+                iconImageView.themeTintColor = .contextMenu_text
+                titleLabel.themeTextColor = .contextMenu_text
+            }
+            
+            didTouchDownInside = false
+        }
+        
+        override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+            if didTouchDownInside {
+                themeBackgroundColor = .clear
+                iconImageView.themeTintColor = .contextMenu_text
+                titleLabel.themeTextColor = .contextMenu_text
+            }
+            
+            didTouchDownInside = false
         }
     }
 }

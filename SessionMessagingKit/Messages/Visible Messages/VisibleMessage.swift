@@ -127,7 +127,7 @@ public final class VisibleMessage: Message {
         let dataMessage: SNProtoDataMessage.SNProtoDataMessageBuilder
         
         // Profile
-        if let profile = profile, let profileProto = profile.toProto() {
+        if let profile = profile, let profileProto: SNProtoDataMessage = profile.toProto() {
             dataMessage = profileProto.asBuilder()
         }
         else {

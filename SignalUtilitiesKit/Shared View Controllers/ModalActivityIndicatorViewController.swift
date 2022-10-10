@@ -1,6 +1,4 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
 import MediaPlayer
@@ -9,60 +7,89 @@ import NVActivityIndicatorView
 
 // A modal view that be used during blocking interactions (e.g. waiting on response from
 // service or on the completion of a long-running local operation).
-@objc
 public class ModalActivityIndicatorViewController: OWSViewController {
     let canCancel: Bool
-    
     let message: String?
+    private let onAppear: (ModalActivityIndicatorViewController) -> Void
 
-    @objc
+    private var hasAppeared: Bool = false
     public var wasCancelled: Bool = false
     
+    lazy var dimmingView: UIView = {
+        let result = UIVisualEffectView()
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            result?.effect = UIBlurEffect(
+                style: (theme.interfaceStyle == .light ?
+                    UIBlurEffect.Style.systemUltraThinMaterialLight :
+                    UIBlurEffect.Style.systemUltraThinMaterial
+                )
+            )
+        }
+        
+        return result
+    }()
+    
     private lazy var spinner: NVActivityIndicatorView = {
-        let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: .white, padding: nil)
+        let result: NVActivityIndicatorView = NVActivityIndicatorView(
+            frame: CGRect.zero,
+            type: .circleStrokeSpin,
+            color: .white,
+            padding: nil
+        )
         result.set(.width, to: 64)
         result.set(.height, to: 64)
+        
+        ThemeManager.onThemeChange(observer: result) { [weak result] theme, _ in
+            guard let textPrimary: UIColor = theme.color(for: .textPrimary) else { return }
+            
+            result?.color = textPrimary
+        }
+        
         return result
     }()
 
     var wasDimissed: Bool = false
 
-    // MARK: Initializers
+    // MARK: - Initializers
 
     @available(*, unavailable, message:"use other constructor instead.")
     public required init?(coder aDecoder: NSCoder) {
         notImplemented()
     }
 
-    public required init(canCancel: Bool = false, message: String? = nil) {
+    public required init(
+        canCancel: Bool = false,
+        message: String? = nil,
+        onAppear: @escaping (ModalActivityIndicatorViewController) -> Void
+    ) {
         self.canCancel = canCancel
         self.message = message
+        self.onAppear = onAppear
+        
         super.init(nibName: nil, bundle: nil)
+        
+        // Present this modal _over_ the current view contents.
+        self.modalPresentationStyle = .overFullScreen
+        self.modalTransitionStyle = .crossDissolve
     }
 
-    @objc
     public class func present(
         fromViewController: UIViewController?,
         canCancel: Bool = false,
         message: String? = nil,
-        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+        onAppear: @escaping (ModalActivityIndicatorViewController) -> Void
     ) {
         guard let fromViewController: UIViewController = fromViewController else { return }
         
         AssertIsOnMainThread()
-
-        let view = ModalActivityIndicatorViewController(canCancel: canCancel, message: message)
-        // Present this modal _over_ the current view contents.
-        view.modalPresentationStyle = .overFullScreen
-        view.modalTransitionStyle = .crossDissolve
-        fromViewController.present(view, animated: false) {
-            DispatchQueue.global().async {
-                backgroundBlock(view)
-            }
-        }
+        
+        fromViewController.present(
+            ModalActivityIndicatorViewController(canCancel: canCancel, message: message, onAppear: onAppear),
+            animated: false
+        )
     }
 
-    @objc
     public func dismiss(completion: @escaping () -> Void) {
         guard Thread.isMainThread else {
             DispatchQueue.main.async { [weak self] in
@@ -75,7 +102,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             // Only dismiss once.
             self.dismiss(animated: false, completion: completion)
             wasDimissed = true
-        } else {
+        }
+        else {
             // If already dismissed, wait a beat then call completion.
             DispatchQueue.main.async {
                 completion()
@@ -86,45 +114,43 @@ public class ModalActivityIndicatorViewController: OWSViewController {
     public override func loadView() {
         super.loadView()
 
-        self.view.backgroundColor = UIColor(white: 0, alpha: 0.6)
-        self.view.isOpaque = false
+        self.view.themeBackgroundColor = .clear
+        
+        self.view.addSubview(dimmingView)
+        dimmingView.pin(to: self.view)
         
         if let message = message {
-            let messageLabel = UILabel()
-            messageLabel.text = message
+            let messageLabel: UILabel = UILabel()
             messageLabel.font = .systemFont(ofSize: Values.mediumFontSize)
-            messageLabel.textColor = UIColor.white
+            messageLabel.text = message
+            messageLabel.themeTextColor = .textPrimary
             messageLabel.numberOfLines = 0
             messageLabel.textAlignment = .center
             messageLabel.lineBreakMode = .byWordWrapping
             messageLabel.set(.width, to: UIScreen.main.bounds.width - 2 * Values.mediumSpacing)
+            
             let stackView = UIStackView(arrangedSubviews: [ messageLabel, spinner ])
             stackView.axis = .vertical
             stackView.spacing = Values.largeSpacing
             stackView.alignment = .center
             self.view.addSubview(stackView)
+            
             stackView.center(in: self.view)
-        } else {
+        }
+        else {
             self.view.addSubview(spinner)
             spinner.autoCenterInSuperview()
         }
 
         if canCancel {
-            let cancelButton = UIButton(type: .custom)
+            let cancelButton: SessionButton = SessionButton(style: .destructive, size: .large)
             cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
-            cancelButton.setTitleColor(UIColor.white, for: .normal)
-            cancelButton.backgroundColor = UIColor.ows_darkGray
-            cancelButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5To7Plus(18, 22))
-            cancelButton.layer.cornerRadius = ScaleFromIPhone5To7Plus(4, 5)
-            cancelButton.clipsToBounds = true
             cancelButton.addTarget(self, action: #selector(cancelPressed), for: .touchUpInside)
-            let buttonWidth = ScaleFromIPhone5To7Plus(140, 160)
-            let buttonHeight = ScaleFromIPhone5To7Plus(40, 50)
             self.view.addSubview(cancelButton)
-            cancelButton.autoHCenterInSuperview()
-            cancelButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: 50)
-            cancelButton.autoSetDimension(.width, toSize: buttonWidth)
-            cancelButton.autoSetDimension(.height, toSize: buttonHeight)
+            
+            cancelButton.center(.horizontal, in: self.view)
+            cancelButton.pin(.bottom, to: .bottom, of: self.view, withInset: -50)
+            cancelButton.set(.width, to: Values.iPadButtonWidth)
         }
 
         // Hide the modal until the presentation animation completes.
@@ -139,6 +165,18 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         // Fade in the modal
         UIView.animate(withDuration: 0.35) {
             self.view.layer.opacity = 1.0
+        }
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !self.hasAppeared {
+            self.hasAppeared = true
+            
+            DispatchQueue.global().async {
+                self.onAppear(self)
+            }
         }
     }
 

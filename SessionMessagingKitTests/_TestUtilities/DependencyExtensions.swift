@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 import SessionSnodeKit
 import SessionUtilitiesKit
 
@@ -11,6 +12,7 @@ extension SMKDependencies {
         onionApi: OnionRequestAPIType.Type? = nil,
         generalCache: Atomic<GeneralCacheType>? = nil,
         storage: Storage? = nil,
+        scheduler: ValueObservationScheduler? = nil,
         sodium: SodiumType? = nil,
         box: BoxType? = nil,
         genericHash: GenericHashType? = nil,
@@ -26,6 +28,7 @@ extension SMKDependencies {
             onionApi: (onionApi ?? self._onionApi.wrappedValue),
             generalCache: (generalCache ?? self._generalCache.wrappedValue),
             storage: (storage ?? self._storage.wrappedValue),
+            scheduler: (scheduler ?? self._scheduler.wrappedValue),
             sodium: (sodium ?? self._sodium.wrappedValue),
             box: (box ?? self._box.wrappedValue),
             genericHash: (genericHash ?? self._genericHash.wrappedValue),

@@ -99,28 +99,35 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                                target: self,
-                                                                action: #selector(donePressed))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(donePressed)
+        )
         
         // Loki: Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = "accessibility_gif_button".localized().uppercased()
-        titleLabel.textColor = Colors.text
+        let titleLabel: UILabel = UILabel()
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        titleLabel.text = "accessibility_gif_button".localized().uppercased()
+        titleLabel.themeTextColor = .textPrimary
         navigationItem.titleView = titleLabel
 
         createViews()
 
         reachability = Reachability.forInternetConnection()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(reachabilityChanged),
-                                               name: NSNotification.Name.reachabilityChanged,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: NSNotification.Name.OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reachabilityChanged),
+            name: .reachabilityChanged,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil
+        )
+        
         loadTrending()
     }
 
@@ -140,14 +147,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: Views
 
     private func createViews() {
-
-        let backgroundColor = Colors.navigationBarBackground
-        self.view.backgroundColor = backgroundColor
-
-        // Block UIKit from adjust insets of collection view which screws up
-        // min/max scroll positions.
-        self.automaticallyAdjustsScrollViewInsets = false
-
+        self.view.themeBackgroundColor = .backgroundPrimary
+        
         // Search
         searchBar.delegate = self
 
@@ -157,7 +158,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        self.collectionView.backgroundColor = backgroundColor
+        self.collectionView.themeBackgroundColor = .backgroundPrimary
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
         // Inserted below searchbar because we later occlude the collectionview
         // by inserting a masking layer between the search bar and collectionview
@@ -165,10 +166,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .leading)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .trailing)
         self.collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
+        
+        // Block UIKit from adjust insets of collection view which screws up
+        // min/max scroll positions
+        self.collectionView.contentInsetAdjustmentBehavior = .never
 
         // for iPhoneX devices, extends the black background to the bottom edge of the view.
         let bottomBannerContainer = UIView()
-        bottomBannerContainer.backgroundColor = isLightMode ? UIColor.black : Colors.navigationBarBackground
+        bottomBannerContainer.themeBackgroundColor = .backgroundPrimary
         self.view.addSubview(bottomBannerContainer)
         bottomBannerContainer.autoPinWidthToSuperview()
         bottomBannerContainer.autoPinEdge(.top, to: .bottom, of: self.collectionView)
@@ -188,15 +193,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         logoImageView.autoPinHeightToSuperview(withMargin: 3)
         logoImageView.autoHCenterInSuperview()
 
-        let noResultsView = createErrorLabel(text: NSLocalizedString("GIF_VIEW_SEARCH_NO_RESULTS",
-                                                                    comment: "Indicates that the user's search had no results."))
+        let noResultsView = createErrorLabel(text: "GIF_VIEW_SEARCH_NO_RESULTS".localized())
         self.noResultsView = noResultsView
         self.view.addSubview(noResultsView)
         noResultsView.autoPinWidthToSuperview(withMargin: 20)
         noResultsView.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
 
-        let searchErrorView = createErrorLabel(text: NSLocalizedString("GIF_VIEW_SEARCH_ERROR",
-                                                                      comment: "Indicates that an error occurred while searching."))
+        let searchErrorView = createErrorLabel(text: "GIF_VIEW_SEARCH_ERROR".localized())
         self.searchErrorView = searchErrorView
         self.view.addSubview(searchErrorView)
         searchErrorView.autoPinWidthToSuperview(withMargin: 20)
@@ -205,29 +208,24 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         searchErrorView.isUserInteractionEnabled = true
         searchErrorView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(retryTapped)))
 
-        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
+        let activityIndicator = UIActivityIndicatorView(style: .large)
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)
         activityIndicator.autoHCenterInSuperview()
         activityIndicator.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
-
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
         
         self.updateContents()
     }
 
     private func createErrorLabel(text: String) -> UILabel {
-        let label = UILabel()
+        let label: UILabel = UILabel()
+        label.font = .ows_mediumFont(withSize: 20)
         label.text = text
-        label.textColor = Colors.text
-        label.font = UIFont.ows_mediumFont(withSize: 20)
+        label.themeTextColor = .textPrimary
         label.textAlignment = .center
-        label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
+        
         return label
     }
 
@@ -246,39 +244,43 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
 
         switch viewMode {
-        case .idle:
-            self.collectionView.isHidden = true
-            noResultsView.isHidden = true
-            searchErrorView.isHidden = true
-            activityIndicator.isHidden = true
-            activityIndicator.stopAnimating()
-        case .searching:
-            self.collectionView.isHidden = true
-            noResultsView.isHidden = true
-            searchErrorView.isHidden = true
-            activityIndicator.isHidden = false
-            activityIndicator.startAnimating()
-        case .results:
-            self.collectionView.isHidden = false
-            noResultsView.isHidden = true
-            searchErrorView.isHidden = true
-            activityIndicator.isHidden = true
-            activityIndicator.stopAnimating()
+            case .idle:
+                self.collectionView.isHidden = true
+                noResultsView.isHidden = true
+                searchErrorView.isHidden = true
+                activityIndicator.isHidden = true
+                activityIndicator.stopAnimating()
+                
+            case .searching:
+                self.collectionView.isHidden = true
+                noResultsView.isHidden = true
+                searchErrorView.isHidden = true
+                activityIndicator.isHidden = false
+                activityIndicator.startAnimating()
+                
+            case .results:
+                self.collectionView.isHidden = false
+                noResultsView.isHidden = true
+                searchErrorView.isHidden = true
+                activityIndicator.isHidden = true
+                activityIndicator.stopAnimating()
 
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.reloadData()
-        case .noResults:
-            self.collectionView.isHidden = true
-            noResultsView.isHidden = false
-            searchErrorView.isHidden = true
-            activityIndicator.isHidden = true
-            activityIndicator.stopAnimating()
-        case .error:
-            self.collectionView.isHidden = true
-            noResultsView.isHidden = true
-            searchErrorView.isHidden = false
-            activityIndicator.isHidden = true
-            activityIndicator.stopAnimating()
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionView.reloadData()
+                
+            case .noResults:
+                self.collectionView.isHidden = true
+                noResultsView.isHidden = false
+                searchErrorView.isHidden = true
+                activityIndicator.isHidden = true
+                activityIndicator.stopAnimating()
+                
+            case .error:
+                self.collectionView.isHidden = true
+                noResultsView.isHidden = true
+                searchErrorView.isHidden = false
+                activityIndicator.isHidden = true
+                activityIndicator.stopAnimating()
         }
     }
 
@@ -314,7 +316,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: - UICollectionViewDelegate
 
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
         guard let cell = collectionView.cellForItem(at: indexPath) as? GifPickerCell else {
             owsFailDebug("unexpected cell.")
             return
@@ -345,7 +346,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
             layer.path = path.cgPath
             layer.fillRule = .evenOdd
-            layer.fillColor = UIColor.black.cgColor
+            layer.themeFillColor = .black
             layer.opacity = 0.7
         }
         maskingView.autoPinEdgesToSuperviewEdges()
@@ -384,22 +385,20 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                 strongSelf.delegate?.gifPickerDidSelect(attachment: attachment)
             }
         }.catch { [weak self] error in
-            guard let strongSelf = self else {
-                Logger.info("ignoring failure, since VC was dismissed before fetching finished.")
-                return
-            }
-
-            let alert = UIAlertController(title: NSLocalizedString("GIF_PICKER_FAILURE_ALERT_TITLE", comment: "Shown when selected GIF couldn't be fetched"),
-                                          message: error.localizedDescription,
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in
-                    strongSelf.getFileForCell(cell)
-            })
-            alert.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
-                strongSelf.dismiss(animated: true, completion: nil)
-            })
-
-            strongSelf.presentAlert(alert)
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self?.view,
+                info: ConfirmationModal.Info(
+                    title: "GIF_PICKER_FAILURE_ALERT_TITLE".localized(),
+                    explanation: error.localizedDescription,
+                    confirmTitle: CommonStrings.retryButton,
+                    cancelTitle: CommonStrings.dismissButton,
+                    cancelStyle: .alert_text,
+                    onConfirm: { _ in
+                        self?.getFileForCell(cell)
+                    }
+                )
+            )
+            self?.present(modal, animated: true)
         }.retainUntilComplete()
     }
 
@@ -439,11 +438,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer = nil
         let kProgressiveSearchDelaySeconds = 1.0
         progressiveSearchTimer = WeakTimer.scheduledTimer(timeInterval: kProgressiveSearchDelaySeconds, target: self, userInfo: nil, repeats: true) { [weak self] _ in
-            guard let strongSelf = self else {
-                return
-            }
-
-            strongSelf.tryToSearch()
+            self?.tryToSearch()
         }
     }
 
@@ -457,19 +452,33 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer?.invalidate()
         progressiveSearchTimer = nil
 
-        guard let text = searchBar.text else {
+        guard let text: String = searchBar.text else {
             // Alert message shown when user tries to search for GIFs without entering any search terms
-            OWSAlerts.showErrorAlert(message: "GIF_PICKER_VIEW_MISSING_QUERY".localized())
+            let modal: ConfirmationModal = ConfirmationModal(
+                targetView: self.view,
+                info: ConfirmationModal.Info(
+                    title: CommonStrings.errorAlertTitle,
+                    explanation: "GIF_PICKER_VIEW_MISSING_QUERY".localized(),
+                    cancelTitle: "BUTTON_OK".localized(),
+                    cancelStyle: .alert_text
+                )
+            )
+            self.present(modal, animated: true)
             return
         }
-
-        let query = (text as String).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+        
+        let query: String = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if (viewMode == .searching || viewMode == .results) && lastQuery == query {
             Logger.info("ignoring duplicate search: \(query)")
             return
         }
 
+        guard !query.isEmpty else {
+            loadTrending()
+            return
+        }
+        
         search(query: query)
     }
     
@@ -477,20 +486,22 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         assert(progressiveSearchTimer == nil)
         assert(searchBar.text == nil || searchBar.text?.count == 0)
 
-        GiphyAPI.sharedInstance.trending().done { [weak self] imageInfos in
-            guard let self = self else { return }
-
-            Logger.info("showing trending")
-            if imageInfos.count > 0 {
-                self.imageInfos = imageInfos
-                self.viewMode = .results
-            } else {
-                owsFailDebug("trending results was unexpectedly empty")
+        GiphyAPI.sharedInstance.trending()
+            .done { [weak self] imageInfos in
+                Logger.info("showing trending")
+                
+                if imageInfos.count > 0 {
+                    self?.imageInfos = imageInfos
+                    self?.viewMode = .results
+                }
+                else {
+                    owsFailDebug("trending results was unexpectedly empty")
+                }
             }
-        }.catch { error in
-            // Don't both showing error UI feedback for default "trending" results.
-            Logger.error("error: \(error)")
-        }
+            .catch { error in
+                // Don't both showing error UI feedback for default "trending" results.
+                Logger.error("error: \(error)")
+            }
     }
 
     private func search(query: String) {
@@ -503,22 +514,26 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         lastQuery = query
         self.collectionView.contentOffset = CGPoint.zero
 
-        GiphyAPI.sharedInstance.search(query: query, success: { [weak self] imageInfos in
-            guard let strongSelf = self else { return }
-            Logger.info("search complete")
-            strongSelf.imageInfos = imageInfos
-            if imageInfos.count > 0 {
-                strongSelf.viewMode = .results
-            } else {
-                strongSelf.viewMode = .noResults
-            }
-        },
-            failure: { [weak self] _ in
-                guard let strongSelf = self else { return }
-                Logger.info("search failed.")
-                // TODO: Present this error to the user.
-                strongSelf.viewMode = .error
-        })
+        GiphyAPI.sharedInstance
+            .search(
+                query: query,
+                success: { [weak self] imageInfos in
+                    Logger.info("search complete")
+                    self?.imageInfos = imageInfos
+                    
+                    if imageInfos.count > 0 {
+                        self?.viewMode = .results
+                    }
+                    else {
+                        self?.viewMode = .noResults
+                    }
+                },
+                failure: { [weak self] _ in
+                    Logger.info("search failed.")
+                    // TODO: Present this error to the user.
+                    self?.viewMode = .error
+                }
+            )
     }
 
     // MARK: - GifPickerLayoutDelegate

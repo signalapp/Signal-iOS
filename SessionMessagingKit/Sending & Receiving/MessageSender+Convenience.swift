@@ -193,9 +193,8 @@ extension MessageSender {
         // fresh install due to the migrations getting run)
         guard Identity.userExists(db) else { return Promise(error: StorageError.generic) }
         
-        let destination: Message.Destination = Message.Destination.contact(
-            publicKey: getUserHexEncodedPublicKey(db)
-        )
+        let publicKey: String = getUserHexEncodedPublicKey(db)
+        let destination: Message.Destination = Message.Destination.contact(publicKey: publicKey)
         let configurationMessage = try ConfigurationMessage.getCurrent(db)
         let (promise, seal) = Promise<Void>.pending()
         
@@ -211,6 +210,7 @@ extension MessageSender {
                 db,
                 job: Job(
                     variant: .messageSend,
+                    threadId: publicKey,
                     details: MessageSendJob.Details(
                         destination: destination,
                         message: configurationMessage

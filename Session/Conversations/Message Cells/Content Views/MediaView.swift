@@ -58,7 +58,7 @@ public class MediaView: UIView {
 
         super.init(frame: .zero)
 
-        backgroundColor = Colors.unimportant
+        themeBackgroundColor = .backgroundSecondary
         clipsToBounds = true
         layer.masksToBounds = true
         layer.cornerRadius = VisibleMessageCell.largeCornerRadius
@@ -119,7 +119,7 @@ public class MediaView: UIView {
             return
         }
         
-        backgroundColor = (isDarkMode ? .ows_gray90 : .ows_gray05)
+        themeBackgroundColor = .backgroundSecondary
         let loader = MediaLoaderView()
         addSubview(loader)
         loader.pin([ UIView.HorizontalEdge.left, UIView.VerticalEdge.bottom, UIView.HorizontalEdge.right ], to: self)
@@ -152,7 +152,7 @@ public class MediaView: UIView {
         // some performance cost.
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
-        animatedImageView.backgroundColor = Colors.unimportant
+        animatedImageView.themeBackgroundColor = .backgroundSecondary
         animatedImageView.isHidden = !attachment.isValid
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
@@ -209,7 +209,7 @@ public class MediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Colors.unimportant
+        stillImageView.themeBackgroundColor = .backgroundSecondary
         stillImageView.isHidden = !attachment.isValid
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
@@ -268,7 +268,7 @@ public class MediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Colors.unimportant
+        stillImageView.themeBackgroundColor = .backgroundSecondary
         stillImageView.isHidden = !attachment.isValid
 
         addSubview(stillImageView)
@@ -358,20 +358,19 @@ public class MediaView: UIView {
             case .missing: return
         }
         
-        backgroundColor = (isDarkMode ? .ows_gray90 : .ows_gray05)
+        themeBackgroundColor = .backgroundSecondary
         
         // For failed ougoing messages add an overlay to make the icon more visible
         if isOutgoing {
             let attachmentOverlayView: UIView = UIView()
-            attachmentOverlayView.backgroundColor = Colors.navigationBarBackground
-                .withAlphaComponent(Values.lowOpacity)
+            attachmentOverlayView.themeBackgroundColor = .messageBubble_overlay
             addSubview(attachmentOverlayView)
             attachmentOverlayView.pin(to: self)
         }
         
         let iconView = UIImageView(image: icon.withRenderingMode(.alwaysTemplate))
-        iconView.tintColor = Colors.text
-            .withAlphaComponent(Values.mediumOpacity)
+        iconView.themeTintColor = .textPrimary
+        iconView.alpha = Values.mediumOpacity
         addSubview(iconView)
         iconView.autoCenterInSuperview()
     }

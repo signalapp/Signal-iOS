@@ -377,7 +377,7 @@ extension MessageReceiver {
                     .membersRemoved(
                         members: removedMembers
                             .asSet()
-                            .subtracting(groupMembers.map { $0.profileId })
+                            .intersection(groupMembers.map { $0.profileId })
                             .map { Data(hex: $0) }
                     )
                     .infoMessage(db, sender: sender),

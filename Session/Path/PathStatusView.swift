@@ -1,27 +1,82 @@
-import UIKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class PathStatusView : UIView {
+import UIKit
+import SessionUIKit
+
+final class PathStatusView: UIView {
+    enum Size {
+        case small
+        case large
+        
+        var pointSize: CGFloat {
+            switch self {
+                case .small: return 8
+                case .large: return 16
+            }
+        }
+        
+        func offset(for interfaceStyle: UIUserInterfaceStyle) -> CGFloat {
+            switch self {
+                case .small: return (interfaceStyle == .light ? 6 : 8)
+                case .large: return (interfaceStyle == .light ? 6 : 8)
+            }
+        }
+    }
     
-    static let size = CGFloat(8)
+    enum Status {
+        case unknown
+        case connecting
+        case connected
+        case error
+        
+        var themeColor: ThemeValue {
+            switch self {
+                case .unknown: return .path_unknown
+                case .connecting: return .path_connecting
+                case .connected: return .path_connected
+                case .error: return .path_error
+            }
+        }
+    }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    // MARK: - Initialization
+    
+    private let size: Size
+    
+    init(size: Size = .small) {
+        self.size = size
+        
+        super.init(frame: .zero)
+        
         setUpViewHierarchy()
         registerObservers()
     }
 
     required init?(coder: NSCoder) {
+        self.size = .small
+        
         super.init(coder: coder)
+        
         setUpViewHierarchy()
         registerObservers()
     }
     
-    private func setUpViewHierarchy() {
-        layer.cornerRadius = PathStatusView.size / 2
-        layer.masksToBounds = false
-        let color = (!OnionRequestAPI.paths.isEmpty ? Colors.accent : Colors.pathsBuilding)
-        setColor(to: color, isAnimated: false)
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
+    
+    // MARK: - Layout
+    
+    private func setUpViewHierarchy() {
+        layer.cornerRadius = (self.size.pointSize / 2)
+        layer.masksToBounds = false
+        self.set(.width, to: self.size.pointSize)
+        self.set(.height, to: self.size.pointSize)
+        
+        setStatus(to: (!OnionRequestAPI.paths.isEmpty ? .connected : .connecting))
+    }
+    
+    // MARK: - Functions
 
     private func registerObservers() {
         let notificationCenter = NotificationCenter.default
@@ -29,22 +84,28 @@ final class PathStatusView : UIView {
         notificationCenter.addObserver(self, selector: #selector(handlePathsBuiltNotification), name: .pathsBuilt, object: nil)
     }
 
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-
-    private func setColor(to color: UIColor, isAnimated: Bool) {
-        backgroundColor = color
-        let size = PathStatusView.size
-        let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: color, isAnimated: isAnimated, radius: isLightMode ? 6 : 8)
-        setCircularGlow(with: glowConfiguration)
+    private func setStatus(to status: Status) {
+        themeBackgroundColor = status.themeColor
+        layer.themeShadowColor = status.themeColor
+        layer.shadowOffset = CGSize(width: 0, height: 0.8)
+        layer.shadowPath = UIBezierPath(
+            ovalIn: CGRect(
+                origin: CGPoint.zero,
+                size: CGSize(width: self.size.pointSize, height: self.size.pointSize)
+            )
+        ).cgPath
+        
+        ThemeManager.onThemeChange(observer: self) { [weak self] theme, _ in
+            self?.layer.shadowOpacity = (theme.interfaceStyle == .light ? 0.4 : 1)
+            self?.layer.shadowRadius = (self?.size.offset(for: theme.interfaceStyle) ?? 0)
+        }
     }
 
     @objc private func handleBuildingPathsNotification() {
-        setColor(to: Colors.pathsBuilding, isAnimated: true)
+        setStatus(to: .connecting)
     }
 
     @objc private func handlePathsBuiltNotification() {
-        setColor(to: Colors.accent, isAnimated: true)
+        setStatus(to: .connected)
     }
 }

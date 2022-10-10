@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import GRDB
 
 open class Dependencies {
     public var _generalCache: Atomic<Atomic<GeneralCacheType>?>
@@ -13,6 +14,12 @@ open class Dependencies {
     public var storage: Storage {
         get { Dependencies.getValueSettingIfNull(&_storage) { Storage.shared } }
         set { _storage.mutate { $0 = newValue } }
+    }
+    
+    public var _scheduler: Atomic<ValueObservationScheduler?>
+    public var scheduler: ValueObservationScheduler {
+        get { Dependencies.getValueSettingIfNull(&_scheduler) { Storage.defaultPublisherScheduler } }
+        set { _scheduler.mutate { $0 = newValue } }
     }
     
     public var _standardUserDefaults: Atomic<UserDefaultsType?>
@@ -32,11 +39,13 @@ open class Dependencies {
     public init(
         generalCache: Atomic<GeneralCacheType>? = nil,
         storage: Storage? = nil,
+        scheduler: ValueObservationScheduler? = nil,
         standardUserDefaults: UserDefaultsType? = nil,
         date: Date? = nil
     ) {
         _generalCache = Atomic(generalCache)
         _storage = Atomic(storage)
+        _scheduler = Atomic(scheduler)
         _standardUserDefaults = Atomic(standardUserDefaults)
         _date = Atomic(date)
     }
@@ -52,12 +61,4 @@ open class Dependencies {
         
         return value
     }
-    
-//    0   libswiftCore.dylib                0x00000001999fd40c _swift_release_dealloc + 32 (HeapObject.cpp:703)
-//    1   SessionMessagingKit               0x0000000106aa958c 0x106860000 + 2397580
-//    2   libswiftCore.dylib                0x00000001999fd424 _swift_release_dealloc + 56 (HeapObject.cpp:703)
-//    3   SessionUtilitiesKit               0x0000000106cbd980 static Dependencies.getValueSettingIfNull<A>(_:_:) + 264 (Dependencies.swift:49)
-//    4   SessionMessagingKit               0x0000000106aa90f4 closure #1 in SMKDependencies.sign.getter + 112 (SMKDependencies.swift:17)
-//    5   SessionUtilitiesKit               0x0000000106cbd974 static Dependencies.getValueSettingIfNull<A>(_:_:) + 252 (Dependencies.swift:48)
-//    6   SessionMessagingKit               0x000000010697aef8 specialized static OpenGroupAPI.sign(_:messageBytes:for:fallbackSigningType:using:) + 1158904 (OpenGroupAPI.swift:1190)
 }
