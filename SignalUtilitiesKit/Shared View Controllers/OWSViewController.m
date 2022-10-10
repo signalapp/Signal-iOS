@@ -82,15 +82,6 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     self.shouldAnimateBottomLayout = NO;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-
-    if (self.shouldUseTheme) {
-        self.view.backgroundColor = [LKColors navigationBarBackground];
-    }
-}
-
 #pragma mark -
 
 - (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch

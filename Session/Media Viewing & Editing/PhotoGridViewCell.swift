@@ -28,9 +28,9 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
     private static let videoBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
     private static let animatedBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
-    private static let selectedBadgeImage = #imageLiteral(resourceName: "selected_blue_circle")
+    private static let selectedBadgeImage = UIImage(systemName: "checkmark.circle.fill")
 
-    public var loadingColor = Colors.unimportant
+    public var loadingColor: ThemeValue = .textSecondary
 
     override public var isSelected: Bool {
         didSet {
@@ -52,18 +52,23 @@ public class PhotoGridViewCell: UICollectionViewCell {
         self.contentTypeBadgeView = UIImageView()
         contentTypeBadgeView.isHidden = true
 
+        let kSelectedBadgeSize = CGSize(width: 32, height: 32)
         self.selectedBadgeView = UIImageView()
-        selectedBadgeView.image = PhotoGridViewCell.selectedBadgeImage
+        selectedBadgeView.image = PhotoGridViewCell.selectedBadgeImage?.withRenderingMode(.alwaysTemplate)
+        selectedBadgeView.themeTintColor = .primary
+        selectedBadgeView.themeBorderColor = .textPrimary
+        selectedBadgeView.themeBackgroundColor = .textPrimary
         selectedBadgeView.isHidden = true
+        selectedBadgeView.layer.cornerRadius = (kSelectedBadgeSize.width / 2)
 
         self.highlightedView = UIView()
         highlightedView.alpha = 0.2
-        highlightedView.backgroundColor = Colors.cellSelected
+        highlightedView.themeBackgroundColor = .black
         highlightedView.isHidden = true
 
         self.selectedView = UIView()
         selectedView.alpha = 0.3
-        selectedView.backgroundColor = Colors.cellSelected
+        selectedView.themeBackgroundColor = .black
         selectedView.isHidden = true
 
         super.init(frame: frame)
@@ -87,9 +92,8 @@ public class PhotoGridViewCell: UICollectionViewCell {
         contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
         contentTypeBadgeView.autoSetDimensions(to: kContentTypeBadgeSize)
 
-        let kSelectedBadgeSize = CGSize(width: 31, height: 31)
-        selectedBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 0)
-        selectedBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 0)
+        selectedBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: Values.verySmallSpacing)
+        selectedBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: Values.verySmallSpacing)
         selectedBadgeView.autoSetDimensions(to: kSelectedBadgeSize)
     }
 
@@ -102,7 +106,7 @@ public class PhotoGridViewCell: UICollectionViewCell {
         get { return imageView.image }
         set {
             imageView.image = newValue
-            imageView.backgroundColor = newValue == nil ? loadingColor : .clear
+            imageView.themeBackgroundColor = (newValue == nil ? loadingColor : .clear)
         }
     }
 

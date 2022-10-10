@@ -4,6 +4,7 @@ import Foundation
 import SessionMessagingKit
 import SessionUtilitiesKit
 import UIKit
+import SessionUIKit
 
 public enum AppSetup {
     private static var hasRun: Bool = false
@@ -68,7 +69,8 @@ public enum AppSetup {
             migrations: [
                 SNUtilitiesKit.migrations(),
                 SNSnodeKit.migrations(),
-                SNMessagingKit.migrations()
+                SNMessagingKit.migrations(),
+                SNUIKit.migrations()
             ],
             onProgressUpdate: migrationProgressChanged,
             onComplete: { error, needsConfigSync in

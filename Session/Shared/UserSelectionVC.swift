@@ -1,9 +1,9 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import SessionUIKit
 import SessionMessagingKit
 
-@objc(SNUserSelectionVC)
 final class UserSelectionVC: BaseVC, UITableViewDataSource, UITableViewDelegate {
     private let navBarTitle: String
     private let usersToExclude: Set<String>
@@ -22,32 +22,32 @@ final class UserSelectionVC: BaseVC, UITableViewDataSource, UITableViewDelegate 
         result.dataSource = self
         result.delegate = self
         result.separatorStyle = .none
-        result.backgroundColor = .clear
+        result.themeBackgroundColor = .clear
         result.showsVerticalScrollIndicator = false
         result.alwaysBounceVertical = false
-        result.register(view: UserCell.self)
+        result.register(view: SessionCell.self)
         
         return result
     }()
 
     // MARK: - Lifecycle
     
-    @objc(initWithTitle:excluding:completion:)
     init(with title: String, excluding usersToExclude: Set<String>, completion: @escaping (Set<String>) -> Void) {
         self.navBarTitle = title
         self.usersToExclude = usersToExclude
         self.completion = completion
+        
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) { preconditionFailure("Use UserSelectionVC.init(excluding:) instead.") }
-    override init(nibName: String?, bundle: Bundle?) { preconditionFailure("Use UserSelectionVC.init(excluding:) instead.") }
+    required init?(coder: NSCoder) { preconditionFailure("Use init(excluding:) instead.") }
+    override init(nibName: String?, bundle: Bundle?) { preconditionFailure("Use init(excluding:) instead.") }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpGradientBackground()
-        setUpNavBarStyle()
+        
         setNavBarTitle(navBarTitle)
+        
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(handleDoneButtonTapped))
         view.addSubview(tableView)
         tableView.pin(to: view)
@@ -60,12 +60,19 @@ final class UserSelectionVC: BaseVC, UITableViewDataSource, UITableViewDelegate 
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UserCell = tableView.dequeue(type: UserCell.self, for: indexPath)
+        let cell: SessionCell = tableView.dequeue(type: SessionCell.self, for: indexPath)
+        let profile: Profile = users[indexPath.row]
         cell.update(
-            with: users[indexPath.row].id,
-            profile: users[indexPath.row],
-            isZombie: false,
-            accessory: .tick(isSelected: selectedUsers.contains(users[indexPath.row].id))
+            with: SessionCell.Info(
+                id: profile,
+                leftAccessory: .profile(profile.id, profile),
+                title: profile.displayName(),
+                rightAccessory: .radio(isSelected: { [weak self] in
+                    self?.selectedUsers.contains(profile.id) == true
+                })
+            ),
+            style: .edgeToEdge,
+            position: Position.with(indexPath.row, count: users.count)
         )
         
         return cell

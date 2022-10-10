@@ -2,10 +2,11 @@
 
 import Foundation
 import GRDB
+import DifferenceKit
 import SignalCoreKit
 import SessionUtilitiesKit
 
-public struct Profile: Codable, Identifiable, Equatable, Hashable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible, CustomStringConvertible {
+public struct Profile: Codable, Identifiable, Equatable, Hashable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible, CustomStringConvertible, Differentiable {
     public static var databaseTableName: String { "profile" }
     internal static let interactionForeignKey = ForeignKey([Columns.id], to: [Interaction.Columns.authorId])
     internal static let contactForeignKey = ForeignKey([Columns.id], to: [Contact.Columns.id])
@@ -151,7 +152,7 @@ public extension Profile {
 
     func toProto() -> SNProtoDataMessage? {
         let dataMessageProto = SNProtoDataMessage.builder()
-        let profileProto = SNProtoDataMessageLokiProfile.builder()
+        let profileProto = SNProtoLokiProfile.builder()
         profileProto.setDisplayName(name)
         
         if let profileKey: OWSAES256Key = profileEncryptionKey, let profilePictureUrl: String = profilePictureUrl {
@@ -193,19 +194,24 @@ public extension Profile {
 // MARK: - GRDB Interactions
 
 public extension Profile {
+    static func allContactProfiles(excluding idsToExclude: Set<String> = []) -> QueryInterfaceRequest<Profile> {
+        return Profile
+            .filter(!idsToExclude.contains(Profile.Columns.id))
+            .joining(
+                required: Profile.contact
+                    .filter(Contact.Columns.isApproved == true)
+                    .filter(Contact.Columns.didApproveMe == true)
+            )
+    }
+    
     static func fetchAllContactProfiles(excluding: Set<String> = [], excludeCurrentUser: Bool = true) -> [Profile] {
         return Storage.shared
             .read { db in
-                let idsToExclude: Set<String> = excluding
-                    .inserting(excludeCurrentUser ? getUserHexEncodedPublicKey(db) : nil)
-                
                 // Sort the contacts by their displayName value
-                return try Profile
-                    .filter(!idsToExclude.contains(Profile.Columns.id))
-                    .joining(
-                        required: Profile.contact
-                            .filter(Contact.Columns.isApproved == true)
-                            .filter(Contact.Columns.didApproveMe == true)
+                try Profile
+                    .allContactProfiles(
+                        excluding: excluding
+                            .inserting(excludeCurrentUser ? getUserHexEncodedPublicKey(db) : nil)
                     )
                     .fetchAll(db)
                     .sorted(by: { lhs, rhs -> Bool in lhs.displayName() < rhs.displayName() })
@@ -240,7 +246,7 @@ public extension Profile {
     private static func defaultFor(_ id: String) -> Profile {
         return Profile(
             id: id,
-            name: id,
+            name: "",
             nickname: nil,
             profilePictureUrl: nil,
             profilePictureFileName: nil,
@@ -313,12 +319,12 @@ public extension Profile {
     }
     
     /// A standardised mechanism for truncating a user id for a given thread
-    static func truncated(id: String, threadVariant: SessionThread.Variant = .contact) -> String {
+    static func truncated(id: String, threadVariant: SessionThread.Variant) -> String {
         return truncated(id: id, truncating: .middle)
     }
     
     /// A standardised mechanism for truncating a user id
-    static func truncated(id: String, truncating: Truncation = .middle) -> String {
+    static func truncated(id: String, truncating: Truncation) -> String {
         guard id.count > 8 else { return id }
         
         switch truncating {

@@ -4,7 +4,7 @@ import Foundation
 import GRDB
 import SessionUtilitiesKit
 
-public struct DisappearingMessagesConfiguration: Codable, Identifiable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
+public struct DisappearingMessagesConfiguration: Codable, Identifiable, Equatable, FetchableRecord, PersistableRecord, TableRecord, ColumnExpressible {
     public static var databaseTableName: String { "disappearingMessagesConfiguration" }
     internal static let threadForeignKey = ForeignKey([Columns.threadId], to: [SessionThread.Columns.id])
     private static let thread = belongsTo(SessionThread.self, using: threadForeignKey)
@@ -69,7 +69,7 @@ public extension DisappearingMessagesConfiguration {
                 
                 return String(
                     format: "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
-                    NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false)
+                    floor(durationSeconds).formatted(format: .long)
                 )
             }
             
@@ -80,13 +80,13 @@ public extension DisappearingMessagesConfiguration {
             return String(
                 format: "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION".localized(),
                 senderName,
-                NSString.formatDurationSeconds(UInt32(floor(durationSeconds)), useShortFormat: false)
+                floor(durationSeconds).formatted(format: .long)
             )
         }
     }
     
     var durationString: String {
-        NSString.formatDurationSeconds(UInt32(durationSeconds), useShortFormat: false)
+        floor(durationSeconds).formatted(format: .long)
     }
     
     func messageInfoString(with senderName: String?) -> String? {
@@ -176,7 +176,7 @@ public class SMKDisappearingMessagesConfiguration: NSObject {
                 DisappearingMessagesConfiguration.validDurationsSeconds[0]
         )
         
-        return NSString.formatDurationSeconds(UInt32(durationSeconds), useShortFormat: false)
+        return floor(durationSeconds).formatted(format: .long)
     }
     
     @objc(update:isEnabled:durationIndex:)

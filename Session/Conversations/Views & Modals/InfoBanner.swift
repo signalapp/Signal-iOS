@@ -1,13 +1,13 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class InfoBanner : UIView {
-    private let message: String
-    private let snBackgroundColor: UIColor
-    
-    init(message: String, backgroundColor: UIColor) {
-        self.message = message
-        self.snBackgroundColor = backgroundColor
+import UIKit
+import SessionUIKit
+
+final class InfoBanner: UIView {
+    init(message: String, backgroundColor: ThemeValue) {
         super.init(frame: CGRect.zero)
-        setUpViewHierarchy()
+        
+        setUpViewHierarchy(message: message, backgroundColor: backgroundColor)
     }
     
     override init(frame: CGRect) {
@@ -18,16 +18,18 @@ final class InfoBanner : UIView {
         preconditionFailure("Use init(coder:) instead.")
     }
     
-    private func setUpViewHierarchy() {
-        backgroundColor = snBackgroundColor
-        let label = UILabel()
-        label.text = message
+    private func setUpViewHierarchy(message: String, backgroundColor: ThemeValue) {
+        themeBackgroundColor = backgroundColor
+        
+        let label: UILabel = UILabel()
         label.font = .boldSystemFont(ofSize: Values.smallFontSize)
-        label.textColor = .white
-        label.numberOfLines = 0
+        label.text = message
+        label.themeTextColor = .textPrimary
         label.textAlignment = .center
         label.lineBreakMode = .byWordWrapping
+        label.numberOfLines = 0
         addSubview(label)
+        
         label.pin(to: self, withInset: Values.mediumSpacing)
     }
 }

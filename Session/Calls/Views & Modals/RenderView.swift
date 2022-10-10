@@ -1,6 +1,7 @@
 // Copyright © 2021 Rangeproof Pty Ltd. All rights reserved.
 
 import UIKit
+import AVFoundation
 import CoreMedia
 
 class RenderView: UIView {

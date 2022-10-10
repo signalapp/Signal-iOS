@@ -33,9 +33,9 @@ extension ContextMenuVC {
         }
 
         private func setUpViewHierarchy() {
-            let emojiLabel = UILabel()
-            emojiLabel.text = self.action.title
+            let emojiLabel: UILabel = UILabel()
             emojiLabel.font = .systemFont(ofSize: Values.veryLargeFontSize)
+            emojiLabel.text = self.action.title
             emojiLabel.set(.height, to: ContextMenuVC.EmojiReactsView.size)
             addSubview(emojiLabel)
             emojiLabel.pin(to: self)
@@ -84,7 +84,7 @@ extension ContextMenuVC {
         private func setUpViewHierarchy() {
             // Icon image
             let iconImageView = UIImageView(image: #imageLiteral(resourceName: "ic_plus_24").withRenderingMode(.alwaysTemplate))
-            iconImageView.tintColor = Colors.text
+            iconImageView.themeTintColor = .textPrimary
             iconImageView.set(.width, to: iconSize)
             iconImageView.set(.height, to: iconSize)
             iconImageView.contentMode = .scaleAspectFit
@@ -93,7 +93,7 @@ extension ContextMenuVC {
             
             // Background
             isUserInteractionEnabled = true
-            backgroundColor = Colors.sessionEmojiPlusButtonBackground
+            themeBackgroundColor = .reactions_contextMoreBackground
             
             // Tap gesture recognizer
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))

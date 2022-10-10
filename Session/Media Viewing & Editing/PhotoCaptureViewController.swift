@@ -1,10 +1,10 @@
-//
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
 
-import Foundation
+import UIKit
 import AVFoundation
 import PromiseKit
+import SessionUIKit
+import SignalUtilitiesKit
 
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController, didFinishProcessingAttachment attachment: SignalAttachment)
@@ -49,7 +49,7 @@ class PhotoCaptureViewController: OWSViewController {
 
     override func loadView() {
         self.view = UIView()
-        self.view.backgroundColor = .black
+        self.view.themeBackgroundColor = .newConversation_background
     }
 
     override func viewDidLoad() {
@@ -82,7 +82,8 @@ class PhotoCaptureViewController: OWSViewController {
             navigationItem.rightBarButtonItems = nil
             navigationItem.titleView = recordingTimerView
             recordingTimerView.sizeToFit()
-        } else {
+        }
+        else {
             navigationItem.titleView = nil
             navigationItem.leftBarButtonItem = dismissControl.barButtonItem
             let fixedSpace = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
@@ -114,8 +115,9 @@ class PhotoCaptureViewController: OWSViewController {
         let barButtonItem: UIBarButtonItem
 
         init(imageName: String, block: @escaping () -> Void) {
-            self.button = OWSButton(imageName: imageName, tintColor: .ows_white, block: block)
+            self.button = OWSButton(imageName: imageName, tintColor: .white, block: block)
             button.autoPinToSquareAspectRatio()
+            button.themeShadowColor = .black
             button.layer.shadowOffset = CGSize.zero
             button.layer.shadowOpacity = 0.35
             button.layer.shadowRadius = 4
@@ -222,10 +224,12 @@ class PhotoCaptureViewController: OWSViewController {
     private func setupOrientationMonitoring() {
         UIDevice.current.beginGeneratingDeviceOrientationNotifications()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didChangeDeviceOrientation),
-                                               name: UIDevice.orientationDidChangeNotification,
-                                               object: UIDevice.current)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didChangeDeviceOrientation),
+            name: UIDevice.orientationDidChangeNotification,
+            object: UIDevice.current
+        )
     }
 
     var lastKnownCaptureOrientation: AVCaptureVideoOrientation = .portrait
@@ -282,15 +286,14 @@ class PhotoCaptureViewController: OWSViewController {
         captureButton.delegate = photoCapture
         previewView = CapturePreviewView(session: photoCapture.session)
 
-        photoCapture.startCapture().done { [weak self] in
-            guard let self = self else { return }
-
-            self.showCaptureUI()
-        }.catch { [weak self] error in
-            guard let self = self else { return }
-
-            self.showFailureUI(error: error)
-        }.retainUntilComplete()
+        photoCapture.startCapture()
+            .done { [weak self] in
+                self?.showCaptureUI()
+            }
+            .catch { [weak self] error in
+                self?.showFailureUI(error: error)
+            }
+            .retainUntilComplete()
     }
 
     private func showCaptureUI() {
@@ -309,11 +312,17 @@ class PhotoCaptureViewController: OWSViewController {
 
     private func showFailureUI(error: Error) {
         Logger.error("error: \(error)")
-
-        OWSAlerts.showAlert(title: nil,
-                            message: error.localizedDescription,
-                            buttonTitle: CommonStrings.dismissButton,
-                            buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
+        let modal: ConfirmationModal = ConfirmationModal(
+            info: ConfirmationModal.Info(
+                title: CommonStrings.errorAlertTitle,
+                explanation: error.localizedDescription,
+                cancelTitle: CommonStrings.dismissButton,
+                cancelStyle: .alert_text,
+                afterClosed: { [weak self] in self?.dismiss(animated: true) }
+            )
+        )
+        
+        present(modal, animated: true)
     }
 
     private func updateFlashModeControl() {
@@ -421,16 +430,17 @@ class CaptureButton: UIView {
 
         addSubview(innerButton)
         innerButtonSizeConstraints = autoSetDimensions(to: CGSize(width: defaultDiameter, height: defaultDiameter))
-        innerButton.backgroundColor = UIColor.ows_white.withAlphaComponent(0.33)
+        innerButton.themeBackgroundColor = .white
         innerButton.layer.shadowOffset = .zero
         innerButton.layer.shadowOpacity = 0.33
         innerButton.layer.shadowRadius = 2
+        innerButton.alpha = 0.33
         innerButton.autoPinEdgesToSuperviewEdges()
 
         addSubview(zoomIndicator)
         zoomIndicatorSizeConstraints = zoomIndicator.autoSetDimensions(to: CGSize(width: defaultDiameter, height: defaultDiameter))
         zoomIndicator.isUserInteractionEnabled = false
-        zoomIndicator.layer.borderColor = UIColor.ows_white.cgColor
+        zoomIndicator.themeBorderColor = .white
         zoomIndicator.layer.borderWidth = 1.5
         zoomIndicator.autoAlignAxis(.horizontal, toSameAxisOf: innerButton)
         zoomIndicator.autoAlignAxis(.vertical, toSameAxisOf: innerButton)
@@ -569,10 +579,10 @@ class RecordingTimerView: UIView {
     // MARK: - Subviews
 
     private lazy var label: UILabel = {
-        let label = UILabel()
-        label.font = UIFont.ows_monospacedDigitFont(withSize: 20)
+        let label: UILabel = UILabel()
+        label.font = .ows_monospacedDigitFont(withSize: 20)
+        label.themeTextColor = .textPrimary
         label.textAlignment = .center
-        label.textColor = UIColor.white
         label.layer.shadowOffset = CGSize.zero
         label.layer.shadowOpacity = 0.35
         label.layer.shadowRadius = 4
@@ -587,8 +597,7 @@ class RecordingTimerView: UIView {
         icon.layer.shadowOffset = CGSize.zero
         icon.layer.shadowOpacity = 0.35
         icon.layer.shadowRadius = 4
-
-        icon.backgroundColor = .red
+        icon.themeBackgroundColor = .danger
         icon.autoSetDimensions(to: CGSize(width: iconWidth, height: iconWidth))
         icon.alpha = 0
 
@@ -601,10 +610,12 @@ class RecordingTimerView: UIView {
     func startCounting() {
         recordingStartTime = CACurrentMediaTime()
         timer = Timer.weakScheduledTimer(withTimeInterval: 0.1, target: self, selector: #selector(updateView), userInfo: nil, repeats: true)
-        UIView.animate(withDuration: 0.5,
-                       delay: 0,
-                       options: [.autoreverse, .repeat],
-                       animations: { self.icon.alpha = 1 })
+        UIView.animate(
+            withDuration: 0.5,
+            delay: 0,
+            options: [.autoreverse, .repeat],
+            animations: { self.icon.alpha = 1 }
+        )
     }
 
     func stopCounting() {

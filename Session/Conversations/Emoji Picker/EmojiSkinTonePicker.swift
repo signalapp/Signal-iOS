@@ -1,5 +1,7 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
+import UIKit
+import SessionUIKit
 
 class EmojiSkinTonePicker: UIView {
     let emoji: Emoji
@@ -116,12 +118,12 @@ class EmojiSkinTonePicker: UIView {
         layer.shadowOpacity = 0.25
         layer.shadowRadius = 4
 
-        referenceOverlay.backgroundColor = Colors.modalBackground
+        referenceOverlay.themeBackgroundColor = .backgroundSecondary
         referenceOverlay.layer.cornerRadius = 9
         addSubview(referenceOverlay)
 
         containerView.layoutMargins = UIEdgeInsets(top: 9, leading: 16, bottom: 9, trailing: 16)
-        containerView.backgroundColor = Colors.modalBackground
+        containerView.themeBackgroundColor = .backgroundSecondary
         containerView.layer.cornerRadius = 11
         addSubview(containerView)
         containerView.autoPinWidthToSuperview()
@@ -129,7 +131,8 @@ class EmojiSkinTonePicker: UIView {
 
         if emoji.baseEmoji!.allowsMultipleSkinTones {
             prepareForMultipleSkinTones()
-        } else {
+        }
+        else {
             prepareForSingleSkinTone()
         }
     }
@@ -159,7 +162,7 @@ class EmojiSkinTonePicker: UIView {
 
         let divider = UIView()
         divider.autoSetDimension(.width, toSize: 1)
-        divider.backgroundColor = isDarkMode ? .ows_gray75 : .ows_gray05
+        divider.themeBackgroundColor = .borderSeparator
         hStack.addArrangedSubview(divider)
 
         hStack.addArrangedSubview(.spacer(withWidth: 2))
@@ -266,7 +269,7 @@ class EmojiSkinTonePicker: UIView {
 
         let divider = UIView()
         divider.autoSetDimension(.height, toSize: 1)
-        divider.backgroundColor = isDarkMode ? .ows_gray75 : .ows_gray05
+        divider.themeBackgroundColor = .borderSeparator
         vStack.addArrangedSubview(divider)
 
         let leftSpacer = UIView.hStretchingSpacer()
@@ -296,7 +299,7 @@ class EmojiSkinTonePicker: UIView {
         let button = OWSButton { handler(emoji) }
         button.titleLabel?.font = .boldSystemFont(ofSize: 32)
         button.setTitle(emoji.rawValue, for: .normal)
-        button.setBackgroundImage(UIImage(color: isDarkMode ? .ows_gray60 : .ows_gray25), for: .selected)
+        button.setThemeBackgroundColor(.backgroundPrimary, for: .selected)
         button.layer.cornerRadius = 6
         button.clipsToBounds = true
         button.autoSetDimensions(to: CGSize(width: 38, height: 38))

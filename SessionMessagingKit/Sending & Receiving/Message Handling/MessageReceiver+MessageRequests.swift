@@ -2,6 +2,7 @@
 
 import Foundation
 import GRDB
+import SignalCoreKit
 import SessionUtilitiesKit
 
 extension MessageReceiver {
@@ -16,6 +17,24 @@ extension MessageReceiver {
         // Ignore messages which were sent from the current user
         guard message.sender != userPublicKey else { return }
         guard let senderId: String = message.sender else { return }
+        
+        // Update profile if needed (want to do this regardless of whether the message exists or
+        // not to ensure the profile info gets sync between a users devices at every chance)
+        if let profile = message.profile {
+            var contactProfileKey: OWSAES256Key? = nil
+            let messageSentTimestamp: TimeInterval = (TimeInterval(message.sentTimestamp ?? 0) / 1000)
+            
+            if let profileKey = profile.profileKey { contactProfileKey = OWSAES256Key(data: profileKey) }
+            
+            try MessageReceiver.updateProfileIfNeeded(
+                db,
+                publicKey: senderId,
+                name: profile.displayName,
+                profilePictureUrl: profile.profilePictureUrl,
+                profileKey: contactProfileKey,
+                sentTimestamp: messageSentTimestamp
+            )
+        }
         
         // Prep the unblinded thread
         let unblindedThread: SessionThread = try SessionThread.fetchOrCreate(db, id: senderId, variant: .contact)

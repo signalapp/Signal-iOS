@@ -1344,9 +1344,12 @@ public enum OpenGroupAPI {
         let method: String = (request.httpMethod ?? "GET")
         let timestamp: Int = Int(floor(dependencies.date.timeIntervalSince1970))
         let nonce: Data = Data(dependencies.nonceGenerator16.nonce())
+        let serverPublicKeyData: Data = Data(hex: serverPublicKey)
         
-        guard let serverPublicKeyData: Data = serverPublicKey.dataFromHex() else { return nil }
-        guard let timestampBytes: Bytes = "\(timestamp)".data(using: .ascii)?.bytes else { return nil }
+        guard
+            !serverPublicKeyData.isEmpty,
+            let timestampBytes: Bytes = "\(timestamp)".data(using: .ascii)?.bytes
+        else { return nil }
         
         /// Get a hash of any body content
         let bodyHash: Bytes? = {

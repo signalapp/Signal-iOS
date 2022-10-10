@@ -5,10 +5,11 @@
 import Foundation
 import AVFoundation
 import MediaPlayer
+import CoreServices
 import PromiseKit
 import SessionUIKit
-import CoreServices
 import SessionMessagingKit
+import SignalCoreKit
 
 public protocol AttachmentApprovalViewControllerDelegate: AnyObject {
     func attachmentApproval(
@@ -44,6 +45,10 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 // MARK: -
 
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+    public override var preferredStatusBarStyle: UIStatusBarStyle {
+        return ThemeManager.currentTheme.statusBarStyle
+    }
+    
     public enum Mode: UInt {
         case modal
         case sharedNavigation
@@ -158,12 +163,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         threadId: String,
         attachments: [SignalAttachment],
         approvalDelegate: AttachmentApprovalViewControllerDelegate
-    ) -> OWSNavigationController {
+    ) -> UINavigationController {
         let vc = AttachmentApprovalViewController(mode: .modal, threadId: threadId, attachments: attachments)
         vc.approvalDelegate = approvalDelegate
         
-        let navController = OWSNavigationController(rootViewController: vc)
-        navController.ows_prefersStatusBarHidden = true
+        let navController = StyledNavigationController(rootViewController: vc)
         
         return navController
     }
@@ -171,8 +175,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     // MARK: - UI
     
     private let kSpacingBetweenItems: CGFloat = 20
-    
-    public override var prefersStatusBarHidden: Bool { return true }
     
     private lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
         let bottomToolView = AttachmentApprovalInputAccessoryView()
@@ -213,18 +215,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     override public func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = Colors.navigationBarBackground
+        self.view.themeBackgroundColor = .newConversation_background
         
-        let backgroundImage: UIImage = UIImage(color: Colors.navigationBarBackground)
-        self.navigationItem.title = nil
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = Colors.navigationBarBackground
-        (self.navigationController?.navigationBar as? OWSNavigationBar)?.respectsTheme = true
-        self.navigationController?.navigationBar.backgroundColor = Colors.navigationBarBackground
-        self.navigationController?.navigationBar.setBackgroundImage(backgroundImage, for: .default)
-
         // Avoid an unpleasant "bounce" which doesn't make sense in the context of a single item.
         pagerScrollView?.isScrollEnabled = (attachmentItems.count > 1)
 
@@ -264,11 +256,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         super.viewDidAppear(animated)
 
         updateContents()
-    }
-
-    override public func viewWillDisappear(_ animated: Bool) {
-        Logger.debug("")
-        super.viewWillDisappear(animated)
     }
     
     // MARK: - Layout
@@ -369,67 +356,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
                 self?.cancelPressed()
             }
-            cancelButton.setTitleColor(Colors.text, for: .normal)
-            if let titleLabel = cancelButton.titleLabel {
-                titleLabel.font = UIFont.systemFont(ofSize: 17.0)
-            } else {
-                owsFailDebug("Missing titleLabel.")
-            }
+            cancelButton.titleLabel?.font = .systemFont(ofSize: 17.0)
+            cancelButton.setThemeTitleColor(.textPrimary, for: .normal)
+            cancelButton.setThemeTitleColor(.textSecondary, for: .highlighted)
             cancelButton.sizeToFit()
             navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         }
         else {
-            // Mimic a conventional back button, but with a shadow.
-            let isRTL = CurrentAppContext().isRTL
-            let imageName = (isRTL ? "NavBarBackRTL" : "NavBarBack")
-            let backButton = OWSButton(imageName: imageName, tintColor: Colors.text) { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            }
-
-            // Nudge closer to the left edge to match default back button item.
-            let kExtraLeftPadding: CGFloat = isRTL ? +0 : -8
-
-            // Give some extra hit area to the back button. This is a little smaller
-            // than the default back button, but makes sense for our left aligned title
-            // view in the MessagesViewController
-            let kExtraRightPadding: CGFloat = isRTL ? -0 : +10
-
-            // Extra hit area above/below
-            let kExtraHeightPadding: CGFloat = 4
-
-            // Matching the default backbutton placement is tricky.
-            // We can't just adjust the imageEdgeInsets on a UIBarButtonItem directly,
-            // so we adjust the imageEdgeInsets on a UIButton, then wrap that
-            // in a UIBarButtonItem.
-
-            backButton.contentHorizontalAlignment = .left
-
-            // Default back button is 1.5 pixel lower than our extracted image.
-            let kTopInsetPadding: CGFloat = 1.5
-            backButton.imageEdgeInsets = UIEdgeInsets(
-                top: kTopInsetPadding,
-                left: kExtraLeftPadding,
-                bottom: 0,
-                right: 0
-            )
-
-            var backImageSize = CGSize.zero
-            if let backImage = UIImage(named: imageName) {
-                backImageSize = backImage.size
-            }
-            else {
-                owsFailDebug("Missing backImage.")
-            }
-            backButton.frame = CGRect(
-                origin: .zero,
-                size: CGSize(
-                    width: backImageSize.width + kExtraRightPadding,
-                    height: backImageSize.height + kExtraHeightPadding
-                )
-            )
-
-            // Note: using a custom leftBarButtonItem breaks the interactive pop gesture.
-            navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
+            navigationItem.leftBarButtonItem = nil
         }
     }
 
@@ -551,7 +485,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     private func setCurrentItem(_ item: SignalAttachmentItem?, direction: UIPageViewController.NavigationDirection, animated isAnimated: Bool) {
         guard let item: SignalAttachmentItem = item, let page = self.buildPage(item: item) else {
-            owsFailDebug("unexpectedly unable to build new page")
+            Logger.error("unexpectedly unable to build new page")
             return
         }
 
@@ -563,7 +497,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     func updateMediaRail() {
         guard let currentItem = self.currentItem else {
-            owsFailDebug("currentItem was unexpectedly nil")
+            Logger.error("currentItem was unexpectedly nil")
             return
         }
 
@@ -578,7 +512,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                     return cell
                     
                 default:
-                    owsFailDebug("unexpted rail item type: \(railItem)")
+                    Logger.error("unexpted rail item type: \(railItem)")
                     return GalleryRailCellView()
             }
         }
@@ -727,13 +661,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 // MARK: -
 
 extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
-    func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController?.setAttachmentViewScale(.compact, animated: true)
-    }
+    func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {}
 
-    func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        currentPageViewController?.setAttachmentViewScale(.fullsize, animated: true)
-    }
+    func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar) {}
 
     func attachmentTextToolbarDidTapSend(_ attachmentTextToolbar: AttachmentTextToolbar) {
         // Toolbar flickers in and out if there are errors
@@ -768,9 +698,9 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
 extension SignalAttachmentItem: GalleryRailItem {
     func buildRailItemView() -> UIView {
         let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = UIColor.black.withAlphaComponent(0.33)
         imageView.image = getThumbnailImage()
+        imageView.themeBackgroundColor = .backgroundSecondary
+        imageView.contentMode = .scaleAspectFill
         
         return imageView
     }

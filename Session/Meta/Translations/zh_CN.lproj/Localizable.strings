@@ -1,17 +1,5 @@
-/* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "以后再说";
-/* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "%@ 版已在 App Store 上线。";
-/* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Session 有新版本啦";
-/* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "更新";
 /* No comment provided by engineer. */
 "ATTACHMENT" = "附件";
-/* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "注释字数已达上限。";
-/* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "添加注释...";
 /* Title for 'caption' mode of the attachment approval view. */
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "注释";
 /* Format string for file extension label in call interstitial view */
@@ -52,44 +40,6 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "不支持的文件";
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "语音消息";
-/* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "无法导出要备份的数据。";
-/* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "服务端返回无效响应";
-/* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "正在清理备份";
-/* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "正在准备备份";
-/* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "正在导出数据";
-/* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "正在导出备份";
-/* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "正在上传备份";
-/* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "无法导入备份。";
-/* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "正在准备备份";
-/* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "正在下载备份数据";
-/* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "备份准备即将完成";
-/* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "正在导入备份。";
-/* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "正在恢复数据库";
-/* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "正在恢复文件";
-/* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "有可用的备份";
-/* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "正在从备份恢复";
-/* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "进度";
-/* Label for the backup restore status. */
-"BACKUP_RESTORE_STATUS" = "状态";
-/* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "未知的备份错误";
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "加入黑名单";
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
@@ -104,24 +54,12 @@
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "用户已屏蔽";
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "已取消屏蔽 %@。";
-/* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "现有成员现在可以再次将您加入群组。";
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "被屏蔽的用户将无法向您发起通话，或发送消息。";
 /* Label for generic done button. */
 "BUTTON_DONE" = "完成";
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "选择";
-/* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "不要恢复";
-/* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "恢复";
-/* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Session无法确定您的iCloud账户状态。请在iOS设置中登陆iCloud账户来备份您在Session中的数据。";
-/* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "没有iCloud账户。请在iOS设置中登陆iCloud账户来备份您在Session中的数据。";
-/* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Session访问您iCloud账户以备份数据的请求被拒绝了。请在iOS设置中允许Session访问iCloud账户来备份您在Session中的数据。";
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "您将无法在此群组中继续发送或接收消息。";
 /* Alert title */
@@ -130,58 +68,30 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "该操作无法撤销。";
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "删除会话？";
+/* keyboard toolbar label when starting to search with no current results */
+"CONVERSATION_SEARCH_SEARCHING" = "Searching...";
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "没有结果";
 /* keyboard toolbar label when exactly 1 message matches the search string */
 "CONVERSATION_SEARCH_ONE_RESULT" = "1个结果";
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d条结果(共%d条)";
-/* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "会话设置";
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "屏蔽该用户";
-/* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "静音";
 /* label for 'mute thread' cell in conversation settings */
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "静音";
-/* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "未静音";
-/* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "静音一天";
-/* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "静音一小时";
-/* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "静音一分钟";
-/* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "静音一星期";
-/* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "静音一年";
-/* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
-"CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "直到 %@";
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "搜索对话";
-/* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "取消静音";
 /* Title for the 'crop/scale image' dialog. */
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "移动与缩放";
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "这需要几分钟的时间。";
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "正在优化数据库";
-/* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@小时前";
-/* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@分钟前";
 /* The present; the current time. */
 "DATE_NOW" = "现在";
-/* The current day. */
-"DATE_TODAY" = "今天";
-/* The day before today. */
-"DATE_YESTERDAY" = "昨天";
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "阅后即焚";
-/* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "此对话中的消息将在%@后消失。";
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "编辑群组";
 /* Label indicating media gallery is empty */
@@ -226,14 +136,10 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "选择附件失败。";
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "语音文件无效";
-/* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "取消阅后即焚";
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "离开群组";
 /* table cell label in conversation settings */
 "LEAVE_GROUP_ACTION" = "离开群组";
-/* Title for the 'long text message' view. */
-"LONG_TEXT_VIEW_TITLE" = "消息";
 /* nav bar button item */
 "MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON" = "所有媒体";
 /* media picker option to choose from library */
@@ -250,48 +156,22 @@
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "您";
 /* Section header in media gallery collection view */
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "这个月";
-/* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "已发送";
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "发送失败。";
-/* status message for failed messages */
-"MESSAGE_STATUS_FAILED_SHORT" = "失败";
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "已读";
-/* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Session account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "已跳过";
 /* message status while message is sending. */
 "MESSAGE_STATUS_SENDING" = "发送中...";
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "已发送";
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "上传中...";
-/* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "您可在 iOS 设置中启用此权限。";
-/* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "您授予照片访问权限后，Session 才能启用此功能。";
-/* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "您将不会收到来自静音对话的通知。";
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@至%@";
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "备忘录";
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "您可能在%@重启时收到了新消息。";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "由于苹果通知推送系统的已知缺陷，消息只有在发送的30秒之内被接收才会显示预览。因此，应用图标上的显示可能并不准确。";
-/* Table cell switch label. When disabled, Session will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "应用内播放提示音";
-/* Label for settings UI that allows user to change the notification sound. */
-"NOTIFICATIONS_SECTION_SOUNDS" = "声音";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "名字和内容";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "只显示名称";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "没有名字或者内容";
-/* No comment provided by engineer. */
-"NOTIFICATIONS_SHOW" = "显示";
 /* No comment provided by engineer. */
 "BUTTON_OK" = "好";
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
@@ -310,10 +190,6 @@
 "PUSH_MANAGER_MARKREAD" = "标记为已读";
 /* Notification action button title */
 "PUSH_MANAGER_REPLY" = "回复";
-/* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "在验证发给你的验证码之前，我们无法激活你的帐户.";
-/* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "立即";
 /* Description of how and why Session iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "验证以打开 Session。";
 /* Title for alert indicating that screen lock could not be unlocked. */
@@ -322,82 +198,10 @@
 "SEND_MEDIA_ABANDON_TITLE" = "丢弃媒体？";
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "丢弃媒体";
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "返回相机";
-/* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "返回媒体库";
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@（默认）";
-/* Label for the backup view in app settings. */
-"SETTINGS_BACKUP" = "备份";
-/* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "现在备份";
-/* Label for 'cancel backup' button in the backup settings view. */
-"SETTINGS_BACKUP_CANCEL_BACKUP" = "取消备份";
-/* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "备份已启用";
-/* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud状态";
-/* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "恢复备份失败";
-/* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "恢复备份未在进行";
-/* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "恢复备份正在进行";
-/* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "恢复备份成功";
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PHASE" = "阶段";
-/* Label for phase row in the in the backup settings view. */
-"SETTINGS_BACKUP_PROGRESS" = "进度";
-/* Label for backup status row in the in the backup settings view. */
-"SETTINGS_BACKUP_STATUS" = "状态";
-/* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "备份失败";
-/* Indicates that app is not backing up. */
-"SETTINGS_BACKUP_STATUS_IDLE" = "等待中";
-/* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "正在备份";
-/* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "备份成功";
-/* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "清除聊天记录";
-/* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "全部删除";
-/* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "清除聊天记录";
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "消息提示音";
-/* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "发送链接预览";
-/* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "大多数URL都支持链接预览。";
-/* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "链接预览";
-/* Setting for enabling & disabling voice & video calls. */
-"SETTINGS_CALLS" = "语音和视频通话";
-/* Footer for setting for enabling & disabling voice & video calls. */
-"SETTINGS_CALLS_FOOTER" = "允许访问以接听其他用户的语音和视频通话。";
-/* Header for setting for enabling & disabling voice & video calls. */
-"SETTINGS_CALLS_HEADER" = "通话";
-/* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "通知内容";
-/* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "已读回执";
-/* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "消息已读时，查看和分享已读状态。该设置为可选设置，且对所有对话生效。";
-/* Label for the 'screen lock activity timeout' setting of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "屏幕锁超时";
-/* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "屏幕锁🔒";
-/* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "屏幕锁🔒";
-/* Header Label for the sounds section of settings views. */
-"SETTINGS_SECTION_SOUNDS" = "声音";
-/* Section header */
-"SETTINGS_SECURITY_TITLE" = "屏幕安全";
-/* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "“正在输入”提示";
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "无";
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
@@ -508,25 +312,13 @@
 "vc_join_public_chat_scan_qr_code_tab_title" = "扫描二维码";
 "vc_enter_chat_url_text_field_hint" = "输入公开群组链接";
 "vc_settings_title" = "设置";
-"vc_settings_display_name_text_field_hint" = "输入您想显示的名称";
+"vc_group_settings_title" = "Group Settings";
 "vc_settings_display_name_missing_error" = "请设定一个名称";
 "vc_settings_display_name_too_long_error" = "请设定一个较短的名称";
 "vc_settings_privacy_button_title" = "隐私";
 "vc_settings_notifications_button_title" = "通知";
 "vc_settings_recovery_phrase_button_title" = "恢复口令";
 "vc_settings_clear_all_data_button_title" = "清除数据";
-"vc_notification_settings_title" = "通知";
-"vc_privacy_settings_title" = "隐私";
-"preferences_notifications_strategy_category_title" = "通知选项";
-"modal_seed_title" = "您的恢复口令";
-"modal_seed_explanation" = "这是您的恢复口令。您可以通过该口令将Session ID还原或迁移到新设备上。";
-"modal_clear_all_data_title" = "清除所有数据";
-"modal_clear_all_data_explanation" = "这将永久删除您的消息、对话和联系人。";
-"modal_clear_all_data_explanation_2" = "你想只清除这个设备，还是删除你的整个账户？";
-"dialog_clear_all_data_deletion_failed_1" = "数据未被一个服务节点删除。服务节点ID： %@";
-"dialog_clear_all_data_deletion_failed_2" = "数据未被 %@ 服务节点删除。服务节点ID： %@";
-"modal_clear_all_data_device_only_button_title" = "仅设备";
-"modal_clear_all_data_entire_account_button_title" = "整个账户";
 "vc_qr_code_title" = "二维码";
 "vc_qr_code_view_my_qr_code_tab_title" = "查看我的二维码";
 "vc_qr_code_view_scan_qr_code_tab_title" = "扫描二维码";
@@ -538,17 +330,14 @@
 "slow_mode_explanation" = "Session将不时在后台获取新消息。";
 "slow_mode" = "慢速模式";
 "vc_pn_mode_title" = "消息通知";
-"vc_notification_settings_notification_mode_title" = "使用快速模式";
 "vc_link_device_recovery_phrase_tab_title" = "恢复口令";
 "vc_link_device_scan_qr_code_explanation" = "在您的其他设备上导航到设置 -> 恢复短语以显示您的 QR 代码。";
 "vc_enter_recovery_phrase_title" = "恢复口令";
 "vc_enter_recovery_phrase_explanation" = "输入您注册时获得的恢复口令以连接你的设备";
 "vc_enter_public_key_text_field_hint" = "输入Session ID或ONS名称";
-"vc_home_title" = "消息";
 "admin_group_leave_warning" = "因为您是这个组的创建者，该组将被解散。该操作无法恢复。";
 "vc_join_open_group_suggestions_title" = "也可以加入这些…";
 "vc_settings_invite_a_friend_button_title" = "邀请朋友";
-"vc_settings_help_us_translate_button_title" = "帮助我们翻译Session界面";
 "copied" = "已复制";
 "vc_conversation_settings_copy_session_id_button_title" = "复制Session ID";
 "vc_conversation_input_prompt" = "消息";
@@ -566,10 +355,6 @@
 "modal_link_previews_title" = "是否启用链接预览?";
 "modal_link_previews_explanation" = "链接预览将为您发送或收到的URL生成预览内容。 该功能非常实用，但Session需要访问该链接指向的网站以生成预览。您可以随后在会话设置中禁用该功能。";
 "modal_link_previews_button_title" = "启用";
-"modal_call_title" = "语音和视频通话";
-"modal_call_explanation" = "当前的语音/视频通话机制会将 IP 地址暴露给 Oxen Foundation 服务器以及与您通话的用户。";
-"modal_share_logs_title" = "分享日志";
-"modal_share_logs_explanation" = "导出日志以供分享和排除故障？";
 "vc_share_title" = "分享到 Session";
 "vc_share_loading_message" = "正在准备附件......";
 "vc_share_sending_message" = "正在发送…";
@@ -579,9 +364,6 @@
 "vc_share_link_previews_disabled_explanation" = "开启链接预览将为您发送或收到的URL生成预览内容。 该功能非常实用，但Session需要访问该链接指向的网站以生成预览。\n\n您可以随后在会话设置中禁用该功能。";
 "view_open_group_invitation_description" = "打开群组邀请";
 "vc_conversation_settings_invite_button_title" = "添加成员";
-"vc_settings_faq_button_title" = "常见问题";
-"vc_settings_survey_button_title" = "意见反馈 / 问卷调查";
-"vc_settings_support_button_title" = "调试日志";
 "modal_send_seed_title" = "警告";
 "modal_send_seed_explanation" = "这是您的恢复口令。如果您将其发送给某人，他们将完全有权访问您的帐户。";
 "modal_send_seed_send_button_title" = "发送";
@@ -610,16 +392,8 @@
 "call_outgoing" = "您呼叫了 %@";
 "call_incoming" = "%@ 来电";
 "call_missed" = "来自 %@ 的未接来电";
-"call_rejected" = "通话被拒绝";
-"call_cancelled" = "通话被取消";
-"call_timeout" = "未接电话";
-"voice_call" = "语音通话";
-"video_call" = "视频通话";
 "APN_Message" = "您有一条新消息。";
 "APN_Collapsed_Messages" = "你有 %@ 条新消息。";
-"system_mode_theme" = "系统";
-"dark_mode_theme" = "深色";
-"light_mode_theme" = "明亮";
 "PIN_BUTTON_TEXT" = "置顶";
 "UNPIN_BUTTON_TEXT" = "取消置顶";
 "modal_call_missed_tips_title" = "未接来电";
@@ -628,8 +402,6 @@
 "screenshot_taken" = "%@ 进行了截图。";
 "SEARCH_SECTION_CONTACTS" = "联系人和群组";
 "SEARCH_SECTION_MESSAGES" = "消息";
-"SEARCH_SECTION_RECENT" = "最近";
-"RECENT_SEARCH_LAST_MESSAGE_DATETIME" = "最后消息： %@";
 "MESSAGE_REQUESTS_TITLE" = "消息请求";
 "MESSAGE_REQUESTS_EMPTY_TEXT" = "没有待处理的消息请求";
 "MESSAGE_REQUESTS_CLEAR_ALL" = "清除所有";
@@ -645,19 +417,12 @@
 "TXT_DECLINE_TITLE" = "Decline";
 "TXT_BLOCK_USER_TITLE" = "Block User";
 "ALERT_ERROR_TITLE" = "错误";
-"NEW_CONVERSATION_MENU_OPEN_GROUP" = "公开群组";
-"NEW_CONVERSATION_MENU_DIRECT_MESSAGE" = "私信";
-"NEW_CONVERSATION_MENU_CLOSED_GROUP" = "私密群组";
 "modal_call_permission_request_title" = "请授予通话权限";
 "modal_call_permission_request_explanation" = "您可以在隐私设置中启用“语音和视频通话”权限。";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_TITLE" = "Oops, an error occurred";
 "DEFAULT_OPEN_GROUP_LOAD_ERROR_SUBTITLE" = "Please try again later";
 "LOADING_CONVERSATIONS" = "Loading Conversations...";
 "DATABASE_MIGRATION_FAILED" = "An error occurred when optimising the database\n\nYou can export your application logs to be able to share for troubleshooting or you can restore your device\n\nWarning: Restoring your device will result in loss of any data older than two weeks";
-"CHATS_TITLE" = "Chats";
-"MESSAGE_TRIMMING_TITLE" = "Message Trimming";
-"MESSAGE_TRIMMING_OPEN_GROUP_TITLE" = "Delete Old Open Group Messages";
-"MESSAGE_TRIMMING_OPEN_GROUP_DESCRIPTION" = "Automatically delete messages which are older than 6 months from open groups with over 2,000 messages when starting the app";
 "RECOVERY_PHASE_ERROR_GENERIC" = "Something went wrong. Please check your recovery phrase and try again.";
 "RECOVERY_PHASE_ERROR_LENGTH" = "Looks like you didn't enter enough words. Please check your recovery phrase and try again.";
 "RECOVERY_PHASE_ERROR_LAST_WORD" = "You seem to be missing the last word of your recovery phrase. Please check what you entered and try again.";
@@ -711,7 +476,122 @@
 "EMOJI_REACTS_NOTIFICATION" = "%@ reacts to a message with %@.";
 "EMOJI_REACTS_MORE_REACTORS_ONE" = "And 1 other has reacted %@ to this message.";
 "EMOJI_REACTS_MORE_REACTORS_MUTIPLE" = "And %@ others have reacted %@ to this message.";
+"EMOJI_REACTS_RATE_LIMIT_TOAST" = "Slow down! You've sent too many emoji reacts. Try again soon.";
 /* New conversation screen*/
 "vc_new_conversation_title" = "New Conversation";
 "CREATE_GROUP_BUTTON_TITLE" = "Create";
 "JOIN_COMMUNITY_BUTTON_TITLE" = "Join";
+"PRIVACY_TITLE" = "隐私";
+"PRIVACY_SECTION_SCREEN_SECURITY" = "屏幕安全";
+"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "Lock Session";
+"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = "Require Touch ID, Face ID or your passcode to unlock Session.";
+"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE" = "Screenshot Notifications";
+"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "Receive a notification when a contact takes a screenshot of a one-to-one chat.";
+"PRIVACY_SECTION_READ_RECEIPTS" = "已读回执";
+"PRIVACY_READ_RECEIPTS_TITLE" = "已读回执";
+"PRIVACY_READ_RECEIPTS_DESCRIPTION" = "Send read receipts in one-to-one chats.";
+"PRIVACY_SECTION_TYPING_INDICATORS" = "“正在输入”提示";
+"PRIVACY_TYPING_INDICATORS_TITLE" = "“正在输入”提示";
+"PRIVACY_TYPING_INDICATORS_DESCRIPTION" = "See and share typing indicators in one-to-one conversations.";
+"PRIVACY_SECTION_LINK_PREVIEWS" = "Link Previews";
+"PRIVACY_LINK_PREVIEWS_TITLE" = "发送链接预览";
+"PRIVACY_LINK_PREVIEWS_DESCRIPTION" = "Generate link previews for supported URLs.";
+"PRIVACY_SECTION_CALLS" = "Calls (Beta)";
+"PRIVACY_CALLS_TITLE" = "语音和视频通话";
+"PRIVACY_CALLS_DESCRIPTION" = "Enables voice and video calls to and from other users.";
+"PRIVACY_CALLS_WARNING_TITLE" = "Voice and Video Calls (Beta)";
+"PRIVACY_CALLS_WARNING_DESCRIPTION" = "Your IP address is visible to your call partner and an Oxen Foundation server while using beta calls. Are you sure you want to enable Voice and Video Calls?";
+"NOTIFICATIONS_TITLE" = "通知";
+"NOTIFICATIONS_SECTION_STRATEGY" = "通知选项";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_TITLE" = "使用快速模式";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_DESCRIPTION" = "You'll be notified of new message reliably and immediately using Apple's notification servers.";
+"NOTIFICATIONS_STRATEGY_FAST_MODE_ACTION" = "Go to device notification settings";
+"NOTIFICATIONS_SECTION_STYLE" = "Notification Style";
+"NOTIFICATIONS_STYLE_SOUND_TITLE" = "Sound";
+"NOTIFICATIONS_STYLE_SOUND_WHEN_OPEN_TITLE" = "Sound When App is Open";
+"NOTIFICATIONS_STYLE_CONTENT_TITLE" = "通知内容";
+"NOTIFICATIONS_STYLE_CONTENT_DESCRIPTION" = "The information shown in notifications.";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_AND_CONTENT" = "Name & Content";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NAME_ONLY" = "只显示名称";
+"NOTIFICATIONS_STYLE_CONTENT_OPTION_NO_NAME_OR_CONTENT" = "没有名字或者内容";
+"CONVERSATION_SETTINGS_TITLE" = "Conversations";
+"CONVERSATION_SETTINGS_SECTION_MESSAGE_TRIMMING" = "Message Trimming";
+"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_TITLE" = "Trim Communities";
+"CONVERSATION_SETTINGS_MESSAGE_TRIMMING_DESCRIPTION" = "Delete messages older than 6 months from Communities that have over 2,000 messages.";
+"CONVERSATION_SETTINGS_SECTION_AUDIO_MESSAGES" = "Audio Messages";
+"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_TITLE" = "Autoplay Audio Messages";
+"CONVERSATION_SETTINGS_AUDIO_MESSAGES_AUTOPLAY_DESCRIPTION" = "Autoplay consecutive audio messages.";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_TITLE" = "Blocked Contacts";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_EMPTY_STATE" = "You have no blocked contacts.";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK" = "Unblock";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_SINGLE" = "Are you sure you want to unblock %@?";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_FALLBACK" = "this contact";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_1" = "Are you sure you want to unblock %@";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_2_SINGLE" = "and %@?";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_TITLE_MULTIPLE_3" = "and %d others?";
+"CONVERSATION_SETTINGS_BLOCKED_CONTACTS_UNBLOCK_CONFIRMATION_ACTON" = "Unblock";
+"APPEARANCE_TITLE" = "Appearance";
+"APPEARANCE_THEMES_TITLE" = "Themes";
+"APPEARANCE_PRIMARY_COLOR_TITLE" = "Primary colour";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_QUOTE" = "How are you?";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_INC_MESSAGE" = "I'm good thanks, you?";
+"APPEARANCE_PRIMARY_COLOR_PREVIEW_OUT_MESSAGE" = "I'm doing great, thanks.";
+"APPEARANCE_NIGHT_MODE_TITLE" = "Auto night-mode";
+"APPEARANCE_NIGHT_MODE_TOGGLE" = "Match system settings";
+"HELP_TITLE" = "Help";
+"HELP_REPORT_BUG_TITLE" = "Report a Bug";
+"HELP_REPORT_BUG_DESCRIPTION" = "Export your logs, then upload the file though Session's Help Desk.";
+"HELP_REPORT_BUG_ACTION_TITLE" = "Export Logs";
+"HELP_TRANSLATE_TITLE" = "Translate Session";
+"HELP_FEEDBACK_TITLE" = "We'd love your Feedback";
+"HELP_FAQ_TITLE" = "常见问题";
+"HELP_SUPPORT_TITLE" = "Support";
+"modal_clear_all_data_title" = "清除所有数据";
+"modal_clear_all_data_explanation" = "This will permanently delete your messages and contacts. Would you like to clear this device only, or delete your data from the network as well?";
+"modal_clear_all_data_explanation_2" = "Are you sure you want to delete your data from the network?   If you continue, you will not be able to restore your messages or contacts.";
+"modal_clear_all_data_device_only_button_title" = "Clear Device Only";
+"modal_clear_all_data_entire_account_button_title" = "Clear Device and Network";
+"dialog_clear_all_data_deletion_failed_1" = "数据未被一个服务节点删除。服务节点ID： %@";
+"dialog_clear_all_data_deletion_failed_2" = "数据未被 %@ 服务节点删除。服务节点ID： %@";
+"modal_clear_all_data_confirm" = "Clear";
+"modal_seed_title" = "您的恢复口令";
+"modal_seed_explanation" = "You can use your recovery phrase to restore your account or link a device.";
+"modal_permission_explanation" = "Session needs %@ access to continue. You can enable access in the iOS settings.";
+"modal_permission_settings_title" = "Settings";
+"modal_permission_camera" = "camera";
+"modal_permission_microphone" = "microphone";
+"modal_permission_library" = "library";
+"DISAPPEARING_MESSAGES_OFF" = "Off";
+"DISAPPEARING_MESSAGES_SUBTITLE_OFF" = "Off";
+"DISAPPEARING_MESSAGES_SUBTITLE_DISAPPEAR_AFTER" = "Disappear After: %@";
+"COPY_GROUP_URL" = "Copy Group URL";
+"NEW_CONVERSATION_CONTACTS_SECTION_TITLE" = "Contacts";
+"GROUP_ERROR_NO_MEMBER_SELECTION" = "Please pick at least 1 group member";
+"GROUP_CREATION_PLEASE_WAIT" = "Please wait while the group is created...";
+"GROUP_CREATION_ERROR_TITLE" = "Couldn't Create Group";
+"GROUP_CREATION_ERROR_MESSAGE" = "Please check your internet connection and try again.";
+"GROUP_UPDATE_ERROR_TITLE" = "Couldn't Update Group";
+"GROUP_UPDATE_ERROR_MESSAGE" = "Can't leave while adding or removing other members.";
+"GROUP_ACTION_REMOVE" = "Remove";
+"GROUP_TITLE_MEMBERS" = "Members";
+"GROUP_TITLE_FALLBACK" = "Group";
+"DM_ERROR_DIRECT_BLINDED_ID" = "You can only send messages to Blinded IDs from within a Community";
+"DM_ERROR_INVALID" = "Please check the Session ID or ONS name and try again";
+"COMMUNITY_ERROR_INVALID_URL" = "Please check the URL you entered and try again.";
+"COMMUNITY_ERROR_GENERIC" = "Couldn't Join";
+"DISAPPERING_MESSAGES_TITLE" = "Disappearing Messages";
+"DISAPPERING_MESSAGES_TYPE_TITLE" = "Delete Type";
+"DISAPPERING_MESSAGES_TYPE_AFTER_READ_TITLE" = "Disappear After Read";
+"DISAPPERING_MESSAGES_TYPE_AFTER_READ_DESCRIPTION" = "Messages delete after they have been read.";
+"DISAPPERING_MESSAGES_TYPE_AFTER_SEND_TITLE" = "Disappear After Send";
+"DISAPPERING_MESSAGES_TYPE_AFTER_SEND_DESCRIPTION" = "Messages delete after they have been sent.";
+"DISAPPERING_MESSAGES_TIMER_TITLE" = "Timer";
+"DISAPPERING_MESSAGES_SAVE_TITLE" = "Set";
+"DISAPPERING_MESSAGES_GROUP_WARNING" = "This setting applies to everyone in this conversation.";
+"DISAPPERING_MESSAGES_GROUP_WARNING_ADMIN_ONLY" = "This setting applies to everyone in this conversation. Only group admins can change this setting.";
+"DISAPPERING_MESSAGES_SUMMARY" = "Disappear After %@ - %@";
+"DISAPPERING_MESSAGES_INFO_ENABLE" = "%@ has set messages to disappear %@ after they have been %@";
+"DISAPPERING_MESSAGES_INFO_UPDATE" = "%@ has changed messages to disappear %@ after they have been %@";
+"DISAPPERING_MESSAGES_INFO_DISABLE" = "%@ has turned off disappearing messages";
+"MESSAGE_STATE_READ" = "Read";
+"MESSAGE_STATE_SENT" = "Sent";

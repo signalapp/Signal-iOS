@@ -238,8 +238,8 @@ extension OpenGroup: CustomStringConvertible, CustomDebugStringConvertible {
             "sequenceNumber: \(sequenceNumber)",
             "inboxLatestMessageId: \(inboxLatestMessageId)",
             "outboxLatestMessageId: \(outboxLatestMessageId)",
-            "pollFailureCount: \(pollFailureCount))",
-            "permissions: \(permissions?.toString() ?? "---")"
+            "pollFailureCount: \(pollFailureCount)",
+            "permissions: \(permissions?.toString() ?? "---"))"
         ].joined(separator: ", ")
     }
 }

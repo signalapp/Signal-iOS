@@ -109,6 +109,7 @@ public extension SendReadReceiptsJob {
                 .filter(interactionIds.contains(Interaction.Columns.id))
                 // Only `standardIncoming` incoming interactions should have read receipts sent
                 .filter(Interaction.Columns.variant == Interaction.Variant.standardIncoming)
+                .filter(Interaction.Columns.wasRead == false)   // Only send for unread messages
                 .joining(
                     // Don't send read receipts in group threads
                     required: Interaction.thread
@@ -119,7 +120,10 @@ public extension SendReadReceiptsJob {
         )
         
         // If there are no timestamp values then do nothing
-        guard let timestampMsValues: [Int64] = maybeTimestampMsValues else { return nil }
+        guard
+            let timestampMsValues: [Int64] = maybeTimestampMsValues,
+            !timestampMsValues.isEmpty
+        else { return nil }
         
         // Try to get an existing job (if there is one that's not running)
         if

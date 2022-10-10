@@ -1,33 +1,43 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-public final class InputTextView : UITextView, UITextViewDelegate {
+import UIKit
+import SessionUIKit
+
+public final class InputTextView: UITextView, UITextViewDelegate {
     private weak var snDelegate: InputTextViewDelegate?
     private let maxWidth: CGFloat
     private lazy var heightConstraint = self.set(.height, to: minHeight)
     
     public override var text: String? { didSet { handleTextChanged() } }
     
-    // MARK: UI Components
+    // MARK: - UI Components
+    
     private lazy var placeholderLabel: UILabel = {
         let result = UILabel()
-        result.text = NSLocalizedString("vc_conversation_input_prompt", comment: "")
         result.font = .systemFont(ofSize: Values.mediumFontSize)
-        result.textColor = Colors.text.withAlphaComponent(Values.mediumOpacity)
+        result.text = "vc_conversation_input_prompt".localized()
+        result.themeTextColor = .textSecondary
+        
         return result
     }()
     
-    // MARK: Settings
+    // MARK: - Settings
+    
     private let minHeight: CGFloat = 22
     private let maxHeight: CGFloat = 80
 
-    // MARK: Lifecycle
+    // MARK: - Lifecycle
+    
     init(delegate: InputTextViewDelegate, maxWidth: CGFloat) {
         snDelegate = delegate
         self.maxWidth = maxWidth
+        
         super.init(frame: CGRect.zero, textContainer: nil)
+        
         setUpViewHierarchy()
         self.delegate = self
         self.isAccessibilityElement = true
-        self.accessibilityLabel = NSLocalizedString("vc_conversation_input_prompt", comment: "")
+        self.accessibilityLabel = "vc_conversation_input_prompt".localized()
     }
     
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
@@ -57,11 +67,12 @@ public final class InputTextView : UITextView, UITextViewDelegate {
     private func setUpViewHierarchy() {
         showsHorizontalScrollIndicator = false
         showsVerticalScrollIndicator = false
-        backgroundColor = .clear
-        textColor = Colors.text
+        
         font = .systemFont(ofSize: Values.mediumFontSize)
-        tintColor = Colors.accent
-        keyboardAppearance = isLightMode ? .light : .dark
+        themeBackgroundColor = .clear
+        themeTextColor = .textPrimary
+        themeTintColor = .primary
+        
         heightConstraint.isActive = true
         let horizontalInset: CGFloat = 2
         textContainerInset = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
@@ -70,9 +81,17 @@ public final class InputTextView : UITextView, UITextViewDelegate {
         placeholderLabel.pin(.top, to: .top, of: self)
         pin(.trailing, to: .trailing, of: placeholderLabel, withInset: horizontalInset)
         pin(.bottom, to: .bottom, of: placeholderLabel)
+        
+        ThemeManager.onThemeChange(observer: self) { [weak self] theme, _ in
+            switch theme.interfaceStyle {
+                case .light: self?.keyboardAppearance = .light
+                default: self?.keyboardAppearance = .dark
+            }
+        }
     }
 
-    // MARK: Updating
+    // MARK: - Updating
+    
     public func textViewDidChange(_ textView: UITextView) {
         handleTextChanged()
     }

@@ -8,6 +8,10 @@ final class InfoMessageCell: MessageCell {
     private static let iconSize: CGFloat = 16
     private static let inset = Values.mediumSpacing
     
+    private var isHandlingLongPress: Bool = false
+    
+    override var contextSnapshotView: UIView? { return label }
+    
     // MARK: - UI
     
     private lazy var iconImageViewWidthConstraint = iconImageView.set(.width, to: InfoMessageCell.iconSize)
@@ -17,11 +21,11 @@ final class InfoMessageCell: MessageCell {
 
     private lazy var label: UILabel = {
         let result: UILabel = UILabel()
-        result.numberOfLines = 0
-        result.lineBreakMode = .byWordWrapping
         result.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-        result.textColor = Colors.text
+        result.themeTextColor = .textPrimary
         result.textAlignment = .center
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
         
         return result
     }()
@@ -48,6 +52,11 @@ final class InfoMessageCell: MessageCell {
         stackView.pin(.top, to: .top, of: self, withInset: InfoMessageCell.inset)
         stackView.pin(.right, to: .right, of: self, withInset: -InfoMessageCell.inset)
         stackView.pin(.bottom, to: .bottom, of: self, withInset: -InfoMessageCell.inset)
+    }
+    
+    override func setUpGestureRecognizers() {
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        addGestureRecognizer(longPressRecognizer)
     }
 
     // MARK: - Updating
@@ -79,7 +88,7 @@ final class InfoMessageCell: MessageCell {
         
         if let icon = icon {
             iconImageView.image = icon.withRenderingMode(.alwaysTemplate)
-            iconImageView.tintColor = Colors.text
+            iconImageView.themeTintColor = .textPrimary
         }
         
         iconImageViewWidthConstraint.constant = (icon != nil) ? InfoMessageCell.iconSize : 0
@@ -89,5 +98,18 @@ final class InfoMessageCell: MessageCell {
     }
     
     override func dynamicUpdate(with cellViewModel: MessageViewModel, playbackInfo: ConversationViewModel.PlaybackInfo?) {
+    }
+    
+    // MARK: - Interaction
+    
+    @objc func handleLongPress(_ gestureRecognizer: UITapGestureRecognizer) {
+        if [ .ended, .cancelled, .failed ].contains(gestureRecognizer.state) {
+            isHandlingLongPress = false
+            return
+        }
+        guard !isHandlingLongPress, let cellViewModel: MessageViewModel = self.viewModel else { return }
+        
+        delegate?.handleItemLongPressed(cellViewModel)
+        isHandlingLongPress = true
     }
 }

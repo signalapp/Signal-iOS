@@ -12,7 +12,12 @@ import Foundation
 /// a somewhat inconsistent interface between different `Atomic` wrappers
 @propertyWrapper
 public class Atomic<Value> {
-    private let queue: DispatchQueue = DispatchQueue(label: "io.oxen.\(UUID().uuidString)")
+    // Note: Using 'userInteractive' to ensure this can't be blockedby higher priority queues
+    // which could result in the main thread getting blocked
+    private let queue: DispatchQueue = DispatchQueue(
+        label: "io.oxen.\(UUID().uuidString)",
+        qos: .userInteractive
+    )
     private var value: Value
 
     /// In order to change the value you **must** use the `mutate` function

@@ -1,9 +1,12 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
+import UIKit
 import CoreServices
 import PromiseKit
 import SignalUtilitiesKit
 import SessionUIKit
 
-final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerDelegate {
+final class ShareVC: UINavigationController, ShareViewDelegate {
     private var areVersionMigrationsComplete = false
     public static var attachmentPrepPromise: Promise<[SignalAttachment]>?
     
@@ -21,11 +24,17 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
     override func loadView() {
         super.loadView()
 
-        // This should be the first thing we do.
-        let appContext = ShareAppExtensionContext(rootViewController: self)
-        SetCurrentAppContext(appContext)
-
-        AppModeManager.configure(delegate: self)
+        // This should be the first thing we do (Note: If you leave the share context and return to it
+        // the context will already exist, trying to override it results in the share context crashing
+        // so ensure it doesn't exist first)
+        if !HasAppContext() {
+            let appContext = ShareAppExtensionContext(rootViewController: self)
+            SetCurrentAppContext(appContext)
+        }
+        
+        // Need to manually trigger these since we don't have a "mainWindow" here and the current theme
+        // might have been changed since the share extension was last opened
+        ThemeManager.applySavedTheme()
 
         Logger.info("")
 
@@ -62,6 +71,14 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
             name: .OWSApplicationDidEnterBackground,
             object: nil
         )
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        // Note: The share extension doesn't have a proper window so we need to manually update
+        // the ThemeManager from here
+        ThemeManager.traitCollectionDidChange(previousTraitCollection)
     }
 
     @objc
@@ -130,7 +147,7 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
 
         Logger.info("")
 
-        if OWSScreenLock.shared.isScreenLockEnabled() {
+        if Storage.shared[.isScreenLockEnabled] {
             self.dismiss(animated: false) { [weak self] in
                 AssertIsOnMainThread()
                 self?.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
@@ -146,20 +163,11 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
         // we can't easily clean up.
         ExitShareExtension()
     }
-
-    // MARK: - App Mode
-
-    public func setCurrentAppMode(to appMode: AppMode) {
-        return // Not applicable to share extensions
-    }
     
-    public func setAppModeToSystemDefault() {
-        return // Not applicable to share extensions
-    }
+    // MARK: - Updating
     
-    // MARK: Updating
     private func showLockScreenOrMainContent() {
-        if OWSScreenLock.shared.isScreenLockEnabled() {
+        if Storage.shared[.isScreenLockEnabled] {
             showLockScreen()
         }
         else {
@@ -214,11 +222,17 @@ final class ShareVC : UINavigationController, ShareViewDelegate, AppModeManagerD
             return
         }
         
-        let alert = UIAlertController(title: "Session", message: error.localizedDescription, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "BUTTON_OK".localized(), style: .default, handler: { _ in
-            self.extensionContext!.cancelRequest(withError: error)
-        }))
-        presentAlert(alert)
+        let modal: ConfirmationModal = ConfirmationModal(
+            targetView: self.view,
+            info: ConfirmationModal.Info(
+                title: "Session",
+                explanation: error.localizedDescription,
+                cancelTitle: "BUTTON_OK".localized(),
+                cancelStyle: .alert_text,
+                afterClosed: { [weak self] in self?.extensionContext?.cancelRequest(withError: error) }
+            )
+        )
+        self.present(modal, animated: true)
     }
     
     // MARK: Attachment Prep

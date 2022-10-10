@@ -18,9 +18,10 @@ public final class Values : NSObject {
     @objc public static let massiveFontSize = CGFloat(50)
     
     // MARK: - Element Sizes
-    @objc public static let smallButtonHeight = isIPhone5OrSmaller ? CGFloat(24) : CGFloat(27)
+    @objc public static let smallButtonHeight = isIPhone5OrSmaller ? CGFloat(24) : CGFloat(28)
     @objc public static let mediumButtonHeight = isIPhone5OrSmaller ? CGFloat(30) : CGFloat(34)
     @objc public static let largeButtonHeight = isIPhone5OrSmaller ? CGFloat(40) : CGFloat(45)
+    @objc public static let alertButtonHeight: CGFloat = 50
     
     @objc public static let accentLineThickness = CGFloat(4)
     
@@ -33,6 +34,15 @@ public final class Values : NSObject {
 
     @objc public static var separatorThickness: CGFloat { return 1 / UIScreen.main.scale }
     
+    public static func footerGradientHeight(window: UIWindow?) -> CGFloat {
+        return (
+            Values.veryLargeSpacing +
+            Values.largeButtonHeight +
+            Values.smallSpacing +
+            (window?.safeAreaInsets.bottom ?? 0)
+        )
+    }
+    
     // MARK: - Distances
     @objc public static let verySmallSpacing = CGFloat(4)
     @objc public static let smallSpacing = CGFloat(8)
@@ -40,7 +50,6 @@ public final class Values : NSObject {
     @objc public static let largeSpacing = CGFloat(24)
     @objc public static let veryLargeSpacing = CGFloat(35)
     @objc public static let massiveSpacing = CGFloat(64)
-    @objc public static let newConversationButtonBottomOffset = CGFloat(52)
     @objc public static let onboardingButtonBottomOffset = isIPhone5OrSmaller ? CGFloat(52) : CGFloat(72)
     
     // MARK: - iPad Sizes

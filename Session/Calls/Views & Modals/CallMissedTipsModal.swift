@@ -6,64 +6,91 @@ import SessionUIKit
 final class CallMissedTipsModal: Modal {
     private let caller: String
     
+    // MARK: - UI
+    
+    private lazy var tipsIconContainerView: UIView = UIView()
+    
+    private lazy var tipsIconImageView: UIImageView = {
+        let result: UIImageView = UIImageView(
+            image: UIImage(named: "Tips")?.withRenderingMode(.alwaysTemplate)
+        )
+        result.themeTintColor = .textPrimary
+        result.set(.width, to: 19)
+        result.set(.height, to: 28)
+        
+        return result
+    }()
+    
+    private lazy var titleLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        result.text = "modal_call_missed_tips_title".localized()
+        result.themeTextColor = .textPrimary
+        result.textAlignment = .center
+        
+        return result
+    }()
+    
+    private lazy var messageLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = String(format: "modal_call_missed_tips_explanation".localized(), caller)
+        result.themeTextColor = .textPrimary
+        result.textAlignment = .natural
+        result.lineBreakMode = .byWordWrapping
+        result.numberOfLines = 0
+        
+        return result
+    }()
+    
+    private lazy var contentStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ tipsIconContainerView, titleLabel, messageLabel ])
+        result.axis = .vertical
+        result.spacing = Values.smallSpacing
+        result.isLayoutMarginsRelativeArrangement = true
+        result.layoutMargins = UIEdgeInsets(
+            top: Values.largeSpacing,
+            leading: Values.largeSpacing,
+            bottom: Values.verySmallSpacing,
+            trailing: Values.largeSpacing
+        )
+        
+        return result
+    }()
+    
+    private lazy var mainStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ contentStackView, cancelButton ])
+        result.axis = .vertical
+        result.spacing = Values.largeSpacing - Values.smallFontSize / 2
+        
+        return result
+    }()
+    
     // MARK: - Lifecycle
     
     init(caller: String) {
         self.caller = caller
-        super.init(nibName: nil, bundle: nil)
+        
+        super.init()
+        
         self.modalPresentationStyle = .overFullScreen
         self.modalTransitionStyle = .crossDissolve
     }
 
     required init?(coder: NSCoder) {
-        preconditionFailure("Use init(onCallEnabled:) instead.")
-    }
-
-    override init(nibName: String?, bundle: Bundle?) {
-        preconditionFailure("Use init(onCallEnabled:) instead.")
+        preconditionFailure("Use init(caller:) instead.")
     }
 
     override func populateContentView() {
-        // Tips icon
-        let tipsIconImageView = UIImageView(image: UIImage(named: "Tips")?.withTint(Colors.text))
-        tipsIconImageView.set(.width, to: 19)
-        tipsIconImageView.set(.height, to: 28)
+        cancelButton.setTitle("BUTTON_OK".localized(), for: .normal)
         
-        // Tips icon container view
-        let tipsIconContainerView = UIView()
+        contentView.addSubview(mainStackView)
         tipsIconContainerView.addSubview(tipsIconImageView)
+        
+        mainStackView.pin(to: contentView)
+        
         tipsIconImageView.pin(.top, to: .top, of: tipsIconContainerView)
         tipsIconImageView.pin(.bottom, to: .bottom, of: tipsIconContainerView)
         tipsIconImageView.center(in: tipsIconContainerView)
-        
-        // Title
-        let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
-        titleLabel.text = "modal_call_missed_tips_title".localized()
-        titleLabel.textAlignment = .center
-        
-        // Message
-        let messageLabel = UILabel()
-        messageLabel.textColor = Colors.text
-        messageLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        messageLabel.text = String(format: "modal_call_missed_tips_explanation".localized(), caller)
-        messageLabel.numberOfLines = 0
-        messageLabel.lineBreakMode = .byWordWrapping
-        messageLabel.textAlignment = .natural
-        
-        // Cancel Button
-        cancelButton.setTitle("BUTTON_OK".localized(), for: .normal)
-        
-        // Main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ tipsIconContainerView, titleLabel, messageLabel, cancelButton ])
-        mainStackView.axis = .vertical
-        mainStackView.alignment = .fill
-        mainStackView.spacing = Values.largeSpacing
-        contentView.addSubview(mainStackView)
-        mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
-        mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
-        contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
     }
 }

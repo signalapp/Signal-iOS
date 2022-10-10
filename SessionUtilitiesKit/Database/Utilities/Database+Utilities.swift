@@ -30,4 +30,8 @@ public extension Database {
     func makeFTS5Pattern<T>(rawPattern: String, forTable table: T.Type) throws -> FTS5Pattern where T: TableRecord, T: ColumnExpressible {
         return try makeFTS5Pattern(rawPattern: rawPattern, forTable: table.databaseTableName)
     }
+    
+    func interrupt() {
+        sqlite3_interrupt(sqliteConnection)
+    }
 }

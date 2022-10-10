@@ -149,6 +149,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     // MARK: - Interaction Data
     
+    private var lastInteractionIdMarkedAsRead: Int64?
     public private(set) var unobservedInteractionDataChanges: [SectionModel]?
     public private(set) var interactionData: [SectionModel] = []
     public private(set) var reactionExpandedInteractionIds: Set<Int64> = []
@@ -198,6 +199,7 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                     }()
                 )
             ],
+            joinSQL: MessageViewModel.optimisedJoinSQL,
             filterSQL: MessageViewModel.filterSQL(threadId: threadId),
             groupSQL: MessageViewModel.groupSQL,
             orderSQL: MessageViewModel.orderSQL,
@@ -296,6 +298,20 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
                                 currentUserBlindedPublicKey: threadData.currentUserBlindedPublicKey
                             )
                         }
+                        .reduce([]) { result, message in
+                            guard message.shouldShowDateHeader else {
+                                return result.appending(message)
+                            }
+                            
+                            return result
+                                .appending(
+                                    MessageViewModel(
+                                        timestampMs: message.timestampMs,
+                                        cellType: .dateHeader
+                                    )
+                                )
+                                .appending(message)
+                        }
                         .appending(typingIndicator)
                 )
             ],
@@ -320,134 +336,39 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
     
     // MARK: - Mentions
     
-    public struct MentionInfo: FetchableRecord, Decodable {
-        fileprivate static let threadVariantKey = CodingKeys.threadVariant.stringValue
-        fileprivate static let openGroupServerKey = CodingKeys.openGroupServer.stringValue
-        fileprivate static let openGroupRoomTokenKey = CodingKeys.openGroupRoomToken.stringValue
-        
-        let profile: Profile
-        let threadVariant: SessionThread.Variant
-        let openGroupServer: String?
-        let openGroupRoomToken: String?
-    }
-    
     public func mentions(for query: String = "") -> [MentionInfo] {
         let threadData: SessionThreadViewModel = self.threadData
         
-        let results: [MentionInfo] = Storage.shared
+        return Storage.shared
             .read { db -> [MentionInfo] in
                 let userPublicKey: String = getUserHexEncodedPublicKey(db)
+                let pattern: FTS5Pattern? = try? SessionThreadViewModel.pattern(db, searchTerm: query, forTable: Profile.self)
+                let capabilities: Set<Capability.Variant> = (threadData.threadVariant != .openGroup ?
+                    nil :
+                    try? Capability
+                        .select(.variant)
+                        .filter(Capability.Columns.openGroupServer == threadData.openGroupServer)
+                        .asRequest(of: Capability.Variant.self)
+                        .fetchSet(db)
+                )
+                .defaulting(to: [])
+                let targetPrefix: SessionId.Prefix = (capabilities.contains(.blind) ?
+                    .blinded :
+                    .standard
+                )
                 
-                switch threadData.threadVariant {
-                    case .contact:
-                        guard userPublicKey != threadData.threadId else { return [] }
-                        
-                        return [Profile.fetchOrCreate(db, id: threadData.threadId)]
-                            .map { profile in
-                                MentionInfo(
-                                    profile: profile,
-                                    threadVariant: threadData.threadVariant,
-                                    openGroupServer: nil,
-                                    openGroupRoomToken: nil
-                                )
-                            }
-                            .filter {
-                                query.count < 2 ||
-                                $0.profile.displayName(for: $0.threadVariant).contains(query)
-                            }
-                        
-                    case .closedGroup:
-                        let profile: TypedTableAlias<Profile> = TypedTableAlias()
-                        
-                        return try GroupMember
-                            .select(
-                                profile.allColumns(),
-                                SQL("\(threadData.threadVariant)").forKey(MentionInfo.threadVariantKey)
-                            )
-                            .filter(GroupMember.Columns.groupId == threadData.threadId)
-                            .filter(GroupMember.Columns.profileId != userPublicKey)
-                            .filter(GroupMember.Columns.role == GroupMember.Role.standard)
-                            .joining(
-                                required: GroupMember.profile
-                                    .aliased(profile)
-                                    // Note: LIKE is case-insensitive in SQLite
-                                    .filter(
-                                        query.count < 2 || (
-                                            profile[.nickname] != nil &&
-                                            profile[.nickname].like("%\(query)%")
-                                        ) || (
-                                            profile[.nickname] == nil &&
-                                            profile[.name].like("%\(query)%")
-                                        )
-                                    )
-                            )
-                            .asRequest(of: MentionInfo.self)
-                            .fetchAll(db)
-                        
-                    case .openGroup:
-                        let profile: TypedTableAlias<Profile> = TypedTableAlias()
-                        let capabilities: Set<Capability.Variant> = (try? Capability
-                            .select(.variant)
-                            .filter(Capability.Columns.openGroupServer == threadData.openGroupServer)
-                            .asRequest(of: Capability.Variant.self)
-                            .fetchSet(db))
-                            .defaulting(to: [])
-                        let targetPrefix: SessionId.Prefix = (capabilities.contains(.blind) ?
-                            .blinded :
-                            .standard
-                        )
-                        
-                        return try Interaction
-                            .select(
-                                profile.allColumns(),
-                                SQL("\(threadData.threadVariant)").forKey(MentionInfo.threadVariantKey),
-                                SQL("\(threadData.openGroupServer)").forKey(MentionInfo.openGroupServerKey),
-                                SQL("\(threadData.openGroupRoomToken)").forKey(MentionInfo.openGroupRoomTokenKey)
-                            )
-                            .distinct()
-                            .group(Interaction.Columns.authorId)
-                            .filter(Interaction.Columns.threadId == threadData.threadId)
-                            .filter(Interaction.Columns.authorId != userPublicKey)
-                            .joining(
-                                required: Interaction.profile
-                                    .aliased(profile)
-                                    .filter(Profile.Columns.id.like("\(targetPrefix.rawValue)%"))
-                                    // Note: LIKE is case-insensitive in SQLite
-                                    .filter(
-                                        query.count < 2 || (
-                                            profile[.nickname] != nil &&
-                                            profile[.nickname].like("%\(query)%")
-                                        ) || (
-                                            profile[.nickname] == nil &&
-                                            profile[.name].like("%\(query)%")
-                                        )
-                                    )
-                            )
-                            .order(Interaction.Columns.timestampMs.desc)
-                            .limit(20)
-                            .asRequest(of: MentionInfo.self)
-                            .fetchAll(db)
-                }
+                return (try MentionInfo
+                    .query(
+                        userPublicKey: userPublicKey,
+                        threadId: threadData.threadId,
+                        threadVariant: threadData.threadVariant,
+                        targetPrefix: targetPrefix,
+                        pattern: pattern
+                    )?
+                    .fetchAll(db))
+                    .defaulting(to: [])
             }
             .defaulting(to: [])
-        
-        guard query.count >= 2 else {
-            return results.sorted { lhs, rhs -> Bool in
-                lhs.profile.displayName(for: lhs.threadVariant) < rhs.profile.displayName(for: rhs.threadVariant)
-            }
-        }
-        
-        return results
-            .sorted { lhs, rhs -> Bool in
-                let maybeLhsRange = lhs.profile.displayName(for: lhs.threadVariant).lowercased().range(of: query.lowercased())
-                let maybeRhsRange = rhs.profile.displayName(for: rhs.threadVariant).lowercased().range(of: query.lowercased())
-                
-                guard let lhsRange: Range<String.Index> = maybeLhsRange, let rhsRange: Range<String.Index> = maybeRhsRange else {
-                    return true
-                }
-                
-                return (lhsRange.lowerBound < rhsRange.lowerBound)
-            }
     }
     
     // MARK: - Functions
@@ -474,21 +395,30 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         }
     }
     
-    public func markAllAsRead() {
-        // Don't bother marking anything as read if there are no unread interactions (we can rely
-        // on the 'threadData.threadUnreadCount' to always be accurate)
+    /// This method will mark all interactions as read before the specified interaction id, if no id is provided then all interactions for
+    /// the thread will be marked as read
+    public func markAsRead(beforeInclusive interactionId: Int64?) {
+        /// Since this method now gets triggered when scrolling we want to try to optimise it and avoid busying the database
+        /// write queue when it isn't needed, in order to do this we:
+        ///
+        ///   - Don't bother marking anything as read if there are no unread interactions (we can rely on the
+        ///     `threadData.threadUnreadCount` to always be accurate)
+        ///   - Don't bother marking anything as read if this was called with the same `interactionId` that we
+        ///     previously marked as read (ie. when scrolling and the last message hasn't changed)
         guard
             (self.threadData.threadUnreadCount ?? 0) > 0,
-            let lastInteractionId: Int64 = self.threadData.interactionId
+            let targetInteractionId: Int64 = (interactionId ?? self.threadData.interactionId),
+            self.lastInteractionIdMarkedAsRead != targetInteractionId
         else { return }
         
         let threadId: String = self.threadData.threadId
         let trySendReadReceipt: Bool = (self.threadData.threadIsMessageRequest == false)
+        self.lastInteractionIdMarkedAsRead = targetInteractionId
         
         Storage.shared.writeAsync { db in
             try Interaction.markAsRead(
                 db,
-                interactionId: lastInteractionId,
+                interactionId: targetInteractionId,
                 threadId: threadId,
                 includingOlder: true,
                 trySendReadReceipt: trySendReadReceipt
@@ -516,6 +446,53 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
         switch oldestMessageId {
             case .some(let id): self.pagedDataObserver?.load(.untilInclusive(id: id, padding: 0))
             case .none: self.pagedDataObserver?.load(.pageBefore)
+        }
+    }
+    
+    public func trustContact() {
+        guard self.threadData.threadVariant == .contact else { return }
+        
+        let threadId: String = self.threadId
+        
+        Storage.shared.writeAsync { db in
+            try Contact
+                .filter(id: threadId)
+                .updateAll(db, Contact.Columns.isTrusted.set(to: true))
+            
+            // Start downloading any pending attachments for this contact (UI will automatically be
+            // updated due to the database observation)
+            try Attachment
+                .stateInfo(authorId: threadId, state: .pendingDownload)
+                .fetchAll(db)
+                .forEach { attachmentDownloadInfo in
+                    JobRunner.add(
+                        db,
+                        job: Job(
+                            variant: .attachmentDownload,
+                            threadId: threadId,
+                            interactionId: attachmentDownloadInfo.interactionId,
+                            details: AttachmentDownloadJob.Details(
+                                attachmentId: attachmentDownloadInfo.attachmentId
+                            )
+                        )
+                    )
+                }
+        }
+    }
+    
+    public func unblockContact() {
+        guard self.threadData.threadVariant == .contact else { return }
+        
+        let threadId: String = self.threadId
+        
+        Storage.shared.writeAsync { db in
+            try Contact
+                .filter(id: threadId)
+                .updateAll(db, Contact.Columns.isBlocked.set(to: false))
+        
+            try MessageSender
+                .syncConfiguration(db, forceSyncNow: true)
+                .retainUntilComplete()
         }
     }
     
@@ -725,7 +702,8 @@ public class ConversationViewModel: OWSAudioPlayerDelegate {
             let currentIndex: Int = messageSection.elements
                 .firstIndex(where: { $0.id == interactionId }),
             currentIndex < (messageSection.elements.count - 1),
-            messageSection.elements[currentIndex + 1].cellType == .audio
+            messageSection.elements[currentIndex + 1].cellType == .audio,
+            Storage.shared[.shouldAutoPlayConsecutiveAudioMessages] == true
         else { return }
         
         let nextItem: MessageViewModel = messageSection.elements[currentIndex + 1]

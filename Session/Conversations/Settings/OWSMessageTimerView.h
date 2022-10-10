@@ -8,13 +8,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageTimerView : UIView
 
+@property (nonatomic) UIImageView *imageView;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder NS_UNAVAILABLE;
 
 - (void)configureWithExpirationTimestamp:(uint64_t)expirationTimestamp
-                  initialDurationSeconds:(uint32_t)initialDurationSeconds
-                               tintColor:(UIColor *)tintColor;
+                  initialDurationSeconds:(uint32_t)initialDurationSeconds;
 
 - (void)prepareForReuse;
 

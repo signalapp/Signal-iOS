@@ -1,9 +1,8 @@
-//
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
-//
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-import Foundation
+import UIKit
 import AVFoundation
+import SessionUIKit
 
 @objc
 public class VideoPlayerView: UIView {
@@ -70,7 +69,7 @@ public class PlayerProgressBar: UIView {
     private let positionLabel = UILabel()
     private let remainingLabel = UILabel()
     private let slider = TrackingSlider()
-    private let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+    private let blurView = UIVisualEffectView()
     weak private var progressObserver: AnyObject?
 
     private let kPreferredTimeScale: CMTimeScale = 100
@@ -107,12 +106,24 @@ public class PlayerProgressBar: UIView {
 
     override public init(frame: CGRect) {
         super.init(frame: frame)
-
-        // Background
-        backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
+        
+        // Background & blur
+        let backgroundView = UIView()
+        backgroundView.themeBackgroundColor = .backgroundSecondary
+        backgroundView.alpha = Values.lowOpacity
+        addSubview(backgroundView)
+        backgroundView.pin(to: self)
+        
         if !UIAccessibility.isReduceTransparencyEnabled {
-            addSubview(blurEffectView)
-            blurEffectView.ows_autoPinToSuperviewEdges()
+            addSubview(blurView)
+            blurView.pin(to: self)
+            
+            ThemeManager.onThemeChange(observer: blurView) { [weak blurView] theme, _ in
+                switch theme.interfaceStyle {
+                    case .light: blurView?.effect = UIBlurEffect(style: .light)
+                    default: blurView?.effect = UIBlurEffect(style: .dark)
+                }
+            }
         }
 
         // Configure controls
@@ -123,8 +134,8 @@ public class PlayerProgressBar: UIView {
 
         // We use a smaller thumb for the progress slider.
         slider.setThumbImage(#imageLiteral(resourceName: "sliderProgressThumb"), for: .normal)
-        slider.maximumTrackTintColor = UIColor.ows_black
-        slider.minimumTrackTintColor = UIColor.ows_black
+        slider.themeMinimumTrackTintColor = .backgroundPrimary
+        slider.themeMaximumTrackTintColor = .backgroundPrimary
 
         slider.addTarget(self, action: #selector(handleSliderTouchDown), for: .touchDown)
         slider.addTarget(self, action: #selector(handleSliderTouchUp), for: .touchUpInside)

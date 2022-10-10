@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SessionUIKit
 
 public extension UIEdgeInsets {
     init(top: CGFloat, leading: CGFloat, bottom: CGFloat, trailing: CGFloat) {
@@ -48,47 +49,6 @@ public extension UINavigationController {
 
 @objc
 public extension UIView {
-    func renderAsImage() -> UIImage? {
-        return renderAsImage(opaque: false, scale: UIScreen.main.scale)
-    }
-
-    func renderAsImage(opaque: Bool, scale: CGFloat) -> UIImage? {
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = scale
-        format.opaque = opaque
-        let renderer = UIGraphicsImageRenderer(bounds: self.bounds,
-                                               format: format)
-        return renderer.image { (context) in
-            self.layer.render(in: context.cgContext)
-        }
-    }
-
-    class func spacer(withWidth width: CGFloat) -> UIView {
-        let view = UIView()
-        view.autoSetDimension(.width, toSize: width)
-        return view
-    }
-
-    class func spacer(withHeight height: CGFloat) -> UIView {
-        let view = UIView()
-        view.autoSetDimension(.height, toSize: height)
-        return view
-    }
-
-    class func hStretchingSpacer() -> UIView {
-        let view = UIView()
-        view.setContentHuggingHorizontalLow()
-        view.setCompressionResistanceHorizontalLow()
-        return view
-    }
-
-    class func vStretchingSpacer() -> UIView {
-        let view = UIView()
-        view.setContentHuggingVerticalLow()
-        view.setCompressionResistanceVerticalLow()
-        return view
-    }
-
     func applyScaleAspectFitLayout(subview: UIView, aspectRatio: CGFloat) -> [NSLayoutConstraint] {
         guard subviews.contains(subview) else {
             owsFailDebug("Not a subview.")
@@ -107,60 +67,19 @@ public extension UIView {
         constraints.append(subview.autoMatch(.height, to: .height, of: self, withMultiplier: 1.0, relation: .lessThanOrEqual))
         return constraints
     }
+}
 
-    func setShadow(radius: CGFloat = 2.0, opacity: Float = 0.66, offset: CGSize = .zero, color: CGColor = UIColor.black.cgColor) {
-        layer.shadowColor = color
+public extension UIView {
+    func setShadow(
+        radius: CGFloat = 2.0,
+        opacity: Float = 0.66,
+        offset: CGSize = .zero,
+        color: ThemeValue = .black
+    ) {
+        layer.themeShadowColor = color
         layer.shadowRadius = radius
         layer.shadowOpacity = opacity
         layer.shadowOffset = offset
-    }
-}
-
-// MARK: -
-
-@objc
-public extension UIViewController {
-    func presentAlert(_ alert: UIAlertController) {
-        self.presentAlert(alert, animated: true)
-    }
-
-    func presentAlert(_ alert: UIAlertController, animated: Bool) {
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async { [weak self] in
-                self?.presentAlert(alert, animated: animated)
-            }
-            return
-        }
-        
-        setupForIPadIfNeeded(alert: alert)
-        
-        self.present(alert, animated: animated) {
-            alert.applyAccessibilityIdentifiers()
-        }
-    }
-
-    func presentAlert(_ alert: UIAlertController, completion: @escaping (() -> Void)) {
-        guard Thread.isMainThread else {
-            DispatchQueue.main.async { [weak self] in
-                self?.presentAlert(alert, completion: completion)
-            }
-            return
-        }
-        
-        setupForIPadIfNeeded(alert: alert)
-        
-        self.present(alert, animated: true) {
-            alert.applyAccessibilityIdentifiers()
-            completion()
-        }
-    }
-    
-    private func setupForIPadIfNeeded(alert: UIAlertController) {
-        if UIDevice.current.isIPad {
-            alert.popoverPresentationController?.permittedArrowDirections = []
-            alert.popoverPresentationController?.sourceView = self.view
-            alert.popoverPresentationController?.sourceRect = self.view.bounds
-        }
     }
 }
 
@@ -376,29 +295,39 @@ public extension UIBarButtonItem {
         self.init(image: image, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 
     convenience init(image: UIImage?, landscapeImagePhone: UIImage?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(image: image, landscapeImagePhone: landscapeImagePhone, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 
     convenience init(title: String?, style: UIBarButtonItem.Style, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(title: title, style: style, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 
     convenience init(barButtonSystemItem systemItem: UIBarButtonItem.SystemItem, target: Any?, action: Selector?, accessibilityIdentifier: String) {
         self.init(barButtonSystemItem: systemItem, target: target, action: action)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 
     convenience init(customView: UIView, accessibilityIdentifier: String) {
         self.init(customView: customView)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+        self.accessibilityLabel = accessibilityIdentifier
+        self.isAccessibilityElement = true
     }
 }

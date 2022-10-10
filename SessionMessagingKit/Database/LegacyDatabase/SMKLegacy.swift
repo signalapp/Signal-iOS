@@ -49,7 +49,6 @@ public enum SMKLegacy {
     
     internal static let preferencesCollection = "SignalPreferences"
     internal static let additionalPreferencesCollection = "SSKPreferences"
-    internal static let preferencesKeyScreenSecurityDisabled = "Screen Security Key"
     internal static let preferencesKeyLastRecordedPushToken = "LastRecordedPushToken"
     internal static let preferencesKeyLastRecordedVoipToken = "LastRecordedVoipToken"
     internal static let preferencesKeyAreLinkPreviewsEnabled = "areLinkPreviewsEnabled"

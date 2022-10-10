@@ -6,6 +6,7 @@ import Foundation
 import Photos
 import PromiseKit
 import SessionUIKit
+import SignalUtilitiesKit
 
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController)
@@ -19,7 +20,7 @@ protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerCanSelectAdditionalItems(_ imagePicker: ImagePickerGridController) -> Bool
 }
 
-class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate, PhotoCollectionPickerDelegate {
+class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegate {
 
     weak var delegate: ImagePickerGridControllerDelegate?
 
@@ -48,7 +49,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = Colors.navigationBarBackground
+        navigationItem.backButtonTitle = ""
+        self.view.themeBackgroundColor = .newConversation_background
 
         library.add(delegate: self)
 
@@ -71,7 +73,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let cancelImage = UIImage(imageLiteralResourceName: "X")
         let cancelButton = UIBarButtonItem(image: cancelImage, style: .plain, target: self, action: #selector(didPressCancel))
 
-        cancelButton.tintColor = Colors.text
+        cancelButton.themeTintColor = .textPrimary
         navigationItem.leftBarButtonItem = cancelButton
 
         let titleView = TitleView()
@@ -80,7 +82,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         navigationItem.titleView = titleView
         self.titleView = titleView
 
-        collectionView.backgroundColor = Colors.navigationBarBackground
+        collectionView.themeBackgroundColor = .newConversation_background
 
         let selectionPanGesture = DirectionalPanGestureRecognizer(direction: [.horizontal], target: self, action: #selector(didPanSelection))
         selectionPanGesture.delegate = self
@@ -105,7 +107,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     enum BatchSelectionGestureMode {
         case select, deselect
     }
+    
     var selectionPanGestureMode: BatchSelectionGestureMode = .select
+    var hasEverAppeared: Bool = false
     
     @objc
     func didPanSelection(_ selectionPanGesture: UIPanGestureRecognizer) {
@@ -189,20 +193,9 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         super.viewWillLayoutSubviews()
         updateLayout()
     }
-
-    var hasEverAppeared: Bool = false
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        let backgroundImage: UIImage = UIImage(color: Colors.navigationBarBackground)
-        self.navigationItem.title = nil
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.isTranslucent = false
-        self.navigationController?.navigationBar.barTintColor = Colors.navigationBarBackground
-        (self.navigationController?.navigationBar as? OWSNavigationBar)?.respectsTheme = true
-        self.navigationController?.navigationBar.backgroundColor = Colors.navigationBarBackground
-        self.navigationController?.navigationBar.setBackgroundImage(backgroundImage, for: .default)
         
         // Determine the size of the thumbnails to request
         let scale = UIScreen.main.scale
@@ -362,9 +355,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - Batch Selection
 
     func batchSelectModeDidChange() {
-        guard let delegate = delegate else {
-            return
-        }
+        guard let delegate = delegate else { return }
 
         guard let collectionView = collectionView else {
             owsFailDebug("collectionView was unexpectedly nil")
@@ -397,7 +388,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         let toastText = String(format: toastFormat, NSNumber(value: SignalAttachment.maxAttachmentsAllowed))
 
-        let toastController = ToastController(text: toastText)
+        let toastController = ToastController(text: toastText, background: .backgroundPrimary)
 
         let kToastInset: CGFloat = 10
         let bottomInset = kToastInset + collectionView.contentInset.bottom + view.layoutMargins.bottom
@@ -415,11 +406,27 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: - PhotoCollectionPicker Presentation
 
     var isShowingCollectionPickerController: Bool = false
+    
+    lazy var collectionPickerController: SessionTableViewController = SessionTableViewController(
+        viewModel: PhotoCollectionPickerViewModel(library: library) { [weak self] collection in
+            guard self?.photoCollection != collection else {
+                self?.hideCollectionPicker()
+                return
+            }
 
-    lazy var collectionPickerController: PhotoCollectionPickerController = {
-        return PhotoCollectionPickerController(library: library,
-                                               collectionDelegate: self)
-    }()
+            // Any selections are invalid as they refer to indices in a different collection
+            self?.clearCollectionViewSelection()
+
+            self?.photoCollection = collection
+            self?.photoCollectionContents = collection.contents()
+
+            self?.titleView.text = collection.localizedTitle()
+
+            self?.collectionView?.reloadData()
+            self?.scrollToBottom(animated: false)
+            self?.hideCollectionPicker()
+        }
+    )
 
     func showCollectionPicker() {
         Logger.debug("")
@@ -437,8 +444,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         collectionPickerView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
         collectionPickerView.autoPinEdge(toSuperviewSafeArea: .top)
         collectionPickerView.layoutIfNeeded()
-        collectionPickerView.backgroundColor = .white
-
+        
         // Initially position offscreen, we'll animate it in.
         collectionPickerView.frame = collectionPickerView.frame.offsetBy(dx: 0, dy: collectionPickerView.frame.height)
 
@@ -462,28 +468,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             self.collectionPickerController.removeFromParent()
         }.retainUntilComplete()
     }
-
-    // MARK: - PhotoCollectionPickerDelegate
-
-    func photoCollectionPicker(_ photoCollectionPicker: PhotoCollectionPickerController, didPickCollection collection: PhotoCollection) {
-        guard photoCollection != collection else {
-            hideCollectionPicker()
-            return
-        }
-
-        // Any selections are invalid as they refer to indices in a different collection
-        clearCollectionViewSelection()
-
-        photoCollection = collection
-        photoCollectionContents = photoCollection.contents()
-
-        titleView.text = photoCollection.localizedTitle()
-
-        collectionView?.reloadData()
-        scrollToBottom(animated: false)
-        hideCollectionPicker()
-    }
-
+    
     // MARK: - UICollectionView
 
     override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
@@ -537,8 +522,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         let cell: PhotoGridViewCell = collectionView.dequeue(type: PhotoGridViewCell.self, for: indexPath)
-        cell.loadingColor = UIColor(white: 0.2, alpha: 1)
-        
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem)
 
@@ -592,12 +575,12 @@ class TitleView: UIView {
 
         addSubview(stackView)
         stackView.autoPinEdgesToSuperviewEdges()
-
-        label.textColor = Colors.text
+        
         label.font = .boldSystemFont(ofSize: Values.mediumFontSize)
+        label.themeTextColor = .textPrimary
 
-        iconView.tintColor = Colors.text
         iconView.image = UIImage(named: "navbar_disclosure_down")?.withRenderingMode(.alwaysTemplate)
+        iconView.themeTintColor = .textPrimary
 
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(titleTapped)))
     }

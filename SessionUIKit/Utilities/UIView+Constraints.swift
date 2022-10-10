@@ -1,54 +1,103 @@
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
+
 import UIKit
 
-public protocol ConstraintUtilitiesEdge { }
+// MARK: - Enums
+
+public protocol ConstraintUtilitiesEdge {}
 
 public extension UIView {
-    
-    enum HorizontalEdge : ConstraintUtilitiesEdge { case left, leading, right, trailing }
-    enum VerticalEdge : ConstraintUtilitiesEdge { case top, bottom }
+    enum HorizontalEdge: ConstraintUtilitiesEdge { case left, leading, right, trailing }
+    enum VerticalEdge: ConstraintUtilitiesEdge { case top, bottom }
     enum Direction { case horizontal, vertical }
     enum Dimension { case width, height }
-    
-    private func anchor(from edge: HorizontalEdge) -> NSLayoutXAxisAnchor {
+}
+
+// MARK: - Anchorable
+
+public protocol Anchorable {
+    func anchor(from edge: UIView.HorizontalEdge) -> NSLayoutXAxisAnchor
+    func anchor(from edge: UIView.VerticalEdge) -> NSLayoutYAxisAnchor
+}
+
+extension UIView: Anchorable {
+    public func anchor(from edge: UIView.HorizontalEdge) -> NSLayoutXAxisAnchor {
         switch edge {
-        case .left: return leftAnchor
-        case .leading: return leadingAnchor
-        case .right: return rightAnchor
-        case .trailing: return trailingAnchor
+            case .left: return leftAnchor
+            case .leading: return leadingAnchor
+            case .right: return rightAnchor
+            case .trailing: return trailingAnchor
         }
     }
     
-    private func anchor(from edge: VerticalEdge) -> NSLayoutYAxisAnchor {
+    public func anchor(from edge: UIView.VerticalEdge) -> NSLayoutYAxisAnchor {
         switch edge {
-        case .top: return topAnchor
-        case .bottom: return bottomAnchor
+            case .top: return topAnchor
+            case .bottom: return bottomAnchor
+        }
+    }
+}
+
+extension UILayoutGuide: Anchorable {
+    public func anchor(from edge: UIView.HorizontalEdge) -> NSLayoutXAxisAnchor {
+        switch edge {
+            case .left: return leftAnchor
+            case .leading: return leadingAnchor
+            case .right: return rightAnchor
+            case .trailing: return trailingAnchor
         }
     }
     
+    public func anchor(from edge: UIView.VerticalEdge) -> NSLayoutYAxisAnchor {
+        switch edge {
+            case .top: return topAnchor
+            case .bottom: return bottomAnchor
+        }
+    }
+}
+
+fileprivate extension NSLayoutConstraint {
+    func setting(isActive: Bool) -> NSLayoutConstraint {
+        self.isActive = isActive
+        return self
+    }
+}
+
+public extension Anchorable {
     @discardableResult
-    func pin(_ constraineeEdge: HorizontalEdge, to constrainerEdge: HorizontalEdge, of view: UIView, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
-        translatesAutoresizingMaskIntoConstraints = false
-        let constraint = anchor(from: constraineeEdge).constraint(equalTo: view.anchor(from: constrainerEdge), constant: inset)
-        constraint.isActive = true
-        return constraint
+    func pin(_ constraineeEdge: UIView.HorizontalEdge, to constrainerEdge: UIView.HorizontalEdge, of anchorable: Anchorable, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
+        (self as? UIView)?.translatesAutoresizingMaskIntoConstraints = false
+        
+        return anchor(from: constraineeEdge)
+            .constraint(
+                equalTo: anchorable.anchor(from: constrainerEdge),
+                constant: inset
+            )
+            .setting(isActive: true)
     }
     
     @discardableResult
-    func pin(_ constraineeEdge: VerticalEdge, to constrainerEdge: VerticalEdge, of view: UIView, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
-        translatesAutoresizingMaskIntoConstraints = false
-        let constraint = anchor(from: constraineeEdge).constraint(equalTo: view.anchor(from: constrainerEdge), constant: inset)
-        constraint.isActive = true
-        return constraint
+    func pin(_ constraineeEdge: UIView.VerticalEdge, to constrainerEdge: UIView.VerticalEdge, of anchorable: Anchorable, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
+        (self as? UIView)?.translatesAutoresizingMaskIntoConstraints = false
+        
+        return anchor(from: constraineeEdge)
+            .constraint(
+                equalTo: anchorable.anchor(from: constrainerEdge),
+                constant: inset
+            )
+            .setting(isActive: true)
     }
-    
+}
+
+// MARK: - View extensions
+
+public extension UIView {
     func pin(_ edges: [ConstraintUtilitiesEdge], to view: UIView) {
         edges.forEach {
-            if let horizontalEdge = $0 as? HorizontalEdge {
-                pin(horizontalEdge, to: horizontalEdge, of: view)
-            } else if let verticalEdge = $0 as? VerticalEdge {
-                pin(verticalEdge, to: verticalEdge, of: view)
-            } else {
-                preconditionFailure() // Should never occur
+            switch $0 {
+                case let edge as HorizontalEdge: pin(edge, to: edge, of: view)
+                case let edge as VerticalEdge: pin(edge, to: edge, of: view)
+                default: break
             }
         }
     }
@@ -66,12 +115,12 @@ public extension UIView {
     }
     
     @discardableResult
-    func center(_ direction: Direction, in view: UIView) -> NSLayoutConstraint {
+    func center(_ direction: Direction, in view: UIView, withInset inset: CGFloat = 0) -> NSLayoutConstraint {
         translatesAutoresizingMaskIntoConstraints = false
         let constraint: NSLayoutConstraint = {
             switch direction {
-            case .horizontal: return centerXAnchor.constraint(equalTo: view.centerXAnchor)
-            case .vertical: return centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            case .horizontal: return centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: inset)
+            case .vertical: return centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: inset)
             }
         }()
         constraint.isActive = true

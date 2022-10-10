@@ -136,6 +136,16 @@ public class HomeViewModel {
                         
                         return SQL("LEFT JOIN \(ThreadTypingIndicator.self) ON \(typingIndicator[.threadId]) = \(thread[.id])")
                     }()
+                ),
+                PagedData.ObservedChanges(
+                    table: Setting.self,
+                    columns: [.value],
+                    joinToPagedType: {
+                        let setting: TypedTableAlias<Setting> = TypedTableAlias()
+                        let targetSetting: String = Setting.BoolKey.showScreenshotNotifications.rawValue
+                        
+                        return SQL("LEFT JOIN \(Setting.self) ON \(setting[.key]) = \(targetSetting)")
+                    }()
                 )
             ],
             /// **Note:** This `optimisedJoinSQL` value includes the required minimum joins needed for the query but differs
@@ -299,5 +309,27 @@ public class HomeViewModel {
     
     public func updateThreadData(_ updatedData: [SectionModel]) {
         self.threadData = updatedData
+    }
+    
+    // MARK: - Functions
+    
+    public func delete(threadId: String, threadVariant: SessionThread.Variant) {
+        Storage.shared.writeAsync { db in
+            switch threadVariant {
+                case .closedGroup:
+                    try MessageSender
+                        .leave(db, groupPublicKey: threadId)
+                        .retainUntilComplete()
+                    
+                case .openGroup:
+                    OpenGroupManager.shared.delete(db, openGroupId: threadId)
+                    
+                default: break
+            }
+            
+            _ = try SessionThread
+                .filter(id: threadId)
+                .deleteAll(db)
+        }
     }
 }

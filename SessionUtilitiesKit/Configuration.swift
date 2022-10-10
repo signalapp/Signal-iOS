@@ -2,17 +2,6 @@
 
 import Foundation
 
-@objc
-public final class SNUtilitiesKitConfiguration : NSObject {
-    public let maxFileSize: UInt
-
-    @objc public static var shared: SNUtilitiesKitConfiguration!
-
-    fileprivate init(maxFileSize: UInt) {
-        self.maxFileSize = maxFileSize
-    }
-}
-
 public enum SNUtilitiesKit { // Just to make the external API nice
     public static func migrations() -> TargetMigrations {
         return TargetMigrations(
@@ -25,12 +14,19 @@ public enum SNUtilitiesKit { // Just to make the external API nice
                     _001_InitialSetupMigration.self,
                     _002_SetupStandardJobs.self,
                     _003_YDBToGRDBMigration.self
-                ]
+                ],
+                [], // Other DB migrations
+                [], // Legacy DB removal
+                []
             ]
         )
     }
 
     public static func configure(maxFileSize: UInt) {
-        SNUtilitiesKitConfiguration.shared = SNUtilitiesKitConfiguration(maxFileSize: maxFileSize)
+        SNUtilitiesKitConfiguration.maxFileSize = maxFileSize
     }
+}
+
+@objc public final class SNUtilitiesKitConfiguration: NSObject {
+    @objc public static var maxFileSize: UInt = 0
 }

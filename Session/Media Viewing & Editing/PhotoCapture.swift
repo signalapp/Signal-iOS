@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import AVFoundation
 import PromiseKit
 import CoreServices
 
@@ -54,9 +55,9 @@ class PhotoCapture: NSObject {
         self.session.beginConfiguration()
         defer { self.session.commitConfiguration() }
 
-        let audioDevice = AVCaptureDevice.default(for: .audio)
+        guard let audioDevice: AVCaptureDevice = AVCaptureDevice.default(for: .audio) else { return }
         // verify works without audio permissions
-        let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice!)
+        let audioDeviceInput = try AVCaptureDeviceInput(device: audioDevice)
         if session.canAddInput(audioDeviceInput) {
             //                self.session.addInputWithNoConnections(audioDeviceInput)
             session.addInput(audioDeviceInput)

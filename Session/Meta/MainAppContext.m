@@ -236,7 +236,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 - (nullable UIAlertAction *)openSystemSettingsAction
 {
     return [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
-                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"system_settings")
+                  accessibilityIdentifier:[NSString stringWithFormat:@"%@.%@", self.class, @"system_settings"]
                                     style:UIAlertActionStyleDefault
                                   handler:^(UIAlertAction *_Nonnull action) {
                                       [UIApplication.sharedApplication openSystemSettings];

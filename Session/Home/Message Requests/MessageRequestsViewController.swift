@@ -8,7 +8,7 @@ import SessionMessagingKit
 import SignalUtilitiesKit
 
 class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDataSource {
-    private static let loadingHeaderHeight: CGFloat = 20
+    private static let loadingHeaderHeight: CGFloat = 40
     
     private let viewModel: MessageRequestsViewModel = MessageRequestsViewModel()
     private var dataChangeObservable: DatabaseCancellable?
@@ -34,19 +34,34 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     }
     
     // MARK: - UI
+    
+    private lazy var loadingConversationsLabel: UILabel = {
+        let result: UILabel = UILabel()
+        result.translatesAutoresizingMaskIntoConstraints = false
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = "LOADING_CONVERSATIONS".localized()
+        result.themeTextColor = .textSecondary
+        result.textAlignment = .center
+        result.numberOfLines = 0
+        
+        return result
+    }()
 
     private lazy var tableView: UITableView = {
         let result: UITableView = UITableView()
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.backgroundColor = .clear
         result.separatorStyle = .none
+        result.themeBackgroundColor = .clear
+        result.showsVerticalScrollIndicator = false
+        result.contentInset = UIEdgeInsets(
+            top: 0,
+            left: 0,
+            bottom: Values.footerGradientHeight(window: UIApplication.shared.keyWindow),
+            right: 0
+        )
         result.register(view: FullConversationCell.self)
         result.dataSource = self
         result.delegate = self
-
-        let bottomInset = Values.newConversationButtonBottomOffset + Values.largeSpacing + HomeVC.newConversationButtonSize
-        result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
-        result.showsVerticalScrollIndicator = false
         
         if #available(iOS 15.0, *) {
             result.sectionHeaderTopPadding = 0
@@ -59,35 +74,34 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         let result: UILabel = UILabel()
         result.translatesAutoresizingMaskIntoConstraints = false
         result.isUserInteractionEnabled = false
-        result.font = UIFont.systemFont(ofSize: Values.smallFontSize)
-        result.text = NSLocalizedString("MESSAGE_REQUESTS_EMPTY_TEXT", comment: "")
-        result.textColor = Colors.text
+        result.font = .systemFont(ofSize: Values.smallFontSize)
+        result.text = "MESSAGE_REQUESTS_EMPTY_TEXT".localized()
+        result.themeTextColor = .textSecondary
         result.textAlignment = .center
         result.numberOfLines = 0
         result.isHidden = true
 
         return result
     }()
-
-    private lazy var fadeView: UIView = {
-        let result: UIView = UIView()
-        result.translatesAutoresizingMaskIntoConstraints = false
-        result.isUserInteractionEnabled = false
-        result.setGradient(Gradients.homeVCFade)
-
+    
+    private lazy var fadeView: GradientView = {
+        let result: GradientView = GradientView()
+        result.themeBackgroundGradient = [
+            .value(.backgroundPrimary, alpha: 0), // Want this to take up 20% (~25pt)
+            .backgroundPrimary,
+            .backgroundPrimary,
+            .backgroundPrimary,
+            .backgroundPrimary
+        ]
+        result.set(.height, to: Values.footerGradientHeight(window: UIApplication.shared.keyWindow))
+        
         return result
     }()
 
-    private lazy var clearAllButton: Button = {
-        let result: Button = Button(style: .destructiveOutline, size: .large)
+    private lazy var clearAllButton: SessionButton = {
+        let result: SessionButton = SessionButton(style: .destructive, size: .large)
         result.translatesAutoresizingMaskIntoConstraints = false
-        result.setTitle(NSLocalizedString("MESSAGE_REQUESTS_CLEAR_ALL", comment: ""), for: .normal)
-        result.setBackgroundImage(
-            Colors.destructive
-                .withAlphaComponent(isDarkMode ? 0.2 : 0.06)
-                .toImage(isDarkMode: isDarkMode),
-            for: .highlighted
-        )
+        result.setTitle("MESSAGE_REQUESTS_CLEAR_ALL".localized(), for: .normal)
         result.addTarget(self, action: #selector(clearAllTapped), for: .touchUpInside)
 
         return result
@@ -106,6 +120,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
         // Add the UI (MUST be done after the thread freeze so the 'tableView' creation and setting
         // the dataSource has the correct data)
+        view.addSubview(loadingConversationsLabel)
         view.addSubview(tableView)
         view.addSubview(emptyStateLabel)
         view.addSubview(fadeView)
@@ -159,6 +174,10 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
 
     private func setupLayout() {
         NSLayoutConstraint.activate([
+            loadingConversationsLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.veryLargeSpacing),
+            loadingConversationsLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.massiveSpacing),
+            loadingConversationsLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.massiveSpacing),
+            
             tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: Values.smallSpacing),
             tableView.leftAnchor.constraint(equalTo: view.leftAnchor),
             tableView.rightAnchor.constraint(equalTo: view.rightAnchor),
@@ -168,19 +187,17 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             emptyStateLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: Values.mediumSpacing),
             emptyStateLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -Values.mediumSpacing),
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-
-            fadeView.topAnchor.constraint(equalTo: view.topAnchor, constant: (0.15 * view.bounds.height)),
+            
             fadeView.leftAnchor.constraint(equalTo: view.leftAnchor),
             fadeView.rightAnchor.constraint(equalTo: view.rightAnchor),
             fadeView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
+            
             clearAllButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             clearAllButton.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                constant: -Values.largeSpacing
+                constant: -Values.smallSpacing
             ),
-            clearAllButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth),
-            clearAllButton.heightAnchor.constraint(equalToConstant: HomeVC.newConversationButtonSize)
+            clearAllButton.widthAnchor.constraint(equalToConstant: Values.iPadButtonWidth)
         ])
     }
     
@@ -207,6 +224,9 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             UIView.performWithoutAnimation { handleThreadUpdates(updatedData, initialLoad: true) }
             return
         }
+        
+        // Hide the 'loading conversations' label (now that we have received conversation data)
+        loadingConversationsLabel.isHidden = true
         
         // Show the empty state if there is no data
         clearAllButton.isHidden = updatedData.isEmpty
@@ -265,14 +285,6 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
             }
         }
     }
-
-    @objc override internal func handleAppModeChangedNotification(_ notification: Notification) {
-        super.handleAppModeChangedNotification(notification)
-
-        let gradient = Gradients.homeVCFade
-        fadeView.setGradient(gradient) // Re-do the gradient
-        tableView.reloadData()
-    }
     
     // MARK: - UITableViewDataSource
 
@@ -306,7 +318,7 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
         switch section.model {
             case .loadMore:
                 let loadingIndicator: UIActivityIndicatorView = UIActivityIndicatorView(style: .medium)
-                loadingIndicator.tintColor = Colors.text
+                loadingIndicator.themeTintColor = .textPrimary
                 loadingIndicator.alpha = 0.5
                 loadingIndicator.startAnimating()
                 
@@ -369,33 +381,34 @@ class MessageRequestsViewController: BaseVC, UITableViewDelegate, UITableViewDat
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let section: MessageRequestsViewModel.SectionModel = self.viewModel.threadData[indexPath.section]
         
         switch section.model {
             case .threads:
                 let threadId: String = section.elements[indexPath.row].threadId
-                
-                let delete = UITableViewRowAction(
+                let delete: UIContextualAction = UIContextualAction(
                     style: .destructive,
                     title: "TXT_DELETE_TITLE".localized()
-                ) { [weak self] _, _ in
+                ) { [weak self] _, _, completionHandler in
                     self?.delete(threadId)
+                    completionHandler(true)
                 }
-                delete.backgroundColor = Colors.destructive
+                delete.themeBackgroundColor = .conversationButton_swipeDestructive
             
-                let block: UITableViewRowAction = UITableViewRowAction(
+                let block: UIContextualAction = UIContextualAction(
                     style: .normal,
                     title: "BLOCK_LIST_BLOCK_BUTTON".localized()
-                ) { [weak self] _, _ in
+                ) { [weak self] _, _, completionHandler in
                     self?.block(threadId)
+                    completionHandler(true)
                 }
-                block.backgroundColor = Colors.blockActionBackground
+                block.themeBackgroundColor = .conversationButton_swipeSecondary
 
-                return [ delete, block ]
+                return UISwipeActionsConfiguration(actions: [ delete, block ])
                 
-            default: return []
+            default: return nil
         }
     }
 

@@ -1,10 +1,14 @@
-import UIKit
+// Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
-final class OptionView : UIView {
+import UIKit
+import SessionUIKit
+
+final class OptionView: UIView {
     private let title: String
     private let explanation: String
     private let delegate: OptionViewDelegate
     private let isRecommended: Bool
+    
     var isSelected = false { didSet { handleIsSelectedChanged() } }
 
     private static let cornerRadius: CGFloat = 8
@@ -14,7 +18,9 @@ final class OptionView : UIView {
         self.explanation = explanation
         self.delegate = delegate
         self.isRecommended = isRecommended
+        
         super.init(frame: CGRect.zero)
+        
         setUpViewHierarchy()
     }
 
@@ -27,49 +33,68 @@ final class OptionView : UIView {
     }
 
     private func setUpViewHierarchy() {
-        backgroundColor = Colors.pnOptionBackground
+        themeBackgroundColor = .backgroundSecondary
+        
         // Round corners
         layer.cornerRadius = OptionView.cornerRadius
+        
         // Set up border
+        themeBorderColor = .borderSeparator
         layer.borderWidth = 1
-        layer.borderColor = Colors.pnOptionBorder.cgColor
+        
         // Set up shadow
-        layer.shadowColor = UIColor.black.cgColor
+        themeShadowColor = .black
         layer.shadowOffset = CGSize(width: 0, height: 0.8)
-        layer.shadowOpacity = isLightMode ? 0.16 : 1
-        layer.shadowRadius = isLightMode ? 4 : 6
+        
+        ThemeManager.onThemeChange(observer: self) { [weak self] theme, _ in
+            switch theme.interfaceStyle {
+                case .light:
+                    self?.layer.shadowOpacity = 0.16
+                    self?.layer.shadowRadius = 4
+                    
+                default:
+                    self?.layer.shadowOpacity = 1
+                    self?.layer.shadowRadius = 6
+            }
+        }
+        
         // Set up title label
-        let titleLabel = UILabel()
-        titleLabel.textColor = Colors.text
+        let titleLabel: UILabel = UILabel()
         titleLabel.font = .boldSystemFont(ofSize: Values.mediumFontSize)
         titleLabel.text = title
-        titleLabel.numberOfLines = 0
+        titleLabel.themeTextColor = .textPrimary
         titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.numberOfLines = 0
+        
         // Set up explanation label
-        let explanationLabel = UILabel()
-        explanationLabel.textColor = Colors.text
+        let explanationLabel: UILabel = UILabel()
         explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
         explanationLabel.text = explanation
-        explanationLabel.numberOfLines = 0
+        explanationLabel.themeTextColor = .textPrimary
         explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.numberOfLines = 0
+        
         // Set up stack view
         let stackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel ])
         stackView.axis = .vertical
         stackView.spacing = 4
         stackView.alignment = .fill
         addSubview(stackView)
+        
         stackView.pin(.leading, to: .leading, of: self, withInset: 12)
         stackView.pin(.top, to: .top, of: self, withInset: 12)
         self.pin(.trailing, to: .trailing, of: stackView, withInset: 12)
         self.pin(.bottom, to: .bottom, of: stackView, withInset: 12)
+        
         // Set up recommended label if needed
         if isRecommended {
-            let recommendedLabel = UILabel()
-            recommendedLabel.textColor = Colors.accent
+            let recommendedLabel: UILabel = UILabel()
             recommendedLabel.font = .boldSystemFont(ofSize: Values.smallFontSize)
-            recommendedLabel.text = NSLocalizedString("vc_pn_mode_recommended_option_tag", comment: "")
+            recommendedLabel.text = "vc_pn_mode_recommended_option_tag".localized()
+            recommendedLabel.themeTextColor = .primary
             stackView.addArrangedSubview(recommendedLabel)
         }
+        
         // Set up tap gesture recognizer
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         addGestureRecognizer(tapGestureRecognizer)
@@ -80,30 +105,18 @@ final class OptionView : UIView {
     }
 
     private func handleIsSelectedChanged() {
-        let animationDuration: TimeInterval = 0.25
-        // Animate border color
-        let newBorderColor = isSelected ? Colors.accent.cgColor : Colors.pnOptionBorder.cgColor
-        let borderAnimation = CABasicAnimation(keyPath: "borderColor")
-        borderAnimation.fromValue = layer.shadowColor
-        borderAnimation.toValue = newBorderColor
-        borderAnimation.duration = animationDuration
-        layer.add(borderAnimation, forKey: borderAnimation.keyPath)
-        layer.borderColor = newBorderColor
-        // Animate shadow color
-        let newShadowColor = isSelected ? Colors.expandedButtonGlowColor.cgColor : UIColor.black.cgColor
-        let shadowAnimation = CABasicAnimation(keyPath: "shadowColor")
-        shadowAnimation.fromValue = layer.shadowColor
-        shadowAnimation.toValue = newShadowColor
-        shadowAnimation.duration = animationDuration
-        layer.add(shadowAnimation, forKey: shadowAnimation.keyPath)
-        layer.shadowColor = newShadowColor
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.themeBorderColor = (self?.isSelected == true ? .primary : .borderSeparator)
+            self?.themeShadowColor = (self?.isSelected == true ? .primary : .black)
+        }
+        
         // Notify delegate
         if isSelected { delegate.optionViewDidActivate(self) }
     }
 }
 
-// MARK: Option View Delegate
-protocol OptionViewDelegate {
+// MARK: - Option View Delegate
 
+protocol OptionViewDelegate {
     func optionViewDidActivate(_ optionView: OptionView)
 }

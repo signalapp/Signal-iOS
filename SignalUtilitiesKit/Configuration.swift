@@ -1,6 +1,7 @@
 // Copyright © 2022 Rangeproof Pty Ltd. All rights reserved.
 
 import Foundation
+import SessionUIKit
 import SessionSnodeKit
 import SessionMessagingKit
 
@@ -13,5 +14,6 @@ public enum Configuration {
         
         SNMessagingKit.configure()
         SNSnodeKit.configure()
+        SNUIKit.configure()
     }
 }
