@@ -254,7 +254,7 @@
 "share" = "به‌اشتراک‌گذاری";
 "invalid_session_id" = "شناسه‌ی Session نامعتبر است.";
 "cancel" = "لغو";
-"your_session_id" = "شناسه‌ی Session شما";
+"your_session_id" = "شناسه Session شما";
 "vc_landing_title_2" = "Session شما از اینجا شروع می‌شود...";
 "vc_landing_register_button_title" = "شناسه‌ی Session را ایجاد کنید";
 "vc_landing_restore_button_title" = "Session خود را ادامه دهید";
@@ -295,15 +295,15 @@
 "vc_path_destination_row_title" = "مقصد";
 "vc_path_learn_more_button_title" = "بیشتر بدانید";
 "vc_create_private_chat_title" = "پیام جدید";
-"vc_create_private_chat_enter_session_id_tab_title" = "شناسه‌ی Session را وارد کنید";
+"vc_create_private_chat_enter_session_id_tab_title" = "شناسه Session را وارید کنید";
 "vc_create_private_chat_scan_qr_code_tab_title" = "اسکن کد QR";
-"vc_enter_public_key_explanation" = "یک مکالمه جدید را با وارد کردن شناسه جلسه شخصی شروع کنید یا شناسه جلسه خود را با آنها به اشتراک بگذارید.";
-"vc_scan_qr_code_camera_access_explanation" = "اپ Session برای اسکن کدهای QR احتیاج دارد به دوربین دسترسی داشته باشد";
+"vc_enter_public_key_explanation" = "یک مکالمه جدید را با وارد کردن شناسه Session شخصی شروع کنید یا شناسه جلسه خود را با آنها به اشتراک بگذارید.";
+"vc_scan_qr_code_camera_access_explanation" = "برای اسکن کدهای Session ،QR نیاز به دسترسی به دوربین دارد";
 "vc_scan_qr_code_grant_camera_access_button_title" = "اعطای دسترسی دوربین";
 "vc_create_closed_group_title" = "ایجاد گروه";
 "vc_create_closed_group_text_field_hint" = "وارد کردن یک نام گروه";
 "vc_create_closed_group_empty_state_message" = "هنوز هیچ مخاطبی ندارید";
-"vc_create_closed_group_empty_state_button_title" = "شروع Session";
+"vc_create_closed_group_empty_state_button_title" = "شروع یک Session";
 "vc_create_closed_group_group_name_missing_error" = "لطفاً یک نام گروه را وارد کنید";
 "vc_create_closed_group_group_name_too_long_error" = "لطفاً یک نام گروه کوتاه‌تر را وارد کنید";
 "vc_create_closed_group_too_many_group_members_error" = "یک گروه نمی‌تواند بیش از ۱۰۰ عضو داشته باشد.";
@@ -334,7 +334,7 @@
 "vc_link_device_scan_qr_code_explanation" = "برای دیدن کد QR خود، در دستگاه دیگرتان به «تنظیمات ← عبارت بازیابی» مراجعه کنید.";
 "vc_enter_recovery_phrase_title" = "عبارت بازیابی";
 "vc_enter_recovery_phrase_explanation" = "برای وصل کردن دستگاهتان، عبارت بازیابی که در زمان ثبت نام به شما داده شده بود را وارد کنید.";
-"vc_enter_public_key_text_field_hint" = "شناسه Session یا اسم سرویس نام Oxen را وارد کنید";
+"vc_enter_public_key_text_field_hint" = "شناسه Session یا نام ONS را وارید کنید";
 "admin_group_leave_warning" = "به دلیل اینکه شما مدیر گروه هستید، این گروه برای همه اعضا ی گروه پاک میشود. این قابل بازگشت نیست.";
 "vc_join_open_group_suggestions_title" = "یا به یکی از این محلق شوید ...";
 "vc_settings_invite_a_friend_button_title" = "دعوت از یک دوست";
@@ -483,8 +483,8 @@
 "JOIN_COMMUNITY_BUTTON_TITLE" = "محلق شدن";
 "PRIVACY_TITLE" = "حریم خصوصی";
 "PRIVACY_SECTION_SCREEN_SECURITY" = "امنیت صفحه";
-"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "قفل سیسشن";
-"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = " برای باز کردن قفل سیسشن به شناسه لمسی، شناسه صورت و یا رمز عبوری ضرورت است.";
+"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "قفل Session";
+"PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = " برای باز کردن قفل Session به شناسه لمسی، شناسه صورت و یا رمز عبوری ضرورت است.";
 "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE" = "اعلانات اسکرین‌شات.";
 "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "هنگامی که یک مخاطب از یک چت یک به یک اسکرین شات می‌گیرد، اعلان دریافت کنید.";
 "PRIVACY_SECTION_READ_RECEIPTS" = "رسیدهای خواندن";
@@ -542,7 +542,7 @@
 "HELP_REPORT_BUG_TITLE" = "گزارش خرابی";
 "HELP_REPORT_BUG_DESCRIPTION" = "گزارش‌های خود را صادر کنید، سپس فایل را از طریق Session's Help Desk آپلود کنید.";
 "HELP_REPORT_BUG_ACTION_TITLE" = "صدور گزارش‌ها";
-"HELP_TRANSLATE_TITLE" = "ترجمه سیسشن";
+"HELP_TRANSLATE_TITLE" = "ترجمه Session";
 "HELP_FEEDBACK_TITLE" = "قدردان نظریات شما هستیم.";
 "HELP_FAQ_TITLE" = "سؤالات متداول";
 "HELP_SUPPORT_TITLE" = "همایت";
@@ -576,7 +576,7 @@
 "GROUP_TITLE_MEMBERS" = "اعضا";
 "GROUP_TITLE_FALLBACK" = "گروه";
 "DM_ERROR_DIRECT_BLINDED_ID" = "فقط از داخل یک انجمن می‌توانید به شناسه‌های نابینا پیام ارسال کنید";
-"DM_ERROR_INVALID" = "لطفاً شناسه جلسه یا نام ONS را بررسی کنید و دوباره امتحان کنید";
+"DM_ERROR_INVALID" = "لطفاً شناسه Session یا نام ONS را بررسی کنید و دوباره امتحان کنید";
 "COMMUNITY_ERROR_INVALID_URL" = "";
 "COMMUNITY_ERROR_GENERIC" = "نمی‌توانید محلق شوید";
 "DISAPPERING_MESSAGES_TITLE" = "پیام‌ها ناپدید میشوند";

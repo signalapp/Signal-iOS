@@ -1560,6 +1560,12 @@ final class ConversationVC: BaseVC, ConversationSearchControllerDelegate, UITabl
             return
         }
         
+        // Note: If the tableView needs to layout then we should do it first without an animation
+        // to prevent an annoying issue where the screen jumps slightly after the scroll completes
+        UIView.performWithoutAnimation {
+            self.tableView.layoutIfNeeded()
+        }
+        
         let targetIndexPath: IndexPath = IndexPath(
             row: targetMessageIndex,
             section: messageSectionIndex
