@@ -42,6 +42,7 @@ class SessionTableViewModel<NavItemId: Equatable, Section: SessionTableSection, 
     open var observableSettingsData: ObservableData {
         preconditionFailure("abstract class - override in subclass")
     }
+    open var footerView: AnyPublisher<UIView?, Never> { Just(nil).eraseToAnyPublisher() }
     
     func updateSettings(_ updatedSettings: [SectionModel]) {
         preconditionFailure("abstract class - override in subclass")

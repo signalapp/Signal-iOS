@@ -250,6 +250,13 @@ class SessionTableViewController<NavItemId: Equatable, Section: SessionTableSect
             }
             .store(in: &disposables)
         
+        viewModel.footerView
+            .receiveOnMain(immediately: true)
+            .sink { [weak self] footerView in
+                self?.tableView.tableFooterView = footerView
+            }
+            .store(in: &disposables)
+        
         viewModel.showToast
             .receive(on: DispatchQueue.main)
             .sink { [weak self] text, color in

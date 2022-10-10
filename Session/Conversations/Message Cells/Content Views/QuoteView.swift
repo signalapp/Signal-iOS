@@ -187,14 +187,19 @@ final class QuoteView: UIView {
         }
         
         // Body label
-        let bodyLabel = UILabel()
+        let bodyLabel = TappableLabel()
         bodyLabel.numberOfLines = 0
         bodyLabel.lineBreakMode = .byTruncatingTail
         
-        let targetThemeColor: ThemeValue = (direction == .outgoing ?
-            .messageBubble_outgoingText :
-            .messageBubble_incomingText
-        )
+        let targetThemeColor: ThemeValue = {
+            switch mode {
+                case .regular: return (direction == .outgoing ?
+                    .messageBubble_outgoingText :
+                    .messageBubble_incomingText
+                )
+                case .draft: return .textPrimary
+            }
+        }()
         bodyLabel.font = .systemFont(ofSize: Values.smallFontSize)
         
         ThemeManager.onThemeChange(observer: bodyLabel) { [weak bodyLabel] theme, primaryColor in

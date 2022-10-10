@@ -112,7 +112,7 @@ final class LinkPreviewView: UIView {
         // Title label
         let titleLabelContainer = UIView()
         titleLabelContainer.addSubview(titleLabel)
-        titleLabel.pin(to: titleLabelContainer, withInset: Values.smallSpacing)
+        titleLabel.pin(to: titleLabelContainer, withInset: Values.mediumSpacing)
         
         // Horizontal stack view
         hStackView.addArrangedSubview(imageViewContainer)
