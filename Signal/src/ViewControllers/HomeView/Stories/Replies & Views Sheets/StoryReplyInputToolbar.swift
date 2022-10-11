@@ -188,7 +188,6 @@ class StoryReplyInputToolbar: UIView {
     private lazy var textContainer: UIView = {
         let textContainer = UIStackView()
         textContainer.axis = .vertical
-        textContainer.spacing = 10
 
         let headerLabel = buildHeaderLabel()
         textContainer.addArrangedSubview(headerLabel)
@@ -198,7 +197,7 @@ class StoryReplyInputToolbar: UIView {
         bubbleView.addBackgroundView(withBackgroundColor: .ows_gray75, cornerRadius: minTextViewHeight / 2)
 
         textContainer.addArrangedSubview(bubbleView)
-        let bottomSpace = (40 - minTextViewHeight) / 2 - textContainer.spacing
+        let bottomSpace = (40 - minTextViewHeight) / 2
         textContainer.addArrangedSubview(.spacer(withHeight: bottomSpace))
 
         if let quotedReplyModel = quotedReplyModel {
@@ -264,7 +263,7 @@ class StoryReplyInputToolbar: UIView {
         }
 
         container.addSubview(label)
-        label.autoPinEdgesToSuperviewEdges(with: .init(hMargin: 4, vMargin: 0))
+        label.autoPinEdgesToSuperviewEdges(with: .init(top: 0, leading: 4, bottom: 10, trailing: 4))
 
         return container
     }
