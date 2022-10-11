@@ -159,11 +159,6 @@ final class NewClosedGroupVC: BaseVC, UITableViewDataSource, UITableViewDelegate
         // Set up content
         setUpViewHierarchy()
     }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        tableViewWidth?.constant = size.width
-    }
 
     private func setUpViewHierarchy() {
         guard !contactProfiles.isEmpty else {
