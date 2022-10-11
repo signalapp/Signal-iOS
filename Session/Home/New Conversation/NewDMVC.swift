@@ -238,7 +238,7 @@ private final class EnterPublicKeyVC: UIViewController {
     
     private lazy var publicKeyTextView: TextView = {
         let result = TextView(placeholder: "vc_enter_public_key_text_field_hint".localized()) { [weak self] text in
-            self?.nextButton.isEnabled = (SessionId(from: text) != nil)
+            self?.nextButton.isEnabled = !text.isEmpty
         }
         result.autocapitalizationType = .none
         
