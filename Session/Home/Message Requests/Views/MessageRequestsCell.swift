@@ -94,8 +94,8 @@ class MessageRequestsCell: UITableViewCell {
         NSLayoutConstraint.activate([
             contentView.heightAnchor.constraint(equalToConstant: 68),
             
-            iconContainerView.leftAnchor.constraint(
-                equalTo: contentView.leftAnchor,
+            iconContainerView.leadingAnchor.constraint(
+                equalTo: contentView.leadingAnchor,
                 // Need 'accentLineThickness' to line up correctly with the 'ConversationCell'
                 constant: (Values.accentLineThickness + Values.mediumSpacing)
             ),
@@ -108,18 +108,18 @@ class MessageRequestsCell: UITableViewCell {
             iconImageView.widthAnchor.constraint(equalToConstant: 25),
             iconImageView.heightAnchor.constraint(equalToConstant: 22),
             
-            titleLabel.leftAnchor.constraint(equalTo: iconContainerView.rightAnchor, constant: Values.mediumSpacing),
-            titleLabel.rightAnchor.constraint(lessThanOrEqualTo: contentView.rightAnchor, constant: -Values.mediumSpacing),
+            titleLabel.leadingAnchor.constraint(equalTo: iconContainerView.trailingAnchor, constant: Values.mediumSpacing),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -Values.mediumSpacing),
             titleLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             
-            unreadCountView.leftAnchor.constraint(equalTo: titleLabel.rightAnchor, constant: (Values.smallSpacing / 2)),
+            unreadCountView.leadingAnchor.constraint(equalTo: titleLabel.trailingAnchor, constant: (Values.smallSpacing / 2)),
             unreadCountView.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
             unreadCountView.widthAnchor.constraint(greaterThanOrEqualToConstant: FullConversationCell.unreadCountViewSize),
             unreadCountView.heightAnchor.constraint(equalToConstant: FullConversationCell.unreadCountViewSize),
             
             unreadCountLabel.topAnchor.constraint(equalTo: unreadCountView.topAnchor),
-            unreadCountLabel.leftAnchor.constraint(equalTo: unreadCountView.leftAnchor, constant: 4),
-            unreadCountLabel.rightAnchor.constraint(equalTo: unreadCountView.rightAnchor, constant: -4),
+            unreadCountLabel.leadingAnchor.constraint(equalTo: unreadCountView.leadingAnchor, constant: 4),
+            unreadCountLabel.trailingAnchor.constraint(equalTo: unreadCountView.trailingAnchor, constant: -4),
             unreadCountLabel.bottomAnchor.constraint(equalTo: unreadCountView.bottomAnchor)
         ])
     }

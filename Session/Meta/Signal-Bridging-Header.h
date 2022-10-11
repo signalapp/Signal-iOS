@@ -24,7 +24,6 @@
 #import <SessionMessagingKit/OWSAudioPlayer.h>
 #import <SignalUtilitiesKit/OWSFormat.h>
 #import <SignalUtilitiesKit/OWSViewController.h>
-#import <SignalUtilitiesKit/UIColor+OWS.h>
 #import <SignalUtilitiesKit/UIFont+OWS.h>
 #import <SessionUtilitiesKit/UIView+OWS.h>
 #import <SignalUtilitiesKit/AppVersion.h>

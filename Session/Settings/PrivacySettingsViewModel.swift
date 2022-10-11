@@ -104,17 +104,6 @@ class PrivacySettingsViewModel: SessionTableViewModel<PrivacySettingsViewModel.N
                                     db[.isScreenLockEnabled] = !db[.isScreenLockEnabled]
                                 }
                             }
-                        ),
-                        SessionCell.Info(
-                            id: .screenshotNotifications,
-                            title: "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE".localized(),
-                            subtitle: "PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION".localized(),
-                            rightAccessory: .toggle(.settingBool(key: .showScreenshotNotifications)),
-                            onTap: {
-                                Storage.shared.writeAsync { db in
-                                    db[.showScreenshotNotifications] = !db[.showScreenshotNotifications]
-                                }
-                            }
                         )
                     ]
                 ),
