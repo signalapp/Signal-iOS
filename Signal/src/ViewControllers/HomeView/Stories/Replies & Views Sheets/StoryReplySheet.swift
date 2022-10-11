@@ -8,6 +8,7 @@ import SignalUI
 import UIKit
 
 protocol StoryReplySheet: OWSViewController, StoryReplyInputToolbarDelegate, MessageReactionPickerDelegate {
+    var bottomBar: UIView { get }
     var inputToolbar: StoryReplyInputToolbar { get }
     var storyMessage: StoryMessage { get }
     var thread: TSThread? { get }
@@ -141,7 +142,16 @@ extension StoryReplySheet {
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar) {}
 
     func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> [SignalServiceAddress] {
-        return thread?.recipientAddressesWithSneakyTransaction ?? []
+        guard let thread = thread, thread.isGroupThread else { return [] }
+        return thread.recipientAddressesWithSneakyTransaction
+    }
+
+    func storyReplyInputToolbarMentionPickerParentView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView? {
+        view
+    }
+
+    func storyReplyInputToolbarMentionPickerReferenceView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView? {
+        bottomBar
     }
 }
 

@@ -15,7 +15,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
     private(set) lazy var tableView = UITableView()
 
-    private let bottomBar = UIView()
+    let bottomBar = UIView()
     private(set) lazy var inputToolbar = StoryReplyInputToolbar()
     private lazy var bottomBarBottomConstraint = bottomBar.autoPinEdge(toSuperviewEdge: .bottom)
     private lazy var contextMenu = ContextMenuInteraction(delegate: self)

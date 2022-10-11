@@ -9,6 +9,7 @@ public class StoryDirectReplySheet: OWSViewController, StoryReplySheet {
 
     var dismissHandler: (() -> Void)?
 
+    var bottomBar: UIView { inputToolbar }
     lazy var inputToolbar: StoryReplyInputToolbar = {
         let quotedReplyModel = databaseStorage.read {
             OWSQuotedReplyModel.quotedReply(from: storyMessage, transaction: $0)

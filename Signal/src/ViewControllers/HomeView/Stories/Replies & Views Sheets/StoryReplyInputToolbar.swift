@@ -15,6 +15,8 @@ protocol StoryReplyInputToolbarDelegate: AnyObject {
     func storyReplyInputToolbarDidBeginEditing(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarHeightDidChange(_ storyReplyInputToolbar: StoryReplyInputToolbar)
     func storyReplyInputToolbarMentionPickerPossibleAddresses(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> [SignalServiceAddress]
+    func storyReplyInputToolbarMentionPickerReferenceView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView?
+    func storyReplyInputToolbarMentionPickerParentView(_ storyReplyInputToolbar: StoryReplyInputToolbar) -> UIView?
 }
 
 // MARK: -
@@ -322,21 +324,21 @@ extension StoryReplyInputToolbar: MentionTextViewDelegate {
     func textViewDidEndTypingMention(_ textView: MentionTextView) {}
 
     func textViewMentionPickerParentView(_ textView: MentionTextView) -> UIView? {
-        return superview
+        delegate?.storyReplyInputToolbarMentionPickerParentView(self)
     }
 
     func textViewMentionPickerReferenceView(_ textView: MentionTextView) -> UIView? {
-        return self
+        delegate?.storyReplyInputToolbarMentionPickerReferenceView(self)
     }
 
     func textViewMentionPickerPossibleAddresses(_ textView: MentionTextView) -> [SignalServiceAddress] {
-        return delegate?.storyReplyInputToolbarMentionPickerPossibleAddresses(self) ?? []
+        delegate?.storyReplyInputToolbarMentionPickerPossibleAddresses(self) ?? []
     }
 
     func textView(_ textView: MentionTextView, didDeleteMention mention: Mention) {}
 
     func textViewMentionStyle(_ textView: MentionTextView) -> Mention.Style {
-        return .groupReply
+        .groupReply
     }
 
     public func textViewDidChange(_ textView: UITextView) {
