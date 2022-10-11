@@ -275,11 +275,15 @@ class StoryContextViewController: OWSViewController {
         onboardingOverlay.checkIfShouldDisplay()
     }
 
+    /// NOTE: once this becomes true, it stays true. Becomes true once interactive presentation animations finish.
+    private var viewHasAppeared = false
+
     /// This controller's view gets generated early to use for a zoom animation, which triggers
     /// viewWill- and viewDidAppear before presentation has really finished.
     /// The parent page controller calls this method when presentation actually finishes.
     func pageControllerDidAppear() {
         onboardingOverlay.showIfNeeded()
+        viewHasAppeared = true
     }
 
     private static let maxItemsToRender = 100
@@ -535,7 +539,12 @@ class StoryContextViewController: OWSViewController {
         playbackProgressView.numberOfItems = items.count
         if let currentItemView = currentItemMediaView, let idx = items.firstIndex(of: currentItemView.item) {
             // When we present a story, mark it as viewed if it's not already, as long as it's downloaded.
-            if !currentItemView.item.isPendingDownload, currentItemView.item.message.localUserViewedTimestamp == nil {
+            if
+                self.viewHasAppeared,
+                !onboardingOverlay.isDisplaying,
+                !currentItemView.item.isPendingDownload,
+                currentItemView.item.message.localUserViewedTimestamp == nil
+            {
                 databaseStorage.write { transaction in
                     currentItemView.item.message.markAsViewed(at: Date.ows_millisecondTimestamp(), circumstance: .onThisDevice, transaction: transaction)
                 }
@@ -1043,6 +1052,10 @@ extension StoryContextViewController: StoryContextOnboardingOverlayViewDelegate 
 
     func storyContextOnboardingOverlayDidDismiss(_: StoryContextOnboardingOverlayView) {
         play()
+    }
+
+    func storyContextOnboardingOverlayWantsToExitStoryViewer(_: StoryContextOnboardingOverlayView) {
+        self.dismiss(animated: true)
     }
 }
 

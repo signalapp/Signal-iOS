@@ -10,6 +10,9 @@ protocol StoryContextOnboardingOverlayViewDelegate: AnyObject {
 
     func storyContextOnboardingOverlayWillDisplay(_: StoryContextOnboardingOverlayView)
     func storyContextOnboardingOverlayDidDismiss(_: StoryContextOnboardingOverlayView)
+
+    /// Called to exit the entire viewer, not just the onboarding overlay.
+    func storyContextOnboardingOverlayWantsToExitStoryViewer(_: StoryContextOnboardingOverlayView)
 }
 
 class StoryContextOnboardingOverlayView: UIView, Dependencies {
@@ -81,12 +84,6 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
             return
         }
 
-        // Mark as viewed from now on.
-        Self.databaseStorage.write { transaction in
-            self.kvStore.setBool(true, key: Self.kvStoreKey, transaction: transaction)
-        }
-        Self.shouldDisplay = false
-
         self.superview?.bringSubviewToFront(self)
         isDisplaying = true
         self.isHidden = false
@@ -99,6 +96,12 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
     }
 
     func dismiss() {
+        // Mark as viewed from now on.
+        Self.databaseStorage.write { transaction in
+            self.kvStore.setBool(true, key: Self.kvStoreKey, transaction: transaction)
+        }
+        Self.shouldDisplay = false
+
         UIView.animate(
             withDuration: 0.2,
             animations: {
@@ -121,9 +124,9 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         let vStack = UIStackView()
         vStack.axis = .vertical
         vStack.alignment = .center
-        vStack.distribution = .equalCentering
+        vStack.distribution = .equalSpacing
+        vStack.spacing = 42
 
-        var prevHStack: UIView?
         for asset in assets {
             let imageContainer = UIView()
 
@@ -139,28 +142,20 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
 
             let label = UILabel()
             label.textColor = .ows_gray05
-            label.font = .ows_dynamicTypeBody
+            label.font = .ows_dynamicTypeBodyClamped
             label.text = asset.text
+            label.numberOfLines = 0
+            label.textAlignment = .center
             label.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-            let hStack = UIStackView()
-            hStack.axis = .horizontal
-            hStack.alignment = .center
-            hStack.distribution = .equalSpacing
-            hStack.addArrangedSubviews([imageContainer, label])
+            let innerVStack = UIStackView()
+            innerVStack.axis = .vertical
+            innerVStack.alignment = .center
+            innerVStack.distribution = .equalSpacing
+            innerVStack.spacing = 12
+            innerVStack.addArrangedSubviews([imageContainer, label])
 
-            if CurrentAppContext().isRTL {
-                label.autoConstrainAttribute(.trailing, to: .vertical, of: imageContainer, withOffset: -46)
-            } else {
-                label.autoConstrainAttribute(.leading, to: .vertical, of: imageContainer, withOffset: 46)
-            }
-
-            vStack.addArrangedSubview(hStack)
-
-            if let prevHStack = prevHStack {
-                hStack.autoPinWidth(toWidthOf: prevHStack)
-            }
-            prevHStack = hStack
+            vStack.addArrangedSubview(innerVStack)
         }
 
         let confirmButtonContainer = ManualLayoutView(name: "confirm_button")
@@ -176,7 +171,7 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
             ),
             for: .normal
         )
-        confirmButton.titleLabel?.font = .ows_dynamicTypeSubheadline.ows_semibold
+        confirmButton.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped.ows_semibold
         confirmButton.backgroundColor = .ows_white
         confirmButton.setTitleColor(.ows_black, for: .normal)
         confirmButton.contentEdgeInsets = UIEdgeInsets(hMargin: 23, vMargin: 8)
@@ -189,13 +184,6 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         }
         confirmButton.autoPinEdges(toEdgesOf: confirmButtonContainer)
 
-        vStack.addArrangedSubview(confirmButtonContainer)
-
-        blurView.contentView.addSubview(vStack)
-        vStack.autoPinHorizontalEdges(toEdgesOf: blurView.contentView)
-        vStack.autoVCenterInSuperview()
-        vStack.autoConstrainAttribute(.height, to: .height, of: blurView, withMultiplier: 0.6)
-
         let closeButton = OWSButton()
         closeButton.setImage(
             UIImage(named: "x-24")?
@@ -205,9 +193,29 @@ class StoryContextOnboardingOverlayView: UIView, Dependencies {
         )
         closeButton.contentMode = .center
         closeButton.block = { [weak self] in
-            self?.dismiss()
+            guard let self = self else { return }
+            self.delegate?.storyContextOnboardingOverlayWantsToExitStoryViewer(self)
         }
         blurView.contentView.addSubview(closeButton)
+        blurView.contentView.addSubview(vStack)
+        blurView.contentView.addSubview(confirmButtonContainer)
+
+        let vStackLayoutGuide = UILayoutGuide()
+        blurView.contentView.addLayoutGuide(vStackLayoutGuide)
+
+        confirmButtonContainer.autoHCenterInSuperview()
+        confirmButtonContainer.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 32)
+
+        vStack.autoPinEdge(.leading, to: .leading, of: blurView, withOffset: 12)
+        vStack.autoPinEdge(.trailing, to: .trailing, of: blurView, withOffset: -12)
+        vStack.autoPinEdge(.top, to: .bottom, of: closeButton, withOffset: 12, relation: .greaterThanOrEqual)
+        vStack.autoPinEdge(.bottom, to: .top, of: confirmButtonContainer, withOffset: -42, relation: .lessThanOrEqual)
+
+        NSLayoutConstraint.activate([
+            vStackLayoutGuide.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 12),
+            vStackLayoutGuide.bottomAnchor.constraint(equalTo: confirmButtonContainer.topAnchor, constant: -42),
+            vStack.centerYAnchor.constraint(equalTo: vStackLayoutGuide.centerYAnchor)
+        ])
 
         closeButton.autoSetDimensions(to: .square(42))
         closeButton.autoPinEdge(toSuperviewEdge: .top, withInset: 20)
