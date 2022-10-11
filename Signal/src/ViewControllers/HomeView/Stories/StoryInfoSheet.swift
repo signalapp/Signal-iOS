@@ -55,7 +55,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
         switch storyMessage.manifest {
         case .outgoing(let recipientStates):
-            buildStatusSections(for: recipientStates).forEach { contents.addSection($0) }
+            contents.addSections(buildStatusSections(for: recipientStates))
         case .incoming:
             contents.addSection(buildSenderSection())
         }

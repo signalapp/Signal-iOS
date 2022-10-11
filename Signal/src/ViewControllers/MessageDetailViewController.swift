@@ -197,7 +197,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         if isIncoming {
             contents.addSection(buildSenderSection())
         } else {
-            buildStatusSections().forEach { contents.addSection($0) }
+            contents.addSections(buildStatusSections())
         }
 
         self.contents = contents
