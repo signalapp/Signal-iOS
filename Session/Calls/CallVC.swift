@@ -363,17 +363,6 @@ final class CallVC: UIViewController, VideoPreviewDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(audioRouteDidChange), name: AVAudioSession.routeChangeNotification, object: nil)
     }
     
-//    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//        super.viewWillTransition(to: size, with: coordinator)
-//
-//        if let existingSublayer = fadeView.layer.sublayers?[0] as? CAGradientLayer {
-//            let layer = CAGradientLayer()
-//            layer.frame = CGRect(x: 0, y: 0, width: size.width, height: 64)
-//            layer.colors = existingSublayer.colors
-//            fadeView.layer.replaceSublayer(existingSublayer, with: layer)
-//        }
-//    }
-    
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         NotificationCenter.default.removeObserver(self)

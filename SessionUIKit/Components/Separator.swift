@@ -25,6 +25,7 @@ public final class Separator: UIView {
     
     private lazy var titleLabel: UILabel = {
         let result = UILabel()
+        result.setContentCompressionResistancePriority(.required, for: .vertical)
         result.font = .systemFont(ofSize: Values.smallFontSize)
         result.themeTextColor = .textSecondary
         result.textAlignment = .center
