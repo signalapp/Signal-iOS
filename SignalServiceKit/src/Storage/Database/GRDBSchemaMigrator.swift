@@ -251,6 +251,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_syncGroupStories
         case dataMigration_deleteOldGroupCapabilities
         case dataMigration_updateStoriesDisabledInAccountRecord
+        case dataMigration_removeGroupStoryRepliesFromSearchIndex
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -2505,6 +2506,28 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(.dataMigration_updateStoriesDisabledInAccountRecord) { db in
             storageServiceManager.recordPendingLocalAccountUpdates()
+        }
+
+        migrator.registerMigration(.dataMigration_removeGroupStoryRepliesFromSearchIndex) { db in
+            do {
+                let uniqueIdSql = """
+                    SELECT \(interactionColumn: .uniqueId)
+                    FROM \(InteractionRecord.databaseTableName)
+                    WHERE \(interactionColumn: .isGroupStoryReply) = 1
+                """
+                let uniqueIds = try String.fetchAll(db, sql: uniqueIdSql)
+
+                guard !uniqueIds.isEmpty else { return }
+
+                let indexUpdateSql = """
+                    DELETE FROM \(GRDBFullTextSearchFinder.contentTableName)
+                    WHERE \(GRDBFullTextSearchFinder.uniqueIdColumn) IN (\(uniqueIds.map { "\"\($0)\"" }.joined(separator: ", ")))
+                    AND \(GRDBFullTextSearchFinder.collectionColumn) = "\(TSInteraction.collection())"
+                """
+                try db.execute(sql: indexUpdateSql)
+            } catch {
+                owsFail("Error \(error)")
+            }
         }
 
         // MARK: - Data Migration Insertion Point

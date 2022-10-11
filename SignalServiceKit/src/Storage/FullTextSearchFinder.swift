@@ -276,6 +276,9 @@ class GRDBFullTextSearchFinder: NSObject {
             // different address.
             return false
         }
+        if let message = model as? TSMessage, message.isGroupStoryReply {
+            return false
+        }
         return true
     }
 
