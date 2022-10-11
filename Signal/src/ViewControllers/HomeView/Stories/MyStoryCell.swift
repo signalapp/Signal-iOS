@@ -116,7 +116,7 @@ class MyStoryCell: UITableViewCell {
             if let secondLatestMessageAttachment = model.secondLatestMessageAttachment {
                 let secondLatestThumbnailView = StoryThumbnailView(attachment: secondLatestMessageAttachment)
                 secondLatestThumbnailView.layer.cornerRadius = 6
-                secondLatestThumbnailView.transform = .init(rotationAngle: -0.18168878)
+                secondLatestThumbnailView.transform = .init(rotationAngle: (CurrentAppContext().isRTL ? 1 : -1) * 0.18168878)
                 attachmentThumbnail.insertSubview(secondLatestThumbnailView, belowSubview: latestThumbnailView)
                 secondLatestThumbnailView.autoPinEdge(toSuperviewEdge: .top, withInset: 4)
                 secondLatestThumbnailView.autoSetDimensions(to: CGSize(width: 43, height: 64))
