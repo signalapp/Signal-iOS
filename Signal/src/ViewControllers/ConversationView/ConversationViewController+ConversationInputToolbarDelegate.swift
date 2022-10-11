@@ -839,6 +839,10 @@ extension ConversationViewController: SendMediaNavDelegate {
 
         inputToolbar.setMessageBody(newMessageBody, animated: false)
     }
+
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeViewOnceState isViewOnce: Bool) {
+        // We can ignore this event.
+    }
 }
 
 // MARK: -

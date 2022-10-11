@@ -22,6 +22,7 @@ public protocol ConversationItem {
 
     var image: UIImage? { get }
     var isBlocked: Bool { get }
+    var isStory: Bool { get }
     var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { get }
 
     func getExistingThread(transaction: SDSAnyReadTransaction) -> TSThread?
@@ -94,6 +95,8 @@ extension RecentConversationItem: ConversationItem {
         return unwrapped.isBlocked
     }
 
+    var isStory: Bool { return false }
+
     var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? {
         return unwrapped.disappearingMessagesConfig
     }
@@ -129,6 +132,8 @@ extension ContactConversationItem: Comparable {
 
 extension ContactConversationItem: ConversationItem {
     var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+
+    var isStory: Bool { return false }
 
     var limitsVideoAttachmentLengthForStories: Bool { return false }
 
@@ -185,6 +190,8 @@ public struct GroupConversationItem: Dependencies {
 
 extension GroupConversationItem: ConversationItem {
     public var outgoingMessageClass: TSOutgoingMessage.Type { TSOutgoingMessage.self }
+
+    public var isStory: Bool { return false }
 
     public var limitsVideoAttachmentLengthForStories: Bool { return false }
 
@@ -389,6 +396,8 @@ extension StoryConversationItem: ConversationItem, Dependencies {
         unwrapped.isBlocked
     }
 
+    public var isStory: Bool { return true }
+
     public var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? {
         unwrapped.disappearingMessagesConfig
     }
@@ -427,6 +436,8 @@ extension PrivateStoryConversationItem: ConversationItem {
     }
 
     public var isBlocked: Bool { false }
+
+    public var isStory: Bool { return true }
 
     public var disappearingMessagesConfig: OWSDisappearingMessagesConfiguration? { nil }
 

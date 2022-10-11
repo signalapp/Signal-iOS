@@ -15,6 +15,8 @@ protocol SendMediaNavDelegate: AnyObject {
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didFinishWithTextAttachment textAttachment: TextAttachment)
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?)
+
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeViewOnceState isViewOnce: Bool)
 }
 
 protocol SendMediaNavDataSource: AnyObject {
@@ -48,6 +50,8 @@ class CameraFirstCaptureNavigationController: SendMediaNavigationController {
         navController.sendMediaNavDelegate = cameraFirstCaptureSendFlow
         navController.sendMediaNavDataSource = cameraFirstCaptureSendFlow
 
+        navController.storiesOnly = storiesOnly
+
         return navController
     }
 }
@@ -59,6 +63,7 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     fileprivate var canSendToStories: Bool { false }
+    fileprivate var storiesOnly: Bool = false
 
     // MARK: - Overrides
 
@@ -179,6 +184,9 @@ class SendMediaNavigationController: OWSNavigationController {
         var options = options
         if requiresContactPickerToProceed {
             options.insert(.isNotFinalScreen)
+        }
+        if canSendToStories, storiesOnly {
+            options.insert(.disallowViewOnce)
         }
         let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
@@ -480,6 +488,10 @@ extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegat
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         sendMediaNavDelegate?.sendMediaNav(self, didChangeMessageBody: newMessageBody)
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) {
+        sendMediaNavDelegate?.sendMediaNav(self, didChangeViewOnceState: isViewOnce)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {

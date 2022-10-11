@@ -581,6 +581,10 @@ extension SendMessageFlow: AttachmentApprovalViewControllerDelegate {
         // TODO: Extend SendMessageFlow to handle camera first capture flow, share extension.
         owsFailDebug("Cannot add more to message forwards.")
     }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) {
+        // We can ignore this event.
+    }
 }
 
 // MARK: -

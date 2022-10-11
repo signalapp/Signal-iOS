@@ -25,6 +25,7 @@ class CameraFirstCaptureSendFlow: NSObject {
     private var selectedConversations: [ConversationItem] { selection.conversations }
 
     private let storiesOnly: Bool
+    private var showsStoriesInPicker = true
     init(storiesOnly: Bool, delegate: CameraFirstCaptureDelegate?) {
         self.storiesOnly = storiesOnly
         self.delegate = delegate
@@ -91,7 +92,7 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         if storiesOnly {
             pickerVC.isStorySectionExpanded = true
             pickerVC.sectionOptions = .stories
-        } else {
+        } else if showsStoriesInPicker {
             pickerVC.sectionOptions.insert(.stories)
         }
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
@@ -102,13 +103,23 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
 
         let pickerVC = ConversationPickerViewController(selection: selection)
         pickerVC.pickerDelegate = self
-        pickerVC.isStorySectionExpanded = true
-        pickerVC.sectionOptions = .stories
+        if showsStoriesInPicker || storiesOnly {
+            pickerVC.isStorySectionExpanded = true
+            pickerVC.sectionOptions = .stories
+        } else {
+            owsFailDebug("Shouldn't ever have stories disabled with text attachments!")
+        }
         sendMediaNavigationController.pushViewController(pickerVC, animated: true)
     }
 
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageBody newMessageBody: MessageBody?) {
         self.approvalMessageBody = newMessageBody
+    }
+
+    func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeViewOnceState isViewOnce: Bool) {
+        guard !self.storiesOnly else { return }
+        // Don't enable view once media to send to stories.
+        self.showsStoriesInPicker = !isViewOnce
     }
 }
 

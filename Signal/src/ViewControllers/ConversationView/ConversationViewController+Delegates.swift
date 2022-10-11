@@ -52,6 +52,8 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
     public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) { }
 
     public func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController) { }
+
+    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) { }
 }
 
 extension ConversationViewController: AttachmentApprovalViewControllerDataSource {

@@ -13,14 +13,14 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     var attachments: [SignalAttachment]? {
         didSet {
-            if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
-                sectionOptions.insert(.stories)
-            } else if isTextMessage {
-                sectionOptions.insert(.stories)
-            } else {
-                sectionOptions.remove(.stories)
-            }
+            updateStoriesState()
             updateApprovalMode()
+        }
+    }
+
+    private var isViewOnce = false {
+        didSet {
+            updateStoriesState()
         }
     }
 
@@ -81,6 +81,20 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
             mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
         } else {
             mentionCandidates = []
+        }
+    }
+
+    private func updateStoriesState() {
+        if isViewOnce {
+            sectionOptions.remove(.stories)
+        } else {
+            if let attachments = attachments, attachments.allSatisfy({ $0.isValidImage || $0.isValidVideo }) {
+                sectionOptions.insert(.stories)
+            } else if isTextMessage {
+                sectionOptions.insert(.stories)
+            } else {
+                sectionOptions.remove(.stories)
+            }
         }
     }
 }
@@ -150,7 +164,10 @@ extension SharingThreadPickerViewController {
 
         } else {
             let approvalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
-            let approvalVCOptions: AttachmentApprovalViewControllerOptions = withCancelButton ? [ .hasCancel ] : []
+            var approvalVCOptions: AttachmentApprovalViewControllerOptions = withCancelButton ? [ .hasCancel ] : []
+            if self.selection.conversations.contains(where: \.isStory) {
+                approvalVCOptions.insert(.disallowViewOnce)
+            }
             let approvalView = AttachmentApprovalViewController(options: approvalVCOptions, attachmentApprovalItems: approvalItems)
             approvalVC = approvalView
             approvalView.approvalDelegate = self
@@ -615,6 +632,10 @@ extension SharingThreadPickerViewController: AttachmentApprovalViewControllerDel
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageBody newMessageBody: MessageBody?) {
         self.approvalMessageBody = newMessageBody
+    }
+
+    func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeViewOnceState isViewOnce: Bool) {
+        self.isViewOnce = isViewOnce
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didRemoveAttachment attachment: SignalAttachment) {
