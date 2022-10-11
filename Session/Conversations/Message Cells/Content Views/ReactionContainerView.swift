@@ -102,7 +102,10 @@ final class ReactionContainerView: UIView {
     private func setUpViewHierarchy() {
         addSubview(mainStackView)
         
-        mainStackView.pin(to: self)
+        mainStackView.pin(.top, to: .top, of: self)
+        mainStackView.pin(.leading, to: .leading, of: self)
+        mainStackView.pin(.trailing, to: .trailing, of: self)
+        mainStackView.pin(.bottom, to: .bottom, of: self, withInset: -Values.verySmallSpacing)
         reactionContainerView.set(.width, to: .width, of: mainStackView)
     }
     

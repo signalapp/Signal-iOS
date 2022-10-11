@@ -230,7 +230,7 @@ final class VisibleMessageCell: MessageCell, TappableLabelDelegate {
         
         // Under bubble content
         addSubview(underBubbleStackView)
-        underBubbleStackView.pin(.top, to: .bottom, of: snContentView, withInset: 5)
+        underBubbleStackView.pin(.top, to: .bottom, of: snContentView, withInset: Values.verySmallSpacing)
         underBubbleStackView.pin(.bottom, to: .bottom, of: self)
         
         underBubbleStackView.addArrangedSubview(reactionContainerView)
