@@ -652,7 +652,11 @@ class MessageManagerRequest: NSObject {
                         Logger.info("Discarding story message received while stories are disabled")
                         return nil
                     }
-                    guard contentProto.storyMessage != nil || (contentProto.dataMessage?.storyContext != nil && contentProto.dataMessage?.groupV2 != nil) else {
+                    guard
+                        contentProto.senderKeyDistributionMessage != nil ||
+                        contentProto.storyMessage != nil ||
+                        (contentProto.dataMessage?.storyContext != nil && contentProto.dataMessage?.groupV2 != nil)
+                    else {
                         owsFailDebug("Discarding story message with invalid content.")
                         return nil
                     }
