@@ -311,6 +311,21 @@ public class StoryFinder: NSObject {
             owsFailDebug("error: \(error)")
         }
     }
+
+    public static func hasFailedStories(transaction: SDSAnyReadTransaction) -> Bool {
+        let sql = """
+            SELECT EXISTS (
+                SELECT 1 FROM \(StoryMessage.databaseTableName)
+                WHERE \(StoryMessage.columnName(.direction)) = \(StoryMessage.Direction.outgoing.rawValue)
+                AND (
+                    SELECT 1 FROM json_tree(\(StoryMessage.columnName(.manifest)), '$.outgoing.recipientStates')
+                    WHERE json_tree.type IS 'object'
+                    AND json_extract(json_tree.value, '$.sendingState') = \(OWSOutgoingMessageRecipientState.failed.rawValue)
+                )
+            )
+        """
+        return try! Bool.fetchOne(transaction.unwrapGrdbRead.database, sql: sql) ?? false
+    }
 }
 
 private extension StoryContext {

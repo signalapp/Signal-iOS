@@ -105,10 +105,18 @@ class HomeTabBarController: UITabBarController {
 
     func updateStoriesBadge() {
         guard RemoteConfig.stories else { return }
-        let unviewedStoriesCount = databaseStorage.read { transaction in
-            StoryFinder.unviewedSenderCount(transaction: transaction)
+
+        var badgeValue: String?
+        databaseStorage.read { transaction in
+            if StoryFinder.hasFailedStories(transaction: transaction) {
+                badgeValue = "!"
+            } else {
+                let unviewedStoriesCount = StoryFinder.unviewedSenderCount(transaction: transaction)
+                badgeValue = unviewedStoriesCount > 0 ? "\(unviewedStoriesCount)" : nil
+            }
         }
-        storiesTabBarItem.badgeValue = unviewedStoriesCount > 0 ? "\(unviewedStoriesCount)" : nil
+
+        storiesTabBarItem.badgeValue = badgeValue
     }
 
     func updateChatListBadge() {
@@ -183,7 +191,8 @@ extension HomeTabBarController: DatabaseChangeDelegate {
         if databaseChanges.didUpdateInteractions || databaseChanges.didUpdateModel(collection: String(describing: ThreadAssociatedData.self)) {
             updateChatListBadge()
         }
-        if databaseChanges.didUpdateModel(collection: StoryContextAssociatedData.collection()) {
+        if databaseChanges.didUpdateModel(collection: StoryContextAssociatedData.collection()) ||
+            databaseChanges.didUpdateModel(collection: StoryMessage.collection()) {
             updateStoriesBadge()
         }
     }
