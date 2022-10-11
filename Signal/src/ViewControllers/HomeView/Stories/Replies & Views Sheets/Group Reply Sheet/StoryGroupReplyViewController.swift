@@ -77,7 +77,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         bottomBar.autoPinWidthToSuperview()
         bottomBarBottomConstraint.isActive = true
 
-        for type in StoryGroupReplyCell.CellType.allCases {
+        for type in StoryGroupReplyCell.CellType.all {
             tableView.register(StoryGroupReplyCell.self, forCellReuseIdentifier: type.rawValue)
         }
 
@@ -345,7 +345,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
 
             var actions = [ContextMenuAction]()
 
-            if item.cellType != .reaction {
+            if !item.cellType.isReaction {
                 actions.append(.init(
                     title: NSLocalizedString(
                         "STORIES_COPY_REPLY_ACTION",
