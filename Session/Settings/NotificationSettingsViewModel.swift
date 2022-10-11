@@ -56,6 +56,11 @@ class NotificationSettingsViewModel: SessionTableViewModel<NoNav, NotificationSe
     /// just in case the database has changed between the two reads - unfortunately it doesn't look like there is a way to prevent this
     private lazy var _observableSettingsData: ObservableData = ValueObservation
         .trackingConstantRegion { db -> [SectionModel] in
+            let notificationSound: Preferences.Sound = db[.defaultNotificationSound]
+                .defaulting(to: Preferences.Sound.defaultNotificationSound)
+            let previewType: Preferences.NotificationPreviewType = db[.preferencesNotificationPreviewType]
+                .defaulting(to: Preferences.NotificationPreviewType.defaultPreviewType)
+            
             return [
                 SectionModel(
                     model: .strategy,
@@ -90,11 +95,7 @@ class NotificationSettingsViewModel: SessionTableViewModel<NoNav, NotificationSe
                             id: .styleSound,
                             title: "NOTIFICATIONS_STYLE_SOUND_TITLE".localized(),
                             rightAccessory: .dropDown(
-                                .dynamicString(
-                                    type: Preferences.Sound.self,
-                                    key: .defaultNotificationSound,
-                                    value: { $0.defaulting(to: .defaultNotificationSound).displayName }
-                                )
+                                .dynamicString { notificationSound.displayName }
                             ),
                             onTap: { [weak self] in
                                 self?.transitionToScreen(
@@ -122,11 +123,7 @@ class NotificationSettingsViewModel: SessionTableViewModel<NoNav, NotificationSe
                             title: "NOTIFICATIONS_STYLE_CONTENT_TITLE".localized(),
                             subtitle: "NOTIFICATIONS_STYLE_CONTENT_DESCRIPTION".localized(),
                             rightAccessory: .dropDown(
-                                .dynamicString(
-                                    type: Preferences.NotificationPreviewType.self,
-                                    key: .preferencesNotificationPreviewType,
-                                    value: { $0.defaulting(to: .defaultPreviewType).name }
-                                )
+                                .dynamicString { previewType.name }
                             ),
                             onTap: { [weak self] in
                                 self?.transitionToScreen(
