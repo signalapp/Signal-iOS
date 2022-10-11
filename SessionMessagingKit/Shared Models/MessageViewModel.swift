@@ -603,25 +603,9 @@ extension MessageViewModel {
 public extension MessageViewModel {
     static func filterSQL(threadId: String) -> SQL {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()
-        let setting: TypedTableAlias<Setting> = TypedTableAlias()
         
-        var targetValue: Bool = true
-        let boolSettingLiteral: Data = Data(bytes: &targetValue, count: MemoryLayout.size(ofValue: targetValue))
-        
-        return SQL("""
-            \(interaction[.threadId]) = \(threadId) AND (
-                \(SQL("\(interaction[.variant]) != \(Interaction.Variant.infoScreenshotNotification)")) OR
-                \(SQL("IFNULL(\(setting[.value]), false) == \(boolSettingLiteral)"))
-            )
-        """)
+        return SQL("\(interaction[.threadId]) = \(threadId)")
     }
-    
-    static let optimisedJoinSQL: SQL = {
-        let setting: TypedTableAlias<Setting> = TypedTableAlias()
-        let targetSetting: String = Setting.BoolKey.showScreenshotNotifications.rawValue
-        
-        return SQL("LEFT JOIN \(Setting.self) ON \(setting[.key]) = \(targetSetting)")
-    }()
     
     static let groupSQL: SQL = {
         let interaction: TypedTableAlias<Interaction> = TypedTableAlias()

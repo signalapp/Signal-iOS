@@ -372,11 +372,9 @@
 		C38EF245255B6D67007E1867 /* UIFont+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF238255B6D66007E1867 /* UIFont+OWS.m */; };
 		C38EF246255B6D67007E1867 /* UIFont+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF239255B6D66007E1867 /* UIFont+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF247255B6D67007E1867 /* NSAttributedString+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF23A255B6D66007E1867 /* NSAttributedString+OWS.m */; };
-		C38EF249255B6D67007E1867 /* UIColor+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF23C255B6D66007E1867 /* UIColor+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF24C255B6D67007E1867 /* NSAttributedString+OWS.h in Headers */ = {isa = PBXBuildFile; fileRef = C38EF23F255B6D67007E1867 /* NSAttributedString+OWS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		C38EF24D255B6D67007E1867 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF240255B6D67007E1867 /* UIView+OWS.swift */; };
 		C38EF24E255B6D67007E1867 /* Collection+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF241255B6D67007E1867 /* Collection+OWS.swift */; };
-		C38EF24F255B6D67007E1867 /* UIColor+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = C38EF242255B6D67007E1867 /* UIColor+OWS.m */; };
 		C38EF2A5255B6D93007E1867 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2A2255B6D93007E1867 /* Identicon+ObjC.swift */; };
 		C38EF2A6255B6D93007E1867 /* PlaceholderIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2A3255B6D93007E1867 /* PlaceholderIcon.swift */; };
 		C38EF2A7255B6D93007E1867 /* ProfilePictureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C38EF2A4255B6D93007E1867 /* ProfilePictureView.swift */; };
@@ -1467,13 +1465,11 @@
 		C38EF238255B6D66007E1867 /* UIFont+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIFont+OWS.m"; path = "SignalUtilitiesKit/Utilities/UIFont+OWS.m"; sourceTree = SOURCE_ROOT; };
 		C38EF239255B6D66007E1867 /* UIFont+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIFont+OWS.h"; path = "SignalUtilitiesKit/Utilities/UIFont+OWS.h"; sourceTree = SOURCE_ROOT; };
 		C38EF23A255B6D66007E1867 /* NSAttributedString+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSAttributedString+OWS.m"; path = "SignalUtilitiesKit/Utilities/NSAttributedString+OWS.m"; sourceTree = SOURCE_ROOT; };
-		C38EF23C255B6D66007E1867 /* UIColor+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIColor+OWS.h"; path = "SignalUtilitiesKit/Utilities/UIColor+OWS.h"; sourceTree = SOURCE_ROOT; };
 		C38EF23D255B6D66007E1867 /* UIView+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIView+OWS.h"; path = "SessionUtilitiesKit/General/UIView+OWS.h"; sourceTree = SOURCE_ROOT; };
 		C38EF23E255B6D66007E1867 /* UIView+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIView+OWS.m"; path = "SessionUtilitiesKit/General/UIView+OWS.m"; sourceTree = SOURCE_ROOT; };
 		C38EF23F255B6D67007E1867 /* NSAttributedString+OWS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSAttributedString+OWS.h"; path = "SignalUtilitiesKit/Utilities/NSAttributedString+OWS.h"; sourceTree = SOURCE_ROOT; };
 		C38EF240255B6D67007E1867 /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+OWS.swift"; path = "SignalUtilitiesKit/Utilities/UIView+OWS.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF241255B6D67007E1867 /* Collection+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Collection+OWS.swift"; path = "SignalUtilitiesKit/Utilities/Collection+OWS.swift"; sourceTree = SOURCE_ROOT; };
-		C38EF242255B6D67007E1867 /* UIColor+OWS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+OWS.m"; path = "SignalUtilitiesKit/Utilities/UIColor+OWS.m"; sourceTree = SOURCE_ROOT; };
 		C38EF281255B6D84007E1867 /* OWSAudioSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OWSAudioSession.swift; path = SessionMessagingKit/Utilities/OWSAudioSession.swift; sourceTree = SOURCE_ROOT; };
 		C38EF2A2255B6D93007E1867 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Identicon+ObjC.swift"; path = "SignalUtilitiesKit/Profile Pictures/Identicon+ObjC.swift"; sourceTree = SOURCE_ROOT; };
 		C38EF2A3255B6D93007E1867 /* PlaceholderIcon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PlaceholderIcon.swift; path = "SignalUtilitiesKit/Profile Pictures/PlaceholderIcon.swift"; sourceTree = SOURCE_ROOT; };
@@ -3290,8 +3286,6 @@
 				C38EF3DC255B6DF1007E1867 /* DirectionalPanGestureRecognizer.swift */,
 				C38EF240255B6D67007E1867 /* UIView+OWS.swift */,
 				FD71161D28D9772700B47552 /* UIViewController+OWS.swift */,
-				C38EF23C255B6D66007E1867 /* UIColor+OWS.h */,
-				C38EF242255B6D67007E1867 /* UIColor+OWS.m */,
 				C38EF2B1255B6D9C007E1867 /* UIViewController+Utilities.swift */,
 				C38EF307255B6DBE007E1867 /* UIGestureRecognizer+OWS.swift */,
 				C38EF239255B6D66007E1867 /* UIFont+OWS.h */,
@@ -4170,7 +4164,6 @@
 				C38EF32B255B6DBF007E1867 /* OWSFormat.h in Headers */,
 				C33FDDCC255A582000E217F9 /* TSConstants.h in Headers */,
 				C33FDDBD255A582000E217F9 /* ByteParser.h in Headers */,
-				C38EF249255B6D67007E1867 /* UIColor+OWS.h in Headers */,
 				C33FDDB3255A582000E217F9 /* OWSError.h in Headers */,
 				C38EF35E255B6DCC007E1867 /* OWSViewController.h in Headers */,
 				C38EF246255B6D67007E1867 /* UIFont+OWS.h in Headers */,
@@ -5215,7 +5208,6 @@
 				FD52090B28B59BB4006098F6 /* ScreenLockViewController.swift in Sources */,
 				C38EF401255B6DF7007E1867 /* VideoPlayerView.swift in Sources */,
 				C38EF3BD255B6DE7007E1867 /* ImageEditorTransform.swift in Sources */,
-				C38EF24F255B6D67007E1867 /* UIColor+OWS.m in Sources */,
 				C33FDC9A255A582000E217F9 /* ByteParser.m in Sources */,
 				C33FDC58255A582000E217F9 /* ReverseDispatchQueue.swift in Sources */,
 				C33FDC78255A582000E217F9 /* TSConstants.m in Sources */,
@@ -6028,7 +6020,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 379;
+				CURRENT_PROJECT_VERSION = 380;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -6101,7 +6093,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 379;
+				CURRENT_PROJECT_VERSION = 380;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -6167,7 +6159,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 379;
+				CURRENT_PROJECT_VERSION = 380;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
@@ -6241,7 +6233,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 379;
+				CURRENT_PROJECT_VERSION = 380;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -7169,7 +7161,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 379;
+				CURRENT_PROJECT_VERSION = 380;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -7241,7 +7233,7 @@
 				CODE_SIGN_ENTITLEMENTS = Session/Meta/Signal.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 379;
+				CURRENT_PROJECT_VERSION = 380;
 				DEVELOPMENT_TEAM = SUQ8J2PCT7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

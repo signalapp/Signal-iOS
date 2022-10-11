@@ -486,8 +486,6 @@
 "PRIVACY_SECTION_SCREEN_SECURITY" = "ความปลอดภัยหน้าจอ";
 "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_TITLE" = "Lock Session";
 "PRIVACY_SCREEN_SECURITY_LOCK_SESSION_DESCRIPTION" = "Require Touch ID, Face ID or your passcode to unlock Session.";
-"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_TITLE" = "Screenshot Notifications";
-"PRIVACY_SCREEN_SECURITY_SCREENSHOT_NOTIFICATIONS_DESCRIPTION" = "Receive a notification when a contact takes a screenshot of a one-to-one chat.";
 "PRIVACY_SECTION_READ_RECEIPTS" = "แจ้งการอ่านข้อความ";
 "PRIVACY_READ_RECEIPTS_TITLE" = "แจ้งการอ่านข้อความ";
 "PRIVACY_READ_RECEIPTS_DESCRIPTION" = "Send read receipts in one-to-one chats.";

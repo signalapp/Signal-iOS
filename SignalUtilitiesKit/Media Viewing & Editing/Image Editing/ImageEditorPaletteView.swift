@@ -31,20 +31,20 @@ public class ImageEditorColor: NSObject {
     }
 
     public class func defaultColor() -> ImageEditorColor {
-        return ImageEditorColor(color: UIColor(rgbHex: 0xffffff), palettePhase: 0)
+        return ImageEditorColor(color: .white, palettePhase: 0)
     }
 
     public static var gradientUIColors: [UIColor] {
         return [
-            UIColor(rgbHex: 0xffffff),
-            UIColor(rgbHex: 0xff0000),
-            UIColor(rgbHex: 0xff00ff),
-            UIColor(rgbHex: 0x0000ff),
-            UIColor(rgbHex: 0x00ffff),
-            UIColor(rgbHex: 0x00ff00),
-            UIColor(rgbHex: 0xffff00),
-            UIColor(rgbHex: 0xff5500),
-            UIColor(rgbHex: 0x000000)
+            #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1),       // #FFFFFF
+            #colorLiteral(red: 1, green: 0, blue: 0, alpha: 1),       // #FF0000
+            #colorLiteral(red: 1, green: 0, blue: 1, alpha: 1),       // #FF00FF
+            #colorLiteral(red: 0, green: 0, blue: 1, alpha: 1),       // #0000FF
+            #colorLiteral(red: 0, green: 1, blue: 1, alpha: 1),       // #00FFFF
+            #colorLiteral(red: 0, green: 1, blue: 0, alpha: 1),       // #00FF00
+            #colorLiteral(red: 1, green: 1, blue: 0, alpha: 1),       // #FFFF00
+            #colorLiteral(red: 1, green: 0.3333333333, blue: 0, alpha: 1),       // #FF5500
+            #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)        // #000000
         ]
     }
 
