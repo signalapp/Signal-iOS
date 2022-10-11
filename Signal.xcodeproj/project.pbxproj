@@ -798,6 +798,7 @@
 		7628DDC1280750BC009AA53D /* ExpandableContactListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */; };
 		7628DDC32807609F009AA53D /* ImageEditorToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC22807609F009AA53D /* ImageEditorToolbar.swift */; };
 		7628DDC5280A01B8009AA53D /* ImageEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDC4280A01B8009AA53D /* ImageEditorViewController.swift */; };
+		76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */; };
 		763D7DDB27E155ED002EA7E6 /* RoundMediaButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */; };
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
 		766035A9286CE4CB00F6B71C /* MediaTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 766035A8286CE4CB00F6B71C /* MediaTopBar.swift */; };
@@ -3048,6 +3049,7 @@
 		7628DDC0280750BC009AA53D /* ExpandableContactListView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandableContactListView.swift; sourceTree = "<group>"; };
 		7628DDC22807609F009AA53D /* ImageEditorToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorToolbar.swift; sourceTree = "<group>"; };
 		7628DDC4280A01B8009AA53D /* ImageEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorViewController.swift; sourceTree = "<group>"; };
+		76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaseIterable.swift; sourceTree = "<group>"; };
 		763D7DDA27E155ED002EA7E6 /* RoundMediaButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundMediaButton.swift; sourceTree = "<group>"; };
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
 		766035A8286CE4CB00F6B71C /* MediaTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaTopBar.swift; sourceTree = "<group>"; };
@@ -8058,6 +8060,7 @@
 				E7D7C93E28B580AC003F043B /* Bundle+OWS.swift */,
 				F9C5CB56289453B200548EEE /* ByteParser.h */,
 				F9C5CB0F289453B200548EEE /* ByteParser.m */,
+				76387BEF28F4ED73002C7BA5 /* CaseIterable.swift */,
 				661396AC28BE74DC00E0C4DF /* ChainedPromise.swift */,
 				F9C5CB3C289453B200548EEE /* ChangePhoneNumber.swift */,
 				F9C5CB2A289453B200548EEE /* Collection+OWS.swift */,
@@ -10549,6 +10552,7 @@
 				F9C5CDE1289453B400548EEE /* ByteParser.m in Sources */,
 				F9C5CD32289453B300548EEE /* CallKitIdStore.m in Sources */,
 				F9C5CD8D289453B300548EEE /* CaptchaChallenge.swift in Sources */,
+				76387BF028F4ED73002C7BA5 /* CaseIterable.swift in Sources */,
 				F9C5CC0C289453B300548EEE /* CDNDownloadOperation.swift in Sources */,
 				F9C5CCC1289453B300548EEE /* CDSHWebsocket.swift in Sources */,
 				661396AD28BE74DC00E0C4DF /* ChainedPromise.swift in Sources */,

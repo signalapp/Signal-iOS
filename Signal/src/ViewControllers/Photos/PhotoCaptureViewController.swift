@@ -1519,12 +1519,11 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     private func didTapTextStyleButton() {
         Logger.verbose("")
 
-        let currentTextStyle = textViewAccessoryToolbar.textStyle
-        let nextTextStyle = MediaTextView.TextStyle(rawValue: currentTextStyle.rawValue + 1) ?? .regular
-        textViewAccessoryToolbar.textStyle = nextTextStyle
+        let textStyle = textViewAccessoryToolbar.textStyle.next()
+        textViewAccessoryToolbar.textStyle = textStyle
 
-        textStyle = {
-            switch nextTextStyle {
+        self.textStyle = {
+            switch textStyle {
             case .regular: return .regular
             case .bold: return .bold
             case .serif: return .serif

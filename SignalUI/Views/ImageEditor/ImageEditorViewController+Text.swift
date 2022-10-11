@@ -290,19 +290,18 @@ extension ImageEditorViewController {
 
     @objc
     func didTapTextStyleButton(sender: UIButton) {
-        let currentTextStyle = textToolbar.textStyle
-        let nextTextStyle = MediaTextView.TextStyle(rawValue: currentTextStyle.rawValue + 1) ?? .regular
+        let textStyle = textToolbar.textStyle.next()
 
         // Update selected text object if any.
         if let selectedTextItemId = imageEditorView.selectedTextItemId,
            let selectedTextItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
-            let newTextItem = selectedTextItem.copy(textStyle: nextTextStyle, decorationStyle: textToolbar.decorationStyle)
+            let newTextItem = selectedTextItem.copy(textStyle: textStyle, decorationStyle: textToolbar.decorationStyle)
             model.replace(item: newTextItem)
         }
 
         // Update toolbar.
-        textToolbar.textStyle = nextTextStyle
-        textViewAccessoryToolbar.textStyle = nextTextStyle
+        textToolbar.textStyle = textStyle
+        textViewAccessoryToolbar.textStyle = textStyle
 
         // Update text view.
         if textView.isFirstResponder {
@@ -312,22 +311,21 @@ extension ImageEditorViewController {
 
     @objc
     func didTapDecorationStyleButton(sender: UIButton) {
-        let currentDecorationStyle = textToolbar.decorationStyle
-        var nextDecorationStyle = MediaTextView.DecorationStyle(rawValue: currentDecorationStyle.rawValue + 1) ?? .none
-        if nextDecorationStyle == .outline {
-            nextDecorationStyle = .none
+        var decorationStyle = textToolbar.decorationStyle.next()
+        if decorationStyle == .outline {
+            decorationStyle = .none
         }
 
         // Update selected text object if any.
         if let selectedTextItemId = imageEditorView.selectedTextItemId,
            let selectedTextItem = model.item(forId: selectedTextItemId) as? ImageEditorTextItem {
-            let newTextItem = selectedTextItem.copy(textStyle: textToolbar.textStyle, decorationStyle: nextDecorationStyle)
+            let newTextItem = selectedTextItem.copy(textStyle: textToolbar.textStyle, decorationStyle: decorationStyle)
             model.replace(item: newTextItem)
         }
 
         // Update toolbar.
-        textToolbar.decorationStyle = nextDecorationStyle
-        textViewAccessoryToolbar.decorationStyle = nextDecorationStyle
+        textToolbar.decorationStyle = decorationStyle
+        textViewAccessoryToolbar.decorationStyle = decorationStyle
 
         // Update text view.
         if textView.isFirstResponder {

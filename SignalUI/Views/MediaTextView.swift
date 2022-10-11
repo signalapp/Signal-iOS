@@ -6,15 +6,16 @@ import UIKit
 
 public class MediaTextView: UITextView {
 
-    public enum DecorationStyle: Int {
-        case none = 0
+    public enum DecorationStyle: String, CaseIterable {
+        case none
         case inverted
         case underline
         case outline
     }
 
-    public enum TextStyle: Int {
-        case regular = 0
+    // Resource names are derived from these values. Do not change without consideration.
+    public enum TextStyle: String, CaseIterable {
+        case regular
         case bold
         case serif
         case script
@@ -168,8 +169,17 @@ public class TextStylingToolbar: UIControl {
         }
     }
 
-    public let textStyleButton = RoundMediaButton(image: #imageLiteral(resourceName: "media-editor-text-font"), backgroundStyle: .blur)
-    public var textStyle: MediaTextView.TextStyle = .regular
+    public let textStyleButton = RoundMediaButton(image: TextStylingToolbar.buttonImage(forTextStyle: .regular),
+                                                  backgroundStyle: .blur)
+    public var textStyle: MediaTextView.TextStyle = .regular {
+        didSet {
+            textStyleButton.setImage(TextStylingToolbar.buttonImage(forTextStyle: textStyle), for: .normal)
+        }
+    }
+
+    private static func buttonImage(forTextStyle textStyle: MediaTextView.TextStyle) -> UIImage? {
+        return UIImage(imageLiteralResourceName: "media-editor-font-" + textStyle.rawValue)
+    }
 
     public var textForegroundColor: UIColor {
         switch decorationStyle {
