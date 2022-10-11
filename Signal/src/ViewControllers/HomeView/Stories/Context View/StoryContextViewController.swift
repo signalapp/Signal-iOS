@@ -201,6 +201,7 @@ class StoryContextViewController: OWSViewController {
         repliesAndViewsButton.block = { [weak self] in self?.presentRepliesAndViewsSheet() }
         repliesAndViewsButton.autoSetDimension(.height, toSize: 64)
         repliesAndViewsButton.setTitleColor(Theme.darkThemePrimaryColor, for: .normal)
+        repliesAndViewsButton.setTitleColor(Theme.darkThemePrimaryColor.withAlphaComponent(0.4), for: .highlighted)
         view.addSubview(repliesAndViewsButton)
         repliesAndViewsButton.autoPinEdge(.leading, to: .leading, of: mediaViewContainer)
         repliesAndViewsButton.autoPinEdge(.trailing, to: .trailing, of: mediaViewContainer)
@@ -522,6 +523,12 @@ class StoryContextViewController: OWSViewController {
                     .color(Theme.darkThemePrimaryColor),
                     .xmlRules([.style("bold", semiboldStyle)])),
                 for: .normal)
+            repliesAndViewsButton.setAttributedTitle(
+                repliesAndViewsButtonText.styled(
+                    with: .font(.systemFont(ofSize: 17)),
+                    .color(Theme.darkThemePrimaryColor.withAlphaComponent(0.4)),
+                    .xmlRules([.style("bold", semiboldStyle)])),
+                for: .highlighted)
         } else {
             repliesAndViewsButton.isHidden = true
         }
@@ -875,6 +882,13 @@ extension StoryContextViewController: UIGestureRecognizerDelegate {
             return isMultiTouchGesture
         } else if isMultiTouchGesture {
             return false
+        }
+
+        if gestureRecognizer == pauseGestureRecognizer {
+            // Don't pause while long pressing the replies and views button
+            guard repliesAndViewsButton.isHidden || !repliesAndViewsButton.bounds.contains(gestureRecognizer.location(in: repliesAndViewsButton)) else {
+                return false
+            }
         }
 
         let nextFrameWidth = mediaViewContainer.width * 0.8
