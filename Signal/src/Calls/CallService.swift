@@ -657,18 +657,29 @@ public final class CallService: LightweightCallManager {
         sendPhoneOrientationNotification()
     }
 
+    private func shouldReorientUI(for call: SignalCall) -> Bool {
+        owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
+
+        guard call.isIndividualCall else {
+            // If we're in a group call, we don't want to use rotating icons,
+            // because we don't rotate user video at the same time,
+            // and that's very obvious for grid view or any non-speaker tile in speaker view.
+            return false
+        }
+
+        // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
+        // Don't distract them with rotating icons.
+        return call.individualCall.hasLocalVideo || call.individualCall.isRemoteVideoEnabled
+    }
+
     private func sendPhoneOrientationNotification() {
         owsAssertDebug(!UIDevice.current.isIPad, "iPad has full UIKit rotation support")
 
         let rotationAngle: CGFloat
-        if let call = currentCall,
-           call.isIndividualCall,
-           !call.individualCall.hasLocalVideo,
-           !call.individualCall.isRemoteVideoEnabled {
-            // If we're in an audio-only 1:1 call, the user isn't going to be looking at the screen.
-            // Don't distract them with rotating icons.
-            // But we still send the notification in case
-            // 1. either the user or their contact (but not both) has video on
+        if let call = currentCall, !shouldReorientUI(for: call) {
+            // We still send the notification in case we *previously* rotated the UI and now we need to revert back.
+            // Example:
+            // 1. In a 1:1 call, either the user or their contact (but not both) has video on
             // 2. the user has the phone in landscape
             // 3. whoever had video turns it off (but the icons are still landscape-oriented)
             // 4. the user rotates back to portrait
