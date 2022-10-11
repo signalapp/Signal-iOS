@@ -84,17 +84,22 @@ final class JoinOpenGroupVC: BaseVC, UIPageViewControllerDataSource, UIPageViewC
         pageVCView.pin(.top, to: .bottom, of: tabBar)
         pageVCView.pin(.trailing, to: .trailing, of: view)
         pageVCView.pin(.bottom, to: .bottom, of: view)
+        
         let navBarHeight: CGFloat = (navigationController?.navigationBar.frame.size.height ?? 0)
-        let height: CGFloat = ((navigationController?.view.bounds.height ?? 0) - navBarHeight - TabBar.snHeight)
-        enterURLVC.constrainHeight(to: height)
-        scanQRCodePlaceholderVC.constrainHeight(to: height)
+        let statusBarHeight: CGFloat = UIApplication.shared.statusBarFrame.size.height
+        let height: CGFloat = ((navigationController?.view.bounds.height ?? 0) - navBarHeight - TabBar.snHeight - statusBarHeight)
+        let size: CGSize = CGSize(width: UIScreen.main.bounds.width, height: height)
+        enterURLVC.constrainSize(to: size)
+        scanQRCodePlaceholderVC.constrainSize(to: size)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        enterURLVC.viewWidth?.constant = size.width
+        let height: CGFloat = (size.height - TabBar.snHeight)
+        let size: CGSize = CGSize(width: size.width, height: height)
+        enterURLVC.constrainSize(to: size)
+        scanQRCodePlaceholderVC.constrainSize(to: size)
         enterURLVC.suggestionGrid.refreshLayout(with: size.width - 2 * Values.largeSpacing)
-        scanQRCodePlaceholderVC.viewWidth?.constant = size.width
     }
 
     // MARK: - General
@@ -256,7 +261,8 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
         return result
     }()
     
-    var viewWidth: NSLayoutConstraint?
+    private var viewWidth: NSLayoutConstraint?
+    private var viewHeight: NSLayoutConstraint?
 
     // MARK: - Lifecycle
     
@@ -332,8 +338,18 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
     
     // MARK: - General
     
-    func constrainHeight(to height: CGFloat) {
-        view.set(.height, to: height)
+    func constrainSize(to size: CGSize) {
+        if viewWidth == nil {
+            viewWidth = view.set(.width, to: size.width)
+        } else {
+            viewWidth?.constant = size.width
+        }
+        
+        if viewHeight == nil {
+            viewHeight = view.set(.height, to: size.height)
+        } else {
+            viewHeight?.constant = size.height
+        }
     }
 
     @objc private func dismissKeyboard() {
@@ -445,7 +461,8 @@ private final class EnterURLVC: UIViewController, UIGestureRecognizerDelegate, O
 private final class ScanQRCodePlaceholderVC: UIViewController {
     weak var joinOpenGroupVC: JoinOpenGroupVC?
     
-    var viewWidth: NSLayoutConstraint?
+    private var viewWidth: NSLayoutConstraint?
+    private var viewHeight: NSLayoutConstraint?
     
     // MARK: - Lifecycle
 
@@ -476,7 +493,6 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
         stackView.alignment = .center
         
         // Constraints
-        viewWidth = view.set(.width, to: UIScreen.main.bounds.width)
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
         view.pin(.trailing, to: .trailing, of: stackView, withInset: Values.massiveSpacing)
@@ -485,8 +501,18 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
         verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
     }
 
-    func constrainHeight(to height: CGFloat) {
-        view.set(.height, to: height)
+    func constrainSize(to size: CGSize) {
+        if viewWidth == nil {
+            viewWidth = view.set(.width, to: size.width)
+        } else {
+            viewWidth?.constant = size.width
+        }
+        
+        if viewHeight == nil {
+            viewHeight = view.set(.height, to: size.height)
+        } else {
+            viewHeight?.constant = size.height
+        }
     }
 
     @objc private func requestCameraAccess() {

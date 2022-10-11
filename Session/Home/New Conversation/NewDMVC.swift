@@ -92,36 +92,41 @@ final class NewDMVC: BaseVC, UIPageViewControllerDataSource, UIPageViewControlle
             navigationItem.leftBarButtonItem = closeButton
         }
         
-        // Set up tab bar
-        view.addSubview(tabBar)
-        tabBar.pin(.top, to: .top, of: view)
-        tabBar.pin(.leading, to: .leading, of: view)
-        tabBar.pin(.trailing, to: .trailing, of: view)
-        
-        // Set up page VC
-        let containerView: UIView = UIView()
-        view.addSubview(containerView)
-        containerView.pin(.top, to: .bottom, of: tabBar)
-        containerView.pin(.leading, to: .leading, of: view)
-        containerView.pin(.trailing, to: .trailing, of: view)
-        containerView.pin(.bottom, to: .bottom, of: view)
-        
+        // Page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ enterPublicKeyVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]
         pageVC.dataSource = self
         pageVC.delegate = self
         pageVC.setViewControllers([ enterPublicKeyVC ], direction: .forward, animated: false, completion: nil)
-        addChild(pageVC)
-        containerView.addSubview(pageVC.view)
         
-        pageVC.view.pin(to: containerView)
-        pageVC.didMove(toParent: self)
+        // Tab bar
+        view.addSubview(tabBar)
+        tabBar.pin(.top, to: .top, of: view)
+        tabBar.pin(.leading, to: .leading, of: view)
+        tabBar.pin(.trailing, to: .trailing, of: view)
+        
+        // Page VC constraints
+        let pageVCView = pageVC.view!
+        view.addSubview(pageVCView)
+        pageVCView.pin(.leading, to: .leading, of: view)
+        pageVCView.pin(.top, to: .bottom, of: tabBar)
+        pageVCView.pin(.trailing, to: .trailing, of: view)
+        pageVCView.pin(.bottom, to: .bottom, of: view)
+        
+        let navBarHeight: CGFloat = (navigationController?.navigationBar.frame.size.height ?? 0)
+        let statusBarHeight: CGFloat = UIApplication.shared.statusBarFrame.size.height
+        let height: CGFloat = ((navigationController?.view.bounds.height ?? 0) - navBarHeight - TabBar.snHeight - statusBarHeight)
+        let size: CGSize = CGSize(width: UIScreen.main.bounds.width, height: height)
+        enterPublicKeyVC.constrainSize(to: size)
+        scanQRCodePlaceholderVC.constrainSize(to: size)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        enterPublicKeyVC.viewWidth?.constant = size.width
-        scanQRCodePlaceholderVC.viewWidth?.constant = size.width
+        let height: CGFloat = (size.height - TabBar.snHeight)
+        let size: CGSize = CGSize(width: size.width, height: height)
+        enterPublicKeyVC.constrainSize(to: size)
+        scanQRCodePlaceholderVC.constrainSize(to: size)
     }
 
     // MARK: - General
@@ -400,7 +405,8 @@ private final class EnterPublicKeyVC: UIViewController {
         return result
     }()
     
-    var viewWidth: NSLayoutConstraint?
+    private var viewWidth: NSLayoutConstraint?
+    private var viewHeight: NSLayoutConstraint?
     
     // MARK: - Lifecycle
     
@@ -436,9 +442,7 @@ private final class EnterPublicKeyVC: UIViewController {
         view.addSubview(mainStackView)
 
         mainStackView.pin([ UIView.HorizontalEdge.leading, UIView.HorizontalEdge.trailing, UIView.VerticalEdge.top ], to: view)
-        bottomConstraint = view.pin(.bottom, to: .bottom, of: mainStackView, withInset: bottomMargin)
-        // Width constraint
-        viewWidth = view.set(.width, to: UIScreen.main.bounds.width)
+        bottomConstraint = mainStackView.pin(.bottom, to: .bottom, of: view, withInset: bottomMargin)
 
         // Dismiss keyboard on tap
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -455,6 +459,21 @@ private final class EnterPublicKeyVC: UIViewController {
     }
     
     // MARK: - General
+    
+    func constrainSize(to size: CGSize) {
+        if viewWidth == nil {
+            viewWidth = view.set(.width, to: size.width)
+        } else {
+            viewWidth?.constant = size.width
+        }
+        
+        if viewHeight == nil {
+            viewHeight = view.set(.height, to: size.height)
+        } else {
+            viewHeight?.constant = size.height
+        }
+    }
+
     
     func setSessionId(to sessionId: String) {
         publicKeyTextView.insertText(sessionId)
@@ -615,7 +634,8 @@ private final class EnterPublicKeyVC: UIViewController {
 private final class ScanQRCodePlaceholderVC: UIViewController {
     weak var newDMVC: NewDMVC!
     
-    var viewWidth: NSLayoutConstraint?
+    private var viewWidth: NSLayoutConstraint?
+    private var viewHeight: NSLayoutConstraint?
     
     override func viewDidLoad() {
         // Remove background color
@@ -644,13 +664,28 @@ private final class ScanQRCodePlaceholderVC: UIViewController {
         stackView.alignment = .center
         
         // Set up constraints
-        viewWidth = view.set(.width, to: UIScreen.main.bounds.width)
-
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view, withInset: Values.massiveSpacing)
-        stackView.pin(.trailing, to: .trailing, of: view, withInset: -Values.massiveSpacing)
-        stackView.center(.vertical, in: view, withInset: -16) // Makes things appear centered visually
+        view.pin(.trailing, to: .trailing, of: stackView, withInset: Values.massiveSpacing)
+        
+        let verticalCenteringConstraint = stackView.center(.vertical, in: view)
+        verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
     }
+    
+    func constrainSize(to size: CGSize) {
+        if viewWidth == nil {
+            viewWidth = view.set(.width, to: size.width)
+        } else {
+            viewWidth?.constant = size.width
+        }
+        
+        if viewHeight == nil {
+            viewHeight = view.set(.height, to: size.height)
+        } else {
+            viewHeight?.constant = size.height
+        }
+    }
+
     
     @objc private func requestCameraAccess() {
         Permissions.requestCameraPermissionIfNeeded { [weak self] in
