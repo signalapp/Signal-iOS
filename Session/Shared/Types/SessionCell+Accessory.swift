@@ -222,32 +222,6 @@ extension SessionCell.Accessory {
         case userDefaults(UserDefaults, key: String)
         case settingBool(key: Setting.BoolKey)
         
-        // MARK: - Convenience Types
-        
-        public static func dynamicString<ET: EnumIntSetting>(
-            type: ET.Type,
-            key: Setting.EnumKey,
-            value: @escaping ((ET?) -> String?)
-        ) -> DataSource {
-            return .dynamicString {
-                let currentValue: ET? = Storage.shared[key]
-                
-                return value(currentValue)
-            }
-        }
-        
-        public static func dynamicString<ET: EnumStringSetting>(
-            type: ET.Type,
-            key: Setting.EnumKey,
-            value: @escaping ((ET?) -> String?)
-        ) -> DataSource {
-            return .dynamicString {
-                let currentValue: ET? = Storage.shared[key]
-                
-                return value(currentValue)
-            }
-        }
-        
         // MARK: - Convenience
         
         public var currentBoolValue: Bool {
