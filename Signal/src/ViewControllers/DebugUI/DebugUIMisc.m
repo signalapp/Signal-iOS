@@ -36,12 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Enable Manual Censorship Circumvention"
-                                     actionBlock:^{
-                                         [DebugUIMisc setManualCensorshipCircumventionEnabled:YES];
-                                     }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Disable Manual Censorship Circumvention"
-                                     actionBlock:^{ [DebugUIMisc setManualCensorshipCircumventionEnabled:NO]; }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];
@@ -271,31 +265,6 @@ NS_ASSUME_NONNULL_BEGIN
     [Environment.shared.preferences unsetRecordedAPNSTokens];
 
     [SignalApp.shared showOnboardingView:[OnboardingController new]];
-}
-
-+ (void)setManualCensorshipCircumventionEnabled:(BOOL)isEnabled
-{
-    OWSCountryMetadata *countryMetadata = nil;
-    NSString *countryCode = self.signalService.manualCensorshipCircumventionCountryCode;
-    if (countryCode) {
-        countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
-    }
-
-    if (!countryMetadata) {
-        countryCode = [PhoneNumber defaultCountryCode];
-        if (countryCode) {
-            countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
-        }
-    }
-
-    if (!countryMetadata) {
-        countryCode = @"US";
-        countryMetadata = [OWSCountryMetadata countryMetadataForCountryCode:countryCode];
-    }
-
-    OWSAssertDebug(countryMetadata);
-    self.signalService.manualCensorshipCircumventionCountryCode = countryCode;
-    self.signalService.isCensorshipCircumventionManuallyActivated = isEnabled;
 }
 
 + (void)clearHasDismissedOffers
