@@ -20,7 +20,7 @@ Truths which we believe to be self-evident:
 Please search both open and closed issues to make sure your bug report is not a duplicate.
 
 ### The issue tracker is for bugs, not feature requests
-The GitHub issue tracker is not used for feature requests, but new ideas can be submitted and discussed on the [community forum](https://community.signalusers.org/c/feature-requests). The purpose of this issue tracker is to track bugs in the iOS client. Bug reports should only be submitted for existing functionality that does not work as intended. Comments that are relevant and concise will help the developers solve issues more quickly. And please don't create issues for beta software bugs, you can use Signal Community's [website](https://community.signalusers.org/c/beta-feedback/).
+The GitHub issue tracker is not used for feature requests, but new ideas can be submitted and discussed on the [community forum](https://community.signalusers.org/c/feature-requests). The purpose of this issue tracker is to track bugs in the iOS client. Bug reports should only be submitted for existing functionality that does not work as intended. Comments that are relevant and concise will help the developers solve issues more quickly. The ["Beta Feedback" category on the community forum](https://community.signalusers.org/c/beta-feedback/) is the best place to share beta feedback.
 
 ### Send support questions to support
 You can reach support by sending an email to support@signal.org or by visiting the [Signal Support Center](https://support.signal.org/) where you can also search for existing troubleshooting articles and find answers to frequently asked questions. Please do not post support questions on the GitHub issue tracker.
