@@ -90,6 +90,6 @@ extension ExperienceUpgrade {
 
         let experienceToUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
         block(experienceToUpgrade)
-        anyUpsert(transaction: transaction)
+        experienceToUpgrade.anyUpsert(transaction: transaction)
     }
 }
