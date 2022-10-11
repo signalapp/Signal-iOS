@@ -82,6 +82,7 @@ class StoryCell: UITableViewCell {
         replyImageView.isHidden = !model.hasReplies
         replyImageView.tintColor = Theme.isDarkThemeEnabled ? Theme.secondaryTextAndIconColor : .ows_gray45
 
+        nameLabel.numberOfLines = 2
         nameLabel.font = .ows_dynamicTypeHeadline
         nameLabel.textColor = Theme.primaryTextColor
         nameLabel.text = model.latestMessageName
