@@ -219,12 +219,15 @@ public class TextStylingToolbar: UIControl {
     public lazy var doneButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "check-24"), backgroundStyle: .blur)
 
     public private(set) var contentWidthConstraint: NSLayoutConstraint?
+    private var stackView = UIStackView()
 
     public init(layout: Layout, currentColor: ColorPickerBarColor? = nil) {
         self.layout = layout
         colorPickerView = ColorPickerBarView(currentColor: currentColor ?? TextStylingToolbar.defaultColor(forLayout: layout))
 
         super.init(frame: .zero)
+
+        autoresizingMask = [ .flexibleHeight ]
 
         colorPickerView.delegate = self
 
@@ -244,7 +247,7 @@ public class TextStylingToolbar: UIControl {
             stackViewLayoutGuide.centerXAnchor.constraint(equalTo: centerXAnchor),
             stackViewLayoutGuide.leadingAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor),
             stackViewLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
-            stackViewLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2),
+            stackViewLayoutGuide.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -2),
             contentWidthConstraint
         ])
 
@@ -258,7 +261,7 @@ public class TextStylingToolbar: UIControl {
                 return [ textStyleButton, decorationStyleButton, colorPickerView, doneButton ]
             }
         }()
-        let stackView = UIStackView(arrangedSubviews: stackViewSubviews)
+        stackView.addArrangedSubviews(stackViewSubviews)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.alignment = .center
         stackView.spacing = 8
@@ -279,12 +282,21 @@ public class TextStylingToolbar: UIControl {
             stackView.leadingAnchor.constraint(equalTo: stackViewLayoutGuide.leadingAnchor, constant: -leadingMargin),
             stackView.trailingAnchor.constraint(equalTo: stackViewLayoutGuide.trailingAnchor, constant: trailingMargin),
             stackView.topAnchor.constraint(equalTo: stackViewLayoutGuide.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: stackViewLayoutGuide.bottomAnchor) ])
+            stackView.bottomAnchor.constraint(equalTo: stackViewLayoutGuide.bottomAnchor)
+        ])
     }
 
     @available(iOS, unavailable, message: "Use init(currentColor:)")
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    public override var intrinsicContentSize: CGSize {
+        // NOTE: Update size calculation if changing margins around UIStackView in init(layout:currentColor:).
+        CGSize(
+            width: UIScreen.main.bounds.width,
+            height: stackView.frame.height + 2 + safeAreaInsets.bottom
+        )
     }
 }
 
