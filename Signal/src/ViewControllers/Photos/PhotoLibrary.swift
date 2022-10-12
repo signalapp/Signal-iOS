@@ -340,12 +340,12 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
                 owsFailDebug("Asset collection has unexpected type: \(type(of: collection))")
                 return
             }
-            let photoCollection = PhotoCollection(collection: assetCollection)
-            guard !hideIfEmpty || photoCollection.contents().assetCount > 0 else {
+
+            guard !hideIfEmpty || assetCollection.estimatedAssetCount > 0 else {
                 return
             }
 
-            collections.append(photoCollection)
+            collections.append(PhotoCollection(collection: assetCollection))
         }
         let processPHAssetCollections: ((fetchResult: PHFetchResult<PHAssetCollection>, hideIfEmpty: Bool)) -> Void = { arg in
             let (fetchResult, hideIfEmpty) = arg
